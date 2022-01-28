@@ -35,8 +35,8 @@ namespace DCL.Configuration
         public const int SCENE_SNAPSHOT_WIDTH_RES = 854;
         public const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
 
-        public const int AERIAL_SCREENSHOT_WIDTH = 328;
-        public const int AERIAL_SCREENSHOT_HEIGHT = 328;
+        public const int AERIAL_SCREENSHOT_WIDTH = 315;
+        public const int AERIAL_SCREENSHOT_HEIGHT = 253;
 
         // Identifiers
         public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";

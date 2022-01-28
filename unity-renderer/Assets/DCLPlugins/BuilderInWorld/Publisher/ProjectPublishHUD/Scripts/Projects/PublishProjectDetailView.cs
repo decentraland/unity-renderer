@@ -82,7 +82,9 @@ namespace DCL.Builder
         [SerializeField] internal Button backSecondButton;
         [SerializeField] internal Button publishButton;
         [SerializeField] internal PublishLandListView landListView;
+        [SerializeField] internal ProjectPublishToast toastView;
         [SerializeField] internal PublishMapView mapView;
+        [SerializeField] internal SearchLandView searchView;
 
         [SerializeField] internal RawImage sceneScreenshotImage;
 
@@ -92,7 +94,7 @@ namespace DCL.Builder
         internal List<Vector2Int> availableLandsToPublish = new List<Vector2Int>();
 
         internal Vector2Int selectedCoords;
-        internal bool coordsSelected = false;
+        internal bool areCoordsSelected = false;
 
         public override void RefreshControl()
         {
@@ -110,6 +112,8 @@ namespace DCL.Builder
             landListView.OnLandSelected += LandSelected;
             mapView.OnParcelHover += ParcelHovered;
             mapView.OnParcelClicked += ParcelClicked;
+            searchView.OnValueSearch += SearchLand;
+
             backButton.onClick.AddListener(Back);
             nextButton.onClick.AddListener(Next);
 
@@ -118,7 +122,7 @@ namespace DCL.Builder
 
             rotateLeftButton.onClick.AddListener( RotateLeft);
             rotateRightButton.onClick.AddListener( RotateRight);
-
+            
             gameObject.SetActive(false);
         }
 
@@ -131,6 +135,8 @@ namespace DCL.Builder
             mapView.OnParcelHover -= ParcelHovered;
             mapView.OnParcelClicked -= ParcelClicked;
             landListView.OnLandSelected -= LandSelected;
+            searchView.OnValueSearch -= SearchLand;
+            
             backButton.onClick.RemoveAllListeners();
             nextButton.onClick.RemoveAllListeners();
 
@@ -159,6 +165,20 @@ namespace DCL.Builder
             ShowCurrentStep();
         }
 
+        private void SearchLand(string searchInput)
+        {
+            List<LandWithAccess> filteredLands = new List<LandWithAccess>();
+            foreach (LandWithAccess land in DataStore.i.builderInWorld.landsWithAccess.Get())
+            {
+                if(land.name.Contains(searchInput) || BIWUtils.Vector2INTToString(land.baseCoords).Contains(searchInput))
+                    filteredLands.Add(land);
+            }
+            
+            // We fill the list with the lands
+            landListView.SetContent(scene.manifest.project.cols, scene.manifest.project.rows, filteredLands);
+            landListView.SetActive(true);
+        }
+
         private void ParcelClicked(Vector2Int parcel)
         {
             if (!availableLandsToPublish.Contains(parcel))
@@ -167,7 +187,24 @@ namespace DCL.Builder
                 return;
             }
 
-            coordsSelected = true;
+            foreach (LandWithAccess land in DataStore.i.builderInWorld.landsWithAccess.Get())
+            {
+                foreach (Vector2Int landParcel in land.parcels)
+                {
+                    if (landParcel == parcel)
+                    {
+                        toastView.SetLandInfo(land.name, BIWUtils.Vector2INTToString(landParcel));
+                        bool isEmpty = !(land.scenes.Count == 0 || land.scenes[0].isEmpty);
+                        toastView.SetSubtitleActive(isEmpty);
+                        toastView.Show();
+                        break;
+                    }
+                }
+             
+            }
+
+            mapView.SelectLandInMap(parcel);
+            areCoordsSelected = true;
             selectedCoords = parcel;
             publishButton.interactable = true;
         }
@@ -191,6 +228,12 @@ namespace DCL.Builder
                     secondStep.SetActive(true);
                     if (availableLandsToPublish.Count > 0)
                         GoToCoords(availableLandsToPublish[0]);
+                    
+                    if (areCoordsSelected)
+                    {
+                        GoToCoords(selectedCoords);
+                        toastView.Show(true);
+                    }
                     break;
             }
         }
@@ -238,7 +281,8 @@ namespace DCL.Builder
             this.scene = scene;
 
             // We reset the selected coords and disable the publish button until the coords are selected
-            coordsSelected = false;
+            toastView.Hide(true);
+            areCoordsSelected = false;
             publishButton.interactable = false;
 
             // We set the screenshot
@@ -258,10 +302,7 @@ namespace DCL.Builder
             // We set the scene info
             nameInputField.SetText(scene.manifest.project.title);
             descriptionInputField.SetText(scene.manifest.project.description);
-
-            // We fill the list with the lands
-            landListView.SetContent(scene.manifest.project.cols, scene.manifest.project.rows, DataStore.i.builderInWorld.landsWithAccess.Get());
-
+            
             // We filter the available lands
             CheckAvailableLandsToPublish(scene);
 
@@ -305,6 +346,8 @@ namespace DCL.Builder
 
         private void LandSelected(LandWithAccess land)
         {
+            landListView.SetActive(false);
+            
             // We set the map to the main land
             GoToCoords(land.baseCoords);
         }
@@ -326,8 +369,11 @@ namespace DCL.Builder
             gameObject.SetActive(true);
             mapView.SetVisible(true);
             modal.Show();
-            if(coordsSelected)
+            if (areCoordsSelected)
+            {
                 GoToCoords(selectedCoords);
+                toastView.Show(true);
+            }
         }
 
         public void ResetView() 

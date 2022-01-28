@@ -10,8 +10,7 @@ public class PubllishLandListAdapter : MonoBehaviour
     public enum AdapterState
     {
         ENABLE = 0,
-        DISABLE = 1,
-        SELECTED = 2
+        DISABLE = 1
     }
 
     public event Action<LandWithAccess> OnLandSelected;
@@ -60,9 +59,6 @@ public class PubllishLandListAdapter : MonoBehaviour
                 break;
             case AdapterState.DISABLE:
                 disabledImage.SetActive(true);
-                break;
-            case AdapterState.SELECTED:
-                selectedImage.SetActive(true);
                 break;
         }
 

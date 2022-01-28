@@ -85,7 +85,7 @@ namespace DCL
 
                 if (currentImageUrl == sceneInfo.previewImageUrl)
                 {
-                    DisplayThumbnail(texturePromise.asset.texture);
+                    DisplayThumbnail(texturePromise?.asset?.texture);
                     return;
                 }
 

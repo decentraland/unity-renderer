@@ -17,14 +17,18 @@ namespace DCL.Builder
         [SerializeField] RectTransform scrollRectContentTransform;
 
         private RectTransform minimapViewport;
+        private RectTransform viewRectTransform;
         private Transform mapRendererMinimapParent;
         private Vector3 atlasOriginalPosition;
         private Vector2 initialContentPosition;
+        private Vector2Int sceneSize;
 
         private bool isVisible = false;
+        private bool isDragging = false;
 
         private void Start()
         {
+            viewRectTransform = GetComponent<RectTransform>();
             scrollRect.onValueChanged.AddListener((x) =>
             {
                 if (isVisible)
@@ -39,13 +43,16 @@ namespace DCL.Builder
         // Note: this event is handled by an event trigger in the same gameobject as the scrollrect
         public void BeginDrag()
         {
+            isDragging = true;
             MapRenderer.i.SetParcelHighlightActive(false);
         }
 
         // Note: this event is handled by an event trigger in the same gameobject as the scrollrect
         public void EndDrag()
         {
-            MapRenderer.i.SetParcelHighlightActive(true);
+            isDragging = false;
+            if(RectTransformUtility.RectangleContainsScreenPoint(viewRectTransform, Input.mousePosition))
+                MapRenderer.i.SetParcelHighlightActive(true);
         }
 
         internal void UpdateOwnedLands()
@@ -61,7 +68,11 @@ namespace DCL.Builder
             MapRenderer.i.HighlightLands(landsToHighlight);
         }
 
-        public void SetProjectSize(Vector2Int[] parcels) { MapRenderer.i.SetHighlighSize(parcels); }
+        public void SetProjectSize(Vector2Int[] parcels)
+        {
+            sceneSize = BIWUtils.GetSceneSize(parcels);
+            MapRenderer.i.SetHighlighSize(sceneSize);
+        }
 
         public void GoToCoords(Vector2Int coords)
         {
@@ -93,7 +104,12 @@ namespace DCL.Builder
             MapRenderer.i.SetHighlightStyle(style);
         }
 
-        private void ParcelHovered(float x, float y) { OnParcelHover?.Invoke( new Vector2Int(Mathf.RoundToInt(x), Mathf.RoundToInt(y))); }
+        private void ParcelHovered(float x, float y)
+        {
+            if(!isDragging)
+                MapRenderer.i.SetParcelHighlightActive(true);
+            OnParcelHover?.Invoke( new Vector2Int(Mathf.RoundToInt(x), Mathf.RoundToInt(y)));
+        }
 
         private void SetMapRendererInContainer()
         {
@@ -138,6 +154,14 @@ namespace DCL.Builder
 
         }
 
-        void ParcelSelect(int cursorTileX, int cursorTileY) { OnParcelClicked?.Invoke(new Vector2Int(cursorTileX, cursorTileY)); }
+        public void SelectLandInMap(Vector2Int coord)
+        {
+            MapRenderer.i.SelectLand(coord, sceneSize);
+        }
+
+        private void ParcelSelect(int cursorTileX, int cursorTileY)
+        {
+            OnParcelClicked?.Invoke(new Vector2Int(cursorTileX, cursorTileY));
+        }
     }
 }

@@ -42,40 +42,9 @@ public class MapParcelHighlight : MonoBehaviour
         }
     }
 
-    public void ChangeHighlighSize(Vector2Int[] parcels)
-    {
-        Vector2Int sceneSize = GetSceneSize(parcels);
-        ChangeHighlighSize(sceneSize);
-    }
-
     public void ChangeHighlighSize(Vector2Int newSize)
     {
         highlighSize = new Vector2(18 * newSize.x, 18 * newSize.y);
         highlighImage.rectTransform.sizeDelta = highlighSize;
-    }
-
-    private Vector2Int GetSceneSize(Vector2Int[] parcels)
-    {
-        int minX = Int32.MaxValue;
-        int maxX = Int32.MinValue;
-        int minY = Int32.MaxValue;
-        int maxY = Int32.MinValue;
-
-        foreach (var parcel in parcels)
-        {
-            if (parcel.x > maxX)
-                maxX = parcel.x;
-            if (parcel.x < minX)
-                minX = parcel.x;
-
-            if (parcel.y > maxY)
-                maxY = parcel.y;
-            if (parcel.y < minY)
-                minY = parcel.y;
-        }
-
-        int sizeX = maxX - minX + 1;
-        int sizeY = maxY - minY + 1;
-        return new Vector2Int(sizeX, sizeY);
     }
 }
