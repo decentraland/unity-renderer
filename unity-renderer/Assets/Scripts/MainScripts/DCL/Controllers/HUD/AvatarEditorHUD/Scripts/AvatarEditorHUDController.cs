@@ -710,6 +710,7 @@ public class AvatarEditorHUDController : IHUD
         {
             // TODO (Santi): Use CatalogController.RequestThirdPartyWearablesByCollection(...) when the endpoint is available by platform!
             //CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
+            view.BlockCollectionsDropdown(true);
             WearablesFetchingHelper.GetThirdPartyWearablesByCollection(collectionId)
                 .Then((wearables) =>
                 {
@@ -719,6 +720,7 @@ public class AvatarEditorHUDController : IHUD
                     }
 
                     CatalogController.i.AddWearablesToCatalog(wearables);
+                    view.BlockCollectionsDropdown(false);
                 })
                 .Catch((error) => Debug.LogError(error));
         }

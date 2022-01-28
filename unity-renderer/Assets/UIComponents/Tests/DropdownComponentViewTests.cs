@@ -224,6 +224,21 @@ public class DropdownComponentViewTests
     }
 
     [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetLoadingActiveCorrectly(bool isActive)
+    {
+        // Arrange
+        dropdownComponent.loadingPanel.SetActive(!isActive);
+
+        // Act
+        dropdownComponent.SetLoadingActive(isActive);
+
+        // Assert
+        Assert.AreEqual(isActive, dropdownComponent.loadingPanel.activeSelf, "The loading panel active property does not match.");
+    }
+
+    [Test]
     public void CreateSelectAllOptionCorrectly()
     {
         // Act

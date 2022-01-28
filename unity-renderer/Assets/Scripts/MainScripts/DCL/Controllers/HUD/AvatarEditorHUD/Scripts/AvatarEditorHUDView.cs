@@ -462,4 +462,9 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         collectionsDropdown.SetOptions(collectionsToAdd);
     }
+
+    public void BlockCollectionsDropdown(bool isBlocked)
+    {
+        collectionsDropdown.SetLoadingActive(isBlocked);
+    }
 }

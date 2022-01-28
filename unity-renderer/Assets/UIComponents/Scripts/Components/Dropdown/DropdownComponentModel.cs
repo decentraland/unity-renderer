@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class DropdownComponentModel : BaseComponentModel
 {
     public string title;
+    public string searchPlaceHolderText;
     public bool isMultiselect = true;
     public List<ToggleComponentModel> options;
-    public string searchPlaceHolderText;
 }

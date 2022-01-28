@@ -292,6 +292,9 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         List<BaseComponentView> extractedItems = new List<BaseComponentView>();
         foreach (BaseComponentView item in instantiatedItems)
         {
+            if (item == null)
+                continue;
+
             item.transform.SetParent(null);
             extractedItems.Add(item);
         }

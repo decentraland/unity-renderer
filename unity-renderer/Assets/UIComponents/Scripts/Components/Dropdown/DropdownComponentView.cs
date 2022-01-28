@@ -69,6 +69,12 @@ public interface IDropdownComponentView
     /// </summary>
     /// <param name="newText">New text.</param>
     void SetSearchPlaceHolderText(string newText);
+
+    /// <summary>
+    /// Show/Hide the loading panel.
+    /// </summary>
+    /// <param name="isActive">Tru for showing it.</param>
+    void SetLoadingActive(bool isActive);
 }
 public class DropdownComponentView : BaseComponentView, IDropdownComponentView, IComponentModelConfig
 {
@@ -80,10 +86,12 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     [SerializeField] internal TMP_Text title;
     [SerializeField] internal SearchBarComponentView searchBar;
     [SerializeField] internal GameObject optionsPanel;
+    [SerializeField] internal GameObject loadingPanel;
     [SerializeField] internal GridContainerComponentView availableOptions;
-    [SerializeField] internal ToggleComponentView togglePrefab;
-
     [SerializeField] internal UIHelper_ClickBlocker blocker;
+
+    [Header("Resources")]
+    [SerializeField] internal ToggleComponentView togglePrefab;
 
     [Header("Configuration")]
     [SerializeField] internal DropdownComponentModel model;
@@ -162,7 +170,9 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
 
         RemoveAllInstantiatedOptions();
 
-        CreateSelectAllOption();
+        if (options.Count > 0)
+            CreateSelectAllOption();
+
         for (int i = 0; i < options.Count; i++)
         {
             CreateOption(options[i], $"Option_{i}");
@@ -235,6 +245,14 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
             return;
 
         searchBar.SetPlaceHolderText(newText);
+    }
+
+    public void SetLoadingActive(bool isActive)
+    {
+        if (loadingPanel == null)
+            return;
+
+        loadingPanel.SetActive(isActive);
     }
 
     public override void Dispose()
@@ -322,33 +340,18 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
             return;
 
         List<IToggleComponentView> allOptions = GetAllOptions();
-        selectAllOptionComponent.OnSelectedChanged -= OnOptionSelected;
-        selectAllOptionComponent.isOn = allOptions.Count > 0 && allOptions.All(x => x.isOn);
-        selectAllOptionComponent.OnSelectedChanged += OnOptionSelected;
+
+        if (selectAllOptionComponent != null)
+        {
+            selectAllOptionComponent.OnSelectedChanged -= OnOptionSelected;
+            selectAllOptionComponent.isOn = allOptions.Count > 0 && allOptions.All(x => x.isOn);
+            selectAllOptionComponent.OnSelectedChanged += OnOptionSelected;
+        }
     }
 
     internal void RemoveAllInstantiatedOptions()
     {
         availableOptions.RemoveItems();
-
-        foreach (Transform child in availableOptions.transform)
-        {
-            if (Application.isPlaying)
-            {
-                Destroy(child.gameObject);
-            }
-            else
-            {
-                if (isActiveAndEnabled)
-                    StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
-            }
-        }
-    }
-
-    internal IEnumerator DestroyGameObjectOnEditor(GameObject go)
-    {
-        yield return null;
-        DestroyImmediate(go);
     }
 
     [ContextMenu("Mock Options")]

@@ -395,6 +395,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         List<BaseComponentView> extractedItems = new List<BaseComponentView>();
         foreach (BaseComponentView item in instantiatedItems)
         {
+            if (item == null)
+                continue;
+
             item.transform.SetParent(null);
             extractedItems.Add(item);
         }
