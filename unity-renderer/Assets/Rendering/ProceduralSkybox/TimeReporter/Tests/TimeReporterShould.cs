@@ -7,11 +7,14 @@ namespace Tests
     public class TimeReporterShould
     {
         private TimeReporter timeReporter;
+        private IDummyEventSubscriber<float, bool> reportSubscriber;
 
         [SetUp]
         public void SetUp()
         {
-            timeReporter = Substitute.ForPartsOf<TimeReporter>();
+            timeReporter = new TimeReporter();
+            reportSubscriber = Substitute.For<IDummyEventSubscriber<float, bool>>();
+            timeReporter.OnReport += reportSubscriber.React;
         }
 
         [TearDown]
@@ -25,9 +28,9 @@ namespace Tests
         {
             DataStore.i.skyboxConfig.useDynamicSkybox.Set(false);
             timeReporter.ReportTime(111);
-            timeReporter.Received(1).DoReport(111, true);
+            reportSubscriber.Received(1).React(111, true);
             timeReporter.ReportTime(928);
-            timeReporter.Received(1).DoReport(928, true);
+            reportSubscriber.Received(1).React(928, true);
         }
 
         [Test]
@@ -35,9 +38,10 @@ namespace Tests
         {
             DataStore.i.skyboxConfig.useDynamicSkybox.Set(true);
             timeReporter.ReportTime(111);
-            timeReporter.Received(1).DoReport(111, false);
+            reportSubscriber.Received(1).React(111, false);
+            reportSubscriber.ClearReceivedCalls();
             timeReporter.ReportTime(928);
-            timeReporter.DidNotReceive().DoReport(Arg.Any<float>(), Arg.Any<bool>());
+            reportSubscriber.DidNotReceive().React(Arg.Any<float>(), Arg.Any<bool>());
         }
 
         [Test]
@@ -45,15 +49,15 @@ namespace Tests
         {
             DataStore.i.skyboxConfig.useDynamicSkybox.Set(true);
             timeReporter.ReportTime(111);
-            timeReporter.Received(1).DoReport(111, false);
+            reportSubscriber.Received(1).React(111, false);
 
             DataStore.i.skyboxConfig.useDynamicSkybox.Set(false);
             timeReporter.ReportTime(928);
-            timeReporter.Received(1).DoReport(928, true);
+            reportSubscriber.Received(1).React(928, true);
 
             DataStore.i.skyboxConfig.useDynamicSkybox.Set(true);
             timeReporter.ReportTime(632);
-            timeReporter.Received(1).DoReport(632, false);
+            reportSubscriber.Received(1).React(632, false);
         }
     }
 }

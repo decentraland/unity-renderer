@@ -1,11 +1,24 @@
+using System;
 using DCL;
 using DCL.Interface;
 
-public class TimeReporter
+public class TimeReporter : IDisposable
 {
     private float timeNormalizationFactor;
     private float cycleTime;
     private bool wasPaused = true;
+
+    internal event Action<float, bool> OnReport;
+
+    public TimeReporter()
+    {
+        OnReport += DoReport;
+    }
+
+    public void Dispose()
+    {
+        OnReport -= DoReport;
+    }
 
     public void Configure(float normalizationFactor, float cycle)
     {
@@ -25,10 +38,10 @@ public class TimeReporter
         }
 
         wasPaused = isPaused;
-        DoReport(time, isPaused);
+        OnReport?.Invoke(time, isPaused);
     }
-
-    internal virtual void DoReport(float time, bool isPaused)
+    
+    private void DoReport(float time, bool isPaused)
     {
         WebInterface.ReportTime(time, isPaused, timeNormalizationFactor, cycleTime);
     }
