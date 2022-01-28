@@ -4,6 +4,7 @@ using UnityEngine;
 public class ListVariable_Legacy<T> : ScriptableObject
 {
     public delegate void Added(T addedValue);
+
     public delegate void Removed(T removedValue);
 
     private event Added OnAddedElementValue;

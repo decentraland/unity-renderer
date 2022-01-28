@@ -1,0 +1,21 @@
+{
+  "name": "DCL.Components.Font",
+  "rootNamespace": "",
+  "references": [
+    "GUID:97d8897529779cb49bebd400c7f402a6",
+    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+    "GUID:a881b57670b1d2747a6d7f9e32b63230",
+    "GUID:19c3df1967929405fba735480b3da9a7",
+    "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
+    "GUID:6055be8ebefd69e48b49212b09b47b2f"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
