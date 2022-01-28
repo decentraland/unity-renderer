@@ -170,7 +170,6 @@ namespace DCL
                     }
                     else
                     {
-                        Debug.LogWarning($"[{resultOp.webRequest.error}] {url}");
                         OnFail?.Invoke(resultOp);
                         resultOp.SetAsCompleted(false);
                     }
