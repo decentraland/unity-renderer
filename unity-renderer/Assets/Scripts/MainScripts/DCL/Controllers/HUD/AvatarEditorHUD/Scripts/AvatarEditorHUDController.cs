@@ -726,7 +726,7 @@ public class AvatarEditorHUDController : IHUD
         }
         else
         {
-            CatalogController.i.RemoveWearablesFromCatalogByColection(collectionId);
+            CatalogController.i.RemoveWearablesFromCatalogByCollection(collectionId);
         }
     }
 }

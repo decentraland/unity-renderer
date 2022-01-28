@@ -146,7 +146,7 @@ public class CatalogController : MonoBehaviour
         }
     }
 
-    public void RemoveWearablesFromCatalogByColection(string collectionId)
+    public void RemoveWearablesFromCatalogByCollection(string collectionId)
     {
         List<string> wearablesToRemove = wearableCatalog
             .Where(x => x.Value.collection == collectionId)
