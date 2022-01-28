@@ -272,7 +272,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         BIWUtils.MakeGetTextureCall(url, screenshotPromise);
 
         IBuilderScene builderScene = new BuilderScene(manifest, IBuilderScene.SceneType.PROJECT);
-        builderScene.SetScene(ManifestTranslator.ManifestToParcelScene(manifest));
+        builderScene.SetScene(ManifestTranslator.ManifestToParcelSceneWithOnlyData(manifest));
         screenshotPromise.Then((texture2D => builderScene.sceneScreenshotTexture = texture2D));
         await screenshotPromise;
         context.publisher.StartPublish(builderScene);
