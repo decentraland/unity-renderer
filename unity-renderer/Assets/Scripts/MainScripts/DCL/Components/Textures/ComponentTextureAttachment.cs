@@ -17,7 +17,7 @@ namespace DCL.Components
         {
             add
             {
-                if ( OnUpdateEvent.GetInvocationList().Length == 0 )
+                if ( OnUpdateEvent == null || OnUpdateEvent.GetInvocationList().Length == 0 )
                     SubscribeToEntityUpdates();
 
                 OnUpdateEvent += value;
@@ -26,7 +26,7 @@ namespace DCL.Components
             {
                 OnUpdateEvent -= value;
 
-                if ( OnUpdateEvent.GetInvocationList().Length == 0 )
+                if ( OnUpdateEvent != null && OnUpdateEvent.GetInvocationList().Length == 0 )
                     UnsubscribeToEntityUpdates();
             }
         }
@@ -37,7 +37,7 @@ namespace DCL.Components
         {
             add
             {
-                if ( OnDetachEvent.GetInvocationList().Length == 0 )
+                if ( OnDetachEvent == null || OnDetachEvent.GetInvocationList().Length == 0 )
                 {
                     component.OnDetach -= OnComponentDetach;
                     component.OnDetach += OnComponentDetach;
@@ -49,7 +49,7 @@ namespace DCL.Components
             {
                 OnDetachEvent -= value;
 
-                if ( OnDetachEvent.GetInvocationList().Length == 0 )
+                if ( OnDetachEvent != null && OnDetachEvent.GetInvocationList().Length == 0 )
                 {
                     component.OnDetach -= OnComponentDetach;
                 }
@@ -62,7 +62,7 @@ namespace DCL.Components
         {
             add
             {
-                if ( OnAttachEvent.GetInvocationList().Length == 0 )
+                if ( OnAttachEvent == null || OnAttachEvent.GetInvocationList().Length == 0 )
                 {
                     component.OnAttach -= OnComponentAttach;
                     component.OnAttach += OnComponentAttach;
@@ -74,7 +74,7 @@ namespace DCL.Components
             {
                 OnAttachEvent -= value;
 
-                if ( OnAttachEvent.GetInvocationList().Length == 0 )
+                if ( OnAttachEvent != null && OnAttachEvent.GetInvocationList().Length == 0 )
                 {
                     component.OnAttach -= OnComponentAttach;
                 }
