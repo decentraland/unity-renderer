@@ -31,7 +31,10 @@ namespace DCL.Components
 
         DCLTexture dclTexture = null;
 
-        public UIImage() { model = new Model(); }
+        public UIImage()
+        {
+            model = new Model();
+        }
 
         public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
 
@@ -60,9 +63,9 @@ namespace DCL.Components
                     {
                         referencesContainer.image.texture = downloadedTexture.texture;
                         fetchRoutine = null;
-                        dclTexture?.DetachFrom(this);
+                        dclTexture?.DetachFrom(new UIShapeTextureAttachment(this));
                         dclTexture = downloadedTexture;
-                        dclTexture.AttachTo(this);
+                        dclTexture.AttachTo(new UIShapeTextureAttachment(this));
 
                         ConfigureUVRect(parentRecTransform);
                     });
@@ -73,7 +76,7 @@ namespace DCL.Components
             else
             {
                 referencesContainer.image.texture = null;
-                dclTexture?.DetachFrom(this);
+                dclTexture?.DetachFrom(new UIShapeTextureAttachment(this));
                 dclTexture = null;
             }
 
@@ -122,7 +125,7 @@ namespace DCL.Components
                 fetchRoutine = null;
             }
 
-            dclTexture?.DetachFrom(this);
+            dclTexture?.DetachFrom(new ComponentTextureAttachment(this));
 
             if (referencesContainer != null)
                 Utils.SafeDestroy(referencesContainer.gameObject);

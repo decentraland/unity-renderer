@@ -3,7 +3,6 @@ using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -29,6 +28,8 @@ namespace DCL.Components
 
         private DCLTexture dclTexture = null;
 
+        private ComponentTextureAttachment baseMapTextureAttachment = null;
+
         private static readonly int _BaseMap = Shader.PropertyToID("_BaseMap");
         private static readonly int _AlphaClip = Shader.PropertyToID("_AlphaClip");
         private static readonly int _Cutoff = Shader.PropertyToID("_Cutoff");
@@ -53,12 +54,7 @@ namespace DCL.Components
                 return;
 
             entity.RemoveSharedComponent(typeof(PBRMaterial));
-            base.AttachTo(entity, overridenAttachedType);
-        }
-
-        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
-        {
-            base.DetachFrom(entity, overridenAttachedType);
+            base.AttachTo(entity);
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -78,30 +74,20 @@ namespace DCL.Components
             {
                 if (dclTexture == null || dclTexture.id != model.texture)
                 {
-                    yield return DCLTexture.FetchTextureComponent(scene, model.texture,
-                        (downloadedTexture) =>
-                        {
-                            if ( dclTexture != null )
-                            {
-                                dclTexture.DetachFrom(this);
-                            }
-
-                            material.SetTexture(_BaseMap, downloadedTexture.texture);
-                            dclTexture = downloadedTexture;
-                            dclTexture.AttachTo(this);
-                        }
-                    );
+                    yield return DCLTexture.FetchTextureComponent(scene, model.texture, (downloadedTexture) =>
+                    {
+                        dclTexture?.DetachFrom(baseMapTextureAttachment);
+                        material.SetTexture(_BaseMap, downloadedTexture.texture);
+                        dclTexture = downloadedTexture;
+                        dclTexture.AttachTo(baseMapTextureAttachment);
+                    });
                 }
             }
             else
             {
                 material.mainTexture = null;
-
-                if ( dclTexture != null )
-                {
-                    dclTexture.DetachFrom(this);
-                    dclTexture = null;
-                }
+                dclTexture?.DetachFrom(baseMapTextureAttachment);
+                dclTexture = null;
             }
 
             material.EnableKeyword("_ALPHATEST_ON");
@@ -110,9 +96,9 @@ namespace DCL.Components
             material.SetFloat(_Cutoff, model.alphaTest);
             material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.AlphaTest;
 
-            foreach (IDCLEntity entity in attachedEntities)
+            foreach (IDCLEntity decentralandEntity in attachedEntities)
             {
-                InitMaterial(entity);
+                InitMaterial(decentralandEntity.meshRootGameObject);
             }
         }
 
@@ -126,51 +112,42 @@ namespace DCL.Components
                 var meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
 
                 if (meshRenderer != null)
-                    InitMaterial(entity);
+                    InitMaterial(entity.meshRootGameObject);
             }
         }
 
-        void InitMaterial(IDCLEntity entity)
+        void InitMaterial(GameObject meshGameObject)
         {
-            var meshGameObject = entity.meshRootGameObject;
-
             if (meshGameObject == null)
                 return;
 
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
-
             if (meshRenderer == null)
                 return;
 
             Model model = (Model) this.model;
 
             meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
-
-            if (meshRenderer.sharedMaterial == material)
-                return;
-
-            MaterialTransitionController
-                matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
-
-            if (matTransition != null && matTransition.canSwitchMaterial)
+            if (meshRenderer.sharedMaterial != material)
             {
-                matTransition.finalMaterials = new Material[] { material };
-                matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
+                MaterialTransitionController
+                    matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
+
+                if (matTransition != null && matTransition.canSwitchMaterial)
+                {
+                    matTransition.finalMaterials = new Material[] { material };
+                    matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
+                }
+
+                SRPBatchingHelper.OptimizeMaterial(material);
+                meshRenderer.sharedMaterial = material;
             }
-
-            SRPBatchingHelper.OptimizeMaterial(material);
-
-            Material oldMaterial = meshRenderer.sharedMaterial;
-            meshRenderer.sharedMaterial = material;
-
-            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, entity.entityId, oldMaterial);
-            DataStore.i.sceneWorldObjects.AddMaterial(scene.sceneData.id, entity.entityId, material);
         }
 
         private void OnShapeUpdated(IDCLEntity entity)
         {
             if (entity != null)
-                InitMaterial(entity);
+                InitMaterial(entity.meshRootGameObject);
         }
 
         void OnMaterialDetached(IDCLEntity entity)
@@ -184,19 +161,11 @@ namespace DCL.Components
 
             if (meshRenderer && meshRenderer.sharedMaterial == material)
                 meshRenderer.sharedMaterial = null;
-
-            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, entity.entityId, material);
         }
 
         public override void Dispose()
         {
-            dclTexture?.DetachFrom(this);
-
-            while ( attachedEntities.Count > 0 )
-            {
-                DetachFrom(attachedEntities.First());
-            }
-
+            dclTexture?.DetachFrom(baseMapTextureAttachment);
             Object.Destroy(material);
             base.Dispose();
         }

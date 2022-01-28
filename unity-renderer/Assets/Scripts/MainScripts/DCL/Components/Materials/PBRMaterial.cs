@@ -301,7 +301,7 @@ namespace DCL.Components
             else
             {
                 material.SetTexture(materialPropertyId, null);
-                cachedDCLTexture?.DetachFrom(this);
+                cachedDCLTexture?.DetachFrom(new ComponentTextureAttachment(this));
             }
         }
 
@@ -314,17 +314,17 @@ namespace DCL.Components
 
         void SwitchTextureComponent(DCLTexture cachedTexture, DCLTexture newTexture)
         {
-            cachedTexture?.DetachFrom(this);
+            cachedTexture?.DetachFrom(new ComponentTextureAttachment(this));
             cachedTexture = newTexture;
-            cachedTexture.AttachTo(this);
+            cachedTexture.AttachTo(new ComponentTextureAttachment(this));
         }
 
         public override void Dispose()
         {
-            albedoDCLTexture?.DetachFrom(this);
-            alphaDCLTexture?.DetachFrom(this);
-            emissiveDCLTexture?.DetachFrom(this);
-            bumpDCLTexture?.DetachFrom(this);
+            albedoDCLTexture?.DetachFrom(new ComponentTextureAttachment(this));
+            alphaDCLTexture?.DetachFrom(new ComponentTextureAttachment(this));
+            emissiveDCLTexture?.DetachFrom(new ComponentTextureAttachment(this));
+            bumpDCLTexture?.DetachFrom(new ComponentTextureAttachment(this));
 
             if (material != null)
             {
