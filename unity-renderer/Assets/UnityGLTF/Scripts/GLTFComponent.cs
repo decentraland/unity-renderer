@@ -114,6 +114,7 @@ namespace UnityGLTF
         public void LoadAsset(string baseUrl, string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null, AssetIdConverter fileToHashConverter = null)
         {
             ctokenSource = new CancellationTokenSource();
+
             if (alreadyLoadedAsset && !loadEvenIfAlreadyLoaded)
             {
                 return;
@@ -283,10 +284,13 @@ namespace UnityGLTF
                         }
                     }
 
-                    if ( state == State.COMPLETED && !token.IsCancellationRequested)
-                        OnFinishedLoadingAsset?.Invoke();
-                    else
-                        OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
+                    if (!token.IsCancellationRequested)
+                    {
+                        if ( state == State.COMPLETED)
+                            OnFinishedLoadingAsset?.Invoke();
+                        else
+                            OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
+                    }
 
                     Destroy(loadingPlaceholder);
                     Destroy(this);
