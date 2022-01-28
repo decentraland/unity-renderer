@@ -66,15 +66,6 @@ namespace DCL.Components
             StopStreaming();
         }
 
-        private bool IsPlayerInSameSceneAsComponent(string currentSceneId)
-        {
-            if (scene == null)
-                return false;
-            if (string.IsNullOrEmpty(currentSceneId))
-                return false;
-            return (scene.sceneData.id == currentSceneId) || (scene is GlobalScene globalScene && globalScene.isPortableExperience);
-        }
-
         private void UpdatePlayingState(bool forceStateUpdate)
         {
             if (!gameObject.activeInHierarchy)
@@ -82,7 +73,7 @@ namespace DCL.Components
                 return;
             }
 
-            bool canPlayStream = IsPlayerInSameSceneAsComponent(CommonScriptableObjects.sceneID) && CommonScriptableObjects.rendererState;
+            bool canPlayStream = scene.sceneData.id == CommonScriptableObjects.sceneID.Get() && CommonScriptableObjects.rendererState;
 
             Model model = (Model) this.model;
             bool shouldStopStream = (isPlaying && !model.playing) || (isPlaying && !canPlayStream);

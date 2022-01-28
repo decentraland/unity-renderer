@@ -133,12 +133,7 @@ namespace DCL.Components
             AudioSettings audioSettingsData = Settings.i != null ? Settings.i.audioSettings.Data : new AudioSettings();
             float newVolume = ((Model)model).volume * Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettingsData.sceneSFXVolume * audioSettingsData.masterVolume);
 
-            if (scene is GlobalScene globalScene && globalScene.isPortableExperience)
-            {
-                audioSource.volume = newVolume;
-                return;
-            }
-
+            // isOutOfBoundaries will always be false for global scenes.
             if (isOutOfBoundaries)
             {
                 audioSource.volume = 0;
@@ -150,17 +145,19 @@ namespace DCL.Components
 
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
         {
-            if (audioSource != null)
-            {
-                Model model = (Model) this.model;
-                float volume = 0;
-                if ((scene.sceneData.id == currentSceneId) || (scene is GlobalScene globalScene && globalScene.isPortableExperience))
-                {
-                    volume = model.volume;
-                }
+            if (audioSource == null)
+                return;
 
-                audioSource.volume = volume;
+            Model model = (Model) this.model;
+            float volume = 0;
+
+            // Note that OnCurrentSceneChange never gets called for global scenes. This only applies for local scenes.
+            if (scene.sceneData.id == currentSceneId)
+            {
+                volume = model.volume;
             }
+
+            audioSource.volume = volume;
         }
 
         private void OnDestroy()
