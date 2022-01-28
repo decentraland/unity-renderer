@@ -3,7 +3,6 @@
     [System.Serializable]
     public class SceneMetricsModel
     {
-        public int parcelCount;
         public int meshes;
         public int bodies;
         public int materials;

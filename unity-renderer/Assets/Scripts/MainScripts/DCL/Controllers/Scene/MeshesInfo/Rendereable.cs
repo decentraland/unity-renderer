@@ -9,11 +9,9 @@ namespace DCL
     /// <summary>
     /// The Rendereable object represents any loaded object that should be visible in the world.
     /// 
-    /// In the future, we may want to add a Renderer[] list here.
-    ///
-    /// With this in place, the SceneBoundsChecker and CullingController implementations can
-    /// be changed to be reactive, and lots of FindObjects and GetComponentsInChildren calls can be
-    /// saved.
+    /// With this in place, the SceneBoundsChecker, CullingController and SceneMetricsCounter
+    /// implementations can  be changed to be reactive, and lots of FindObjects and GetComponentsInChildren
+    /// calls can be saved.
     /// </summary>
     public class Rendereable : ICloneable
     {
@@ -22,6 +20,8 @@ namespace DCL
         public List<Mesh> meshes = new List<Mesh>();
         public Dictionary<Mesh, int> meshToTriangleCount = new Dictionary<Mesh, int>();
         public List<Renderer> renderers = new List<Renderer>();
+        public List<Material> materials = new List<Material>();
+        public List<Texture> textures = new List<Texture>();
         public int totalTriangleCount = 0;
 
         public bool Equals(Rendereable other)
@@ -34,15 +34,42 @@ namespace DCL
             var result = (Rendereable)this.MemberwiseClone();
             result.meshToTriangleCount = new Dictionary<Mesh, int>(meshToTriangleCount);
             result.renderers = new List<Renderer>(renderers);
+            result.materials = new List<Material>(materials);
+            result.textures = new List<Texture>(textures);
             result.meshes = new List<Mesh>(meshes);
             return result;
         }
 
+        private static List<int> texIdsCache = new List<int>();
+        private static Shader hologramShader = null;
+
         public static Rendereable CreateFromGameObject(GameObject go)
         {
+            if ( hologramShader == null )
+                hologramShader = Shader.Find("DCL/FX/Hologram");
+
             Rendereable rendereable = new Rendereable();
             rendereable.container = go;
             rendereable.renderers = go.GetComponentsInChildren<Renderer>().ToList();
+
+            // Get unique materials that are not holograms
+            rendereable.materials = rendereable.renderers.SelectMany( (x) =>
+                x.sharedMaterials.Where( (mat) => mat.shader != hologramShader )
+            ).Distinct().ToList();
+
+            // Get unique textures within the materials
+            rendereable.textures = rendereable.materials.SelectMany( (mat) =>
+            {
+                mat.GetTexturePropertyNameIDs(texIdsCache);
+                List<Texture> result = new List<Texture>();
+                for ( int i = 0; i < texIdsCache.Count; i++ )
+                {
+                    result.Add( mat.GetTexture(texIdsCache[i]));
+                }
+
+                return result;
+            }).Distinct().ToList();
+
             rendereable.meshes = MeshesInfoUtils.ExtractMeshes(go);
             rendereable.meshToTriangleCount = MeshesInfoUtils.ExtractMeshToTriangleMap(rendereable.meshes);
             rendereable.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(rendereable.renderers, rendereable.meshToTriangleCount);
