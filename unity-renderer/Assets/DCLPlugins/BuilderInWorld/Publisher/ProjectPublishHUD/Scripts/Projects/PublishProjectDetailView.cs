@@ -37,8 +37,8 @@ namespace DCL.Builder
         /// <summary>
         /// This will reset the view to the first state
         /// </summary>
-        void ResetView(); 
-        
+        void ResetView();
+
         /// <summary>
         /// This will show the detail modal 
         /// </summary>
@@ -122,7 +122,7 @@ namespace DCL.Builder
 
             rotateLeftButton.onClick.AddListener( RotateLeft);
             rotateRightButton.onClick.AddListener( RotateRight);
-            
+
             gameObject.SetActive(false);
         }
 
@@ -136,7 +136,7 @@ namespace DCL.Builder
             mapView.OnParcelClicked -= ParcelClicked;
             landListView.OnLandSelected -= LandSelected;
             searchView.OnValueSearch -= SearchLand;
-            
+
             backButton.onClick.RemoveAllListeners();
             nextButton.onClick.RemoveAllListeners();
 
@@ -170,10 +170,10 @@ namespace DCL.Builder
             List<LandWithAccess> filteredLands = new List<LandWithAccess>();
             foreach (LandWithAccess land in DataStore.i.builderInWorld.landsWithAccess.Get())
             {
-                if(land.name.Contains(searchInput) || BIWUtils.Vector2INTToString(land.baseCoords).Contains(searchInput))
+                if (land.name.Contains(searchInput) || BIWUtils.Vector2INTToString(land.baseCoords).Contains(searchInput))
                     filteredLands.Add(land);
             }
-            
+
             // We fill the list with the lands
             landListView.SetContent(scene.manifest.project.cols, scene.manifest.project.rows, filteredLands);
             landListView.SetActive(true);
@@ -200,7 +200,7 @@ namespace DCL.Builder
                         break;
                     }
                 }
-             
+
             }
 
             mapView.SelectLandInMap(parcel);
@@ -228,7 +228,7 @@ namespace DCL.Builder
                     secondStep.SetActive(true);
                     if (availableLandsToPublish.Count > 0)
                         GoToCoords(availableLandsToPublish[0]);
-                    
+
                     if (areCoordsSelected)
                     {
                         GoToCoords(selectedCoords);
@@ -302,7 +302,7 @@ namespace DCL.Builder
             // We set the scene info
             nameInputField.SetText(scene.manifest.project.title);
             descriptionInputField.SetText(scene.manifest.project.description);
-            
+
             // We filter the available lands
             CheckAvailableLandsToPublish(scene);
 
@@ -313,41 +313,13 @@ namespace DCL.Builder
         private void CheckAvailableLandsToPublish(IBuilderScene sceneToPublish)
         {
             availableLandsToPublish.Clear();
-            var lands = DataStore.i.builderInWorld.landsWithAccess.Get();
-            List<Vector2Int> totalParcels = new List<Vector2Int>();
-            foreach (LandWithAccess land in lands)
-            {
-                totalParcels.AddRange(land.parcels.ToList());
-            }
-
-            Vector2Int sceneSize = BIWUtils.GetSceneSize(sceneToPublish.scene.sceneData.parcels);
-            foreach (Vector2Int parcel in totalParcels)
-            {
-                List<Vector2Int> necessaryParcelsToOwn = new List<Vector2Int>();
-                for (int x = 1; x < sceneSize.x; x++)
-                {
-                    for (int y = 1; y < sceneSize.y; y++)
-                    {
-                        necessaryParcelsToOwn.Add(new Vector2Int(parcel.x + x, parcel.y + y));
-                    }
-                }
-
-                int amountOfParcelFounds = 0;
-                foreach (Vector2Int parcelToCheck in totalParcels)
-                {
-                    if (necessaryParcelsToOwn.Contains(parcelToCheck))
-                        amountOfParcelFounds++;
-                }
-
-                if (amountOfParcelFounds == necessaryParcelsToOwn.Count)
-                    availableLandsToPublish.Add(parcel);
-            }
+            availableLandsToPublish = BIWUtils.GetLandsToPublishProject(DataStore.i.builderInWorld.landsWithAccess.Get(), sceneToPublish);
         }
 
         private void LandSelected(LandWithAccess land)
         {
             landListView.SetActive(false);
-            
+
             // We set the map to the main land
             GoToCoords(land.baseCoords);
         }
@@ -376,8 +348,8 @@ namespace DCL.Builder
             }
         }
 
-        public void ResetView() 
-        { 
+        public void ResetView()
+        {
             currentStep = 0;
             ShowCurrentStep();
         }

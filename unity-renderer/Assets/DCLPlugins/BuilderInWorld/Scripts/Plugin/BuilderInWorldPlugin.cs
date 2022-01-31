@@ -10,6 +10,7 @@ public class BuilderInWorldPlugin : IPlugin
     internal ISceneManager sceneManager;
     internal ICameraController cameraController;
     internal IPublisher publisher;
+    internal ICommonHUD commonHUD;
 
     internal IContext context;
 
@@ -24,6 +25,7 @@ public class BuilderInWorldPlugin : IPlugin
         sceneManager = new SceneManager();
         cameraController = new CameraController();
         publisher = new Publisher();
+        commonHUD = new CommonHUD();
 
         context = new Context(editor,
             panelController,
@@ -31,6 +33,7 @@ public class BuilderInWorldPlugin : IPlugin
             sceneManager,
             cameraController,
             publisher,
+            commonHUD,
             new BuilderEditorHUDController(),
             new BIWOutlinerController(),
             new BIWInputHandler(),
@@ -58,6 +61,7 @@ public class BuilderInWorldPlugin : IPlugin
         builderAPIController = context.builderAPIController;
         cameraController = context.cameraController;
         publisher = context.publisher;
+        commonHUD = context.commonHUD;
 
         Initialize();
     }
@@ -75,6 +79,7 @@ public class BuilderInWorldPlugin : IPlugin
         sceneManager.Initialize(context);
         cameraController.Initialize(context);
         publisher.Initialize(context);
+        commonHUD.Initialize(context);
 
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -92,7 +97,8 @@ public class BuilderInWorldPlugin : IPlugin
         panelController.Dispose();
         sceneManager.Dispose();
         cameraController.Dispose();
-        publisher.Dipose();
+        publisher.Dispose();
+        commonHUD.Dispose();
         context.Dispose();
 
         Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);

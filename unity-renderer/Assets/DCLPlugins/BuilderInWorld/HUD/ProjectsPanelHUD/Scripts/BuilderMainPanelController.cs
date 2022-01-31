@@ -14,6 +14,7 @@ using Object = UnityEngine.Object;
 
 public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 {
+    private const string DELETE_PROJECT_CONFIRM_TEXT = "Are you sure that you want to delete {0} project?\nThis can't be undone";
     private const string CREATING_PROJECT_ERROR = "Error creating a new project: ";
     private const string OBTAIN_PROJECT_ERROR = "Error obtaining the project: ";
 
@@ -25,8 +26,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
-    private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
-    private const string VIEW_PREFAB_PATH_DEV = "BuilderProjectsPanelDev";
+    private const string VIEW_PREFAB_PATH = "BuilderProjectsPanelDev";
 
     private const float CACHE_TIME_LAND = 5 * 60;
     private const float CACHE_TIME_SCENES = 1 * 60;
@@ -66,10 +66,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     public BuilderMainPanelController()
     {
-        if (DataStore.i.builderInWorld.isDevBuild.Get())
-            SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH_DEV)));
-        else
-            SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH)));
+        SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH)));
 
         configureBuilderInFullscreenMenu.OnChange += ConfigureBuilderInFullscreenMenuChanged;
         ConfigureBuilderInFullscreenMenuChanged(configureBuilderInFullscreenMenu.Get(), null);
@@ -280,20 +277,26 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private void DeleteProject(ProjectData data)
     {
-        Promise<bool> manifestPromise = context.builderAPIController.DeleteProject(data.id);
-        manifestPromise.Then( (isOk) =>
-        {
-            if (isOk)
-            {
-                BIWUtils.ShowGenericNotification(DELETE_PROJECT_SUCCESS + data.title);
-                FetchProjectData();
-            }
-        });
+        string deleteText = DELETE_PROJECT_CONFIRM_TEXT.Replace("{0}", data.title);
 
-        manifestPromise.Catch( errorString =>
-        {
-            BIWUtils.ShowGenericNotification(DELETE_PROJECT_ERROR + errorString);
-        });
+        context.commonHUD.GetPopUp()
+               .ShowPopUpWithoutTitle(deleteText, "YES", "NO", () =>
+               {
+                   Promise<bool> manifestPromise = context.builderAPIController.DeleteProject(data.id);
+                   manifestPromise.Then( (isOk) =>
+                   {
+                       if (isOk)
+                       {
+                           BIWUtils.ShowGenericNotification(DELETE_PROJECT_SUCCESS + data.title);
+                           FetchProjectData();
+                       }
+                   });
+
+                   manifestPromise.Catch( errorString =>
+                   {
+                       BIWUtils.ShowGenericNotification(DELETE_PROJECT_ERROR + errorString);
+                   });
+               }, null);
     }
 
     private void GetManifestToEdit(ProjectData data)

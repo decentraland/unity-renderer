@@ -28,6 +28,40 @@ public static partial class BIWUtils
 
     public static string Vector2INTToString(Vector2Int vector) { return vector.x + "," + vector.y; }
 
+    public static List<Vector2Int> GetLandsToPublishProject(LandWithAccess[] lands, IBuilderScene scene)
+    {
+        List<Vector2Int> availableLandsToPublish = new List<Vector2Int>();
+        List<Vector2Int> totalParcels = new List<Vector2Int>();
+        foreach (LandWithAccess land in lands)
+        {
+            totalParcels.AddRange(land.parcels.ToList());
+        }
+
+        Vector2Int sceneSize = GetSceneSize(scene.scene.sceneData.parcels);
+        foreach (Vector2Int parcel in totalParcels)
+        {
+            List<Vector2Int> necessaryParcelsToOwn = new List<Vector2Int>();
+            for (int x = 1; x < sceneSize.x; x++)
+            {
+                for (int y = 1; y < sceneSize.y; y++)
+                {
+                    necessaryParcelsToOwn.Add(new Vector2Int(parcel.x + x, parcel.y + y));
+                }
+            }
+
+            int amountOfParcelFounds = 0;
+            foreach (Vector2Int parcelToCheck in totalParcels)
+            {
+                if (necessaryParcelsToOwn.Contains(parcelToCheck))
+                    amountOfParcelFounds++;
+            }
+
+            if (amountOfParcelFounds == necessaryParcelsToOwn.Count)
+                availableLandsToPublish.Add(parcel);
+        }
+        return availableLandsToPublish;
+    }
+
     public static Vector2Int GetRowsAndColumsFromLand(LandWithAccess landWithAccess)
     {
         Vector2Int result = new Vector2Int();

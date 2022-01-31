@@ -7,8 +7,8 @@ namespace DCL.Builder
     public interface IPublisher
     {
         void Initialize(IContext context);
-        void Dipose();
-        
+        void Dispose();
+
         /// <summary>
         /// This will start the publish flow for the given scene.
         /// This handle all possible situations of the scene

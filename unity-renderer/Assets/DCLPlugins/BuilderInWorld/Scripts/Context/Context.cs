@@ -22,6 +22,7 @@ namespace DCL.Builder
         public ICameraController cameraController  { get; internal set; }
         public ISceneReferences sceneReferences { get; internal set; }
         public IPublisher publisher { get; internal set; }
+        public ICommonHUD commonHUD { get; internal set; }
 
         //Editor
         public IEditorContext editorContext { get; internal set; }
@@ -32,6 +33,7 @@ namespace DCL.Builder
             ISceneManager sceneManager,
             ICameraController cameraController,
             IPublisher publisher,
+            ICommonHUD commonHUD,
             IBuilderEditorHUDController editorHUD,
             IBIWOutlinerController outlinerController,
             IBIWInputHandler inputHandler,
@@ -59,6 +61,7 @@ namespace DCL.Builder
             this.sceneManager = sceneManager;
             this.cameraController = cameraController;
             this.publisher = publisher;
+            this.commonHUD = commonHUD;
 
             editorContext = new EditorContext(editorHUD,
                 outlinerController,

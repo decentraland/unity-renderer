@@ -12,6 +12,9 @@ namespace DCL.Configuration
 
         public const string BASE_URL_BUILDER_PROJECT_THUMBNAIL = "https://builder-api.decentraland.{ENV}/v1/projects/{id}/media/";
 
+        //Useful links
+        public const string MARKETPLACE_URL = "https://market.decentraland.org/lands";
+
         //Deployment constants
         public const string DEPLOYMENT_DEFINITION_FILE = "scene-state-definition.json";
         public const string DEPLOYMENT_SCENE_FILE = "scene.json";
