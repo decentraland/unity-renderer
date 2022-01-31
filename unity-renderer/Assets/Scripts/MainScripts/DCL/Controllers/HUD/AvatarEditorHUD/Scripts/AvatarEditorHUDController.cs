@@ -24,7 +24,7 @@ public class AvatarEditorHUDController : IHUD
     [NonSerialized]
     public bool bypassUpdateAvatarPreview = false;
 
-    private UserProfile userProfile;
+    internal UserProfile userProfile;
     private BaseDictionary<string, WearableItem> catalog;
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
     bool isPlayerRendererLoaded => DataStore.i.common.isPlayerRendererLoaded.Get();
@@ -57,6 +57,9 @@ public class AvatarEditorHUDController : IHUD
         this.userProfile = userProfile;
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
 
+        LoadUserProfile(userProfile, true);
+        this.userProfile.OnUpdate += LoadUserProfile;
+
         view = AvatarEditorHUDView.Create(this);
 
         avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
@@ -74,8 +77,6 @@ public class AvatarEditorHUDController : IHUD
 
         SetCatalog(catalog);
 
-        LoadUserProfile(userProfile, true);
-        this.userProfile.OnUpdate += LoadUserProfile;
 
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
     }

@@ -1539,7 +1539,7 @@ MonoBehaviour:
   navigationInfos:
   - toggle: {fileID: 3150290542716019958}
     canvas: {fileID: 3150290543018005860}
-    enabledByDefault: 0
+    enabledByDefault: 1
     focus: 0
   - toggle: {fileID: 3661532844623969922}
     canvas: {fileID: 3150290543101964660}
@@ -1609,11 +1609,6 @@ MonoBehaviour:
     canvas: {fileID: 6151202184307174224}
     enabledByDefault: 0
     focus: 1
-  defaultNavigationPanel:
-    toggle: {fileID: 0}
-    canvas: {fileID: 0}
-    enabledByDefault: 0
-    focus: 0
   wearableGridPairs:
   - categoryFilter: body_shape
     selector: {fileID: 3358252997386326019}
@@ -1662,7 +1657,6 @@ MonoBehaviour:
   randomizeButton: {fileID: 1450360507441575512}
   randomizeAnimator: {fileID: 4292949885884074233}
   doneButton: {fileID: 8118935322395685570}
-  exitButton: {fileID: 0}
   loadingSpinnerGameObject: {fileID: 4028908633907793762}
   web3Container: {fileID: 233924306434789069}
   web3GoToMarketplaceButton: {fileID: 6975390227394394232}
