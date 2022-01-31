@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
+using DCL;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
@@ -13,6 +14,8 @@ public class AvatarEditorHUDView : MonoBehaviour
     private const string VIEW_OBJECT_NAME = "_AvatarEditorHUD";
 
     public bool isOpen { get; private set; }
+
+    internal bool arePanelsInitialized { get; private set; }
 
     [System.Serializable]
     public class AvatarEditorNavigationInfo
@@ -99,8 +102,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     public event System.Action<bool> OnSetVisibility;
     public event System.Action OnRandomize;
 
-    private UserProfile userProfile;
-
     private void Awake()
     {
         loadingSpinnerGameObject.SetActive(false);
@@ -112,6 +113,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         }
 
         isOpen = false;
+        arePanelsInitialized = false;
     }
 
     private void Initialize(AvatarEditorHUDController controller)
@@ -119,12 +121,9 @@ public class AvatarEditorHUDView : MonoBehaviour
         ItemToggle.getEquippedWearablesReplacedByFunc = controller.GetWearablesReplacedBy;
         this.controller = controller;
         gameObject.name = VIEW_OBJECT_NAME;
-        userProfile = controller.userProfile;
-        userProfile.OnUpdate += InizializeWithUserInfo;
 
         randomizeButton.onClick.AddListener(OnRandomizeButton);
         doneButton.onClick.AddListener(OnDoneButton);
-        InitializeNavigationEvents();
         InitializeWearableChangeEvents();
 
         web3GoToMarketplaceButton.onClick.RemoveAllListeners();
@@ -135,28 +134,22 @@ public class AvatarEditorHUDView : MonoBehaviour
         characterPreviewController.camera.enabled = false;
     }
 
-    private void InizializeWithUserInfo(UserProfile profile)
-    {
-        InitializeNavigationEvents();
-        userProfile.OnUpdate -= InizializeWithUserInfo;
-    }
-
     public void SetIsWeb3(bool isWeb3User)
     {
         web3Container.SetActive(isWeb3User);
         noWeb3Container.SetActive(!isWeb3User);
     }
 
-    private void InitializeNavigationEvents()
+    internal void InitializeNavigationEvents(bool isGuest)
     {
         for (int i = 0; i < navigationInfos.Length; i++)
         {
             InitializeNavigationInfo(navigationInfos[i]);
         }
-        
-        InitializeNavigationInfo(collectiblesNavigationInfo, !string.IsNullOrEmpty(userProfile.userName));
+        InitializeNavigationInfo(collectiblesNavigationInfo, !isGuest);
         
         characterPreviewRotation.OnHorizontalRotation += characterPreviewController.Rotate;
+        arePanelsInitialized = true;
     }
 
     private void InitializeNavigationInfo(AvatarEditorNavigationInfo current, bool isActive) 
