@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 public static class WearableLiterals
@@ -16,6 +17,8 @@ public static class WearableLiterals
 
     public static class Categories
     {
+        public static readonly ReadOnlyCollection<string> REQUIRED_CATEGORIES = new ReadOnlyCollection<string>(new List<string> { UPPER_BODY, LOWER_BODY, EYES, EYEBROWS, MOUTH });
+
         public const string BODY_SHAPE = "body_shape";
         public const string UPPER_BODY = "upper_body";
         public const string LOWER_BODY = "lower_body";
@@ -56,7 +59,7 @@ public static class WearableLiterals
 
     public static class DefaultWearables
     {
-        private static readonly Dictionary<(string, string), string> defaultWearables = new Dictionary<(string, string), string>
+        public static readonly IReadOnlyDictionary<(string, string), string> defaultWearables = new Dictionary<(string, string), string>
         {
             { (BodyShapes.MALE, Categories.EYES), "urn:decentraland:off-chain:base-avatars:eyes_00" },
             { (BodyShapes.MALE, Categories.EYEBROWS), "urn:decentraland:off-chain:base-avatars:eyebrows_00" },
@@ -76,6 +79,7 @@ public static class WearableLiterals
             { (BodyShapes.FEMALE, Categories.FEET), "urn:decentraland:off-chain:base-avatars:bun_shoes" },
         };
 
+        public static string[] GetDefaultWearables() => defaultWearables.Values.Distinct().ToArray();
         public static string[] GetDefaultWearables(string bodyShapeId) => defaultWearables.Where(x => x.Key.Item1 == bodyShapeId).Select(x => x.Value).ToArray();
 
         public static string GetDefaultWearable(string bodyShapeId, string category)

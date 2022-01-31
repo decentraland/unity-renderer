@@ -7,6 +7,20 @@ using Object = UnityEngine.Object;
 
 namespace DCL
 {
+    public interface IAvatarMeshCombinerHelper : IDisposable
+    {
+        public bool useCullOpaqueHeuristic { get; set; }
+        public bool prepareMeshForGpuSkinning { get; set; }
+        public bool uploadMeshToGpu { get; set; }
+        public bool enableCombinedMesh { get; set; }
+
+        public GameObject container { get; }
+        public SkinnedMeshRenderer renderer { get; }
+
+        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine);
+        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset);
+    }
+    
     /// <summary>
     /// AvatarMeshCombinerHelper uses the AvatarMeshCombiner utility class to combine many skinned renderers
     /// into a single one.
@@ -14,7 +28,7 @@ namespace DCL
     /// This class will recycle the same gameObject and renderer each time it is called,
     /// and binds the AvatarMeshCombiner output to a proper well configured SkinnedMeshRenderer. 
     /// </summary>
-    public class AvatarMeshCombinerHelper : IDisposable
+    public class AvatarMeshCombinerHelper : IAvatarMeshCombinerHelper
     {
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
@@ -22,13 +36,27 @@ namespace DCL
         public GameObject container { get; private set; }
         public SkinnedMeshRenderer renderer { get; private set; }
 
-        public bool useCullOpaqueHeuristic = false;
-        public bool prepareMeshForGpuSkinning = false;
-        public bool uploadMeshToGpu = true;
+        public bool useCullOpaqueHeuristic { get; set; } = false;
+        public bool prepareMeshForGpuSkinning { get; set; } = false;
+        public bool uploadMeshToGpu { get; set; } = true;
+        public bool enableCombinedMesh { get; set; } = true;
 
         private AvatarMeshCombiner.Output? lastOutput;
 
         public AvatarMeshCombinerHelper (GameObject container = null) { this.container = container; }
+
+        /// <summary>
+        /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
+        /// After the avatar is combined, it will generate a new GameObject with a SkinnedMeshRenderer that contains
+        /// the generated mesh. This GameObject and Renderer will be preserved over any number of Combine() calls.
+        ///
+        /// Uses a predefined Material ready for the Avatar
+        /// 
+        /// For more details on the combining check out AvatarMeshCombiner.CombineSkinnedMeshes.
+        /// </summary>
+        /// <param name="bonesContainer">A SkinnedMeshRenderer that must contain the bones and bindposes that will be used by the combined avatar.</param>
+        /// <param name="renderersToCombine">A list of avatar parts to be combined</param>
+        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine) { return Combine(bonesContainer, renderersToCombine, Resources.Load<Material>("Avatar Material")); }
 
         /// <summary>
         /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
@@ -50,7 +78,7 @@ namespace DCL
             SkinnedMeshRenderer[] renderers = renderersToCombine;
 
             // Sanitize renderers list
-            renderers = renderers.Where( (x) => x != null && x.enabled && x.sharedMesh != null ).ToArray();
+            renderers = renderers.Where( (x) => x != null && x.sharedMesh != null ).ToArray();
 
             if ( renderers.Length == 0 )
                 return false;
@@ -91,7 +119,6 @@ namespace DCL
                 logger.LogError("AvatarMeshCombiner", "Combine failed!");
                 return false;
             }
-
             Transform rootBone = bonesContainer.rootBone;
 
             if ( container == null )
@@ -111,7 +138,7 @@ namespace DCL
             renderer.quality = SkinQuality.Bone4;
             renderer.updateWhenOffscreen = false;
             renderer.skinnedMotionVectors = false;
-            renderer.enabled = true;
+            renderer.enabled = enableCombinedMesh;
 
             if (prepareMeshForGpuSkinning)
                 GPUSkinningUtils.EncodeBindPosesIntoMesh(renderer);
