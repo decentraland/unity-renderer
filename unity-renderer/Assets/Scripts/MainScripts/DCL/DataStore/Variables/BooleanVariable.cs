@@ -4,5 +4,4 @@ using UnityEngine;
 public class BooleanVariable : BaseVariableAsset<bool>
 {
     public override bool Equals(bool other) { return other == value; }
-
 }

@@ -4,5 +4,4 @@
 public class FloatVariable : BaseVariableAsset<float>
 {
     public override bool Equals(float other) { return other == value; }
-
 }

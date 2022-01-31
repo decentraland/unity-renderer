@@ -72,7 +72,7 @@ public class BaseDictionary_Legacy<TKey, TValue> : ScriptableObject
     public Dictionary<TKey, TValue>.Enumerator GetEnumerator() { return dictionary.GetEnumerator(); }
 
     public int Count => dictionary.Count;
-    
+
     public IEnumerable<TValue> GetValues() { return dictionary.Values; }
 
     public void Clear()

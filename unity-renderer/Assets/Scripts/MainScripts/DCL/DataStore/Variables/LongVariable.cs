@@ -4,5 +4,4 @@ using UnityEngine;
 public class LongVariable : BaseVariableAsset<long>
 {
     public override bool Equals(long other) { return other == value; }
-
 }
