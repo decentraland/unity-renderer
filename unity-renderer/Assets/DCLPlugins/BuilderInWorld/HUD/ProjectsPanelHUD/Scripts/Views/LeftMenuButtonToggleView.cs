@@ -18,6 +18,7 @@ namespace DCL.Builder
         [SerializeField] private Color colorBackgroundSelected;
         [SerializeField] private Color colorTextDefault;
         [SerializeField] private Color colorTextSelected;
+        [SerializeField] private Color colorTextDisabled;
 
         [Header("References")]
         [SerializeField] private Image imageBackground;
@@ -32,7 +33,7 @@ namespace DCL.Builder
 
                 SetIsOnWithoutNotify(value);
 
-                if (value)
+                if (value && !isDisabled)
                 {
                     OnToggleOn?.Invoke(this);
                 }
@@ -42,6 +43,7 @@ namespace DCL.Builder
 
         private bool isToggleOn = false;
         private bool isSetup = false;
+        private bool isDisabled = false;
 
         public void Setup()
         {
@@ -50,6 +52,18 @@ namespace DCL.Builder
 
             isSetup = true;
             OnToggleOn += OnReceiveToggleOn;
+        }
+
+        public void Enable()
+        {
+            isDisabled = false;
+            SetDefaultColor();
+        }
+
+        public void Disable()
+        {
+            isDisabled = true;
+            SetDisableColor();
         }
 
         public void SetIsOnWithoutNotify(bool value)
@@ -99,6 +113,8 @@ namespace DCL.Builder
             imageBackground.color = colorBackgroundSelected;
             text.color = colorTextSelected;
         }
+
+        private void SetDisableColor() { text.color = colorTextDisabled; }
 
         private void SetDefaultColor()
         {

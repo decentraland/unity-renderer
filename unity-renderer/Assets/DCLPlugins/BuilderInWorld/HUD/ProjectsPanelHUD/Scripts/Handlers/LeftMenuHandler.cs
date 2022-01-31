@@ -29,6 +29,8 @@ namespace DCL.Builder
             LeftMenuButtonToggleView.OnToggleOn -= OnToggleOn;
         }
 
+        public void DisableButtons() { }
+
         public void SetToPreviousMainPanel()
         {
             if (isMainPanel)

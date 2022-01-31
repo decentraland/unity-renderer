@@ -70,6 +70,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         configureBuilderInFullscreenMenu.OnChange += ConfigureBuilderInFullscreenMenuChanged;
         ConfigureBuilderInFullscreenMenuChanged(configureBuilderInFullscreenMenu.Get(), null);
+
+        view.SetGuestMode(UserProfile.GetOwnUserProfile().isGuest);
     }
 
     internal void SetView(IBuilderMainPanelView view)
