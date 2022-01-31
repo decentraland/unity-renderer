@@ -1,11 +1,12 @@
-﻿using DCL.Components;
+﻿using AvatarSystem;
+using DCL.Components;
 using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
 {
     [RequireComponent(typeof(AvatarShape))]
-    public class AvatarMovementController : MonoBehaviour, IPoolLifecycleHandler
+    public class AvatarMovementController : MonoBehaviour, IPoolLifecycleHandler, IAvatarMovementController
     {
         const float SPEED_SLOW = 2.0f;
         const float SPEED_FAST = 4.0f;
@@ -14,7 +15,7 @@ namespace DCL
         const float ROTATION_SPEED = 6.25f;
         const float SPEED_EPSILON = 0.0001f;
 
-        public float movementLerpWait = 0f;
+        private float movementLerpWait = 0f;
         private float movementLerpWaitCounter = 0f;
 
         Transform avatarTransform
@@ -159,5 +160,7 @@ namespace DCL
                 movementLerpWaitCounter = 0f;
             }
         }
+
+        public void SetMovementLerpWait(float secondsBetweenUpdates) { movementLerpWait = secondsBetweenUpdates; }
     }
 }
