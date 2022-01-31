@@ -679,6 +679,7 @@ namespace Builder
                 softShadows = true,
                 shadowResolution = UnityEngine.Rendering.Universal.ShadowResolution._256,
                 cameraDrawDistance = 100,
+                cameraFOV = 60,
                 bloom = true,
                 reflectionResolution = QualitySettings.ReflectionResolution.Res_256
             };
