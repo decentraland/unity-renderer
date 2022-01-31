@@ -10,7 +10,6 @@ namespace DCL.Controllers
     {
         class InvalidMeshInfo
         {
-            public Dictionary<Renderer, Material> originalMaterials = new Dictionary<Renderer, Material>();
             public List<GameObject> wireframeObjects = new List<GameObject>();
             public MeshesInfo meshesInfo;
             public System.Action OnResetMaterials;
@@ -30,7 +29,7 @@ namespace DCL.Controllers
 
                 for (int i = 0; i < meshesInfo.renderers.Length; i++)
                 {
-                    meshesInfo.renderers[i].sharedMaterial = originalMaterials[meshesInfo.renderers[i]];
+                    meshesInfo.renderers[i].renderingLayerMask = 0;
                 }
 
                 int wireframeObjectscount = wireframeObjects.Count;
@@ -44,11 +43,9 @@ namespace DCL.Controllers
         }
 
         const string WIREFRAME_PREFAB_NAME = "Prefabs/WireframeCubeMesh";
-        const string INVALID_MESH_MATERIAL_NAME = "Materials/InvalidMesh";
-        const string INVALID_SUBMESH_MATERIAL_NAME = "Materials/InvalidSubMesh";
 
-        Material invalidMeshMaterial;
-        Material invalidSubMeshMaterial;
+        private const uint INVALID_MESH_RENDERING_LAYER_MASK = 1 << 1;
+
         Dictionary<GameObject, InvalidMeshInfo> invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>();
         HashSet<Renderer> invalidSubmeshes = new HashSet<Renderer>();
         private readonly List<MeshesInfo> currentMeshesInvalidated = new List<MeshesInfo>();
@@ -56,8 +53,6 @@ namespace DCL.Controllers
         public SceneBoundsFeedbackStyle_RedFlicker()
         {
             invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>();
-            invalidMeshMaterial = Resources.Load(INVALID_MESH_MATERIAL_NAME) as Material;
-            invalidSubMeshMaterial = Resources.Load(INVALID_SUBMESH_MATERIAL_NAME) as Material;
         }
 
         public int GetInvalidMeshesCount() { return invalidMeshesInfo.Count; }
@@ -131,27 +126,20 @@ namespace DCL.Controllers
             Renderer[] entityRenderers = meshesInfo.renderers;
             for (int i = 0; i < entityRenderers.Length; i++)
             {
-                // Save original materials
-                invalidMeshInfo.originalMaterials.Add(entityRenderers[i], entityRenderers[i].sharedMaterial);
+                entityRenderers[i].renderingLayerMask = INVALID_MESH_RENDERING_LAYER_MASK;
 
-                if (!invalidSubmeshes.Contains(entityRenderers[i]))
-                {
-                    // Wireframe that shows the boundaries to the dev (We don't use the GameObject.Instantiate(prefab, parent)
-                    // overload because we need to set the position and scale before parenting, to deal with scaled objects)
-                    GameObject wireframeObject = GameObject.Instantiate(Resources.Load<GameObject>(WIREFRAME_PREFAB_NAME));
-                    wireframeObject.transform.position = entityRenderers[i].bounds.center;
-                    wireframeObject.transform.localScale = entityRenderers[i].bounds.size * 1.01f;
-                    wireframeObject.transform.SetParent(meshesInfo.innerGameObject.transform);
+                if (invalidSubmeshes.Contains(entityRenderers[i]))
+                    continue;
 
-                    entityRenderers[i].sharedMaterial = invalidSubMeshMaterial;
+                // Wireframe that shows the boundaries to the dev (We don't use the GameObject.Instantiate(prefab, parent)
+                // overload because we need to set the position and scale before parenting, to deal with scaled objects)
+                GameObject wireframeObject = Object.Instantiate(Resources.Load<GameObject>(WIREFRAME_PREFAB_NAME));
+                wireframeObject.transform.position = entityRenderers[i].bounds.center;
+                wireframeObject.transform.localScale = entityRenderers[i].bounds.size * 1.01f;
+                wireframeObject.transform.SetParent(meshesInfo.innerGameObject.transform);
 
-                    invalidMeshInfo.wireframeObjects.Add(wireframeObject);
-                    invalidSubmeshes.Add(entityRenderers[i]);
-                }
-                else
-                {
-                    entityRenderers[i].sharedMaterial = invalidMeshMaterial;
-                }
+                invalidMeshInfo.wireframeObjects.Add(wireframeObject);
+                invalidSubmeshes.Add(entityRenderers[i]);
             }
 
             currentMeshesInvalidated.Add(meshesInfo);
@@ -162,11 +150,6 @@ namespace DCL.Controllers
 
         public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)
         {
-            if (invalidMeshesInfo.ContainsKey(meshesInfo.innerGameObject))
-            {
-                return invalidMeshesInfo[meshesInfo.innerGameObject].originalMaterials.Values.ToList();
-            }
-
             List<Material> result = new List<Material>();
 
             for (int i = 0; i < meshesInfo.renderers.Length; i++)
