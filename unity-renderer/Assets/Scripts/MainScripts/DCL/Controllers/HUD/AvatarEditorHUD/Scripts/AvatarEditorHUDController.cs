@@ -213,10 +213,7 @@ public class AvatarEditorHUDController : IHUD
         *       due to the execution order of things. The init cannot be done below because that would mean to do it when the
         *       menu is firstly opened
         */
-        if (!view.arePanelsInitialized)
-        {
-            view.InitializeNavigationEvents(string.IsNullOrEmpty(userProfile.userName));
-        }
+        view.InitializeNavigationEvents(string.IsNullOrEmpty(userProfile.userName));
 
         CatalogController.wearableCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
 
