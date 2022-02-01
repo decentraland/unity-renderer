@@ -26,6 +26,12 @@ public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
+    public static LayerMask GetBIWCulling(LayerMask currentCulling)
+    {
+        currentCulling += BIWSettings.FX_LAYER;
+        return currentCulling;
+    }
+    
     public static string Vector2INTToString(Vector2Int vector) { return vector.x + "," + vector.y; }
 
     public static List<Vector2Int> GetLandsToPublishProject(LandWithAccess[] lands, IBuilderScene scene)

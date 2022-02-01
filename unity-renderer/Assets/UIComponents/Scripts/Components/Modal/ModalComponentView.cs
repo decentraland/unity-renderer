@@ -61,8 +61,6 @@ public class ModalComponentView : BaseComponentView, IModalComponentView
         this.model = model;
         RefreshControl();
     }
-    
-    public void CanBeCancelled(bool canBe) { closeButton.gameObject.SetActive(canBe);}
 
     public void CanBeCancelled(bool canBe)
     {

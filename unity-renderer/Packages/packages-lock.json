@@ -1,13 +1,13 @@
 {
   "dependencies": {
-      "com.coffee.ui-particle": {
-          "version": "https://github.com/mob-sakai/ParticleEffectForUGUI.git",
-          "depth": 0,
-          "source": "git",
-          "dependencies": {},
-          "hash": "bda77ab0395282b9a2c417c6affa21c1d004321b"
-      },
-      "com.cysharp.unitask": {
+    "com.coffee.ui-particle": {
+      "version": "https://github.com/mob-sakai/ParticleEffectForUGUI.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "bda77ab0395282b9a2c417c6affa21c1d004321b"
+    },
+    "com.cysharp.unitask": {
       "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
       "depth": 0,
       "source": "git",
@@ -15,15 +15,15 @@
       "hash": "50a67d8f419b6cea0398eff6c19cf0bbe11ed609"
     },
     "com.unity.2d.sprite": {
-          "version": "1.0.0",
-          "depth": 0,
-          "source": "builtin",
-          "dependencies": {}
-      },
-      "com.unity.2d.tilemap": {
-          "version": "1.0.0",
-          "depth": 0,
-          "source": "builtin",
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.2d.tilemap": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
       "dependencies": {}
     },
     "com.unity.build-report-inspector": {

@@ -74,8 +74,6 @@ namespace DCL.Builder
             MapRenderer.i.SetHighlighSize(sceneSize);
         }
 
-        public void SetProjectSize(Vector2Int[] parcels) { MapRenderer.i.SetHighlighSize(parcels); }
-
         public void GoToCoords(Vector2Int coords)
         {
             //Reset scroll

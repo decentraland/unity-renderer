@@ -103,10 +103,8 @@ public class BuilderInWorldEditor : IBIWEditor
             context.editorContext.editorHUD.OnProjectNameAndDescriptionChanged -= ChangeProjectNameAndDescription;
             context.editorContext.editorHUD.OnTutorialAction -= StartTutorial;
         }
-
-
+        
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
-
         BIWNFTController.i.Dispose();
 
         CleanItems();

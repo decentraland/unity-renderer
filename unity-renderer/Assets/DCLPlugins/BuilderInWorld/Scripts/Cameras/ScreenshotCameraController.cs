@@ -17,10 +17,18 @@ namespace DCL.Builder
             GameObject screenshotCameraGameObject = new GameObject("BuilderScreenshotCamera");
             screenshotCamera = screenshotCameraGameObject.AddComponent<UnityEngine.Camera>();
             screenshotCamera.depth = -9999;
+       
             screenshotCamera.gameObject.SetActive(false);
             
-            if (context.sceneReferences.cameraController != null && context.sceneReferences.cameraController.GetComponent<Camera.CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
-                freeCameraMovement = (FreeCameraMovement) cameraState;
+            if (context.sceneReferences.cameraController != null)
+            {
+                var cameraController = context.sceneReferences.cameraController.GetComponent<Camera.CameraController>();
+                // We assign the same culling configuration as the camera
+                screenshotCamera.cullingMask = cameraController.GetCulling();
+                
+                if(cameraController.TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
+                    freeCameraMovement = (FreeCameraMovement) cameraState;
+            } 
         }
 
         public void Dispose() { GameObject.Destroy(screenshotCamera.gameObject); }
