@@ -13,7 +13,6 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene, ISceneMessageProcessor
     {
-        public static bool VERBOSE = false;
         public Dictionary<string, IDCLEntity> entities { get; private set; } = new Dictionary<string, IDCLEntity>();
         public Dictionary<string, ISharedComponent> disposableComponents { get; private set; } = new Dictionary<string, ISharedComponent>();
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
@@ -93,7 +92,12 @@ namespace DCL.Controllers
                 gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
             }
 
-            metricsCounter = new SceneMetricsCounter(this);
+            metricsCounter = new SceneMetricsCounter(
+                DataStore.i.sceneWorldObjects,
+                sceneData.id,
+                sceneData.basePosition,
+                sceneData.parcels.Length, () => new HashSet<string>(entities.Keys));
+
             metricsCounter.Enable();
 
             OnSetData?.Invoke(data);

@@ -120,12 +120,14 @@ namespace DCL.Components
                 return;
 
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
+
             if (meshRenderer == null)
                 return;
 
             Model model = (Model) this.model;
 
             meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
+
             if (meshRenderer.sharedMaterial != material)
             {
                 MaterialTransitionController

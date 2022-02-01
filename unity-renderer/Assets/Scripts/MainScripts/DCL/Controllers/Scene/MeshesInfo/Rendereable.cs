@@ -53,5 +53,10 @@ namespace DCL
 
             return rendereable;
         }
+
+        public override string ToString()
+        {
+            return $"Rendereable - owner: {ownerId} ... textures: {textures.Count} ... triangles: {totalTriangleCount} ... materials: {materials.Count} ... meshes: {meshes.Count} ... renderers: {renderers.Count}";
+        }
     }
 }

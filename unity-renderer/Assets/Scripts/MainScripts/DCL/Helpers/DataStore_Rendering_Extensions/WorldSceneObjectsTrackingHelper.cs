@@ -26,19 +26,19 @@ namespace DCL
         public event Action<Rendereable> OnWillRemoveRendereable;
 
         private string sceneId;
-        private DataStore dataStore;
+        private DataStore_WorldObjects dataStore;
 
-        public WorldSceneObjectsTrackingHelper (DataStore dataStore, string sceneId)
+        public WorldSceneObjectsTrackingHelper (DataStore_WorldObjects dataStore, string sceneId)
         {
             logger.Log("A wild WorldSceneObjectsTrackingHelper appears!");
             this.dataStore = dataStore;
             this.sceneId = sceneId;
 
-            if (dataStore.sceneWorldObjects.sceneData.ContainsKey(sceneId))
-                SetSceneData(dataStore.sceneWorldObjects.sceneData[sceneId]);
+            if (dataStore.sceneData.ContainsKey(sceneId))
+                SetSceneData(dataStore.sceneData[sceneId]);
 
-            dataStore.sceneWorldObjects.sceneData.OnAdded += OnSceneAdded;
-            dataStore.sceneWorldObjects.sceneData.OnRemoved += OnSceneRemoved;
+            dataStore.sceneData.OnAdded += OnSceneAdded;
+            dataStore.sceneData.OnRemoved += OnSceneRemoved;
         }
 
         private void OnSceneRemoved(string sceneId, DataStore_WorldObjects.SceneData arg2)
@@ -104,8 +104,8 @@ namespace DCL
             sceneData.renderedObjects.OnAdded -= OnRenderedObjectsAdded;
             sceneData.renderedObjects.OnRemoved -= OnRenderedObjectsRemoved;
 
-            dataStore.sceneWorldObjects.sceneData.OnAdded -= OnSceneAdded;
-            dataStore.sceneWorldObjects.sceneData.OnRemoved -= OnSceneRemoved;
+            dataStore.sceneData.OnAdded -= OnSceneAdded;
+            dataStore.sceneData.OnRemoved -= OnSceneRemoved;
             logger.Log($"Disposing.");
         }
     }

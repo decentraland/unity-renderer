@@ -153,7 +153,7 @@ namespace DCL
             self.RemoveMesh( sceneId, mesh );
         }
 
-        private static void AddRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
+        public static void AddRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
         {
             if ( rendereable == null )
             {
@@ -173,7 +173,7 @@ namespace DCL
                 sceneData.renderedObjects.Add(rendereable);
         }
 
-        private static void RemoveRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
+        public static void RemoveRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
         {
             if ( rendereable == null )
             {

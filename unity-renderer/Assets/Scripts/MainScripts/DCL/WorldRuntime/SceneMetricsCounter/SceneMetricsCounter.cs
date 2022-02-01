@@ -9,73 +9,6 @@ using UnityEngine.Assertions;
 
 namespace DCL
 {
-    public class RefCountedMetric
-    {
-        private Dictionary<object, int> collection = new Dictionary<object, int>();
-
-        public int GetObjectsCount()
-        {
-            return collection.Count;
-        }
-
-        public int GetRefCount(object obj)
-        {
-            if ( !collection.ContainsKey(obj) )
-                return 0;
-
-            return collection[obj];
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public bool Add(object obj)
-        {
-            if ( obj == null )
-                return false;
-
-            if (!collection.ContainsKey(obj))
-            {
-                collection.Add(obj, 1);
-                return true;
-            }
-
-            collection[obj]++;
-            return false;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public bool Remove(object obj)
-        {
-            if ( obj == null )
-                return true;
-
-            if (!collection.ContainsKey(obj))
-                return true;
-
-            collection[obj]--;
-
-            if (collection[obj] == 0)
-            {
-                collection.Remove(obj);
-                return true;
-            }
-
-            return false;
-        }
-
-        public void Clear()
-        {
-            collection.Clear();
-        }
-    }
-
     // - Redefine how metrics should be calculated
     //      - Unique loaded textures size
     //      - Vertex count
@@ -117,15 +50,21 @@ namespace DCL
         private WorldSceneObjectsTrackingHelper sceneObjectsTrackingHelper;
         public DataStore_SceneMetrics data => DataStore.i.Get<DataStore_SceneMetrics>();
 
-        public IParcelScene scene { get; private set; }
-
         private Dictionary<string, EntityMetrics> entityMetrics = new Dictionary<string, EntityMetrics>();
         private HashSet<string> excludedEntities = new HashSet<string>();
 
         SceneMetricsModel sceneLimits = null;
 
         private SceneMetricsModel modelValue;
-        public ref readonly SceneMetricsModel model => ref modelValue;
+
+        public ref readonly SceneMetricsModel model
+        {
+            get
+            {
+                modelValue.entities = ComputeEntityCount();
+                return ref modelValue;
+            }
+        }
 
         public bool isDirty { get; private set; }
 
@@ -135,15 +74,26 @@ namespace DCL
         private RefCountedMetric uniqueMaterials = new RefCountedMetric();
         private RefCountedMetric uniqueMeshes = new RefCountedMetric();
         private RefCountedMetric uniqueEntities = new RefCountedMetric();
-        private int entityCount => scene.entities.Count;
 
-        public SceneMetricsCounter(IParcelScene sceneOwner)
+        private string sceneId;
+
+        private Vector2Int scenePosition;
+
+        private int sceneParcelCount;
+
+        private Func<HashSet<string>> entitiesGetter;
+
+        public SceneMetricsCounter(DataStore_WorldObjects dataStore, string sceneId, Vector2Int scenePosition, int sceneParcelCount, Func<HashSet<string>> entitiesGetter)
         {
-            Assert.IsTrue( !string.IsNullOrEmpty(sceneOwner.sceneData.id), "Scene must have an ID!" );
-            this.scene = sceneOwner;
+            this.sceneId = sceneId;
+            this.scenePosition = scenePosition;
+            this.sceneParcelCount = sceneParcelCount;
+            this.entitiesGetter = entitiesGetter;
+
+            Assert.IsTrue( !string.IsNullOrEmpty(sceneId), "Scene must have an ID!" );
 
             modelValue = new SceneMetricsModel();
-            sceneObjectsTrackingHelper = new WorldSceneObjectsTrackingHelper(DataStore.i, scene.sceneData.id);
+            sceneObjectsTrackingHelper = new WorldSceneObjectsTrackingHelper(dataStore, sceneId);
         }
 
         public void Dispose()
@@ -153,9 +103,6 @@ namespace DCL
 
         public void Enable()
         {
-            if (scene == null)
-                return;
-
             sceneObjectsTrackingHelper.OnWillAddRendereable -= OnWillAddRendereable;
             sceneObjectsTrackingHelper.OnWillRemoveRendereable -= OnWillRemoveRendereable;
 
@@ -165,9 +112,6 @@ namespace DCL
 
         public void Disable()
         {
-            if (scene == null)
-                return;
-
             sceneObjectsTrackingHelper.OnWillAddRendereable -= OnWillAddRendereable;
             sceneObjectsTrackingHelper.OnWillRemoveRendereable -= OnWillRemoveRendereable;
         }
@@ -175,6 +119,8 @@ namespace DCL
         private void OnWillAddRendereable(Rendereable rendereable)
         {
             string entityId = rendereable.ownerId;
+
+            Assert.IsTrue(entityId != null, "rendereable.ownerId cannot be null!");
 
             if (excludedEntities.Contains(entityId))
                 return;
@@ -196,6 +142,8 @@ namespace DCL
         private void OnWillRemoveRendereable(Rendereable rendereable)
         {
             string entityId = rendereable.ownerId;
+
+            Assert.IsTrue(entityId != null, "rendereable.ownerId cannot be null!");
 
             if (excludedEntities.Contains(rendereable.ownerId))
                 return;
@@ -220,9 +168,8 @@ namespace DCL
             {
                 sceneLimits = new SceneMetricsModel();
 
-                int parcelCount = scene.sceneData.parcels.Length;
-                float log = Mathf.Log(parcelCount + 1, 2);
-                float lineal = parcelCount;
+                float log = Mathf.Log(sceneParcelCount + 1, 2);
+                float lineal = sceneParcelCount;
 
                 sceneLimits.triangles = (int) (lineal * LimitsConfig.triangles);
                 sceneLimits.bodies = (int) (lineal * LimitsConfig.bodies);
@@ -242,7 +189,7 @@ namespace DCL
             SceneMetricsModel usage = modelValue;
 
             // Workaround for the issue of adding entities without rendereables.
-            usage.entities = entityCount;
+            usage.entities = ComputeEntityCount();
 
             if (usage.triangles > limits.triangles)
                 return false;
@@ -302,11 +249,12 @@ namespace DCL
             if (trackedRendereables.Contains(rend))
                 RemoveTrackedRendereable(rend);
 
+            logger.Log($"Adding rendereable {rend.ownerId} -- {rend}");
             trackedRendereables.Add(rend);
 
             int trianglesToAdd = rend.totalTriangleCount / 3;
             modelValue.triangles += trianglesToAdd;
-            modelValue.bodies++;
+            modelValue.bodies += rend.renderers.Count;
 
             foreach ( var mat in rend.materials )
             {
@@ -329,11 +277,12 @@ namespace DCL
             if ( !trackedRendereables.Contains(rend) )
                 return;
 
+            logger.Log($"Removing rendereable {rend.ownerId} -- {rend}");
             trackedRendereables.Remove(rend);
 
             int trianglesToAdd = rend.totalTriangleCount / 3;
             modelValue.triangles -= trianglesToAdd;
-            modelValue.bodies--;
+            modelValue.bodies -= rend.renderers.Count;
 
             foreach ( var mat in rend.materials )
             {
@@ -368,7 +317,6 @@ namespace DCL
                 if ( !isOffending )
                     return;
 
-                string sceneId = scene.sceneData.id;
                 bool firstOffense = false;
 
                 if (!data.worstMetricOffenses.ContainsKey(sceneId))
@@ -381,19 +329,24 @@ namespace DCL
                 SceneMetricsModel currentOffense = sceneLimits - model;
 
                 if ( firstOffense )
-                    logger.Log($"New offending scene {sceneId} ({scene.sceneData.basePosition})!\n{model}");
+                    logger.Log($"New offending scene {sceneId} ({scenePosition})!\n{model}");
 
                 if ( currentOffense < worstOffense )
                     return;
 
-                data.worstMetricOffenses[scene.sceneData.id] = currentOffense;
-                logger.Log($"New offending scene {sceneId} {scene.sceneData.basePosition}!\nmetrics: {model}\nlimits: {sceneLimits}\ndelta:{currentOffense}");
+                data.worstMetricOffenses[sceneId] = currentOffense;
+                logger.Log($"New offending scene {sceneId} {scenePosition}!\nmetrics: {model}\nlimits: {sceneLimits}\ndelta:{currentOffense}");
             }
         }
 
         public SceneMetricsModel GetModel()
         {
             return modelValue;
+        }
+
+        private int ComputeEntityCount()
+        {
+            return entitiesGetter().Count(x => !excludedEntities.Contains(x));
         }
 
         private void RaiseMetricsUpdate()
@@ -409,8 +362,7 @@ namespace DCL
 
             isDirty = false;
 
-            Interface.WebInterface.ReportOnMetricsUpdate(scene.sceneData.id,
-                modelValue.ToMetricsModel(), ComputeSceneLimits().ToMetricsModel());
+            Interface.WebInterface.ReportOnMetricsUpdate(sceneId, modelValue.ToMetricsModel(), ComputeSceneLimits().ToMetricsModel());
         }
     }
 }

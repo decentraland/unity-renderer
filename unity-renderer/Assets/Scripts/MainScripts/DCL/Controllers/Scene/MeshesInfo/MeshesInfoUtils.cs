@@ -83,6 +83,7 @@ namespace DCL.Models
 
         private static Shader hologramShader = null;
         private static List<int> texIdsCache = new List<int>();
+        private static List<string> texNameCache = new List<string>();
 
         public static HashSet<Renderer> ExtractUniqueRenderers(GameObject container)
         {
@@ -106,13 +107,18 @@ namespace DCL.Models
                     (mat) =>
                     {
                         mat.GetTexturePropertyNameIDs(texIdsCache);
+                        mat.GetTexturePropertyNames(texNameCache);
                         List<Texture> result = new List<Texture>();
                         for ( int i = 0; i < texIdsCache.Count; i++ )
                         {
                             var tex = mat.GetTexture(texIdsCache[i]);
+                            Debug.Log("Checking tex id " + texNameCache[i]);
 
                             if ( tex != null )
+                            {
+                                Debug.Log("Adding Texture");
                                 result.Add(tex);
+                            }
                         }
 
                         return result;
