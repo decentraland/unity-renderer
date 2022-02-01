@@ -33,6 +33,7 @@ public class TaskbarHUDController : IHUD
     private InputAction_Trigger toggleWorldChatTrigger;
     private ISceneController sceneController;
     private IWorldState worldState;
+    private Transform experiencesViewerTransform;
 
     public event System.Action OnAnyTaskbarButtonClicked;
 
@@ -90,6 +91,8 @@ public class TaskbarHUDController : IHUD
         toggleWorldChatTrigger = Resources.Load<InputAction_Trigger>("ToggleWorldChat");
         toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
         toggleWorldChatTrigger.OnTriggered += ToggleWorldChatTrigger_OnTriggered;
+
+        isExperiencesViewerOpen.OnChange += IsExperiencesViewerOpenChanged;
 
         if (chatController != null)
         {
@@ -209,6 +212,7 @@ public class TaskbarHUDController : IHUD
             return;
 
         controller.view.transform.SetParent(view.leftWindowContainer, false);
+        experiencesViewerTransform?.SetAsLastSibling();
 
         worldChatWindowHud = controller;
 
@@ -239,6 +243,7 @@ public class TaskbarHUDController : IHUD
             return;
 
         controller.view.transform.SetParent(view.leftWindowContainer, false);
+        experiencesViewerTransform?.SetAsLastSibling();
 
         privateChatWindowHud = controller;
 
@@ -286,6 +291,7 @@ public class TaskbarHUDController : IHUD
             return;
 
         controller.view.transform.SetParent(view.leftWindowContainer, false);
+        experiencesViewerTransform?.SetAsLastSibling();
 
         friendsHud = controller;
         view.OnAddFriendsWindow();
@@ -303,9 +309,20 @@ public class TaskbarHUDController : IHUD
         if (currentViewTransform == null)
             return;
 
-        currentViewTransform.SetParent(view.leftWindowContainer, false);
+        experiencesViewerTransform = currentViewTransform;
+        experiencesViewerTransform.SetParent(view.leftWindowContainer, false);
+        experiencesViewerTransform.SetAsLastSibling();
 
         view.OnAddExperiencesWindow();
+    }
+
+    private void IsExperiencesViewerOpenChanged(bool current, bool previous)
+    {
+        if (current)
+            return;
+
+        view.experiencesButton.SetToggleState(false, false);
+        MarkWorldChatAsReadIfOtherWindowIsOpen();
     }
 
     public void OnAddVoiceChat() { view.OnAddVoiceChat(); }
@@ -366,6 +383,7 @@ public class TaskbarHUDController : IHUD
         }
 
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
+        isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }

@@ -781,9 +781,6 @@ GameObject:
   - component: {fileID: 611153476423869351}
   - component: {fileID: 4147718943967981837}
   - component: {fileID: 7843417032049270183}
-  - component: {fileID: 1912092935597420311}
-  - component: {fileID: 548223070456177984}
-  - component: {fileID: 1053466953841624463}
   - component: {fileID: 3817172054433513208}
   m_Layer: 5
   m_Name: ExperiencesViewer
@@ -864,53 +861,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
---- !u!95 &1912092935597420311
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8302530127849051524}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!225 &548223070456177984
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8302530127849051524}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
---- !u!114 &1053466953841624463
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8302530127849051524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hideOnEnable: 0
-  animSpeedFactor: 1
-  disableAfterFadeOut: 0
-  visibleParam: visible
 --- !u!114 &3817172054433513208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -923,7 +873,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c948d8717012c30468a4ff86fd47c743, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  experienceRowPrefab: {fileID: 0}
+  experienceRowPrefab: {fileID: 1284051070034360627, guid: edacd4f9cf83b1b498d00be69ee404be,
+    type: 3}
+  closeButton: {fileID: 5353950544011912494}
 --- !u!1001 &3917028601854969857
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1326,6 +1278,18 @@ PrefabInstance:
         type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88cd164bd30b4c446917e9faee11dd6a, type: 3}
+--- !u!114 &5353950544011912494 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 439785820983603457, guid: 88cd164bd30b4c446917e9faee11dd6a,
+    type: 3}
+  m_PrefabInstance: {fileID: 5500974839121171503}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6812575718317121646 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,

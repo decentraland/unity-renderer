@@ -19,23 +19,28 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
     {
         view = CreateView();
 
+        view.OnCloseButtonPressed += OnCloseButtonPressed;
+
         isOpen.OnChange += IsOpenChanged;
         IsOpenChanged(isOpen.Get(), false);
 
         isInitialized.Set(view.transform);
     }
 
-    private void IsOpenChanged(bool current, bool previous)
+    public void SetVisibility(bool visible)
     {
-        SetVisibility(current);
+        view.SetVisible(visible);
+        isOpen.Set(visible);
     }
-
-    public void SetVisibility(bool visible) { view.SetVisible(visible); }
 
     public void Dispose()
     {
         isOpen.OnChange -= IsOpenChanged;
     }
+
+    internal void OnCloseButtonPressed() { SetVisibility(false); }
+
+    internal void IsOpenChanged(bool current, bool previous) { SetVisibility(current); }
 
     internal virtual ExperiencesViewerComponentView CreateView() => ExperiencesViewerComponentView.Create();
 }

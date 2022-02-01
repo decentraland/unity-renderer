@@ -1,8 +1,14 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public interface IExperiencesViewerComponentView
 {
+    /// <summary>
+    /// It will be triggered when the close button is clicked.
+    /// </summary>
+    event Action OnCloseButtonPressed;
+
     /// <summary>
     /// Set the available realms component with a list of realms.
     /// </summary>
@@ -21,6 +27,18 @@ public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesVie
     [Header("Assets References")]
     [SerializeField] internal ExperienceRowComponentView experienceRowPrefab;
 
+    [Header("Prefab References")]
+    [SerializeField] internal ButtonComponentView closeButton;
+
+    public event Action OnCloseButtonPressed;
+
+    public override void Start()
+    {
+        base.Start();
+
+        closeButton.onClick.AddListener(() => OnCloseButtonPressed?.Invoke());
+    }
+
     public override void RefreshControl()
     {
 
@@ -31,9 +49,13 @@ public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesVie
         
     }
 
-    public void SetVisible(bool isActive)
+    public void SetVisible(bool isActive) { gameObject.SetActive(isActive); }
+
+    public override void Dispose()
     {
-        gameObject.SetActive(isActive);
+        base.Dispose();
+
+        closeButton.onClick.RemoveAllListeners();
     }
 
     internal static ExperiencesViewerComponentView Create()
