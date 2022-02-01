@@ -652,6 +652,8 @@ namespace UnityGLTF
 
                 await ConstructUnityTexture(settings, stream, imageCacheIndex, cancellationToken);
             }
+            
+            cancellationToken.ThrowIfCancellationRequested();
         }
 
         protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex, CancellationToken cancellationToken)
@@ -692,6 +694,8 @@ namespace UnityGLTF
                     await ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
                 }
             }
+            
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (stream is FileStream fileStream)
             {
@@ -701,6 +705,8 @@ namespace UnityGLTF
                     await ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
                 }
             }
+            
+            cancellationToken.ThrowIfCancellationRequested();
         }
 
         // Note that if the texture is reduced in size, the source one is destroyed
@@ -2253,6 +2259,8 @@ namespace UnityGLTF
             else
             {
                 await ConstructImage(settings, image, sourceId, cancellationToken);
+                
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (_assetCache.ImageCache[sourceId] == null)
                 {
