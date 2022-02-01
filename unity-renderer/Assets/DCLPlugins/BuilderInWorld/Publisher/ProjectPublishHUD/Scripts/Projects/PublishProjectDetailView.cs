@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
 
 namespace DCL.Builder
 {
@@ -49,34 +52,41 @@ namespace DCL.Builder
 
     public class PublishProjectDetailView : BaseComponentView, IPublishProjectDetailView
     {
-        private const string SCREENSHOT_TEXT =  @"{0} parcel = {1}x{2}m";
-
         public event Action<PublishInfo.ProjectRotation> OnProjectRotateChange;
         public event Action OnCancel;
         public event Action<PublishInfo> OnPublishButtonPressed;
 
-        [Header("Map Renderer")]
-        public PublishMapView mapView;
+        [SerializeField] internal ModalComponentView modal;
 
-        [SerializeField] internal Button cancelButton;
-        [SerializeField] internal Button publishButton;
+        [Header("First step")]
+        [SerializeField] internal GameObject firstStep;
 
+        [SerializeField] internal Button backButton;
+        [SerializeField] internal Button nextButton;
         [SerializeField] internal Button rotateLeftButton;
         [SerializeField] internal Button rotateRightButton;
 
-        [SerializeField] internal RawImage sceneScreenshotImage;
+        [SerializeField] internal RawImage sceneAerialScreenshotImage;
 
-        [SerializeField] internal ModalComponentView modal;
-
-        [SerializeField] internal TMP_Text sceneScreenshotParcelText;
         [SerializeField] internal LimitInputField nameInputField;
         [SerializeField] internal LimitInputField descriptionInputField;
 
-        [SerializeField] internal TMP_Dropdown landsDropDown;
+        [Header("Second step")]
+        [SerializeField] internal GameObject secondStep;
+        [SerializeField] internal Button backSecondButton;
+        [SerializeField] internal Button publishButton;
+        [SerializeField] internal PublishLandListView landListView;
+        [SerializeField] internal PublishMapView mapView;
+        
+        [SerializeField] internal RawImage sceneScreenshotImage;
 
         internal IBuilderScene scene;
-        internal Dictionary<string, LandWithAccess> landsDropdownDictionary = new Dictionary<string, LandWithAccess>();
         private PublishInfo.ProjectRotation projectRotation = PublishInfo.ProjectRotation.NORTH;
+        internal int currentStep = 0;
+        internal List<Vector2Int> availableLandsToPublish = new List<Vector2Int>();
+
+        internal Vector2Int selectedCoords;
+        internal bool coordsSelected = false;
 
         public override void RefreshControl()
         {
@@ -91,15 +101,17 @@ namespace DCL.Builder
             base.Awake();
             modal.OnCloseAction += CancelPublish;
 
-            cancelButton.onClick.AddListener(CancelButtonPressed);
+            landListView.OnLandSelected += LandSelected;
+            mapView.OnParcelHover += ParcelHovered;
+            mapView.OnParcelClicked += ParcelClicked;
+            backButton.onClick.AddListener(Back);
+            nextButton.onClick.AddListener(Next);
+
+            backSecondButton.onClick.AddListener(Back);
             publishButton.onClick.AddListener(PublishButtonPressed);
 
             rotateLeftButton.onClick.AddListener( RotateLeft);
             rotateRightButton.onClick.AddListener( RotateRight);
-
-            landsDropDown.onValueChanged.AddListener(LandSelectedFromDropDown);
-
-            mapView.OnParcelClicked += LandSelectedFromMap;
 
             gameObject.SetActive(false);
         }
@@ -109,15 +121,72 @@ namespace DCL.Builder
             base.Dispose();
 
             modal.OnCloseAction -= CancelPublish;
-            mapView.OnParcelClicked -= LandSelectedFromMap;
 
-            cancelButton.onClick.RemoveAllListeners();
+            mapView.OnParcelHover -= ParcelHovered;
+            mapView.OnParcelClicked -= ParcelClicked;
+            landListView.OnLandSelected -= LandSelected;
+            backButton.onClick.RemoveAllListeners();
+            nextButton.onClick.RemoveAllListeners();
+
+            backSecondButton.onClick.RemoveAllListeners();
             publishButton.onClick.RemoveAllListeners();
-
-            landsDropDown.onValueChanged.RemoveAllListeners();
 
             rotateLeftButton.onClick.RemoveAllListeners();
             rotateRightButton.onClick.RemoveAllListeners();
+        }
+
+        private void Back()
+        {
+            if (currentStep <= 0)
+            {
+                Hide();
+                return;
+            }
+
+            currentStep--;
+            ShowCurrentStep();
+        }
+
+        private void Next()
+        {
+            currentStep++;
+            ShowCurrentStep();
+        }
+
+        private void ParcelClicked(Vector2Int parcel)
+        {
+            if (!availableLandsToPublish.Contains(parcel))
+            {
+                BIWUtils.ShowGenericNotification("The project can't be placed in this land");
+                return;
+            }
+
+            coordsSelected = true;
+            selectedCoords = parcel;
+            publishButton.interactable = true;
+        }
+
+        private void ParcelHovered(Vector2Int parcel)
+        {
+            bool isAvailable = availableLandsToPublish.Contains(parcel);
+            mapView.SetAvailabilityToPublish(isAvailable);
+        }
+
+        private void ShowCurrentStep()
+        {
+            firstStep.SetActive(false);
+            secondStep.SetActive(false);
+            switch (currentStep)
+            {
+                case 0: // Choose name, desc and rotation
+                    firstStep.SetActive(true);
+                    break;
+                case 1: // Choose land to deploy
+                    secondStep.SetActive(true);
+                    if (availableLandsToPublish.Count >= 0)
+                        CoordsSelected(availableLandsToPublish[0]);
+                    break;
+            }
         }
 
         private void RotateLeft()
@@ -154,107 +223,97 @@ namespace DCL.Builder
                     zRotation = 270;
                     break;
             }
-
-            sceneScreenshotImage.rectTransform.rotation = Quaternion.Euler(0, 0, zRotation);
+            sceneAerialScreenshotImage.rectTransform.rotation = Quaternion.Euler(0, 0, zRotation);
             OnProjectRotateChange?.Invoke(rotation);
         }
-
-        private void LandSelectedFromDropDown(int index)
-        {
-            //We set the map to the main land
-            Vector2Int coordsToHighlight = landsDropdownDictionary[landsDropDown.options[index].text].baseCoords;
-            mapView.GoToCoords(coordsToHighlight);
-        }
-
-        private void LandSelectedFromMap(Vector2Int coords)
-        {
-            foreach (var land in DataStore.i.builderInWorld.landsWithAccess.Get())
-            {
-                foreach (Vector2Int landParcel in land.parcels)
-                {
-                    if (landParcel == coords)
-                    {
-                        string text = GetLandText(land.name, landParcel);
-                        for (int i = 0 ; i < landsDropDown.options.Count; i++)
-                        {
-                            if (text == landsDropDown.options[i].text)
-                                landsDropDown.SetValueWithoutNotify(i);
-                        }
-                    }
-                }
-            }
-            mapView.GoToCoords(coords);
-        }
-
-        [ContextMenu("-150,-150")]
-        public void CenterIn150() { mapView.GoToCoords(Vector2Int.one * -150); }
-
-        [ContextMenu("Reset View")]
-        public void CenterInZero() { mapView.GoToCoords(Vector2Int.zero); }
 
         public void SetProjectToPublish(IBuilderScene scene)
         {
             this.scene = scene;
 
-            //We set the screenshot
-            sceneScreenshotImage.texture = scene.aerialScreenshotTexture;
+            // We reset the selected coords and disable the publish button until the coords are selected
+            coordsSelected = false;
+            publishButton.interactable = false;
 
-            //We set the scene info
+            // We set the screenshot
+            sceneAerialScreenshotImage.texture = scene.aerialScreenshotTexture;
+            if(sceneScreenshotImage != null)
+                sceneScreenshotImage.texture = scene.sceneScreenshotTexture;
+
+            // We set the scene info
             nameInputField.SetText(scene.manifest.project.title);
             descriptionInputField.SetText(scene.manifest.project.description);
-            sceneScreenshotParcelText.text = GetScreenshotText(scene.scene.sceneData.parcels);
 
-            //We fill the land drop down
-            FillLandDropDown();
+            // We fill the list with the lands
+            landListView.SetContent(scene.manifest.project.cols, scene.manifest.project.rows, DataStore.i.builderInWorld.landsWithAccess.Get());
 
-            //We set the map to the main land
-            CoroutineStarter.Start(WaitFrameToPositionMap());
+            // We filter the available lands
+            CheckAvailableLandsToPublish(scene);
+
+            // We set the size of the project in the builder
+            mapView.SetProjectSize(scene.scene.sceneData.parcels);
         }
 
-        IEnumerator WaitFrameToPositionMap()
+        private void CheckAvailableLandsToPublish(IBuilderScene sceneToPublish)
         {
-            yield return null;
-            Vector2Int coordsToHighlight = landsDropdownDictionary[landsDropDown.options[landsDropDown.value].text].baseCoords;
-            mapView.GoToCoords(coordsToHighlight);
-        }
-
-        private string GetScreenshotText(Vector2Int[] parcels)
-        {
-            Vector2Int sceneSize = BIWUtils.GetSceneSize(parcels);
-            return string.Format(SCREENSHOT_TEXT, parcels.Length, sceneSize.x * DCL.Configuration.ParcelSettings.PARCEL_SIZE,  DCL.Configuration.ParcelSettings.PARCEL_SIZE * sceneSize.y);
-        }
-
-        private void FillLandDropDown()
-        {
-            landsDropdownDictionary.Clear();
-
-            List<TMP_Dropdown.OptionData> landsOption =  new List<TMP_Dropdown.OptionData>();
-            foreach (var land in DataStore.i.builderInWorld.landsWithAccess.Get())
+            availableLandsToPublish.Clear();
+            var lands = DataStore.i.builderInWorld.landsWithAccess.Get();
+            List<Vector2Int> totalParcels = new List<Vector2Int>();
+            foreach (LandWithAccess land in lands)
             {
-                foreach (Vector2Int landParcel in land.parcels)
-                {
-                    string text = GetLandText(land.name, landParcel);
-
-                    if (landsDropdownDictionary.ContainsKey(text))
-                        continue;
-
-                    TMP_Dropdown.OptionData landData = new TMP_Dropdown.OptionData();
-                    landData.text = text;
-                    landsOption.Add(landData);
-                    landsDropdownDictionary.Add(text, land);
-                }
+                totalParcels.AddRange(land.parcels.ToList());
             }
 
-            landsDropDown.options = landsOption;
+            Vector2Int sceneSize = BIWUtils.GetSceneSize(sceneToPublish.scene.sceneData.parcels);
+            foreach (Vector2Int parcel in totalParcels)
+            {
+                List<Vector2Int> necessaryParcelsToOwn = new List<Vector2Int>();
+                for (int x = 1; x < sceneSize.x; x++)
+                {
+                    for (int y = 1; y < sceneSize.y; y++)
+                    {
+                        necessaryParcelsToOwn.Add(new Vector2Int(parcel.x + x, parcel.y + y));
+                    }
+                }
+
+                int amountOfParcelFounds = 0;
+                foreach (Vector2Int parcelToCheck in totalParcels)
+                {
+                    if (necessaryParcelsToOwn.Contains(parcelToCheck))
+                        amountOfParcelFounds++;
+                }
+
+                if (amountOfParcelFounds == necessaryParcelsToOwn.Count)
+                    availableLandsToPublish.Add(parcel);
+            }
         }
 
-        internal string GetLandText(string landName, Vector2Int landParcel) { return landName + " (" + landParcel.x + "," + landParcel.y + ")"; }
+        private void LandSelected(LandWithAccess land)
+        {
+            // We set the map to the main land
+            CoordsSelected(land.baseCoords);
+        }
+
+        private void CoordsSelected(Vector2Int coord)
+        {
+            // We set the map to the main land
+            CoroutineStarter.Start(WaitFrameToPositionMap(coord));
+        }
+
+        IEnumerator WaitFrameToPositionMap(Vector2Int coords)
+        {
+            yield return null;
+            mapView.GoToCoords(coords);
+        }
 
         public void Show()
         {
             gameObject.SetActive(true);
             mapView.SetVisible(true);
             modal.Show();
+
+            currentStep = 0;
+            ShowCurrentStep();
         }
 
         public void Hide()
@@ -269,8 +328,7 @@ namespace DCL.Builder
             PublishInfo publishInfo = new PublishInfo();
             scene.manifest.project.title = nameInputField.GetValue();
             scene.manifest.project.description = descriptionInputField.GetValue();
-            publishInfo.landsToPublish = new LandWithAccess[1];
-            publishInfo.landsToPublish[0] = landsDropdownDictionary[landsDropDown.options[landsDropDown.value].text];
+            publishInfo.coordsToPublish = selectedCoords;
 
             OnPublishButtonPressed?.Invoke(publishInfo);
         }
@@ -282,6 +340,5 @@ namespace DCL.Builder
             Hide();
             CancelPublish();
         }
-
     }
 }

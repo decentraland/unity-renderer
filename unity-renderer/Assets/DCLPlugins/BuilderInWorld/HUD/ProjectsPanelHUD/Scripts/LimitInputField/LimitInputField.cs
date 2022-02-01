@@ -41,7 +41,11 @@ public class LimitInputField : MonoBehaviour
             hasBeenEmpty = true;
     }
 
-    public void SetText(string value) { inputField.SetTextWithoutNotify(value); }
+    public void SetText(string value)
+    {
+        currentValue = value;
+        inputField.SetTextWithoutNotify(value);
+    }
 
     public void SetError() { LimitReached(); }
 

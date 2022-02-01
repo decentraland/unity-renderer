@@ -19,7 +19,7 @@ MonoBehaviour:
   snapDistanceToActivateMovement: 0.1
   initialEagleCameraHeight: 10
   initialEagleCameraDistance: 10
-  initialEagleCameraLookAtHeight: 0
+  aerialScreenshotHeight: 21
   layerToStopClick:
     serializedVersion: 2
     m_Bits: 2048

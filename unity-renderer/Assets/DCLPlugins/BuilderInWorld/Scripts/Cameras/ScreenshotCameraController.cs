@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCL.Builder
 {
-    public class ScreenshotCameraController: IScreenshotCameraController
+    public class ScreenshotCameraController : IScreenshotCameraController
     {
         private IContext context;
         private UnityEngine.Camera screenshotCamera;
@@ -23,15 +23,13 @@ namespace DCL.Builder
                 freeCameraMovement = (FreeCameraMovement) cameraState;
         }
 
-        public void Dispose()
-        {
-            GameObject.Destroy(screenshotCamera.gameObject);
-        }
-        
+        public void Dispose() { GameObject.Destroy(screenshotCamera.gameObject); }
+
         public void TakeSceneAerialScreenshot(IParcelScene parcelScene, IScreenshotCameraController.OnSnapshotsReady onSuccess)
         {
             Vector3 pointToLookAt = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
-            Vector3 cameraPosition = pointToLookAt  + Vector3.up * context.editorContext.godModeDynamicVariablesAsset.aerialScreenshotHeight;
+            float heightPosition = context.editorContext.godModeDynamicVariablesAsset.aerialScreenshotHeight * Mathf.Sqrt(parcelScene.sceneData.parcels.Length);
+            Vector3 cameraPosition = pointToLookAt  + Vector3.up * heightPosition;
 
             TakeSceneScreenshot(cameraPosition, pointToLookAt, BIWSettings.AERIAL_SCREENSHOT_WIDTH, BIWSettings.AERIAL_SCREENSHOT_HEIGHT, onSuccess);
         }
@@ -43,14 +41,11 @@ namespace DCL.Builder
             
             screenshotCamera.transform.position = freeCameraMovement.GetCameraPosition;
             screenshotCamera.transform.rotation = freeCameraMovement.gameObject.transform.rotation;
-            
+
             TakeScreenshot(onSuccess, BIWSettings.SCENE_SNAPSHOT_WIDTH_RES, BIWSettings.SCENE_SNAPSHOT_HEIGHT_RES);
         }
 
-        public void TakeSceneScreenshot(Vector3 camPosition, Vector3 pointToLookAt, IScreenshotCameraController.OnSnapshotsReady onSuccess)
-        {
-            TakeSceneScreenshot(camPosition,pointToLookAt,BIWSettings.SCENE_SNAPSHOT_WIDTH_RES,BIWSettings.SCENE_SNAPSHOT_HEIGHT_RES ,onSuccess);
-        }
+        public void TakeSceneScreenshot(Vector3 camPosition, Vector3 pointToLookAt, IScreenshotCameraController.OnSnapshotsReady onSuccess) { TakeSceneScreenshot(camPosition, pointToLookAt, BIWSettings.SCENE_SNAPSHOT_WIDTH_RES, BIWSettings.SCENE_SNAPSHOT_HEIGHT_RES , onSuccess); }
 
         public void TakeSceneScreenshot(Vector3 camPosition, Vector3 pointToLookAt, int width, int height, IScreenshotCameraController.OnSnapshotsReady onSuccess)
         {
@@ -74,7 +69,6 @@ namespace DCL.Builder
             
             callback?.Invoke(sceneScreenshot);
         }
-        
         private Texture2D ScreenshotFromCamera(int width, int height)
         {
             RenderTexture rt = new RenderTexture(width, height, 32);

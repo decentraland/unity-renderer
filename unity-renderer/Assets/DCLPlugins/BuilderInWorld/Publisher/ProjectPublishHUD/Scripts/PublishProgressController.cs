@@ -25,7 +25,13 @@ namespace DCL.Builder
         /// This is called when the deployment has succeed
         /// </summary>
         /// <param name="publishedScene"></param>
-        void DeploySuccess(IBuilderScene publishedScene);
+        void DeploySuccess();
+        
+        /// <summary>
+        /// Set the scene to publish
+        /// </summary>
+        /// <param name="scene"></param>
+        void SetScene(IBuilderScene scene);
 
         /// <summary>
         /// This is called when the deployment has failed with the error as parameter
@@ -38,56 +44,46 @@ namespace DCL.Builder
     {
         public event Action OnConfirm;
 
-        private const string PROGRESS_PREFAB_PATH = "Project/PublishProgressView";
-        private const string SUCCESS_PREFAB_PATH = "Project/PublishSuccessView";
+        private const string PROGRESS_PREFAB_PATH = "PublishProgressView";
 
-        private const string GENERIC_DEPLOY_ERROR = "Error deploying the scene";
-
-        internal IPublishProjectProgressView progressView;
-        internal IPublishProjectSuccesView succesView;
+        internal IPublishProgressView view;
 
         public void Initialize()
         {
-            progressView = GameObject.Instantiate(Resources.Load<PublishProjectProgressView>(PROGRESS_PREFAB_PATH));
-            succesView = GameObject.Instantiate(Resources.Load<PublishProjectSuccesView>(SUCCESS_PREFAB_PATH));
+            view = GameObject.Instantiate(Resources.Load<PublishProgressView>(PROGRESS_PREFAB_PATH));
 
-            progressView.OnViewClosed += ViewClosed;
-            progressView.OnPublishConfirmButtonPressed += ConfirmPressed;
-
-            succesView.OnViewClose += ViewClosed;
+            view.OnViewClosed += ViewClosed;
+            view.OnPublishConfirmButtonPressed += ConfirmPressed;
         }
 
         public void Dispose()
         {
-            progressView.OnViewClosed -= ViewClosed;
-            progressView.OnPublishConfirmButtonPressed -= ConfirmPressed;
-
-            succesView.OnViewClose -= ViewClosed;
-
-            progressView.Dispose();
-            succesView.Dispose();
+            view.OnViewClosed -= ViewClosed;
+            view.OnPublishConfirmButtonPressed -= ConfirmPressed;
+            
+            view.Dispose();
         }
 
-        public void ShowConfirmDeploy() { progressView.ShowConfirmPopUp(); }
+        public void ShowConfirmDeploy() { view.ConfirmDeployment(); }
 
         private void ConfirmPressed()
         {
             OnConfirm?.Invoke();
-            progressView.PublishStarted();
+            view.PublishStarted();
         }
 
-        public void DeploySuccess(IBuilderScene publishedScene)
+        public void DeploySuccess()
         {
-            progressView.Hide();
-            succesView.ProjectPublished(publishedScene);
+            view.ProjectPublished();
         }
+        
+        public void SetScene(IBuilderScene scene) { view.SetScene(scene); }
 
-        public void DeployError(string error) { progressView.PublishError(error); }
+        public void DeployError(string error) { view.PublishError(error); }
 
         private void ViewClosed()
         {
-            progressView.Hide();
-            succesView.Hide();
+            view.Hide();
         }
     }
 }

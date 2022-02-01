@@ -26,6 +26,31 @@ public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
+    public static string Vector2INTToString(Vector2Int vector) { return vector.x + "," + vector.y; }
+
+    public static Vector2Int GetRowsAndColumsFromLand(LandWithAccess landWithAccess)
+    {
+        Vector2Int result = new Vector2Int();
+        int baseX = landWithAccess.baseCoords.x;
+        int baseY = landWithAccess.baseCoords.y;
+
+        int amountX = 0;
+        int amountY = 0;
+
+        foreach (Vector2Int parcel in landWithAccess.parcels)
+        {
+            if (parcel.x == baseX)
+                amountX++;
+
+            if (parcel.y == baseY)
+                amountY++;
+        }
+
+        result.x = amountX;
+        result.y = amountY;
+        return result;
+    }
+
     public static ILand CreateILandFromManifest(IManifest manifest, Vector2Int initialCoord)
     {
         ILand land = new ILand();
@@ -265,6 +290,43 @@ public static partial class BIWUtils
 
     public static Vector2Int GetSceneSize(IParcelScene parcelScene) { return GetSceneSize(parcelScene.sceneData.parcels); }
 
+    public static bool HasSquareSize(LandWithAccess land)
+    {
+        Vector2Int size = GetSceneSize(land.parcels);
+
+        for (int x = land.baseCoords.x; x < size.x; x++)
+        {
+            bool found = false;
+            foreach (Vector2Int parcel in land.parcels)
+            {
+                if (parcel.x == x)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                return false;
+        }
+
+        for (int y = land.baseCoords.y; y < size.x; y++)
+        {
+            bool found = false;
+            foreach (Vector2Int parcel in land.parcels)
+            {
+                if (parcel.y == y)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                return false;
+        }
+
+        return true;
+    }
+
     public static Vector2Int GetSceneSize(Vector2Int[] parcels)
     {
         int minX = Int32.MaxValue;
@@ -320,17 +382,15 @@ public static partial class BIWUtils
                 maxY = vector.y;
         }
 
-        float centerX = totalX / parcelScene.sceneData.parcels.Length;
-        float centerZ = totalZ / parcelScene.sceneData.parcels.Length;
+        float centerX = totalX / parcelScene.sceneData.parcels.Length + 0.5f;
+        float centerZ = totalZ / parcelScene.sceneData.parcels.Length + 0.5f;
 
         position.x = centerX;
         position.y = totalY;
         position.z = centerZ;
 
-        position = WorldStateUtils.ConvertScenePositionToUnityPosition(parcelScene);
-
-        position.x += ParcelSettings.PARCEL_SIZE / 2;
-        position.z += ParcelSettings.PARCEL_SIZE / 2;
+        Vector3 scenePosition = Utils.GridToWorldPosition(centerX, centerZ);
+        position = PositionUtils.WorldToUnityPosition(scenePosition);
 
         return position;
     }
