@@ -1,8 +1,11 @@
 using System;
+using AvatarSystem;
+using DCL;
 using DCL.Components;
+using DCL.Helpers;
 using UnityEngine;
 
-public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
+public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnimator
 {
     const float IDLE_TRANSITION_TIME = 0.2f;
     const float STRAFE_TRANSITION_TIME = 0.25f;
@@ -62,6 +65,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
     Vector3 lastPosition;
     AvatarAnimationsVariable currentAnimations;
     bool isOwnPlayer = false;
+    private AvatarAnimationEventHandler animEventHandler;
 
     public void Start() { OnPoolGet(); }
 
@@ -283,5 +287,51 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
         }
 
         SetIdleFrame();
+        animation.Sample();
+    }
+
+    // AvatarSystem entry points
+    public bool Prepare(string bodyshapeId, GameObject container)
+    {
+        if (!container.transform.TryFindChildRecursively("Armature", out Transform armature))
+        {
+            Debug.LogError($"Couldn't find Armature for AnimatorLegacy in path: {transform.GetHierarchyPath()}");
+            return false;
+        }
+        Transform armatureParent = armature.parent;
+        animation = armatureParent.gameObject.GetOrCreateComponent<Animation>();
+        armatureParent.gameObject.GetOrCreateComponent<StickerAnimationListener>();
+
+        BindBodyShape(animation, bodyshapeId, target);
+        InitializeAvatarAudioAndParticleHandlers(animation);
+        return true;
+    }
+
+    public void PlayExpression(string expressionId, long timestamps) { SetExpressionValues(expressionId, timestamps); }
+
+    private void InitializeAvatarAudioAndParticleHandlers(Animation createdAnimation)
+    {
+        //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
+        AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventHandler>();
+        AudioContainer audioContainer = transform.GetComponentInChildren<AudioContainer>();
+        if (audioContainer != null)
+        {
+            animationEventHandler.Init(audioContainer);
+
+            //NOTE(Mordi): If this is a remote avatar, pass the animation component so we can keep track of whether it is culled (off-screen) or not
+            AvatarAudioHandlerRemote audioHandlerRemote = audioContainer.GetComponent<AvatarAudioHandlerRemote>();
+            if (audioHandlerRemote != null)
+            {
+                audioHandlerRemote.Init(createdAnimation.gameObject);
+            }
+        }
+
+        animEventHandler = animationEventHandler;
+    }
+
+    private void OnDestroy()
+    {
+        if (animEventHandler != null)
+            Destroy(animEventHandler);
     }
 }

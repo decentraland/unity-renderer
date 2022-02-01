@@ -1,38 +1,39 @@
 {
-  "name": "AvatarsLODControllerTests",
-  "rootNamespace": "",
-  "references": [
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:28f74c468a54948bfa9f625c5d428f56",
-    "GUID:9fad297e585ef204c9c2c497d77099f0",
-    "GUID:c44f6fd10d3d94432a107d581e0096b5",
-    "GUID:09421665db03949048c48febfea4311f",
-    "GUID:c34e38f41494f834abff029ddf82af43",
-    "GUID:46cbc133d57a24117993396eb0fbbc5a",
-    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-    "GUID:750a3dd4b18d34b46a798e22b150fa10",
-    "GUID:f070f44586498a44c9e6d2ea3e166379",
-    "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
-    "GUID:2995626b54c60644988f134a69a77450",
-    "GUID:896ac1ef7dceedf49b9a9b0f3c8e798d",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
-    "GUID:fbcc413e192ef9048811d47ab0aca0c0",
-    "GUID:9857fe4bae4e30441bc3a577c5de790a",
-    "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "NSubstitute.dll",
-    "nunit.framework.dll",
-    "System.Threading.Tasks.Extensions.dll"
-  ],
-  "autoReferenced": true,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "AvatarsLODControllerTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:9fad297e585ef204c9c2c497d77099f0",
+        "GUID:c44f6fd10d3d94432a107d581e0096b5",
+        "GUID:09421665db03949048c48febfea4311f",
+        "GUID:c34e38f41494f834abff029ddf82af43",
+        "GUID:46cbc133d57a24117993396eb0fbbc5a",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:750a3dd4b18d34b46a798e22b150fa10",
+        "GUID:f070f44586498a44c9e6d2ea3e166379",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:2995626b54c60644988f134a69a77450",
+        "GUID:896ac1ef7dceedf49b9a9b0f3c8e798d",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:9857fe4bae4e30441bc3a577c5de790a",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:49176a91bbf7f8a4aaf35f6df0643d1a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "nunit.framework.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

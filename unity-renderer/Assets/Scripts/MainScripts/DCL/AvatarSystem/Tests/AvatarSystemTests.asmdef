@@ -1,0 +1,37 @@
+{
+    "name": "AvatarSystemTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:24ec3d5b95972d44394d682772ea3db1",
+        "GUID:49176a91bbf7f8a4aaf35f6df0643d1a",
+        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
+        "GUID:07d177de1697ea140902b30d6889fa5d",
+        "GUID:a1e1473c53889c2489c0822a9dd5fa33",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:8af21c3a612af2645a9953d4b9b3f6d5",
+        "GUID:b24824f3bc2a60641a01e2083614f802",
+        "GUID:59a84c943ce672c4695df742fcdd6d20",
+        "GUID:f070f44586498a44c9e6d2ea3e166379",
+        "GUID:e65144cdbd5b744238fa03c40df6cd71"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

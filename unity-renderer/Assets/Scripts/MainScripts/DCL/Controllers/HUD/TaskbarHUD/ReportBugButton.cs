@@ -9,7 +9,11 @@ namespace MainScripts.DCL.Controllers.HUD.TaskbarHUD
 {
     public class ReportBugButton : MonoBehaviour
     {
+#if UNITY_WEBGL
         private const string ReportBugURL = "https://github.com/decentraland/issues/issues/new?assignees=&labels=new%2Cexplorer&template=bug_report.yml";
+#else
+        private const string ReportBugURL = "https://github.com/decentraland/explorer-desktop/issues/new?assignees=&labels=new%2Cexplorer&template=bug_report.yml";
+#endif
 
         [SerializeField] private Button button;
 
@@ -48,7 +52,7 @@ namespace MainScripts.DCL.Controllers.HUD.TaskbarHUD
 #if UNITY_WEBGL
             return "explorer,new";
 #else
-            return "explorer-desktop,new";
+            return "new";
 #endif
         }
 
