@@ -228,8 +228,7 @@ public class BuilderInWorldEditor : IBIWEditor
         }
 
         var culling = mainCameraController.GetCulling();
-        culling += BIWSettings.FX_LAYER;
-        mainCameraController.SetCulling(culling);
+        mainCameraController.SetCulling(  BIWUtils.GetBIWCulling(culling));
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
         DataStore.i.builderInWorld.showTaskBar.Set(true);

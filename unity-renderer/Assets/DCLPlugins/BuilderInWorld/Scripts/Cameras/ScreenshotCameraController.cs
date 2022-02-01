@@ -24,7 +24,8 @@ namespace DCL.Builder
             {
                 var cameraController = context.sceneReferences.cameraController.GetComponent<Camera.CameraController>();
                 // We assign the same culling configuration as the camera
-                screenshotCamera.cullingMask = cameraController.GetCulling();
+                var biwCulling = BIWUtils.GetBIWCulling(cameraController.GetCulling());
+                screenshotCamera.cullingMask = biwCulling;
                 
                 if(cameraController.TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
                     freeCameraMovement = (FreeCameraMovement) cameraState;
