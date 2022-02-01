@@ -16,7 +16,7 @@ public interface IModalComponentView
     /// </summary>
     /// <param name="model">Data to configure the image.</param>
     void Configure(ModalComponentModel model);
-    
+
     /// <summary>
     /// This will hide the close button of the pop up, forcing the user to take an action 
     /// </summary>
@@ -37,6 +37,7 @@ public class ModalComponentView : BaseComponentView, IModalComponentView
     [SerializeField] internal ModalComponentModel model;
 
     internal GameObject content;
+    internal bool canBeCanceled = true;
 
     public override void Start()
     {
@@ -60,11 +61,17 @@ public class ModalComponentView : BaseComponentView, IModalComponentView
         this.model = model;
         RefreshControl();
     }
-    
-    public void CanBeCancelled(bool canBe) { closeButton.gameObject.SetActive(canBe);}
+
+    public void CanBeCancelled(bool canBe)
+    {
+        closeButton.gameObject.SetActive(canBe);
+        canBeCanceled = canBe;
+    }
 
     internal void CloseButtonClicked()
     {
+        if (!canBeCanceled)
+            return;
         OnCloseAction?.Invoke();
         Hide();
     }

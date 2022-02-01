@@ -25,7 +25,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public List<string> muted => model.muted ?? new List<string>();
     public bool hasConnectedWeb3 => model.hasConnectedWeb3;
     public bool hasClaimedName => model.hasClaimedName;
-    public bool isGuest => string.IsNullOrEmpty(model.ethAddress);
+    public bool isGuest => !model.hasConnectedWeb3;
     public AvatarModel avatar => model.avatar;
     public int tutorialStep => model.tutorialStep;
 

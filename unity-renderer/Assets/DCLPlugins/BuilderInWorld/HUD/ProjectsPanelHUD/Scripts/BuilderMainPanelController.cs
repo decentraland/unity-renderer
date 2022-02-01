@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using DCL.Configuration;
 using UnityEngine;
 using Variables.RealmsInfo;
 using Environment = DCL.Environment;
@@ -70,8 +71,6 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         configureBuilderInFullscreenMenu.OnChange += ConfigureBuilderInFullscreenMenuChanged;
         ConfigureBuilderInFullscreenMenuChanged(configureBuilderInFullscreenMenu.Get(), null);
-
-        view.SetGuestMode(UserProfile.GetOwnUserProfile().isGuest);
     }
 
     internal void SetView(IBuilderMainPanelView view)
@@ -79,7 +78,10 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         this.view = view;
         view.OnClosePressed += OnClose;
         view.OnBackPressed += OnBack;
+        view.OnGuestConnectWallet += ConnectGuestWallet;
     }
+
+    private void ConnectGuestWallet() { WebInterface.OpenURL(BIWSettings.GUEST_WALLET_INFO); }
 
     private void OnBack()
     {
@@ -114,6 +116,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
         view.OnBackPressed -= OnBack;
+        view.OnGuestConnectWallet -= ConnectGuestWallet;
 
         unpublishPopupController?.Dispose();
 
@@ -332,7 +335,12 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private void OpenEditorFromManifest(Manifest manifest) { context.sceneManager.StartFlowFromProject(manifest); }
 
-    public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
+    public void SetVisibility(bool visible)
+    {
+        // Note: we set it here since the profile is not ready at the initialization part
+        view.SetGuestMode(UserProfile.GetOwnUserProfile().isGuest);
+        DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible);
+    }
 
     private void OnVisibilityChanged(bool isVisible, bool prev)
     {
@@ -340,6 +348,9 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             return;
 
         view.SetVisible(isVisible);
+
+        // Note: we set it here since the profile is not ready at the initialization part
+        view.SetGuestMode(UserProfile.GetOwnUserProfile().isGuest);
 
         if (isVisible)
         {

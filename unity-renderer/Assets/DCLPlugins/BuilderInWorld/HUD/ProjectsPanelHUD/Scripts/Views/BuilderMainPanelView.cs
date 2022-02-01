@@ -166,6 +166,7 @@ namespace DCL.Builder
             {
                 guestModeGameObject.SetActive(true);
                 sectionGameObject.SetActive(false);
+                createSceneButton.interactable = false;
 
                 for (int i = 0; i < sectionToggles.Length; i++)
                 {
@@ -176,6 +177,7 @@ namespace DCL.Builder
             {
                 guestModeGameObject.SetActive(false);
                 sectionGameObject.SetActive(true);
+                createSceneButton.interactable = true;
 
                 for (int i = 0; i < sectionToggles.Length; i++)
                 {

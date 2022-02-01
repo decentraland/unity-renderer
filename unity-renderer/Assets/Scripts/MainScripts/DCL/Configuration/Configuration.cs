@@ -14,6 +14,7 @@ namespace DCL.Configuration
 
         //Useful links
         public const string MARKETPLACE_URL = "https://market.decentraland.org/lands";
+        public const string GUEST_WALLET_INFO = "https://docs.decentraland.org/examples/get-a-wallet/";
 
         //Deployment constants
         public const string DEPLOYMENT_DEFINITION_FILE = "scene-state-definition.json";
@@ -33,6 +34,7 @@ namespace DCL.Configuration
         public static readonly LayerMask COLLIDER_SELECTION_LAYER = LayerMask.GetMask("OnBuilderPointerClick");
         public static readonly LayerMask GIZMOS_LAYER = LayerMask.GetMask("Gizmo");
         public static readonly LayerMask GROUND_LAYER = LayerMask.GetMask("Ground");
+        public static readonly LayerMask FX_LAYER = LayerMask.GetMask("FX");
 
         // Screenshot settings
         public const int SCENE_SNAPSHOT_WIDTH_RES = 854;

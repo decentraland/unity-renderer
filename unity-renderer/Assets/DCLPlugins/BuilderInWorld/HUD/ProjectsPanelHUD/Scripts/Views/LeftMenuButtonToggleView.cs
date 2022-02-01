@@ -28,12 +28,12 @@ namespace DCL.Builder
         {
             set
             {
-                if (isToggleOn == value)
+                if (isToggleOn == value || isDisabled)
                     return;
 
                 SetIsOnWithoutNotify(value);
 
-                if (value && !isDisabled)
+                if (value)
                 {
                     OnToggleOn?.Invoke(this);
                 }
@@ -70,21 +70,19 @@ namespace DCL.Builder
         {
             isToggleOn = value;
 
-            if (isToggleOn)
-            {
+            if (isDisabled)
+                SetDisableColor();
+            else if (isToggleOn)
                 SetSelectColor();
-            }
             else
-            {
                 SetDefaultColor();
-            }
         }
 
         private void OnDestroy() { OnToggleOn -= OnReceiveToggleOn; }
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            if (isOn)
+            if (isOn || isDisabled)
                 return;
 
             SetSelectColor();
@@ -92,7 +90,7 @@ namespace DCL.Builder
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            if (isOn)
+            if (isOn || isDisabled)
                 return;
 
             SetDefaultColor();
@@ -102,7 +100,7 @@ namespace DCL.Builder
         {
             AudioScriptableObjects.buttonClick.Play(true);
 
-            if (isOn)
+            if (isOn || isDisabled)
                 return;
 
             isOn = true;
@@ -114,7 +112,11 @@ namespace DCL.Builder
             text.color = colorTextSelected;
         }
 
-        private void SetDisableColor() { text.color = colorTextDisabled; }
+        private void SetDisableColor()
+        {
+            imageBackground.color = colorBackgroundSelected;
+            text.color = colorTextDisabled;
+        }
 
         private void SetDefaultColor()
         {
@@ -124,7 +126,7 @@ namespace DCL.Builder
 
         private void OnReceiveToggleOn(LeftMenuButtonToggleView toggle)
         {
-            if (!isOn)
+            if (!isOn || isDisabled)
                 return;
 
             if (toggle != this)

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3589397491589073865}
   - component: {fileID: 7027690908109731583}
   - component: {fileID: -6844462693027094784}
-  m_Layer: 0
+  m_Layer: 24
   m_Name: AvatarFootstep
   m_TagString: Untagged
   m_Icon: {fileID: 0}
