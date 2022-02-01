@@ -53,8 +53,8 @@ public class TaskbarHUDView : MonoBehaviour
         var taskbarButtonList = new List<TaskbarButton>();
         taskbarButtonList.Add(chatButton);
         taskbarButtonList.Add(friendsButton);
-        taskbarButtonList.Add(experiencesButton);
         taskbarButtonList.AddRange(chatHeadsGroup.chatHeads);
+        taskbarButtonList.Add(experiencesButton);
 
         using (var iterator = activePortableExperienceItems.GetEnumerator())
         {
