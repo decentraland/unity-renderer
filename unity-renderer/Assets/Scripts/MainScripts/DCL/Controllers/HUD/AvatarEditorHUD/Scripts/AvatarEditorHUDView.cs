@@ -15,7 +15,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public bool isOpen { get; private set; }
 
-    internal bool arePanelsInitialized { get; private set; }
+    internal bool arePanelsInitialized = false;
 
     [System.Serializable]
     public class AvatarEditorNavigationInfo
