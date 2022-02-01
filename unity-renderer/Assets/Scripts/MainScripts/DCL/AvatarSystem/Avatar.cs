@@ -10,6 +10,7 @@ namespace AvatarSystem
     public class Avatar : IAvatar
     {
         private const float RESCALING_BOUNDS_FACTOR = 100f;
+        internal const string LOADING_VISIBILITY_CONSTRAIN = "Loading";
         private readonly IAvatarCurator avatarCurator;
         private readonly ILoader loader;
         private readonly IAnimator animator;
@@ -51,7 +52,7 @@ namespace AvatarSystem
 
             try
             {
-                visibility.SetLoadingReady(false);
+                visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
                 WearableItem bodyshape = null;
                 WearableItem eyes = null;
                 WearableItem eyebrows = null;
@@ -71,7 +72,7 @@ namespace AvatarSystem
                 gpuSkinningThrottler.Bind(gpuSkinning);
 
                 visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers);
-                visibility.SetLoadingReady(true);
+                visibility.RemoveGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
 
                 lod.Bind(gpuSkinning.renderer);
                 gpuSkinningThrottler.Start();
@@ -95,7 +96,9 @@ namespace AvatarSystem
             }
         }
 
-        public void SetVisibility(bool visible) { visibility.SetExplicitVisibility(visible); }
+        public void AddVisibilityConstrain(string key) { visibility.AddGlobalConstrain(key); }
+
+        public void RemoveVisibilityConstrain(string key) { visibility.RemoveGlobalConstrain(key); }
 
         public void SetExpression(string expressionId, long timestamps) { animator?.PlayExpression(expressionId, timestamps); }
 
@@ -104,7 +107,9 @@ namespace AvatarSystem
         public void SetAnimationThrottling(int framesBetweenUpdate) { gpuSkinningThrottler.SetThrottling(framesBetweenUpdate); }
 
         public void SetImpostorTexture(Texture2D impostorTexture) { lod.SetImpostorTexture(impostorTexture); }
+
         public void SetImpostorTint(Color color) { lod.SetImpostorTint(color); }
+
         public Transform[] GetBones() => loader.GetBones();
 
         public void Dispose()

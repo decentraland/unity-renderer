@@ -31,6 +31,8 @@ namespace AvatarSystem
 
         private CancellationTokenSource transitionCTS;
         private CancellationTokenSource billboardLookAtCameraCTS;
+        private string VISIBILITY_CONSTRAIN_IN_IMPOSTOR = "in_impostor";
+        private string VISIBILITY_CONSTRAIN_IN_LOD1 = "in_LOD1";
 
         public LOD(GameObject impostorContainer, IVisibility visibility, IAvatarMovementController avatarMovementController)
         {
@@ -84,8 +86,17 @@ namespace AvatarSystem
                 UpdateSSAO(combinedAvatar, lodIndex);
                 UpdateAlpha(avatarAlpha);
                 UpdateMovementLerping(lodIndex);
-                visibility.SetCombinedRendererVisibility(lodIndex <= 1);
-                visibility.SetFacialFeaturesVisibility(lodIndex <= 0);
+
+                if (avatarAlpha > 0)
+                    visibility.RemoveCombinedRendererConstrain(VISIBILITY_CONSTRAIN_IN_IMPOSTOR);
+                else
+                    visibility.AddCombinedRendererConstrain(VISIBILITY_CONSTRAIN_IN_IMPOSTOR);
+
+                if (lodIndex == 0)
+                    visibility.RemoveFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
+                else
+                    visibility.AddFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
+
                 SetImpostorEnabled(avatarAlpha == 0);
                 return;
             }
@@ -114,7 +125,7 @@ namespace AvatarSystem
 
             try
             {
-                visibility.SetCombinedRendererVisibility(true);
+                visibility.RemoveCombinedRendererConstrain(VISIBILITY_CONSTRAIN_IN_IMPOSTOR);
                 impostorRenderer.enabled = true;
                 float targetAvatarAlpha = lodIndex <= 1 ? 1f : 0f;
                 while (!Mathf.Approximately(targetAvatarAlpha, avatarAlpha))
@@ -127,8 +138,15 @@ namespace AvatarSystem
                 UpdateSSAO(combinedAvatar, lodIndex);
                 UpdateMovementLerping(lodIndex);
 
-                visibility.SetCombinedRendererVisibility(avatarAlpha > 0);
-                visibility.SetFacialFeaturesVisibility(lodIndex == 0);
+                if (avatarAlpha > 0)
+                    visibility.RemoveCombinedRendererConstrain(VISIBILITY_CONSTRAIN_IN_IMPOSTOR);
+                else
+                    visibility.AddCombinedRendererConstrain(VISIBILITY_CONSTRAIN_IN_IMPOSTOR);
+
+                if (lodIndex == 0)
+                    visibility.RemoveFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
+                else
+                    visibility.AddFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
 
                 SetImpostorEnabled(avatarAlpha == 0);
             }
