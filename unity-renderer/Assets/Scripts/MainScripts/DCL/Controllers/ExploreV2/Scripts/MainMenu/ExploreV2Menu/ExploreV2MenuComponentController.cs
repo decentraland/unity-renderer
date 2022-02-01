@@ -35,7 +35,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal float chatInputHUDCloseTime = 0f;
     internal List<RealmRowComponentModel> currentAvailableRealms = new List<RealmRowComponentModel>();
 
-    internal RendererState rendererState => CommonScriptableObjects.rendererState;
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
     internal BaseVariable<int> currentSectionIndex => DataStore.i.exploreV2.currentSectionIndex;
     internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
@@ -60,18 +59,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void Initialize()
     {
-        // It waits for the world is up before starting to initialize the Start Menu
-        rendererState.OnChange += Initialize_Internal;
-        Initialize_Internal(rendererState.Get(), false);
-    }
-
-    internal void Initialize_Internal(bool currentRendererState, bool previousRendererState)
-    {
-        if (!currentRendererState)
-            return;
-
-        rendererState.OnChange -= Initialize_Internal;
-
         exploreV2Analytics = CreateAnalyticsController();
         view = CreateView();
         SetVisibility(false);
@@ -175,7 +162,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void Dispose()
     {
-        rendererState.OnChange -= Initialize_Internal;
         DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
         DataStore.i.realm.realmsInfo.OnSet -= UpdateAvailableRealmsInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
