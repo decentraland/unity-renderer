@@ -4,13 +4,6 @@ using UnityEngine;
 
 namespace DCL
 {
-    public interface IPhysicsSyncController
-    {
-        bool isDirty { get; }
-        void MarkDirty();
-        void Sync();
-    }
-
     public class PhysicsSyncController : IPhysicsSyncController
     {
         public bool isDirty { get; private set; } = false;
@@ -19,6 +12,9 @@ namespace DCL
         {
             Physics.autoSimulation = false;
             Physics.autoSyncTransforms = false;
+
+            PoolManager.i.OnGet -= MarkDirty;
+            PoolManager.i.OnGet += MarkDirty;
         }
 
         public void MarkDirty() { isDirty = true; }
@@ -30,6 +26,15 @@ namespace DCL
 
             isDirty = false;
             Physics.SyncTransforms();
+        }
+
+        public void Dispose()
+        {
+            PoolManager.i.OnGet -= MarkDirty;
+        }
+
+        public void Initialize()
+        {
         }
     }
 }

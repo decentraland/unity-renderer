@@ -76,12 +76,6 @@ public class PublishLandListView : ListView<LandWithAccess>
         Vector2Int rowsAndColum = BIWUtils.GetRowsAndColumsFromLand(land);
         PubllishLandListAdapter instanciatedAdapter = Instantiate(adapter, contentPanelTransform).GetComponent<PubllishLandListAdapter>();
         var status = rowsAndColum.x >= projectCols && rowsAndColum.y >= projectRows && BIWUtils.HasSquareSize(land) ? PubllishLandListAdapter.AdapterState.ENABLE : PubllishLandListAdapter.AdapterState.DISABLE;
-        // if (status == PubllishLandListAdapter.AdapterState.ENABLE && !selectedSet)
-        // {
-        //     status = PubllishLandListAdapter.AdapterState.SELECTED;
-        //     selectedSet = true;
-        //     OnLandSelected?.Invoke(land);
-        // }
 
         instanciatedAdapter.SetContent(land, status);
         instanciatedAdapter.OnLandSelected += SelectedLand;

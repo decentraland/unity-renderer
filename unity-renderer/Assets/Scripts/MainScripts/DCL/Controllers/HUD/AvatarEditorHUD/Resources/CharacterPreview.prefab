@@ -225,11 +225,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 3830021777958501345}
-  avatarRenderer: {fileID: 8922715421469685814}
   defaultEditingTemplate: {fileID: 2524994584819242542}
   faceEditingTemplate: {fileID: 7575988263520695659}
   faceSnapshotTemplate: {fileID: 7143330429815360873}
   bodySnapshotTemplate: {fileID: 4122678849617202556}
+  avatarContainer: {fileID: 6856622359626919856}
 --- !u!1 &5657874010593393711
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,7 +270,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6705057966129581724}
   - component: {fileID: 2150367651614698250}
-  - component: {fileID: 8922715421469685814}
   m_Layer: 15
   m_Name: AvatarRenderer
   m_TagString: Untagged
@@ -326,25 +325,6 @@ MonoBehaviour:
   target: {fileID: 6705057966129581724}
   runMinSpeed: 6
   walkMinSpeed: 0.1
---- !u!114 &8922715421469685814
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6856622359626919856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53a4f52c7cc5dc348ab140ed3238943a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultMaterial: {fileID: 2100000, guid: 77828a2ff3421ba42a6b4cc7e9a9061e, type: 2}
-  eyeMaterial: {fileID: 2100000, guid: fcfa021e0982c0840aaefe7411340f7f, type: 2}
-  eyebrowMaterial: {fileID: 2100000, guid: db9e974bee285614b8ea2d8832d1a563, type: 2}
-  mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
-  lodRenderer: {fileID: 0}
-  lodMeshFilter: {fileID: 0}
-  isLoading: 0
 --- !u!1 &8127486274469708600
 GameObject:
   m_ObjectHideFlags: 0

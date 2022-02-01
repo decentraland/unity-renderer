@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using DCL;
+using NSubstitute;
 using NSubstitute.ClearExtensions;
 using UnityEngine.TestTools;
 
@@ -7,37 +8,32 @@ namespace Tests
 {
     public class IntegrationTestSuite
     {
-        protected virtual WorldRuntimeContext CreateRuntimeContext() { return DCL.Tests.WorldRuntimeContextFactory.CreateMocked(); }
-
-        protected virtual PlatformContext CreatePlatformContext() { return DCL.Tests.PlatformContextFactory.CreateMocked(); }
-
-        protected virtual MessagingContext CreateMessagingContext()
+        protected virtual void InitializeServices(ServiceLocator serviceLocator)
         {
-            return DCL.Tests.MessagingContextFactory.CreateMocked();
         }
 
         [UnitySetUp]
         protected virtual IEnumerator SetUp()
         {
-            Environment.SetupWithBuilders(
-                messagingBuilder: CreateMessagingContext,
-                platformBuilder: CreatePlatformContext,
-                worldRuntimeBuilder: CreateRuntimeContext,
-                hudBuilder: HUDContextFactory.CreateDefault
-            );
+            DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
+            DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+            AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
+            PoolManager.enablePrewarm = false;
 
-            AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = double.MaxValue;
-
+            ServiceLocator serviceLocator = DCL.ServiceLocatorTestFactory.CreateMocked();
+            InitializeServices(serviceLocator);
+            Environment.Setup(serviceLocator);
             yield break;
         }
 
         [UnityTearDown]
         protected virtual IEnumerator TearDown()
         {
-            Environment.Dispose();
             PoolManager.i?.Dispose();
             DataStore.Clear();
-            yield break;
+
+            yield return null;
+            Environment.Dispose();
         }
     }
 }

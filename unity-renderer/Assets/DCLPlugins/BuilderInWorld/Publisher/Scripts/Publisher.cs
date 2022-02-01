@@ -212,7 +212,6 @@ namespace DCL.Builder
             {
                 progressController.DeployError(message);
             }
-
             string successString = isOk ? "Success" : message;
             BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
 

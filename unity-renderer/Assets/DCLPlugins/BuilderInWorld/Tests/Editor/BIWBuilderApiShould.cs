@@ -15,6 +15,7 @@ using Tests;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.TestTools;
+using Environment = System.Environment;
 
 public class BIWBuilderApiShould : IntegrationTestSuite
 {
@@ -22,13 +23,6 @@ public class BIWBuilderApiShould : IntegrationTestSuite
     private IWebRequestController mockedRequestController;
     private string baseURL;
     private GameObject gameObjectToDestroy;
-
-    protected override PlatformContext CreatePlatformContext()
-    {
-        mockedRequestController =  Substitute.For<IWebRequestController>();
-        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks( mockedRequestController
-        );
-    }
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
@@ -43,6 +37,8 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         var context = BIWTestUtils.CreateMockedContext();
         context.sceneReferences.Configure().biwBridgeGameObject.Returns(gameObjectToDestroy);
         apiController.Initialize(context);
+
+        mockedRequestController = DCL.Environment.i.platform.webRequest;
     }
 
     [UnityTearDown]

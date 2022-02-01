@@ -214,8 +214,8 @@ public class CarouselComponentViewTests
         Assert.IsTrue(allExtractedItems[1].transform.parent == null, "The parent of the item 1 extracted is not null.");
         Assert.IsTrue(carouselComponent.instantiatedItems.Count == 0, "The instantiated items list is not empty.");
 
-        Object.Destroy(testItem1);
-        Object.Destroy(testItem2);
+        Object.Destroy(testItem1.gameObject);
+        Object.Destroy(testItem2.gameObject);
     }
 
     [UnityTest]

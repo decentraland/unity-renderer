@@ -18,7 +18,7 @@ namespace DCL.Builder
             screenshotCamera = screenshotCameraGameObject.AddComponent<UnityEngine.Camera>();
             screenshotCamera.depth = -9999;
             screenshotCamera.gameObject.SetActive(false);
-
+            
             if (context.sceneReferences.cameraController != null && context.sceneReferences.cameraController.GetComponent<Camera.CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
                 freeCameraMovement = (FreeCameraMovement) cameraState;
         }
@@ -67,7 +67,7 @@ namespace DCL.Builder
             Texture2D sceneScreenshot = ScreenshotFromCamera(width, height);
             screenshotCamera.targetTexture = current;
             screenshotCamera.gameObject.SetActive(false);
-
+            
             callback?.Invoke(sceneScreenshot);
         }
 

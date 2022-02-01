@@ -530,5 +530,26 @@ namespace DCL.Helpers
             yield return new WaitForSeconds(delay);
             onFinishCallback.Invoke();
         }
+
+        public static string GetHierarchyPath(this Transform transform)
+        {
+            if (transform.parent == null)
+                return transform.name;
+            return $"{transform.parent.GetHierarchyPath()}/{transform.name}";
+        }
+
+        public static bool TryFindChildRecursively(this Transform transform, string name, out Transform foundChild)
+        {
+            foundChild = transform.Find(name);
+            if (foundChild != null)
+                return true;
+
+            foreach (Transform child in transform)
+            {
+                if (TryFindChildRecursively(child, name, out foundChild))
+                    return true;
+            }
+            return false;
+        }
     }
 }

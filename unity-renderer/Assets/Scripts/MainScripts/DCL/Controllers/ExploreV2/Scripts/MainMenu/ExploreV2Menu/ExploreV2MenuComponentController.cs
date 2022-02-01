@@ -2,6 +2,7 @@ using DCL;
 using DCL.Helpers;
 using ExploreV2Analytics;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,6 +13,8 @@ using Variables.RealmsInfo;
 /// </summary>
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
+    internal const float MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU = 0.1f;
+
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     internal RectTransform topMenuTooltipReference { get => view.currentTopMenuTooltipReference; }
     internal RectTransform placesAndEventsTooltipReference { get => view.currentPlacesAndEventsTooltipReference; }
@@ -26,6 +29,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
     internal IExploreV2Analytics exploreV2Analytics;
     internal ExploreSection currentOpenSection;
+    internal float controlsHUDCloseTime = 0f;
+    internal float emotesHUDCloseTime = 0f;
+    internal float playerInfoCardHUDCloseTime = 0f;
+    internal float chatInputHUDCloseTime = 0f;
+    internal List<RealmRowComponentModel> currentAvailableRealms = new List<RealmRowComponentModel>();
 
     internal RendererState rendererState => CommonScriptableObjects.rendererState;
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
@@ -44,6 +52,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> questVisible => DataStore.i.HUDs.questsPanelVisible;
     internal BaseVariable<bool> isSettingsPanelInitialized => DataStore.i.settings.isInitialized;
     internal BaseVariable<bool> settingsVisible => DataStore.i.settings.settingsPanelVisible;
+
+    internal BaseVariable<bool> controlsVisible => DataStore.i.HUDs.controlsVisible;
+    internal BaseVariable<bool> emotesVisible => DataStore.i.HUDs.emotesVisible;
+    internal BaseVariable<bool> chatInputVisible => DataStore.i.HUDs.chatInputVisible;
+    internal BooleanVariable playerInfoCardVisible => CommonScriptableObjects.playerInfoCardVisibleState;
 
     public void Initialize()
     {
@@ -66,9 +79,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.realm.playerRealm.OnChange += UpdateRealmInfo;
         UpdateRealmInfo(DataStore.i.realm.playerRealm.Get(), null);
 
+        DataStore.i.realm.realmsInfo.OnSet += UpdateAvailableRealmsInfo;
+        UpdateAvailableRealmsInfo(DataStore.i.realm.realmsInfo.Get());
+
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
         view.currentProfileCard.onClick?.AddListener(() => { profileCardIsOpen.Set(!profileCardIsOpen.Get()); });
+        view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
         view.OnCloseButtonPressed += OnCloseButtonPressed;
         view.OnAfterShowAnimation += OnAfterShowAnimation;
 
@@ -118,6 +135,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         IsSettingsPanelInitializedChanged(isSettingsPanelInitialized.Get(), false);
         settingsVisible.OnChange += SettingsVisibleChanged;
         SettingsVisibleChanged(settingsVisible.Get(), false);
+        
+        ConfigureOhterUIDependencies();
 
         isInitialized.Set(true);
     }
@@ -158,6 +177,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         rendererState.OnChange -= Initialize_Internal;
         DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
+        DataStore.i.realm.realmsInfo.OnSet -= UpdateAvailableRealmsInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view?.currentProfileCard.onClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
@@ -177,6 +197,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (view != null)
         {
+            view.currentProfileCard.onClick?.RemoveAllListeners();
+            view.currentRealmViewer.onLogoClick?.RemoveAllListeners();
             view.OnCloseButtonPressed -= OnCloseButtonPressed;
             view.OnAfterShowAnimation -= OnAfterShowAnimation;
             view.OnSectionOpen -= OnSectionOpen;
@@ -254,13 +276,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             view.GoToSection(ExploreSection.Explore);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Explore, true);
         }
         else if (currentOpenSection == ExploreSection.Explore)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Explore, false);
         }
     }
@@ -274,13 +306,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             view.GoToSection(ExploreSection.Backpack);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Backpack, true);
         }
         else if (currentOpenSection == ExploreSection.Backpack)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Backpack, false);
         }
     }
@@ -300,13 +342,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             view.GoToSection(ExploreSection.Map);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Map, true);
         }
         else if (currentOpenSection == ExploreSection.Map)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Map, false);
         }
     }
@@ -326,13 +378,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             view.GoToSection(ExploreSection.Builder);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Builder, true);
         }
         else if (currentOpenSection == ExploreSection.Builder)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Builder, false);
         }
     }
@@ -352,13 +414,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             view.GoToSection(ExploreSection.Quest);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Quest, true);
         }
         else if (currentOpenSection == ExploreSection.Quest)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Quest, false);
         }
     }
@@ -378,33 +450,37 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
             view.GoToSection(ExploreSection.Settings);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Settings, true);
         }
         else if (currentOpenSection == ExploreSection.Settings)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Settings, false);
         }
     }
 
     internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)
     {
-        // Get the name of the current realm
-        string currentRealmServer = currentRealm?.serverName;
-        string currentRealmLayer = currentRealm?.layer;
-        string formattedRealmName = currentRealmServer;
-        if (!string.IsNullOrEmpty(currentRealmLayer))
-        {
-            formattedRealmName = $"{formattedRealmName}-{currentRealmLayer}";
-        }
+        if (currentRealm == null)
+            return;
 
-        view.currentRealmViewer.SetRealm(formattedRealmName);
+        // Get the name of the current realm
+        view.currentRealmViewer.SetRealm(currentRealm.serverName);
+        view.currentRealmSelectorModal.SetCurrentRealm(currentRealm.serverName);
 
         // Calculate number of users in the current realm
         List<RealmModel> realmList = DataStore.i.realm.realmsInfo.Get()?.ToList();
-        RealmModel currentRealmModel = realmList?.FirstOrDefault(r => r.serverName == currentRealmServer && (r.layer == null || r.layer == currentRealmLayer));
+        RealmModel currentRealmModel = realmList?.FirstOrDefault(r => r.serverName == currentRealm.serverName);
         int realmUsers = 0;
         if (currentRealmModel != null)
             realmUsers = currentRealmModel.usersCount;
@@ -412,8 +488,58 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentRealmViewer.SetNumberOfUsers(realmUsers);
     }
 
+    internal void UpdateAvailableRealmsInfo(IEnumerable<RealmModel> currentRealmList)
+    {
+        if (!NeedToRefreshRealms(currentRealmList))
+            return;
+
+        currentAvailableRealms.Clear();
+        CurrentRealmModel currentRealm = DataStore.i.realm.playerRealm.Get();
+
+        if (currentRealmList != null)
+        {
+            foreach (RealmModel realmModel in currentRealmList)
+            {
+                RealmRowComponentModel realmToAdd = new RealmRowComponentModel
+                {
+                    name = realmModel.serverName,
+                    players = realmModel.usersCount,
+                    isConnected = realmModel.serverName == currentRealm?.serverName
+                };
+
+                currentAvailableRealms.Add(realmToAdd);
+            }
+        }
+
+        view.currentRealmSelectorModal.SetAvailableRealms(currentAvailableRealms);
+    }
+
+    internal bool NeedToRefreshRealms(IEnumerable<RealmModel> newRealmList)
+    {
+        if (newRealmList == null)
+            return true;
+
+        bool needToRefresh = false;
+        if (newRealmList.Count() == currentAvailableRealms.Count)
+        {
+            foreach (RealmModel realm in newRealmList)
+            {
+                if (!currentAvailableRealms.Exists(x => x.name == realm.serverName && x.players == realm.usersCount))
+                {
+                    needToRefresh = true;
+                    break;
+                }
+            }
+        }
+        else
+            needToRefresh = true;
+
+        return needToRefresh;
+    }
+
     internal void UpdateProfileInfo(UserProfile profile)
     {
+        view.currentProfileCard.SetIsClaimedName(profile.hasClaimedName);
         view.currentProfileCard.SetProfileName(profile.userName);
         view.currentProfileCard.SetProfileAddress(profile.ethAddress);
         view.currentProfileCard.SetProfilePicture(profile.face128SnapshotURL);
@@ -421,10 +547,61 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnCloseButtonPressed(bool fromShortcut)
     {
-        if (isOpen.Get())
+        if (!fromShortcut)
+        {
+            SetVisibility(false);
             exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
+        }
+        else
+        {
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
+            }
+            else
+            {
+                if (Time.realtimeSinceStartup - controlsHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU &&
+                    Time.realtimeSinceStartup - emotesHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU &&
+                    Time.realtimeSinceStartup - playerInfoCardHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU &&
+                    Time.realtimeSinceStartup - chatInputHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU)
+                {
+                    SetVisibility(true);
+                    exploreV2Analytics.SendStartMenuVisibility(true, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
+                }
+            }
+        }
+    }
 
-        SetVisibility(false);
+    internal void ConfigureOhterUIDependencies()
+    {
+        controlsHUDCloseTime = Time.realtimeSinceStartup;
+        controlsVisible.OnChange += (current, old) =>
+        {
+            if (!current)
+                controlsHUDCloseTime = Time.realtimeSinceStartup;
+        };
+
+        emotesHUDCloseTime = Time.realtimeSinceStartup;
+        emotesVisible.OnChange += (current, old) =>
+        {
+            if (!current)
+                emotesHUDCloseTime = Time.realtimeSinceStartup;
+        };
+
+        chatInputHUDCloseTime = Time.realtimeSinceStartup;
+        chatInputVisible.OnChange += (current, old) =>
+        {
+            if (!current)
+                chatInputHUDCloseTime = Time.realtimeSinceStartup;
+        };
+
+        playerInfoCardHUDCloseTime = Time.realtimeSinceStartup;
+        playerInfoCardVisible.OnChange += (current, old) =>
+        {
+            if (!current)
+                playerInfoCardHUDCloseTime = Time.realtimeSinceStartup;
+        };
     }
 
     internal virtual IExploreV2Analytics CreateAnalyticsController() => new ExploreV2Analytics.ExploreV2Analytics();

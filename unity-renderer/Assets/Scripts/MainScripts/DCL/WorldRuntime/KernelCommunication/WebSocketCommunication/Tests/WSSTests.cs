@@ -14,13 +14,7 @@ namespace Tests
     {
         protected override IEnumerator SetUp()
         {
-            Environment.SetupWithBuilders
-            (
-                MessagingContextFactory.CreateDefault,
-                PlatformContextFactory.CreateDefault,
-                WorldRuntimeContextFactory.CreateDefault,
-                HUDContextFactory.CreateDefault
-            );
+            Environment.Setup(ServiceLocatorFactory.CreateDefault());
             yield break;
         }
 
@@ -102,7 +96,7 @@ namespace Tests
                 Assert.IsTrue(DCL.Environment.i.world.state.loadedScenes[loadedSceneID] != null,
                     "Expected loadedScene found but was null!!!");
             }
-            
+
             // Use the Assert class to test conditions.
             // Use yield to skip a frame.
             yield return null;

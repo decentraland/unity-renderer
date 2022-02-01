@@ -20,7 +20,7 @@ namespace DCL.Builder
             ERROR = 3,
             SUCCESS = 4
         }
-
+        
         /// <summary>
         /// This action will be called when the confirm button is pressed
         /// </summary>
@@ -81,12 +81,12 @@ namespace DCL.Builder
         private const string ERROR_MAIN_TEXT = "The publication of your project has failed!";
         private const string SUCCESS_MAIN_TEXT = "Project successfully published!";
         private const string PUBLISHING_MAIN_TEXT = "Publishing";
-
+        
         // Sub titles
         private const string CONFIRM_SUB_TITLE_TEXT =  @"{0} will be deployed in {1},{2}";
         private const string PUBLISHING_SUB_TITLE_TEXT =  @"{0} is being deployed in {1},{2}";
         private const string SUCCESS_SUB_TITLE_TEXT =  @"{0} is now a live place in {1},{2} ready to be visited!";
-
+        
         public event Action OnPublishConfirmButtonPressed;
         public event Action OnViewClosed;
         public event Action OnBackPressed;
@@ -96,26 +96,24 @@ namespace DCL.Builder
         [SerializeField] internal TMP_Text subTitleTextView;
         [SerializeField] internal RawImage screenshotImage;
         [SerializeField] internal ModalComponentView modal;
-
+        
         [Header("Confirm Popup references")]
         [SerializeField] internal GameObject confirmGameObject;
         [SerializeField] internal Button noButton;
         [SerializeField] internal Button yesButton;
-
+        
         [Header("Publish Progress references")]
         [SerializeField] internal GameObject progressGameObject;
         [SerializeField] internal LoadingBar loadingBar;
-
         [Header("Error references")]
         [SerializeField] internal TMP_Text errorTextView;
         [SerializeField] internal GameObject errorGameObject;
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal Button retryButton;
-
+        
         [Header("Success references")]
         [SerializeField] internal Button okButton;
         [SerializeField] internal GameObject successGameObject;
-
         private IPublishProgressView.PublishStatus currentStatus;
         private float currentProgress = 0;
         private Coroutine fakeProgressCoroutine;
@@ -149,7 +147,7 @@ namespace DCL.Builder
 
             if (fakeProgressCoroutine != null)
                 StopCoroutine(fakeProgressCoroutine);
-
+            
             modal.OnCloseAction -= Close;
         }
 
@@ -160,7 +158,7 @@ namespace DCL.Builder
             confirmGameObject.SetActive(false);
             progressGameObject.SetActive(false);
             modal.CanBeCancelled(true);
-
+            
             switch (currentStatus)
             {
                 case IPublishProgressView.PublishStatus.CONFIRM:
@@ -211,7 +209,7 @@ namespace DCL.Builder
         {
             mainTitleTextView.text = PUBLISHING_MAIN_TEXT;
             subTitleTextView.text = GetConfirmSubtitleText(PUBLISHING_SUB_TITLE_TEXT);
-
+            
             currentProgress = 0;
             modal.CanBeCancelled(false);
             progressGameObject.SetActive(true);
@@ -225,14 +223,13 @@ namespace DCL.Builder
         {
             mainTitleTextView.text = SUCCESS_MAIN_TEXT;
             subTitleTextView.text = GetConfirmSubtitleText(SUCCESS_SUB_TITLE_TEXT);
-
+            
             successGameObject.SetActive(true);
         }
-
+        
         public void ShowPublishError()
         {
             mainTitleTextView.text = ERROR_MAIN_TEXT;
-
             errorGameObject.SetActive(true);
         }
 

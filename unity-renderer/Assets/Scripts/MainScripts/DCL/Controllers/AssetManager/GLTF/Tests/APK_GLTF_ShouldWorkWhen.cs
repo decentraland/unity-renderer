@@ -20,13 +20,14 @@ namespace AssetPromiseKeeper_GLTF_Tests
         {
             yield return base.SetUp();
             contentProvider = new ContentProvider();
-            keeper.throttlingCounter.budgetPerFrameInMilliseconds = float.MaxValue;
+            keeper.throttlingCounter.enabled = false;
         }
 
         protected override AssetPromise_GLTF CreatePromise()
         {
             string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             var prom = new AssetPromise_GLTF(contentProvider, url);
+            prom.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
             return prom;
         }
     }

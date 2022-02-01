@@ -87,8 +87,6 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         if (newProjectFlowController.IsActive())
             newProjectFlowController.Hide();
-        else
-            OnClose();
     }
 
     public void Dispose()
