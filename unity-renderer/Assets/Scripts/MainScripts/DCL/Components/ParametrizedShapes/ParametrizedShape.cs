@@ -199,31 +199,34 @@ namespace DCL.Components
 
         private void RemoveRendereableFromDataStore(IDCLEntity entity)
         {
-            if ( attachedRendereables.ContainsKey(entity) )
-            {
-                DataStore.i.sceneWorldObjects.RemoveRendereable(entity, attachedRendereables[entity]);
-                attachedRendereables.Remove(entity);
-            }
+            if (!attachedRendereables.ContainsKey(entity))
+                return;
+
+            DataStore.i.sceneWorldObjects.RemoveRendereable(entity, attachedRendereables[entity]);
+            attachedRendereables.Remove(entity);
         }
 
         private void AddRendereableToDataStore(IDCLEntity entity)
         {
+            if (attachedRendereables.ContainsKey(entity))
+                return;
+
             int triangleCount = currentMesh.triangles.Length;
 
             var newRendereable = new Rendereable()
             {
-                renderers = new List<Renderer>(entity.meshesInfo.renderers),
+                renderers = new HashSet<Renderer>(entity.meshesInfo.renderers),
                 container = entity.meshRootGameObject,
                 totalTriangleCount = triangleCount,
-                meshes = new List<Mesh>() { currentMesh },
+                meshes = new HashSet<Mesh>() { currentMesh },
                 meshToTriangleCount = new Dictionary<Mesh, int>() { { currentMesh, triangleCount } }
             };
 
-            if ( !attachedRendereables.ContainsKey(entity) )
-            {
-                attachedRendereables.Add(entity, newRendereable);
-                DataStore.i.sceneWorldObjects.AddRendereable(entity, newRendereable);
-            }
+            newRendereable.materials = MeshesInfoUtils.ExtractUniqueMaterials(newRendereable.renderers);
+            newRendereable.textures = MeshesInfoUtils.ExtractUniqueTextures(newRendereable.materials);
+
+            attachedRendereables.Add(entity, newRendereable);
+            DataStore.i.sceneWorldObjects.AddRendereable(entity, newRendereable);
         }
     }
 }

@@ -26,8 +26,16 @@ namespace DCL
             return collection[obj];
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public bool Add(object obj)
         {
+            if ( obj == null )
+                return false;
+
             if (!collection.ContainsKey(obj))
             {
                 collection.Add(obj, 1);
@@ -38,8 +46,16 @@ namespace DCL
             return false;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public bool Remove(object obj)
         {
+            if ( obj == null )
+                return true;
+
             if (!collection.ContainsKey(obj))
                 return true;
 
@@ -119,6 +135,7 @@ namespace DCL
         private RefCountedMetric uniqueMaterials = new RefCountedMetric();
         private RefCountedMetric uniqueMeshes = new RefCountedMetric();
         private RefCountedMetric uniqueEntities = new RefCountedMetric();
+        private int entityCount => scene.entities.Count;
 
         public SceneMetricsCounter(IParcelScene sceneOwner)
         {
@@ -224,6 +241,9 @@ namespace DCL
             SceneMetricsModel limits = ComputeSceneLimits();
             SceneMetricsModel usage = modelValue;
 
+            // Workaround for the issue of adding entities without rendereables.
+            usage.entities = entityCount;
+
             if (usage.triangles > limits.triangles)
                 return false;
 
@@ -250,9 +270,12 @@ namespace DCL
             if (excludedEntities.Contains(entityId))
                 excludedEntities.Remove(entityId);
 
-            foreach ( var rend in entityMetrics[entityId].rendereables )
+            if (entityMetrics.ContainsKey(entityId))
             {
-                AddTrackedRendereable( rend );
+                foreach ( var rend in entityMetrics[entityId].rendereables )
+                {
+                    AddTrackedRendereable( rend );
+                }
             }
 
             UpdateUniqueMetrics();
@@ -263,9 +286,12 @@ namespace DCL
             if (!excludedEntities.Contains(entityId))
                 excludedEntities.Add(entityId);
 
-            foreach ( var rend in entityMetrics[entityId].rendereables )
+            if (entityMetrics.ContainsKey(entityId))
             {
-                RemoveTrackedRendereable( rend );
+                foreach ( var rend in entityMetrics[entityId].rendereables )
+                {
+                    RemoveTrackedRendereable( rend );
+                }
             }
 
             UpdateUniqueMetrics();
