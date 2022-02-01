@@ -207,6 +207,22 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         }
 
         [Test]
+        public void ChangeCameraFOVCorrectly() 
+        {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<FOVControlController>();
+            settingController.Initialize();
+
+            // Act
+            float newValue = 90f;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "Camera FOV stored value mismatch");
+            Assert.AreEqual(firstPersonCamera.m_Lens.FieldOfView, newValue, "1st person camera FOV value mismatch");
+        }
+
+        [Test]
         public void ChangeFPSLimitCorrectly()
         {
             // Arrange

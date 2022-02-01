@@ -56,6 +56,10 @@ namespace DCL.SettingsCommon
         [Range(40, 500)]
         public float cameraDrawDistance;
 
+        [Tooltip("Camera FOV")]
+        [Range(50, 100)]
+        public float cameraFOV;
+
         [Tooltip("Enable bloom post process")] public bool bloom;
 
         [Tooltip("Enable 30 FPS capping for more stable framerate")]

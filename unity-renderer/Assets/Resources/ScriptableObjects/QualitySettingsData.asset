@@ -22,9 +22,9 @@ MonoBehaviour:
     softShadows: 0
     shadowResolution: 256
     cameraDrawDistance: 100
+    cameraFOV: 60
     bloom: 0
     fpsCap: 1
-    colorGrading: 1
     shadowDistance: 45
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 85
@@ -39,9 +39,9 @@ MonoBehaviour:
     softShadows: 1
     shadowResolution: 1024
     cameraDrawDistance: 150
+    cameraFOV: 60
     bloom: 1
     fpsCap: 1
-    colorGrading: 1
     shadowDistance: 60
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 50
@@ -56,9 +56,9 @@ MonoBehaviour:
     softShadows: 1
     shadowResolution: 2048
     cameraDrawDistance: 250
+    cameraFOV: 60
     bloom: 1
     fpsCap: 0
-    colorGrading: 1
     shadowDistance: 70
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 50
@@ -73,9 +73,9 @@ MonoBehaviour:
     softShadows: 1
     shadowResolution: 4096
     cameraDrawDistance: 500
+    cameraFOV: 60
     bloom: 1
     fpsCap: 0
-    colorGrading: 1
     shadowDistance: 100
     enableDetailObjectCulling: 0
     detailObjectCullingLimit: 0
