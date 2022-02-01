@@ -20,6 +20,7 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal VoiceChatButton voiceChatButton;
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
+    [SerializeField] internal TaskbarButton experiencesButton;
     [SerializeField] internal ChatHeadGroupView chatHeadsGroup;
 
     [Header("Right Side Config")]
@@ -44,12 +45,15 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action OnChatToggleOff;
     public event System.Action OnFriendsToggleOn;
     public event System.Action OnFriendsToggleOff;
+    public event System.Action OnExperiencesToggleOn;
+    public event System.Action OnExperiencesToggleOff;
 
     internal List<TaskbarButton> GetButtonList()
     {
         var taskbarButtonList = new List<TaskbarButton>();
         taskbarButtonList.Add(chatButton);
         taskbarButtonList.Add(friendsButton);
+        taskbarButtonList.Add(experiencesButton);
         taskbarButtonList.AddRange(chatHeadsGroup.chatHeads);
 
         using (var iterator = activePortableExperienceItems.GetEnumerator())
@@ -79,12 +83,14 @@ public class TaskbarHUDView : MonoBehaviour
         ShowBar(true, true);
         chatButton.transform.parent.gameObject.SetActive(false);
         friendsButton.transform.parent.gameObject.SetActive(false);
+        experiencesButton.transform.parent.gameObject.SetActive(false);
         voiceChatButtonPlaceholder.SetActive(false);
         voiceChatButton.gameObject.SetActive(false);
 
         chatHeadsGroup.Initialize(chatController, friendsController);
         chatButton.Initialize();
         friendsButton.Initialize();
+        experiencesButton.Initialize();
 
         chatHeadsGroup.OnHeadToggleOn += OnWindowToggleOn;
         chatHeadsGroup.OnHeadToggleOff += OnWindowToggleOff;
@@ -94,6 +100,9 @@ public class TaskbarHUDView : MonoBehaviour
 
         friendsButton.OnToggleOn += OnWindowToggleOn;
         friendsButton.OnToggleOff += OnWindowToggleOff;
+
+        experiencesButton.OnToggleOn += OnWindowToggleOn;
+        experiencesButton.OnToggleOff += OnWindowToggleOff;
 
         portableExperiencesPool = PoolManager.i.AddPool(
             PORTABLE_EXPERIENCE_ITEMS_POOL,
@@ -112,6 +121,8 @@ public class TaskbarHUDView : MonoBehaviour
             OnFriendsToggleOff?.Invoke();
         else if (obj == chatButton)
             OnChatToggleOff?.Invoke();
+        else if (obj == experiencesButton)
+            OnExperiencesToggleOff?.Invoke();
         else
         {
             using (var iterator = activePortableExperienceItems.GetEnumerator())
@@ -155,6 +166,8 @@ public class TaskbarHUDView : MonoBehaviour
             OnFriendsToggleOn?.Invoke();
         else if (obj == chatButton)
             OnChatToggleOn?.Invoke();
+        else if (obj == experiencesButton)
+            OnExperiencesToggleOn?.Invoke();
         else
         {
             using (var iterator = activePortableExperienceItems.GetEnumerator())
@@ -187,6 +200,8 @@ public class TaskbarHUDView : MonoBehaviour
     internal void OnAddChatWindow() { chatButton.transform.parent.gameObject.SetActive(true); }
 
     internal void OnAddFriendsWindow() { friendsButton.transform.parent.gameObject.SetActive(true); }
+
+    internal void OnAddExperiencesWindow() { experiencesButton.transform.parent.gameObject.SetActive(true); }
 
     internal void OnAddVoiceChat()
     {
@@ -224,6 +239,12 @@ public class TaskbarHUDView : MonoBehaviour
         {
             friendsButton.OnToggleOn -= OnWindowToggleOn;
             friendsButton.OnToggleOff -= OnWindowToggleOff;
+        }
+
+        if (experiencesButton != null)
+        {
+            experiencesButton.OnToggleOn -= OnWindowToggleOn;
+            experiencesButton.OnToggleOff -= OnWindowToggleOff;
         }
     }
 

@@ -38,6 +38,9 @@ public class TaskbarHUDController : IHUD
 
     public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
 
+    internal BaseVariable<Transform> isExperiencesViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
+    internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
+
     protected internal virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(this, chatController, friendsController); }
 
     public void Initialize(
@@ -73,6 +76,8 @@ public class TaskbarHUDController : IHUD
         view.OnChatToggleOn += View_OnChatToggleOn;
         view.OnFriendsToggleOff += View_OnFriendsToggleOff;
         view.OnFriendsToggleOn += View_OnFriendsToggleOn;
+        view.OnExperiencesToggleOff += View_OnExperiencesToggleOff;
+        view.OnExperiencesToggleOn += View_OnExperiencesToggleOn;
 
         toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
         toggleFriendsTrigger.OnTriggered -= ToggleFriendsTrigger_OnTriggered;
@@ -108,6 +113,9 @@ public class TaskbarHUDController : IHUD
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
         DataStore.i.builderInWorld.showTaskBar.OnChange += SetVisibility;
+
+        isExperiencesViewerInitialized.OnChange += InitializeExperiencesViewer;
+        InitializeExperiencesViewer(isExperiencesViewerInitialized.Get(), null);
     }
 
     private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindowHud.SetVisibility(false); }
@@ -119,6 +127,14 @@ public class TaskbarHUDController : IHUD
     }
 
     private void View_OnFriendsToggleOff() { friendsHud?.SetVisibility(false); }
+
+    private void View_OnExperiencesToggleOn()
+    {
+        isExperiencesViewerOpen.Set(true);
+        OnAnyTaskbarButtonClicked?.Invoke();
+    }
+
+    private void View_OnExperiencesToggleOff() { isExperiencesViewerOpen.Set(false); }
 
     private void ToggleFriendsTrigger_OnTriggered(DCLAction_Trigger action)
     {
@@ -282,6 +298,16 @@ public class TaskbarHUDController : IHUD
         friendsHud.view.friendsList.OnDeleteConfirmation += (userIdToRemove) => { view.chatHeadsGroup.RemoveChatHead(userIdToRemove); };
     }
 
+    internal void InitializeExperiencesViewer(Transform currentViewTransform, Transform previousViewTransform)
+    {
+        if (currentViewTransform == null)
+            return;
+
+        currentViewTransform.SetParent(view.leftWindowContainer, false);
+
+        view.OnAddExperiencesWindow();
+    }
+
     public void OnAddVoiceChat() { view.OnAddVoiceChat(); }
 
     public void DisableFriendsWindow()
@@ -309,6 +335,8 @@ public class TaskbarHUDController : IHUD
             view.OnChatToggleOn -= View_OnChatToggleOn;
             view.OnFriendsToggleOff -= View_OnFriendsToggleOff;
             view.OnFriendsToggleOn -= View_OnFriendsToggleOn;
+            view.OnExperiencesToggleOff -= View_OnExperiencesToggleOff;
+            view.OnExperiencesToggleOn -= View_OnExperiencesToggleOn;
 
             UnityEngine.Object.Destroy(view.gameObject);
         }
