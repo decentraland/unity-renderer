@@ -142,6 +142,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     internal void InitializeNavigationEvents(bool isGuest)
     {
+        if (arePanelsInitialized)
+            return;
         for (int i = 0; i < navigationInfos.Length; i++)
         {
             InitializeNavigationInfo(navigationInfos[i]);
