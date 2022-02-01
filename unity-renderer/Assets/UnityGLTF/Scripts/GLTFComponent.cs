@@ -100,6 +100,7 @@ namespace UnityGLTF
         private Settings settings;
 
         private  CancellationTokenSource ctokenSource;
+        private bool isDestroyed;
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
@@ -283,18 +284,22 @@ namespace UnityGLTF
                             sceneImporter = null;
                         }
                     }
-
-                    if (!token.IsCancellationRequested)
+                    
+                    if (!isDestroyed)
                     {
-                        if ( state == State.COMPLETED)
-                            OnFinishedLoadingAsset?.Invoke();
-                        else
-                            OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
+                        if (!token.IsCancellationRequested)
+                        {
+                            if ( state == State.COMPLETED)
+                                OnFinishedLoadingAsset?.Invoke();
+                            else
+                                OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
+                        }
+                    
+                        CleanUp();
+                        Destroy(loadingPlaceholder);
+                        Destroy(this);
+                        isDestroyed = true;
                     }
-
-                    Destroy(loadingPlaceholder);
-                    Destroy(this);
-                    CleanUp();
                 }
             }
             else
@@ -378,6 +383,9 @@ namespace UnityGLTF
             if (isQuitting)
                 return;
 #endif
+            isDestroyed = true;
+            CleanUp();
+            
             if (state != State.COMPLETED)
             {
                 ctokenSource.Cancel();
