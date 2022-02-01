@@ -57,9 +57,6 @@ public class AvatarEditorHUDController : IHUD
         this.userProfile = userProfile;
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
 
-        LoadUserProfile(userProfile, true);
-        this.userProfile.OnUpdate += LoadUserProfile;
-
         view = AvatarEditorHUDView.Create(this);
 
         avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
@@ -77,6 +74,8 @@ public class AvatarEditorHUDController : IHUD
 
         SetCatalog(catalog);
 
+        LoadUserProfile(userProfile, true);
+        this.userProfile.OnUpdate += LoadUserProfile;
 
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
     }
