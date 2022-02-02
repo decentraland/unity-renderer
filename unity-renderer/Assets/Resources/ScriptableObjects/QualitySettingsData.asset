@@ -22,7 +22,6 @@ MonoBehaviour:
     softShadows: 0
     shadowResolution: 256
     cameraDrawDistance: 100
-    cameraFOV: 50
     bloom: 0
     fpsCap: 1
     shadowDistance: 45
@@ -39,7 +38,6 @@ MonoBehaviour:
     softShadows: 1
     shadowResolution: 1024
     cameraDrawDistance: 150
-    cameraFOV: 55
     bloom: 1
     fpsCap: 1
     shadowDistance: 60
@@ -56,7 +54,6 @@ MonoBehaviour:
     softShadows: 1
     shadowResolution: 2048
     cameraDrawDistance: 250
-    cameraFOV: 60
     bloom: 1
     fpsCap: 0
     shadowDistance: 70
@@ -73,7 +70,6 @@ MonoBehaviour:
     softShadows: 1
     shadowResolution: 4096
     cameraDrawDistance: 500
-    cameraFOV: 70
     bloom: 1
     fpsCap: 0
     shadowDistance: 100
