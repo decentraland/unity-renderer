@@ -2,6 +2,7 @@ using DCL;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public interface IExperiencesViewerComponentView
 {
@@ -10,15 +11,33 @@ public interface IExperiencesViewerComponentView
     /// </summary>
     event Action onCloseButtonPressed;
 
+    /// <summary>
+    /// It will be triggered when the UI visibility of some experience changes.
+    /// </summary>
     event Action<string, bool> onSomeExperienceUIVisibilityChanged;
 
+    /// <summary>
+    /// It will be triggered when the execution of some experience changes.
+    /// </summary>
     event Action<string, bool> onSomeExperienceExecutionChanged;
 
     /// <summary>
-    /// Set the available realms component with a list of realms.
+    /// Set the available experiences component with a list of experiences.
     /// </summary>
-    /// <param name="realms">List of realms (model) to be loaded.</param>
-    void SetAvailableExperiences(List<ExperienceRowComponentModel> realms);
+    /// <param name="experiences">List of experiences (model) to be loaded.</param>
+    void SetAvailableExperiences(List<ExperienceRowComponentModel> experiences);
+
+    /// <summary>
+    /// Add an experience into the available experiences component.
+    /// </summary>
+    /// <param name="experience">Experience to add.</param>
+    void AddAvailableExperience(ExperienceRowComponentModel experience);
+
+    /// <summary>
+    /// Remove an experience from the available experiences component.
+    /// </summary>
+    /// <param name="id">Experience id to remove.</param>
+    void RemoveAvailableExperience(string id);
 
     /// <summary>
     /// Shows/Hides the game object of the Experiences Viewer.
@@ -38,6 +57,8 @@ public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesVie
     [Header("Prefab References")]
     [SerializeField] internal ButtonComponentView closeButton;
     [SerializeField] internal GridContainerComponentView availableExperiences;
+    public Color rowsBackgroundColor;
+    public Color rowsOnHoverColor;
 
     public event Action onCloseButtonPressed;
     public event Action<string, bool> onSomeExperienceUIVisibilityChanged;
@@ -67,16 +88,33 @@ public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesVie
         List<BaseComponentView> experiencesToAdd = new List<BaseComponentView>();
         foreach (ExperienceRowComponentModel exp in experiences)
         {
-            ExperienceRowComponentView newRealmRow = experiencesPool.Get().gameObject.GetComponent<ExperienceRowComponentView>();
-            newRealmRow.Configure(exp);
-            newRealmRow.onShowPEXUI -= OnSomeExperienceUIVisibilityChanged;
-            newRealmRow.onShowPEXUI += OnSomeExperienceUIVisibilityChanged;
-            newRealmRow.onStartPEX -= OnSomeExperienceExecutionChanged;
-            newRealmRow.onStartPEX += OnSomeExperienceExecutionChanged;
-            experiencesToAdd.Add(newRealmRow);
+            AddAvailableExperience(exp);
         }
+    }
 
-        availableExperiences.SetItems(experiencesToAdd);
+    public void AddAvailableExperience(ExperienceRowComponentModel experience)
+    {
+        experience.backgroundColor = rowsBackgroundColor;
+        experience.onHoverColor = rowsOnHoverColor;
+
+        ExperienceRowComponentView newRealmRow = experiencesPool.Get().gameObject.GetComponent<ExperienceRowComponentView>();
+        newRealmRow.Configure(experience);
+        newRealmRow.onShowPEXUI -= OnSomeExperienceUIVisibilityChanged;
+        newRealmRow.onShowPEXUI += OnSomeExperienceUIVisibilityChanged;
+        newRealmRow.onStartPEX -= OnSomeExperienceExecutionChanged;
+        newRealmRow.onStartPEX += OnSomeExperienceExecutionChanged;
+
+        availableExperiences.AddItem(newRealmRow);
+    }
+
+    public void RemoveAvailableExperience(string id)
+    {
+        ExperienceRowComponentView experienceToRemove = availableExperiences.GetItems()
+            .Select(x => x as ExperienceRowComponentView)
+            .FirstOrDefault(x => x.model.id == id);
+
+        if (experienceToRemove != null)
+            availableExperiences.RemoveItem(experienceToRemove);
     }
 
     public void SetVisible(bool isActive) { gameObject.SetActive(isActive); }
