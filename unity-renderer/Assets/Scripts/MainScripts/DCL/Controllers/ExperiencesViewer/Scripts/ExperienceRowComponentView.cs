@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,30 +6,26 @@ using UnityEngine.UI;
 public interface IExperienceRowComponentView
 {
     /// <summary>
-    /// Event that will be triggered when the Show PEX UI button is clicked.
+    /// Event that will be triggered when the Show/Hide PEX UI button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onShowPEXUIClick { get; }
+    event Action<string, bool> onShowPEXUI;
 
     /// <summary>
-    /// Event that will be triggered when the Hide PEX UI button is clicked.
+    /// Event that will be triggered when the Start(Stop PEX button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onHidePEXUIClick { get; }
+    event Action<string, bool> onStartPEX;
 
     /// <summary>
-    /// Event that will be triggered when the Start PEX button is clicked.
+    /// Set the PEX id.
     /// </summary>
-    Button.ButtonClickedEvent onStartPEXClick { get; }
+    /// <param name="id">A string</param>
+    void SetId(string id);
 
     /// <summary>
-    /// Event that will be triggered when the Start PEX button is clicked.
+    /// Set an icon image from an uri.
     /// </summary>
-    Button.ButtonClickedEvent onStopPEXClick { get; }
-
-    /// <summary>
-    /// Set an icon from a 2D texture,
-    /// </summary>
-    /// <param name="texture">2D texture.</param>
-    void SetIcon(Texture2D texture);
+    /// <param name="uri">Url of the icon image.</param>
+    void SetIcon(string uri);
 
     /// <summary>
     /// Set the name label.
@@ -75,20 +72,18 @@ public class ExperienceRowComponentView : BaseComponentView, IExperienceRowCompo
     [Header("Configuration")]
     [SerializeField] internal ExperienceRowComponentModel model;
 
+    public event Action<string, bool> onShowPEXUI;
+    public event Action<string, bool> onStartPEX;
+
     internal Color originalBackgroundColor;
     internal Color onHoverColor;
-
-    public Button.ButtonClickedEvent onShowPEXUIClick => showPEXUIButton?.onClick;
-    public Button.ButtonClickedEvent onHidePEXUIClick => hidePEXUIButton?.onClick;
-    public Button.ButtonClickedEvent onStartPEXClick => startPEXButton?.onClick;
-    public Button.ButtonClickedEvent onStopPEXClick => stopPEXButton?.onClick;
 
     public override void Awake()
     {
         base.Awake();
 
         originalBackgroundColor = backgroundImage.color;
-        RefreshControl();
+        ConfigureRowButtons();
     }
 
     public void Configure(BaseComponentModel newModel)
@@ -102,7 +97,8 @@ public class ExperienceRowComponentView : BaseComponentView, IExperienceRowCompo
         if (model == null)
             return;
 
-        SetIcon(model.icon);
+        SetId(model.id);
+        SetIcon(model.iconUri);
         SetName(model.name);
         SetUIVisibility(model.isUIVisible);
         SetAsPlaying(model.isPlaying);
@@ -124,14 +120,19 @@ public class ExperienceRowComponentView : BaseComponentView, IExperienceRowCompo
         backgroundImage.color = originalBackgroundColor;
     }
 
-    public void SetIcon(Texture2D texture)
+    public void SetId(string id)
     {
-        model.icon = texture;
+        model.id = id;
+    }
+
+    public void SetIcon(string uri)
+    {
+        model.iconUri = uri;
 
         if (iconImage == null)
             return;
 
-        iconImage.SetImage(texture);
+        iconImage.SetImage(uri);
     }
 
     public void SetName(string name)
@@ -181,5 +182,39 @@ public class ExperienceRowComponentView : BaseComponentView, IExperienceRowCompo
     {
         model.onHoverColor = color;
         onHoverColor = color;
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        showPEXUIButton?.onClick.RemoveAllListeners();
+        hidePEXUIButton?.onClick.RemoveAllListeners();
+        startPEXButton?.onClick.RemoveAllListeners();
+        stopPEXButton?.onClick.RemoveAllListeners();
+    }
+
+    internal void ConfigureRowButtons()
+    {
+        showPEXUIButton?.onClick.AddListener(() =>
+        {
+            SetUIVisibility(true);
+            onShowPEXUI?.Invoke(model.id, true);
+        });
+        hidePEXUIButton?.onClick.AddListener(() =>
+        {
+            SetUIVisibility(false);
+            onShowPEXUI?.Invoke(model.id, false);
+        });
+        startPEXButton?.onClick.AddListener(() =>
+        {
+            SetAsPlaying(true);
+            onStartPEX?.Invoke(model.id, true);
+        });
+        stopPEXButton?.onClick.AddListener(() =>
+        {
+            SetAsPlaying(false);
+            onStartPEX?.Invoke(model.id, false);
+        });
     }
 }

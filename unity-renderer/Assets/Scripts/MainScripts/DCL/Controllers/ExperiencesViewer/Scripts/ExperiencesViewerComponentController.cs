@@ -19,8 +19,10 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
     {
         view = CreateView();
 
-        view.OnCloseButtonPressed += OnCloseButtonPressed;
-
+        view.onCloseButtonPressed += OnCloseButtonPressed;
+        view.onSomeExperienceUIVisibilityChanged += OnSomeExperienceUIVisibilityChanged;
+        view.onSomeExperienceExecutionChanged += OnSomeExperienceExecutionChanged;
+        
         isOpen.OnChange += IsOpenChanged;
         IsOpenChanged(isOpen.Get(), false);
 
@@ -35,10 +37,27 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
 
     public void Dispose()
     {
+        if (view != null)
+        {
+            view.onCloseButtonPressed -= OnCloseButtonPressed;
+            view.onSomeExperienceUIVisibilityChanged -= OnSomeExperienceUIVisibilityChanged;
+            view.onSomeExperienceExecutionChanged -= OnSomeExperienceExecutionChanged;
+        }
+
         isOpen.OnChange -= IsOpenChanged;
     }
 
     internal void OnCloseButtonPressed() { SetVisibility(false); }
+
+    private void OnSomeExperienceUIVisibilityChanged(string pexId, bool isVisible)
+    {
+        
+    }
+
+    private void OnSomeExperienceExecutionChanged(string pexId, bool isPlaying)
+    {
+        
+    }
 
     internal void IsOpenChanged(bool current, bool previous) { SetVisibility(current); }
 

@@ -286,7 +286,7 @@ MonoBehaviour:
   stopPEXButton: {fileID: 5938951239643202907}
   backgroundImage: {fileID: 7325696701227709463}
   model:
-    icon: {fileID: 2800000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    iconUri: 
     name: Experience 01
     isUIVisible: 0
     isPlaying: 0
@@ -975,21 +975,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5577526729248553953}
     m_Modifications:
-    - target: {fileID: 4936655407855709455, guid: 4849d2ed3b5a18948bf3cd46256869a4,
-        type: 3}
-      propertyPath: model.sprite
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4936655407855709455, guid: 4849d2ed3b5a18948bf3cd46256869a4,
-        type: 3}
-      propertyPath: model.texture
-      value: 
-      objectReference: {fileID: 2800000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
-    - target: {fileID: 5573392751968575400, guid: 4849d2ed3b5a18948bf3cd46256869a4,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 6302203761313059702, guid: 4849d2ed3b5a18948bf3cd46256869a4,
         type: 3}
       propertyPath: m_Pivot.x

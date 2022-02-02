@@ -4,7 +4,8 @@ using UnityEngine;
 [Serializable]
 public class ExperienceRowComponentModel : BaseComponentModel
 {
-    public Texture2D icon;
+    public string id;
+    public string iconUri;
     public string name;
     public bool isUIVisible;
     public bool isPlaying;
