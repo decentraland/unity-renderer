@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
+using DCL;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
@@ -12,6 +14,8 @@ public class AvatarEditorHUDView : MonoBehaviour
     private const string VIEW_OBJECT_NAME = "_AvatarEditorHUD";
 
     public bool isOpen { get; private set; }
+
+    internal bool arePanelsInitialized = false;
 
     [System.Serializable]
     public class AvatarEditorNavigationInfo
@@ -109,6 +113,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         }
 
         isOpen = false;
+        arePanelsInitialized = false;
     }
 
     private void Initialize(AvatarEditorHUDController controller)
@@ -119,7 +124,6 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         randomizeButton.onClick.AddListener(OnRandomizeButton);
         doneButton.onClick.AddListener(OnDoneButton);
-        InitializeNavigationEvents();
         InitializeWearableChangeEvents();
 
         web3GoToMarketplaceButton.onClick.RemoveAllListeners();
@@ -136,30 +140,38 @@ public class AvatarEditorHUDView : MonoBehaviour
         noWeb3Container.SetActive(!isWeb3User);
     }
 
-    private void InitializeNavigationEvents()
+    internal void InitializeNavigationEvents(bool isGuest)
     {
+        if (arePanelsInitialized)
+            return;
+
         for (int i = 0; i < navigationInfos.Length; i++)
         {
             InitializeNavigationInfo(navigationInfos[i]);
         }
-
-        InitializeNavigationInfo(collectiblesNavigationInfo);
-
+        InitializeNavigationInfo(collectiblesNavigationInfo, !isGuest);
+        
         characterPreviewRotation.OnHorizontalRotation += characterPreviewController.Rotate;
+        arePanelsInitialized = true;
     }
 
-    private void InitializeNavigationInfo(AvatarEditorNavigationInfo current)
+    private void InitializeNavigationInfo(AvatarEditorNavigationInfo current, bool isActive) 
     {
         current.Initialize();
 
-        current.toggle.isOn = current.enabledByDefault;
+        current.toggle.isOn = isActive ? current.enabledByDefault : false;
+        current.canvas.gameObject.SetActive(isActive ? current.enabledByDefault : false);
 
-        current.canvas.gameObject.SetActive(current.enabledByDefault);
         current.toggle.onValueChanged.AddListener((on) =>
         {
             current.canvas.gameObject.SetActive(@on);
             characterPreviewController.SetFocus(current.focus);
         });
+    }
+
+    private void InitializeNavigationInfo(AvatarEditorNavigationInfo current)
+    {
+        InitializeNavigationInfo(current, true);
     }
 
     private void InitializeWearableChangeEvents()

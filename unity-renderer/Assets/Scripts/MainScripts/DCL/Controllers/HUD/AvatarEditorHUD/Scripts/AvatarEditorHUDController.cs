@@ -24,7 +24,7 @@ public class AvatarEditorHUDController : IHUD
     [NonSerialized]
     public bool bypassUpdateAvatarPreview = false;
 
-    private UserProfile userProfile;
+    internal UserProfile userProfile;
     private BaseDictionary<string, WearableItem> catalog;
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
     bool isPlayerRendererLoaded => DataStore.i.common.isPlayerRendererLoaded.Get();
@@ -208,6 +208,12 @@ public class AvatarEditorHUDController : IHUD
 
         if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
             return;
+
+        /*TODO: this has to be refactored, currently there is no other way of understanding if the user is a regular or a guest
+        *       due to the execution order of things. The init cannot be done below because that would mean to do it when the
+        *       menu is firstly opened
+        */
+        view.InitializeNavigationEvents(string.IsNullOrEmpty(userProfile.userName));
 
         CatalogController.wearableCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
 

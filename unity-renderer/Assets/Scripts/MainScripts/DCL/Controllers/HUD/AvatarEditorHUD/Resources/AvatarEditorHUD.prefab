@@ -1657,7 +1657,6 @@ MonoBehaviour:
   randomizeButton: {fileID: 1450360507441575512}
   randomizeAnimator: {fileID: 4292949885884074233}
   doneButton: {fileID: 8118935322395685570}
-  exitButton: {fileID: 0}
   loadingSpinnerGameObject: {fileID: 4028908633907793762}
   web3Container: {fileID: 233924306434789069}
   web3GoToMarketplaceButton: {fileID: 6975390227394394232}
