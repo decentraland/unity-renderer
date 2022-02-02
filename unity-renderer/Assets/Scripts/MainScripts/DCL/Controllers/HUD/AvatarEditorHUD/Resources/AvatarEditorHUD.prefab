@@ -1645,7 +1645,7 @@ MonoBehaviour:
   collectiblesNavigationInfo:
     toggle: {fileID: 1039268970838228618}
     canvas: {fileID: 7406321907236003421}
-    enabledByDefault: 0
+    enabledByDefault: 1
     focus: 0
   collectiblesItemSelector: {fileID: 5289564723011178695}
   skinColorSelector: {fileID: 3615833362840057512}
