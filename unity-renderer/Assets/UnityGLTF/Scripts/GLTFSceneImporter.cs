@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
@@ -19,6 +20,7 @@ using UnityEngine.Rendering;
 using UnityGLTF.Cache;
 using UnityGLTF.Extensions;
 using UnityGLTF.Loader;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using WaitUntil = UnityEngine.WaitUntil;
 #if !WINDOWS_UWP
@@ -920,7 +922,7 @@ namespace UnityGLTF
             GLTFHelpers.BuildAnimationSamplers(ref samplersByType);
         }
 
-        async UniTask ProcessCurves(Transform root, GameObject[] nodes, AnimationClip clip, GLTFAnimation animation, AnimationCacheData animationCache)
+        async UniTask ProcessCurves(Transform root, GameObject[] nodes, AnimationClip clip, GLTFAnimation animation, AnimationCacheData animationCache, CancellationToken cancellationToken)
         {
             foreach (AnimationChannel channel in animation.Channels)
             {
@@ -956,7 +958,7 @@ namespace UnityGLTF
                                 var position = data.AsVec3s[frame].ToUnityVector3Convert();
 
                                 return new float[] { position.x, position.y, position.z };
-                            });
+                            }, cancellationToken);
 
                         break;
 
@@ -973,6 +975,7 @@ namespace UnityGLTF
 
                                 return new float[] { quaternion.x, quaternion.y, quaternion.z, quaternion.w };
                             },
+                            cancellationToken,
                             // NOTE(Brian): Unity makes some conversion to eulers on AnimationClip.SetCurve
                             // that breaks the keyframe optimization.
                             optimizeKeyframes: false);
@@ -989,7 +992,7 @@ namespace UnityGLTF
                                 var scale = data.AsVec3s[frame];
 
                                 return new float[] { scale.x, scale.y, scale.z };
-                            });
+                            }, cancellationToken);
 
                         break;
 
@@ -1008,8 +1011,7 @@ namespace UnityGLTF
             clip.EnsureQuaternionContinuity();
         }
 
-        protected async UniTask SetAnimationCurve(
-            AnimationClip clip,
+        protected async UniTask SetAnimationCurve(AnimationClip clip,
             string relativePath,
             string[] propertyNames,
             NumericArray input,
@@ -1017,8 +1019,11 @@ namespace UnityGLTF
             InterpolationType mode,
             Type curveType,
             ValuesConvertion getConvertedValues,
+            CancellationToken cancellationToken,
             bool optimizeKeyframes = true)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var channelCount = propertyNames.Length;
             var frameCount = input.AsFloats.Length;
 
@@ -1079,7 +1084,9 @@ namespace UnityGLTF
                             SetTangentMode(keyframes[ci], i, mode);
                     }
                 }
-            });
+            }, cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (optimizeKeyframes)
             {
@@ -1089,7 +1096,9 @@ namespace UnityGLTF
                     {
                         keyframes[ci] = OptimizeKeyFrames(keyframes[ci]);
                     }
-                });
+                }, cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
 
                 // Setting the curves by the keyframe length order fixes weird index overrun issue:
                 // https://forum.unity.com/threads/animationutility-seteditorcurve-cant-add-curve-with-one-keyfram.247372/
@@ -1269,6 +1278,9 @@ namespace UnityGLTF
                 await ConstructMaterialImageBuffers(gltfMaterial, token);
             }
 
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             for (int i = 0; i < nodesWithMeshes.Count; i++)
             {
                 NodeId_Like nodeId = nodesWithMeshes[i];
@@ -1278,7 +1290,15 @@ namespace UnityGLTF
                     parent: _assetCache.NodeCache[nodeId.Id].transform,
                     meshId: node.Mesh.Id,
                     skin: node.Skin != null ? node.Skin.Value : null, token);
+
+                if ( stopWatch.ElapsedMilliseconds > 5)
+                {
+                    await UniTask.Yield();
+                    stopWatch.Restart();
+                }
             }
+
+            stopWatch.Stop();
 
             if (_gltfRoot.Animations != null && _gltfRoot.Animations.Count > 0)
             {
@@ -1297,7 +1317,7 @@ namespace UnityGLTF
 
                     AnimationClip clip = ConstructClip(i, out gltfAnimation, out animationCache);
 
-                    await ProcessCurves(CreatedObject.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache);
+                    await ProcessCurves(CreatedObject.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache, token);
 
                     clip.wrapMode = WrapMode.Loop;
 
@@ -1614,13 +1634,15 @@ namespace UnityGLTF
 
             _assetCache.MeshCache[meshId] ??= new MeshCacheData[mesh.Primitives.Count];
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             for (int i = 0; i < mesh.Primitives.Count; ++i)
             {
                 var primitive = mesh.Primitives[i];
-                int materialIndex = primitive.Material?.Id ?? -1;
 
-                // NOTE(Brian): Submesh loading
                 await ConstructMeshPrimitive(primitive, meshId, i, cancellationToken);
+                await ThrottleWatch(stopwatch, 5);
 
                 cancellationToken.ThrowIfCancellationRequested();
                 var primitiveObj = new GameObject("Primitive");
@@ -1648,6 +1670,7 @@ namespace UnityGLTF
                         if (HasBones(skin))
                         {
                             await SetupBones(skin, primitive, skinnedMeshRenderer, primitiveObj, curMesh, cancellationToken);
+                            await ThrottleWatch(stopwatch, 5);
                         }
 
                         OnRendererCreated?.Invoke(skinnedMeshRenderer);
@@ -1662,6 +1685,7 @@ namespace UnityGLTF
                     }
 
                     await ConstructPrimitiveMaterials(mesh, meshId, i, cancellationToken);
+                    await ThrottleWatch(stopwatch, 5);
                 }
                 else
                 {
@@ -1688,6 +1712,8 @@ namespace UnityGLTF
 
                         break;
                 }
+
+                stopwatch.Restart();
             }
         }
 
@@ -1747,11 +1773,13 @@ namespace UnityGLTF
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await TaskUtils.RunThrottledCoroutine(
+                /*await TaskUtils.RunThrottledCoroutine(
                                    ConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData),
                                    exception => throw exception,
                                    throttlingCounter.EvaluateTimeBudget)
-                               .AttachExternalCancellation(cancellationToken);
+                               .AttachExternalCancellation(cancellationToken);*/
+
+                await AsyncConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData);
             }
         }
 
@@ -1885,14 +1913,6 @@ namespace UnityGLTF
             await UniTask.WhenAll(tasks);
         }
 
-        private async UniTask SkipFrameIfDepletedTimeBudget()
-        {
-            if (!skipFrameIfDepletedTimeBudget.keepWaiting)
-                return;
-
-            await UniTask.WaitUntil(() => !skipFrameIfDepletedTimeBudget.keepWaiting);
-        }
-
         protected IEnumerator ConstructUnityMesh(MeshConstructionData meshConstructionData, int meshId, int primitiveIndex, UnityMeshData unityMeshData)
         {
             MeshPrimitive primitive = meshConstructionData.Primitive;
@@ -1961,6 +1981,78 @@ namespace UnityGLTF
             mesh.boneWeights = unityMeshData.BoneWeights;
 
             yield return skipFrameIfDepletedTimeBudget;
+
+            if (!hasNormals)
+                mesh.RecalculateNormals();
+
+            if ( !Application.isPlaying )
+                mesh.Optimize();
+
+            OnMeshCreated?.Invoke(mesh);
+
+            if (forceGPUOnlyMesh)
+            {
+                Physics.BakeMesh(mesh.GetInstanceID(), false);
+                mesh.UploadMeshData(true);
+            }
+        }
+
+        private async UniTask ThrottleWatch(Stopwatch watch, long limit)
+        {
+            if (watch.ElapsedMilliseconds > limit)
+            {
+                watch.Restart();
+                await  UniTask.Yield();
+            }
+        }
+        private async UniTask AsyncConstructUnityMesh(MeshConstructionData meshConstructionData, int meshId, int primitiveIndex, UnityMeshData unityMeshData)
+        {
+            var stopwatch = new Stopwatch();
+            MeshPrimitive primitive = meshConstructionData.Primitive;
+            int vertexCount = (int) primitive.Attributes[SemanticProperties.POSITION].Value.Count;
+            bool hasNormals = unityMeshData.Normals != null;
+
+            Mesh mesh = new Mesh
+            {
+#if UNITY_2017_3_OR_NEWER
+                indexFormat = vertexCount > 65535 ? IndexFormat.UInt32 : IndexFormat.UInt16,
+#endif
+            };
+
+            _assetCache.MeshCache[meshId][primitiveIndex].LoadedMesh = mesh;
+
+            mesh.vertices = unityMeshData.Vertices;
+            await ThrottleWatch(stopwatch, 1);
+            mesh.normals = unityMeshData.Normals;
+            await ThrottleWatch(stopwatch, 1);
+            mesh.uv = unityMeshData.Uv1;
+            await ThrottleWatch(stopwatch, 1);
+            mesh.uv2 = unityMeshData.Uv2;
+            await ThrottleWatch(stopwatch, 1);
+            mesh.uv3 = unityMeshData.Uv3;
+            await ThrottleWatch(stopwatch, 1);
+            mesh.uv4 = unityMeshData.Uv4;
+            await ThrottleWatch(stopwatch, 1);
+            mesh.colors = unityMeshData.Colors;
+
+            if ( !Application.isPlaying )
+            {
+                if (AreMeshTrianglesValid(unityMeshData.Triangles, vertexCount)) // Some scenes contain broken meshes that can trigger a fatal error
+                {
+                    mesh.triangles = unityMeshData.Triangles;
+                }
+                else
+                {
+                    Debug.Log("GLTFSceneImporter - ERROR - ConstructUnityMesh - Couldn't assign triangles to mesh as there are indices pointing to vertices out of bounds");
+                }
+            }
+            else
+            {
+                mesh.triangles = unityMeshData.Triangles;
+            }
+
+            mesh.tangents = unityMeshData.Tangents;
+            mesh.boneWeights = unityMeshData.BoneWeights;
 
             if (!hasNormals)
                 mesh.RecalculateNormals();
@@ -2259,7 +2351,7 @@ namespace UnityGLTF
             else
             {
                 await ConstructImage(settings, image, sourceId, cancellationToken);
-                
+
                 cancellationToken.ThrowIfCancellationRequested();
 
                 if (_assetCache.ImageCache[sourceId] == null)
