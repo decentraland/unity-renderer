@@ -53,10 +53,11 @@ public class WearableItem
 
     private readonly string[] skinImplicitCategories =
     {
-        WearableLiterals.Categories.EYES,
+        // TODO: this is not supported by the new avatar renderer system and can cause problems
+        // WearableLiterals.Categories.EYES,
+        // WearableLiterals.Categories.MOUTH,
+        // WearableLiterals.Categories.EYEBROWS,
         WearableLiterals.Categories.HAIR,
-        WearableLiterals.Categories.MOUTH,
-        WearableLiterals.Categories.EYEBROWS,
         WearableLiterals.Categories.UPPER_BODY,
         WearableLiterals.Categories.LOWER_BODY,
         WearableLiterals.Categories.FEET,
