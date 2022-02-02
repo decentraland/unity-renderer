@@ -74,6 +74,9 @@ public class EntityInformationController : IEntityInformationController
 
     public void Dispose()
     {
+        if (entityInformationView == null)
+            return;
+        
         if (entityInformationView.position != null)
             entityInformationView.position.OnChanged -= PositionChanged;
 

@@ -214,6 +214,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             BIWUtils.ShowGenericNotification(DUPLICATE_PROJECT_ERROR + errorString);
         });
     }
+    
     private async void DuplicateProject(ProjectData data, Manifest manifest)
     {
         string url = BIWUrlUtils.GetBuilderProjecThumbnailUrl(data.id, data.thumbnail);
@@ -247,6 +248,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         await createPromise;
         await screenshotPromise;
 
+        // We need to wait a bit before refreshing the projects so the server is able to process the data 
         CoroutineStarter.Start(WaitASecondAndRefreshProjects());
     }
 
