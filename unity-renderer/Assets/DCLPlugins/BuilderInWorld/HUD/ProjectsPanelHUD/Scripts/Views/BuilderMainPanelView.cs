@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DCL.Builder;
 
 namespace DCL.Builder
 {
@@ -17,6 +18,7 @@ namespace DCL.Builder
         void SetTogglOnWithoutNotify(SectionId sectionId);
         void SetMainLeftPanel();
         void SetProjectSettingsLeftPanel();
+        void ShowToast(string text);
         SceneCardView GetSceneCardViewPrefab();
         ProjectCardView GetProjectCardView();
         Transform GetSectionContainer();
@@ -43,6 +45,7 @@ namespace DCL.Builder
         [SerializeField] internal InputAction_Trigger closeTrigger;
         [SerializeField] internal GameObject guestModeGameObject;
         [SerializeField] internal GameObject sectionGameObject;
+        [SerializeField] internal Toast toastView;
 
         [Header("Left-Panel Section Buttons")]
         [SerializeField] internal LeftMenuButtonToggleView[] sectionToggles;
@@ -186,6 +189,12 @@ namespace DCL.Builder
             }
         }
 
+        public void ShowToast(string text)
+        {
+            toastView.SetText(text);
+            toastView.Show(false);
+        }
+        
         private void CloseTriggerOnOnTriggered(DCLAction_Trigger action) { OnBackPressed?.Invoke(); }
 
         void ISceneListener.SetScenes(Dictionary<string, ISceneCardView> scenes) { scenesCount = scenes.Count; }

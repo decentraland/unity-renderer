@@ -23,7 +23,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     private const string PUBLISH_PROJECT_ERROR = "Error publishing the project: ";
 
     private const string DELETE_PROJECT_ERROR = "Error deleting the project: ";
-    private const string DELETE_PROJECT_SUCCESS = "Project deleted: ";
+    private const string DELETE_PROJECT_SUCCESS = "<b>{0}</b> has been deleted";
 
     private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
@@ -290,7 +290,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
                    {
                        if (isOk)
                        {
-                           BIWUtils.ShowGenericNotification(DELETE_PROJECT_SUCCESS + data.title);
+                           string text = DELETE_PROJECT_SUCCESS.Replace("{0}", data.title);
+                           view.ShowToast(text);
                            FetchProjectData();
                        }
                    });
