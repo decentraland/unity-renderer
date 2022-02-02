@@ -63,6 +63,7 @@ namespace UnityGLTF.Loader
 
         public void LoadStreamSync(string jsonFilePath) { throw new NotImplementedException(); }
 
+        private static int awaitCount = 0;
         private async UniTask CreateHTTPRequest(string rootUri, string httpRequestPath, CancellationToken token)
         {
             string finalUrl = httpRequestPath;
@@ -80,12 +81,8 @@ namespace UnityGLTF.Loader
                 requestAttemps: 3);
 
             Assert.IsNotNull(asyncOp, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
-
-            await TaskUtils.Run( async () =>
-            {
-                while (asyncOp.keepWaiting && !asyncOp.isDone && !asyncOp.isDisposed)
-                    await UniTask.WaitForEndOfFrame();
-            }, cancellationToken: token);
+            
+            await asyncOp.asyncOp;
             
             token.ThrowIfCancellationRequested();
             

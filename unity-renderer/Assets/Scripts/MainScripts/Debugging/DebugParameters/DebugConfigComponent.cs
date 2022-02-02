@@ -92,6 +92,7 @@ namespace DCL
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
             DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
             DataStore.i.performance.multithreading.Set(multithreaded);
+            Texture.allowThreadedTextureCreation = multithreaded;
         }
 
         private void Start()

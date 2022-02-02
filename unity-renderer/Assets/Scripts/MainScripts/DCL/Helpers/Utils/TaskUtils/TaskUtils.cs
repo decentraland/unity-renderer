@@ -2,20 +2,20 @@ using System;
 using System.Collections;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 
 namespace DCL.Helpers
 {
     public static class TaskUtils
     {
         private static BaseVariable<bool> multithreading => DataStore.i.performance.multithreading;
-        public static async UniTask Run(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
+        public static async UniTask Run(Action action, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             if (multithreading.Get())
             {
-                await UniTask.RunOnThreadPool(action, configureAwait, cancellationToken);
+                await UniTask.RunOnThreadPool(action, true, cancellationToken);
+                await UniTask.SwitchToMainThread();
             }
             else
             {
@@ -26,13 +26,14 @@ namespace DCL.Helpers
             cancellationToken.ThrowIfCancellationRequested();
         }
 
-        public static async UniTask Run(Func<UniTask> action, bool configureAwait = true, CancellationToken cancellationToken = default)
+        public static async UniTask Run(Func<UniTask> action, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             if (multithreading.Get())
             {
-                await UniTask.RunOnThreadPool(action, configureAwait, cancellationToken);
+                await UniTask.RunOnThreadPool(action, true, cancellationToken);
+                await UniTask.SwitchToMainThread();
             }
             else
             {
