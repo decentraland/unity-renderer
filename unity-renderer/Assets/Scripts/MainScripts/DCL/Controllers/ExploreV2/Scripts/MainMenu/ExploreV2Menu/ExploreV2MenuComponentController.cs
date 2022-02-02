@@ -122,7 +122,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         IsSettingsPanelInitializedChanged(isSettingsPanelInitialized.Get(), false);
         settingsVisible.OnChange += SettingsVisibleChanged;
         SettingsVisibleChanged(settingsVisible.Get(), false);
-
+        
         ConfigureOhterUIDependencies();
 
         isInitialized.Set(true);
