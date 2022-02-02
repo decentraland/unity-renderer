@@ -215,7 +215,7 @@ MonoBehaviour:
     soloSceneCoords: {x: 0, y: 0}
     ignoreGlobalScenes: 0
     msgStepByStep: 0
-  openBrowserWhenStart: 1
+  openBrowserWhenStart: 0
   webSocketSSL: 0
   kernelVersion: 
   useCustomContentServer: 0
@@ -232,6 +232,8 @@ MonoBehaviour:
   builderInWorld: 0
   enableProceduralSkybox: 0
   soloScene: 0
+  multithreaded: 1
+  disableTextureCompress: 0
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:

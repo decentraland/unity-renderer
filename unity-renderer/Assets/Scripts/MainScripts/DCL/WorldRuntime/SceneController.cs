@@ -5,13 +5,14 @@ using DCL.Models;
 using DCL.Configuration;
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
-using Newtonsoft.Json;
+using JetBrains.Annotations;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace DCL
 {
@@ -42,8 +43,7 @@ namespace DCL
 
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
-            if (deferredMessagesDecoding) // We should be able to delete this code
-                deferredDecodingCoroutine = CoroutineStarter.Start(DeferredDecoding());
+            SetupDeferredRunners();
 
             DCLCharacterController.OnCharacterMoved += SetPositionDirty;
 
@@ -52,22 +52,37 @@ namespace DCL
             // TODO(Brian): Move this later to Main.cs
             if ( !EnvironmentSettings.RUNNING_TESTS )
             {
-                if (prewarmSceneMessagesPool)
-                {
-                    for (int i = 0; i < SCENE_MESSAGES_PREWARM_COUNT; i++)
-                    {
-                        sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene());
-                    }
-                }
+                PrewarmSceneMessagesPool();
+            }
 
-                if (prewarmEntitiesPool)
+            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+        }
+        private void SetupDeferredRunners()
+        {
+#if UNITY_WEBGL
+            deferredDecodingCoroutine = CoroutineStarter.Start(DeferredDecodingAndEnqueue());
+#else
+            CancellationToken tokenSourceToken = tokenSource.Token;
+            //CoroutineStarter.Start(DeferredEnqueue());
+            // TaskUtils.Run(async () => await ThreadedDeferredEnqueue(tokenSourceToken), cancellationToken: tokenSourceToken).Forget();
+            TaskUtils.Run(async () => await ThreadedDeferredDecoding(tokenSourceToken), cancellationToken: tokenSourceToken).Forget();
+#endif
+        }
+        private void PrewarmSceneMessagesPool()
+        {
+            if (prewarmSceneMessagesPool)
+            {
+                for (int i = 0; i < SCENE_MESSAGES_PREWARM_COUNT; i++)
                 {
-                    PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
+                    sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene());
                 }
             }
 
-            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
-            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+            if (prewarmEntitiesPool)
+            {
+                PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
+            }
         }
 
         private void OnDebugModeSet(bool current, bool previous)
@@ -91,8 +106,8 @@ namespace DCL
             tokenSource.Dispose();
             loadingFeedbackController.Dispose();
 
-            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
-            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
             PoolManager.i.OnGet -= Environment.i.platform.physicsSyncController.MarkDirty;
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
@@ -145,7 +160,9 @@ namespace DCL
 #endif
         public bool deferredMessagesDecoding { get; set; } = false;
 
-        Queue<string> payloadsToDecode = new Queue<string>();
+        readonly ConcurrentQueue<string> chunksToDecode = new ConcurrentQueue<string>();
+        private readonly ConcurrentQueue<QueuedSceneMessage_Scene> messagesToProcess = new ConcurrentQueue<QueuedSceneMessage_Scene>();
+
         const float MAX_TIME_FOR_DECODE = 0.005f;
 
         public bool ProcessMessage(QueuedSceneMessage_Scene msgObject, out CustomYieldInstruction yieldInstruction)
@@ -348,59 +365,17 @@ namespace DCL
             PhysicsCast.i.Query(raycastQuery);
         }
 
-        public void SendSceneMessage(string payload)
+        public void SendSceneMessage(string chunk)
         {
-            SendSceneMessage(payload, deferredMessagesDecoding).Forget();
-        }
+            var renderer = CommonScriptableObjects.rendererState.Get();
 
-        private async UniTaskVoid SendSceneMessage(string payload, bool enqueue)
-        {
-            string[] chunks = payload.Split(new [] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            bool renderState = CommonScriptableObjects.rendererState.Get();
-            int count = chunks.Length;
-
-            if (renderState && enqueue)
+            if (!renderer)
             {
-                for (int i = 0; i < count; i++)
-                {
-                    payloadsToDecode.Enqueue(chunks[i]);
-                }
+                EnqueueChunk(chunk);
             }
             else
             {
-                //threaded
-                QueuedSceneMessage_Scene[] messages = new QueuedSceneMessage_Scene[count];
-
-                for (int i = 0; i < count; i++)
-                {
-                    messages[i] = GetEmptySceneMessage();
-                }
-
-                await TaskUtils.Run( () =>
-                {
-                    for (int i = 0; i < count; i++)
-                    {
-                        messages[i] = Decode(chunks[i], messages[i]);
-                    }
-                }, cancellationToken: tokenSource.Token);
-                
-                BatchEnqueue(messages);
-            }
-        }
-        
-        private QueuedSceneMessage_Scene GetEmptySceneMessage() { return sceneMessagesPool.Count > 0 ? sceneMessagesPool.Dequeue() : new QueuedSceneMessage_Scene(); }
-
-        //  todo: Throttle me!
-        private void BatchEnqueue(QueuedSceneMessage_Scene[] messages)
-        {
-            int messagesLength = messages.Length;
-
-            for (int i = 0; i < messagesLength; i++)
-            {
-                QueuedSceneMessage_Scene message = messages[i];
-
-                if (message != null)
-                    EnqueueSceneMessage(message);
+                chunksToDecode.Enqueue(chunk);
             }
         }
 
@@ -409,10 +384,10 @@ namespace DCL
             ProfilingEvents.OnMessageDecodeStart?.Invoke("Misc");
 
             if (!MessageDecoder.DecodePayloadChunk(payload,
-                out string sceneId,
-                out string message,
-                out string messageTag,
-                out PB_SendSceneMessage sendSceneMessage))
+                    out string sceneId,
+                    out string message,
+                    out string messageTag,
+                    out PB_SendSceneMessage sendSceneMessage))
             {
                 return null;
             }
@@ -424,7 +399,8 @@ namespace DCL
             return queuedMessage;
         }
 
-        private IEnumerator DeferredDecoding()
+        [UsedImplicitly]
+        private IEnumerator DeferredDecodingAndEnqueue()
         {
             float start = Time.realtimeSinceStartup;
             float maxTimeForDecode;
@@ -433,19 +409,113 @@ namespace DCL
             {
                 maxTimeForDecode = CommonScriptableObjects.rendererState.Get() ? MAX_TIME_FOR_DECODE : float.MaxValue;
 
-                if (payloadsToDecode.Count > 0)
+                if (chunksToDecode.Count > 0)
                 {
-                    string payload = payloadsToDecode.Dequeue();
+                    if (chunksToDecode.TryDequeue(out string chunk))
+                    {
+                        EnqueueChunk(chunk);
 
-                    EnqueueSceneMessage(Decode(payload, GetEmptySceneMessage()));
-
-                    if (Time.realtimeSinceStartup - start < maxTimeForDecode)
-                        continue;
+                        if (Time.realtimeSinceStartup - start < maxTimeForDecode)
+                            continue;
+                    }
                 }
 
                 yield return null;
 
                 start = Time.unscaledTime;
+            }
+        }
+        private void EnqueueChunk(string chunk)
+        {
+            string[] payloads = chunk.Split(new [] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var count = payloads.Length;
+
+            for (int i = 0; i < count; i++)
+            {
+                bool availableMessage = sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene freeMessage);
+
+                if (availableMessage)
+                {
+                    EnqueueSceneMessage(Decode(payloads[i], freeMessage));
+                }
+                else
+                {
+                    EnqueueSceneMessage(Decode(payloads[i], new QueuedSceneMessage_Scene()));
+                }
+            }
+        }
+
+        // Note (Pato): is this the best way to thread a permanent decoder?
+        private async UniTask ThreadedDeferredDecoding(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                try
+                {
+                    if (chunksToDecode.Count > 0)
+                    {
+                        await TaskUtils.Run( () => ThreadedDecode(cancellationToken), cancellationToken: cancellationToken);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }   
+                
+                await UniTask.Yield();
+            }
+        }
+        private void ThreadedDecode(CancellationToken cancellationToken)
+        {
+            while (chunksToDecode.TryDequeue(out string chunk))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                string[] payloads = chunk.Split(new [] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                var count = payloads.Length;
+
+                for (int i = 0; i < count; i++)
+                {
+                    var payload = payloads[i];
+                    bool availableMessage = sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene freeMessage);
+
+                    if (availableMessage)
+                    {
+                        //messagesToProcess.Enqueue(Decode(payload, freeMessage));a
+                        EnqueueSceneMessage(Decode(payload, freeMessage));
+                    }
+                    else
+                    {
+                        //messagesToProcess.Enqueue(Decode(payload, new QueuedSceneMessage_Scene()));
+                        EnqueueSceneMessage(Decode(payload, new QueuedSceneMessage_Scene()));
+                    }
+                }
+            }
+        }
+
+        private IEnumerator DeferredEnqueue()
+        {
+            while (!tokenSource.IsCancellationRequested)
+            {
+                while (messagesToProcess.TryDequeue(out QueuedSceneMessage_Scene message) && !tokenSource.IsCancellationRequested)
+                {
+                    EnqueueSceneMessage(message);
+                }
+
+                yield return null;
+            }
+        }
+
+        private async UniTask ThreadedDeferredEnqueue(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                while (messagesToProcess.TryDequeue(out QueuedSceneMessage_Scene message) && !tokenSource.IsCancellationRequested)
+                {
+                    EnqueueSceneMessage(message);
+                }
+
+                await UniTask.Yield();
             }
         }
 
@@ -887,7 +957,7 @@ namespace DCL
 
         //======================================================================
 
-        public Queue<QueuedSceneMessage_Scene> sceneMessagesPool { get; } = new Queue<QueuedSceneMessage_Scene>();
+        public ConcurrentQueue<QueuedSceneMessage_Scene> sceneMessagesPool { get; } = new ConcurrentQueue<QueuedSceneMessage_Scene>();
 
         public bool prewarmSceneMessagesPool { get; set; } = true;
         public bool prewarmEntitiesPool { get; set; } = true;

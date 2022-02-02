@@ -73,6 +73,9 @@ namespace DCL
 
         public void Enqueue(QueuedSceneMessage message, QueueMode queueMode = QueueMode.Reliable)
         {
+            if (message == null)
+                throw new Exception("A null message?");
+            
             bool enqueued = true;
 
             // When removing an entity we have to ensure that the enqueued lossy messages after it are processed and not replaced
@@ -163,7 +166,16 @@ namespace DCL
 
             while (enabled && pendingMessagesCount > 0 && Time.realtimeSinceStartup - startTime < timeBudget)
             {
-                QueuedSceneMessage m = pendingMessages.First.Value;
+                LinkedListNode<QueuedSceneMessage> pendingMessagesFirst = pendingMessages.First;
+
+                // Note (Kinerius): This may be caused by 2 threads fighting for messages
+                if (pendingMessagesFirst == null)
+                {
+                    pendingMessagesCount = 0;
+                    continue;
+                }
+                
+                QueuedSceneMessage m = pendingMessagesFirst.Value;
 
                 RemoveFirstReliableMessage();
 
