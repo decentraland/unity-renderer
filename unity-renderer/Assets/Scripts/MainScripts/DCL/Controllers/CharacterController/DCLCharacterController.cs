@@ -252,7 +252,7 @@ public class DCLCharacterController : MonoBehaviour
 
     internal void LateUpdate()
     {
-        deltaTime = Mathf.Min(deltaTimeCap, Time.deltaTime);
+        deltaTime = Time.deltaTime;//Mathf.Min(deltaTimeCap, Time.deltaTime);
 
         if (transform.position.y < minimumYPosition)
         {

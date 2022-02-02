@@ -78,7 +78,7 @@ public class FreeMovementController : MonoBehaviour
             velocity += forwardTarget * speed;
             CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
 
-            characterController.Move(velocity * deltaTime);
+            characterController.Move(velocity * Time.deltaTime);
         }
 
         return velocity;
