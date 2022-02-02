@@ -15,7 +15,6 @@ namespace DCL.SettingsCommon
         private const string SHADOW_DISTANCE = "shadowDistance";
         private const string CAMERA_DRAW_DISTANCE = "cameraDrawDistance";
         private const string DETAIL_OBJECT_CULLING_LIMIT = "detailObjectCullingLimit";
-        private const string CAMERA_FOV = "cameraFOV";
         private const string ANTI_ALIASING = "antiAliasing";
         private const string BASE_RESOLUTION = "baseResolution";
         private const string SHADOW_RESOLUTION = "shadowResolution";
@@ -62,7 +61,6 @@ namespace DCL.SettingsCommon
             settingsByKey.SetFloat(SHADOW_DISTANCE, currentSettings.shadowDistance);
             settingsByKey.SetFloat(CAMERA_DRAW_DISTANCE, currentSettings.cameraDrawDistance);
             settingsByKey.SetFloat(DETAIL_OBJECT_CULLING_LIMIT, currentSettings.detailObjectCullingLimit);
-            settingsByKey.SetFloat(CAMERA_FOV, currentSettings.cameraFOV);
             settingsByKey.SetEnum(ANTI_ALIASING, currentSettings.antiAliasing);
             settingsByKey.SetEnum(BASE_RESOLUTION, currentSettings.baseResolution);
             settingsByKey.SetEnum(SHADOW_RESOLUTION, currentSettings.shadowResolution);
@@ -89,7 +87,6 @@ namespace DCL.SettingsCommon
                 settings.shadowDistance = settingsByKey.GetFloat(SHADOW_DISTANCE, defaultSettings.shadowDistance);
                 settings.cameraDrawDistance = settingsByKey.GetFloat(CAMERA_DRAW_DISTANCE, defaultSettings.cameraDrawDistance);
                 settings.detailObjectCullingLimit = settingsByKey.GetFloat(DETAIL_OBJECT_CULLING_LIMIT, defaultSettings.detailObjectCullingLimit);
-                settings.cameraFOV = settingsByKey.GetFloat(CAMERA_FOV, defaultSettings.cameraFOV);
                 settings.antiAliasing = settingsByKey.GetEnum(ANTI_ALIASING, defaultSettings.antiAliasing);
                 settings.baseResolution = settingsByKey.GetEnum(BASE_RESOLUTION, defaultSettings.baseResolution);
                 settings.shadowResolution = settingsByKey.GetEnum(SHADOW_RESOLUTION, defaultSettings.shadowResolution);

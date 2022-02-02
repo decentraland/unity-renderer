@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace DCL.SettingsCommon
 {
@@ -20,5 +21,9 @@ namespace DCL.SettingsCommon
         public bool showAvatarNames;
         public bool dynamicProceduralSkybox;
         public float skyboxTime;
+
+        [Tooltip("First person camera FOV")]
+        [Range(50, 80)]
+        public float firstPersonCameraFOV;
     }
 }
