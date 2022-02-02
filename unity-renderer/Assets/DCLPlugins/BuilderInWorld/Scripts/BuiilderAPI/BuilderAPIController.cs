@@ -305,6 +305,7 @@ public class BuilderAPIController : IBuilderAPIController
                     manifest = JsonConvert.DeserializeObject<Manifest>(result);
                     fullNewProjectPromise.Resolve(manifest);
                 }
+                // Sometimes the API respond that OK but the data is empty so we need to check that 
                 else if (x["data"].HasValues && x["data"].First["version"] != null)
                 {
                     APIResponse response = JsonConvert.DeserializeObject<APIResponse>(result);
