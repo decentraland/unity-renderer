@@ -10,10 +10,10 @@ namespace AvatarAssets_Test
 
         private readonly string[] skinImplicitHideList =
         {
-            WearableLiterals.Categories.EYES,
+            // WearableLiterals.Categories.EYES,
+            // WearableLiterals.Categories.MOUTH,
+            // WearableLiterals.Categories.EYEBROWS,
             WearableLiterals.Categories.HAIR,
-            WearableLiterals.Categories.MOUTH,
-            WearableLiterals.Categories.EYEBROWS,
             WearableLiterals.Categories.UPPER_BODY,
             WearableLiterals.Categories.LOWER_BODY,
             WearableLiterals.Categories.FEET,
