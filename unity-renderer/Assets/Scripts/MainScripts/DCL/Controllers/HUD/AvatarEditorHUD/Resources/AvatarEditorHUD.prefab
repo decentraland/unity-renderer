@@ -1033,7 +1033,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cfb6394cc153446eacda7327b3db852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetImage: {fileID: 0}
+  targetImage: {fileID: 7844101360987254928}
   onColor: {r: 1, g: 0.45490196, b: 0.22352941, a: 1}
   offColor: {r: 0.08627451, g: 0.08235294, b: 0.09411765, a: 1}
 --- !u!1 &2102600130718894042
@@ -6788,7 +6788,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Group
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 3150290543200916218}
     - target: {fileID: 1830841025121393311, guid: 64db3989e888c4ffaa3213f1189ee958,
         type: 3}
       propertyPath: m_Pivot.x
@@ -7688,7 +7688,7 @@ PrefabInstance:
     - target: {fileID: 5176895287733378623, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b, type: 3}
