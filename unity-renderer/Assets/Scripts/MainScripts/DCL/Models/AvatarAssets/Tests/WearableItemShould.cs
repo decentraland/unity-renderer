@@ -42,6 +42,15 @@ namespace AvatarAssets_Test
             ThenHideListIs(hides.Concat(customHides).Distinct(), hides);
         }
 
+        [Test]
+        public void HidesAllCategoriesWhenIsSkin()
+        {
+            var wearable = GivenSkinWearable(null);
+
+            foreach (var category in skinImplicitHideList)
+                Assert.IsTrue(wearable.DoesHide(category, BODY_SHAPE));
+        }
+
         private WearableItem GivenSkinWearable(string[] customHides)
         {
             var wearable = new WearableItem

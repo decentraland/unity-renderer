@@ -316,6 +316,9 @@ public class AvatarEditorHUDController : IHUD
             }
             else
             {
+                if (IsTryingToReplaceSkin(wearable))
+                    UnequipWearable(model.GetWearable(WearableLiterals.Categories.SKIN));
+                
                 var sameCategoryEquipped = model.GetWearable(wearable.data.category);
                 if (sameCategoryEquipped != null)
                     UnequipWearable(sameCategoryEquipped);
@@ -700,9 +703,19 @@ public class AvatarEditorHUDController : IHUD
         var isWearingSkinAlready = model.wearables.Any(item => item.IsSkin());
         return wearable.IsSkin() && !isWearingSkinAlready;
     }
+
+    private bool IsTryingToReplaceSkin(WearableItem wearable)
+    {
+        return model.wearables.Any(skin =>
+        {
+            return skin.IsSkin()
+                   && skin.DoesHide(wearable.data.category, model.bodyShape.id);
+        });
+    }
     
     private bool ShouldShowReplaceOtherWearablesToast(WearableItem wearable)
     {
+        if (IsTryingToReplaceSkin(wearable)) return true;
         var toReplace = GetWearablesReplacedBy(wearable);
         if (wearable == null || toReplace.Count == 0) return false;
         if (model.wearables.Contains(wearable)) return false;
