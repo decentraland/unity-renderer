@@ -520,6 +520,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         }
         catch (Exception e)
         {
+            Debug.Log("Error setting the lands and scenes "+ e);
             landsesController.SetLands(lands);
             scenesViewController.SetScenes(new ISceneData[] { });
         }

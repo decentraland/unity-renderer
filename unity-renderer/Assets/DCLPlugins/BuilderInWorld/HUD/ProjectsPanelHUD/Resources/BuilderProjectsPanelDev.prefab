@@ -4527,7 +4527,7 @@ MonoBehaviour:
     avatarImage: {fileID: 4513147324902183127}
     authorNameText: {fileID: 338454054351000294}
     adminsMenuToggle: {fileID: 5161656191955093869}
-  sceneCardViewPrefab: {fileID: 6743010040785150304, guid: 0384d382f4cd14fd5b14515c7eb2d514,
+  sceneCardViewPrefab: {fileID: 6564871239669491174, guid: 081f8bcbbd6d7924794987447e2d0799,
     type: 3}
   projectCardView: {fileID: 1330318716352662649, guid: 35b8e45004f9e9c4d8acfdb873eeadba,
     type: 3}
@@ -7300,7 +7300,7 @@ PrefabInstance:
     - target: {fileID: 4442324750835086300, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_Padding.m_Left
-      value: 34
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4558219463554405914, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
@@ -7806,7 +7806,7 @@ PrefabInstance:
     - target: {fileID: 9100674442869307643, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 665.3301
+      value: 665.33
       objectReference: {fileID: 0}
     - target: {fileID: 9100674442869307643, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
@@ -7891,7 +7891,7 @@ PrefabInstance:
     - target: {fileID: 9213047372593995591, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 38.6512
+      value: 38
       objectReference: {fileID: 0}
     - target: {fileID: 9213047372593995591, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}

@@ -210,7 +210,7 @@ namespace DCL.Builder
             publishedGameObject.gameObject.SetActive(true);
             if (scenes.Count == 0)
             {
-                syncImage.enabled = false;
+                syncImage.gameObject.SetActive(false);
                 projectSyncTxt.text = NOT_PUBLISHED;
                 downButtonTransform.gameObject.SetActive(false);
             }
