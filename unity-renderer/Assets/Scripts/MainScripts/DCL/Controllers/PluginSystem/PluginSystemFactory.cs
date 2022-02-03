@@ -18,7 +18,6 @@ namespace DCL
             pluginSystem.RegisterWithFlag(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag(() => new PlacesAndEventsFeature(), "explorev2");
             pluginSystem.RegisterWithFlag(() => new SkyboxController(), "procedural_skybox");
-            pluginSystem.RegisterWithFlag(() => new SkinFeature(DataStore.i.common.isAvatarSkinsEnabled), "avatar_skins");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 
