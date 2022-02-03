@@ -347,7 +347,6 @@ public class DCLCharacterController : MonoBehaviour
         {
             SaveLateUpdateGroundTransforms();
         }
-
         OnUpdateFinish?.Invoke(Time.deltaTime);
     }
 
