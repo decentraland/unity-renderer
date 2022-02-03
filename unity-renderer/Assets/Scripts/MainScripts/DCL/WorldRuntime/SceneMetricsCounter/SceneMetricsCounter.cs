@@ -43,9 +43,9 @@ namespace DCL
             public HashSet<Rendereable> rendereables = new HashSet<Rendereable>();
         }
 
-        public event Action<ISceneMetricsCounter> OnMetricsUpdated;
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
+        public event Action<ISceneMetricsCounter> OnMetricsUpdated;
 
         private WorldSceneObjectsTrackingHelper sceneObjectsTrackingHelper;
         public DataStore_SceneMetrics data => DataStore.i.Get<DataStore_SceneMetrics>();
@@ -55,17 +55,10 @@ namespace DCL
 
         private HashSet<string> excludedEntities = new HashSet<string>();
 
-        SceneMetricsModel sceneLimits = null;
+        private SceneMetricsModel sceneLimits = new SceneMetricsModel();
+        private SceneMetricsModel modelValue = new SceneMetricsModel();
 
-        private SceneMetricsModel modelValue;
-
-        public ref readonly SceneMetricsModel model
-        {
-            get
-            {
-                return ref modelValue;
-            }
-        }
+        public SceneMetricsModel model => modelValue.Clone();
 
         public bool isDirty { get; private set; }
 
@@ -90,7 +83,6 @@ namespace DCL
 
             Assert.IsTrue( !string.IsNullOrEmpty(sceneId), "Scene must have an ID!" );
 
-            modelValue = new SceneMetricsModel();
             sceneObjectsTrackingHelper = new WorldSceneObjectsTrackingHelper(dataStore, sceneId);
         }
 
@@ -359,13 +351,15 @@ namespace DCL
             modelValue.textures = uniqueTextures.GetObjectsCount();
             modelValue.meshes = uniqueMeshes.GetObjectsCount();
             modelValue.entities = uniqueEntities.Count();
+
+            logger.Log($"Current metrics: {modelValue}");
         }
 
         private void UpdateWorstMetricsOffense()
         {
             if ( sceneLimits != null && data.worstMetricOffenseComputeEnabled.Get() )
             {
-                bool isOffending = model > sceneLimits;
+                bool isOffending = modelValue > sceneLimits;
 
                 if ( !isOffending )
                     return;

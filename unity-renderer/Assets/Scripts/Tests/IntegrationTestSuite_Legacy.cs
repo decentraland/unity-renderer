@@ -119,6 +119,9 @@ public class IntegrationTestSuite_Legacy
         AssetPromiseKeeper_GLTF.i?.Cleanup();
         AssetPromiseKeeper_AB_GameObject.i?.Cleanup();
         AssetPromiseKeeper_AB.i?.Cleanup();
+        AssetPromiseKeeper_Texture.i?.Cleanup();
+        AssetPromiseKeeper_AudioClip.i?.Cleanup();
+        AssetPromiseKeeper_Gif.i?.Cleanup();
 
         if (PoolManager.i != null)
             PoolManager.i.Dispose();

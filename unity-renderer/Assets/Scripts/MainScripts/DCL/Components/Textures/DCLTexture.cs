@@ -161,10 +161,15 @@ namespace DCL
 
         public virtual void DetachFrom(UIImage image) { RemoveRefCount(); }
 
-        public void AddRefCount() { refCount++; }
+        public void AddRefCount()
+        {
+            refCount++;
+        }
 
         public void RemoveRefCount()
         {
+            refCount--;
+
             if (refCount == 0)
                 Dispose();
         }
@@ -172,6 +177,7 @@ namespace DCL
         public override void Dispose()
         {
             isDisposed = true;
+
             if (texturePromise != null)
             {
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);
