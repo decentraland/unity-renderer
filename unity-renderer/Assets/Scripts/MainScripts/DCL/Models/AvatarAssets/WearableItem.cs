@@ -223,7 +223,7 @@ public class WearableItem
         //Last wearable added has priority over the rest
         for (int index = 0; index < wearables.Length; index++)
         {
-            var wearableItem = wearables[index];
+            WearableItem wearableItem = wearables[index];
             if (result.Contains(wearableItem.data.category)) //Skip hidden elements to avoid two elements hiding each other
                 continue;
 
