@@ -60,24 +60,26 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
     [Test]
     public void CountEntitiesWhenAddedAndRemoved()
     {
-        var sceneMetricsCounter = new SceneMetricsCounter(new DataStore_WorldObjects(), "1", Vector2Int.zero, 10);
+        var sceneMetricsCounter = new SceneMetricsCounter(new DataStore_WorldObjects(), "A", Vector2Int.zero, 10);
         sceneMetricsCounter.Enable();
+
+        sceneMetricsCounter.AddEntity("1");
 
         Assert.That( sceneMetricsCounter.model.entities, Is.EqualTo(1));
 
-        sceneMetricsCounter.AddEntityMetrics("2");
-        sceneMetricsCounter.AddEntityMetrics("3");
-        sceneMetricsCounter.AddEntityMetrics("4");
-        sceneMetricsCounter.AddEntityMetrics("5");
-        sceneMetricsCounter.AddEntityMetrics("6");
-        sceneMetricsCounter.AddEntityMetrics("7");
-        sceneMetricsCounter.AddEntityMetrics("8");
-        sceneMetricsCounter.AddEntityMetrics("9");
-        sceneMetricsCounter.AddEntityMetrics("10");
+        sceneMetricsCounter.AddEntity("2");
+        sceneMetricsCounter.AddEntity("3");
+        sceneMetricsCounter.AddEntity("4");
+        sceneMetricsCounter.AddEntity("5");
+        sceneMetricsCounter.AddEntity("6");
+        sceneMetricsCounter.AddEntity("7");
+        sceneMetricsCounter.AddEntity("8");
+        sceneMetricsCounter.AddEntity("9");
+        sceneMetricsCounter.AddEntity("10");
 
         Assert.That( sceneMetricsCounter.model.entities, Is.EqualTo(10));
 
-        sceneMetricsCounter.RemoveEntityMetrics("5");
+        sceneMetricsCounter.RemoveEntity("5");
 
         Assert.That( sceneMetricsCounter.model.entities, Is.EqualTo(9));
 

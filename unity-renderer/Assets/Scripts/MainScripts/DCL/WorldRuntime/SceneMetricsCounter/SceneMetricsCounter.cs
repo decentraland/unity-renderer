@@ -123,6 +123,8 @@ namespace DCL
 
             if ( !uniqueEntities.Contains(entityId) )
                 uniqueEntities.Add(entityId);
+
+            modelValue.entities = uniqueEntities.Count();
         }
 
         public void RemoveEntity(string entityId)
@@ -134,6 +136,8 @@ namespace DCL
 
             if ( uniqueEntities.Contains(entityId))
                 uniqueEntities.Remove(entityId);
+
+            modelValue.entities = uniqueEntities.Count();
         }
 
         public void RemoveExcludedEntity(string entityId)
