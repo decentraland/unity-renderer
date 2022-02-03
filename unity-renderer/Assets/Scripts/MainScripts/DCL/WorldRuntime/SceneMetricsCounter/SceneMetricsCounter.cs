@@ -55,7 +55,7 @@ namespace DCL
 
         private HashSet<string> excludedEntities = new HashSet<string>();
 
-        private SceneMetricsModel sceneLimits = new SceneMetricsModel();
+        private SceneMetricsModel sceneLimits;
         private SceneMetricsModel modelValue = new SceneMetricsModel();
 
         public SceneMetricsModel model => modelValue.Clone();
