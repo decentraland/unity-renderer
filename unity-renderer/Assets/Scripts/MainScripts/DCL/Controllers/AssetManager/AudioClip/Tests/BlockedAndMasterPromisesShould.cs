@@ -1,33 +1,35 @@
-﻿using AssetPromiseKeeper_Tests;
+﻿using System.Collections;
+using AssetPromiseKeeper_Tests;
 using DCL;
-using System.Collections;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
-namespace AssetPromiseKeeper_Gif_Tests
+namespace AssetPromiseKeeper_AudioClip_Tests
 {
-    public class GifBlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_Gif,
-        AssetPromise_Gif,
-        Asset_Gif,
-        AssetLibrary_RefCounted<Asset_Gif>>
+    public class BlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_AudioClip,
+        AssetPromise_AudioClip,
+        Asset_AudioClip,
+        AssetLibrary_RefCounted<Asset_AudioClip>>
     {
         [UnityTest]
-        public IEnumerator FailCorrectlyWhenGivenWrongURL()
+        public IEnumerator AudioClip_FailCorrectlyWhenGivenWrongURL()
         {
-            var prom = new AssetPromise_Gif("123325");
-            Asset_Gif asset = null;
+            var provider = new ContentProvider_Dummy();
+
+            var prom = new AssetPromise_AudioClip("123325", provider);
+            Asset_AudioClip asset = null;
             bool failEventCalled1 = false;
             prom.OnSuccessEvent += (x) => { asset = x; };
             prom.OnFailEvent += (x, error) => { failEventCalled1 = true; };
 
-            var prom2 = new AssetPromise_Gif("43254378");
-            Asset_Gif asset2 = null;
+            var prom2 = new AssetPromise_AudioClip("43254378", provider);
+            Asset_AudioClip asset2 = null;
             bool failEventCalled2 = false;
             prom2.OnSuccessEvent += (x) => { asset2 = x; };
             prom2.OnFailEvent += (x, error) => { failEventCalled2 = true; };
 
-            var prom3 = new AssetPromise_Gif("09898765");
-            Asset_Gif asset3 = null;
+            var prom3 = new AssetPromise_AudioClip("09898765", provider);
+            Asset_AudioClip asset3 = null;
             bool failEventCalled3 = false;
             prom3.OnSuccessEvent += (x) => { asset3 = x; };
             prom3.OnFailEvent += (x, error) => { failEventCalled3 = true; };

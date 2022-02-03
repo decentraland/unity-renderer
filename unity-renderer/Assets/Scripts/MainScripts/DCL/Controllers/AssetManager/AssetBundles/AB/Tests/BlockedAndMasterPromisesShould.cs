@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_AssetBundle_Tests
 {
-    public class ABBlockedAndMasterPromisesShould :
+    public class BlockedAndMasterPromisesShould :
         TestsBase_APK<AssetPromiseKeeper_AB, AssetPromise_AB, Asset_AB, AssetLibrary_AB>
     {
         protected AssetPromise_AB CreatePromise(string hash = null)
@@ -21,7 +21,7 @@ namespace AssetPromiseKeeper_AssetBundle_Tests
         }
 
         [UnityTest]
-        public IEnumerator FailCorrectlyWhenGivenWrongURL()
+        public IEnumerator AB_FailCorrectlyWhenGivenWrongURL()
         {
             string url = "non_existing_url.glb";
             
