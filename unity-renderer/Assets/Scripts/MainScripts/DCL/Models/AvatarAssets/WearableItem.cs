@@ -54,9 +54,9 @@ public class WearableItem
     private readonly string[] skinHideImplicitCategories =
     {
         // TODO: this is not supported by the new avatar renderer system and can cause problems
-        // WearableLiterals.Categories.EYES,
-        // WearableLiterals.Categories.MOUTH,
-        // WearableLiterals.Categories.EYEBROWS,
+        WearableLiterals.Categories.EYES,
+        WearableLiterals.Categories.MOUTH,
+        WearableLiterals.Categories.EYEBROWS,
         WearableLiterals.Categories.HAIR,
         WearableLiterals.Categories.UPPER_BODY,
         WearableLiterals.Categories.LOWER_BODY,
@@ -154,7 +154,7 @@ public class WearableItem
         else
             replaces = representation.overrideReplaces;
         
-        if (skinReplaceImplicitCategories.Contains(data.category))
+        if (skinHideImplicitCategories.Contains(data.category))
         {
             var skinCategory = new[] {WearableLiterals.Categories.SKIN};
             replaces = replaces == null ? skinCategory : replaces.Concat(skinCategory).Distinct().ToArray();

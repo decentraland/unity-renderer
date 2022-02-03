@@ -114,7 +114,7 @@ namespace Test.AvatarSystem
         {
             var settings = new AvatarSettings { bodyshapeId = "bodyshapeId" };
             SkinnedMeshRenderer combinedRenderer = CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>();
-            SkinnedMeshRenderer[] facialFeatures = { CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>() };
+            List<Renderer> facialFeatures = new List<Renderer> { CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>() };
             Renderer gpuSkinnedRenderer = CreatePrimitive(container.transform).GetComponent<Renderer>();
             loader.combinedRenderer.Returns(combinedRenderer);
             loader.facialFeaturesRenderers.Returns(facialFeatures);

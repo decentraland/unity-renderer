@@ -85,9 +85,9 @@ namespace AvatarSystem
 
                 return (
                     wearablesByCategory[WearableLiterals.Categories.BODY_SHAPE],
-                    wearablesByCategory[WearableLiterals.Categories.EYES],
-                    wearablesByCategory[WearableLiterals.Categories.EYEBROWS],
-                    wearablesByCategory[WearableLiterals.Categories.MOUTH],
+                    wearablesByCategory.ContainsKey(WearableLiterals.Categories.EYES) ? wearablesByCategory[WearableLiterals.Categories.EYES] : null,
+                    wearablesByCategory.ContainsKey(WearableLiterals.Categories.EYEBROWS) ? wearablesByCategory[WearableLiterals.Categories.EYEBROWS] : null,
+                    wearablesByCategory.ContainsKey(WearableLiterals.Categories.MOUTH) ? wearablesByCategory[WearableLiterals.Categories.MOUTH] : null,
                     wearables
                 );
             }
