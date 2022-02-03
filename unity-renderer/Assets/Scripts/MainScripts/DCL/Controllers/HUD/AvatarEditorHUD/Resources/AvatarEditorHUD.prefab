@@ -2116,7 +2116,7 @@ MonoBehaviour:
   - toggle: {fileID: 1968554840564726539}
     canvas: {fileID: 1681340112337273603}
     enabledByDefault: 0
-    focus: 1
+    focus: 0
   wearableGridPairs:
   - categoryFilter: body_shape
     selector: {fileID: 3358252997386326019}
@@ -7688,7 +7688,7 @@ PrefabInstance:
     - target: {fileID: 5176895287733378623, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b, type: 3}
