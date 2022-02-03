@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_GLTF_Tests
 {
-    public class BlockedAndMasterPromisesShould : IntegrationTestSuite_Legacy
+    public class GLTFBlockedAndMasterPromisesShould : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
 
@@ -52,7 +52,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Object.Destroy(parent);
 
             yield return prom;
-
             yield return prom2;
             yield return prom3;
 
@@ -78,8 +77,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             keeper.throttlingCounter.enabled = false;
 
             //NOTE(Brian): Expect the 404 error
-            LogAssert.Expect(LogType.Log, new Regex("^.*?404"));
-            LogAssert.Expect(LogType.Exception, new Regex(".+"));
+            LogAssert.Expect(LogType.Exception, new Regex("^.*?404"));
 
             string url = TestAssetsUtils.GetPath() + "/non_existing_url.glb";
 

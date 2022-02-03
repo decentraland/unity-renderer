@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_Gif_Tests
 {
-    public class BlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_Gif,
+    public class GifBlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_Gif,
         AssetPromise_Gif,
         Asset_Gif,
         AssetLibrary_RefCounted<Asset_Gif>>
