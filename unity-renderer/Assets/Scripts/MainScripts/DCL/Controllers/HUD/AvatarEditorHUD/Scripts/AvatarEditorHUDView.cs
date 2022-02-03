@@ -77,6 +77,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     [SerializeField]
     internal Button doneButton;
+    
+    [SerializeField] internal Button[] goToMarketplaceButtons;
 
     [SerializeField] internal GameObject loadingSpinnerGameObject;
 
@@ -101,9 +103,10 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     [SerializeField] internal GameObject skinsMissingWeb3Container;
     
-    [SerializeField] internal Button skinsGoToMarketplaceButton;
-    
     [SerializeField] internal Button skinsConnectWalletButton;
+
+    [SerializeField] private GameObject skinsPopulatedListContainer;
+    [SerializeField] private GameObject skinsEmptyListContainer;
 
     internal static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
@@ -137,13 +140,12 @@ public class AvatarEditorHUDView : MonoBehaviour
         doneButton.onClick.AddListener(OnDoneButton);
         InitializeWearableChangeEvents();
 
-        web3GoToMarketplaceButton.onClick.RemoveAllListeners();
-        noWeb3GoToMarketplaceButton.onClick.RemoveAllListeners();
-        skinsGoToMarketplaceButton.onClick.RemoveAllListeners();
-        skinsConnectWalletButton.onClick.RemoveAllListeners();
+        foreach (var button in goToMarketplaceButtons)
+            button.onClick.RemoveAllListeners();
+        foreach (var button in goToMarketplaceButtons)
+            button.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
         web3GoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
         noWeb3GoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
-        skinsGoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
         skinsConnectWalletButton.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
 
         characterPreviewController.camera.enabled = false;
@@ -463,5 +465,11 @@ public class AvatarEditorHUDView : MonoBehaviour
         rectTransform.localPosition = Vector2.zero;
         rectTransform.offsetMax = new Vector2(0f, 50f);
         rectTransform.offsetMin = Vector2.zero;
+    }
+
+    public void ShowSkinPopulatedList(bool show)
+    {
+        skinsPopulatedListContainer.SetActive(show);
+        skinsEmptyListContainer.SetActive(!show);
     }
 }

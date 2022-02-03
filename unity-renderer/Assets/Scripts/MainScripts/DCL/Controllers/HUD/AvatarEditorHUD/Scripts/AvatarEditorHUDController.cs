@@ -131,6 +131,7 @@ public class AvatarEditorHUDController : IHUD
                              this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
                              LoadUserProfile(userProfile, true);
                              view.ShowCollectiblesLoadingSpinner(false);
+                             view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
                          })
                          .Catch((error) =>
                          {
