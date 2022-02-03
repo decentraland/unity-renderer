@@ -53,10 +53,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   openSection: 1
-  colorBackgroundDefault: {r: 1, g: 1, b: 1, a: 0}
-  colorBackgroundSelected: {r: 1, g: 1, b: 1, a: 1}
+  colorBackgroundDefault: {r: 1, g: 1, b: 1, a: 1}
+  colorBackgroundSelected: {r: 1, g: 0.45490196, b: 0.22352941, a: 1}
   colorTextDefault: {r: 0, g: 0, b: 0, a: 1}
-  colorTextSelected: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
+  colorTextSelected: {r: 1, g: 1, b: 1, a: 1}
   colorTextDisabled: {r: 0.5254902, g: 0.5254902, b: 0.5294118, a: 1}
   imageBackground: {fileID: 5570361539524376226}
   text: {fileID: 300575138721498652}
