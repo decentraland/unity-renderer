@@ -3,11 +3,16 @@ using System;
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using DCL.Controllers;
+using DCL.Interface;
+using DCL.Components;
 
 public interface IExperiencesViewerComponentController : IDisposable
 {
     void Initialize();
     void SetVisibility(bool visible);
+    void OnWearableAdded(string id, WearableItem wearable);
+    void OnWearableRemoved(string id, WearableItem wearable);
 }
 
 public class ExperiencesViewerComponentController : IExperiencesViewerComponentController
@@ -17,12 +22,14 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
 
     internal ExperiencesViewerComponentView view;
     internal UserProfile userProfile;
-    internal Dictionary<string, ExperienceRowComponentModel> loadedExperiences = new Dictionary<string, ExperienceRowComponentModel>();
+    internal BaseDictionary<string, WearableItem> wearableCatalog;
+    internal ISceneController sceneController;
+    internal List<string> loadedExperiencesIds = new List<string>();
+    internal Dictionary<string, IParcelScene> activePEXScenes = new Dictionary<string, IParcelScene>();
 
     public void Initialize()
     {
         view = CreateView();
-
         view.onCloseButtonPressed += OnCloseButtonPressed;
         view.onSomeExperienceUIVisibilityChanged += OnSomeExperienceUIVisibilityChanged;
         view.onSomeExperienceExecutionChanged += OnSomeExperienceExecutionChanged;
@@ -30,16 +37,21 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
         isOpen.OnChange += IsOpenChanged;
         IsOpenChanged(isOpen.Get(), false);
 
-        isInitialized.Set(view.transform);
-
         userProfile = UserProfile.GetOwnUserProfile();
         userProfile.OnUpdate += OnUserProfileUpdated;
         OnUserProfileUpdated(userProfile);
 
-        CatalogController.wearableCatalog.OnAdded += AddExperience;
-        CatalogController.wearableCatalog.OnRemoved += RemoveExperience;
+        wearableCatalog = CatalogController.wearableCatalog;
+        wearableCatalog.OnAdded += OnWearableAdded;
+        wearableCatalog.OnRemoved += OnWearableRemoved;
+        CheckCurrentSmartWearables();
 
-        FirstTimeLoading();
+        sceneController = DCL.Environment.i.world.sceneController;
+        sceneController.OnNewPortableExperienceSceneAdded += OnPEXSceneAdded;
+        sceneController.OnNewPortableExperienceSceneRemoved += OnPEXSceneRemoved;
+        CheckCurrentActivePortableExperiences();
+
+        isInitialized.Set(view.transform);
     }
 
     public void SetVisibility(bool visible)
@@ -50,28 +62,30 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
 
     public void Dispose()
     {
-        if (view != null)
-        {
-            view.onCloseButtonPressed -= OnCloseButtonPressed;
-            view.onSomeExperienceUIVisibilityChanged -= OnSomeExperienceUIVisibilityChanged;
-            view.onSomeExperienceExecutionChanged -= OnSomeExperienceExecutionChanged;
-        }
-
+        view.onCloseButtonPressed -= OnCloseButtonPressed;
+        view.onSomeExperienceUIVisibilityChanged -= OnSomeExperienceUIVisibilityChanged;
+        view.onSomeExperienceExecutionChanged -= OnSomeExperienceExecutionChanged;
         userProfile.OnUpdate -= OnUserProfileUpdated;
-        CatalogController.wearableCatalog.OnAdded -= AddExperience;
-        CatalogController.wearableCatalog.OnRemoved -= RemoveExperience;
+        wearableCatalog.OnAdded -= OnWearableAdded;
+        wearableCatalog.OnRemoved -= OnWearableRemoved;
     }
 
     internal void OnCloseButtonPressed() { SetVisibility(false); }
 
     internal void OnSomeExperienceUIVisibilityChanged(string pexId, bool isVisible)
     {
-        // TODO...
+        activePEXScenes.TryGetValue(pexId, out IParcelScene scene);
+        if (scene != null)
+        {
+            UIScreenSpace sceneUIComponent = scene.GetSharedComponent<UIScreenSpace>();
+            sceneUIComponent.canvas.enabled = isVisible;
+        }
     }
 
     internal void OnSomeExperienceExecutionChanged(string pexId, bool isPlaying)
     {
-        // TODO...
+        if (!isPlaying)
+            WebInterface.KillPortableExperience(pexId);
     }
 
     internal void IsOpenChanged(bool current, bool previous) { SetVisibility(current); }
@@ -85,21 +99,23 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
         CatalogController.RequestOwnedWearables(userProfile.userId);
     }
 
-    internal void FirstTimeLoading()
+    internal void CheckCurrentSmartWearables()
     {
-        List<WearableItem> smartWearables = CatalogController.wearableCatalog
+        loadedExperiencesIds.Clear();
+
+        List<WearableItem> smartWearables = wearableCatalog
             .Where(x => x.Value.IsSmart())
             .Select(x => x.Value).ToList();
 
         foreach (WearableItem wearable in smartWearables)
         {
-            AddExperience(wearable.id, wearable);
+            OnWearableAdded(wearable.id, wearable);
         }
     }
 
-    internal void AddExperience(string id, WearableItem wearable)
+    public void OnWearableAdded(string id, WearableItem wearable)
     {
-        if (!wearable.IsSmart() || loadedExperiences.ContainsKey(id))
+        if (!wearable.IsSmart() || loadedExperiencesIds.Contains(id))
             return;
 
         ExperienceRowComponentModel experienceToAdd = new ExperienceRowComponentModel
@@ -112,16 +128,57 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
         };
 
         view.AddAvailableExperience(experienceToAdd);
-        loadedExperiences.Add(id, experienceToAdd);
+        loadedExperiencesIds.Add(id);
     }
 
-    internal void RemoveExperience(string id, WearableItem wearable)
+    public void OnWearableRemoved(string id, WearableItem wearable)
     {
-        if (!wearable.IsSmart() || !loadedExperiences.ContainsKey(id))
+        if (!wearable.IsSmart() || !loadedExperiencesIds.Contains(id))
             return;
 
         view.RemoveAvailableExperience(id);
-        loadedExperiences.Remove(id);
+        loadedExperiencesIds.Remove(id);
+    }
+
+    internal void CheckCurrentActivePortableExperiences()
+    {
+        activePEXScenes.Clear();
+
+        List<GlobalScene> activePortableExperiences = WorldStateUtils.GetActivePortableExperienceScenes();
+        foreach (GlobalScene pexScene in activePortableExperiences)
+        {
+            OnPEXSceneAdded(pexScene);
+        }
+    }
+
+    internal void OnPEXSceneAdded(IParcelScene scene)
+    {
+        if (activePEXScenes.ContainsKey(scene.sceneData.id))
+            return;
+
+        activePEXScenes.Add(scene.sceneData.id, scene);
+
+        ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(scene.sceneData.id);
+        if (experienceToUpdate != null)
+        {
+            experienceToUpdate.SetAsPlaying(true);
+            experienceToUpdate.SetUIVisibility(true);
+        }
+    }
+
+    internal void OnPEXSceneRemoved(string id)
+    {
+        if (!activePEXScenes.ContainsKey(id))
+            return;
+
+        activePEXScenes.Remove(id);
+
+        ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(id);
+        if (experienceToUpdate != null)
+        {
+            experienceToUpdate.SetAsPlaying(false);
+            experienceToUpdate.SetUIVisibility(true);
+        }
     }
 
     internal virtual ExperiencesViewerComponentView CreateView() => ExperiencesViewerComponentView.Create();

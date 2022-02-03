@@ -40,6 +40,13 @@ public interface IExperiencesViewerComponentView
     void RemoveAvailableExperience(string id);
 
     /// <summary>
+    /// Get a specific experience.
+    /// </summary>
+    /// <param name="id">Id of the experience to search.</param>
+    /// <returns>An experience.</returns>
+    ExperienceRowComponentView GetAvailableExperienceById(string id);
+
+    /// <summary>
     /// Shows/Hides the game object of the Experiences Viewer.
     /// </summary>
     /// <param name="isActive">True to show it.</param>
@@ -115,6 +122,13 @@ public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesVie
 
         if (experienceToRemove != null)
             availableExperiences.RemoveItem(experienceToRemove);
+    }
+
+    public ExperienceRowComponentView GetAvailableExperienceById(string id)
+    {
+        return availableExperiences.GetItems()
+            .Select(x => x as ExperienceRowComponentView)
+            .FirstOrDefault(x => x.model.id == id);
     }
 
     public void SetVisible(bool isActive) { gameObject.SetActive(isActive); }
