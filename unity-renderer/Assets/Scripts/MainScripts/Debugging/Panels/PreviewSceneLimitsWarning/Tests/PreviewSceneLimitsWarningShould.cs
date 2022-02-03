@@ -27,7 +27,7 @@ public class PreviewSceneLimitsWarningShould
         scenes = new Dictionary<string, IParcelScene>() { { SCENE_ID, scene } };
 
         ISceneMetricsCounter sceneMetrics = Substitute.For<ISceneMetricsCounter>();
-        sceneMetrics.GetModel().Returns(metrics);
+        sceneMetrics.model.Returns(metrics);
         sceneMetrics.ComputeSceneLimits().Returns(limit);
 
         scene.metricsCounter.Returns(sceneMetrics);

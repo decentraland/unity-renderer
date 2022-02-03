@@ -162,6 +162,8 @@ namespace DCL.Components
                     totalTriangleCount = x.totalTriangleCount,
                     meshes = x.meshes,
                     renderers = x.renderers,
+                    materials = x.materials,
+                    textures = x.textures,
                     meshToTriangleCount = x.meshToTriangleCount
                 };
 

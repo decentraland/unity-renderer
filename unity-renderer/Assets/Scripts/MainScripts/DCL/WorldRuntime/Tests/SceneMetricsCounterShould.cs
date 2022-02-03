@@ -17,6 +17,14 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
 {
     private ParcelScene scene;
 
+    private readonly string[] texturePaths =
+    {
+        "/Images/alphaTexture.png",
+        "/Images/atlas.png",
+        "/Images/avatar.png",
+        "/Images/avatar2.png"
+    };
+
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
         //serviceLocator.Register<ISceneController>(() => new SceneController());
@@ -42,29 +50,34 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
         CommonScriptableObjects.rendererState.Set(true);
     }
 
+    [UnityTearDown]
+    protected override IEnumerator TearDown()
+    {
+        yield return base.TearDown();
+        UnityEngine.Object.Destroy(scene.gameObject);
+    }
+
     [Test]
     public void CountEntitiesWhenAddedAndRemoved()
     {
-        HashSet<string> entities = new HashSet<string>();
-        entities.Add("1");
-        var sceneMetricsCounter = new SceneMetricsCounter(new DataStore_WorldObjects(), "1", Vector2Int.zero, 10, () => entities);
+        var sceneMetricsCounter = new SceneMetricsCounter(new DataStore_WorldObjects(), "1", Vector2Int.zero, 10);
         sceneMetricsCounter.Enable();
 
         Assert.That( sceneMetricsCounter.model.entities, Is.EqualTo(1));
 
-        entities.Add("2");
-        entities.Add("3");
-        entities.Add("4");
-        entities.Add("5");
-        entities.Add("6");
-        entities.Add("7");
-        entities.Add("8");
-        entities.Add("9");
-        entities.Add("10");
+        sceneMetricsCounter.AddEntityMetrics("2");
+        sceneMetricsCounter.AddEntityMetrics("3");
+        sceneMetricsCounter.AddEntityMetrics("4");
+        sceneMetricsCounter.AddEntityMetrics("5");
+        sceneMetricsCounter.AddEntityMetrics("6");
+        sceneMetricsCounter.AddEntityMetrics("7");
+        sceneMetricsCounter.AddEntityMetrics("8");
+        sceneMetricsCounter.AddEntityMetrics("9");
+        sceneMetricsCounter.AddEntityMetrics("10");
 
         Assert.That( sceneMetricsCounter.model.entities, Is.EqualTo(10));
 
-        entities.Remove("5");
+        sceneMetricsCounter.RemoveEntityMetrics("5");
 
         Assert.That( sceneMetricsCounter.model.entities, Is.EqualTo(9));
 
@@ -75,7 +88,7 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
     public void CountUniqueMeshesWhenAddedAndRemoved()
     {
         DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
-        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10, () => new HashSet<string>());
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
         sceneMetricsCounter.Enable();
 
         dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
@@ -125,7 +138,7 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
     public void CountUniqueMaterialsWhenAddedAndRemoved()
     {
         DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
-        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10, () => new HashSet<string>());
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
         sceneMetricsCounter.Enable();
 
         dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
@@ -175,7 +188,7 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
     public void CountUniqueTexturesWhenAddedAndRemoved()
     {
         DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
-        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10, () => new HashSet<string>());
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
         sceneMetricsCounter.Enable();
 
         dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
@@ -225,7 +238,7 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
     public void CountTotalTrianglesWhenAddedAndRemoved()
     {
         DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
-        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10, () => new HashSet<string>());
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
         sceneMetricsCounter.Enable();
 
         dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
@@ -255,7 +268,7 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
     public void CountBodiesWhenAddedAndRemoved()
     {
         DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
-        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10, () => new HashSet<string>());
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
         sceneMetricsCounter.Enable();
 
         dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
@@ -301,45 +314,63 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
         UnityEngine.Object.Destroy(rend4.gameObject);
     }
 
+
+    [Test]
+    public void NotCountWhenEntityIsExcluded()
+    {
+        const string OWNER_1 = "A";
+        const string OWNER_2 = "B";
+        const string SCENE_ID = "1";
+
+        DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, SCENE_ID, Vector2Int.zero, 10);
+        sceneMetricsCounter.Enable();
+
+        dataStore.sceneData.Add(SCENE_ID, new DataStore_WorldObjects.SceneData());
+
+        Rendereable rendereable1 = new Rendereable();
+        rendereable1.ownerId = OWNER_1;
+
+        Rendereable rendereable2 = new Rendereable();
+        rendereable2.ownerId = OWNER_2;
+
+        dataStore.AddRendereable(SCENE_ID, rendereable1);
+
+        Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(1), $"Entity {OWNER_1} shouldn't be excluded!");
+
+        dataStore.RemoveRendereable(SCENE_ID, rendereable1);
+
+        Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(0), $"Entity {OWNER_1} should be always removed!");
+
+        sceneMetricsCounter.AddExcludedEntity(OWNER_1);
+
+        dataStore.AddRendereable(SCENE_ID, rendereable1);
+        dataStore.AddRendereable(SCENE_ID, rendereable2);
+
+        Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(1), "AddExcludedEntity is not working!");
+
+        sceneMetricsCounter.RemoveExcludedEntity(OWNER_1);
+
+        Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(2), "RemoveExcludedEntity is not working!");
+
+        sceneMetricsCounter.AddExcludedEntity(OWNER_1);
+        sceneMetricsCounter.AddExcludedEntity(OWNER_2);
+
+        Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(0), "AddExcludedEntity should remove existing entities!");
+
+        sceneMetricsCounter.Dispose();
+    }
+
     [UnityTest]
     public IEnumerator CountParametrizedShapes()
     {
-        ConeShape coneShape = TestUtils.SharedComponentCreate<ConeShape, ConeShape.Model>(
-            scene,
-            DCL.Models.CLASS_ID.CONE_SHAPE,
-            new ConeShape.Model()
-            {
-                radiusTop = 1,
-                radiusBottom = 0
-            }
-        );
+        ConeShape coneShape = CreateCone();
+        PlaneShape planeShape = CreatePlane();
+        DCLTexture dclTexture = CreateTexture(texturePaths[0]);
+        BasicMaterial basicMaterial = CreateBasicMaterial(dclTexture.id);
 
-        PlaneShape planeShape = TestUtils.SharedComponentCreate<PlaneShape, PlaneShape.Model>(
-            scene,
-            DCL.Models.CLASS_ID.PLANE_SHAPE,
-            new PlaneShape.Model()
-            {
-                height = 1.5f,
-                width = 1
-            }
-        );
-
-
-        DCLTexture dclTexture = TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
-
-        BasicMaterial basicMaterial = TestUtils.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(
-            scene,
-            DCL.Models.CLASS_ID.BASIC_MATERIAL,
-            new BasicMaterial.Model()
-            {
-                texture = dclTexture.id
-            });
-
-        IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
-        TestUtils.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
-
-        IDCLEntity entity2 = TestUtils.CreateSceneEntity(scene);
-        TestUtils.SetEntityTransform(scene, entity2, Vector3.zero, Quaternion.identity, Vector3.one);
+        IDCLEntity entity = CreateEntityWithTransform();
+        IDCLEntity entity2 = CreateEntityWithTransform();
 
         TestUtils.SharedComponentAttach(basicMaterial, entity);
         TestUtils.SharedComponentAttach(basicMaterial, entity2);
@@ -371,6 +402,156 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
     }
 
     [UnityTest]
+    public IEnumerator CountSameTextureOnManyBasicMaterials()
+    {
+        var texture = CreateTexture(texturePaths[0]);
+
+        List<BasicMaterial> materials = new List<BasicMaterial>();
+        List<IDCLEntity> entities = new List<IDCLEntity>();
+
+        PlaneShape planeShape = CreatePlane();
+
+        for ( int i = 0; i < 10; i++ )
+        {
+            materials.Add( CreateBasicMaterial(texture.id) );
+            entities.Add( CreateEntityWithTransform());
+            TestUtils.SharedComponentAttach(planeShape, entities[i]);
+            TestUtils.SharedComponentAttach(materials[i], entities[i]);
+        }
+
+        yield return new WaitForAllMessagesProcessed();
+
+        SceneMetricsModel inputModel = scene.metricsCounter.model;
+
+        Assert.That( inputModel.materials, Is.EqualTo(10) );
+        Assert.That( inputModel.textures, Is.EqualTo(1) );
+
+        for ( int i = 0; i < 10; i++ )
+        {
+            TestUtils.RemoveSceneEntity(scene, entities[i]);
+        }
+
+        yield return new WaitForAllMessagesProcessed();
+
+        Assert.That( inputModel.materials, Is.EqualTo(0) );
+        Assert.That( inputModel.textures, Is.EqualTo(0) );
+    }
+
+    [UnityTest]
+    public IEnumerator CountManyAttachedTexturesOnSingleBasicMaterial()
+    {
+        var material = CreateBasicMaterial("");
+
+        List<DCLTexture> textures = new List<DCLTexture>();
+        SceneMetricsModel sceneMetrics;
+
+        for ( int i = 0; i < 10; i++ )
+        {
+            textures.Add( CreateTexture(texturePaths[0]));
+        }
+
+        IDCLEntity entity = CreateEntityWithTransform();
+        TestUtils.SharedComponentAttach(material, entity);
+
+        PlaneShape planeShape = CreatePlane();
+        TestUtils.SharedComponentAttach(planeShape, entity);
+
+        for ( int i = 0; i < 10; i++ )
+        {
+            TestUtils.SharedComponentAttach(textures[i], entity);
+            TestUtils.SharedComponentUpdate(material, new BasicMaterial.Model()
+            {
+                texture = textures[i].id
+            });
+
+            yield return new WaitForAllMessagesProcessed();
+
+            sceneMetrics = scene.metricsCounter.model;
+
+            Assert.That( sceneMetrics.materials, Is.EqualTo(1) );
+            Assert.That( sceneMetrics.textures, Is.EqualTo(1) );
+        }
+
+        TestUtils.RemoveSceneEntity(scene, entity);
+
+        yield return new WaitForAllMessagesProcessed();
+
+        sceneMetrics = scene.metricsCounter.model;
+
+        Assert.That( sceneMetrics.materials, Is.EqualTo(0) );
+        Assert.That( sceneMetrics.textures, Is.EqualTo(0) );
+    }
+
+    [UnityTest]
+    public IEnumerator NotCountMaterialsAndTexturesWhenNoShapeIsPresent()
+    {
+        var texture1 = CreateTexture(texturePaths[0]);
+        var material1 = CreatePBRMaterial(texture1.id, texture1.id, texture1.id, texture1.id);
+
+        yield return new WaitForAllMessagesProcessed();
+
+        Assert.That( scene.metricsCounter.model.materials, Is.EqualTo(0) );
+        Assert.That( scene.metricsCounter.model.textures, Is.EqualTo(0) );
+    }
+
+    [UnityTest]
+    public IEnumerator NotCountIdenticalTexturesWhenManyTextureComponentsAreAdded()
+    {
+        var texture1 = CreateTexture(texturePaths[0]);
+        var texture2 = CreateTexture(texturePaths[0]);
+        var texture3 = CreateTexture(texturePaths[0]);
+        var texture4 = CreateTexture(texturePaths[0]);
+        var material1 = CreatePBRMaterial(texture1.id, texture2.id, texture3.id, texture4.id);
+        var planeShape = CreatePlane();
+        var entity = CreateEntityWithTransform();
+
+        TestUtils.SharedComponentAttach(planeShape, entity);
+        TestUtils.SharedComponentAttach(material1, entity);
+
+        yield return new WaitForAllMessagesProcessed();
+
+        Assert.That( scene.metricsCounter.model.textures, Is.EqualTo(1) );
+
+        TestUtils.RemoveSceneEntity(scene, entity.entityId);
+
+        yield return new WaitForAllMessagesProcessed();
+
+        Assert.That( scene.metricsCounter.model.textures, Is.EqualTo(0) );
+    }
+
+    [UnityTest]
+    public IEnumerator CountManyAttachedTexturesOnSinglePBRMaterial()
+    {
+        SceneMetricsModel sceneMetrics = null;
+
+        var texture1 = CreateTexture(texturePaths[0]);
+        var texture2 = CreateTexture(texturePaths[1]);
+        var texture3 = CreateTexture(texturePaths[2]);
+        var texture4 = CreateTexture(texturePaths[3]);
+        var material1 = CreatePBRMaterial(texture1.id, texture2.id, texture3.id, texture4.id);
+        var planeShape = CreatePlane();
+        var entity = CreateEntityWithTransform();
+
+        TestUtils.SharedComponentAttach(planeShape, entity);
+        TestUtils.SharedComponentAttach(material1, entity);
+
+        sceneMetrics = scene.metricsCounter.model;
+
+        Assert.That( sceneMetrics.materials, Is.EqualTo(1) );
+        Assert.That( sceneMetrics.textures, Is.EqualTo(4) );
+
+        TestUtils.RemoveSceneEntity(scene, entity);
+        yield return new WaitForAllMessagesProcessed();
+
+        sceneMetrics = scene.metricsCounter.model;
+
+        Assert.That( sceneMetrics.materials, Is.EqualTo(0) );
+        Assert.That( sceneMetrics.textures, Is.EqualTo(0) );
+
+        yield break;
+    }
+
+    [UnityTest]
     public IEnumerator CountGLTFShapes()
     {
         IDCLEntity entity1 = TestUtils.CreateSceneEntity(scene);
@@ -397,7 +578,7 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
 
         yield return new WaitForAllMessagesProcessed();
 
-        Debug.Log(scene.metricsCounter.GetModel());
+        Debug.Log(scene.metricsCounter.model);
         AssertMetricsModel(scene,
             triangles: 612,
             materials: 1,
@@ -420,6 +601,7 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
     }
 
     [UnityTest]
+    [Explicit]
     public IEnumerator CountNFTShapes()
     {
         var entity = TestUtils.CreateSceneEntity(scene);
@@ -432,13 +614,13 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
         };
 
         NFTShape component = TestUtils.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
-        Debug.Log(scene.metricsCounter.GetModel());
+        Debug.Log(scene.metricsCounter.model);
         TestUtils.SharedComponentAttach(component, entity);
 
         LoadWrapper_NFT wrapper = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
         yield return new WaitUntil(() => wrapper.alreadyLoaded);
 
-        Debug.Log(scene.metricsCounter.GetModel());
+        Debug.Log(scene.metricsCounter.model);
         AssertMetricsModel(scene,
             triangles: 190,
             materials: 6,
@@ -460,13 +642,6 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
     }
 
     [UnityTest]
-    public IEnumerator NotCountWhenEntityIsExcluded()
-    {
-        yield break;
-    }
-
-
-    [UnityTest]
     public IEnumerator CountMetricsCorrectlyWhenStressed()
     {
         var coneShape = TestUtils.SharedComponentCreate<ConeShape, ConeShape.Model>(scene, DCL.Models.CLASS_ID.CONE_SHAPE, new ConeShape.Model()
@@ -481,8 +656,8 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
             width = 1
         });
 
-        var shapeEntity = TestUtils.CreateSceneEntity(scene);
-        TestUtils.SetEntityTransform(scene, shapeEntity, Vector3.one, Quaternion.identity, Vector3.one);
+        var shapeEntity = CreateEntityWithTransform();
+
         TestUtils.SharedComponentAttach(coneShape, shapeEntity);
 
         TestUtils.UpdateShape(scene, coneShape.id, JsonUtility.ToJson(new ConeShape.Model()
@@ -552,10 +727,77 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
         yield return null;
     }
 
+    PlaneShape CreatePlane()
+    {
+        PlaneShape planeShape = TestUtils.SharedComponentCreate<PlaneShape, PlaneShape.Model>(
+            scene,
+            DCL.Models.CLASS_ID.PLANE_SHAPE,
+            new PlaneShape.Model()
+            {
+                height = 1.5f,
+                width = 1
+            }
+        );
+        return planeShape;
+    }
+
+    ConeShape CreateCone()
+    {
+        ConeShape coneShape = TestUtils.SharedComponentCreate<ConeShape, ConeShape.Model>(
+            scene,
+            DCL.Models.CLASS_ID.CONE_SHAPE,
+            new ConeShape.Model()
+            {
+                radiusTop = 1,
+                radiusBottom = 0
+            }
+        );
+        return coneShape;
+    }
+
+    PBRMaterial CreatePBRMaterial( string albedoTexId, string alphaTexId, string bumpTexId, string emissiveTexId )
+    {
+        PBRMaterial basicMaterial = TestUtils.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(
+            scene,
+            DCL.Models.CLASS_ID.PBR_MATERIAL,
+            new PBRMaterial.Model()
+            {
+                albedoTexture = albedoTexId,
+                alphaTexture = alphaTexId,
+                bumpTexture = bumpTexId,
+                emissiveTexture = emissiveTexId
+            });
+        return basicMaterial;
+    }
+
+    BasicMaterial CreateBasicMaterial( string textureId )
+    {
+        BasicMaterial basicMaterial = TestUtils.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(
+            scene,
+            DCL.Models.CLASS_ID.BASIC_MATERIAL,
+            new BasicMaterial.Model()
+            {
+                texture = textureId
+            });
+        return basicMaterial;
+    }
+
+    DCLTexture CreateTexture( string path )
+    {
+        return TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + path);
+    }
+
+    IDCLEntity CreateEntityWithTransform()
+    {
+        IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
+        TestUtils.SetEntityTransform(scene, entity, Vector3.one, Quaternion.identity, Vector3.one);
+        return entity;
+    }
+
     void AssertMetricsModel(ParcelScene scene, int triangles, int materials, int entities, int meshes, int bodies,
         int textures)
     {
-        SceneMetricsModel inputModel = scene.metricsCounter.GetModel();
+        SceneMetricsModel inputModel = scene.metricsCounter.model;
 
         Assert.AreEqual(triangles, inputModel.triangles, "Incorrect triangle count, was: " + triangles);
         Assert.AreEqual(materials, inputModel.materials, "Incorrect materials count");

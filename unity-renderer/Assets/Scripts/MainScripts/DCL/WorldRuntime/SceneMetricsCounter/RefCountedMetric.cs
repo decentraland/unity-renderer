@@ -24,7 +24,7 @@ namespace DCL
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public bool Add(object obj)
+        public bool AddRef(object obj)
         {
             if ( obj == null )
                 return false;
@@ -44,7 +44,7 @@ namespace DCL
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public bool Remove(object obj)
+        public bool RemoveRef(object obj)
         {
             if ( obj == null )
                 return true;

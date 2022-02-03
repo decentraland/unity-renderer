@@ -104,7 +104,7 @@ namespace DCL.Builder
                 return false;
 
             SceneMetricsModel limits = sceneToEdit.metricsCounter.ComputeSceneLimits();
-            SceneMetricsModel usage = sceneToEdit.metricsCounter.GetModel();
+            SceneMetricsModel usage = sceneToEdit.metricsCounter.model;
 
             if (limits.bodies < usage.bodies + sceneObject.metrics.bodies)
             {

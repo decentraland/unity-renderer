@@ -72,18 +72,24 @@ namespace DCL.Components
             {
                 if (dclTexture == null || dclTexture.id != model.texture)
                 {
-                    yield return DCLTexture.FetchTextureComponent(scene, model.texture, (downloadedTexture) =>
-                    {
-                        dclTexture?.DetachFrom(this);
-                        material.SetTexture(_BaseMap, downloadedTexture.texture);
-                        dclTexture = downloadedTexture;
-                        dclTexture.AttachTo(this);
-                    });
+                    yield return DCLTexture.FetchTextureComponent(scene, model.texture,
+                        (downloadedTexture) =>
+                        {
+                            dclTexture?.DetachFrom(this);
+                            material.SetTexture(_BaseMap, downloadedTexture.texture);
+                            dclTexture = downloadedTexture;
+                            dclTexture.AttachTo(this);
+
+                            // add new rendereable con solo la texture
+                        }
+                    );
                 }
             }
             else
             {
+                // remove rendereable con solo la texture
                 material.mainTexture = null;
+
                 dclTexture?.DetachFrom(this);
                 dclTexture = null;
             }
@@ -94,9 +100,9 @@ namespace DCL.Components
             material.SetFloat(_Cutoff, model.alphaTest);
             material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.AlphaTest;
 
-            foreach (IDCLEntity decentralandEntity in attachedEntities)
+            foreach (IDCLEntity entity in attachedEntities)
             {
-                InitMaterial(decentralandEntity.meshRootGameObject);
+                InitMaterial(entity.meshRootGameObject);
             }
         }
 

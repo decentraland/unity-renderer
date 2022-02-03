@@ -92,7 +92,7 @@ namespace DCL
             {
                 worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene);
                 ISceneMetricsCounter metricsController = scene?.metricsCounter;
-                SceneMetricsModel currentMetrics = metricsController?.GetModel();
+                SceneMetricsModel currentMetrics = metricsController?.model;
                 SceneMetricsModel limit = metricsController?.ComputeSceneLimits();
 
                 string warningMessage = null;

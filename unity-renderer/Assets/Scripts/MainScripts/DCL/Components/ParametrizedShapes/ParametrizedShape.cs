@@ -202,7 +202,7 @@ namespace DCL.Components
             if (!attachedRendereables.ContainsKey(entity))
                 return;
 
-            DataStore.i.sceneWorldObjects.RemoveRendereable(entity, attachedRendereables[entity]);
+            DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.id, attachedRendereables[entity]);
             attachedRendereables.Remove(entity);
         }
 
@@ -222,13 +222,14 @@ namespace DCL.Components
                 meshToTriangleCount = new Dictionary<Mesh, int>() { { currentMesh, triangleCount } }
             };
 
+            newRendereable.ownerId = entity.entityId;
             newRendereable.materials = MeshesInfoUtils.ExtractUniqueMaterials(newRendereable.renderers);
             newRendereable.textures = MeshesInfoUtils.ExtractUniqueTextures(newRendereable.materials);
 
             Debug.Log($"Parametrized shape, adding rendereable... {newRendereable}");
 
             attachedRendereables.Add(entity, newRendereable);
-            DataStore.i.sceneWorldObjects.AddRendereable(entity, newRendereable);
+            DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.id, newRendereable);
         }
     }
 }

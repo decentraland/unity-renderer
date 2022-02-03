@@ -35,7 +35,7 @@ public class BiwSceneMetricsAnalyticsHelper
             return;
         }
 
-        var metricsModel = scene.metricsCounter.GetModel();
+        var metricsModel = scene.metricsCounter.model;
         var metricsLimits = scene.metricsCounter.ComputeSceneLimits();
 
         string exceededLimits = BIWAnalytics.GetLimitsPassedArray(metricsModel, metricsLimits);

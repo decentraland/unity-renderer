@@ -7,7 +7,10 @@ namespace DCL
     {
         event System.Action<ISceneMetricsCounter> OnMetricsUpdated;
         SceneMetricsModel ComputeSceneLimits();
-        SceneMetricsModel GetModel();
+        ref readonly SceneMetricsModel model { get; }
+
+        void AddEntity( string entityId );
+        void RemoveEntity( string entityId );
 
         void Enable();
 

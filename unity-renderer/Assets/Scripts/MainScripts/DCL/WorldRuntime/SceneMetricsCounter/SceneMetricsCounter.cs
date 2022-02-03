@@ -50,7 +50,9 @@ namespace DCL
         private WorldSceneObjectsTrackingHelper sceneObjectsTrackingHelper;
         public DataStore_SceneMetrics data => DataStore.i.Get<DataStore_SceneMetrics>();
 
+        // EntityMetrics will save even ignored entities.
         private Dictionary<string, EntityMetrics> entityMetrics = new Dictionary<string, EntityMetrics>();
+
         private HashSet<string> excludedEntities = new HashSet<string>();
 
         SceneMetricsModel sceneLimits = null;
@@ -61,7 +63,6 @@ namespace DCL
         {
             get
             {
-                modelValue.entities = ComputeEntityCount();
                 return ref modelValue;
             }
         }
@@ -73,7 +74,7 @@ namespace DCL
         private RefCountedMetric uniqueTextures = new RefCountedMetric();
         private RefCountedMetric uniqueMaterials = new RefCountedMetric();
         private RefCountedMetric uniqueMeshes = new RefCountedMetric();
-        private RefCountedMetric uniqueEntities = new RefCountedMetric();
+        private HashSet<string> uniqueEntities = new HashSet<string>();
 
         private string sceneId;
 
@@ -81,14 +82,11 @@ namespace DCL
 
         private int sceneParcelCount;
 
-        private Func<HashSet<string>> entitiesGetter;
-
-        public SceneMetricsCounter(DataStore_WorldObjects dataStore, string sceneId, Vector2Int scenePosition, int sceneParcelCount, Func<HashSet<string>> entitiesGetter)
+        public SceneMetricsCounter(DataStore_WorldObjects dataStore, string sceneId, Vector2Int scenePosition, int sceneParcelCount)
         {
             this.sceneId = sceneId;
             this.scenePosition = scenePosition;
             this.sceneParcelCount = sceneParcelCount;
-            this.entitiesGetter = entitiesGetter;
 
             Assert.IsTrue( !string.IsNullOrEmpty(sceneId), "Scene must have an ID!" );
 
@@ -116,20 +114,57 @@ namespace DCL
             sceneObjectsTrackingHelper.OnWillRemoveRendereable -= OnWillRemoveRendereable;
         }
 
+        public void AddEntityMetrics(string entityId, Rendereable rendereable = null)
+        {
+            if (!entityMetrics.ContainsKey(entityId))
+                entityMetrics.Add(entityId, new EntityMetrics());
+
+            if ( rendereable == null )
+                rendereable = new Rendereable();
+
+            entityMetrics[entityId].rendereables.Add(rendereable);
+        }
+
+        public void RemoveEntityMetrics(string entityId)
+        {
+            if (entityMetrics.ContainsKey(entityId))
+                entityMetrics.Remove(entityId);
+        }
+
+        public void AddEntity(string entityId)
+        {
+            AddEntityMetrics(entityId);
+
+            if (excludedEntities.Contains(entityId))
+                return;
+
+            if ( !uniqueEntities.Contains(entityId) )
+                uniqueEntities.Add(entityId);
+        }
+
+        public void RemoveEntity(string entityId)
+        {
+            RemoveEntityMetrics(entityId);
+
+            if (excludedEntities.Contains(entityId))
+                return;
+
+            if ( uniqueEntities.Contains(entityId))
+                uniqueEntities.Remove(entityId);
+        }
+
         private void OnWillAddRendereable(Rendereable rendereable)
         {
             string entityId = rendereable.ownerId;
 
             Assert.IsTrue(entityId != null, "rendereable.ownerId cannot be null!");
 
+            // Rendereable have to be always be added in order to be counted/discounted
+            // when excluded entities are toggled.
+            AddEntityMetrics(entityId, rendereable);
+
             if (excludedEntities.Contains(entityId))
                 return;
-
-            if (uniqueEntities.Add(entityId))
-            {
-                if (!entityMetrics.ContainsKey(entityId))
-                    entityMetrics.Add(entityId, new EntityMetrics());
-            }
 
             AddTrackedRendereable(rendereable);
             UpdateUniqueMetrics();
@@ -145,14 +180,10 @@ namespace DCL
 
             Assert.IsTrue(entityId != null, "rendereable.ownerId cannot be null!");
 
-            if (excludedEntities.Contains(rendereable.ownerId))
-                return;
+            RemoveEntityMetrics(entityId);
 
-            if (uniqueEntities.Remove(entityId))
-            {
-                if (entityMetrics.ContainsKey(entityId))
-                    entityMetrics.Remove(entityId);
-            }
+            if (excludedEntities.Contains(entityId))
+                return;
 
             RemoveTrackedRendereable(rendereable);
             UpdateUniqueMetrics();
@@ -188,9 +219,6 @@ namespace DCL
             SceneMetricsModel limits = ComputeSceneLimits();
             SceneMetricsModel usage = modelValue;
 
-            // Workaround for the issue of adding entities without rendereables.
-            usage.entities = ComputeEntityCount();
-
             if (usage.triangles > limits.triangles)
                 return false;
 
@@ -214,8 +242,10 @@ namespace DCL
 
         public void RemoveExcludedEntity(string entityId)
         {
-            if (excludedEntities.Contains(entityId))
-                excludedEntities.Remove(entityId);
+            if (!excludedEntities.Contains(entityId))
+                return;
+
+            excludedEntities.Remove(entityId);
 
             if (entityMetrics.ContainsKey(entityId))
             {
@@ -230,8 +260,10 @@ namespace DCL
 
         public void AddExcludedEntity(string entityId)
         {
-            if (!excludedEntities.Contains(entityId))
-                excludedEntities.Add(entityId);
+            if (excludedEntities.Contains(entityId))
+                return;
+
+            excludedEntities.Add(entityId);
 
             if (entityMetrics.ContainsKey(entityId))
             {
@@ -256,19 +288,22 @@ namespace DCL
             modelValue.triangles += trianglesToAdd;
             modelValue.bodies += rend.renderers.Count;
 
+            if (!uniqueEntities.Contains(rend.ownerId))
+                uniqueEntities.Add(rend.ownerId);
+
             foreach ( var mat in rend.materials )
             {
-                uniqueMaterials.Add(mat);
+                uniqueMaterials.AddRef(mat);
             }
 
             foreach ( var mesh in rend.meshes )
             {
-                uniqueMeshes.Add(mesh);
+                uniqueMeshes.AddRef(mesh);
             }
 
             foreach ( var tex in rend.textures )
             {
-                uniqueTextures.Add(tex);
+                uniqueTextures.AddRef(tex);
             }
         }
 
@@ -280,23 +315,26 @@ namespace DCL
             logger.Log($"Removing rendereable {rend.ownerId} -- {rend}");
             trackedRendereables.Remove(rend);
 
+            if (uniqueEntities.Contains(rend.ownerId))
+                uniqueEntities.Remove(rend.ownerId);
+
             int trianglesToAdd = rend.totalTriangleCount / 3;
             modelValue.triangles -= trianglesToAdd;
             modelValue.bodies -= rend.renderers.Count;
 
             foreach ( var mat in rend.materials )
             {
-                uniqueMaterials.Remove(mat);
+                uniqueMaterials.RemoveRef(mat);
             }
 
             foreach ( var mesh in rend.meshes )
             {
-                uniqueMeshes.Remove(mesh);
+                uniqueMeshes.RemoveRef(mesh);
             }
 
             foreach ( var tex in rend.textures )
             {
-                uniqueTextures.Remove(tex);
+                uniqueTextures.RemoveRef(tex);
             }
         }
 
@@ -305,7 +343,7 @@ namespace DCL
             modelValue.materials = uniqueMaterials.GetObjectsCount();
             modelValue.textures = uniqueTextures.GetObjectsCount();
             modelValue.meshes = uniqueMeshes.GetObjectsCount();
-            modelValue.entities = uniqueEntities.GetObjectsCount();
+            modelValue.entities = uniqueEntities.Count();
         }
 
         private void UpdateWorstMetricsOffense()
@@ -337,16 +375,6 @@ namespace DCL
                 data.worstMetricOffenses[sceneId] = currentOffense;
                 logger.Log($"New offending scene {sceneId} {scenePosition}!\nmetrics: {model}\nlimits: {sceneLimits}\ndelta:{currentOffense}");
             }
-        }
-
-        public SceneMetricsModel GetModel()
-        {
-            return modelValue;
-        }
-
-        private int ComputeEntityCount()
-        {
-            return entitiesGetter().Count(x => !excludedEntities.Contains(x));
         }
 
         private void RaiseMetricsUpdate()

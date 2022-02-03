@@ -96,7 +96,7 @@ namespace DCL.Controllers
                 DataStore.i.sceneWorldObjects,
                 sceneData.id,
                 sceneData.basePosition,
-                sceneData.parcels.Length, () => new HashSet<string>(entities.Keys));
+                sceneData.parcels.Length);
 
             metricsCounter.Enable();
 
@@ -282,6 +282,7 @@ namespace DCL.Controllers
                 newEntity.OnShapeUpdated += Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked;
 
             entities.Add(id, newEntity);
+            metricsCounter.AddEntity(id);
 
             OnEntityAdded?.Invoke(newEntity);
 
@@ -301,6 +302,7 @@ namespace DCL.Controllers
                 }
 
                 entities.Remove(id);
+                metricsCounter.RemoveEntity(id);
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else

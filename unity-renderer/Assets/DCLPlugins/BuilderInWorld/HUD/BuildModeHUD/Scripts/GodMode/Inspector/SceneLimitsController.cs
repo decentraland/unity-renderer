@@ -76,7 +76,7 @@ public class SceneLimitsController : ISceneLimitsController
         }
 
         SceneMetricsModel limits = currentParcelScene.metricsCounter.ComputeSceneLimits();
-        SceneMetricsModel usage = currentParcelScene.metricsCounter.GetModel();
+        SceneMetricsModel usage = currentParcelScene.metricsCounter.model;
 
         string leftDesc = AppendUsageAndLimit("ENTITIES", usage.entities, limits.entities);
         leftDesc += "\n" + AppendUsageAndLimit("BODIES", usage.bodies, limits.bodies);
@@ -125,7 +125,7 @@ public class SceneLimitsController : ISceneLimitsController
     internal float GetHigherLimitPercentInfo()
     {
         SceneMetricsModel limits = currentParcelScene.metricsCounter.ComputeSceneLimits();
-        SceneMetricsModel usage = currentParcelScene.metricsCounter.GetModel();
+        SceneMetricsModel usage = currentParcelScene.metricsCounter.model;
 
         float percentEntities = usage.entities * 100 / limits.entities;
         float percentBodies = usage.bodies * 100 / limits.bodies;
