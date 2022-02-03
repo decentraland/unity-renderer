@@ -144,9 +144,6 @@ public class AvatarEditorHUDView : MonoBehaviour
             button.onClick.RemoveAllListeners();
         foreach (var button in goToMarketplaceButtons)
             button.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
-        web3GoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
-        noWeb3GoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
-        skinsConnectWalletButton.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
 
         characterPreviewController.camera.enabled = false;
     }
