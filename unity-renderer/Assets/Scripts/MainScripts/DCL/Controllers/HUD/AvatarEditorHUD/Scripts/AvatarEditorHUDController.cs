@@ -539,8 +539,8 @@ public class AvatarEditorHUDController : IHUD
         var wearablesToReplace = new List<WearableItem>();
         var categoriesToReplace = new HashSet<string>(wearableItem.GetReplacesList(model.bodyShape.id) ?? new string[0]);
 
-        var wearableCount = model.wearables.Count;
-        for (var i = 0; i < wearableCount; i++)
+        int wearableCount = model.wearables.Count;
+        for (int i = 0; i < wearableCount; i++)
         {
             var wearable = model.wearables[i];
             if (wearable == null) continue;
@@ -552,7 +552,7 @@ public class AvatarEditorHUDController : IHUD
             else
             {
                 //For retrocompatibility's sake we check current wearables against new one (compatibility matrix is symmetrical)
-                var replacesList = new HashSet<string>(wearable.GetReplacesList(model.bodyShape.id) ?? new string[0]);
+                HashSet<string> replacesList = new HashSet<string>(wearable.GetReplacesList(model.bodyShape.id) ?? new string[0]);
                 if (replacesList.Contains(wearableItem.data.category))
                 {
                     wearablesToReplace.Add(wearable);
