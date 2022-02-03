@@ -41,6 +41,11 @@ public class LimitInputField : MonoBehaviour
             hasBeenEmpty = true;
     }
 
+    public void SetCharacterLimit(int limit)
+    {
+        characterLimit = limit;
+    }
+    
     public void SetText(string value)
     {
         currentValue = value;
@@ -80,7 +85,7 @@ public class LimitInputField : MonoBehaviour
         OnInputChange?.Invoke(newValue);
     }
 
-    internal void InputAvailable()
+    public void InputAvailable()
     {
         if (!hasPassedLimit && !hasBeenEmpty)
             return;
@@ -102,7 +107,7 @@ public class LimitInputField : MonoBehaviour
         OnEmptyValue?.Invoke();
     }
 
-    internal void LimitReached()
+    public void LimitReached()
     {
         if (hasPassedLimit)
             return;

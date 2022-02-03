@@ -29,6 +29,12 @@ namespace DCL.Builder
         event Action<PublishInfo.ProjectRotation>  OnProjectRotateChange;
 
         /// <summary>
+        /// Update the size of the project
+        /// </summary>
+        /// <param name="parcels"></param>
+        void UpdateProjectSize(Vector2Int[] parcels);
+        
+        /// <summary>
         /// Set the project to publish
         /// </summary>
         /// <param name="scene"></param>
@@ -113,6 +119,7 @@ namespace DCL.Builder
             mapView.OnParcelHover += ParcelHovered;
             mapView.OnParcelClicked += ParcelClicked;
             searchView.OnValueSearch += SearchLand;
+            searchView.OnSearchCanceled += DeactivateSearch;
 
             backButton.onClick.AddListener(Back);
             nextButton.onClick.AddListener(Next);
@@ -136,6 +143,7 @@ namespace DCL.Builder
             mapView.OnParcelClicked -= ParcelClicked;
             landListView.OnLandSelected -= LandSelected;
             searchView.OnValueSearch -= SearchLand;
+            searchView.OnSearchCanceled -= DeactivateSearch;
 
             backButton.onClick.RemoveAllListeners();
             nextButton.onClick.RemoveAllListeners();
@@ -145,6 +153,11 @@ namespace DCL.Builder
 
             rotateLeftButton.onClick.RemoveAllListeners();
             rotateRightButton.onClick.RemoveAllListeners();
+        }
+
+        private void DeactivateSearch()
+        {
+            landListView.SetActive(false);
         }
 
         private void Back()
@@ -170,7 +183,7 @@ namespace DCL.Builder
             List<LandWithAccess> filteredLands = new List<LandWithAccess>();
             foreach (LandWithAccess land in DataStore.i.builderInWorld.landsWithAccess.Get())
             {
-                if (land.name.Contains(searchInput) || BIWUtils.Vector2INTToString(land.baseCoords).Contains(searchInput))
+                if (land.name.ToLower().Contains(searchInput.ToLower()) || BIWUtils.Vector2INTToString(land.baseCoords).Contains(searchInput))
                     filteredLands.Add(land);
             }
 
@@ -187,6 +200,11 @@ namespace DCL.Builder
                 return;
             }
 
+            LandSelected(parcel);
+        }
+
+        public void LandSelected(Vector2Int parcel)
+        {
             foreach (LandWithAccess land in DataStore.i.builderInWorld.landsWithAccess.Get())
             {
                 foreach (Vector2Int landParcel in land.parcels)
@@ -225,6 +243,7 @@ namespace DCL.Builder
                     firstStep.SetActive(true);
                     break;
                 case 1: // Choose land to deploy
+                    searchView.ClearSearch();
                     secondStep.SetActive(true);
                     if (availableLandsToPublish.Count > 0)
                         GoToCoords(availableLandsToPublish[0]);
@@ -286,7 +305,7 @@ namespace DCL.Builder
             publishButton.interactable = false;
 
             // We set the screenshot
-            if (scene.aerialScreenshotTexture != null)
+            if (scene.aerialScreenshotTexture != null && BIWUtils.IsParcelSceneSquare(scene.scene.sceneData.parcels))
             {
                 aerialScreenshotGameObject.SetActive(true);
                 sceneAerialScreenshotImage.texture = scene.aerialScreenshotTexture;
@@ -307,7 +326,13 @@ namespace DCL.Builder
             CheckAvailableLandsToPublish(scene);
 
             // We set the size of the project in the builder
-            mapView.SetProjectSize(scene.scene.sceneData.parcels);
+            UpdateProjectSize(scene.scene.sceneData.parcels);
+        }
+
+        public void UpdateProjectSize(Vector2Int[] parcels)
+        {
+            // We set the size of the project in the builder
+            mapView.SetProjectSize(parcels);
         }
 
         private void CheckAvailableLandsToPublish(IBuilderScene sceneToPublish)
@@ -319,7 +344,11 @@ namespace DCL.Builder
         private void LandSelected(LandWithAccess land)
         {
             landListView.SetActive(false);
-
+            searchView.ClearSearch();
+            
+            // We select the land
+            LandSelected(land.baseCoords);
+            
             // We set the map to the main land
             GoToCoords(land.baseCoords);
         }

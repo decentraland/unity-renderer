@@ -56,7 +56,7 @@ namespace DCL.Builder
                 rows = 1;
             else
                 rows = Mathf.Abs(Int32.Parse(value));
-            ValueChanged();
+            ValueChanged(rowsInputField);
         }
 
         internal void ColumnsChanged(string value)
@@ -66,17 +66,21 @@ namespace DCL.Builder
                 colums = 1;
             else
                 colums = Mathf.Abs(Int32.Parse(value));
-            ValueChanged();
+            ValueChanged(columsInputField);
         }
 
-        private void ValueChanged()
+        private void ValueChanged(LimitInputField origin)
         {
             if (rows * colums > MAX_PARCELS)
             {
                 ShowError();
+                origin.SetError();
             }
             else
             {
+                columsInputField.InputAvailable();
+                rowsInputField.InputAvailable();
+                
                 gridModel.constraintCount = rows;
                 gridView.SetItems(parcelImagePrefab, rows * colums);
                 gridView.Configure(gridModel);

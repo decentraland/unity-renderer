@@ -25,9 +25,9 @@ namespace DCL
         [SerializeField] private float parcelHightlightScale = 1.25f;
         [SerializeField] private Button ParcelHighlightButton;
         [SerializeField] private MapParcelHighlight highlight;      
-        [SerializeField] private RawImage parcelHighlightImage;
-        [SerializeField] private RawImage parcelHighlighImagePrefab;
-        [SerializeField] private RawImage selectParcelHighlighImagePrefab;
+        [SerializeField] private Image parcelHighlightImage;
+        [SerializeField] private Image parcelHighlighImagePrefab;
+        [SerializeField] private Image selectParcelHighlighImagePrefab;
 
         private float parcelSizeInMap;
         private Vector3Variable playerWorldPosition => CommonScriptableObjects.playerWorldPosition;
@@ -84,7 +84,7 @@ namespace DCL
         public static System.Action OnCursorFarFromParcel;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-        private Dictionary<Vector2Int, RawImage> highlightedLands = new Dictionary<Vector2Int, RawImage>();
+        private Dictionary<Vector2Int, Image> highlightedLands = new Dictionary<Vector2Int, Image>();
         private Vector2Int lastSelectedLand;
 
         private bool isInitialized = false;
@@ -117,9 +117,9 @@ namespace DCL
 
             playerWorldPosition.OnChange += OnCharacterMove;
             playerRotation.OnChange += OnCharacterRotate;
-
-            parcelHighlightImage.rectTransform.localScale = new Vector3(parcelHightlightScale, parcelHightlightScale, 1f);
-
+            
+            highlight.SetScale(parcelHightlightScale);
+            
             usersPositionMarkerController = new MapGlobalUsersPositionMarkerController(globalUserMarkerPrefab,
                 globalUserMarkerContainer,
                 MapUtils.GetTileToLocalPosition);
@@ -188,7 +188,7 @@ namespace DCL
 
         public void CleanLandsHighlights()
         {
-            foreach (KeyValuePair<Vector2Int, RawImage> kvp in highlightedLands)
+            foreach (KeyValuePair<Vector2Int, Image> kvp in highlightedLands)
             {
                 Destroy(kvp.Value.gameObject);
             }
@@ -229,9 +229,9 @@ namespace DCL
             }
         }
 
-        private void CreateHighlightParcel(RawImage prefab,Vector2Int coords, Vector2Int size)
+        private void CreateHighlightParcel(Image prefab,Vector2Int coords, Vector2Int size)
         {
-            var highlightItem = Instantiate(prefab, overlayContainer, true).GetComponent<RawImage>();
+            var highlightItem = Instantiate(prefab, overlayContainer, true).GetComponent<Image>();
             highlightItem.rectTransform.localScale = new Vector3(parcelHightlightScale*size.x, parcelHightlightScale*size.y, 1f);
             highlightItem.rectTransform.SetAsLastSibling();
             highlightItem.rectTransform.anchoredPosition = MapUtils.GetTileToLocalPosition(coords.x, coords.y);

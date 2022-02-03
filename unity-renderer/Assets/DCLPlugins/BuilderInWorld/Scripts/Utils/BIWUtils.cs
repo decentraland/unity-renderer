@@ -24,6 +24,36 @@ using UnityEngine.Events;
 
 public static partial class BIWUtils
 {
+    public static bool IsParcelSceneSquare(Vector2Int[] parcelsPoints)
+    {
+        int minX = int.MaxValue;
+        int minY = int.MaxValue;
+        int maxX = int.MinValue;
+        int maxY = int.MinValue;
+
+        foreach (Vector2Int vector in parcelsPoints)
+        {
+            if (vector.x < minX)
+                minX = vector.x;
+            if (vector.y < minY)
+                minY = vector.y;
+            if (vector.x > maxX)
+                maxX = vector.x;
+            if (vector.y > maxY)
+                maxY = vector.y;
+        }
+
+        if (maxX - minX != maxY - minY)
+            return false;
+
+        int lateralLengh = Math.Abs((maxX - minX) + 1);
+
+        if (parcelsPoints.Length != lateralLengh * lateralLengh)
+            return false;
+
+        return true;
+    }
+    
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     public static LayerMask GetBIWCulling(LayerMask currentCulling)
@@ -47,9 +77,9 @@ public static partial class BIWUtils
         foreach (Vector2Int parcel in totalParcels)
         {
             List<Vector2Int> necessaryParcelsToOwn = new List<Vector2Int>();
-            for (int x = 1; x < sceneSize.x; x++)
+            for (int x = 0; x < sceneSize.x; x++)
             {
-                for (int y = 1; y < sceneSize.y; y++)
+                for (int y = 0; y < sceneSize.y; y++)
                 {
                     necessaryParcelsToOwn.Add(new Vector2Int(parcel.x + x, parcel.y + y));
                 }

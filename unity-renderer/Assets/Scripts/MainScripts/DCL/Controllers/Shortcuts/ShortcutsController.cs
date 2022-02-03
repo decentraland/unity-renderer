@@ -77,6 +77,9 @@ public class ShortcutsController : IDisposable
 
     private void ToggleStartMenuTriggered(DCLAction_Trigger action)
     {
+        if (DataStore.i.builderInWorld.isCreatingProject.Get())
+            return;
+        
         bool value = !DataStore.i.exploreV2.isOpen.Get();
         if (DataStore.i.common.isSignUpFlow.Get()) return;
 

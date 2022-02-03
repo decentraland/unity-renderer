@@ -57,14 +57,24 @@ public class NewProjectFlowController : INewProjectFlowController
         this.view = view;
         view.OnTittleAndDescriptionSet += SetTitleAndDescription;
         view.OnSizeSet += SetRowsAndColumns;
+        view.OnViewHide += SetCreatingProjectStatusToFalse;
     }
 
-    public void Hide() { view.Hide(); }
+    public void Hide()
+    {
+        view.Hide();
+    }
 
+    public void SetCreatingProjectStatusToFalse()
+    {
+        DataStore.i.builderInWorld.isCreatingProject.Set(false);
+    }
+    
     public void Dispose()
     {
         view.OnTittleAndDescriptionSet -= SetTitleAndDescription;
         view.OnSizeSet -= SetRowsAndColumns;
+        view.OnViewHide -= SetCreatingProjectStatusToFalse;
         view.Dispose();
     }
 
@@ -82,7 +92,7 @@ public class NewProjectFlowController : INewProjectFlowController
         projectData = new ProjectData();
         projectData.id = Guid.NewGuid().ToString();
         projectData.eth_address = UserProfile.GetOwnUserProfile().ethAddress;
-
+        DataStore.i.builderInWorld.isCreatingProject.Set(true);
         view.ShowNewProjectTitleAndDescrition();
     }
 
@@ -104,7 +114,7 @@ public class NewProjectFlowController : INewProjectFlowController
     {
         projectData.created_at = DateTime.UtcNow;
         projectData.updated_at = DateTime.UtcNow;
-
+        DataStore.i.builderInWorld.isCreatingProject.Set(false);
         view.Reset();
         OnNewProjectCrated?.Invoke(projectData);
         view.Hide();

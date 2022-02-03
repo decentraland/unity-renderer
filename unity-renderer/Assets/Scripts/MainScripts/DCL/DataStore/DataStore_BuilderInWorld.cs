@@ -13,6 +13,6 @@ namespace DCL
         public readonly BaseVariable<bool> isDevBuild = new BaseVariable<bool>();
         public readonly BaseVariable<LandWithAccess[]> landsWithAccess = new BaseVariable<LandWithAccess[]>();
         public readonly BaseVariable<ProjectData[]> projectData = new BaseVariable<ProjectData[]>();
-        public readonly BaseVariable<Scene[]> scenesData = new BaseVariable<Scene[]>();
+        public readonly BaseVariable<bool> isCreatingProject = new BaseVariable<bool>(false);
     }
 }
