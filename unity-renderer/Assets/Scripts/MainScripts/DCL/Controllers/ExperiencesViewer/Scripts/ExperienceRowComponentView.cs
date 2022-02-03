@@ -63,6 +63,7 @@ public class ExperienceRowComponentView : BaseComponentView, IExperienceRowCompo
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView iconImage;
     [SerializeField] internal TMP_Text nameText;
+    [SerializeField] internal GameObject showHideUIButtonsContainer;
     [SerializeField] internal ButtonComponentView showPEXUIButton;
     [SerializeField] internal ButtonComponentView hidePEXUIButton;
     [SerializeField] internal ButtonComponentView startPEXButton;
@@ -165,6 +166,9 @@ public class ExperienceRowComponentView : BaseComponentView, IExperienceRowCompo
 
         if (stopPEXButton != null)
             stopPEXButton.gameObject.SetActive(isPlaying);
+
+        if (showHideUIButtonsContainer != null)
+            showHideUIButtonsContainer.SetActive(isPlaying);
     }
 
     public void SetRowColor(Color color)
