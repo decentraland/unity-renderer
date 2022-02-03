@@ -1,35 +1,44 @@
-﻿using System.Collections;
 using AssetPromiseKeeper_Tests;
 using DCL;
+using DCL.Helpers;
+using System.Collections;
+using System.Text.RegularExpressions;
+using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
-namespace AssetPromiseKeeper_AudioClip_Tests
+namespace AssetPromiseKeeper_AssetBundle_Tests
 {
-    public class BlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_AudioClip,
-        AssetPromise_AudioClip,
-        Asset_AudioClip,
-        AssetLibrary_RefCounted<Asset_AudioClip>>
+    public class ABBlockedAndMasterPromisesShould :
+        TestsBase_APK<AssetPromiseKeeper_AB, AssetPromise_AB, Asset_AB, AssetLibrary_AB>
     {
+        protected AssetPromise_AB CreatePromise(string hash = null)
+        {
+            string contentUrl = TestAssetsUtils.GetPath() + "/AssetBundles/";
+            hash = hash ?? "QmYACL8SnbXEonXQeRHdWYbfm8vxvaFAWnsLHUaDG4ABp5";
+            var prom = new AssetPromise_AB(contentUrl, hash);
+            return prom;
+        }
+
         [UnityTest]
         public IEnumerator FailCorrectlyWhenGivenWrongURL()
         {
-            var provider = new ContentProvider_Dummy();
-
-            var prom = new AssetPromise_AudioClip("123325", provider);
-            Asset_AudioClip asset = null;
+            string url = "non_existing_url.glb";
+            
+            AssetPromise_AB prom = CreatePromise(url);
+            Asset_AB asset = null;
             bool failEventCalled1 = false;
             prom.OnSuccessEvent += (x) => { asset = x; };
             prom.OnFailEvent += (x, error) => { failEventCalled1 = true; };
 
-            var prom2 = new AssetPromise_AudioClip("43254378", provider);
-            Asset_AudioClip asset2 = null;
+            AssetPromise_AB prom2 = CreatePromise(url);
+            Asset_AB asset2 = null;
             bool failEventCalled2 = false;
             prom2.OnSuccessEvent += (x) => { asset2 = x; };
             prom2.OnFailEvent += (x, error) => { failEventCalled2 = true; };
 
-            var prom3 = new AssetPromise_AudioClip("09898765", provider);
-            Asset_AudioClip asset3 = null;
+            AssetPromise_AB prom3 = CreatePromise(url);
+            Asset_AB asset3 = null;
             bool failEventCalled3 = false;
             prom3.OnSuccessEvent += (x) => { asset3 = x; };
             prom3.OnFailEvent += (x, error) => { failEventCalled3 = true; };
@@ -37,8 +46,6 @@ namespace AssetPromiseKeeper_AudioClip_Tests
             keeper.Keep(prom);
             keeper.Keep(prom2);
             keeper.Keep(prom3);
-
-            Assert.AreEqual(3, keeper.waitingPromisesCount);
 
             yield return prom;
             yield return prom2;

@@ -72,6 +72,8 @@ namespace UnityGLTF.Loader
             {
                 finalUrl = Path.Combine(rootUri, httpRequestPath);
             }
+            
+            token.ThrowIfCancellationRequested();
 
             WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
                 url: finalUrl,
@@ -82,8 +84,10 @@ namespace UnityGLTF.Loader
 
             Assert.IsNotNull(asyncOp, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
             
-            await asyncOp.asyncOp;
+            token.ThrowIfCancellationRequested();
             
+            await UniTask.WaitUntil( () => asyncOp.isDone || asyncOp.isDisposed || asyncOp.isSucceded, cancellationToken: token);
+
             token.ThrowIfCancellationRequested();
             
             bool error = false;

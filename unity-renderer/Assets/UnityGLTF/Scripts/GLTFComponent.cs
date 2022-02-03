@@ -266,7 +266,7 @@ namespace UnityGLTF
                 }
                 catch (Exception e) when (!(e is OperationCanceledException))
                 {
-                    throw;
+                    Debug.LogException(e);
                 }
                 finally
                 {

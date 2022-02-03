@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_Texture_Tests
 {
-    public class BlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_Texture,
+    public class TextureBlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_Texture,
         AssetPromise_Texture,
         Asset_Texture,
         AssetLibrary_Texture>
