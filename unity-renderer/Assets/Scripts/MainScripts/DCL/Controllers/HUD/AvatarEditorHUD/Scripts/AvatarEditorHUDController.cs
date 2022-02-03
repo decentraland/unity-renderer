@@ -536,9 +536,6 @@ public class AvatarEditorHUDController : IHUD
         var wearablesToReplace = new List<WearableItem>();
         var categoriesToReplace = new HashSet<string>(wearableItem.GetReplacesList(model.bodyShape.id) ?? new string[0]);
 
-        if (IsTryingToReplaceSkin(wearableItem) && !categoriesToReplace.Contains(WearableLiterals.Categories.SKIN))
-            categoriesToReplace.Add(WearableLiterals.Categories.SKIN);
-
         var wearableCount = model.wearables.Count;
         for (var i = 0; i < wearableCount; i++)
         {
@@ -702,15 +699,6 @@ public class AvatarEditorHUDController : IHUD
     {
         var isWearingSkinAlready = model.wearables.Any(item => item.IsSkin());
         return wearable.IsSkin() && !isWearingSkinAlready;
-    }
-
-    private bool IsTryingToReplaceSkin(WearableItem wearable)
-    {
-        return model.wearables.Any(skin =>
-        {
-            return skin.IsSkin()
-                   && skin.DoesHide(wearable.data.category, model.bodyShape.id);
-        });
     }
     
     private bool ShouldShowReplaceOtherWearablesToast(WearableItem wearable)

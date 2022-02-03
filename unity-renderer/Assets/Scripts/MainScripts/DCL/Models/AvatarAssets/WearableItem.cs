@@ -51,12 +51,25 @@ public class WearableItem
     private readonly Dictionary<string, ContentProvider> cachedContentProviers =
         new Dictionary<string, ContentProvider>();
 
-    private readonly string[] skinImplicitCategories =
+    private readonly string[] skinHideImplicitCategories =
     {
         // TODO: this is not supported by the new avatar renderer system and can cause problems
         // WearableLiterals.Categories.EYES,
         // WearableLiterals.Categories.MOUTH,
         // WearableLiterals.Categories.EYEBROWS,
+        WearableLiterals.Categories.HAIR,
+        WearableLiterals.Categories.UPPER_BODY,
+        WearableLiterals.Categories.LOWER_BODY,
+        WearableLiterals.Categories.FEET,
+        WearableLiterals.Misc.HEAD,
+        WearableLiterals.Categories.FACIAL_HAIR
+    };
+    
+    private readonly string[] skinReplaceImplicitCategories =
+    {
+        WearableLiterals.Categories.EYES,
+        WearableLiterals.Categories.MOUTH,
+        WearableLiterals.Categories.EYEBROWS,
         WearableLiterals.Categories.HAIR,
         WearableLiterals.Categories.UPPER_BODY,
         WearableLiterals.Categories.LOWER_BODY,
@@ -134,10 +147,20 @@ public class WearableItem
     {
         var representation = GetRepresentation(bodyShapeType);
 
-        if (representation?.overrideReplaces == null || representation.overrideReplaces.Length == 0)
-            return data.replaces;
+        string[] replaces;
 
-        return representation.overrideReplaces;
+        if (representation?.overrideReplaces == null || representation.overrideReplaces.Length == 0)
+            replaces = data.replaces;
+        else
+            replaces = representation.overrideReplaces;
+        
+        if (skinReplaceImplicitCategories.Contains(data.category))
+        {
+            var skinCategory = new[] {WearableLiterals.Categories.SKIN};
+            replaces = replaces == null ? skinCategory : replaces.Concat(skinCategory).Distinct().ToArray();
+        }
+
+        return replaces;
     }
 
     public string[] GetHidesList(string bodyShapeType)
@@ -154,14 +177,12 @@ public class WearableItem
         if (IsSkin())
         {
             hides = hides == null
-                ? skinImplicitCategories
-                : hides.Concat(skinImplicitCategories).Distinct().ToArray();
+                ? skinHideImplicitCategories
+                : hides.Concat(skinHideImplicitCategories).Distinct().ToArray();
         }
 
         return hides;
     }
-
-    public bool DoesHide(string category, string bodyShape) => GetHidesList(bodyShape).Any(s => s == category);
 
     public bool IsCollectible()
     {
