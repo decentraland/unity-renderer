@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -80,14 +81,26 @@ namespace DCL.Components
                             dclTexture = downloadedTexture;
                             dclTexture.AttachTo(this);
 
-                            // add new rendereable con solo la texture
+                            foreach (IDCLEntity entity in attachedEntities)
+                            {
+                                var meshGameObject = entity.meshRootGameObject;
+
+                                if (meshGameObject == null)
+                                    continue;
+
+                                var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
+
+                                if (meshRenderer == null)
+                                    continue;
+
+                                MaterialUtils.UpdateMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, null, material);
+                            }
                         }
                     );
                 }
             }
             else
             {
-                // remove rendereable con solo la texture
                 material.mainTexture = null;
 
                 dclTexture?.DetachFrom(this);
@@ -102,7 +115,7 @@ namespace DCL.Components
 
             foreach (IDCLEntity entity in attachedEntities)
             {
-                InitMaterial(entity.meshRootGameObject);
+                InitMaterial(entity);
             }
         }
 
@@ -116,12 +129,14 @@ namespace DCL.Components
                 var meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
 
                 if (meshRenderer != null)
-                    InitMaterial(entity.meshRootGameObject);
+                    InitMaterial(entity);
             }
         }
 
-        void InitMaterial(GameObject meshGameObject)
+        void InitMaterial(IDCLEntity entity)
         {
+            var meshGameObject = entity.meshRootGameObject;
+
             if (meshGameObject == null)
                 return;
 
@@ -134,26 +149,30 @@ namespace DCL.Components
 
             meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
 
-            if (meshRenderer.sharedMaterial != material)
+            if (meshRenderer.sharedMaterial == material)
+                return;
+
+            MaterialTransitionController
+                matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
+
+            if (matTransition != null && matTransition.canSwitchMaterial)
             {
-                MaterialTransitionController
-                    matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
-
-                if (matTransition != null && matTransition.canSwitchMaterial)
-                {
-                    matTransition.finalMaterials = new Material[] { material };
-                    matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
-                }
-
-                SRPBatchingHelper.OptimizeMaterial(material);
-                meshRenderer.sharedMaterial = material;
+                matTransition.finalMaterials = new Material[] { material };
+                matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
             }
+
+            SRPBatchingHelper.OptimizeMaterial(material);
+
+            Material oldMaterial = meshRenderer.sharedMaterial;
+            meshRenderer.sharedMaterial = material;
+
+            MaterialUtils.UpdateMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, oldMaterial, material);
         }
 
         private void OnShapeUpdated(IDCLEntity entity)
         {
             if (entity != null)
-                InitMaterial(entity.meshRootGameObject);
+                InitMaterial(entity);
         }
 
         void OnMaterialDetached(IDCLEntity entity)
@@ -167,6 +186,8 @@ namespace DCL.Components
 
             if (meshRenderer && meshRenderer.sharedMaterial == material)
                 meshRenderer.sharedMaterial = null;
+
+            MaterialUtils.RemoveMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, material);
         }
 
         public override void Dispose()

@@ -44,7 +44,7 @@ namespace DCL
         }
 
         public event Action<ISceneMetricsCounter> OnMetricsUpdated;
-        private static bool VERBOSE = true;
+        private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
 
         private WorldSceneObjectsTrackingHelper sceneObjectsTrackingHelper;

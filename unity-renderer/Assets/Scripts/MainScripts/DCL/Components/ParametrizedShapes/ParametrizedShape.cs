@@ -226,8 +226,6 @@ namespace DCL.Components
             newRendereable.materials = MeshesInfoUtils.ExtractUniqueMaterials(newRendereable.renderers);
             newRendereable.textures = MeshesInfoUtils.ExtractUniqueTextures(newRendereable.materials);
 
-            Debug.Log($"Parametrized shape, adding rendereable... {newRendereable}");
-
             attachedRendereables.Add(entity, newRendereable);
             DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.id, newRendereable);
         }

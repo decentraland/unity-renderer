@@ -379,7 +379,7 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
         TestUtils.SharedComponentAttach(coneShape, entity);
         TestUtils.SharedComponentAttach(planeShape, entity2);
 
-        yield return new WaitForAllMessagesProcessed();
+        yield return basicMaterial.routine;
 
         AssertMetricsModel(scene,
             triangles: 105,
@@ -419,9 +419,9 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
             entities.Add( CreateEntityWithTransform());
             TestUtils.SharedComponentAttach(planeShape, entities[i]);
             TestUtils.SharedComponentAttach(materials[i], entities[i]);
+            TestUtils.SharedComponentAttach(texture, entities[i]);
+            yield return materials[i].routine;
         }
-
-        yield return new WaitForAllMessagesProcessed();
 
         SceneMetricsModel inputModel = scene.metricsCounter.model;
 
@@ -433,7 +433,7 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
             TestUtils.RemoveSceneEntity(scene, entities[i]);
         }
 
-        yield return new WaitForAllMessagesProcessed();
+        yield return null;
 
         Assert.That( inputModel.materials, Is.EqualTo(0) );
         Assert.That( inputModel.textures, Is.EqualTo(0) );
@@ -461,7 +461,7 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
         for ( int i = 0; i < 10; i++ )
         {
             TestUtils.SharedComponentAttach(textures[i], entity);
-            TestUtils.SharedComponentUpdate(material, new BasicMaterial.Model()
+            yield return TestUtils.SharedComponentUpdate(material, new BasicMaterial.Model()
             {
                 texture = textures[i].id
             });
@@ -469,6 +469,8 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
             yield return new WaitForAllMessagesProcessed();
 
             sceneMetrics = scene.metricsCounter.model;
+
+            Debug.Log("Asserting!");
 
             Assert.That( sceneMetrics.materials, Is.EqualTo(1) );
             Assert.That( sceneMetrics.textures, Is.EqualTo(1) );
@@ -509,14 +511,18 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
 
         TestUtils.SharedComponentAttach(planeShape, entity);
         TestUtils.SharedComponentAttach(material1, entity);
+        TestUtils.SharedComponentAttach(texture1, entity);
+        TestUtils.SharedComponentAttach(texture2, entity);
+        TestUtils.SharedComponentAttach(texture3, entity);
+        TestUtils.SharedComponentAttach(texture4, entity);
 
-        yield return new WaitForAllMessagesProcessed();
+        yield return material1.routine;
 
         Assert.That( scene.metricsCounter.model.textures, Is.EqualTo(1) );
 
         TestUtils.RemoveSceneEntity(scene, entity.entityId);
 
-        yield return new WaitForAllMessagesProcessed();
+        yield return null;
 
         Assert.That( scene.metricsCounter.model.textures, Is.EqualTo(0) );
     }
@@ -530,12 +536,18 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
         var texture2 = CreateTexture(texturePaths[1]);
         var texture3 = CreateTexture(texturePaths[2]);
         var texture4 = CreateTexture(texturePaths[3]);
-        var material1 = CreatePBRMaterial(texture1.id, texture2.id, texture3.id, texture4.id);
         var planeShape = CreatePlane();
         var entity = CreateEntityWithTransform();
+        var material1 = CreatePBRMaterial(texture1.id, texture2.id, texture3.id, texture4.id);
 
         TestUtils.SharedComponentAttach(planeShape, entity);
         TestUtils.SharedComponentAttach(material1, entity);
+        TestUtils.SharedComponentAttach(texture1, entity);
+        TestUtils.SharedComponentAttach(texture2, entity);
+        TestUtils.SharedComponentAttach(texture3, entity);
+        TestUtils.SharedComponentAttach(texture4, entity);
+
+        yield return material1.routine;
 
         sceneMetrics = scene.metricsCounter.model;
 
@@ -671,7 +683,8 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
         TestUtils.DetachSharedComponent(scene, shapeEntity.entityId, coneShape.id);
         TestUtils.SharedComponentAttach(planeShape, shapeEntity);
 
-        yield return new WaitForAllMessagesProcessed();
+        yield return coneShape.routine;
+        yield return planeShape.routine;
         yield return null;
 
         var lanternEntity = TestUtils.CreateSceneEntity(scene);
@@ -711,7 +724,7 @@ public class SceneMetricsCounterShould : IntegrationTestSuite
             entities: 4,
             meshes: 4,
             bodies: 4,
-            textures: 0);
+            textures: 1);
 
         TestUtils.RemoveSceneEntity(scene, "1");
         TestUtils.RemoveSceneEntity(scene, "2");

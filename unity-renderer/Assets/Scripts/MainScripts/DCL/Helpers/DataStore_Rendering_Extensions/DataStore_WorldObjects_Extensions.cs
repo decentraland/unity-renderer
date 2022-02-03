@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DCL.Models;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace DCL
 {
@@ -8,6 +10,36 @@ namespace DCL
     {
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
+
+        public static Rendereable GetRendereableByRenderer(this DataStore_WorldObjects self, string sceneId, string entityId, Renderer renderer)
+        {
+            if (string.IsNullOrEmpty(sceneId))
+            {
+                logger.LogWarning($"GetRendereableByRenderer", $"invalid sceneId!");
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(entityId))
+            {
+                logger.LogWarning($"GetRendereableByRenderer", $"invalid entityId!");
+                return null;
+            }
+
+            var sceneData = self.sceneData[sceneId];
+
+            if (!sceneData.filteredByOwner.ContainsKey(entityId))
+                return null;
+
+            var rendereables = sceneData.filteredByOwner[entityId].rendereables.Get();
+
+            foreach (var r in rendereables)
+            {
+                if ( r.renderers.Contains(renderer))
+                    return r;
+            }
+
+            return null;
+        }
 
         public static void AddRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
         {
