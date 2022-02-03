@@ -114,23 +114,6 @@ namespace DCL
             sceneObjectsTrackingHelper.OnWillRemoveRendereable -= OnWillRemoveRendereable;
         }
 
-        public void AddEntityMetrics(string entityId, Rendereable rendereable = null)
-        {
-            if (!entityMetrics.ContainsKey(entityId))
-                entityMetrics.Add(entityId, new EntityMetrics());
-
-            if ( rendereable == null )
-                rendereable = new Rendereable();
-
-            entityMetrics[entityId].rendereables.Add(rendereable);
-        }
-
-        public void RemoveEntityMetrics(string entityId)
-        {
-            if (entityMetrics.ContainsKey(entityId))
-                entityMetrics.Remove(entityId);
-        }
-
         public void AddEntity(string entityId)
         {
             AddEntityMetrics(entityId);
@@ -153,44 +136,40 @@ namespace DCL
                 uniqueEntities.Remove(entityId);
         }
 
-        private void OnWillAddRendereable(Rendereable rendereable)
+        public void RemoveExcludedEntity(string entityId)
         {
-            string entityId = rendereable.ownerId;
-
-            Assert.IsTrue(entityId != null, "rendereable.ownerId cannot be null!");
-
-            // Rendereable have to be always be added in order to be counted/discounted
-            // when excluded entities are toggled.
-            AddEntityMetrics(entityId, rendereable);
-
-            if (excludedEntities.Contains(entityId))
+            if (!excludedEntities.Contains(entityId))
                 return;
 
-            AddTrackedRendereable(rendereable);
+            excludedEntities.Remove(entityId);
+
+            if (entityMetrics.ContainsKey(entityId))
+            {
+                foreach ( var rend in entityMetrics[entityId].rendereables )
+                {
+                    AddTrackedRendereable( rend );
+                }
+            }
+
             UpdateUniqueMetrics();
-
-            isDirty = true;
-
-            RaiseMetricsUpdate();
         }
 
-        private void OnWillRemoveRendereable(Rendereable rendereable)
+        public void AddExcludedEntity(string entityId)
         {
-            string entityId = rendereable.ownerId;
-
-            Assert.IsTrue(entityId != null, "rendereable.ownerId cannot be null!");
-
-            RemoveEntityMetrics(entityId);
-
             if (excludedEntities.Contains(entityId))
                 return;
 
-            RemoveTrackedRendereable(rendereable);
+            excludedEntities.Add(entityId);
+
+            if (entityMetrics.ContainsKey(entityId))
+            {
+                foreach ( var rend in entityMetrics[entityId].rendereables )
+                {
+                    RemoveTrackedRendereable( rend );
+                }
+            }
+
             UpdateUniqueMetrics();
-
-            isDirty = true;
-
-            RaiseMetricsUpdate();
         }
 
         public SceneMetricsModel ComputeSceneLimits()
@@ -240,43 +219,57 @@ namespace DCL
             return true;
         }
 
-        public void RemoveExcludedEntity(string entityId)
+        public void SendEvent()
         {
-            if (!excludedEntities.Contains(entityId))
+            if (!isDirty)
                 return;
 
-            excludedEntities.Remove(entityId);
+            isDirty = false;
 
-            if (entityMetrics.ContainsKey(entityId))
-            {
-                foreach ( var rend in entityMetrics[entityId].rendereables )
-                {
-                    AddTrackedRendereable( rend );
-                }
-            }
-
-            UpdateUniqueMetrics();
+            Interface.WebInterface.ReportOnMetricsUpdate(sceneId, modelValue.ToMetricsModel(), ComputeSceneLimits().ToMetricsModel());
         }
 
-        public void AddExcludedEntity(string entityId)
+        private void OnWillAddRendereable(Rendereable rendereable)
         {
+            string entityId = rendereable.ownerId;
+
+            Assert.IsTrue(entityId != null, "rendereable.ownerId cannot be null!");
+
+            // Rendereable have to be always be added in order to be counted/discounted
+            // when excluded entities are toggled.
+            AddEntityMetrics(entityId, rendereable);
+
             if (excludedEntities.Contains(entityId))
                 return;
 
-            excludedEntities.Add(entityId);
-
-            if (entityMetrics.ContainsKey(entityId))
-            {
-                foreach ( var rend in entityMetrics[entityId].rendereables )
-                {
-                    RemoveTrackedRendereable( rend );
-                }
-            }
-
+            AddTrackedRendereable(rendereable);
             UpdateUniqueMetrics();
+
+            isDirty = true;
+
+            RaiseMetricsUpdate();
         }
 
-        public void AddTrackedRendereable(Rendereable rend)
+        private void OnWillRemoveRendereable(Rendereable rendereable)
+        {
+            string entityId = rendereable.ownerId;
+
+            Assert.IsTrue(entityId != null, "rendereable.ownerId cannot be null!");
+
+            RemoveEntityMetrics(entityId);
+
+            if (excludedEntities.Contains(entityId))
+                return;
+
+            RemoveTrackedRendereable(rendereable);
+            UpdateUniqueMetrics();
+
+            isDirty = true;
+
+            RaiseMetricsUpdate();
+        }
+
+        private void AddTrackedRendereable(Rendereable rend)
         {
             if (trackedRendereables.Contains(rend))
                 RemoveTrackedRendereable(rend);
@@ -307,7 +300,7 @@ namespace DCL
             }
         }
 
-        public void RemoveTrackedRendereable(Rendereable rend)
+        private void RemoveTrackedRendereable(Rendereable rend)
         {
             if ( !trackedRendereables.Contains(rend) )
                 return;
@@ -338,7 +331,25 @@ namespace DCL
             }
         }
 
-        void UpdateUniqueMetrics()
+        private void AddEntityMetrics(string entityId, Rendereable rendereable = null)
+        {
+            if (!entityMetrics.ContainsKey(entityId))
+                entityMetrics.Add(entityId, new EntityMetrics());
+
+            if ( rendereable == null )
+                rendereable = new Rendereable();
+
+            entityMetrics[entityId].rendereables.Add(rendereable);
+        }
+
+        private void RemoveEntityMetrics(string entityId)
+        {
+            if (entityMetrics.ContainsKey(entityId))
+                entityMetrics.Remove(entityId);
+        }
+
+
+        private void UpdateUniqueMetrics()
         {
             modelValue.materials = uniqueMaterials.GetObjectsCount();
             modelValue.textures = uniqueTextures.GetObjectsCount();
@@ -381,16 +392,6 @@ namespace DCL
         {
             UpdateWorstMetricsOffense();
             OnMetricsUpdated?.Invoke(this);
-        }
-
-        public void SendEvent()
-        {
-            if (!isDirty)
-                return;
-
-            isDirty = false;
-
-            Interface.WebInterface.ReportOnMetricsUpdate(sceneId, modelValue.ToMetricsModel(), ComputeSceneLimits().ToMetricsModel());
         }
     }
 }
