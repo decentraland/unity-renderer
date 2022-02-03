@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
 {
-    public class ABGoBlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_AB_GameObject,
+    public class BlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_AB_GameObject,
                                                 AssetPromise_AB_GameObject,
                                                 Asset_AB_GameObject,
                                                 AssetLibrary_AB_GameObject>
@@ -80,7 +80,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
         }
 
         [UnityTest]
-        public IEnumerator FailCorrectlyWhenGivenWrongURL()
+        public IEnumerator AB_GameObject_FailCorrectlyWhenGivenWrongURL()
         {
             string invalidHash = "Qm_InVaLiD_hAsH";
 
