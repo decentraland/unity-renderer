@@ -85,7 +85,7 @@ MonoBehaviour:
   topPanelHeight: 80
   panelBGColor: {r: 0.09433961, g: 0.09433961, b: 0.09433961, a: 1}
   panelsPadding: 3
-  leftPanelWidthPercentage: 0.26
+  leftPanelWidthPercentage: 0.288
   leftPanelPadding:
     serializedVersion: 2
     x: 5

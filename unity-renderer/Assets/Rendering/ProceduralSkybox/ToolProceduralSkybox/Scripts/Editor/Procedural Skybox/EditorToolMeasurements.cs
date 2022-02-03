@@ -28,6 +28,7 @@ namespace DCL.Skybox
 
         // Right Panel
         [Header("Right Panel")]
+        public float pinnedPanelHeight = 300;
         public Rect rightPanelPadding;
         public GUIStyleStateVar rightPanelHeadingState;
         public GUIStyleStateVar rightPanelHeadingTextColor;

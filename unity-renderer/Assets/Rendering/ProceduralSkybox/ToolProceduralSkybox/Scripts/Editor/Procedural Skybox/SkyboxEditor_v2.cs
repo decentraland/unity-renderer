@@ -18,6 +18,14 @@ namespace DCL.Skybox
         Base_Skybox
     }
 
+    public class RightPanelPins
+    {
+        public string name;
+        public SkyboxEditorToolsParts part;
+        public int baseSkyboxSelectedIndex;
+        public bool pinned;
+    }
+
     public class SkyboxEditorWindow_v2 : EditorWindow
     {
         private EditorToolMeasurements toolSize;
@@ -40,12 +48,6 @@ namespace DCL.Skybox
         private string newConfigName;
         private bool overridingController;
 
-        private bool showBackgroundLayer;
-        private bool showAmbienLayer;
-        private bool showFogLayer;
-        private bool showDLLayer;
-        private bool showAvatarLayer;
-        private bool showTimelineTags;
         private MaterialReferenceContainer.Mat_Layer matLayer = null;
 
         private GUIStyle foldoutStyle;
@@ -61,6 +63,7 @@ namespace DCL.Skybox
         private float rightPanelWidth;
         private SkyboxEditorToolsParts selectedPart = SkyboxEditorToolsParts.BG_Layer;
         private int baseSkyboxSelectedIndex;
+        private List<RightPanelPins> rightPanelPins = new List<RightPanelPins>() { new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = "Background Layer" } };
         private string rightPanelHeadingTxt = "Background Layer";
 
         [MenuItem("Window/Skybox Editor v2")]
@@ -124,9 +127,8 @@ namespace DCL.Skybox
 
             // Right Panel
             topLeft = toolSize.topPanelLeftStart + width + toolSize.panelsPadding;
-            //width = (position.width - toolSize.topPanelRightPadding - toolSize.panelsPadding) * (1 - toolSize.leftPanelWidthPercentage);
             width = position.width - toolSize.toolRightPadding - topLeft;
-            EditorGUI.DrawRect(new Rect(topLeft, top, width, height), toolSize.panelBGColor);
+            //EditorGUI.DrawRect(new Rect(topLeft, top, width, height), toolSize.panelBGColor);
             GUILayout.BeginArea(new Rect(topLeft + toolSize.rightPanelPadding.xMin, top + toolSize.rightPanelPadding.yMin, width - toolSize.rightPanelPadding.xMax, height - toolSize.rightPanelPadding.yMax));
             RenderRightPanel();
             GUILayout.EndArea();
@@ -135,6 +137,51 @@ namespace DCL.Skybox
             {
                 ApplyOnMaterial();
             }
+        }
+
+        void RenderPinnedRightPanel(float topLeft, float top, float width, float height)
+        {
+            RefreshPinnedPanels();
+
+            // Make a box for pinned panel
+            EditorGUI.DrawRect(new Rect(topLeft, top, width, toolSize.pinnedPanelHeight), toolSize.panelBGColor);
+            GUILayout.BeginArea(new Rect(topLeft + toolSize.rightPanelPadding.xMin, top + toolSize.rightPanelPadding.yMin, width - toolSize.rightPanelPadding.xMax, toolSize.pinnedPanelHeight));
+            RenderRightPanel();
+            GUILayout.EndArea();
+        }
+
+        private void AddToRightPanel(RightPanelPins obj)
+        {
+            List<RightPanelPins> pinnedPanels = new List<RightPanelPins>();
+            // Remove
+            for (int i = 0; i < rightPanelPins.Count; i++)
+            {
+                if (rightPanelPins[i].pinned)
+                {
+                    pinnedPanels.Add(rightPanelPins[i]);
+                }
+            }
+            pinnedPanels.Add(obj);
+            // Add
+            rightPanelPins = pinnedPanels;
+        }
+
+        private void RefreshPinnedPanels()
+        {
+            List<RightPanelPins> pinnedPanels = new List<RightPanelPins>();
+
+            for (int i = 0; i < rightPanelPins.Count; i++)
+            {
+                if (rightPanelPins[i].pinned)
+                {
+                    pinnedPanels.Add(rightPanelPins[i]);
+                }
+                else if (i == (rightPanelPins.Count - 1))
+                {
+                    pinnedPanels.Add(rightPanelPins[i]);
+                }
+            }
+            rightPanelPins = pinnedPanels;
         }
 
         #region Top Panel
@@ -162,6 +209,7 @@ namespace DCL.Skybox
 
             EditorGUILayout.EndHorizontal();
 
+            // Timeline Tags
             EditorGUILayout.BeginHorizontal();
 
             style = new GUIStyle(EditorStyles.toolbarButton);
@@ -170,8 +218,9 @@ namespace DCL.Skybox
             Rect r = EditorGUILayout.BeginVertical(style);
             if (GUI.Button(r, GUIContent.none))
             {
-                selectedPart = SkyboxEditorToolsParts.Timeline_Tags;
-                rightPanelHeadingTxt = "Timeline Tags";
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Timeline_Tags, name = "Timeline Tags" });
+                //selectedPart = SkyboxEditorToolsParts.Timeline_Tags;
+                //rightPanelHeadingTxt = "Timeline Tags";
             }
             EditorGUILayout.LabelField("Timeline Tags");
             EditorGUILayout.EndVertical();
@@ -287,36 +336,41 @@ namespace DCL.Skybox
             // Render BG Layer Button
             if (GUILayout.Button("BG Layer", EditorStyles.toolbarButton))
             {
-                selectedPart = SkyboxEditorToolsParts.BG_Layer;
-                rightPanelHeadingTxt = "Background Layer";
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = "Background Layer" });
+                //selectedPart = SkyboxEditorToolsParts.BG_Layer;
+                //rightPanelHeadingTxt = "Background Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Ambient Layer", EditorStyles.toolbarButton))
             {
-                selectedPart = SkyboxEditorToolsParts.Ambient_Layer;
-                rightPanelHeadingTxt = "Ambient Layer";
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Ambient_Layer, name = "Ambient Layer" });
+                //selectedPart = SkyboxEditorToolsParts.Ambient_Layer;
+                //rightPanelHeadingTxt = "Ambient Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Avatar Layer", EditorStyles.toolbarButton))
             {
-                selectedPart = SkyboxEditorToolsParts.Avatar_Layer;
-                rightPanelHeadingTxt = "Avatar Layer";
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Avatar_Layer, name = "Avatar Layer" });
+                //selectedPart = SkyboxEditorToolsParts.Avatar_Layer;
+                //rightPanelHeadingTxt = "Avatar Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Fog Layer", EditorStyles.toolbarButton))
             {
-                selectedPart = SkyboxEditorToolsParts.Fog_Layer;
-                rightPanelHeadingTxt = "Fog Layer";
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Fog_Layer, name = "Fog Layer" });
+                //selectedPart = SkyboxEditorToolsParts.Fog_Layer;
+                //rightPanelHeadingTxt = "Fog Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Directional Light Layer", EditorStyles.toolbarButton))
             {
-                selectedPart = SkyboxEditorToolsParts.Directional_Light_Layer;
-                rightPanelHeadingTxt = "Directional Light Layer";
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Directional_Light_Layer, name = "Directional Light Layer" });
+                //selectedPart = SkyboxEditorToolsParts.Directional_Light_Layer;
+                //rightPanelHeadingTxt = "Directional Light Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
@@ -338,15 +392,16 @@ namespace DCL.Skybox
             for (int i = 0; i < selectedConfiguration.layers.Count; i++)
             {
 
-                Rect r = EditorGUILayout.BeginHorizontal(toolSize.leftPanelHorizontal);
+                EditorGUILayout.BeginHorizontal(toolSize.leftPanelHorizontal);
 
                 selectedConfiguration.layers[i].enabled = EditorGUILayout.Toggle(selectedConfiguration.layers[i].enabled, GUILayout.Width(toolSize.layerActiveCheckboxSize), GUILayout.Height(toolSize.layerActiveCheckboxSize));
 
                 if (GUILayout.Button(selectedConfiguration.layers[i].nameInEditor, GUILayout.Width(toolSize.layerButtonWidth)))
                 {
-                    selectedPart = SkyboxEditorToolsParts.Base_Skybox;
-                    baseSkyboxSelectedIndex = i;
-                    rightPanelHeadingTxt = selectedConfiguration.layers[i].nameInEditor;
+                    AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Base_Skybox, name = selectedConfiguration.layers[i].nameInEditor, baseSkyboxSelectedIndex = i });
+                    //selectedPart = SkyboxEditorToolsParts.Base_Skybox;
+                    //baseSkyboxSelectedIndex = i;
+                    //rightPanelHeadingTxt = selectedConfiguration.layers[i].nameInEditor;
                 }
 
                 selectedConfiguration.layers[i].slotID = EditorGUILayout.Popup(selectedConfiguration.layers[i].slotID, renderingOrderList.ToArray(), GUILayout.Width(toolSize.layerRenderWidth));
@@ -423,6 +478,13 @@ namespace DCL.Skybox
 
                 EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             }
+            Rect r = EditorGUILayout.BeginHorizontal();
+            if (GUI.Button(new Rect(r.width - 35, r.y, 25, 25), "+"))
+            {
+                selectedConfiguration.layers.Add(new TextureLayer("Tex Layer " + (selectedConfiguration.layers.Count + 1)));
+            }
+            EditorGUILayout.EndHorizontal();
+
         }
 
         #endregion
@@ -431,47 +493,65 @@ namespace DCL.Skybox
 
         private void RenderRightPanel()
         {
-            RenderRightPanelHeading(rightPanelHeadingTxt);
-            EditorGUILayout.Space(5);
-
+            RefreshPinnedPanels();
             rightPanelScrollPos = EditorGUILayout.BeginScrollView(rightPanelScrollPos);
-            switch (selectedPart)
+
+            for (int i = 0; i < rightPanelPins.Count; i++)
             {
-                case SkyboxEditorToolsParts.Timeline_Tags:
-                    RenderTimelineTags();
-                    break;
-                case SkyboxEditorToolsParts.BG_Layer:
-                    RenderBackgroundColorLayer();
-                    break;
-                case SkyboxEditorToolsParts.Ambient_Layer:
-                    RenderAmbientLayer();
-                    break;
-                case SkyboxEditorToolsParts.Avatar_Layer:
-                    RenderAvatarColorLayer();
-                    break;
-                case SkyboxEditorToolsParts.Fog_Layer:
-                    RenderFogLayer();
-                    break;
-                case SkyboxEditorToolsParts.Directional_Light_Layer:
-                    RenderDirectionalLightLayer();
-                    break;
-                case SkyboxEditorToolsParts.Base_Skybox:
-                    RenderTextureLayer(selectedConfiguration.layers[baseSkyboxSelectedIndex]);
-                    break;
-                default:
-                    break;
+                RenderRightPanelHeading(rightPanelPins[i].name, rightPanelPins[i]);
+                EditorGUILayout.Space(5);
+                switch (rightPanelPins[i].part)
+                {
+                    case SkyboxEditorToolsParts.Timeline_Tags:
+                        RenderTimelineTags();
+                        break;
+                    case SkyboxEditorToolsParts.BG_Layer:
+                        RenderBackgroundColorLayer();
+                        break;
+                    case SkyboxEditorToolsParts.Ambient_Layer:
+                        RenderAmbientLayer();
+                        break;
+                    case SkyboxEditorToolsParts.Avatar_Layer:
+                        RenderAvatarColorLayer();
+                        break;
+                    case SkyboxEditorToolsParts.Fog_Layer:
+                        RenderFogLayer();
+                        break;
+                    case SkyboxEditorToolsParts.Directional_Light_Layer:
+                        RenderDirectionalLightLayer();
+                        break;
+                    case SkyboxEditorToolsParts.Base_Skybox:
+                        RenderTextureLayer(selectedConfiguration.layers[rightPanelPins[i].baseSkyboxSelectedIndex]);
+                        break;
+                    default:
+                        break;
+                }
+
+                GUIStyle style = new GUIStyle(GUI.skin.horizontalSlider);
+                style.padding = new RectOffset(0, 0, 0, 0);
+                style.margin = new RectOffset(0, 0, 0, 0);
+                style.contentOffset = Vector2.zero;
+                style.border = new RectOffset(0, 0, 0, 0);
+                EditorGUILayout.LabelField("", style);
             }
+
             EditorGUILayout.EndScrollView();
         }
 
-        void RenderRightPanelHeading(string text)
+        void RenderRightPanelHeading(string text, RightPanelPins obj)
         {
             GUIStyle style = new GUIStyle(EditorStyles.miniBoldLabel);
             style.normal.background = toolSize.rightPanelHeadingState.backgroundTex;
             EditorGUILayout.BeginHorizontal(style);
             style = new GUIStyle(EditorStyles.boldLabel);
             style.normal.textColor = toolSize.rightPanelHeadingTextColor.textColor;
-            EditorGUILayout.LabelField(text, style);
+            EditorGUILayout.LabelField(text, style, GUILayout.Width(200));
+
+            string btnTxt = (obj.pinned) ? "Un-Pin" : "Pin";
+            if (GUILayout.Button(btnTxt, GUILayout.Width(50)))
+            {
+                obj.pinned = !obj.pinned;
+            }
             EditorGUILayout.EndHorizontal();
         }
 
