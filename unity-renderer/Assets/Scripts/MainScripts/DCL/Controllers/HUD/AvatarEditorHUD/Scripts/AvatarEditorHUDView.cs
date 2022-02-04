@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
-using DCL;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
@@ -87,13 +86,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     internal GameObject web3Container;
 
     [SerializeField]
-    internal Button web3GoToMarketplaceButton;
-
-    [SerializeField]
     internal GameObject noWeb3Container;
-
-    [SerializeField]
-    internal Button noWeb3GoToMarketplaceButton;
 
     [Header("Skins")]
     
@@ -103,7 +96,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     [SerializeField] internal GameObject skinsMissingWeb3Container;
     
-    [SerializeField] internal Button skinsConnectWalletButton;
+    [SerializeField] internal GameObject skinsConnectWalletButtonContainer;
 
     [SerializeField] private GameObject skinsPopulatedListContainer;
     [SerializeField] private GameObject skinsEmptyListContainer;
@@ -468,5 +461,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         skinsPopulatedListContainer.SetActive(show);
         skinsEmptyListContainer.SetActive(!show);
+        skinsConnectWalletButtonContainer.SetActive(show);
     }
 }
