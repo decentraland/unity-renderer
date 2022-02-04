@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AvatarSystem
 {
     public interface IVisibility : IDisposable
     {
-        void Bind(Renderer combinedRenderer, Renderer[] facialFeatures);
+        void Bind(Renderer combinedRenderer, List<Renderer> facialFeatures);
         void AddGlobalConstrain(string key);
         void RemoveGlobalConstrain(string key);
 

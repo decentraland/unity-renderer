@@ -1,4 +1,5 @@
-﻿using AvatarSystem;
+﻿using System.Collections.Generic;
+using AvatarSystem;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -8,13 +9,13 @@ namespace Test.AvatarSystem
     {
         private Visibility visibility;
         private Renderer combined;
-        private Renderer[] facialFeatures;
+        private List<Renderer> facialFeatures;
 
         [SetUp]
         public void SetUp()
         {
             combined = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<Renderer>();
-            facialFeatures = new []
+            facialFeatures = new List<Renderer>
             {
                 GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<Renderer>(),
                 GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<Renderer>(),
