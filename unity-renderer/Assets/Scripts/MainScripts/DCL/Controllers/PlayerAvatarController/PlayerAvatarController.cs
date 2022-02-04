@@ -33,6 +33,7 @@ public class PlayerAvatarController : MonoBehaviour
     private Camera mainCamera;
     private PlayerAvatarAnalytics playerAvatarAnalytics;
     private IFatalErrorReporter fatalErrorReporter; // TODO?
+    private string VISIBILITY_CONSTRAIN;
 
     private void Start()
     {
@@ -103,7 +104,14 @@ public class PlayerAvatarController : MonoBehaviour
         avatarVisibility.SetVisibility("PLAYER_AVATAR_CONTROLLER", shouldBeVisible);
     }
 
-    public void SetAvatarVisibility(bool isVisible) { avatar.SetVisibility(isVisible); }
+    public void SetAvatarVisibility(bool isVisible)
+    {
+        VISIBILITY_CONSTRAIN = "own_player_invisible";
+        if (isVisible)
+            avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
+        else
+            avatar.AddVisibilityConstrain(VISIBILITY_CONSTRAIN);
+    }
 
     private void OnEnable()
     {

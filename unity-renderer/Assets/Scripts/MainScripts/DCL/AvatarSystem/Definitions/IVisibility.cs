@@ -6,9 +6,13 @@ namespace AvatarSystem
     public interface IVisibility : IDisposable
     {
         void Bind(Renderer combinedRenderer, Renderer[] facialFeatures);
-        void SetExplicitVisibility(bool explicitVisibility);
-        void SetLoadingReady(bool loadingReady);
-        void SetCombinedRendererVisibility(bool combinedRendererVisibility);
-        void SetFacialFeaturesVisibility(bool facialFeaturesVisibility);
+        void AddGlobalConstrain(string key);
+        void RemoveGlobalConstrain(string key);
+
+        void AddCombinedRendererConstrain(string key);
+        void RemoveCombinedRendererConstrain(string key);
+
+        void AddFacialFeaturesConstrain(string key);
+        void RemoveFacialFeaturesConstrain(string key);
     }
 }

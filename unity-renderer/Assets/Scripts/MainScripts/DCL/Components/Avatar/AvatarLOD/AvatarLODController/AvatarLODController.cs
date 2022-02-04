@@ -19,6 +19,7 @@ namespace DCL
 
     public class AvatarLODController : IAvatarLODController
     {
+        private string VISIBILITY_CONSTRAIN = "behind_camera_or_out_of_limits";
         public Player player { get; }
 
         public AvatarLODController(Player player)
@@ -36,7 +37,7 @@ namespace DCL
 
             player.onPointerDownCollider.SetColliderEnabled(true);
             player.avatar.SetLODLevel(0);
-            player.avatar.SetVisibility(true);
+            player.avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
         }
 
         public void SetLOD1()
@@ -46,7 +47,7 @@ namespace DCL
 
             player.onPointerDownCollider.SetColliderEnabled(true);
             player.avatar.SetLODLevel(1);
-            player.avatar.SetVisibility(true);
+            player.avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
         }
 
         public void SetLOD2()
@@ -56,7 +57,7 @@ namespace DCL
 
             player.onPointerDownCollider.SetColliderEnabled(false);
             player.avatar.SetLODLevel(2);
-            player.avatar.SetVisibility(true);
+            player.avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
         }
 
         public void SetInvisible()
@@ -64,7 +65,7 @@ namespace DCL
             if (player?.avatar == null)
                 return;
 
-            player.avatar.SetVisibility(false);
+            player.avatar.AddVisibilityConstrain(VISIBILITY_CONSTRAIN);
             player.onPointerDownCollider.SetColliderEnabled(false);
         }
 
