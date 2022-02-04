@@ -192,7 +192,7 @@ namespace DCL.Controllers
             if (parcels.Count == 0)
                 return false;
 
-            float heightLimit = metricsCounter.ComputeSceneLimits().sceneHeight;
+            float heightLimit = metricsCounter.sceneLimits.sceneHeight;
 
             if (height > heightLimit)
                 return false;
@@ -205,7 +205,7 @@ namespace DCL.Controllers
             if (parcels.Count == 0)
                 return false;
 
-            float heightLimit = metricsCounter.ComputeSceneLimits().sceneHeight;
+            float heightLimit = metricsCounter.sceneLimits.sceneHeight;
             if (height > heightLimit)
                 return false;
 

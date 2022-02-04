@@ -55,10 +55,11 @@ namespace DCL
 
         private HashSet<string> excludedEntities = new HashSet<string>();
 
-        private SceneMetricsModel sceneLimits;
+        private SceneMetricsModel sceneLimitsValue = new SceneMetricsModel();
         private SceneMetricsModel modelValue = new SceneMetricsModel();
 
         public SceneMetricsModel model => modelValue.Clone();
+        public SceneMetricsModel sceneLimits => sceneLimitsValue.Clone();
 
         public bool isDirty { get; private set; }
 
@@ -84,6 +85,7 @@ namespace DCL
             Assert.IsTrue( !string.IsNullOrEmpty(sceneId), "Scene must have an ID!" );
 
             sceneObjectsTrackingHelper = new WorldSceneObjectsTrackingHelper(dataStore, sceneId);
+            sceneLimitsValue = ComputeSceneLimits();
         }
 
         public void Dispose()
@@ -168,25 +170,22 @@ namespace DCL
             UpdateUniqueMetrics();
         }
 
-        public SceneMetricsModel ComputeSceneLimits()
+        private SceneMetricsModel ComputeSceneLimits()
         {
-            if (sceneLimits == null)
-            {
-                sceneLimits = new SceneMetricsModel();
+            var result = new SceneMetricsModel();
 
-                float log = Mathf.Log(sceneParcelCount + 1, 2);
-                float lineal = sceneParcelCount;
+            float log = Mathf.Log(sceneParcelCount + 1, 2);
+            float lineal = sceneParcelCount;
 
-                sceneLimits.triangles = (int) (lineal * LimitsConfig.triangles);
-                sceneLimits.bodies = (int) (lineal * LimitsConfig.bodies);
-                sceneLimits.entities = (int) (lineal * LimitsConfig.entities);
-                sceneLimits.materials = (int) (log * LimitsConfig.materials);
-                sceneLimits.textures = (int) (log * LimitsConfig.textures);
-                sceneLimits.meshes = (int) (log * LimitsConfig.meshes);
-                sceneLimits.sceneHeight = (int) (log * LimitsConfig.height);
-            }
+            result.triangles = (int) (lineal * LimitsConfig.triangles);
+            result.bodies = (int) (lineal * LimitsConfig.bodies);
+            result.entities = (int) (lineal * LimitsConfig.entities);
+            result.materials = (int) (log * LimitsConfig.materials);
+            result.textures = (int) (log * LimitsConfig.textures);
+            result.meshes = (int) (log * LimitsConfig.meshes);
+            result.sceneHeight = (int) (log * LimitsConfig.height);
 
-            return sceneLimits;
+            return result;
         }
 
         public bool IsInsideTheLimits()
@@ -357,9 +356,9 @@ namespace DCL
 
         private void UpdateWorstMetricsOffense()
         {
-            if ( sceneLimits != null && data.worstMetricOffenseComputeEnabled.Get() )
+            if ( sceneLimitsValue != null && data.worstMetricOffenseComputeEnabled.Get() )
             {
-                bool isOffending = modelValue > sceneLimits;
+                bool isOffending = modelValue > sceneLimitsValue;
 
                 if ( !isOffending )
                     return;
@@ -373,7 +372,7 @@ namespace DCL
                 }
 
                 SceneMetricsModel worstOffense = data.worstMetricOffenses[sceneId];
-                SceneMetricsModel currentOffense = sceneLimits - model;
+                SceneMetricsModel currentOffense = sceneLimitsValue - model;
 
                 if ( firstOffense )
                     logger.Log($"New offending scene {sceneId} ({scenePosition})!\n{model}");
@@ -382,7 +381,7 @@ namespace DCL
                     return;
 
                 data.worstMetricOffenses[sceneId] = currentOffense;
-                logger.Log($"New offending scene {sceneId} {scenePosition}!\nmetrics: {model}\nlimits: {sceneLimits}\ndelta:{currentOffense}");
+                logger.Log($"New offending scene {sceneId} {scenePosition}!\nmetrics: {model}\nlimits: {sceneLimitsValue}\ndelta:{currentOffense}");
             }
         }
 

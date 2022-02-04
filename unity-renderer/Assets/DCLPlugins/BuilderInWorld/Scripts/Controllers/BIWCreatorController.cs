@@ -103,7 +103,7 @@ namespace DCL.Builder
             if ( context.editorContext.editorHUD == null)
                 return false;
 
-            SceneMetricsModel limits = sceneToEdit.metricsCounter.ComputeSceneLimits();
+            SceneMetricsModel limits = sceneToEdit.metricsCounter.sceneLimits;
             SceneMetricsModel usage = sceneToEdit.metricsCounter.model;
 
             if (limits.bodies < usage.bodies + sceneObject.metrics.bodies)
