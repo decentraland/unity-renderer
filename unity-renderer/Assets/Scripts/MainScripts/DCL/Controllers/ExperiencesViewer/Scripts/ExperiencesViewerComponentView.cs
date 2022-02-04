@@ -1,5 +1,6 @@
 using DCL;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -51,12 +52,18 @@ public interface IExperiencesViewerComponentView
     /// </summary>
     /// <param name="isActive">True to show it.</param>
     void SetVisible(bool isActive);
+
+    /// <summary>
+    /// Shows the info toast for when the UI of an experience is hidden.
+    /// </summary>
+    void ShowUIHiddenToast();
 }
 
 public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesViewerComponentView
 {
     internal const string EXPERIENCES_POOL_NAME = "ExperiencesViewer_ExperienceRowsPool";
     internal const int EXPERIENCES_POOL_PREWARM = 10;
+    internal const float UI_HIDDEN_TOAST_SHOWING_TIME = 2f;
 
     [Header("Assets References")]
     [SerializeField] internal ExperienceRowComponentView experienceRowPrefab;
@@ -64,6 +71,7 @@ public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesVie
     [Header("Prefab References")]
     [SerializeField] internal ButtonComponentView closeButton;
     [SerializeField] internal GridContainerComponentView availableExperiences;
+    [SerializeField] internal ShowHideAnimator hiddenUIToastAnimator;
     public Color rowsBackgroundColor;
     public Color rowsOnHoverColor;
 
@@ -72,6 +80,7 @@ public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesVie
     public event Action<string, bool> onSomeExperienceExecutionChanged;
 
     internal Pool experiencesPool;
+    internal Coroutine uiHiddenToastCoroutine;
 
     public override void Awake()
     {
@@ -133,6 +142,17 @@ public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesVie
 
     public void SetVisible(bool isActive) { gameObject.SetActive(isActive); }
 
+    public void ShowUIHiddenToast() 
+    {
+        if (uiHiddenToastCoroutine != null)
+        {
+            StopCoroutine(uiHiddenToastCoroutine);
+            uiHiddenToastCoroutine = null;
+        }
+
+        uiHiddenToastCoroutine = StartCoroutine(ShowUIHiddenToastCoroutine());
+    }
+
     public override void Dispose()
     {
         base.Dispose();
@@ -163,6 +183,13 @@ public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesVie
 
             experiencesPool.ForcePrewarm();
         }
+    }
+
+    internal IEnumerator ShowUIHiddenToastCoroutine()
+    {
+        hiddenUIToastAnimator.Show();
+        yield return new WaitForSeconds(UI_HIDDEN_TOAST_SHOWING_TIME);
+        hiddenUIToastAnimator.Hide();
     }
 
     internal static ExperiencesViewerComponentView Create()

@@ -65,6 +65,9 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
             UIScreenSpace sceneUIComponent = scene.GetSharedComponent<UIScreenSpace>();
             sceneUIComponent.canvas.enabled = isVisible;
         }
+
+        if (!isVisible)
+            view.ShowUIHiddenToast();
     }
 
     internal void OnSomeExperienceExecutionChanged(string pexId, bool isPlaying)
