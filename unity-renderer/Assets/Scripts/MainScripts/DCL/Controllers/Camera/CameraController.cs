@@ -40,7 +40,7 @@ namespace DCL.Camera
 
         private bool wasBlendingLastFrame;
 
-        private float mouseWheelThreshold = 0.4f;
+        private float mouseWheelThreshold = 0.04f;
 
         private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
         private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
