@@ -10,8 +10,6 @@ public interface IExperiencesViewerComponentController : IDisposable
 {
     void Initialize();
     void SetVisibility(bool visible);
-    void OnPEXSceneAdded(IParcelScene scene);
-    void OnPEXSceneRemoved(string id);
 }
 
 public class ExperiencesViewerComponentController : IExperiencesViewerComponentController
@@ -21,8 +19,10 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
 
     internal ExperiencesViewerComponentView view;
+    internal UserProfile userProfile;
     internal ISceneController sceneController;
     internal Dictionary<string, IParcelScene> activePEXScenes = new Dictionary<string, IParcelScene>();
+    internal List<string> pausedPEXScenesIds = new List<string>();
 
     public void Initialize()
     {
@@ -30,7 +30,7 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
         view.onCloseButtonPressed += OnCloseButtonPressed;
         view.onSomeExperienceUIVisibilityChanged += OnSomeExperienceUIVisibilityChanged;
         view.onSomeExperienceExecutionChanged += OnSomeExperienceExecutionChanged;
-        
+
         isOpen.OnChange += IsOpenChanged;
         IsOpenChanged(isOpen.Get(), false);
 
@@ -38,6 +38,10 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
         sceneController.OnNewPortableExperienceSceneAdded += OnPEXSceneAdded;
         sceneController.OnNewPortableExperienceSceneRemoved += OnPEXSceneRemoved;
         CheckCurrentActivePortableExperiences();
+
+        userProfile = UserProfile.GetOwnUserProfile();
+        userProfile.OnUpdate += OnUserProfileUpdated;
+        OnUserProfileUpdated(userProfile);
 
         isInitialized.Set(view.transform);
     }
@@ -53,6 +57,9 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
         view.onCloseButtonPressed -= OnCloseButtonPressed;
         view.onSomeExperienceUIVisibilityChanged -= OnSomeExperienceUIVisibilityChanged;
         view.onSomeExperienceExecutionChanged -= OnSomeExperienceExecutionChanged;
+        sceneController.OnNewPortableExperienceSceneAdded -= OnPEXSceneAdded;
+        sceneController.OnNewPortableExperienceSceneRemoved -= OnPEXSceneRemoved;
+        userProfile.OnUpdate -= OnUserProfileUpdated;
     }
 
     internal void OnCloseButtonPressed() { SetVisibility(false); }
@@ -72,8 +79,29 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
 
     internal void OnSomeExperienceExecutionChanged(string pexId, bool isPlaying)
     {
-        if (!isPlaying)
+        if (isPlaying)
+        {
+            activePEXScenes.TryGetValue(pexId, out IParcelScene scene);
+            if (scene != null)
+            {
+                GlobalScene pexSceneToPlay = scene as GlobalScene;
+                WebInterface.SpawnPortableExperience(new WebInterface.SpawnPortableExperiencePayload
+                {
+                    id = pexSceneToPlay.sceneData.id,
+                    name = pexSceneToPlay.sceneName,
+                    baseUrl = pexSceneToPlay.sceneData.baseUrl,
+                    mappings = pexSceneToPlay.sceneData.contents.ToArray(),
+                    icon = pexSceneToPlay.iconUrl
+                });
+            }
+        }
+        else
+        {
+            if (!pausedPEXScenesIds.Contains(pexId))
+                pausedPEXScenesIds.Add(pexId);
+
             WebInterface.KillPortableExperience(pexId);
+        }
     }
 
     internal void IsOpenChanged(bool current, bool previous) { SetVisibility(current); }
@@ -81,6 +109,7 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
     internal void CheckCurrentActivePortableExperiences()
     {
         activePEXScenes.Clear();
+        pausedPEXScenesIds.Clear();
 
         List<GlobalScene> activePortableExperiences = WorldStateUtils.GetActivePortableExperienceScenes();
         foreach (GlobalScene pexScene in activePortableExperiences)
@@ -93,23 +122,42 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
 
     public void OnPEXSceneAdded(IParcelScene scene)
     {
+        ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(scene.sceneData.id);
+
         if (activePEXScenes.ContainsKey(scene.sceneData.id))
+        {
+            activePEXScenes[scene.sceneData.id] = scene;
+
+            if (experienceToUpdate != null)
+                experienceToUpdate.SetUIVisibility(true);
+
             return;
+        }
 
         GlobalScene newPortableExperienceScene = scene as GlobalScene;
 
-        ExperienceRowComponentModel experienceToAdd = new ExperienceRowComponentModel
+        if (pausedPEXScenesIds.Contains(scene.sceneData.id))
         {
-            id = newPortableExperienceScene.sceneData.id,
-            isPlaying = true,
-            isUIVisible = true,
-            name = newPortableExperienceScene.sceneName,
-            iconUri = newPortableExperienceScene.iconUrl
-        };
+            pausedPEXScenesIds.Remove(scene.sceneData.id);
 
-        view.AddAvailableExperience(experienceToAdd);
-        activePEXScenes.Add(scene.sceneData.id, scene);
-        numOfLoadedExperiences.Set(activePEXScenes.Count);
+            if (experienceToUpdate != null)
+                experienceToUpdate.SetAsPlaying(true);
+        }
+        else
+        {
+            ExperienceRowComponentModel experienceToAdd = new ExperienceRowComponentModel
+            {
+                id = newPortableExperienceScene.sceneData.id,
+                isPlaying = true,
+                isUIVisible = true,
+                name = newPortableExperienceScene.sceneName,
+                iconUri = newPortableExperienceScene.iconUrl
+            };
+
+            view.AddAvailableExperience(experienceToAdd);
+            activePEXScenes.Add(scene.sceneData.id, scene);
+            numOfLoadedExperiences.Set(activePEXScenes.Count);
+        }
     }
 
     public void OnPEXSceneRemoved(string id)
@@ -117,8 +165,39 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
         if (!activePEXScenes.ContainsKey(id))
             return;
 
+        if (pausedPEXScenesIds.Contains(id))
+        {
+            ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(id);
+            if (experienceToUpdate != null)
+            {
+                if (!experienceToUpdate.model.isPlaying)
+                    return;
+            }
+        }
+
         view.RemoveAvailableExperience(id);
         activePEXScenes.Remove(id);
+        pausedPEXScenesIds.Remove(id);
+        numOfLoadedExperiences.Set(activePEXScenes.Count);
+    }
+
+    internal void OnUserProfileUpdated(UserProfile userProfile)
+    {
+        List<string> experiencesIdsToRemove = new List<string>();
+
+        foreach (var pex in activePEXScenes)
+        {
+            if (!userProfile.avatar.wearables.Contains(pex.Key))
+                experiencesIdsToRemove.Add(pex.Key);
+        }
+
+        foreach (string pexId in experiencesIdsToRemove)
+        {
+            view.RemoveAvailableExperience(pexId);
+            activePEXScenes.Remove(pexId);
+            pausedPEXScenesIds.Remove(pexId);
+        }
+
         numOfLoadedExperiences.Set(activePEXScenes.Count);
     }
 
