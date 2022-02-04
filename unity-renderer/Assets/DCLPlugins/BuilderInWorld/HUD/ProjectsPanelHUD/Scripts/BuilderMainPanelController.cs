@@ -320,7 +320,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         Promise<ProjectData> projectPromise = context.builderAPIController.CreateNewProject(project);
 
-        projectPromise.Then( OpenEditorFromProjectData);
+        projectPromise.Then( OpenEditorFromNewProject);
 
         projectPromise.Catch( errorString =>
         {
@@ -328,9 +328,10 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         });
     }
 
-    private void OpenEditorFromProjectData(ProjectData projectData)
+    private void OpenEditorFromNewProject(ProjectData projectData)
     {
         var manifest = BIWUtils.CreateManifestFromProject(projectData);
+        DataStore.i.builderInWorld.lastProjectIdCreated.Set(manifest.project.id);
         OpenEditorFromManifest(manifest);
     }
 

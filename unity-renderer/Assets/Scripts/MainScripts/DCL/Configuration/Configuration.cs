@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Configuration
@@ -80,13 +81,18 @@ namespace DCL.Configuration
         public const string FLOOR_ID = "c9b17021-765c-4d9a-9966-ce93a9c323d1";
         public const string FLOOR_MODEL = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
         public const string FLOOR_NAME = "Floor";
+        public const string FLOOR_ASSET_PACK_ID = "e6fa9601-3e47-4dff-9a84-e8e017add15a";
         public const string FLOOR_ASSET_PACK_NAME = "Genesis City";
+        public const string FLOOR_ASSET_THUMBNAIL = "https://builder-api.decentraland.io/v1/storage/contents/QmexuPHcbEtQCR11dPXxKZmRjGuY4iTooPJYfST7hW71DE";
 
         public const string FLOOR_GLTF_KEY = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
         public const string FLOOR_GLTF_VALUE = "QmSyvWnb5nKCaGHw9oHLSkwywvS5NYpj6vgb8L121kWveS";
 
         public const string FLOOR_TEXTURE_KEY = "FloorBaseGrass_01/Floor_Grass01.png.png";
         public const string FLOOR_TEXTURE_VALUE = "QmT1WfQPMBVhgwyxV5SfcfWivZ6hqMCT74nxdKXwyZBiXb";
+        
+        public const string FLOOR_THUMBNAIL_KEY = "FloorBaseGrass_01/thumbnail.png";
+        public const string FLOOR_THUMBNAIL_VALUE = "QmexuPHcbEtQCR11dPXxKZmRjGuY4iTooPJYfST7hW71DE";
 
         //Collectables
         public const string ASSETS_COLLECTIBLES = "Collectibles";

@@ -68,6 +68,8 @@ public class BuilderInWorldEditor : IBIWEditor
         biwAudioHandler = UnityEngine.Object.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
         biwAudioHandler.Initialize(context);
         biwAudioHandler.gameObject.SetActive(false);
+
+        floorHandler.OnAllParcelsFloorLoaded += NewSceneFloorLoaded;
     }
 
     public void InitReferences(SceneReferences sceneReferences)
@@ -104,6 +106,7 @@ public class BuilderInWorldEditor : IBIWEditor
             context.editorContext.editorHUD.OnTutorialAction -= StartTutorial;
         }
         
+        floorHandler.OnAllParcelsFloorLoaded -= NewSceneFloorLoaded;
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         BIWNFTController.i.Dispose();
 
@@ -223,7 +226,7 @@ public class BuilderInWorldEditor : IBIWEditor
             context.editorContext.editorHUD.RefreshCatalogAssetPack();
             context.editorContext.editorHUD.SetVisibilityOfCatalog(true);
             context.editorContext.editorHUD.SetVisibilityOfInspector(true);
-            if (sceneToEdit.HasBeenCreatedThisSession())
+            if (sceneToEdit.HasBeenCreatedThisSession() && sceneToEdit.sceneType == IBuilderScene.SceneType.LAND)
                 context.editorContext.editorHUD.NewSceneForLand(sceneToEdit);
         }
 
@@ -323,4 +326,16 @@ public class BuilderInWorldEditor : IBIWEditor
     public bool IsNewScene() { return sceneToEdit.scene.entities.Count <= 0; }
 
     public void SetupNewScene() { floorHandler.CreateDefaultFloor(); }
+
+    private void NewSceneFloorLoaded()
+    {
+        if (!sceneToEdit.HasBeenCreatedThisSession())
+            return;
+        
+        context.cameraController.TakeSceneScreenshotFromResetPosition(snapshot =>
+            {
+                context.builderAPIController.SetThumbnail(sceneToEdit.manifest.project.id, snapshot);
+            }
+        );
+    }
 }

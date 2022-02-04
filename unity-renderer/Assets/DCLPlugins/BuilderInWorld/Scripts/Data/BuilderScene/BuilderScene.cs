@@ -27,6 +27,7 @@ namespace DCL.Builder
         public void UpdateManifestFromScene() { manifest.scene = ManifestTranslator.ParcelSceneToWebBuilderScene((ParcelScene)scene); }
 
         public void SetScene(IParcelScene scene) { this.scene = scene; }
+        
         public bool HasBeenCreatedThisSession() { return isNew; }
     }
 

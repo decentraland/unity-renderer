@@ -280,23 +280,79 @@ public static partial class BIWUtils
         Manifest manifest = new Manifest();
         manifest.version = BIWSettings.MANIFEST_VERSION;
         manifest.project = projectData;
-        manifest.scene = CreateEmtpyBuilderScene(projectData.rows * projectData.cols);
+        manifest.scene = CreateEmtpyBuilderScene(projectData.rows, projectData.cols);
 
         manifest.project.scene_id = manifest.scene.id;
         return manifest;
     }
 
     //We create the scene the same way as the current builder do, so we ensure the compatibility between both builders
-    private static WebBuilderScene CreateEmtpyBuilderScene(int parcelsAmount)
+    private static WebBuilderScene CreateEmtpyBuilderScene(int rows, int cols)
     {
+        Dictionary<string, BuilderEntity> entities = new Dictionary<string, BuilderEntity>();
+        Dictionary<string, BuilderComponent> components = new Dictionary<string, BuilderComponent>();
+        Dictionary<string, SceneObject> assets = new Dictionary<string, SceneObject>();
+        
+        // We get the asset
+        var floorAsset = CreateFloorSceneObject();
+        assets.Add(floorAsset.id,floorAsset);
+        
+        // We create the ground
         BuilderGround ground = new BuilderGround();
-        ground.assetId = BIWSettings.FLOOR_ID;
+        ground.assetId = floorAsset.id;
         ground.componentId = Guid.NewGuid().ToString();
+
+        for (int x = 0; x < rows; x++)
+        {
+            for (int y = 0; y < cols; y++)
+            {
+                // We create the entity for the ground
+                BuilderEntity entity = new BuilderEntity();
+                entity.id = Guid.NewGuid().ToString();
+                entity.disableGizmos = true;
+                entity.name = "entity"+x+y;
+        
+                // We need a transform for the entity so we create it
+                BuilderComponent transformComponent = new BuilderComponent();
+                transformComponent.id = Guid.NewGuid().ToString();
+                transformComponent.type = "Transform";
+        
+                // We create the transform data
+                TransformComponent entityTransformComponentModel = new TransformComponent();
+                entityTransformComponentModel.position = new Vector3(8+(16*x), 0, 8+(16*y));
+                entityTransformComponentModel.rotation = new ProtocolV2.QuaternionRepresentation(Quaternion.identity);
+                entityTransformComponentModel.scale = Vector3.one;
+        
+                transformComponent.data = entityTransformComponentModel;
+                entity.components.Add(transformComponent.id);
+                if(!components.ContainsKey(transformComponent.id))
+                    components.Add(transformComponent.id,transformComponent);
+        
+                // We create the GLTFShape component
+                BuilderComponent gltfShapeComponent = new BuilderComponent();
+                gltfShapeComponent.id = ground.componentId;
+                gltfShapeComponent.type = "GLTFShape";
+        
+                LoadableShape.Model model = new GLTFShape.Model();
+                model.assetId = floorAsset.id;
+                gltfShapeComponent.data = model;
+        
+                entity.components.Add(ground.componentId);
+                if(!components.ContainsKey(gltfShapeComponent.id))
+                    components.Add(gltfShapeComponent.id,gltfShapeComponent);
+
+                // Finally, we add the entity to the list
+                entities.Add(entity.id,entity);
+            }
+        }
 
         WebBuilderScene scene = new WebBuilderScene
         {
             id = Guid.NewGuid().ToString(),
-            limits = GetSceneMetricsLimits(parcelsAmount),
+            entities = entities,
+            components =  components,
+            assets = assets,
+            limits = GetSceneMetricsLimits(rows*cols),
             metrics = new SceneMetricsModel(),
             ground = ground
         };
@@ -325,7 +381,7 @@ public static partial class BIWUtils
         manifest.project = projectData;
 
         //We create an empty scene
-        manifest.scene = CreateEmtpyBuilderScene(size.x + size.y);
+        manifest.scene = CreateEmtpyBuilderScene(size.x, size.y);
         return manifest;
     }
 
@@ -477,7 +533,35 @@ public static partial class BIWUtils
         return position;
     }
 
-    public static CatalogItem CreateFloorSceneObject()
+    public static SceneObject CreateFloorSceneObject()
+    {
+        SceneObject floorSceneObject = new SceneObject();
+        floorSceneObject.id = BIWSettings.FLOOR_ID;
+
+        floorSceneObject.model = BIWSettings.FLOOR_MODEL;
+        floorSceneObject.name = BIWSettings.FLOOR_NAME;
+        floorSceneObject.asset_pack_id = BIWSettings.FLOOR_ASSET_PACK_ID;
+        floorSceneObject.thumbnail = BIWSettings.FLOOR_ASSET_THUMBNAIL;
+        floorSceneObject.category = BIWSettings.FLOOR_CATEGORY;
+        
+        floorSceneObject.tags = new List<string>();
+        floorSceneObject.tags.Add("genesis");
+        floorSceneObject.tags.Add("city");
+        floorSceneObject.tags.Add("town");
+        floorSceneObject.tags.Add("ground");
+
+        floorSceneObject.contents = new Dictionary<string, string>();
+
+        floorSceneObject.contents.Add(BIWSettings.FLOOR_GLTF_KEY, BIWSettings.FLOOR_GLTF_VALUE);
+        floorSceneObject.contents.Add(BIWSettings.FLOOR_TEXTURE_KEY, BIWSettings.FLOOR_TEXTURE_VALUE);
+        floorSceneObject.contents.Add(BIWSettings.FLOOR_THUMBNAIL_KEY, BIWSettings.FLOOR_THUMBNAIL_VALUE);
+
+        floorSceneObject.metrics = new SceneObject.ObjectMetrics();
+
+        return floorSceneObject;
+    }
+    
+    public static CatalogItem CreateFloorCatalogItem()
     {
         CatalogItem floorSceneObject = new CatalogItem();
         floorSceneObject.id = BIWSettings.FLOOR_ID;
@@ -485,11 +569,19 @@ public static partial class BIWUtils
         floorSceneObject.model = BIWSettings.FLOOR_MODEL;
         floorSceneObject.name = BIWSettings.FLOOR_NAME;
         floorSceneObject.assetPackName = BIWSettings.FLOOR_ASSET_PACK_NAME;
+        floorSceneObject.thumbnailURL = BIWSettings.FLOOR_ASSET_THUMBNAIL;
 
+        floorSceneObject.tags = new List<string>();
+        floorSceneObject.tags.Add("genesis");
+        floorSceneObject.tags.Add("city");
+        floorSceneObject.tags.Add("town");
+        floorSceneObject.tags.Add("ground");
+        
         floorSceneObject.contents = new Dictionary<string, string>();
 
         floorSceneObject.contents.Add(BIWSettings.FLOOR_GLTF_KEY, BIWSettings.FLOOR_GLTF_VALUE);
         floorSceneObject.contents.Add(BIWSettings.FLOOR_TEXTURE_KEY, BIWSettings.FLOOR_TEXTURE_VALUE);
+        floorSceneObject.contents.Add(BIWSettings.FLOOR_THUMBNAIL_KEY, BIWSettings.FLOOR_THUMBNAIL_VALUE);
 
         floorSceneObject.metrics = new SceneObject.ObjectMetrics();
 

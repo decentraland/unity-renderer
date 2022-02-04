@@ -178,12 +178,38 @@ namespace DCL.Builder
                     switch (component.type)
                     {
                         case "Transform":
-                            DCLTransform.Model model = JsonConvert.DeserializeObject<DCLTransform.Model>(component.data.ToString());
+                            DCLTransform.Model model;
+                            
+                            try
+                            {
+                                // This is a very ugly way to handle the things because some times the data can come serialize and other times it wont 
+                                // It will be deleted when we create the new builder server that only have 1 way to handle everything
+                                model = JsonConvert.DeserializeObject<DCLTransform.Model>(component.data.ToString());
+                            }
+                            catch (Exception e)
+                            {
+                                // We may have create the component so de data is not serialized
+                                model = JsonConvert.DeserializeObject<DCLTransform.Model>(JsonConvert.SerializeObject(component.data));
+                            }
+                            
                             EntityComponentsUtils.AddTransformComponent(sceneToEdit.scene, entity, model);
                             break;
 
                         case "GLTFShape":
-                            LoadableShape.Model gltfModel = JsonConvert.DeserializeObject<LoadableShape.Model>(component.data.ToString());
+                            LoadableShape.Model gltfModel;
+                            
+                            try
+                            {
+                                // This is a very ugly way to handle the things because some times the data can come serialize and other times it wont
+                                // It will be deleted when we create the new builder server that only have 1 way to handle everything
+                                gltfModel = JsonConvert.DeserializeObject<LoadableShape.Model>(component.data.ToString());
+                            }
+                            catch (Exception e)
+                            {
+                                // We may have create the component so de data is not serialized
+                                gltfModel = (GLTFShape.Model)component.data;
+                            }
+                            
                             EntityComponentsUtils.AddGLTFComponent(sceneToEdit.scene, entity, gltfModel, component.id);
                             break;
 
@@ -254,7 +280,10 @@ namespace DCL.Builder
         {
             DataStore.i.HUDs.loadingHUD.visible.Set(true);
 
-            BuilderScene builderScene = new BuilderScene(manifest, IBuilderScene.SceneType.PROJECT);
+            bool hasBeenCreatedThisSession = !string.IsNullOrEmpty(DataStore.i.builderInWorld.lastProjectIdCreated.Get()) && DataStore.i.builderInWorld.lastProjectIdCreated.Get() == manifest.project.id;
+            DataStore.i.builderInWorld.lastProjectIdCreated.Set("");
+            
+            BuilderScene builderScene = new BuilderScene(manifest, IBuilderScene.SceneType.PROJECT,hasBeenCreatedThisSession);
             StartFlow(builderScene, SOURCE_BUILDER_PANEl);
         }
 
@@ -543,6 +572,7 @@ namespace DCL.Builder
 
             manifestPromise.Then(response =>
             {
+             
                 BuilderScene builderScene = new BuilderScene(response.manifest, IBuilderScene.SceneType.LAND, response.hasBeenCreated);
                 StartFlow(builderScene, source);
             });

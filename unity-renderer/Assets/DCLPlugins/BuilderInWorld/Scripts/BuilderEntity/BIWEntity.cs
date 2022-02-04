@@ -76,6 +76,8 @@ public class BIWEntity
         }
     }
 
+    public bool isLoaded { get; internal set; } = false;
+    
     public bool isVoxel { get; set; } = false;
 
     private CatalogItem associatedCatalogItem;
@@ -123,8 +125,12 @@ public class BIWEntity
         if (rootEntity.gameObject != null)
             isVisible = rootEntity.gameObject.activeSelf;
 
+        isLoaded = false;
         isShapeComponentSet = false;
         InitRotation();
+        
+        isFloor = IsEntityAFloor();
+        isNFT = IsEntityNFT();
 
         if (rootEntity.meshRootGameObject && rootEntity.meshesInfo.renderers.Length > 0)
         {
@@ -409,9 +415,6 @@ public class BIWEntity
     {
         isShapeComponentSet = true;
 
-        isFloor = IsEntityAFloor();
-        isNFT = IsEntityNFT();
-
         CreateCollidersForEntity(rootEntity);
 
         if (isFloor)
@@ -438,6 +441,8 @@ public class BIWEntity
 
         DCL.Environment.i.world.sceneBoundsChecker.AddPersistent(rootEntity);
         SetEntityBoundariesError(DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(rootEntity));
+
+        isLoaded = true;
     }
 
     private void HandleAnimation()
@@ -689,9 +694,9 @@ public class BIWEntity
         return false;
     }
 
-    bool IsEntityAFloor() { return GetCatalogItemAssociated()?.category == BIWSettings.FLOOR_CATEGORY; }
+    private bool IsEntityAFloor() { return GetCatalogItemAssociated()?.category == BIWSettings.FLOOR_CATEGORY; }
 
-    bool IsEntityAVoxel()
+    private bool IsEntityAVoxel()
     {
         if (rootEntity.meshesInfo?.currentShape == null)
             return false;

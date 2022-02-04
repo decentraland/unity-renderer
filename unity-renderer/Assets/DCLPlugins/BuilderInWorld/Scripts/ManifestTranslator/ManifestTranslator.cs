@@ -194,7 +194,7 @@ namespace DCL.Builder
 
                     // Since the transform model data is different from the others, we set it in the switch instead of here
                     if (builderComponent.type != "Transform")
-                        builderComponent.data = JsonConvert.SerializeObject(entityComponent.Value.GetModel());
+                        builderComponent.data = entityComponent.Value.GetModel();
 
                     builderEntity.components.Add(builderComponent.id);
 
@@ -208,13 +208,13 @@ namespace DCL.Builder
                     BuilderComponent builderComponent = new BuilderComponent();
                     // We generate a new uuid for the component since there is no uuid for components in the stateful scheme
                     builderComponent.id = Guid.NewGuid().ToString();
-                    builderComponent.data = JsonConvert.SerializeObject(sharedEntityComponent.Value.GetModel());
+                    builderComponent.data = sharedEntityComponent.Value.GetModel();
 
                     if (sharedEntityComponent.Value is GLTFShape)
                     {
                         componentType = "GLTFShape";
-
-                        var gltfModel = JsonConvert.DeserializeObject<GLTFShape.Model>(builderComponent.data.ToString());
+                        
+                        var gltfModel = (GLTFShape.Model) builderComponent.data;
 
                         //We get the associated asset to the GLFTShape and add it to the scene 
                         var asset = AssetCatalogBridge.i.sceneObjectCatalog.Get(gltfModel.assetId);
@@ -237,8 +237,8 @@ namespace DCL.Builder
                         componentType = "NFTShape";
 
                         // This is a special case where we are assigning the builder url field for NFTs because builder model data is different
-                        NFTShape.Model model = JsonConvert.DeserializeObject<NFTShape.Model>(builderComponent.data.ToString());
-                        builderComponent.data = JsonConvert.SerializeObject(GetWebBuilderRepresentationOfNFT(model));
+                        NFTShape.Model model = (NFTShape.Model) builderComponent.data;
+                        builderComponent.data = GetWebBuilderRepresentationOfNFT(model);
 
                         //This is the name format that is used by builder, we will have a different name in unity due to DCLName component
                         entityName = "nft";
@@ -267,9 +267,10 @@ namespace DCL.Builder
                 if (!builderScene.entities.ContainsKey(builderEntity.id))
                     builderScene.entities.Add(builderEntity.id, builderEntity);
             }
-
+            
             //We add the limits to the scene, the current metrics are calculated in the builder
             builderScene.limits = BIWUtils.GetSceneMetricsLimits(scene.parcels.Count);
+            builderScene.metrics = new SceneMetricsModel();
             builderScene.ground = ground;
 
             return builderScene;
