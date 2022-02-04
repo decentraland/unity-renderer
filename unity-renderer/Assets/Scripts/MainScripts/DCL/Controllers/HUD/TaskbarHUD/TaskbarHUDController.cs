@@ -41,6 +41,7 @@ public class TaskbarHUDController : IHUD
 
     internal BaseVariable<Transform> isExperiencesViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
+    internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
 
     protected internal virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(this, chatController, friendsController); }
 
@@ -119,6 +120,9 @@ public class TaskbarHUDController : IHUD
 
         isExperiencesViewerInitialized.OnChange += InitializeExperiencesViewer;
         InitializeExperiencesViewer(isExperiencesViewerInitialized.Get(), null);
+
+        numOfLoadedExperiences.OnChange += NumOfLoadedExperiencesChanged;
+        NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
     }
 
     private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindowHud.SetVisibility(false); }
@@ -325,6 +329,14 @@ public class TaskbarHUDController : IHUD
         MarkWorldChatAsReadIfOtherWindowIsOpen();
     }
 
+    private void NumOfLoadedExperiencesChanged(int current, int previous)
+    {
+        view.SetExperiencesVisbility(current > 0);
+
+        if (current == 0)
+            View_OnExperiencesToggleOff();
+    }
+
     public void OnAddVoiceChat() { view.OnAddVoiceChat(); }
 
     public void DisableFriendsWindow()
@@ -384,6 +396,8 @@ public class TaskbarHUDController : IHUD
 
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
+        isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
+        numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }

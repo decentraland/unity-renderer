@@ -322,6 +322,7 @@ MonoBehaviour:
   startPEXButton: {fileID: 2572322081863477867}
   stopPEXButton: {fileID: 5938951239643202907}
   backgroundImage: {fileID: 7325696701227709463}
+  defaultIconSprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
   model:
     id: 01
     iconUri: 

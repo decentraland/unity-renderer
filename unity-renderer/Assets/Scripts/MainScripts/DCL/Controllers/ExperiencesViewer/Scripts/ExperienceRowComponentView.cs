@@ -60,6 +60,9 @@ public interface IExperienceRowComponentView
 
 public class ExperienceRowComponentView : BaseComponentView, IExperienceRowComponentView, IComponentModelConfig
 {
+    [Header("Assets References")]
+    [SerializeField] internal Sprite defaultIconSprite;
+
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView iconImage;
     [SerializeField] internal TMP_Text nameText;
@@ -133,7 +136,10 @@ public class ExperienceRowComponentView : BaseComponentView, IExperienceRowCompo
         if (iconImage == null)
             return;
 
-        iconImage.SetImage(uri);
+        if (!String.IsNullOrEmpty(uri))
+            iconImage.SetImage(uri);
+        else
+            iconImage.SetImage(defaultIconSprite);
     }
 
     public void SetName(string name)

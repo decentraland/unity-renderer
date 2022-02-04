@@ -393,8 +393,9 @@ MonoBehaviour:
   voiceChatButton: {fileID: 7962135255627428372}
   chatButton: {fileID: 8561792805223980205}
   friendsButton: {fileID: 4603229045924843475}
-  experiencesButton: {fileID: 2371533818113636580}
   chatHeadsGroup: {fileID: 1163524797233769629}
+  experiencesContainer: {fileID: 6163705406466198189}
+  experiencesButton: {fileID: 2371533818113636580}
   rightButtonsHorizontalLayout: {fileID: 7859633553351928332}
   portableExperienceItem: {fileID: 7008230418994466216, guid: 5e5c6fb3a6d05c6449ad00f42ca5036b,
     type: 3}

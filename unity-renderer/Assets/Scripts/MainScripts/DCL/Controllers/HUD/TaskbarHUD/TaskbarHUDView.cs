@@ -20,8 +20,10 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal VoiceChatButton voiceChatButton;
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
-    [SerializeField] internal TaskbarButton experiencesButton;
     [SerializeField] internal ChatHeadGroupView chatHeadsGroup;
+
+    [SerializeField] internal GameObject experiencesContainer;
+    [SerializeField] internal TaskbarButton experiencesButton;
 
     [Header("Right Side Config")]
     [SerializeField] internal HorizontalLayoutGroup rightButtonsHorizontalLayout;
@@ -220,6 +222,8 @@ public class TaskbarHUDView : MonoBehaviour
     }
 
     public void SetVisibility(bool visible) { gameObject.SetActive(visible); }
+
+    public void SetExperiencesVisbility(bool visible) { experiencesContainer.SetActive(visible); }
 
     private void OnDestroy()
     {
