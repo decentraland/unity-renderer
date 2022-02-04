@@ -197,8 +197,7 @@ namespace DCL.SettingsPanelHUD
 
         public void SetWorldPreviewActive(bool isActive)
         {
-            // TODO (Santi): Delete this line! The World Preview window will be deactivated until we decide (from design) how to show it.
-            //isActive = false;
+            isActive = false;
 
             worldPreviewWindowTransform.gameObject.SetActive(isActive);
             DataStore.i.camera.outputTexture.Set(isActive ? worldPreviewRawImage.texture as RenderTexture : null);
