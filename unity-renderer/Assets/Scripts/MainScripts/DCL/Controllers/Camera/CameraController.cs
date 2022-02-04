@@ -248,6 +248,7 @@ namespace DCL.Camera
 
             worldOffset.OnChange -= OnWorldReposition;
             cameraChangeAction.OnTriggered -= OnCameraChangeAction;
+            mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
             CommonScriptableObjects.cameraBlocked.OnChange -= CameraBlocked_OnChange;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
