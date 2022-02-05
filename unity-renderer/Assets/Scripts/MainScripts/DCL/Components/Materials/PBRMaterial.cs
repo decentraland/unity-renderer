@@ -299,62 +299,15 @@ namespace DCL.Components
                             if (material == null)
                                 return;
 
-                            Texture oldTexture = material.GetTexture(materialPropertyId);
                             material.SetTexture(materialPropertyId, fetchedDCLTexture.texture);
                             SwitchTextureComponent(cachedDCLTexture, fetchedDCLTexture);
-
-                            DataStore_WorldObjects renderingData = DataStore.i.sceneWorldObjects;
-                            DataStore_WorldObjects.SceneData sceneData = renderingData.sceneData[scene.sceneData.id];
-
-                            sceneData.textures.AddRefCount(fetchedDCLTexture.texture);
-                            sceneData.textures.RemoveRefCount(oldTexture);
-
-                            // foreach (IDCLEntity entity in attachedEntities)
-                            // {
-                            //     DataStore.i.sceneWorldObjects.RemoveRendereable(scene.sceneData.id, entity.rendereable);
-                            //     entity.rendereable.textures.Remove(oldTexture);
-                            //     entity.rendereable.textures.Add(newTexture);
-                            //     DataStore.i.sceneWorldObjects.AddRendereable(scene.sceneData.id, entity.rendereable);
-                            //     // var meshGameObject = entity.meshRootGameObject;
-                            //     //
-                            //     // if (meshGameObject == null)
-                            //     //     continue;
-                            //     //
-                            //     // var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
-                            //     //
-                            //     // if (meshRenderer == null)
-                            //     //     continue;
-                            //     //
-                            //     // MaterialUtils.UpdateMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, null, material);
-                            // }
                         });
                 }
             }
             else
             {
-                Texture oldTexture = material.GetTexture(materialPropertyId);
                 material.SetTexture(materialPropertyId, null);
                 cachedDCLTexture?.DetachFrom(this);
-
-                DataStore_WorldObjects renderingData = DataStore.i.sceneWorldObjects;
-                DataStore_WorldObjects.SceneData sceneData = renderingData.sceneData[scene.sceneData.id];
-
-                sceneData.textures.RemoveRefCount(oldTexture);
-
-                // foreach (IDCLEntity entity in attachedEntities)
-                // {
-                //     var meshGameObject = entity.meshRootGameObject;
-                //
-                //     if (meshGameObject == null)
-                //         continue;
-                //
-                //     var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
-                //
-                //     if (meshRenderer == null)
-                //         continue;
-                //
-                //     //MaterialUtils.RemoveMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, material);
-                // }
             }
         }
 

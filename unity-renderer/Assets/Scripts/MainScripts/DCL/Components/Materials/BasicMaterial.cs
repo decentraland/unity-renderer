@@ -77,31 +77,9 @@ namespace DCL.Components
                         (downloadedTexture) =>
                         {
                             dclTexture?.DetachFrom(this);
-                            Texture oldTexture = material.GetTexture(_BaseMap);
                             material.SetTexture(_BaseMap, downloadedTexture.texture);
                             dclTexture = downloadedTexture;
                             dclTexture.AttachTo(this);
-
-                            var renderingData = DataStore.i.sceneWorldObjects;
-                            var sceneData = renderingData.sceneData[scene.sceneData.id];
-
-                            sceneData.textures.RemoveRefCount(oldTexture);
-                            sceneData.textures.AddRefCount(downloadedTexture.texture);
-
-                            // foreach (IDCLEntity entity in attachedEntities)
-                            // {
-                            //     var meshGameObject = entity.meshRootGameObject;
-                            //
-                            //     if (meshGameObject == null)
-                            //         continue;
-                            //
-                            //     var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
-                            //
-                            //     if (meshRenderer == null)
-                            //         continue;
-                            //
-                            //     MaterialUtils.UpdateMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, null, material);
-                            // }
                         }
                     );
                 }
@@ -207,7 +185,6 @@ namespace DCL.Components
         public override void Dispose()
         {
             dclTexture?.DetachFrom(this);
-
             Object.Destroy(material);
 
             base.Dispose();

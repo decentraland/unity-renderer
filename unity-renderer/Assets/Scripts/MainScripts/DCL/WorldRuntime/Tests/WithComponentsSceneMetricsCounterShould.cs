@@ -30,6 +30,7 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
         serviceLocator.Register<IWorldState>(() => new WorldState());
         serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory));
         serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
+        serviceLocator.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
     }
 
     [UnitySetUp]
@@ -50,13 +51,46 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
     [UnityTearDown]
     protected override IEnumerator TearDown()
     {
+        scene.Cleanup(true);
         yield return base.TearDown();
-        UnityEngine.Object.Destroy(scene.gameObject);
     }
 
+    [UnityTest]
+    public IEnumerator CountParametrizedShapesWhenRemoved()
+    {
+        ConeShape coneShape = CreateCone();
+        PlaneShape planeShape = CreatePlane();
+        DCLTexture dclTexture = CreateTexture(texturePaths[0]);
+        BasicMaterial basicMaterial = CreateBasicMaterial(dclTexture.id);
+
+        IDCLEntity entity = CreateEntityWithTransform();
+        IDCLEntity entity2 = CreateEntityWithTransform();
+
+        TestUtils.SharedComponentAttach(dclTexture, entity);
+        TestUtils.SharedComponentAttach(basicMaterial, entity);
+        TestUtils.SharedComponentAttach(basicMaterial, entity2);
+        TestUtils.SharedComponentAttach(coneShape, entity);
+        TestUtils.SharedComponentAttach(planeShape, entity2);
+
+        yield return basicMaterial.routine;
+
+        TestUtils.RemoveSceneEntity(scene, entity);
+        TestUtils.RemoveSceneEntity(scene, entity2);
+        dclTexture.Dispose();
+
+        yield return new WaitForAllMessagesProcessed();
+
+        AssertMetricsModel(scene,
+            triangles: 0,
+            materials: 0,
+            entities: 0,
+            meshes: 0,
+            bodies: 0,
+            textures: 0);
+    }
 
     [UnityTest]
-    public IEnumerator CountParametrizedShapes()
+    public IEnumerator CountParametrizedShapesWhenAdded()
     {
         ConeShape coneShape = CreateCone();
         PlaneShape planeShape = CreatePlane();
@@ -80,19 +114,6 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
             meshes: 2,
             bodies: 2,
             textures: 1);
-
-        TestUtils.RemoveSceneEntity(scene, entity);
-        TestUtils.RemoveSceneEntity(scene, entity2);
-
-        yield return new WaitForAllMessagesProcessed();
-
-        AssertMetricsModel(scene,
-            triangles: 0,
-            materials: 0,
-            entities: 0,
-            meshes: 0,
-            bodies: 0,
-            textures: 0);
     }
 
     [UnityTest]
@@ -125,8 +146,11 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
 
         for ( int i = 0; i < 10; i++ )
         {
-            TestUtils.RemoveSceneEntity(scene, entities[i]);
+            materials[i].Dispose();
         }
+
+        texture.Dispose();
+        planeShape.Dispose();
 
         inputModel = scene.metricsCounter.currentCount;
 
@@ -171,11 +195,18 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
             Assert.That( sceneMetrics.textures, Is.EqualTo(1) );
         }
 
-        TestUtils.RemoveSceneEntity(scene, entity);
+        foreach ( var texture in textures )
+        {
+            texture.Dispose();
+        }
+
+        material.Dispose();
 
         yield return null;
 
         sceneMetrics = scene.metricsCounter.currentCount;
+
+        Debug.Log("SceneMetrics = " + sceneMetrics);
 
         Assert.That( sceneMetrics.materials, Is.EqualTo(0) );
         Assert.That( sceneMetrics.textures, Is.EqualTo(0) );
@@ -216,7 +247,12 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
 
         Assert.That( scene.metricsCounter.currentCount.textures, Is.EqualTo(1) );
 
-        TestUtils.RemoveSceneEntity(scene, entity.entityId);
+        texture1.Dispose();
+        texture2.Dispose();
+        texture3.Dispose();
+        texture4.Dispose();
+        material1.Dispose();
+        planeShape.Dispose();
 
         yield return null;
 
@@ -250,7 +286,13 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
         Assert.That( sceneMetrics.materials, Is.EqualTo(1) );
         Assert.That( sceneMetrics.textures, Is.EqualTo(4) );
 
-        TestUtils.RemoveSceneEntity(scene, entity);
+        texture1.Dispose();
+        texture2.Dispose();
+        texture3.Dispose();
+        texture4.Dispose();
+        material1.Dispose();
+        planeShape.Dispose();
+
         yield return null;
 
         sceneMetrics = scene.metricsCounter.currentCount;
@@ -260,7 +302,25 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
     }
 
     [UnityTest]
-    public IEnumerator CountGLTFShapes()
+    public IEnumerator CountBasicMaterialWhenAdded() { yield break; }
+
+    [UnityTest]
+    public IEnumerator CountBasicMaterialWhenRemoved() { yield break; }
+
+    [UnityTest]
+    public IEnumerator CountPBRMaterialWhenAdded() { yield break; }
+
+    [UnityTest]
+    public IEnumerator CountPBRMaterialWhenRemoved() { yield break; }
+
+    [UnityTest]
+    public IEnumerator CountTextureWhenAdded() { yield break; }
+
+    [UnityTest]
+    public IEnumerator CountTextureWhenRemoved() { yield break; }
+
+    [UnityTest]
+    public IEnumerator CountGLTFShapesWhenAdded()
     {
         IDCLEntity entity1 = TestUtils.CreateSceneEntity(scene);
         GLTFShape entity1shape = TestUtils.AttachGLTFShape(entity1,
@@ -294,8 +354,37 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
             bodies: 2,
             textures: 1);
 
-        TestUtils.RemoveSceneEntity(scene, entity1);
-        TestUtils.RemoveSceneEntity(scene, entity2);
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator CountGLTFShapesWhenRemoved()
+    {
+        IDCLEntity entity1 = TestUtils.CreateSceneEntity(scene);
+        GLTFShape entity1shape = TestUtils.AttachGLTFShape(entity1,
+            scene,
+            new Vector3(8, 1, 8),
+            new LoadableShape.Model()
+            {
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
+            });
+
+        yield return TestUtils.WaitForGLTFLoad(entity1);
+
+        IDCLEntity entity2 = TestUtils.CreateSceneEntity(scene);
+        GLTFShape entity2shape = TestUtils.AttachGLTFShape(entity2,
+            scene,
+            new Vector3(8, 1, 8),
+            new LoadableShape.Model()
+            {
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
+            });
+
+        yield return TestUtils.WaitForGLTFLoad(entity2);
+
+        entity1shape.Dispose();
+        entity2shape.Dispose();
+
         yield return null;
 
         AssertMetricsModel(scene,
@@ -337,7 +426,8 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
             bodies: 4,
             textures: 0);
 
-        TestUtils.RemoveSceneEntity(scene, entity);
+        component.Dispose();
+
         yield return null;
 
         AssertMetricsModel(scene,
@@ -432,7 +522,6 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
             bodies: 1,
             textures: 0);
 
-        Environment.i.world.sceneController.UnloadAllScenes();
         yield return null;
     }
 

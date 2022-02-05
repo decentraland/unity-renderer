@@ -299,7 +299,13 @@ namespace DCL.Controllers
                 }
 
                 entities.Remove(id);
-                DataStore.i.sceneWorldObjects.sceneData[sceneData.id].owners.Remove(id);
+
+                var data = DataStore.i.sceneWorldObjects.sceneData;
+
+                if (data.ContainsKey(sceneData.id))
+                {
+                    data[sceneData.id].owners.Remove(id);
+                }
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else

@@ -27,22 +27,9 @@ namespace DCL
             public const float visibleRadius = 10;
         }
 
-        // private class EntityMetrics
-        // {
-        //     public HashSet<Rendereable> rendereables = new HashSet<Rendereable>();
-        // }
-
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
         public event Action<ISceneMetricsCounter> OnMetricsUpdated;
-
-        // private WorldSceneObjectsTrackingHelper sceneObjectsTrackingHelper;
-        // public DataStore_SceneMetrics data => DataStore.i.Get<DataStore_SceneMetrics>();
-
-        // EntityMetrics will save even ignored entities.
-        // private Dictionary<string, EntityMetrics> entityMetrics = new Dictionary<string, EntityMetrics>();
-
-        // private HashSet<string> excludedEntities = new HashSet<string>();
 
         private SceneMetricsModel maxCountValue = new SceneMetricsModel();
         private SceneMetricsModel currentCountValue = new SceneMetricsModel();
@@ -59,13 +46,6 @@ namespace DCL
         public SceneMetricsModel maxCount => maxCountValue.Clone();
 
         public bool dirty { get; private set; }
-
-        // public HashSet<Rendereable> trackedRendereables = new HashSet<Rendereable>();
-
-        // private RefCountedMetric uniqueTextures = new RefCountedMetric();
-        // private RefCountedMetric uniqueMaterials = new RefCountedMetric();
-        // private RefCountedMetric uniqueMeshes = new RefCountedMetric();
-        // private HashSet<string> uniqueEntities = new HashSet<string>();
 
         private string sceneId;
 
@@ -220,12 +200,17 @@ namespace DCL
 
         private void UpdateMetrics()
         {
-            currentCountValue.materials = data.sceneData[sceneId].materials.Count();
-            currentCountValue.textures = data.sceneData[sceneId].textures.Count();
-            currentCountValue.meshes = data.sceneData[sceneId].meshes.Count();
-            currentCountValue.entities = data.sceneData[sceneId].owners.Count();
-            currentCountValue.bodies = data.sceneData[sceneId].renderers.Count();
-            currentCountValue.triangles = data.sceneData[sceneId].triangles.Get() / 3;
+            var sceneData = data?.sceneData[sceneId];
+
+            if ( sceneData != null )
+            {
+                currentCountValue.materials = sceneData.materials.Count();
+                currentCountValue.textures = sceneData.textures.Count();
+                currentCountValue.meshes = sceneData.meshes.Count();
+                currentCountValue.entities = sceneData.owners.Count();
+                currentCountValue.bodies = sceneData.renderers.Count();
+                currentCountValue.triangles = sceneData.triangles.Get() / 3;
+            }
 
             logger.Log($"Current metrics: {currentCountValue}");
             RaiseMetricsUpdate();

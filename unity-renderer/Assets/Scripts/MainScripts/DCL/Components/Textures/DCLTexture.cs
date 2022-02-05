@@ -94,6 +94,9 @@ namespace DCL
                     break;
             }
 
+            var renderingData = DataStore.i.sceneWorldObjects;
+            var sceneData = renderingData.sceneData[scene.sceneData.id];
+
             if (texture == null && !string.IsNullOrEmpty(model.src))
             {
                 bool isBase64 = model.src.Contains("image/png;base64");
@@ -102,11 +105,12 @@ namespace DCL
                 {
                     string base64Data = model.src.Substring(model.src.IndexOf(',') + 1);
 
+                    if (texture != null)
+                        sceneData.textures.RemoveRefCount(texture);
+
                     // The used texture variable can't be null for the ImageConversion.LoadImage to work
                     if (texture == null)
-                    {
                         texture = new Texture2D(1, 1);
-                    }
 
                     if (!ImageConversion.LoadImage(texture, Convert.FromBase64String(base64Data)))
                     {
@@ -120,6 +124,8 @@ namespace DCL
                         texture.Compress(false);
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
                     }
+
+                    sceneData.textures.AddRefCount(texture);
                 }
                 else
                 {
@@ -134,7 +140,10 @@ namespace DCL
                     if (!string.IsNullOrEmpty(contentsUrl))
                     {
                         if (texturePromise != null)
+                        {
+                            sceneData.textures.RemoveRefCount(texture);
                             AssetPromiseKeeper_Texture.i.Forget(texturePromise);
+                        }
 
                         texturePromise = new AssetPromise_Texture(contentsUrl, unityWrap, unitySamplingMode, storeDefaultTextureInAdvance: true);
                         texturePromise.OnSuccessEvent += (x) => texture = x.texture;
@@ -142,41 +151,37 @@ namespace DCL
 
                         AssetPromiseKeeper_Texture.i.Keep(texturePromise);
                         yield return texturePromise;
+                        sceneData.textures.AddRefCount(texture);
                     }
                 }
             }
         }
 
-        protected int refCount;
+        public virtual void AttachTo(PBRMaterial material) { }
 
-        public virtual void AttachTo(PBRMaterial material) { AddRefCount(); }
+        public virtual void AttachTo(BasicMaterial material) { }
 
-        public virtual void AttachTo(BasicMaterial material) { AddRefCount(); }
+        public virtual void AttachTo(UIImage image) { }
 
-        public virtual void AttachTo(UIImage image) { AddRefCount(); }
+        public virtual void DetachFrom(PBRMaterial material) { }
 
-        public virtual void DetachFrom(PBRMaterial material) { RemoveRefCount(); }
+        public virtual void DetachFrom(BasicMaterial material) { }
 
-        public virtual void DetachFrom(BasicMaterial material) { RemoveRefCount(); }
-
-        public virtual void DetachFrom(UIImage image) { RemoveRefCount(); }
-
-        public void AddRefCount()
-        {
-            refCount++;
-        }
-
-        public void RemoveRefCount()
-        {
-            refCount--;
-
-            if (refCount == 0)
-                Dispose();
-        }
+        public virtual void DetachFrom(UIImage image) { }
 
         public override void Dispose()
         {
+            if ( isDisposed )
+                return;
+
             isDisposed = true;
+
+            if (texture != null)
+            {
+                var renderingData = DataStore.i.sceneWorldObjects;
+                var sceneData = renderingData.sceneData[scene.sceneData.id];
+                sceneData.textures.RemoveRefCount(texture);
+            }
 
             if (texturePromise != null)
             {
