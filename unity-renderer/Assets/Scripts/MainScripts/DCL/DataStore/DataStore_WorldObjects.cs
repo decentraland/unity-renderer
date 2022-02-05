@@ -6,14 +6,16 @@ namespace DCL
     {
         public class SceneData
         {
-            //public readonly BaseDictionary<Mesh, int> refCountedMeshes = new BaseDictionary<Mesh, int>();
-            public readonly BaseHashSet<Rendereable> renderedObjects = new BaseHashSet<Rendereable>();
-            public readonly BaseDictionary<string, OwnerData> filteredByOwner = new BaseDictionary<string, OwnerData>();
-        }
+            public readonly BaseHashSet<string> ignoredOwners = new BaseHashSet<string>();
 
-        public class OwnerData
-        {
-            public readonly BaseHashSet<Rendereable> rendereables = new BaseHashSet<Rendereable>();
+            public readonly BaseRefCounter<Mesh> meshes = new BaseRefCounter<Mesh>();
+            public readonly BaseRefCounter<Material> materials = new BaseRefCounter<Material>();
+            public readonly BaseRefCounter<Texture> textures = new BaseRefCounter<Texture>();
+            public readonly BaseVariable<int> triangles = new BaseVariable<int>();
+            public readonly BaseHashSet<string> owners = new BaseHashSet<string>();
+            public readonly BaseHashSet<Renderer> renderers = new BaseHashSet<Renderer>();
+
+            //public readonly BaseHashSet<Rendereable> renderedObjects = new BaseHashSet<Rendereable>();
         }
 
         public readonly BaseDictionary<string, SceneData> sceneData = new BaseDictionary<string, SceneData>();

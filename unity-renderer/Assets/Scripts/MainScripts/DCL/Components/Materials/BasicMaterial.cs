@@ -77,24 +77,31 @@ namespace DCL.Components
                         (downloadedTexture) =>
                         {
                             dclTexture?.DetachFrom(this);
+                            Texture oldTexture = material.GetTexture(_BaseMap);
                             material.SetTexture(_BaseMap, downloadedTexture.texture);
                             dclTexture = downloadedTexture;
                             dclTexture.AttachTo(this);
 
-                            foreach (IDCLEntity entity in attachedEntities)
-                            {
-                                var meshGameObject = entity.meshRootGameObject;
+                            var renderingData = DataStore.i.sceneWorldObjects;
+                            var sceneData = renderingData.sceneData[scene.sceneData.id];
 
-                                if (meshGameObject == null)
-                                    continue;
+                            sceneData.textures.RemoveRefCount(oldTexture);
+                            sceneData.textures.AddRefCount(downloadedTexture.texture);
 
-                                var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
-
-                                if (meshRenderer == null)
-                                    continue;
-
-                                MaterialUtils.UpdateMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, null, material);
-                            }
+                            // foreach (IDCLEntity entity in attachedEntities)
+                            // {
+                            //     var meshGameObject = entity.meshRootGameObject;
+                            //
+                            //     if (meshGameObject == null)
+                            //         continue;
+                            //
+                            //     var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
+                            //
+                            //     if (meshRenderer == null)
+                            //         continue;
+                            //
+                            //     MaterialUtils.UpdateMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, null, material);
+                            // }
                         }
                     );
                 }
@@ -166,7 +173,11 @@ namespace DCL.Components
             Material oldMaterial = meshRenderer.sharedMaterial;
             meshRenderer.sharedMaterial = material;
 
-            MaterialUtils.UpdateMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, oldMaterial, material);
+            var renderingData = DataStore.i.sceneWorldObjects;
+            var sceneData = renderingData.sceneData[scene.sceneData.id];
+
+            sceneData.materials.RemoveRefCount(oldMaterial);
+            sceneData.materials.AddRefCount(material);
         }
 
         private void OnShapeUpdated(IDCLEntity entity)
@@ -187,7 +198,10 @@ namespace DCL.Components
             if (meshRenderer && meshRenderer.sharedMaterial == material)
                 meshRenderer.sharedMaterial = null;
 
-            MaterialUtils.RemoveMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, material);
+            var renderingData = DataStore.i.sceneWorldObjects;
+            var sceneData = renderingData.sceneData[scene.sceneData.id];
+
+            sceneData.materials.RemoveRefCount(material);
         }
 
         public override void Dispose()

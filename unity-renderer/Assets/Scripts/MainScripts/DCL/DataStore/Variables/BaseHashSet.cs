@@ -28,6 +28,14 @@ public class BaseHashSet<T> : IBaseCollection<T>, IEquatable<IEnumerable<T>>
         OnAdded?.Invoke(element);
     }
 
+    public void Add(IEnumerable<T> elements)
+    {
+        foreach ( T e in elements )
+        {
+            Add(e);
+        }
+    }
+
     public bool Remove(T element)
     {
         if (!hashSet.Remove(element))
@@ -35,6 +43,14 @@ public class BaseHashSet<T> : IBaseCollection<T>, IEquatable<IEnumerable<T>>
 
         OnRemoved?.Invoke(element);
         return true;
+    }
+
+    public void Remove(IEnumerable<T> elements)
+    {
+        foreach ( T e in elements )
+        {
+            Remove(e);
+        }
     }
 
     public int Count() => hashSet.Count;

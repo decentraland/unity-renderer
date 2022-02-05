@@ -163,6 +163,14 @@ namespace DCL
             newScene.isPersistent = true;
             newScene.SetData(data);
 
+            newScene.metricsCounter = new SceneMetricsCounter(
+                DataStore.i.sceneWorldObjects,
+                data.id,
+                newScene.sceneData.basePosition,
+                newScene.sceneData.parcels.Length);
+
+            newScene.metricsCounter.Enable();
+
             if (DCLCharacterController.i != null)
                 newScene.InitializeDebugPlane();
 

@@ -146,8 +146,8 @@ namespace DCL
 
                 if (activeScene != null && activeScene.metricsCounter != null)
                 {
-                    var metrics = activeScene.metricsCounter.model;
-                    var limits = activeScene.metricsCounter.sceneLimits;
+                    var metrics = activeScene.metricsCounter.currentCount;
+                    var limits = activeScene.metricsCounter.maxCount;
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.CURRENT_SCENE, $"{activeScene.sceneData.id}");
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.POLYGONS_VS_LIMIT, $"{metrics.triangles} of {limits.triangles}");
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.TEXTURES_VS_LIMIT, $"{metrics.textures} of {limits.textures}");

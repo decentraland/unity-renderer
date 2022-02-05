@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DCL.Models;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -11,34 +12,16 @@ namespace DCL
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
 
-        public static Rendereable GetRendereableByRenderer(this DataStore_WorldObjects self, string sceneId, string entityId, Renderer renderer)
+        public static void AddScene( this DataStore_WorldObjects self, string sceneId )
         {
-            if (string.IsNullOrEmpty(sceneId))
-            {
-                logger.LogWarning($"GetRendereableByRenderer", $"invalid sceneId!");
-                return null;
-            }
+            if (!self.sceneData.ContainsKey(sceneId))
+                self.sceneData.Add(sceneId, new DataStore_WorldObjects.SceneData());
+        }
 
-            if (string.IsNullOrEmpty(entityId))
-            {
-                logger.LogWarning($"GetRendereableByRenderer", $"invalid entityId!");
-                return null;
-            }
-
-            var sceneData = self.sceneData[sceneId];
-
-            if (!sceneData.filteredByOwner.ContainsKey(entityId))
-                return null;
-
-            var rendereables = sceneData.filteredByOwner[entityId].rendereables.Get();
-
-            foreach (var r in rendereables)
-            {
-                if ( r.renderers.Contains(renderer))
-                    return r;
-            }
-
-            return null;
+        public static void RemoveScene( this DataStore_WorldObjects self, string sceneId )
+        {
+            if (self.sceneData.ContainsKey(sceneId))
+                self.sceneData.Remove(sceneId);
         }
 
         public static void AddRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
@@ -61,19 +44,17 @@ namespace DCL
                 return;
             }
 
-            if (!self.sceneData.ContainsKey(sceneId))
-                self.sceneData.Add(sceneId, new DataStore_WorldObjects.SceneData());
-
             var sceneData = self.sceneData[sceneId];
 
-            if ( !sceneData.renderedObjects.Contains(rendereable) )
-                sceneData.renderedObjects.Add(rendereable);
+            if ( sceneData.ignoredOwners.Contains(rendereable.ownerId))
+                return;
 
-            if ( !sceneData.filteredByOwner.ContainsKey(rendereable.ownerId) )
-                sceneData.filteredByOwner.Add(rendereable.ownerId, new DataStore_WorldObjects.OwnerData());
-
-            DataStore_WorldObjects.OwnerData ownerData = sceneData.filteredByOwner[rendereable.ownerId];
-            ownerData.rendereables.Add(rendereable);
+            sceneData.materials.AddRefCount(rendereable.materials);
+            sceneData.meshes.AddRefCount(rendereable.meshes);
+            sceneData.textures.AddRefCount(rendereable.textures);
+            sceneData.renderers.Add(rendereable.renderers);
+            sceneData.owners.Add(rendereable.ownerId);
+            sceneData.triangles.Set( sceneData.triangles.Get() + rendereable.totalTriangleCount);
         }
 
         public static void RemoveRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
@@ -98,26 +79,20 @@ namespace DCL
 
             var sceneData = self.sceneData[sceneId];
 
-            if ( sceneData.renderedObjects.Contains(rendereable) )
-                sceneData.renderedObjects.Remove(rendereable);
+            if ( sceneData.ignoredOwners.Contains(rendereable.ownerId))
+                return;
 
-            if (self.sceneData[sceneId].IsEmpty())
-                self.sceneData.Remove(sceneId);
-
-
-            if ( sceneData.filteredByOwner.ContainsKey(rendereable.ownerId) )
-            {
-                DataStore_WorldObjects.OwnerData ownerData = sceneData.filteredByOwner[rendereable.ownerId];
-                ownerData.rendereables.Remove(rendereable);
-
-                if ( ownerData.rendereables.Count() == 0 )
-                    sceneData.filteredByOwner.Remove(rendereable.ownerId);
-            }
+            sceneData.materials.RemoveRefCount(rendereable.materials);
+            sceneData.meshes.RemoveRefCount(rendereable.meshes);
+            sceneData.textures.RemoveRefCount(rendereable.textures);
+            sceneData.renderers.Remove(rendereable.renderers);
+            sceneData.owners.Remove(rendereable.ownerId);
+            sceneData.triangles.Set( sceneData.triangles.Get() - rendereable.totalTriangleCount);
         }
 
         private static bool IsEmpty( this DataStore_WorldObjects.SceneData self)
         {
-            return self.renderedObjects.Count() == 0;
+            return !self.textures.Any() && !self.meshes.Any() && !self.materials.Any() && self.renderers.Count() == 0;
         }
     }
 }

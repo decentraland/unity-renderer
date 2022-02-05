@@ -118,7 +118,7 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
             yield return materials[i].routine;
         }
 
-        SceneMetricsModel inputModel = scene.metricsCounter.model;
+        SceneMetricsModel inputModel = scene.metricsCounter.currentCount;
 
         Assert.That( inputModel.materials, Is.EqualTo(10) );
         Assert.That( inputModel.textures, Is.EqualTo(1) );
@@ -128,7 +128,7 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
             TestUtils.RemoveSceneEntity(scene, entities[i]);
         }
 
-        inputModel = scene.metricsCounter.model;
+        inputModel = scene.metricsCounter.currentCount;
 
         Assert.That( inputModel.materials, Is.EqualTo(0) );
         Assert.That( inputModel.textures, Is.EqualTo(0) );
@@ -165,7 +165,7 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
 
             yield return null;
 
-            sceneMetrics = scene.metricsCounter.model;
+            sceneMetrics = scene.metricsCounter.currentCount;
 
             Assert.That( sceneMetrics.materials, Is.EqualTo(1) );
             Assert.That( sceneMetrics.textures, Is.EqualTo(1) );
@@ -175,7 +175,7 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
 
         yield return null;
 
-        sceneMetrics = scene.metricsCounter.model;
+        sceneMetrics = scene.metricsCounter.currentCount;
 
         Assert.That( sceneMetrics.materials, Is.EqualTo(0) );
         Assert.That( sceneMetrics.textures, Is.EqualTo(0) );
@@ -190,8 +190,8 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
         yield return texture1.routine;
         yield return material1.routine;
 
-        Assert.That( scene.metricsCounter.model.materials, Is.EqualTo(0) );
-        Assert.That( scene.metricsCounter.model.textures, Is.EqualTo(0) );
+        Assert.That( scene.metricsCounter.currentCount.materials, Is.EqualTo(0) );
+        Assert.That( scene.metricsCounter.currentCount.textures, Is.EqualTo(0) );
     }
 
     [UnityTest]
@@ -214,13 +214,13 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
 
         yield return material1.routine;
 
-        Assert.That( scene.metricsCounter.model.textures, Is.EqualTo(1) );
+        Assert.That( scene.metricsCounter.currentCount.textures, Is.EqualTo(1) );
 
         TestUtils.RemoveSceneEntity(scene, entity.entityId);
 
         yield return null;
 
-        Assert.That( scene.metricsCounter.model.textures, Is.EqualTo(0) );
+        Assert.That( scene.metricsCounter.currentCount.textures, Is.EqualTo(0) );
     }
 
     [UnityTest]
@@ -245,7 +245,7 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
 
         yield return material1.routine;
 
-        sceneMetrics = scene.metricsCounter.model;
+        sceneMetrics = scene.metricsCounter.currentCount;
 
         Assert.That( sceneMetrics.materials, Is.EqualTo(1) );
         Assert.That( sceneMetrics.textures, Is.EqualTo(4) );
@@ -253,7 +253,7 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
         TestUtils.RemoveSceneEntity(scene, entity);
         yield return null;
 
-        sceneMetrics = scene.metricsCounter.model;
+        sceneMetrics = scene.metricsCounter.currentCount;
 
         Assert.That( sceneMetrics.materials, Is.EqualTo(0) );
         Assert.That( sceneMetrics.textures, Is.EqualTo(0) );
@@ -322,13 +322,13 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
         };
 
         NFTShape component = TestUtils.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
-        Debug.Log(scene.metricsCounter.model);
+        Debug.Log(scene.metricsCounter.currentCount);
         TestUtils.SharedComponentAttach(component, entity);
 
         LoadWrapper_NFT wrapper = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
         yield return new WaitUntil(() => wrapper.alreadyLoaded);
 
-        Debug.Log(scene.metricsCounter.model);
+        Debug.Log(scene.metricsCounter.currentCount);
         AssertMetricsModel(scene,
             triangles: 190,
             materials: 6,
@@ -506,7 +506,7 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
     void AssertMetricsModel(ParcelScene scene, int triangles, int materials, int entities, int meshes, int bodies,
         int textures)
     {
-        SceneMetricsModel inputModel = scene.metricsCounter.model;
+        SceneMetricsModel inputModel = scene.metricsCounter.currentCount;
 
         Assert.AreEqual(triangles, inputModel.triangles, "Incorrect triangle count, was: " + triangles);
         Assert.AreEqual(materials, inputModel.materials, "Incorrect materials count");

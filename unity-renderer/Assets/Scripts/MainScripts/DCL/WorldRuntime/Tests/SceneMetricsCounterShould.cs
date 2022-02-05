@@ -7,28 +7,31 @@ public class SceneMetricsCounterShould
     [Test]
     public void CountEntitiesWhenAddedAndRemoved()
     {
-        var sceneMetricsCounter = new SceneMetricsCounter(new DataStore_WorldObjects(), "A", Vector2Int.zero, 10);
+        var dataStore = new DataStore_WorldObjects();
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "A", Vector2Int.zero, 10);
+        dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
+
         sceneMetricsCounter.Enable();
 
-        sceneMetricsCounter.AddEntity("1");
+        // sceneMetricsCounter.AddEntity("1");
 
-        Assert.That( sceneMetricsCounter.model.entities, Is.EqualTo(1));
+        Assert.That( sceneMetricsCounter.currentCount.entities, Is.EqualTo(1));
 
-        sceneMetricsCounter.AddEntity("2");
-        sceneMetricsCounter.AddEntity("3");
-        sceneMetricsCounter.AddEntity("4");
-        sceneMetricsCounter.AddEntity("5");
-        sceneMetricsCounter.AddEntity("6");
-        sceneMetricsCounter.AddEntity("7");
-        sceneMetricsCounter.AddEntity("8");
-        sceneMetricsCounter.AddEntity("9");
-        sceneMetricsCounter.AddEntity("10");
+        // sceneMetricsCounter.AddEntity("2");
+        // sceneMetricsCounter.AddEntity("3");
+        // sceneMetricsCounter.AddEntity("4");
+        // sceneMetricsCounter.AddEntity("5");
+        // sceneMetricsCounter.AddEntity("6");
+        // sceneMetricsCounter.AddEntity("7");
+        // sceneMetricsCounter.AddEntity("8");
+        // sceneMetricsCounter.AddEntity("9");
+        // sceneMetricsCounter.AddEntity("10");
 
-        Assert.That( sceneMetricsCounter.model.entities, Is.EqualTo(10));
+        Assert.That( sceneMetricsCounter.currentCount.entities, Is.EqualTo(10));
 
-        sceneMetricsCounter.RemoveEntity("5");
+        // sceneMetricsCounter.RemoveEntity("5");
 
-        Assert.That( sceneMetricsCounter.model.entities, Is.EqualTo(9));
+        Assert.That( sceneMetricsCounter.currentCount.entities, Is.EqualTo(9));
 
         sceneMetricsCounter.Dispose();
     }
@@ -38,10 +41,10 @@ public class SceneMetricsCounterShould
     {
         DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
         var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
-        sceneMetricsCounter.Enable();
 
         dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
         dataStore.sceneData.Add("2", new DataStore_WorldObjects.SceneData());
+        sceneMetricsCounter.Enable();
 
         Mesh mesh1 = new Mesh();
         Mesh mesh2 = new Mesh();
@@ -65,15 +68,15 @@ public class SceneMetricsCounterShould
         dataStore.AddRendereable("1", rendereable2);
         dataStore.AddRendereable("2", rendereable3);
 
-        Assert.That( sceneMetricsCounter.model.meshes, Is.EqualTo(3));
+        Assert.That( sceneMetricsCounter.currentCount.meshes, Is.EqualTo(3));
 
         dataStore.RemoveRendereable("1", rendereable2);
 
-        Assert.That( sceneMetricsCounter.model.meshes, Is.EqualTo(2));
+        Assert.That( sceneMetricsCounter.currentCount.meshes, Is.EqualTo(2));
 
         dataStore.RemoveRendereable("1", rendereable1);
 
-        Assert.That( sceneMetricsCounter.model.meshes, Is.EqualTo(0));
+        Assert.That( sceneMetricsCounter.currentCount.meshes, Is.EqualTo(0));
 
         sceneMetricsCounter.Dispose();
 
@@ -88,10 +91,10 @@ public class SceneMetricsCounterShould
     {
         DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
         var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
-        sceneMetricsCounter.Enable();
 
         dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
         dataStore.sceneData.Add("2", new DataStore_WorldObjects.SceneData());
+        sceneMetricsCounter.Enable();
 
         Material mat1 = new Material(Shader.Find("Standard"));
         Material mat2 = new Material(Shader.Find("Standard"));
@@ -115,15 +118,15 @@ public class SceneMetricsCounterShould
         dataStore.AddRendereable("1", rendereable2);
         dataStore.AddRendereable("2", rendereable3);
 
-        Assert.That( sceneMetricsCounter.model.materials, Is.EqualTo(3));
+        Assert.That( sceneMetricsCounter.currentCount.materials, Is.EqualTo(3));
 
         dataStore.RemoveRendereable("1", rendereable2);
 
-        Assert.That( sceneMetricsCounter.model.materials, Is.EqualTo(2));
+        Assert.That( sceneMetricsCounter.currentCount.materials, Is.EqualTo(2));
 
         dataStore.RemoveRendereable("1", rendereable1);
 
-        Assert.That( sceneMetricsCounter.model.materials, Is.EqualTo(0));
+        Assert.That( sceneMetricsCounter.currentCount.materials, Is.EqualTo(0));
 
         sceneMetricsCounter.Dispose();
 
@@ -138,10 +141,10 @@ public class SceneMetricsCounterShould
     {
         DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
         var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
-        sceneMetricsCounter.Enable();
 
         dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
         dataStore.sceneData.Add("2", new DataStore_WorldObjects.SceneData());
+        sceneMetricsCounter.Enable();
 
         Texture2D tex1 = new Texture2D(1, 1);
         Texture2D tex2 = new Texture2D(1, 1);
@@ -165,15 +168,15 @@ public class SceneMetricsCounterShould
         dataStore.AddRendereable("1", rendereable2);
         dataStore.AddRendereable("2", rendereable3);
 
-        Assert.That( sceneMetricsCounter.model.textures, Is.EqualTo(3));
+        Assert.That( sceneMetricsCounter.currentCount.textures, Is.EqualTo(3));
 
         dataStore.RemoveRendereable("1", rendereable2);
 
-        Assert.That( sceneMetricsCounter.model.textures, Is.EqualTo(2));
+        Assert.That( sceneMetricsCounter.currentCount.textures, Is.EqualTo(2));
 
         dataStore.RemoveRendereable("1", rendereable1);
 
-        Assert.That( sceneMetricsCounter.model.textures, Is.EqualTo(0));
+        Assert.That( sceneMetricsCounter.currentCount.textures, Is.EqualTo(0));
 
         sceneMetricsCounter.Dispose();
 
@@ -188,10 +191,10 @@ public class SceneMetricsCounterShould
     {
         DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
         var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
-        sceneMetricsCounter.Enable();
 
         dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
         dataStore.sceneData.Add("2", new DataStore_WorldObjects.SceneData());
+        sceneMetricsCounter.Enable();
 
         Rendereable rendereable1 = new Rendereable();
         rendereable1.ownerId = "A";
@@ -204,11 +207,11 @@ public class SceneMetricsCounterShould
         dataStore.AddRendereable("1", rendereable1);
         dataStore.AddRendereable("1", rendereable2);
 
-        Assert.That( sceneMetricsCounter.model.triangles, Is.EqualTo(30));
+        Assert.That( sceneMetricsCounter.currentCount.triangles, Is.EqualTo(30));
 
         dataStore.RemoveRendereable("1", rendereable1);
 
-        Assert.That( sceneMetricsCounter.model.triangles, Is.EqualTo(20));
+        Assert.That( sceneMetricsCounter.currentCount.triangles, Is.EqualTo(20));
 
         sceneMetricsCounter.Dispose();
     }
@@ -218,10 +221,10 @@ public class SceneMetricsCounterShould
     {
         DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
         var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
-        sceneMetricsCounter.Enable();
-
         dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
         dataStore.sceneData.Add("2", new DataStore_WorldObjects.SceneData());
+
+        sceneMetricsCounter.Enable();
 
         Renderer rend1 = new GameObject("Test").AddComponent<MeshRenderer>();
         Renderer rend2 = new GameObject("Test").AddComponent<MeshRenderer>();
@@ -245,15 +248,15 @@ public class SceneMetricsCounterShould
         dataStore.AddRendereable("1", rendereable2);
         dataStore.AddRendereable("2", rendereable3);
 
-        Assert.That( sceneMetricsCounter.model.bodies, Is.EqualTo(3));
+        Assert.That( sceneMetricsCounter.currentCount.bodies, Is.EqualTo(3));
 
         dataStore.RemoveRendereable("1", rendereable2);
 
-        Assert.That( sceneMetricsCounter.model.bodies, Is.EqualTo(2));
+        Assert.That( sceneMetricsCounter.currentCount.bodies, Is.EqualTo(2));
 
         dataStore.RemoveRendereable("1", rendereable1);
 
-        Assert.That( sceneMetricsCounter.model.bodies, Is.EqualTo(0));
+        Assert.That( sceneMetricsCounter.currentCount.bodies, Is.EqualTo(0));
 
         sceneMetricsCounter.Dispose();
 
@@ -263,49 +266,49 @@ public class SceneMetricsCounterShould
         UnityEngine.Object.Destroy(rend4.gameObject);
     }
 
-    [Test]
-    public void NotCountWhenEntityIsExcluded()
-    {
-        const string OWNER_1 = "A";
-        const string OWNER_2 = "B";
-        const string SCENE_ID = "1";
-
-        DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
-        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, SCENE_ID, Vector2Int.zero, 10);
-        sceneMetricsCounter.Enable();
-
-        dataStore.sceneData.Add(SCENE_ID, new DataStore_WorldObjects.SceneData());
-
-        Rendereable rendereable1 = new Rendereable();
-        rendereable1.ownerId = OWNER_1;
-
-        Rendereable rendereable2 = new Rendereable();
-        rendereable2.ownerId = OWNER_2;
-
-        dataStore.AddRendereable(SCENE_ID, rendereable1);
-
-        Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(1), $"Entity {OWNER_1} shouldn't be excluded!");
-
-        dataStore.RemoveRendereable(SCENE_ID, rendereable1);
-
-        Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(0), $"Entity {OWNER_1} should be always removed!");
-
-        sceneMetricsCounter.AddExcludedEntity(OWNER_1);
-
-        dataStore.AddRendereable(SCENE_ID, rendereable1);
-        dataStore.AddRendereable(SCENE_ID, rendereable2);
-
-        Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(1), "AddExcludedEntity is not working!");
-
-        sceneMetricsCounter.RemoveExcludedEntity(OWNER_1);
-
-        Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(2), "RemoveExcludedEntity is not working!");
-
-        sceneMetricsCounter.AddExcludedEntity(OWNER_1);
-        sceneMetricsCounter.AddExcludedEntity(OWNER_2);
-
-        Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(0), "AddExcludedEntity should remove existing entities!");
-
-        sceneMetricsCounter.Dispose();
-    }
+    // [Test]
+    // public void NotCountWhenEntityIsExcluded()
+    // {
+    //     const string OWNER_1 = "A";
+    //     const string OWNER_2 = "B";
+    //     const string asd = "1";
+    //
+    //     DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
+    //     var sceneMetricsCounter = new SceneMetricsCounter(dataStore, asd, Vector2Int.zero, 10);
+    //     sceneMetricsCounter.Enable();
+    //
+    //     dataStore.sceneData.Add(asd, new DataStore_WorldObjects.SceneData());
+    //
+    //     Rendereable rendereable1 = new Rendereable();
+    //     rendereable1.ownerId = OWNER_1;
+    //
+    //     Rendereable rendereable2 = new Rendereable();
+    //     rendereable2.ownerId = OWNER_2;
+    //
+    //     dataStore.AddRendereable(asd, rendereable1);
+    //
+    //     Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(1), $"Entity {OWNER_1} shouldn't be excluded!");
+    //
+    //     dataStore.RemoveRendereable(asd, rendereable1);
+    //
+    //     Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(0), $"Entity {OWNER_1} should be always removed!");
+    //
+    //     sceneMetricsCounter.AddExcludedEntity(OWNER_1);
+    //
+    //     dataStore.AddRendereable(asd, rendereable1);
+    //     dataStore.AddRendereable(asd, rendereable2);
+    //
+    //     Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(1), "AddExcludedEntity is not working!");
+    //
+    //     sceneMetricsCounter.RemoveExcludedEntity(OWNER_1);
+    //
+    //     Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(2), "RemoveExcludedEntity is not working!");
+    //
+    //     sceneMetricsCounter.AddExcludedEntity(OWNER_1);
+    //     sceneMetricsCounter.AddExcludedEntity(OWNER_2);
+    //
+    //     Assert.That(sceneMetricsCounter.model.entities, Is.EqualTo(0), "AddExcludedEntity should remove existing entities!");
+    //
+    //     sceneMetricsCounter.Dispose();
+    // }
 }

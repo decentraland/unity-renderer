@@ -205,7 +205,7 @@ namespace DCL.Helpers
                 IParcelScene scene = kvp.Value;
 
                 // Sum operator is overloaded
-                totalSceneLimits += scene.metricsCounter?.model.ToMetricsModel();
+                totalSceneLimits += scene.metricsCounter?.currentCount.ToMetricsModel();
 
                 loadedScenes.Add( new LoadedScenesDump
                     {

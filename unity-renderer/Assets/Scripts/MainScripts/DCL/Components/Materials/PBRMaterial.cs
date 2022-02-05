@@ -256,7 +256,11 @@ namespace DCL.Components
             meshRenderer.sharedMaterial = material;
             SRPBatchingHelper.OptimizeMaterial(material);
 
-            MaterialUtils.UpdateMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, oldMaterial, material);
+            var renderingData = DataStore.i.sceneWorldObjects;
+            var sceneData = renderingData.sceneData[scene.sceneData.id];
+
+            sceneData.materials.RemoveRefCount(oldMaterial);
+            sceneData.materials.AddRefCount(material);
         }
 
         private void OnShapeUpdated(IDCLEntity entity)
@@ -277,7 +281,10 @@ namespace DCL.Components
             if (meshRenderer && meshRenderer.sharedMaterial == material)
                 meshRenderer.sharedMaterial = null;
 
-            MaterialUtils.RemoveMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, material);
+            var renderingData = DataStore.i.sceneWorldObjects;
+            var sceneData = renderingData.sceneData[scene.sceneData.id];
+
+            sceneData.materials.RemoveRefCount(material);
         }
 
         IEnumerator FetchTexture(int materialPropertyId, string textureComponentId, DCLTexture cachedDCLTexture)
@@ -292,47 +299,62 @@ namespace DCL.Components
                             if (material == null)
                                 return;
 
+                            Texture oldTexture = material.GetTexture(materialPropertyId);
                             material.SetTexture(materialPropertyId, fetchedDCLTexture.texture);
                             SwitchTextureComponent(cachedDCLTexture, fetchedDCLTexture);
 
-                            Debug.Log("TEXTURE READY!!!");
+                            DataStore_WorldObjects renderingData = DataStore.i.sceneWorldObjects;
+                            DataStore_WorldObjects.SceneData sceneData = renderingData.sceneData[scene.sceneData.id];
 
-                            foreach (IDCLEntity entity in attachedEntities)
-                            {
-                                var meshGameObject = entity.meshRootGameObject;
+                            sceneData.textures.AddRefCount(fetchedDCLTexture.texture);
+                            sceneData.textures.RemoveRefCount(oldTexture);
 
-                                if (meshGameObject == null)
-                                    continue;
-
-                                var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
-
-                                if (meshRenderer == null)
-                                    continue;
-
-                                MaterialUtils.UpdateMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, null, material);
-                            }
+                            // foreach (IDCLEntity entity in attachedEntities)
+                            // {
+                            //     DataStore.i.sceneWorldObjects.RemoveRendereable(scene.sceneData.id, entity.rendereable);
+                            //     entity.rendereable.textures.Remove(oldTexture);
+                            //     entity.rendereable.textures.Add(newTexture);
+                            //     DataStore.i.sceneWorldObjects.AddRendereable(scene.sceneData.id, entity.rendereable);
+                            //     // var meshGameObject = entity.meshRootGameObject;
+                            //     //
+                            //     // if (meshGameObject == null)
+                            //     //     continue;
+                            //     //
+                            //     // var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
+                            //     //
+                            //     // if (meshRenderer == null)
+                            //     //     continue;
+                            //     //
+                            //     // MaterialUtils.UpdateMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, null, material);
+                            // }
                         });
                 }
             }
             else
             {
+                Texture oldTexture = material.GetTexture(materialPropertyId);
                 material.SetTexture(materialPropertyId, null);
                 cachedDCLTexture?.DetachFrom(this);
 
-                foreach (IDCLEntity entity in attachedEntities)
-                {
-                    var meshGameObject = entity.meshRootGameObject;
+                DataStore_WorldObjects renderingData = DataStore.i.sceneWorldObjects;
+                DataStore_WorldObjects.SceneData sceneData = renderingData.sceneData[scene.sceneData.id];
 
-                    if (meshGameObject == null)
-                        continue;
+                sceneData.textures.RemoveRefCount(oldTexture);
 
-                    var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
-
-                    if (meshRenderer == null)
-                        continue;
-
-                    MaterialUtils.RemoveMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, material);
-                }
+                // foreach (IDCLEntity entity in attachedEntities)
+                // {
+                //     var meshGameObject = entity.meshRootGameObject;
+                //
+                //     if (meshGameObject == null)
+                //         continue;
+                //
+                //     var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
+                //
+                //     if (meshRenderer == null)
+                //         continue;
+                //
+                //     //MaterialUtils.RemoveMaterialFromRendereable(scene.sceneData.id, entity.entityId, meshRenderer, material);
+                // }
             }
         }
 

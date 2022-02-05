@@ -6,11 +6,8 @@ namespace DCL
     public interface ISceneMetricsCounter : IDisposable
     {
         event System.Action<ISceneMetricsCounter> OnMetricsUpdated;
-        SceneMetricsModel sceneLimits { get; }
-        SceneMetricsModel model { get; }
-
-        void AddEntity( string entityId );
-        void RemoveEntity( string entityId );
+        SceneMetricsModel maxCount { get; }
+        SceneMetricsModel currentCount { get; }
 
         void Enable();
 
@@ -19,7 +16,5 @@ namespace DCL
         void SendEvent();
 
         bool IsInsideTheLimits();
-        void RemoveExcludedEntity(string entityId);
-        void AddExcludedEntity(string entityId);
     }
 }

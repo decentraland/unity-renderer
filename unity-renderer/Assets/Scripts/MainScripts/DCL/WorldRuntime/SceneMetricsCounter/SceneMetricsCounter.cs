@@ -9,17 +9,6 @@ using UnityEngine.Assertions;
 
 namespace DCL
 {
-    // - Redefine how metrics should be calculated
-    //      - Unique loaded textures size
-    //      - Vertex count
-    //      - Skinned mesh renderers
-    //      - Scene messages throughput (tbd criteria)
-    //      - Do not take into account invisible shapes
-    //      - Transparent vs opaque materials
-
-    // - Send events with the metrics to measure world status
-    // - Refactor SceneMetricsCounter to support textures + handle excluded entities correctly
-
     public sealed class SceneMetricsCounter : ISceneMetricsCounter
     {
         public static class LimitsConfig
@@ -38,37 +27,45 @@ namespace DCL
             public const float visibleRadius = 10;
         }
 
-        private class EntityMetrics
-        {
-            public HashSet<Rendereable> rendereables = new HashSet<Rendereable>();
-        }
+        // private class EntityMetrics
+        // {
+        //     public HashSet<Rendereable> rendereables = new HashSet<Rendereable>();
+        // }
 
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
         public event Action<ISceneMetricsCounter> OnMetricsUpdated;
 
-        private WorldSceneObjectsTrackingHelper sceneObjectsTrackingHelper;
-        public DataStore_SceneMetrics data => DataStore.i.Get<DataStore_SceneMetrics>();
+        // private WorldSceneObjectsTrackingHelper sceneObjectsTrackingHelper;
+        // public DataStore_SceneMetrics data => DataStore.i.Get<DataStore_SceneMetrics>();
 
         // EntityMetrics will save even ignored entities.
-        private Dictionary<string, EntityMetrics> entityMetrics = new Dictionary<string, EntityMetrics>();
+        // private Dictionary<string, EntityMetrics> entityMetrics = new Dictionary<string, EntityMetrics>();
 
-        private HashSet<string> excludedEntities = new HashSet<string>();
+        // private HashSet<string> excludedEntities = new HashSet<string>();
 
-        private SceneMetricsModel sceneLimitsValue = new SceneMetricsModel();
-        private SceneMetricsModel modelValue = new SceneMetricsModel();
+        private SceneMetricsModel maxCountValue = new SceneMetricsModel();
+        private SceneMetricsModel currentCountValue = new SceneMetricsModel();
 
-        public SceneMetricsModel model => modelValue.Clone();
-        public SceneMetricsModel sceneLimits => sceneLimitsValue.Clone();
+        public SceneMetricsModel currentCount
+        {
+            get
+            {
+                UpdateMetrics();
+                return currentCountValue.Clone();
+            }
+        }
 
-        public bool isDirty { get; private set; }
+        public SceneMetricsModel maxCount => maxCountValue.Clone();
 
-        public HashSet<Rendereable> trackedRendereables = new HashSet<Rendereable>();
+        public bool dirty { get; private set; }
 
-        private RefCountedMetric uniqueTextures = new RefCountedMetric();
-        private RefCountedMetric uniqueMaterials = new RefCountedMetric();
-        private RefCountedMetric uniqueMeshes = new RefCountedMetric();
-        private HashSet<string> uniqueEntities = new HashSet<string>();
+        // public HashSet<Rendereable> trackedRendereables = new HashSet<Rendereable>();
+
+        // private RefCountedMetric uniqueTextures = new RefCountedMetric();
+        // private RefCountedMetric uniqueMaterials = new RefCountedMetric();
+        // private RefCountedMetric uniqueMeshes = new RefCountedMetric();
+        // private HashSet<string> uniqueEntities = new HashSet<string>();
 
         private string sceneId;
 
@@ -76,101 +73,80 @@ namespace DCL
 
         private int sceneParcelCount;
 
+        private DataStore_WorldObjects data;
+        private bool enabled = false;
+
         public SceneMetricsCounter(DataStore_WorldObjects dataStore, string sceneId, Vector2Int scenePosition, int sceneParcelCount)
         {
             this.sceneId = sceneId;
             this.scenePosition = scenePosition;
             this.sceneParcelCount = sceneParcelCount;
+            this.data = dataStore;
 
             Assert.IsTrue( !string.IsNullOrEmpty(sceneId), "Scene must have an ID!" );
-
-            sceneObjectsTrackingHelper = new WorldSceneObjectsTrackingHelper(dataStore, sceneId);
-            sceneLimitsValue = ComputeSceneLimits();
+            maxCountValue = ComputeMaxCount();
         }
 
         public void Dispose()
         {
-            sceneObjectsTrackingHelper.Dispose();
         }
+
 
         public void Enable()
         {
-            sceneObjectsTrackingHelper.OnWillAddRendereable -= OnWillAddRendereable;
-            sceneObjectsTrackingHelper.OnWillRemoveRendereable -= OnWillRemoveRendereable;
+            if ( enabled )
+                return;
 
-            sceneObjectsTrackingHelper.OnWillAddRendereable += OnWillAddRendereable;
-            sceneObjectsTrackingHelper.OnWillRemoveRendereable += OnWillRemoveRendereable;
+            var sceneData = data.sceneData[sceneId];
+
+            sceneData.materials.OnAdded += OnDataChanged;
+            sceneData.materials.OnRemoved += OnDataChanged;
+
+            sceneData.textures.OnAdded += OnDataChanged;
+            sceneData.textures.OnRemoved += OnDataChanged;
+
+            sceneData.meshes.OnAdded += OnDataChanged;
+            sceneData.meshes.OnRemoved += OnDataChanged;
+
+            sceneData.renderers.OnAdded += OnDataChanged;
+            sceneData.renderers.OnRemoved += OnDataChanged;
+
+            sceneData.owners.OnAdded += OnDataChanged;
+            sceneData.owners.OnRemoved += OnDataChanged;
+
+            sceneData.triangles.OnChange += OnDataChanged;
+
+            enabled = true;
         }
 
         public void Disable()
         {
-            sceneObjectsTrackingHelper.OnWillAddRendereable -= OnWillAddRendereable;
-            sceneObjectsTrackingHelper.OnWillRemoveRendereable -= OnWillRemoveRendereable;
-        }
-
-        public void AddEntity(string entityId)
-        {
-            AddEntityMetrics(entityId);
-
-            if (excludedEntities.Contains(entityId))
+            if ( !enabled )
                 return;
 
-            if ( !uniqueEntities.Contains(entityId) )
-                uniqueEntities.Add(entityId);
+            var sceneData = data.sceneData[sceneId];
 
-            modelValue.entities = uniqueEntities.Count();
+            sceneData.materials.OnAdded -= OnDataChanged;
+            sceneData.materials.OnRemoved -= OnDataChanged;
+
+            sceneData.textures.OnAdded -= OnDataChanged;
+            sceneData.textures.OnRemoved -= OnDataChanged;
+
+            sceneData.meshes.OnAdded -= OnDataChanged;
+            sceneData.meshes.OnRemoved -= OnDataChanged;
+
+            sceneData.renderers.OnAdded -= OnDataChanged;
+            sceneData.renderers.OnRemoved -= OnDataChanged;
+
+            sceneData.owners.OnAdded -= OnDataChanged;
+            sceneData.owners.OnRemoved -= OnDataChanged;
+
+            sceneData.triangles.OnChange -= OnDataChanged;
+
+            enabled = false;
         }
 
-        public void RemoveEntity(string entityId)
-        {
-            RemoveEntityMetrics(entityId);
-
-            if (excludedEntities.Contains(entityId))
-                return;
-
-            if ( uniqueEntities.Contains(entityId))
-                uniqueEntities.Remove(entityId);
-
-            modelValue.entities = uniqueEntities.Count();
-        }
-
-        public void RemoveExcludedEntity(string entityId)
-        {
-            if (!excludedEntities.Contains(entityId))
-                return;
-
-            excludedEntities.Remove(entityId);
-
-            if (entityMetrics.ContainsKey(entityId))
-            {
-                foreach ( var rend in entityMetrics[entityId].rendereables )
-                {
-                    AddTrackedRendereable( rend );
-                }
-            }
-
-            UpdateUniqueMetrics();
-        }
-
-        public void AddExcludedEntity(string entityId)
-        {
-            if (excludedEntities.Contains(entityId))
-                return;
-
-            excludedEntities.Add(entityId);
-
-            if (entityMetrics.ContainsKey(entityId))
-            {
-                foreach ( var rend in entityMetrics[entityId].rendereables )
-                {
-                    RemoveTrackedRendereable( rend );
-                }
-            }
-
-            UpdateUniqueMetrics();
-        }
-
-        private SceneMetricsModel ComputeSceneLimits()
+        private SceneMetricsModel ComputeMaxCount()
         {
             var result = new SceneMetricsModel();
 
@@ -190,8 +166,8 @@ namespace DCL
 
         public bool IsInsideTheLimits()
         {
-            SceneMetricsModel limits = ComputeSceneLimits();
-            SceneMetricsModel usage = modelValue;
+            SceneMetricsModel limits = ComputeMaxCount();
+            SceneMetricsModel usage = currentCountValue;
 
             if (usage.triangles > limits.triangles)
                 return false;
@@ -214,174 +190,77 @@ namespace DCL
             return true;
         }
 
+        private void MarkDirty()
+        {
+            dirty = true;
+        }
+
         public void SendEvent()
         {
-            if (!isDirty)
+            if (!dirty)
                 return;
 
-            isDirty = false;
+            dirty = false;
 
-            Interface.WebInterface.ReportOnMetricsUpdate(sceneId, modelValue.ToMetricsModel(), ComputeSceneLimits().ToMetricsModel());
+            UpdateMetrics();
+
+            Interface.WebInterface.ReportOnMetricsUpdate(sceneId, currentCountValue.ToMetricsModel(), maxCount.ToMetricsModel());
         }
 
-        private void OnWillAddRendereable(Rendereable rendereable)
+        void OnDataChanged<T>(T obj)
+            where T : class
         {
-            string entityId = rendereable.ownerId;
+            MarkDirty();
+        }
 
-            Assert.IsTrue(entityId != null, "rendereable.ownerId cannot be null!");
+        void OnDataChanged(int obj1, int obj2)
+        {
+            MarkDirty();
+        }
 
-            // Rendereable have to be always be added in order to be counted/discounted
-            // when excluded entities are toggled.
-            AddEntityMetrics(entityId, rendereable);
+        private void UpdateMetrics()
+        {
+            currentCountValue.materials = data.sceneData[sceneId].materials.Count();
+            currentCountValue.textures = data.sceneData[sceneId].textures.Count();
+            currentCountValue.meshes = data.sceneData[sceneId].meshes.Count();
+            currentCountValue.entities = data.sceneData[sceneId].owners.Count();
+            currentCountValue.bodies = data.sceneData[sceneId].renderers.Count();
+            currentCountValue.triangles = data.sceneData[sceneId].triangles.Get() / 3;
 
-            if (excludedEntities.Contains(entityId))
-                return;
-
-            AddTrackedRendereable(rendereable);
-            UpdateUniqueMetrics();
-
-            isDirty = true;
-
+            logger.Log($"Current metrics: {currentCountValue}");
             RaiseMetricsUpdate();
-        }
-
-        private void OnWillRemoveRendereable(Rendereable rendereable)
-        {
-            string entityId = rendereable.ownerId;
-
-            Assert.IsTrue(entityId != null, "rendereable.ownerId cannot be null!");
-
-            RemoveEntityMetrics(entityId);
-
-            if (excludedEntities.Contains(entityId))
-                return;
-
-            RemoveTrackedRendereable(rendereable);
-            UpdateUniqueMetrics();
-
-            isDirty = true;
-
-            RaiseMetricsUpdate();
-        }
-
-        private void AddTrackedRendereable(Rendereable rend)
-        {
-            if (trackedRendereables.Contains(rend))
-                RemoveTrackedRendereable(rend);
-
-            logger.Log($"Adding rendereable {rend.ownerId} -- {rend}");
-            trackedRendereables.Add(rend);
-
-            int trianglesToAdd = rend.totalTriangleCount / 3;
-            modelValue.triangles += trianglesToAdd;
-            modelValue.bodies += rend.renderers.Count;
-
-            if (!uniqueEntities.Contains(rend.ownerId))
-                uniqueEntities.Add(rend.ownerId);
-
-            foreach ( var mat in rend.materials )
-            {
-                uniqueMaterials.AddRef(mat);
-            }
-
-            foreach ( var mesh in rend.meshes )
-            {
-                uniqueMeshes.AddRef(mesh);
-            }
-
-            foreach ( var tex in rend.textures )
-            {
-                uniqueTextures.AddRef(tex);
-            }
-        }
-
-        private void RemoveTrackedRendereable(Rendereable rend)
-        {
-            if ( !trackedRendereables.Contains(rend) )
-                return;
-
-            logger.Log($"Removing rendereable {rend.ownerId} -- {rend}");
-            trackedRendereables.Remove(rend);
-
-            if (uniqueEntities.Contains(rend.ownerId))
-                uniqueEntities.Remove(rend.ownerId);
-
-            int trianglesToAdd = rend.totalTriangleCount / 3;
-            modelValue.triangles -= trianglesToAdd;
-            modelValue.bodies -= rend.renderers.Count;
-
-            foreach ( var mat in rend.materials )
-            {
-                uniqueMaterials.RemoveRef(mat);
-            }
-
-            foreach ( var mesh in rend.meshes )
-            {
-                uniqueMeshes.RemoveRef(mesh);
-            }
-
-            foreach ( var tex in rend.textures )
-            {
-                uniqueTextures.RemoveRef(tex);
-            }
-        }
-
-        private void AddEntityMetrics(string entityId, Rendereable rendereable = null)
-        {
-            if (!entityMetrics.ContainsKey(entityId))
-                entityMetrics.Add(entityId, new EntityMetrics());
-
-            if ( rendereable == null )
-                rendereable = new Rendereable();
-
-            entityMetrics[entityId].rendereables.Add(rendereable);
-        }
-
-        private void RemoveEntityMetrics(string entityId)
-        {
-            if (entityMetrics.ContainsKey(entityId))
-                entityMetrics.Remove(entityId);
-        }
-
-
-        private void UpdateUniqueMetrics()
-        {
-            modelValue.materials = uniqueMaterials.GetObjectsCount();
-            modelValue.textures = uniqueTextures.GetObjectsCount();
-            modelValue.meshes = uniqueMeshes.GetObjectsCount();
-            modelValue.entities = uniqueEntities.Count();
-
-            logger.Log($"Current metrics: {modelValue}");
         }
 
         private void UpdateWorstMetricsOffense()
         {
-            if ( sceneLimitsValue != null && data.worstMetricOffenseComputeEnabled.Get() )
+            DataStore_SceneMetrics metricsData = DataStore.i.Get<DataStore_SceneMetrics>();
+
+            if ( maxCountValue != null && metricsData.worstMetricOffenseComputeEnabled.Get() )
             {
-                bool isOffending = modelValue > sceneLimitsValue;
+                bool isOffending = currentCountValue > maxCountValue;
 
                 if ( !isOffending )
                     return;
 
                 bool firstOffense = false;
 
-                if (!data.worstMetricOffenses.ContainsKey(sceneId))
+                if (!metricsData.worstMetricOffenses.ContainsKey(sceneId))
                 {
                     firstOffense = true;
-                    data.worstMetricOffenses[sceneId] = model.Clone();
+                    metricsData.worstMetricOffenses[sceneId] = currentCount.Clone();
                 }
 
-                SceneMetricsModel worstOffense = data.worstMetricOffenses[sceneId];
-                SceneMetricsModel currentOffense = sceneLimitsValue - model;
+                SceneMetricsModel worstOffense = metricsData.worstMetricOffenses[sceneId];
+                SceneMetricsModel currentOffense = maxCountValue - currentCount;
 
                 if ( firstOffense )
-                    logger.Log($"New offending scene {sceneId} ({scenePosition})!\n{model}");
+                    logger.Log($"New offending scene {sceneId} ({scenePosition})!\n{currentCount}");
 
                 if ( currentOffense < worstOffense )
                     return;
 
-                data.worstMetricOffenses[sceneId] = currentOffense;
-                logger.Log($"New offending scene {sceneId} {scenePosition}!\nmetrics: {model}\nlimits: {sceneLimitsValue}\ndelta:{currentOffense}");
+                metricsData.worstMetricOffenses[sceneId] = currentOffense;
+                logger.Log($"New offending scene {sceneId} {scenePosition}!\nmetrics: {currentCount}\nlimits: {maxCountValue}\ndelta:{currentOffense}");
             }
         }
 

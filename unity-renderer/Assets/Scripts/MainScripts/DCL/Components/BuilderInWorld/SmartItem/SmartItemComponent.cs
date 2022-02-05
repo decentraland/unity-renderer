@@ -21,12 +21,17 @@ namespace DCL.Components
         public override void Initialize(IParcelScene scene, IDCLEntity entity)
         {
             base.Initialize(scene, entity);
-            scene.metricsCounter.AddExcludedEntity(entity.entityId);
+
+            DataStore_WorldObjects renderingData = DataStore.i.sceneWorldObjects;
+            DataStore_WorldObjects.SceneData sceneData = renderingData.sceneData[scene.sceneData.id];
+            sceneData.ignoredOwners.Add(entity.entityId);
         }
 
         public override void Cleanup()
         {
-            scene.metricsCounter.RemoveExcludedEntity(entity.entityId);
+            DataStore_WorldObjects renderingData = DataStore.i.sceneWorldObjects;
+            DataStore_WorldObjects.SceneData sceneData = renderingData.sceneData[scene.sceneData.id];
+            sceneData.ignoredOwners.Remove(entity.entityId);
             base.Cleanup();
         }
 

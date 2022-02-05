@@ -92,13 +92,7 @@ namespace DCL.Controllers
                 gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
             }
 
-            metricsCounter = new SceneMetricsCounter(
-                DataStore.i.sceneWorldObjects,
-                sceneData.id,
-                sceneData.basePosition,
-                sceneData.parcels.Length);
-
-            metricsCounter.Enable();
+            DataStore.i.sceneWorldObjects.AddScene(sceneData.id);
 
             OnSetData?.Invoke(data);
         }
@@ -151,6 +145,7 @@ namespace DCL.Controllers
             {
                 RemoveAllEntitiesImmediate();
                 PoolManager.i.Cleanup(true, true);
+                DataStore.i.sceneWorldObjects.RemoveScene(sceneData.id);
             }
             else
             {
@@ -164,6 +159,7 @@ namespace DCL.Controllers
                 else
                 {
                     Destroy(this.gameObject);
+                    DataStore.i.sceneWorldObjects.RemoveScene(sceneData.id);
                 }
             }
 
@@ -192,7 +188,7 @@ namespace DCL.Controllers
             if (parcels.Count == 0)
                 return false;
 
-            float heightLimit = metricsCounter.sceneLimits.sceneHeight;
+            float heightLimit = metricsCounter.maxCount.sceneHeight;
 
             if (height > heightLimit)
                 return false;
@@ -205,7 +201,7 @@ namespace DCL.Controllers
             if (parcels.Count == 0)
                 return false;
 
-            float heightLimit = metricsCounter.sceneLimits.sceneHeight;
+            float heightLimit = metricsCounter.maxCount.sceneHeight;
             if (height > heightLimit)
                 return false;
 
@@ -282,7 +278,8 @@ namespace DCL.Controllers
                 newEntity.OnShapeUpdated += Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked;
 
             entities.Add(id, newEntity);
-            metricsCounter.AddEntity(id);
+
+            DataStore.i.sceneWorldObjects.sceneData[sceneData.id].owners.Add(id);
 
             OnEntityAdded?.Invoke(newEntity);
 
@@ -302,7 +299,7 @@ namespace DCL.Controllers
                 }
 
                 entities.Remove(id);
-                metricsCounter.RemoveEntity(id);
+                DataStore.i.sceneWorldObjects.sceneData[sceneData.id].owners.Remove(id);
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else

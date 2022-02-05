@@ -124,7 +124,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
     private void StartPublishScene(string sceneName, string sceneDescription, string sceneScreenshot)
     {
         startPublishingTimestamp = Time.realtimeSinceStartup;
-        BIWAnalytics.StartScenePublish(sceneToEdit.metricsCounter.model);
+        BIWAnalytics.StartScenePublish(sceneToEdit.metricsCounter.currentCount);
         builderInWorldBridge.PublishScene(sceneToEdit, sceneName, sceneDescription, sceneScreenshot);
     }
 
@@ -133,6 +133,6 @@ public class BIWPublishController : BIWController, IBIWPublishController
         if ( context.editorContext.editorHUD != null)
             context.editorContext.editorHUD.PublishEnd(isOk, message);
         string successString = isOk ? "Success" : message;
-        BIWAnalytics.EndScenePublish(sceneToEdit.metricsCounter.model, successString, Time.realtimeSinceStartup - startPublishingTimestamp);
+        BIWAnalytics.EndScenePublish(sceneToEdit.metricsCounter.currentCount, successString, Time.realtimeSinceStartup - startPublishingTimestamp);
     }
 }

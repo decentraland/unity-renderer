@@ -73,13 +73,13 @@ namespace DCL
                 //
                 // Scenes with the same sceneId shouldn't ever be added twice, and if this happens
                 // we have an early exit.
-                this.sceneData.renderedObjects.OnAdded -= OnRenderedObjectsAdded;
-                this.sceneData.renderedObjects.OnRemoved -= OnRenderedObjectsRemoved;
+                //this.sceneData.renderedObjects.OnAdded -= OnRenderedObjectsAdded;
+                //this.sceneData.renderedObjects.OnRemoved -= OnRenderedObjectsRemoved;
             }
 
             logger.Log($"Subscribing events for {sceneId}.");
-            sceneData.renderedObjects.OnAdded += OnRenderedObjectsAdded;
-            sceneData.renderedObjects.OnRemoved += OnRenderedObjectsRemoved;
+            //sceneData.renderedObjects.OnAdded += OnRenderedObjectsAdded;
+            //sceneData.renderedObjects.OnRemoved += OnRenderedObjectsRemoved;
 
             this.sceneData = sceneData;
         }
@@ -101,8 +101,8 @@ namespace DCL
             if ( sceneData == null )
                 return;
 
-            sceneData.renderedObjects.OnAdded -= OnRenderedObjectsAdded;
-            sceneData.renderedObjects.OnRemoved -= OnRenderedObjectsRemoved;
+            //sceneData.renderedObjects.OnAdded -= OnRenderedObjectsAdded;
+            //sceneData.renderedObjects.OnRemoved -= OnRenderedObjectsRemoved;
 
             dataStore.sceneData.OnAdded -= OnSceneAdded;
             dataStore.sceneData.OnRemoved -= OnSceneRemoved;

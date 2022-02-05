@@ -148,8 +148,8 @@ namespace DCL
                     ParcelScene scene = v.Value as ParcelScene;
                     if (scene.metricsCounter != null)
                     {
-                        meshesCount += scene.metricsCounter.model.meshes;
-                        materialCount += scene.metricsCounter.model.materials;
+                        meshesCount += scene.metricsCounter.currentCount.meshes;
+                        materialCount += scene.metricsCounter.currentCount.materials;
                     }
 
                     sharedCount += scene.disposableComponents.Count;
