@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
-using NSubstitute;
 using NUnit.Framework;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Environment = DCL.Environment;
 
 public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
 {
@@ -159,7 +156,7 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
     }
 
     [UnityTest]
-    public IEnumerator CountSameTextureOnManyBasicMaterials()
+    public IEnumerator CountSingleTextureAttachedToManyBasicMaterials()
     {
         var texture = CreateTexture(texturePaths[0]);
 
@@ -201,7 +198,7 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
     }
 
     [UnityTest]
-    public IEnumerator CountManyAttachedTexturesOnSingleBasicMaterial()
+    public IEnumerator CountSingleTextureWhenTextureIsSwappedOnSingleBasicMaterial()
     {
         var material = CreateBasicMaterial("");
 
@@ -248,23 +245,28 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
 
         sceneMetrics = scene.metricsCounter.currentCount;
 
-        Debug.Log("SceneMetrics = " + sceneMetrics);
-
         Assert.That( sceneMetrics.materials, Is.EqualTo(0) );
         Assert.That( sceneMetrics.textures, Is.EqualTo(0) );
     }
 
     [UnityTest]
-    public IEnumerator NotCountMaterialsAndTexturesWhenNoShapeIsPresent()
+    public IEnumerator NotCountPBRMaterialsWhenNoShapeIsPresent()
     {
-        var texture1 = CreateTexture(texturePaths[0]);
-        var material1 = CreatePBRMaterial(texture1.id, texture1.id, texture1.id, texture1.id);
+        var material1 = CreatePBRMaterial("", "", "", "");
 
-        yield return texture1.routine;
         yield return material1.routine;
 
         Assert.That( scene.metricsCounter.currentCount.materials, Is.EqualTo(0) );
-        Assert.That( scene.metricsCounter.currentCount.textures, Is.EqualTo(0) );
+    }
+
+    [UnityTest]
+    public IEnumerator NotCountBasicMaterialsWhenNoShapeIsPresent()
+    {
+        var material1 = CreateBasicMaterial("");
+
+        yield return material1.routine;
+
+        Assert.That( scene.metricsCounter.currentCount.materials, Is.EqualTo(0) );
     }
 
     [UnityTest]
@@ -439,9 +441,25 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
     }
 
     [UnityTest]
-    [Explicit]
-    [Category("Explicit")]
-    public IEnumerator CountNFTShapes()
+    public IEnumerator CountGifNftShapeWhenAdded()
+    {
+        yield break;
+    }
+
+    [UnityTest]
+    public IEnumerator CountGifNftShapeWhenRemoved()
+    {
+        yield break;
+    }
+
+    [UnityTest]
+    public IEnumerator CountStaticNftShapeWhenRemoved()
+    {
+        yield break;
+    }
+
+    [UnityTest]
+    public IEnumerator CountStaticNftShapeWhenAdded()
     {
         var entity = TestUtils.CreateSceneEntity(scene);
 
