@@ -151,11 +151,8 @@ namespace DCL.Components
             Material oldMaterial = meshRenderer.sharedMaterial;
             meshRenderer.sharedMaterial = material;
 
-            var renderingData = DataStore.i.sceneWorldObjects;
-            var sceneData = renderingData.sceneData[scene.sceneData.id];
-
-            sceneData.materials.RemoveRefCount(oldMaterial);
-            sceneData.materials.AddRefCount(material);
+            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, oldMaterial);
+            DataStore.i.sceneWorldObjects.AddMaterial(scene.sceneData.id, material);
         }
 
         private void OnShapeUpdated(IDCLEntity entity)
@@ -176,10 +173,7 @@ namespace DCL.Components
             if (meshRenderer && meshRenderer.sharedMaterial == material)
                 meshRenderer.sharedMaterial = null;
 
-            var renderingData = DataStore.i.sceneWorldObjects;
-            var sceneData = renderingData.sceneData[scene.sceneData.id];
-
-            sceneData.materials.RemoveRefCount(material);
+            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, material);
         }
 
         public override void Dispose()

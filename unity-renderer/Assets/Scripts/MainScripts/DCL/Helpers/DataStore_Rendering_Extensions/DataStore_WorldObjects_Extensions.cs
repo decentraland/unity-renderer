@@ -24,6 +24,35 @@ namespace DCL
                 self.sceneData.Remove(sceneId);
         }
 
+        public static void AddTexture(this DataStore_WorldObjects self, string sceneId, Texture texture )
+        {
+            var r = new Rendereable();
+            r.textures.Add(texture);
+            AddRendereable(self, sceneId, r);
+        }
+
+        public static void RemoveTexture(this DataStore_WorldObjects self, string sceneId, Texture texture )
+        {
+            var r = new Rendereable();
+            r.textures.Add(texture);
+            RemoveRendereable(self, sceneId, r);
+        }
+
+        public static void AddMaterial(this DataStore_WorldObjects self, string sceneId, Material material )
+        {
+            var r = new Rendereable();
+            r.materials.Add(material);
+            AddRendereable(self, sceneId, r);
+        }
+
+        public static void RemoveMaterial(this DataStore_WorldObjects self, string sceneId, Material material )
+        {
+            var r = new Rendereable();
+            r.materials.Add(material);
+            RemoveRendereable(self, sceneId, r);
+        }
+
+
         public static void AddRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
         {
             if (rendereable == null)

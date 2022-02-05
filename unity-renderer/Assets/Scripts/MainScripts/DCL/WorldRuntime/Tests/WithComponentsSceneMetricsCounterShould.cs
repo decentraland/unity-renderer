@@ -56,6 +56,48 @@ public class WithComponentsSceneMetricsCounterShould : IntegrationTestSuite
     }
 
     [UnityTest]
+    public IEnumerator NotCountIgnoredEntitiesWithGLTFShape()
+    {
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator NotCountIgnoredEntitiesWithParametrizedShape()
+    {
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator NotCountIgnoredEntitiesWithBillboard()
+    {
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator NotCountIgnoredEntitiesWithTextShape()
+    {
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator NotCountIgnoredEntitiesWithBasicMaterial()
+    {
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator NotCountIgnoredEntitiesWithPBRMaterial()
+    {
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator UpdateCountWhenParametrizedShapesChange()
+    {
+        yield return null;
+    }
+
+    [UnityTest]
     public IEnumerator CountParametrizedShapesWhenRemoved()
     {
         ConeShape coneShape = CreateCone();

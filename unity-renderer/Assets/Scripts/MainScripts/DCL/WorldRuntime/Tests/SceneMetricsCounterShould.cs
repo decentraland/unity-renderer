@@ -8,28 +8,30 @@ public class SceneMetricsCounterShould
     public void CountEntitiesWhenAddedAndRemoved()
     {
         var dataStore = new DataStore_WorldObjects();
-        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "A", Vector2Int.zero, 10);
-        dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
+        dataStore.sceneData.Add("A", new DataStore_WorldObjects.SceneData());
 
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "A", Vector2Int.zero, 10);
         sceneMetricsCounter.Enable();
 
-        // sceneMetricsCounter.AddEntity("1");
+        var sceneData = dataStore.sceneData["A"];
+
+        sceneData.owners.Add("1");
 
         Assert.That( sceneMetricsCounter.currentCount.entities, Is.EqualTo(1));
 
-        // sceneMetricsCounter.AddEntity("2");
-        // sceneMetricsCounter.AddEntity("3");
-        // sceneMetricsCounter.AddEntity("4");
-        // sceneMetricsCounter.AddEntity("5");
-        // sceneMetricsCounter.AddEntity("6");
-        // sceneMetricsCounter.AddEntity("7");
-        // sceneMetricsCounter.AddEntity("8");
-        // sceneMetricsCounter.AddEntity("9");
-        // sceneMetricsCounter.AddEntity("10");
+        sceneData.owners.Add("2");
+        sceneData.owners.Add("3");
+        sceneData.owners.Add("4");
+        sceneData.owners.Add("5");
+        sceneData.owners.Add("6");
+        sceneData.owners.Add("7");
+        sceneData.owners.Add("8");
+        sceneData.owners.Add("9");
+        sceneData.owners.Add("10");
 
         Assert.That( sceneMetricsCounter.currentCount.entities, Is.EqualTo(10));
 
-        // sceneMetricsCounter.RemoveEntity("5");
+        sceneData.owners.Remove("9");
 
         Assert.That( sceneMetricsCounter.currentCount.entities, Is.EqualTo(9));
 

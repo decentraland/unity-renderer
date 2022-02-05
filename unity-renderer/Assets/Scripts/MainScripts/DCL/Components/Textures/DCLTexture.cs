@@ -94,9 +94,6 @@ namespace DCL
                     break;
             }
 
-            var renderingData = DataStore.i.sceneWorldObjects;
-            var sceneData = renderingData.sceneData[scene.sceneData.id];
-
             if (texture == null && !string.IsNullOrEmpty(model.src))
             {
                 bool isBase64 = model.src.Contains("image/png;base64");
@@ -106,7 +103,7 @@ namespace DCL
                     string base64Data = model.src.Substring(model.src.IndexOf(',') + 1);
 
                     if (texture != null)
-                        sceneData.textures.RemoveRefCount(texture);
+                        DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, texture);
 
                     // The used texture variable can't be null for the ImageConversion.LoadImage to work
                     if (texture == null)
@@ -125,11 +122,11 @@ namespace DCL
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
                     }
 
-                    sceneData.textures.AddRefCount(texture);
+                    DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, texture);
                 }
                 else
                 {
-                    string contentsUrl = string.Empty;
+                    string contentsUrl;
                     bool isExternalURL = model.src.Contains("http://") || model.src.Contains("https://");
 
                     if (isExternalURL)
@@ -139,19 +136,22 @@ namespace DCL
 
                     if (!string.IsNullOrEmpty(contentsUrl))
                     {
-                        if (texturePromise != null)
-                        {
-                            sceneData.textures.RemoveRefCount(texture);
-                            AssetPromiseKeeper_Texture.i.Forget(texturePromise);
-                        }
+                        if (texture != null)
+                            DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, texture);
 
+                        if (texturePromise != null)
+                            AssetPromiseKeeper_Texture.i.Forget(texturePromise);
+
+                        texture = null;
                         texturePromise = new AssetPromise_Texture(contentsUrl, unityWrap, unitySamplingMode, storeDefaultTextureInAdvance: true);
                         texturePromise.OnSuccessEvent += (x) => texture = x.texture;
                         texturePromise.OnFailEvent += (x, error) => { texture = null; };
 
                         AssetPromiseKeeper_Texture.i.Keep(texturePromise);
                         yield return texturePromise;
-                        sceneData.textures.AddRefCount(texture);
+
+                        if (texture != null)
+                            DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, texture);
                     }
                 }
             }
@@ -177,11 +177,7 @@ namespace DCL
             isDisposed = true;
 
             if (texture != null)
-            {
-                var renderingData = DataStore.i.sceneWorldObjects;
-                var sceneData = renderingData.sceneData[scene.sceneData.id];
-                sceneData.textures.RemoveRefCount(texture);
-            }
+                DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, texture);
 
             if (texturePromise != null)
             {
