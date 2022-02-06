@@ -256,8 +256,8 @@ namespace DCL.Components
             meshRenderer.sharedMaterial = material;
             SRPBatchingHelper.OptimizeMaterial(material);
 
-            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, oldMaterial);
-            DataStore.i.sceneWorldObjects.AddMaterial(scene.sceneData.id, material);
+            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, entity.entityId, oldMaterial);
+            DataStore.i.sceneWorldObjects.AddMaterial(scene.sceneData.id, entity.entityId, material);
         }
 
         private void OnShapeUpdated(IDCLEntity entity)
@@ -278,7 +278,7 @@ namespace DCL.Components
             if (meshRenderer && meshRenderer.sharedMaterial == material)
                 meshRenderer.sharedMaterial = null;
 
-            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, material);
+            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, entity.entityId, material);
         }
 
         IEnumerator FetchTexture(int materialPropertyId, string textureComponentId, DCLTexture cachedDCLTexture)

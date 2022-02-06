@@ -38,8 +38,6 @@ public class WithParametrizedShape_SceneMetricsCounterShould : IntegrationTestSu
         TestUtils.RemoveSceneEntity(scene, entity2);
         dclTexture.Dispose();
 
-        yield return new WaitForAllMessagesProcessed();
-
         AssertMetricsModel(scene,
             triangles: 0,
             materials: 0,

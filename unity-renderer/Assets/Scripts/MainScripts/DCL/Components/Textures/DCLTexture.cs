@@ -6,6 +6,7 @@ using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DCL
 {
@@ -35,6 +36,8 @@ namespace DCL
         public FilterMode unitySamplingMode;
         public Texture2D texture;
         protected bool isDisposed;
+
+        public Dictionary<ISharedComponent, HashSet<string>> attachedComponents = new Dictionary<ISharedComponent, HashSet<string>>();
 
         public override int GetClassId() { return (int) CLASS_ID.TEXTURE; }
 
@@ -102,9 +105,6 @@ namespace DCL
                 {
                     string base64Data = model.src.Substring(model.src.IndexOf(',') + 1);
 
-                    if (texture != null)
-                        DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, texture);
-
                     // The used texture variable can't be null for the ImageConversion.LoadImage to work
                     if (texture == null)
                         texture = new Texture2D(1, 1);
@@ -121,8 +121,6 @@ namespace DCL
                         texture.Compress(false);
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
                     }
-
-                    DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, texture);
                 }
                 else
                 {
@@ -136,9 +134,6 @@ namespace DCL
 
                     if (!string.IsNullOrEmpty(contentsUrl))
                     {
-                        if (texture != null)
-                            DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, texture);
-
                         if (texturePromise != null)
                             AssetPromiseKeeper_Texture.i.Forget(texturePromise);
 
@@ -149,25 +144,49 @@ namespace DCL
 
                         AssetPromiseKeeper_Texture.i.Keep(texturePromise);
                         yield return texturePromise;
-
-                        if (texture != null)
-                            DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, texture);
                     }
                 }
             }
         }
 
-        public virtual void AttachTo(PBRMaterial material) { }
+        public virtual void AttachTo(PBRMaterial component) => AddReference(component);
 
-        public virtual void AttachTo(BasicMaterial material) { }
+        public virtual void AttachTo(BasicMaterial component) => AddReference(component);
 
-        public virtual void AttachTo(UIImage image) { }
+        public virtual void AttachTo(UIImage component) => AddReference(component);
 
-        public virtual void DetachFrom(PBRMaterial material) { }
+        public virtual void DetachFrom(PBRMaterial component) => RemoveReference(component);
 
-        public virtual void DetachFrom(BasicMaterial material) { }
+        public virtual void DetachFrom(BasicMaterial component) => RemoveReference(component);
 
-        public virtual void DetachFrom(UIImage image) { }
+        public virtual void DetachFrom(UIImage component) => RemoveReference(component);
+
+        void AddReference(ISharedComponent component)
+        {
+            if (attachedComponents.ContainsKey(component))
+                return;
+
+            attachedComponents.Add(component, new HashSet<string>());
+
+            foreach ( var entity in component.GetAttachedEntities() )
+            {
+                attachedComponents[component].Add(entity.entityId);
+                DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, entity.entityId, texture);
+            }
+        }
+
+        void RemoveReference(ISharedComponent component)
+        {
+            if (!attachedComponents.ContainsKey(component))
+                return;
+
+            foreach ( var entityId in attachedComponents[component] )
+            {
+                DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, entityId, texture);
+            }
+
+            attachedComponents.Remove(component);
+        }
 
         public override void Dispose()
         {
@@ -176,8 +195,10 @@ namespace DCL
 
             isDisposed = true;
 
-            if (texture != null)
-                DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, texture);
+            while ( attachedComponents.Count > 0 )
+            {
+                RemoveReference(attachedComponents.First().Key);
+            }
 
             if (texturePromise != null)
             {
