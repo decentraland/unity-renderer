@@ -77,7 +77,6 @@ namespace DCL
         public bool testWearables = false;
         public bool enableTutorial = false;
         public bool builderInWorld = false;
-        public bool enableProceduralSkybox = false;
         public bool soloScene = true;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
@@ -189,11 +188,6 @@ namespace DCL
             if (builderInWorld)
             {
                 debugString += "ENABLE_BUILDER_IN_WORLD&";
-            }
-
-            if (enableProceduralSkybox)
-            {
-                debugString += "ENABLE_PROCEDURAL_SKYBOX&";
             }
 
             if (!string.IsNullOrEmpty(realm))
