@@ -58,7 +58,17 @@ internal class SearchBarView : MonoBehaviour
 
     private void OnSortButtonPressed()
     {
-        if (sortDropdown.GetSortTypesCount() > 1)
+        if (sortDropdown.gameObject.activeSelf)
+        {
+            sortDropdown.gameObject.SetActive(false);
+            return;
+        }
+        else
+        {
+            sortDropdown.gameObject.SetActive(true);
+        }
+
+            if (sortDropdown.GetSortTypesCount() > 1)
         {
             sortDropdown.Show();
         }

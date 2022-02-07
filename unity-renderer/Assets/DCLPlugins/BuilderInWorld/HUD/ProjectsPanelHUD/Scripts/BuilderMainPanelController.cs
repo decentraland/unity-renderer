@@ -470,6 +470,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         DataStore.i.builderInWorld.projectData.Set(data);
         isFetchingProjects = false;
+        sectionsController.SetFetchingDataEnd<SectionProjectController>();
         projectsController.SetProjects(data);
         UpdateProjectsDeploymentStatus();
     }

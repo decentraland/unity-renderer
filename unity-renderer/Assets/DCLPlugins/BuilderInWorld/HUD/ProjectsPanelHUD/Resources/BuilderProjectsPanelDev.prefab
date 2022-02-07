@@ -3429,8 +3429,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 243dd557f2b614bc5ba2599f40d20448, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 54cbe9bf5928342d490167f954f07710, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -3438,7 +3438,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 2
+  m_PixelsPerUnitMultiplier: 5.74
 --- !u!1 &5525946394129667055
 GameObject:
   m_ObjectHideFlags: 0
@@ -5580,7 +5580,7 @@ PrefabInstance:
     - target: {fileID: 300575138721498652, guid: 2b55442dd63ec4364b72395e33090c22,
         type: 3}
       propertyPath: m_fontStyle
-      value: 16
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 300575138721498652, guid: 2b55442dd63ec4364b72395e33090c22,
         type: 3}
@@ -6250,7 +6250,7 @@ PrefabInstance:
     - target: {fileID: 300575138721498652, guid: 2b55442dd63ec4364b72395e33090c22,
         type: 3}
       propertyPath: m_text
-      value: SCENES
+      value: Scenes
       objectReference: {fileID: 0}
     - target: {fileID: 300575138721498652, guid: 2b55442dd63ec4364b72395e33090c22,
         type: 3}
@@ -6266,7 +6266,7 @@ PrefabInstance:
     - target: {fileID: 300575138721498652, guid: 2b55442dd63ec4364b72395e33090c22,
         type: 3}
       propertyPath: m_fontStyle
-      value: 16
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 300575138721498652, guid: 2b55442dd63ec4364b72395e33090c22,
         type: 3}
@@ -7537,6 +7537,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4943254986213864520}
     m_Modifications:
+    - target: {fileID: 300575138721498652, guid: 2b55442dd63ec4364b72395e33090c22,
+        type: 3}
+      propertyPath: m_text
+      value: Projects
+      objectReference: {fileID: 0}
+    - target: {fileID: 300575138721498652, guid: 2b55442dd63ec4364b72395e33090c22,
+        type: 3}
+      propertyPath: m_fontStyle
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 628043497076171344, guid: 2b55442dd63ec4364b72395e33090c22,
         type: 3}
       propertyPath: m_Pivot.x
@@ -7646,6 +7656,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ProjectsButtonToggle
+      objectReference: {fileID: 0}
+    - target: {fileID: 8468712402457772117, guid: 2b55442dd63ec4364b72395e33090c22,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b55442dd63ec4364b72395e33090c22, type: 3}
@@ -8040,12 +8055,12 @@ PrefabInstance:
     - target: {fileID: 3200959797415023958, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3200959797415023958, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3200959797415023958, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
@@ -8060,7 +8075,7 @@ PrefabInstance:
     - target: {fileID: 3200959797415023958, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -19
       objectReference: {fileID: 0}
     - target: {fileID: 3222109552093127356, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
@@ -8284,12 +8299,12 @@ PrefabInstance:
     - target: {fileID: 4891229805778622636, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4891229805778622636, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4891229805778622636, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
@@ -8304,7 +8319,7 @@ PrefabInstance:
     - target: {fileID: 4891229805778622636, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -19
       objectReference: {fileID: 0}
     - target: {fileID: 4919936693687943724, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
@@ -8372,6 +8387,17 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 191.7
       objectReference: {fileID: 0}
+    - target: {fileID: 5486778934628633536, guid: cfa10a3fc421146919bdccb6f63fb116,
+        type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5486778934628633536, guid: cfa10a3fc421146919bdccb6f63fb116,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 54cbe9bf5928342d490167f954f07710,
+        type: 3}
     - target: {fileID: 5612729514126258079, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -8523,12 +8549,12 @@ PrefabInstance:
     - target: {fileID: 6534727106252480396, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6534727106252480396, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6534727106252480396, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
@@ -8543,7 +8569,7 @@ PrefabInstance:
     - target: {fileID: 6534727106252480396, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -19
       objectReference: {fileID: 0}
     - target: {fileID: 6589262942117770613, guid: cfa10a3fc421146919bdccb6f63fb116,
         type: 3}
