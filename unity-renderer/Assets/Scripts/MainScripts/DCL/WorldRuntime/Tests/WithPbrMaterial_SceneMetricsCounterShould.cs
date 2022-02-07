@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using DCL;
+using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
@@ -7,23 +9,59 @@ public class WithPbrMaterial_SceneMetricsCounterShould : IntegrationTestSuite_Sc
     [UnityTest]
     public IEnumerator NotCountWhenAttachedToIgnoredEntities()
     {
-        Assert.Fail();
-        yield return null;
+        var material = CreatePBRMaterial("", "", "", "");
+        var shape = CreatePlane();
+        var entity = CreateEntityWithTransform();
+
+        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.id, entity.entityId);
+
+        TestUtils.SharedComponentAttach(shape, entity);
+        TestUtils.SharedComponentAttach(material, entity);
+
+        yield return material.routine;
+
+        Assert.That( scene.metricsCounter.currentCount.entities, Is.EqualTo(0) );
+        Assert.That( scene.metricsCounter.currentCount.materials, Is.EqualTo(0) );
+
+        DataStore.i.sceneWorldObjects.RemoveExcludedOwner(scene.sceneData.id, entity.entityId);
     }
 
 
     [UnityTest]
     public IEnumerator CountWhenAdded()
     {
-        Assert.Fail();
-        yield break;
+        var material = CreatePBRMaterial("", "", "", "");
+        var shape = CreatePlane();
+        var entity = CreateEntityWithTransform();
+
+        TestUtils.SharedComponentAttach(shape, entity);
+        TestUtils.SharedComponentAttach(material, entity);
+
+        yield return material.routine;
+
+        Assert.That( scene.metricsCounter.currentCount.materials, Is.EqualTo(1) );
+        Assert.That( scene.metricsCounter.currentCount.bodies, Is.EqualTo(1) );
+        Assert.That( scene.metricsCounter.currentCount.entities, Is.EqualTo(1) );
     }
 
     [UnityTest]
     public IEnumerator CountWhenRemoved()
     {
-        Assert.Fail();
-        yield break;
+        var material = CreatePBRMaterial("", "", "", "");
+        var shape = CreatePlane();
+        var entity = CreateEntityWithTransform();
+
+        TestUtils.SharedComponentAttach(shape, entity);
+        TestUtils.SharedComponentAttach(material, entity);
+
+        yield return material.routine;
+
+        material.Dispose();
+        shape.Dispose();
+
+        Assert.That( scene.metricsCounter.currentCount.materials, Is.EqualTo(0) );
+        Assert.That( scene.metricsCounter.currentCount.bodies, Is.EqualTo(0) );
+        Assert.That( scene.metricsCounter.currentCount.entities, Is.EqualTo(0) );
     }
 
     [UnityTest]

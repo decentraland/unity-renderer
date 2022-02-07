@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -11,8 +12,24 @@ public class WithGltfShape_SceneMetricsCounterShould : IntegrationTestSuite_Scen
     [UnityTest]
     public IEnumerator NotCountWhenAttachedToIgnoredEntities()
     {
-        Assert.Fail();
-        yield return null;
+        IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
+        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.id, entity.entityId);
+        GLTFShape gltfShape = TestUtils.AttachGLTFShape(entity,
+            scene,
+            new Vector3(8, 1, 8),
+            new LoadableShape.Model()
+            {
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
+            });
+
+        yield return TestUtils.WaitForGLTFLoad(entity);
+
+        SceneMetricsModel inputModel = scene.metricsCounter.currentCount;
+
+        Assert.That( inputModel.bodies, Is.EqualTo(0), "Bodies should not be counted!" );
+        Assert.That( inputModel.materials, Is.EqualTo(0), "Materials should not be counted!" );
+        Assert.That( inputModel.textures, Is.EqualTo(0), "Textures should not be counted!" );
+        Assert.That( inputModel.entities, Is.EqualTo(0), "Entities should not be counted!" );
     }
 
     [UnityTest]

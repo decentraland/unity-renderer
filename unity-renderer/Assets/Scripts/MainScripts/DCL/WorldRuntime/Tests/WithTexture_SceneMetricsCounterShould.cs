@@ -184,14 +184,101 @@ public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneM
     [UnityTest]
     public IEnumerator CountWhenAdded()
     {
-        Assert.Fail();
-        yield break;
+        DCLTexture texture = CreateTexture(texturePaths[0]);
+        IDCLEntity entity;
+        BasicMaterial material;
+        PlaneShape planeShape = CreatePlane();
+
+        yield return planeShape.routine;
+        yield return texture.routine;
+
+        material = CreateBasicMaterial(texture.id);
+        entity = CreateEntityWithTransform();
+        TestUtils.SharedComponentAttach(planeShape, entity);
+        TestUtils.SharedComponentAttach(material, entity);
+        TestUtils.SharedComponentAttach(texture, entity);
+
+        yield return material.routine;
+
+        SceneMetricsModel inputModel = scene.metricsCounter.currentCount;
+
+        Assert.That( inputModel.materials, Is.EqualTo(1) );
+        Assert.That( inputModel.textures, Is.EqualTo(1) );
     }
 
     [UnityTest]
     public IEnumerator CountWhenRemoved()
     {
-        Assert.Fail();
-        yield break;
+        DCLTexture texture = CreateTexture(texturePaths[0]);
+        IDCLEntity entity = null;
+        BasicMaterial material = null;
+        PlaneShape planeShape = CreatePlane();
+
+        yield return planeShape.routine;
+        yield return texture.routine;
+
+        material = CreateBasicMaterial(texture.id);
+        entity = CreateEntityWithTransform();
+        TestUtils.SharedComponentAttach(planeShape, entity);
+        TestUtils.SharedComponentAttach(material, entity);
+        TestUtils.SharedComponentAttach(texture, entity);
+
+        yield return material.routine;
+
+        material.Dispose();
+        texture.Dispose();
+        planeShape.Dispose();
+
+        SceneMetricsModel inputModel = scene.metricsCounter.currentCount;
+
+        Assert.That( inputModel.materials, Is.EqualTo(0) );
+        Assert.That( inputModel.textures, Is.EqualTo(0) );
+    }
+
+    [UnityTest]
+    public IEnumerator NotCountWhenAttachedToIgnoredEntities()
+    {
+        IDCLEntity entity = CreateEntityWithTransform();
+        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.id, entity.entityId);
+
+        DCLTexture texture = CreateTexture(texturePaths[0]);
+        BasicMaterial material = CreateBasicMaterial(texture.id);
+        PlaneShape planeShape = CreatePlane();
+
+        yield return texture.routine;
+
+        TestUtils.SharedComponentAttach(texture, entity);
+        TestUtils.SharedComponentAttach(material, entity);
+        TestUtils.SharedComponentAttach(planeShape, entity);
+
+        var sceneMetrics = scene.metricsCounter.currentCount;
+
+        Assert.That( sceneMetrics.textures, Is.EqualTo(0) );
+
+        material.Dispose();
+        texture.Dispose();
+        planeShape.Dispose();
+        DataStore.i.sceneWorldObjects.RemoveExcludedOwner(scene.sceneData.id, entity.entityId);
+    }
+
+    [UnityTest]
+    public IEnumerator NotCountWhenNoMaterialIsPresent()
+    {
+        DCLTexture texture = CreateTexture(texturePaths[0]);
+        IDCLEntity entity = CreateEntityWithTransform();
+        PlaneShape planeShape = CreatePlane();
+
+        yield return planeShape.routine;
+        yield return texture.routine;
+
+        TestUtils.SharedComponentAttach(planeShape, entity);
+        TestUtils.SharedComponentAttach(texture, entity);
+
+        SceneMetricsModel inputModel = scene.metricsCounter.currentCount;
+
+        Assert.That( inputModel.textures, Is.EqualTo(0), "Stray textures should not be counted!" );
+
+        texture.Dispose();
+        planeShape.Dispose();
     }
 }

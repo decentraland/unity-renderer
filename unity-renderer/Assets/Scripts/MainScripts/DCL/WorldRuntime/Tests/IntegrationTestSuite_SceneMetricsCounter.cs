@@ -119,15 +119,15 @@ public class IntegrationTestSuite_SceneMetricsCounter : IntegrationTestSuite
     }
 
     protected void AssertMetricsModel(ParcelScene scene, int triangles, int materials, int entities, int meshes, int bodies,
-        int textures)
+        int textures, string failMessage = "")
     {
         SceneMetricsModel inputModel = scene.metricsCounter.currentCount;
 
-        Assert.AreEqual(triangles, inputModel.triangles, "Incorrect triangle count, was: " + triangles);
-        Assert.AreEqual(materials, inputModel.materials, "Incorrect materials count");
-        Assert.AreEqual(entities, inputModel.entities, "Incorrect entities count");
-        Assert.AreEqual(meshes, inputModel.meshes, "Incorrect geometries/meshes count");
-        Assert.AreEqual(bodies, inputModel.bodies, "Incorrect bodies count");
-        Assert.AreEqual(textures, inputModel.textures, "Incorrect textures count");
+        Assert.AreEqual(triangles, inputModel.triangles, "Incorrect triangle count ... " + failMessage);
+        Assert.AreEqual(materials, inputModel.materials, "Incorrect materials count ... " + failMessage);
+        Assert.AreEqual(entities, inputModel.entities, "Incorrect entities count ... " + failMessage);
+        Assert.AreEqual(meshes, inputModel.meshes, "Incorrect geometries/meshes count ... " + failMessage);
+        Assert.AreEqual(bodies, inputModel.bodies, "Incorrect bodies count ... " + failMessage);
+        Assert.AreEqual(textures, inputModel.textures, "Incorrect textures count ... " + failMessage);
     }
 }

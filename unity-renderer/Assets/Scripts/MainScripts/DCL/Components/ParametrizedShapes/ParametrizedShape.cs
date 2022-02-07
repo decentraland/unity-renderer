@@ -67,16 +67,15 @@ namespace DCL.Components
             {
                 entity.meshesInfo.UpdateExistingMeshAtIndex(currentMesh, 0);
             }
-
-            // First we remove the old rendereable, then we compute and add the new one.
-            RemoveRendereableFromDataStore(entity);
-            AddRendereableToDataStore(entity);
         }
 
         void OnShapeAttached(IDCLEntity entity)
         {
             if (entity == null)
                 return;
+
+            // First we remove the old rendereable, then we compute and add the new one.
+            RemoveRendereableFromDataStore(entity);
 
             entity.EnsureMeshGameObject(componentName + " mesh");
 
@@ -113,6 +112,7 @@ namespace DCL.Components
             collisionsDirty = true;
             UpdateRenderer(entity);
             OnShapeFinishedLoading(entity);
+            AddRendereableToDataStore(entity);
         }
 
         void OnShapeFinishedLoading(IDCLEntity entity)
@@ -154,6 +154,15 @@ namespace DCL.Components
             //             Otherwise, the mesh will be created on the OnShapeAttached.
             if (attachedEntities.Count > 0)
             {
+                using (var iterator = attachedEntities.GetEnumerator())
+                {
+                    while (iterator.MoveNext())
+                    {
+                        var entity = iterator.Current;
+                        RemoveRendereableFromDataStore(entity);
+                    }
+                }
+
                 if (shouldGenerateMesh)
                 {
                     DestroyGeometry();
@@ -175,6 +184,15 @@ namespace DCL.Components
                         UpdateRenderer(entity, newModel);
 
                         entity.OnShapeUpdated?.Invoke(entity);
+                    }
+                }
+
+                using (var iterator = attachedEntities.GetEnumerator())
+                {
+                    while (iterator.MoveNext())
+                    {
+                        var entity = iterator.Current;
+                        AddRendereableToDataStore(entity);
                     }
                 }
             }
@@ -213,18 +231,19 @@ namespace DCL.Components
 
             int triangleCount = currentMesh.triangles.Length;
 
-            var newRendereable = new Rendereable()
-            {
-                renderers = new HashSet<Renderer>(entity.meshesInfo.renderers),
-                container = entity.meshRootGameObject,
-                totalTriangleCount = triangleCount,
-                meshes = new HashSet<Mesh>() { currentMesh },
-                meshToTriangleCount = new Dictionary<Mesh, int>() { { currentMesh, triangleCount } }
-            };
+            var newRendereable =
+                new Rendereable()
+                {
+                    container = entity.meshRootGameObject,
+                    totalTriangleCount = triangleCount,
+                    meshes = new HashSet<Mesh>() { currentMesh },
+                    meshToTriangleCount = new Dictionary<Mesh, int>() { { currentMesh, triangleCount } }
+                };
 
-            newRendereable.ownerId = entity.entityId;
+            newRendereable.renderers = MeshesInfoUtils.ExtractUniqueRenderers(entity.meshRootGameObject);
             newRendereable.materials = MeshesInfoUtils.ExtractUniqueMaterials(newRendereable.renderers);
             newRendereable.textures = MeshesInfoUtils.ExtractUniqueTextures(newRendereable.materials);
+            newRendereable.ownerId = entity.entityId;
 
             attachedRendereables.Add(entity, newRendereable);
             DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.id, newRendereable);

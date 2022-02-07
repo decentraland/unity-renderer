@@ -195,6 +195,7 @@ namespace DCL
 
         void OnDataChanged(int obj1, int obj2)
         {
+            Debug.Log("Triangles dirty");
             MarkDirty();
         }
 

@@ -4,6 +4,7 @@ using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class WithParametrizedShape_SceneMetricsCounterShould : IntegrationTestSuite_SceneMetricsCounter
@@ -11,8 +12,41 @@ public class WithParametrizedShape_SceneMetricsCounterShould : IntegrationTestSu
     [UnityTest]
     public IEnumerator CountWhenChanged()
     {
-        Assert.Fail();
+        IDCLEntity entity = CreateEntityWithTransform();
+        ConeShape coneShape = CreateCone();
+
+        TestUtils.SharedComponentAttach(coneShape, entity);
+
+        yield return coneShape.routine;
+
+        AssertMetricsModel(scene,
+            triangles: 101,
+            materials: 1,
+            entities: 1,
+            meshes: 1,
+            bodies: 1,
+            textures: 0, "Failed before change");
+
+        // TODO(Brian): right now, the segmentsRadial field is ignored.
+        //              This test should be updated when parametrized shape vertex count
+        //              changes with updates.
+        TestUtils.SharedComponentUpdate(coneShape, new ConeShape.Model()
+        {
+            segmentsRadial = 18,
+            radiusTop = 1,
+            radiusBottom = 0
+        });
+
+        yield return coneShape.routine;
         yield return null;
+
+        AssertMetricsModel(scene,
+            triangles: 101,
+            materials: 1,
+            entities: 1,
+            meshes: 1,
+            bodies: 1,
+            textures: 0, "Failed after change");
     }
 
     [UnityTest]
@@ -77,7 +111,28 @@ public class WithParametrizedShape_SceneMetricsCounterShould : IntegrationTestSu
     [UnityTest]
     public IEnumerator NotCountWhenAttachedToIgnoredEntities()
     {
-        Assert.Fail();
-        yield return null;
+        IDCLEntity entity = CreateEntityWithTransform();
+        IDCLEntity entity2 = CreateEntityWithTransform();
+
+        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.id, entity.entityId);
+
+        ConeShape coneShape = CreateCone();
+        PlaneShape planeShape = CreatePlane();
+
+        TestUtils.SharedComponentAttach(coneShape, entity);
+        TestUtils.SharedComponentAttach(planeShape, entity2);
+
+        yield return planeShape.routine;
+
+        AssertMetricsModel(scene,
+            triangles: 4,
+            materials: 1,
+            entities: 1,
+            meshes: 1,
+            bodies: 1,
+            textures: 0);
+
+
+        DataStore.i.sceneWorldObjects.RemoveExcludedOwner(scene.sceneData.id, entity.entityId);
     }
 }

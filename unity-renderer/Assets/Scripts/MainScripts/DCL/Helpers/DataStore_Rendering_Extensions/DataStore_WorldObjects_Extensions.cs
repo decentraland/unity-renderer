@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DCL.Models;
 using NSubstitute;
@@ -24,7 +25,32 @@ namespace DCL
                 self.sceneData.Remove(sceneId);
         }
 
-        public static void AddTexture(this DataStore_WorldObjects self, string sceneId, string ownerId, Texture texture )
+        /// <summary>
+        /// Add owner to the excluded owners list.
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="sceneId"></param>
+        /// <param name="ownerId"></param>
+        [Obsolete("This feature is only used by the SmartItem component and will have to be deprecated on the future. Please don't use it.")]
+        public static void AddExcludedOwner(this DataStore_WorldObjects self, string sceneId, string ownerId)
+        {
+            if (!self.sceneData.ContainsKey(sceneId))
+                return;
+
+            self.sceneData[sceneId].ignoredOwners.Add(ownerId);
+            self.sceneData[sceneId].owners.Remove(ownerId);
+        }
+
+        [Obsolete("This feature is only used by the SmartItem component and will have to be deprecated on the future. Please don't use it.")]
+        public static void RemoveExcludedOwner(this DataStore_WorldObjects self, string sceneId, string ownerId)
+        {
+            if (!self.sceneData.ContainsKey(sceneId))
+                return;
+
+            self.sceneData[sceneId].ignoredOwners.Remove(ownerId);
+        }
+
+        public static void AddTexture(this DataStore_WorldObjects self, string sceneId, string ownerId, Texture texture)
         {
             var r = new Rendereable();
             r.textures.Add(texture);
@@ -88,6 +114,7 @@ namespace DCL
             sceneData.renderers.Add(rendereable.renderers);
             sceneData.owners.Add(rendereable.ownerId);
             sceneData.triangles.Set( sceneData.triangles.Get() + rendereable.totalTriangleCount);
+            Debug.Log("triangles: " + sceneData.triangles.Get());
         }
 
         public static void RemoveRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
@@ -121,6 +148,7 @@ namespace DCL
             sceneData.renderers.Remove(rendereable.renderers);
             sceneData.owners.Remove(rendereable.ownerId);
             sceneData.triangles.Set( sceneData.triangles.Get() - rendereable.totalTriangleCount);
+            Debug.Log("triangles: " + sceneData.triangles.Get());
         }
 
         private static bool IsEmpty( this DataStore_WorldObjects.SceneData self)
