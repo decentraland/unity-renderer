@@ -195,7 +195,6 @@ namespace DCL
 
         void OnDataChanged(int obj1, int obj2)
         {
-            Debug.Log("Triangles dirty");
             MarkDirty();
         }
 
@@ -233,20 +232,20 @@ namespace DCL
                 if (!metricsData.worstMetricOffenses.ContainsKey(sceneId))
                 {
                     firstOffense = true;
-                    metricsData.worstMetricOffenses[sceneId] = currentCount.Clone();
+                    metricsData.worstMetricOffenses[sceneId] = currentCountValue.Clone();
                 }
 
                 SceneMetricsModel worstOffense = metricsData.worstMetricOffenses[sceneId];
-                SceneMetricsModel currentOffense = maxCountValue - currentCount;
+                SceneMetricsModel currentOffense = maxCountValue - currentCountValue;
 
                 if ( firstOffense )
-                    logger.Log($"New offending scene {sceneId} ({scenePosition})!\n{currentCount}");
+                    logger.Log($"New offending scene {sceneId} ({scenePosition})!\n{currentCountValue}");
 
                 if ( currentOffense < worstOffense )
                     return;
 
                 metricsData.worstMetricOffenses[sceneId] = currentOffense;
-                logger.Log($"New offending scene {sceneId} {scenePosition}!\nmetrics: {currentCount}\nlimits: {maxCountValue}\ndelta:{currentOffense}");
+                logger.Log($"New offending scene {sceneId} {scenePosition}!\nmetrics: {currentCountValue}\nlimits: {maxCountValue}\ndelta:{currentOffense}");
             }
         }
 

@@ -114,7 +114,6 @@ namespace DCL
             sceneData.renderers.Add(rendereable.renderers);
             sceneData.owners.Add(rendereable.ownerId);
             sceneData.triangles.Set( sceneData.triangles.Get() + rendereable.totalTriangleCount);
-            Debug.Log("triangles: " + sceneData.triangles.Get());
         }
 
         public static void RemoveRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
@@ -148,12 +147,6 @@ namespace DCL
             sceneData.renderers.Remove(rendereable.renderers);
             sceneData.owners.Remove(rendereable.ownerId);
             sceneData.triangles.Set( sceneData.triangles.Get() - rendereable.totalTriangleCount);
-            Debug.Log("triangles: " + sceneData.triangles.Get());
-        }
-
-        private static bool IsEmpty( this DataStore_WorldObjects.SceneData self)
-        {
-            return !self.textures.Any() && !self.meshes.Any() && !self.materials.Any() && self.renderers.Count() == 0;
         }
     }
 }
