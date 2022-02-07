@@ -168,12 +168,19 @@ MonoBehaviour:
     m_FixedHeight: 0
     m_StretchWidth: 0
     m_StretchHeight: 0
+  pinnedPanelHeight: 125
+  pinnedPanelBGOffset:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 0
+    height: 5
   rightPanelPadding:
     serializedVersion: 2
-    x: 5
-    y: 5
-    width: 5
-    height: 5
+    x: 0
+    y: 0
+    width: 0
+    height: 0
   rightPanelHeadingState:
     backgroundColor: {r: 0.09411766, g: 0.09411766, b: 0.09411766, a: 1}
     textColor: {r: 0, g: 0, b: 0, a: 0}
