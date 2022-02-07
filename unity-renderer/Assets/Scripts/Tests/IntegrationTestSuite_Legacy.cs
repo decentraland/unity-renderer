@@ -38,8 +38,6 @@ public class IntegrationTestSuite_Legacy
 
         legacySystems = SetUp_LegacySystems();
 
-        RenderProfileManifest.i.Initialize();
-
         Environment.Setup(InitializeServiceLocator());
 
         yield return SetUp_Camera();
