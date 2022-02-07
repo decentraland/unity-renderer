@@ -10,10 +10,10 @@ using System;
 public class ScrollRectSensitivityHandler : MonoBehaviour
 {
 
-    private const float windowsSensitivityMultiplier = 6f;
-    private const float macSensitivityMultiplier = 3f;
-    private const float linuxSensitivityMultiplier = 2.5f;
-    private const float defaultSensitivityMultiplier = 2f;
+    private const float windowsSensitivityMultiplier = 10f;
+    private const float macSensitivityMultiplier = 4f;
+    private const float linuxSensitivityMultiplier = 3f;
+    private const float defaultSensitivityMultiplier = 3.5f;
 
     private ScrollRect myScrollRect;
     private float defaultSens;
