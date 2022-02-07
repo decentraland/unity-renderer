@@ -13,7 +13,7 @@ namespace AvatarSystem
     {
         public GameObject bodyshapeContainer => bodyshapeLoader?.rendereable?.container;
         public SkinnedMeshRenderer combinedRenderer { get; private set; }
-        public Renderer[] facialFeaturesRenderers { get; private set; }
+        public List<Renderer> facialFeaturesRenderers { get; private set; }
         public ILoader.Status status { get; private set; } = ILoader.Status.Idle;
 
         private readonly IWearableLoaderFactory wearableLoaderFactory;
@@ -52,8 +52,21 @@ namespace AvatarSystem
                     throw new Exception($"Couldnt load (nor fallback) wearables with required category: {string.Join(", ", ConstructRequiredFailedWearablesList(loaders.Values))}");
 
                 AvatarSystemUtils.CopyBones(bodyshapeLoader.upperBodyRenderer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
+                (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(settings.bodyshapeId, wearables);
 
-                (combinedRenderer, facialFeaturesRenderers) = await MergeAvatar(settings, wearables, ct);
+                combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, ct);
+
+                facialFeaturesRenderers = new List<Renderer>();
+                
+                if (headVisible)
+                {
+                    if (eyes != null)
+                        facialFeaturesRenderers.Add(bodyshapeLoader.eyesRenderer);
+                    if (eyebrows != null)
+                        facialFeaturesRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
+                    if (mouth != null)
+                        facialFeaturesRenderers.Add(bodyshapeLoader.mouthRenderer);
+                }
             }
             catch (OperationCanceledException)
             {
@@ -87,7 +100,7 @@ namespace AvatarSystem
         private async UniTask LoadBodyshape(AvatarSettings settings, WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<IWearableLoader> loadersToCleanUp, CancellationToken ct)
         {
             //We get a new loader if any of the subparts of the bodyshape changes
-            if (bodyshapeLoader == null || bodyshapeLoader.wearable.id != bodyshape.id || bodyshapeLoader.eyes.id != eyes.id || bodyshapeLoader.eyebrows.id != eyebrows.id || bodyshapeLoader.mouth.id != mouth.id)
+            if (bodyshapeLoader == null || !bodyshapeLoader.IsValid(bodyshape, eyebrows, eyes, mouth))
             {
                 loadersToCleanUp.Add(bodyshapeLoader);
                 bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
@@ -144,9 +157,10 @@ namespace AvatarSystem
 
         public Transform[] GetBones() { return bodyshapeLoader?.upperBodyRenderer?.bones; }
 
-        private async UniTask<(SkinnedMeshRenderer combinedRenderer, SkinnedMeshRenderer[] facialFeaures)> MergeAvatar(AvatarSettings settings, List<WearableItem> wearables, CancellationToken ct)
+        private async UniTask<SkinnedMeshRenderer> MergeAvatar(AvatarSettings settings, List<WearableItem> wearables,
+            bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible,
+            CancellationToken ct)
         {
-            (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(settings.bodyshapeId, wearables);
             var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible);
             IEnumerable<SkinnedMeshRenderer> allRenderers = activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
 
@@ -169,12 +183,7 @@ namespace AvatarSystem
             avatarMeshCombiner.container.transform.SetParent(container.transform, true);
             avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
 
-            if (headVisible)
-                return (avatarMeshCombiner.renderer, new [] { bodyshapeLoader.eyesRenderer, bodyshapeLoader.eyebrowsRenderer, bodyshapeLoader.mouthRenderer });
-
-            //Loader is not in charge of visibility, since everything loaded has the renderer disabled
-            //we can just leave this field nulled 
-            return (avatarMeshCombiner.renderer, null);
+            return avatarMeshCombiner.renderer;
         }
 
         internal static ILoader.Status ComposeStatus(Dictionary<string, IWearableLoader> loaders)

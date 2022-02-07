@@ -10,14 +10,14 @@ namespace AvatarSystem
         internal readonly HashSet<string> facialFeaturesConstrains = new HashSet<string>();
 
         private Renderer combinedRenderer = null;
-        private Renderer[] facialFeatures = null;
+        private List<Renderer> facialFeatures = null;
 
         /// <summary>
         /// Bind a set of renderers, previous renderers enabled wont be modified
         /// </summary>
         /// <param name="combinedRenderer"></param>
         /// <param name="facialFeatures"></param>
-        public void Bind(Renderer combinedRenderer, Renderer[] facialFeatures)
+        public void Bind(Renderer combinedRenderer, List<Renderer> facialFeatures)
         {
             this.combinedRenderer = combinedRenderer;
             this.facialFeatures = facialFeatures;
@@ -77,7 +77,7 @@ namespace AvatarSystem
                 return;
 
             bool facialFeaturesVisibility = globalConstrains.Count == 0 && facialFeaturesConstrains.Count == 0;
-            for (int i = 0; i < facialFeatures.Length; i++)
+            for (int i = 0; i < facialFeatures.Count; i++)
             {
                 facialFeatures[i].enabled = facialFeaturesVisibility;
             }

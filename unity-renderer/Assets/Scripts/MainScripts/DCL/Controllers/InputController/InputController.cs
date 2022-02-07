@@ -109,6 +109,7 @@ public enum DCLAction_Measurable
     CharacterYAxis = 2,
     CameraXAxis = 3,
     CameraYAxis = 4,
+    MouseWheel = 5
 }
 
 /// <summary>
@@ -192,7 +193,7 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.CameraChange:
                     if (CommonScriptableObjects.cameraModeInputLocked.Get()) 
                         break;
-                    
+
                     //Disable until the fine-tuning is ready
                     if (ENABLE_THIRD_PERSON_CAMERA)
                         InputProcessor.FromKey(action, KeyCode.V,
@@ -474,6 +475,9 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Measurable.CameraYAxis:
                     InputProcessor.FromAxis(action, "Mouse Y", InputProcessor.Modifier.NeedsPointerLocked);
+                    break;
+                case DCLAction_Measurable.MouseWheel:
+                    InputProcessor.FromAxis(action, "Mouse ScrollWheel", modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
