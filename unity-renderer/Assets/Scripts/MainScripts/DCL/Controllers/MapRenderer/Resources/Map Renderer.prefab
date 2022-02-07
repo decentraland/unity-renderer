@@ -226,8 +226,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parcelHightlightScale: 1.25
-  parcelHoldTimeInSeconds: 1
   ParcelHighlightButton: {fileID: 3511145948971381255}
+  containerRectTransform: {fileID: 2249193035634569280}
+  mouseWheelAction: {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
   cursorMapCoords: {x: 0, y: 0, z: 0}
   showCursorCoords: 1
   atlas: {fileID: 8867674412829076673}
