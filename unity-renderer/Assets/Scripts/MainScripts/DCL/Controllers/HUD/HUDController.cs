@@ -254,9 +254,7 @@ public class HUDController : IHUDController
                         taskbarHud.Initialize(
                             SceneReferences.i.mouseCatcher,
                             ChatController.i,
-                            FriendsController.i,
-                            DCL.Environment.i.world.sceneController,
-                            DCL.Environment.i.world.state);
+                            FriendsController.i);
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
 

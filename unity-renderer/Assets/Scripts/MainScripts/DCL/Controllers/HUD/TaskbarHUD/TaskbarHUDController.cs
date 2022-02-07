@@ -31,8 +31,6 @@ public class TaskbarHUDController : IHUD
     private InputAction_Trigger toggleFriendsTrigger;
     private InputAction_Trigger closeWindowTrigger;
     private InputAction_Trigger toggleWorldChatTrigger;
-    private ISceneController sceneController;
-    private IWorldState worldState;
     private Transform experiencesViewerTransform;
 
     public event System.Action OnAnyTaskbarButtonClicked;
@@ -48,18 +46,13 @@ public class TaskbarHUDController : IHUD
     public void Initialize(
         IMouseCatcher mouseCatcher,
         IChatController chatController,
-        IFriendsController friendsController,
-        ISceneController sceneController,
-        IWorldState worldState)
+        IFriendsController friendsController)
     {
         this.friendsController = friendsController;
         this.mouseCatcher = mouseCatcher;
         this.chatController = chatController;
 
         view = CreateView();
-
-        this.sceneController = sceneController;
-        this.worldState = worldState;
 
         if (mouseCatcher != null)
         {
@@ -99,18 +92,6 @@ public class TaskbarHUDController : IHUD
         {
             chatController.OnAddMessage -= OnAddMessage;
             chatController.OnAddMessage += OnAddMessage;
-        }
-
-        if (this.sceneController != null && this.worldState != null)
-        {
-            this.sceneController.OnNewPortableExperienceSceneAdded += SceneController_OnNewPortableExperienceSceneAdded;
-            this.sceneController.OnNewPortableExperienceSceneRemoved += SceneController_OnNewPortableExperienceSceneRemoved;
-
-            List<GlobalScene> activePortableExperiences = WorldStateUtils.GetActivePortableExperienceScenes();
-            for (int i = 0; i < activePortableExperiences.Count; i++)
-            {
-                SceneController_OnNewPortableExperienceSceneAdded(activePortableExperiences[i]);
-            }
         }
 
         view.leftWindowContainerAnimator.Show();
@@ -388,12 +369,6 @@ public class TaskbarHUDController : IHUD
         if (chatController != null)
             chatController.OnAddMessage -= OnAddMessage;
 
-        if (sceneController != null)
-        {
-            sceneController.OnNewPortableExperienceSceneAdded -= SceneController_OnNewPortableExperienceSceneAdded;
-            sceneController.OnNewPortableExperienceSceneRemoved -= SceneController_OnNewPortableExperienceSceneRemoved;
-        }
-
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
         isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
@@ -470,24 +445,4 @@ public class TaskbarHUDController : IHUD
         if (!AnyWindowsDifferentThanChatIsOpen())
             worldChatWindowHud.MarkWorldChatMessagesAsRead();
     }
-
-    private void SceneController_OnNewPortableExperienceSceneAdded(IParcelScene scene)
-    {
-        GlobalScene newPortableExperienceScene = scene as GlobalScene;
-
-        if ( newPortableExperienceScene == null )
-        {
-            Debug.LogError("Portable experience must be of type GlobalScene!");
-            return;
-        }
-
-        view.AddPortableExperienceElement(
-            scene.sceneData.id,
-            newPortableExperienceScene.sceneName,
-            newPortableExperienceScene.iconUrl);
-    }
-
-    private void SceneController_OnNewPortableExperienceSceneRemoved(string portableExperienceSceneIdToRemove) { view.RemovePortableExperienceElement(portableExperienceSceneIdToRemove); }
-
-    public void KillPortableExperience(string portableExperienceSceneIdToKill) { WebInterface.KillPortableExperience(portableExperienceSceneIdToKill); }
 }
