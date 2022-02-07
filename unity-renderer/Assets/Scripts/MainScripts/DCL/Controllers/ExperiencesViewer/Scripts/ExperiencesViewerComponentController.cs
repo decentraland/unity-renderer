@@ -98,7 +98,11 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
         else
         {
             if (!pausedPEXScenesIds.Contains(pexId))
-                pausedPEXScenesIds.Add(pexId);
+            {
+                // We only keep the experience paused in the list if our avatar has the related wearable equipped
+                if (userProfile.avatar.wearables.Contains(pexId))
+                    pausedPEXScenesIds.Add(pexId);
+            }
 
             WebInterface.KillPortableExperience(pexId);
         }
@@ -187,6 +191,7 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
 
         foreach (var pex in activePEXScenes)
         {
+            // We remove from the list all those experiences that not belong to any equipped wearable
             if (!userProfile.avatar.wearables.Contains(pex.Key))
                 experiencesIdsToRemove.Add(pex.Key);
         }
