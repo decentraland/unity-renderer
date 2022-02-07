@@ -484,12 +484,14 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
                 continue;
 
             var entityDuplicated = DuplicateEntity(entityToDuplicate);
+            
+            // We move the entity before completing the action to save its position too
+            entityDuplicated.rootEntity.gameObject.transform.position += Vector3.right * DUPLICATE_OFFSET;
+            
             BIWEntityAction biwEntityAction = new BIWEntityAction(entityDuplicated.rootEntity, entityDuplicated.rootEntity.entityId, BIWUtils.ConvertEntityToJSON(entityDuplicated.rootEntity));
             entityActionList.Add(biwEntityAction);
             SelectEntity(entityDuplicated);
         }
-
-        currentActiveMode?.SetDuplicationOffset(DUPLICATE_OFFSET);
 
         buildAction.CreateActionType(entityActionList, IBIWCompleteAction.ActionType.CREATE);
         actionController.AddAction(buildAction);
@@ -547,16 +549,17 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         }
 
         var convertedEntity = SetupEntityToEdit(newEntity, true);
-
+        
+        if(!convertedEntity.isLoaded)
+            creatorController.CreateLoadingObject(convertedEntity);
+        
         if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.GLTF_SHAPE, out var gltfComponent))
             gltfComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
 
         if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.NFT_SHAPE, out var nftComponent))
             nftComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
-
-        creatorController.CreateLoadingObject(convertedEntity);
+        
         EntityListChanged();
-
         return newEntity;
     }
 

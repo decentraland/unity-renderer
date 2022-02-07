@@ -296,17 +296,17 @@ public class BuilderAPIController : IBuilderAPIController
 
             try
             {
-                var x = JObject.Parse(result);
+                var jsonObject = JObject.Parse(result);
 
                 //We check if the object contains the version attribute, if it contains it it is a manifest
                 //The API has two version , one with the APIResponse and one who don't
-                if (x["version"] != null)
+                if (jsonObject["version"] != null)
                 {
                     manifest = JsonConvert.DeserializeObject<Manifest>(result);
                     fullNewProjectPromise.Resolve(manifest);
                 }
                 // Sometimes the API respond that OK but the data is empty so we need to check that 
-                else if (x["data"].HasValues && x["data"].First["version"] != null)
+                else if (jsonObject["data"].HasValues && jsonObject["data"].First["version"] != null)
                 {
                     APIResponse response = JsonConvert.DeserializeObject<APIResponse>(result);
                     manifest = JsonConvert.DeserializeObject<Manifest[]>(response.data.ToString())[0];

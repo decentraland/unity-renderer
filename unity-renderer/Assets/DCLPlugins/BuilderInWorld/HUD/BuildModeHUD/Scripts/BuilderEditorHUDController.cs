@@ -194,7 +194,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
     private void ConfigureNewProjectController() { controllers.newProjectDetailsController.OnNameAndDescriptionSet += NameAndDescriptionOfNewProjectSet; }
     private void QuickBarCatalogItemAssigned(CatalogItem item) { BIWAnalytics.QuickAccessAssigned(item, GetCatalogSectionSelected().ToString()); }
 
-    private void NameAndDescriptionOfNewProjectSet(string name, string description) { OnProjectNameAndDescriptionChanged?.Invoke(name, description); }
+    private void NameAndDescriptionOfNewProjectSet(string name, string description) => OnProjectNameAndDescriptionChanged?.Invoke(name, description); 
 
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 

@@ -504,6 +504,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
         sectionsController.SetFetchingDataEnd<SectionLandController>();
+        sectionsController.SetFetchingDataEnd<SectionScenesController>();
         isFetchingLands = false;
         UpdateProjectsDeploymentStatus();
 

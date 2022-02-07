@@ -11,7 +11,7 @@ namespace DCL.Builder
 
         public void Initialize(IContext context)
         {
-            genericPopUp = GameObject.Instantiate(Resources.Load<GenericPopUpVIew>(GENERIC_POP_UP_VIEW_PREFAB_PATH));
+            genericPopUp = GameObject.Instantiate(Resources.Load<GenericPopUpView>(GENERIC_POP_UP_VIEW_PREFAB_PATH));
         }
 
         public void Dispose() { genericPopUp.Dispose(); }
