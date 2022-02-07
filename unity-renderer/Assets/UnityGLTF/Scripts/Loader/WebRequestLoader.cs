@@ -14,6 +14,7 @@ namespace UnityGLTF.Loader
 {
     public class WebRequestLoader : ILoader
     {
+        private const int TIMEOUT_IN_SECONDS = 300;
         public Stream LoadedStream { get; private set; }
         public bool HasSyncLoadMethod { get; private set; }
         public AssetIdConverter assetIdConverter { get; private set; }
@@ -78,7 +79,7 @@ namespace UnityGLTF.Loader
             WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
                 url: finalUrl,
                 downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 30,
+                timeout: TIMEOUT_IN_SECONDS,
                 disposeOnCompleted: false,
                 requestAttemps: 3);
 
