@@ -14,7 +14,7 @@ namespace DCL.Components
     public class DCLVideoTexture : DCLTexture
     {
         public static bool VERBOSE = false;
-        public static ILogger logger = new Logger(Debug.unityLogger) { filterLogType = VERBOSE ? LogType.Log : LogType.Error };
+        public static Logger logger = new Logger("DCLVideoTexture") { verboseEnabled = VERBOSE };
 
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
         private const float VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS = 1f;
@@ -94,7 +94,7 @@ namespace DCL.Components
 
                 if (dclVideoClip == null)
                 {
-                    logger.LogError("DCLVideoTexture", "Wrong video clip type when playing VideoTexture!!");
+                    logger.Error( "Wrong video clip type when playing VideoTexture!!");
                     yield break;
                 }
 

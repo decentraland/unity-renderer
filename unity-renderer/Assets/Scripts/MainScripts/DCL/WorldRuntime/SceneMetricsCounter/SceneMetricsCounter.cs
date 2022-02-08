@@ -28,7 +28,7 @@ namespace DCL
         }
 
         private static bool VERBOSE = false;
-        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
+        private static Logger logger = new Logger("SceneMetricsCounter") { verboseEnabled = VERBOSE };
         public event Action<ISceneMetricsCounter> OnMetricsUpdated;
 
         private SceneMetricsModel maxCountValue = new SceneMetricsModel();
@@ -212,7 +212,7 @@ namespace DCL
                 currentCountValue.triangles = sceneData.triangles.Get() / 3;
             }
 
-            logger.Log($"Current metrics: {currentCountValue}");
+            logger.Verbose($"Current metrics: {currentCountValue}");
             RaiseMetricsUpdate();
         }
 
@@ -239,13 +239,13 @@ namespace DCL
                 SceneMetricsModel currentOffense = maxCountValue - currentCountValue;
 
                 if ( firstOffense )
-                    logger.Log($"New offending scene {sceneId} ({scenePosition})!\n{currentCountValue}");
+                    logger.Verbose($"New offending scene {sceneId} ({scenePosition})!\n{currentCountValue}");
 
                 if ( currentOffense < worstOffense )
                     return;
 
                 metricsData.worstMetricOffenses[sceneId] = currentOffense;
-                logger.Log($"New offending scene {sceneId} {scenePosition}!\nmetrics: {currentCountValue}\nlimits: {maxCountValue}\ndelta:{currentOffense}");
+                logger.Verbose($"New offending scene {sceneId} {scenePosition}!\nmetrics: {currentCountValue}\nlimits: {maxCountValue}\ndelta:{currentOffense}");
             }
         }
 
