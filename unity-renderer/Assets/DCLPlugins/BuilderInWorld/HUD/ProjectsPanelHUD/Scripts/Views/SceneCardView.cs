@@ -103,6 +103,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     [Space]
     [SerializeField] private RawImageFillParent thumbnail;
+    [SerializeField] private GameObject thumbnailGameObject;
     [SerializeField] private GameObject thumbnailLoading;
 
     [SerializeField] private TextMeshProUGUI sceneName;
@@ -266,6 +267,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
         thumbnail.texture = thumbnailTexture ?? defaultThumbnail;
         isLoadingThumbnail = false;
         thumbnail.enabled = true;
+        thumbnailGameObject.SetActive(true);
         thumbnailLoading.SetActive(false);
         if(loadingAnimator != null)
             loadingAnimator?.SetBool(isLoadingAnimation, isLoadingThumbnail);

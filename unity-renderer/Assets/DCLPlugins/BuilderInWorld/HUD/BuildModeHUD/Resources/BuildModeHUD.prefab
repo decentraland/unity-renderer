@@ -852,6 +852,21 @@ PrefabInstance:
       propertyPath: m_TargetGraphic
       value: 
       objectReference: {fileID: 2478481587887307697}
+    - target: {fileID: 5398450734781630137, guid: a8cf4aa467ddc0c4d9503c4913860cc2,
+        type: 3}
+      propertyPath: m_Colors.m_SelectedColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5398450734781630137, guid: a8cf4aa467ddc0c4d9503c4913860cc2,
+        type: 3}
+      propertyPath: m_Colors.m_SelectedColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5398450734781630137, guid: a8cf4aa467ddc0c4d9503c4913860cc2,
+        type: 3}
+      propertyPath: m_Colors.m_SelectedColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5500734187720606990, guid: a8cf4aa467ddc0c4d9503c4913860cc2,
         type: 3}
       propertyPath: m_Name

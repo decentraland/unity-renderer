@@ -24,7 +24,7 @@ namespace DCL
 
         [SerializeField] private float parcelHightlightScale = 1.25f;
         [SerializeField] private Button ParcelHighlightButton;
-        [SerializeField] private MapParcelHighlight highlight;      
+        [SerializeField] private MapParcelHighlight highlight;
         [SerializeField] private Image parcelHighlightImage;
         [SerializeField] private Image parcelHighlighImagePrefab;
         [SerializeField] private Image selectParcelHighlighImagePrefab;
@@ -64,6 +64,7 @@ namespace DCL
         private Pool usersInfoPool;
 
         private bool parcelHighlightEnabledValue = false;
+        private bool otherPlayersIconsEnabled = true;
 
         List<WorldRange> validWorldRanges = new List<WorldRange>
         {
@@ -117,9 +118,9 @@ namespace DCL
 
             playerWorldPosition.OnChange += OnCharacterMove;
             playerRotation.OnChange += OnCharacterRotate;
-            
+
             highlight.SetScale(parcelHightlightScale);
-            
+
             usersPositionMarkerController = new MapGlobalUsersPositionMarkerController(globalUserMarkerPrefab,
                 globalUserMarkerContainer,
                 MapUtils.GetTileToLocalPosition);
@@ -145,8 +146,20 @@ namespace DCL
                     usersInfoPool.ForcePrewarm();
             }
         }
+
+        public void SetOtherPlayersIconActive(bool isActive)
+        {
+            otherPlayersIconsEnabled = isActive;
+            
+            foreach (PoolableObject poolableObject in usersInfoMarkers.Values)
+            {
+                poolableObject.gameObject.SetActive(isActive);
+            }
+        }
         
-        public void SetParcelHighlightActive(bool isAtive) => parcelHighlightImage.enabled = isAtive;
+        public void SetPlayerIconActive(bool isActive) => playerPositionIcon.gameObject.SetActive(isActive);
+        
+        public void SetParcelHighlightActive(bool isActive) => parcelHighlightImage.enabled = isActive;
         
         public Vector3 GetParcelHighlightTransform() => parcelHighlightImage.transform.position;
 
@@ -372,6 +385,7 @@ namespace DCL
             marker.gameObject.name = $"UserIcon-{player.name}";
             marker.gameObject.transform.SetParent(overlayContainer.transform, true);
             marker.Populate(player);
+            marker.gameObject.SetActive(otherPlayersIconsEnabled);
             usersInfoMarkers.Add(userId, poolable);
         }
 

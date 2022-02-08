@@ -210,12 +210,15 @@ namespace DCL.Builder
             publishedGameObject.gameObject.SetActive(true);
             if (scenes.Count == 0)
             {
+                expandButton.interactable = false;
                 syncImage.gameObject.SetActive(false);
                 projectSyncTxt.text = NOT_PUBLISHED;
                 downButtonTransform.gameObject.SetActive(false);
             }
             else
             {
+                expandButton.interactable = true;
+                syncImage.gameObject.SetActive(true);
                 downButtonTransform.gameObject.SetActive(true);
                 bool isSync = true;
                 long projectTimestamp = BIWUtils.ConvertToMilisecondsTimestamp(projectData.updated_at);

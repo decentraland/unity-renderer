@@ -53,6 +53,11 @@ public class PublishLandListView : ListView<LandWithAccess>
         adapterList.Clear();
     }
 
+    public void HideEmptyContent()
+    {
+        emptyContentMark.SetActive(false);
+    }
+
     internal void SelectedLand(LandWithAccess land)
     {
         foreach (PubllishLandListAdapter adapter in adapterList)

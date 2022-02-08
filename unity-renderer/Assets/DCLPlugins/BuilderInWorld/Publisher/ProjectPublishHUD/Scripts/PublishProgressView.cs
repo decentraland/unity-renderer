@@ -85,7 +85,7 @@ namespace DCL.Builder
         // Sub titles
         private const string CONFIRM_SUB_TITLE_TEXT =  @"{0} will be deployed in {1},{2}";
         private const string PUBLISHING_SUB_TITLE_TEXT =  @"{0} is being deployed in {1},{2}";
-        private const string SUCCESS_SUB_TITLE_TEXT =  @"{0} is now a live place in {1},{2} ready to be visited!";
+        private const string SUCCESS_SUB_TITLE_TEXT =  @"{0} is now a live place in [landName]{1},{2}";
         
         public event Action OnPublishConfirmButtonPressed;
         public event Action OnViewClosed;
@@ -222,7 +222,16 @@ namespace DCL.Builder
         public void ShowProjectPublishSucces()
         {
             mainTitleTextView.text = SUCCESS_MAIN_TEXT;
-            subTitleTextView.text = GetConfirmSubtitleText(SUCCESS_SUB_TITLE_TEXT);
+            string text = GetConfirmSubtitleText(SUCCESS_SUB_TITLE_TEXT);
+
+            foreach (var land in DataStore.i.builderInWorld.landsWithAccess.Get())
+            {
+                if (land.baseCoords == currentInfo.coordsToPublish && !string.IsNullOrEmpty(land.name))
+                    text = text.Replace("[landName]", land.name + " ");
+            }
+            
+            text = text.Replace("[landName]", "");
+            subTitleTextView.text = text;
             
             successGameObject.SetActive(true);
         }

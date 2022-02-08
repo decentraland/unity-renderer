@@ -122,8 +122,8 @@ namespace DCL.Builder
             MapRenderer.i.transform.SetParent(scrollRectContentTransform);
             MapRenderer.i.atlas.UpdateCulling();
             MapRenderer.i.OnMovedParcelCursor += ParcelHovered;
-            MapRenderer.i.userIconPrefab.SetActive(false);
             MapRenderer.i.SetPointOfInterestActive(false);
+            MapRenderer.i.SetPlayerIconActive(false);
             
             scrollRect.content = MapRenderer.i.atlas.chunksParent.transform as RectTransform;
             initialContentPosition = scrollRect.content.anchoredPosition;
@@ -144,7 +144,7 @@ namespace DCL.Builder
             MapRenderer.i.atlas.chunksParent.transform.localPosition = atlasOriginalPosition;
             MapRenderer.i.atlas.UpdateCulling();
             MapRenderer.i.SetPointOfInterestActive(true);
-            MapRenderer.i.userIconPrefab.SetActive(true);
+            MapRenderer.i.SetPlayerIconActive(true);
 
             // Restore the player icon to its original parent
             MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(MapRenderer.i.atlas.chunksParent.transform.parent);

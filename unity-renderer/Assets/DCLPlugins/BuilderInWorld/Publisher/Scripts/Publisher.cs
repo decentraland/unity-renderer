@@ -11,8 +11,8 @@ namespace DCL.Builder
 {
     public class Publisher : IPublisher
     {
-        private const string NO_LAND_TO_PUBLISH_TEXT = "Your scene is bigger than any Land you own.\nBrowse the Marketplace and buy some new Land where you can deploy";
-        private const string BIGGER_LAND_TO_PUBLISH_TEXT = "To publish a scene first you need a Land where you can deploy it. Browse the marketplace to get some and show the world what you have created";
+        private const string BIGGER_LAND_TO_PUBLISH_TEXT = "Your scene is bigger than any Land you own.\nBrowse the Marketplace and buy some new Land where you can deploy.";
+        private const string NO_LAND_TO_PUBLISH_TEXT = "To publish a scene first you need a Land where you can deploy it. Browse the marketplace to get some and show the world what you have created.";
 
         private IPublishProjectController projectPublisher;
         private ILandPublisherController landPublisher;
@@ -93,7 +93,7 @@ namespace DCL.Builder
             if (!CanPublishInLands(scene))
             {
                 context.commonHUD.GetPopUp()
-                       .ShowPopUpWithoutTitle(NO_LAND_TO_PUBLISH_TEXT, "BUY LAND", "BACK", () =>
+                       .ShowPopUpWithoutTitle(BIGGER_LAND_TO_PUBLISH_TEXT, "BUY LAND", "BACK", () =>
                        {
                            WebInterface.OpenURL(BIWSettings.MARKETPLACE_URL);
                        }, null);
