@@ -112,11 +112,9 @@ namespace DCL.Models
                         for ( int i = 0; i < texIdsCache.Count; i++ )
                         {
                             var tex = mat.GetTexture(texIdsCache[i]);
-                            //  Debug.Log($"{mat.name} - Checking tex id {texNameCache[i]}");
 
                             if ( tex != null )
                             {
-                                //    Debug.Log("Adding Texture");
                                 result.Add(tex);
                             }
                         }

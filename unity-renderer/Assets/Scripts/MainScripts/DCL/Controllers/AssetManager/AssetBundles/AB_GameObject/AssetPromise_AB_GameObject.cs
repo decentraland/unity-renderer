@@ -47,7 +47,7 @@ namespace DCL
 
         protected override void OnReuse(Action OnSuccess)
         {
-            asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container); //asset.container.GetComponentsInChildren<Renderer>(true).ToList();
+            asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
             asset.Show(OnSuccess);
         }
 

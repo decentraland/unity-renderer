@@ -241,8 +241,6 @@ namespace DCL.Components
                 };
 
             newRendereable.renderers = MeshesInfoUtils.ExtractUniqueRenderers(entity.meshRootGameObject);
-            //newRendereable.materials = MeshesInfoUtils.ExtractUniqueMaterials(newRendereable.renderers);
-            //newRendereable.textures = MeshesInfoUtils.ExtractUniqueTextures(newRendereable.materials);
             newRendereable.ownerId = entity.entityId;
 
             attachedRendereables.Add(entity, newRendereable);
