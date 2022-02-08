@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Models;
-using NSubstitute;
 using UnityEngine;
 using UnityEngine.Assertions;
 
