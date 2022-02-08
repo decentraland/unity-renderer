@@ -88,16 +88,19 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
         }
         else
         {
-            WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.Concat(new List<string> { pexId }).ToArray());
-
             // We only keep the experience paused in the list if our avatar has the related wearable equipped
             if (userProfile.avatar.wearables.Contains(pexId))
             {
                 if (!pausedPEXScenesIds.Contains(pexId))
                     pausedPEXScenesIds.Add(pexId);
-            }
 
-            WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
+                WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
+            }
+            else
+            {
+                WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.Concat(new List<string> { pexId }).ToArray());
+                WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
+            }
         }
     }
 
