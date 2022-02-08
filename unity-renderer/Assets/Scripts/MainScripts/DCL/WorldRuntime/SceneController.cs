@@ -800,9 +800,6 @@ namespace DCL
             if (!string.IsNullOrEmpty(globalScene.icon))
             {
                 newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
-
-                if (newScene.iconUrl == null)
-                    newScene.iconUrl = globalScene.icon;
             }
 
             worldState.loadedScenes.Add(newGlobalSceneId, newScene);
