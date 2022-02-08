@@ -19,37 +19,25 @@ namespace DCL
         const int MINIMAP_USER_ICONS_MAX_PREWARM = 30;
         private const int MAX_CURSOR_PARCEL_DISTANCE = 40;
         private int NAVMAP_CHUNK_LAYER;
-        private const float MAP_DEFAULT_ZOOM = 0.5f;
-        private const float MAP_ZOOM_MAX_SCALE = 2;
-        private const float MAP_ZOOM_MIN_SCALE = 0.1f;
-        private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
-        private const float MAP_ZOOM_LEVELS = 4;
 
         public static MapRenderer i { get; private set; }
 
         [SerializeField] private float parcelHightlightScale = 1.25f;
         [SerializeField] private Button ParcelHighlightButton;
-        [SerializeField] private RectTransform containerRectTransform;
-        [SerializeField] internal InputAction_Measurable mouseWheelAction;
-
-        private float parcelSizeInMap;
-        private Vector3Variable playerWorldPosition => CommonScriptableObjects.playerWorldPosition;
-        private Vector3Variable playerRotation => CommonScriptableObjects.cameraForward;
-        private Vector3[] mapWorldspaceCorners = new Vector3[4];
-        private Vector3 worldCoordsOriginInMap;
-        private List<RaycastResult> uiRaycastResults = new List<RaycastResult>();
-        private PointerEventData uiRaycastPointerEventData = new PointerEventData(EventSystem.current);
 
         [HideInInspector] public Vector3 cursorMapCoords;
         [HideInInspector] public bool showCursorCoords = true;
+        [HideInInspector] public event System.Action OnMovedParcelCursor;
         public Vector3 playerGridPosition => Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get());
         public MapAtlas atlas;
         public RawImage parcelHighlightImage;
         public TextMeshProUGUI highlightedParcelText;
         public Transform overlayContainer;
         public Transform globalUserMarkerContainer;
-
         public RectTransform playerPositionIcon;
+
+        public static System.Action<int, int> OnParcelClicked;
+        public static System.Action OnCursorFarFromParcel;
 
         // Used as a reference of the coordinates origin in-map and as a parcel width/height reference
         public RectTransform centeredReferenceParcel;
@@ -60,13 +48,23 @@ namespace DCL
 
         public MapGlobalUsersPositionMarkerController usersPositionMarkerController { private set; get; }
 
+        private float parcelSizeInMap;
+        private Vector3Variable playerWorldPosition => CommonScriptableObjects.playerWorldPosition;
+        private Vector3Variable playerRotation => CommonScriptableObjects.cameraForward;
+        private Vector3[] mapWorldspaceCorners = new Vector3[4];
+        private Vector3 worldCoordsOriginInMap;
+        private List<RaycastResult> uiRaycastResults = new List<RaycastResult>();
+        private PointerEventData uiRaycastPointerEventData = new PointerEventData(EventSystem.current);
+
         private HashSet<MinimapMetadata.MinimapSceneInfo> scenesOfInterest = new HashSet<MinimapMetadata.MinimapSceneInfo>();
         private Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject> scenesOfInterestMarkers = new Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject>();
         private Dictionary<string, PoolableObject> usersInfoMarkers = new Dictionary<string, PoolableObject>();
 
         private Vector3 lastClickedCursorMapCoords;
         private Pool usersInfoPool;
-        private float zoomDelta;
+
+        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+        private bool isInitialized = false;
 
         private bool parcelHighlightEnabledValue = false;
 
@@ -85,16 +83,6 @@ namespace DCL
             get { return parcelHighlightEnabledValue; }
         }
 
-        public static System.Action<int, int> OnParcelClicked;
-        public static System.Action OnCursorFarFromParcel;
-
-        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-
-        private bool isInitialized = false;
-
-        [HideInInspector]
-        public event System.Action OnMovedParcelCursor;
-
         private void Awake()
         {
             i = this;
@@ -109,11 +97,9 @@ namespace DCL
             isInitialized = true;
             EnsurePools();
             atlas.InitializeChunks();
-            zoomDelta = (MAP_ZOOM_MAX_SCALE - MAP_ZOOM_MIN_SCALE) / MAP_ZOOM_LEVELS;
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
 
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
-            mouseWheelAction.OnValueChanged += OnMouseWheelChangeValue;
             otherPlayers.OnAdded += OnOtherPlayersAdded;
             otherPlayers.OnRemoved += OnOtherPlayerRemoved;
 
@@ -380,15 +366,6 @@ namespace DCL
             highlightedParcelText.text = string.Empty;
             lastClickedCursorMapCoords = new Vector3((int)cursorMapCoords.x, (int)cursorMapCoords.y, 0);
             OnParcelClicked?.Invoke((int)cursorMapCoords.x, (int)cursorMapCoords.y);
-        }
-
-        private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
-        {
-            if (value > -MOUSE_WHEEL_THRESHOLD && value < MOUSE_WHEEL_THRESHOLD) return;
-            Vector3 newScale = containerRectTransform.localScale * value;
-            Debug.Log("New scale is: " + newScale + " value is: " + value);
-            if (newScale.x > MAP_ZOOM_MAX_SCALE || newScale.x < MAP_ZOOM_MIN_SCALE) return;
-            containerRectTransform.localScale += newScale;
         }
     }
 }

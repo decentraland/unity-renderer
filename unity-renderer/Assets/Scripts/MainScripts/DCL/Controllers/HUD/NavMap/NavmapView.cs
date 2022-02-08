@@ -15,6 +15,7 @@ namespace DCL
         [SerializeField] internal TextMeshProUGUI currentSceneNameText;
         [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
         [SerializeField] internal NavmapToastView toastView;
+        [SerializeField] internal InputAction_Measurable mouseWheelAction;
 
         InputAction_Trigger.Triggered selectParcelDelegate;
         RectTransform minimapViewport;
@@ -27,10 +28,19 @@ namespace DCL
 
         public BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
         public static event System.Action<bool> OnToggle;
+        private const float MAP_ZOOM_MAX_SCALE = 1;
+        private const float MAP_ZOOM_MIN_SCALE = 0.3f;
+        private const float MOUSE_WHEEL_THRESHOLD = 0.0000001f;
+        private const float MAP_ZOOM_LEVELS = 4;
+        private RectTransform containerRectTransform;
+        private float zoomDelta;
+        private int defaultZoomLevel;
+        private int currentZoomLevel;
 
         void Start()
         {
             mapMetadata = MinimapMetadata.GetMetadata();
+            containerRectTransform = scrollRectContentTransform.GetComponent<RectTransform>();
 
             closeButton.onClick.AddListener(() =>
             {
@@ -54,8 +64,56 @@ namespace DCL
 
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
-
+            mouseWheelAction.OnValueChanged += OnMouseWheelChangeValue;
+            ResetCameraZoom();
             Initialize();
+        }
+        private float scale = 1f;
+
+        private void ResetCameraZoom()
+        {
+            zoomDelta = (MAP_ZOOM_MAX_SCALE - MAP_ZOOM_MIN_SCALE) / MAP_ZOOM_LEVELS;
+            currentZoomLevel = defaultZoomLevel = Mathf.CeilToInt(MAP_ZOOM_LEVELS / 2);
+            scale = defaultZoomLevel * zoomDelta;
+            containerRectTransform.localScale = new Vector3(scale, scale, scale);
+        }
+
+        private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
+        {
+            if (value > -MOUSE_WHEEL_THRESHOLD && value < MOUSE_WHEEL_THRESHOLD) return;
+            if (!navmapVisible.Get()) return;
+
+            if (value > 0 && currentZoomLevel <= MAP_ZOOM_LEVELS)
+            {
+                currentZoomLevel++;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(containerRectTransform, Input.mousePosition, Camera.main, out var localPointInRect);
+                SetPivot(containerRectTransform, localPointInRect);
+                scale = zoomDelta * currentZoomLevel;
+                containerRectTransform.localScale = new Vector3(scale, scale, scale);
+            }
+            else if (value < 0 && currentZoomLevel > 1)
+            {
+                currentZoomLevel--;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(containerRectTransform, Input.mousePosition, Camera.main, out var localPointInRect);
+                SetPivot(containerRectTransform, localPointInRect);
+                scale = zoomDelta * currentZoomLevel;
+                containerRectTransform.localScale = new Vector3(scale, scale, scale);
+            }
+        }
+
+        private void SetPivot(RectTransform rectTransform, Vector2 localPoint)
+        {
+            Rect targetRect = rectTransform.rect;
+
+            Vector2 newPivot = new Vector2((localPoint.x - targetRect.x) / (targetRect.xMax - targetRect.x), 
+                (localPoint.y - targetRect.y) / (targetRect.yMax - targetRect.y));
+
+            Vector2 deltaPivot = (rectTransform.pivot - newPivot) * scale;
+
+            Vector2 rectSize = targetRect.size;
+
+            rectTransform.pivot = newPivot;
+            rectTransform.localPosition += new Vector3(deltaPivot.x * rectSize.x, deltaPivot.y * rectSize.y) * -1f;
         }
 
         private void OnNavmapVisibleChanged(bool current, bool previous) { SetVisible(current); }
@@ -74,6 +132,7 @@ namespace DCL
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             navmapVisible.OnChange -= OnNavmapVisibleChanged;
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
+            mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
         }
 
         internal void SetVisible(bool visible)
@@ -148,6 +207,7 @@ namespace DCL
                 if (minimapViewport == null)
                     return;
 
+                ResetCameraZoom();
                 CloseToast();
 
                 MapRenderer.i.atlas.viewport = minimapViewport;
