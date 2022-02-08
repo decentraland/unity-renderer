@@ -28,6 +28,10 @@ namespace DCL
                         return CLASS_ID_COMPONENT.UUID_ON_UP;
                     case OnClick.NAME:
                         return CLASS_ID_COMPONENT.UUID_ON_CLICK;
+                    case OnPointerHoverEnter.NAME:
+                        return CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER;
+                    case OnPointerHoverExit.NAME:
+                        return CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT;
                 }
 
                 return CLASS_ID_COMPONENT.UUID_CALLBACK;

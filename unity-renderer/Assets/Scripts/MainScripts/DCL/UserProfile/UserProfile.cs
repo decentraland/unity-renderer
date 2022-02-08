@@ -31,6 +31,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     internal Dictionary<string, int> inventory = new Dictionary<string, int>();
 
     public ILazyTextureObserver snapshotObserver = new LazyTextureObserver();
+    public ILazyTextureObserver bodySnapshotObserver = new LazyTextureObserver();
 
     internal UserProfileModel model = new UserProfileModel() //Empty initialization to avoid nullchecks
     {
@@ -46,6 +47,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         }
 
         bool faceSnapshotDirty = model.snapshots.face256 != newModel.snapshots.face256;
+        bool bodySnapshotDirty = model.snapshots.body != newModel.snapshots.body;
 
         model.userId = newModel.userId;
         model.ethAddress = newModel.ethAddress;
@@ -70,6 +72,11 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         if (model.snapshots != null && faceSnapshotDirty)
         {
             this.snapshotObserver.RefreshWithUri(model.snapshots.face256);
+        }
+
+        if (model.snapshots != null && bodySnapshotDirty)
+        {
+            bodySnapshotObserver.RefreshWithUri(model.snapshots.body);
         }
 
         OnUpdate?.Invoke(this);

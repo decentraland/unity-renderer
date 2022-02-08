@@ -13,32 +13,13 @@ using UnityGLTF;
 
 public class BIWSceneBoundariesShould : IntegrationTestSuite
 {
-    protected override PlatformContext CreatePlatformContext()
+    protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        WebRequestController webRequestController = new WebRequestController();
-        webRequestController.Initialize(
-            genericWebRequest: new WebRequest(),
-            assetBundleWebRequest: new WebRequestAssetBundle(),
-            textureWebRequest: new WebRequestTexture(),
-            null);
-
-        var context = DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
-        (
-            webRequestController
-        );
-
-        return context;
-    }
-
-    protected override WorldRuntimeContext CreateRuntimeContext()
-    {
-        return DCL.Tests.WorldRuntimeContextFactory.CreateWithCustomMocks
-        (
-            sceneController: new SceneController(),
-            state: new WorldState(),
-            componentFactory: new RuntimeComponentFactory(),
-            sceneBoundsChecker: new SceneBoundsChecker()
-        );
+        serviceLocator.Register<ISceneController>(() => new SceneController());
+        serviceLocator.Register<IWorldState>(() => new WorldState());
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
+        serviceLocator.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
+        serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
     }
 
     [Test]

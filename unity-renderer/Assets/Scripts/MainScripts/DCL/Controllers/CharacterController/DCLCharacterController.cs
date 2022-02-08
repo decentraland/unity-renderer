@@ -42,10 +42,10 @@ public class DCLCharacterController : MonoBehaviour
     float lastMovementReportTime;
     float originalGravity;
     Vector3 lastLocalGroundPosition;
-    
+
     Vector3 lastCharacterRotation;
     Vector3 lastGlobalCharacterRotation;
-    
+
     Vector3 velocity = Vector3.zero;
 
     public bool isWalking { get; private set; } = false;
@@ -99,6 +99,7 @@ public class DCLCharacterController : MonoBehaviour
 
     [System.NonSerialized]
     public float movingPlatformSpeed;
+
     public event System.Action OnJump;
     public event System.Action OnHitGround;
     public event System.Action<float> OnMoved;
@@ -140,7 +141,6 @@ public class DCLCharacterController : MonoBehaviour
 
         avatarReference = new DCL.Models.DecentralandEntity { gameObject = avatarGameObject };
         firstPersonCameraReference = new DCL.Models.DecentralandEntity { gameObject = firstPersonCameraGameObject };
-        
     }
 
     private void SubscribeToInput()
@@ -168,6 +168,7 @@ public class DCLCharacterController : MonoBehaviour
         sprintAction.OnStarted -= walkStartedDelegate;
         sprintAction.OnFinished -= walkFinishedDelegate;
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
+        i = null;
     }
 
     void OnWorldReposition(Vector3 current, Vector3 previous)
@@ -192,7 +193,7 @@ public class DCLCharacterController : MonoBehaviour
         lastPosition = characterPosition.worldPosition;
         characterPosition.worldPosition = newPosition;
         transform.position = characterPosition.unityPosition;
-        Environment.i.platform.physicsSyncController.MarkDirty();
+        Environment.i.platform.physicsSyncController?.MarkDirty();
 
         CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
         CommonScriptableObjects.playerWorldPosition.Set(characterPosition.worldPosition);
@@ -284,7 +285,7 @@ public class DCLCharacterController : MonoBehaviour
                 lastUngroundedTime = Time.time;
             }
 
-            if (Utils.isCursorLocked && characterForward.HasValue())
+            if (characterForward.HasValue())
             {
                 // Horizontal movement
                 var speed = movementSpeed * (isWalking ? runningSpeedMultiplier : 1f);
@@ -335,7 +336,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             //NOTE(Brian): Transform has to be in sync before the Move call, otherwise this call
             //             will reset the character controller to its previous position.
-            Environment.i.platform.physicsSyncController.Sync();
+            Environment.i.platform.physicsSyncController?.Sync();
             characterController.Move(velocity * deltaTime);
         }
 
@@ -353,10 +354,11 @@ public class DCLCharacterController : MonoBehaviour
 
         OnUpdateFinish?.Invoke(deltaTime);
     }
+
     private void SaveLateUpdateGroundTransforms()
     {
         lastLocalGroundPosition = groundTransform.InverseTransformPoint(transform.position);
-        
+
         if (CommonScriptableObjects.characterForward.HasValue())
         {
             lastCharacterRotation = groundTransform.InverseTransformDirection(CommonScriptableObjects.characterForward.Get().Value);
@@ -402,13 +404,14 @@ public class DCLCharacterController : MonoBehaviour
             Vector3 newGroundWorldPos = groundTransform.TransformPoint(lastLocalGroundPosition);
             movingPlatformSpeed = Vector3.Distance(newGroundWorldPos, transform.position);
             transform.position = newGroundWorldPos;
-            
+
             Vector3 newCharacterForward = groundTransform.TransformDirection(lastCharacterRotation);
             Vector3 lastFrameDifference = Vector3.zero;
             if (CommonScriptableObjects.characterForward.HasValue())
             {
                 lastFrameDifference = CommonScriptableObjects.characterForward.Get().Value - lastGlobalCharacterRotation;
             }
+
             //NOTE(Kinerius) CameraStateTPS rotates the character between frames so we add the difference.
             //               if we dont do this, the character wont rotate when moving, only when the platform rotates
             CommonScriptableObjects.characterForward.Set(newCharacterForward + lastFrameDifference);
@@ -429,7 +432,7 @@ public class DCLCharacterController : MonoBehaviour
                     CommonScriptableObjects.playerIsOnMovingPlatform.Set(true);
                     Physics.SyncTransforms();
                     SaveLateUpdateGroundTransforms();
-                    
+
                     Quaternion deltaRotation = groundTransform.rotation * Quaternion.Inverse(groundLastRotation);
                     CommonScriptableObjects.movingPlatformRotationDelta.Set(deltaRotation);
                 }
@@ -524,6 +527,7 @@ public class DCLCharacterController : MonoBehaviour
         var reportPosition = characterPosition.worldPosition + (Vector3.up * height);
         var compositeRotation = Quaternion.LookRotation(cameraForward.Get());
         var playerHeight = height + (characterController.height / 2);
+        var cameraRotation = Quaternion.LookRotation(cameraForward.Get());
 
         //NOTE(Brian): We have to wait for a Teleport before sending the ReportPosition, because if not ReportPosition events will be sent
         //             When the spawn point is being selected / scenes being prepared to be sent and the Kernel gets crazy.
@@ -532,7 +536,7 @@ public class DCLCharacterController : MonoBehaviour
         //                  - Scenes not being sent for loading, making ActivateRenderer never being sent, only in WSS mode.
         //                  - Random teleports to 0,0 or other positions that shouldn't happen.
         if (initialPositionAlreadySet)
-            DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight);
+            DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight, cameraRotation);
 
         lastMovementReportTime = DCLTime.realtimeSinceStartup;
     }

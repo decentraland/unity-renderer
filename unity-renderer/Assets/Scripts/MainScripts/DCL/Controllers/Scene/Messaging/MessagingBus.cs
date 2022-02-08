@@ -37,7 +37,7 @@ namespace DCL
         public string debugTag;
 
         public MessagingController owner;
-        private MessagingControllersManager manager;
+        private IMessagingControllersManager manager;
 
         Dictionary<string, LinkedListNode<QueuedSceneMessage>> unreliableMessages = new Dictionary<string, LinkedListNode<QueuedSceneMessage>>();
         public int unreliableMessagesReplaced = 0;
@@ -54,7 +54,7 @@ namespace DCL
             this.type = type;
             this.owner = owner;
             this.pendingMessagesCount = 0;
-            manager = Environment.i.messaging.manager as MessagingControllersManager;
+            manager = owner.messagingManager;
         }
 
         public void Start() { enabled = true; }

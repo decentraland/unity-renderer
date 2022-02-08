@@ -73,6 +73,8 @@ namespace DCL.SettingsPanelHUD
     /// </summary>
     public class SettingsPanelHUDController : IHUD, ISettingsPanelHUDController
     {
+        private const string SECTION_TO_ACTIVATE_WORLD_PREVIEW = "graphics";
+
         public SettingsPanelHUDView view { get; private set; }
 
         public event System.Action OnOpen;
@@ -146,7 +148,7 @@ namespace DCL.SettingsPanelHUD
         {
             newMenuButton?.Initialize(sectionConfig.icon, sectionConfig.text);
 
-            newSection.Initialize(newSectionController, sectionConfig.widgets.ToList());
+            newSection.Initialize(newSectionController, sectionConfig.widgets.ToList(), sectionConfig.text);
             newSection.SetActive(false);
             sections.Add(newSection);
 
@@ -169,6 +171,9 @@ namespace DCL.SettingsPanelHUD
             foreach (var section in sections)
             {
                 section.SetActive(section == sectionToOpen);
+
+                if (section == sectionToOpen)
+                    view.SetWorldPreviewActive(section.sectionName.ToLower() == SECTION_TO_ACTIVATE_WORLD_PREVIEW);
             }
         }
 
@@ -178,6 +183,9 @@ namespace DCL.SettingsPanelHUD
             {
                 var section = sections[i];
                 section.SetActive(i == sectionIndex);
+
+                if (i == sectionIndex)
+                    view.SetWorldPreviewActive(section.sectionName.ToLower() == SECTION_TO_ACTIVATE_WORLD_PREVIEW);
             }
         }
 
@@ -194,7 +202,11 @@ namespace DCL.SettingsPanelHUD
 
         public void ResetAllSettings() { Settings.i.ResetAllSettings(); }
 
-        public void SetTutorialButtonEnabled(bool isEnabled) { view.SetTutorialButtonEnabled(isEnabled); }
+        public void SetTutorialButtonEnabled(bool isEnabled)
+        {
+            if (view != null)
+                view.SetTutorialButtonEnabled(isEnabled);
+        }
 
         public void AddHelpAndSupportWindow(HelpAndSupportHUDController controller)
         {

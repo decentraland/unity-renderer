@@ -403,10 +403,12 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     public void RemoveItems()
     {
-        foreach (Transform child in transform)
+        List<BaseComponentView> itemsToDestroy = ExtractItems();
+        foreach (BaseComponentView itemToDestroy in itemsToDestroy)
         {
-            Destroy(child.gameObject);
+            DestroyImmediate(itemToDestroy.gameObject);
         }
+        itemsToDestroy.Clear();
 
         instantiatedItems.Clear();
     }

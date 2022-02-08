@@ -54,7 +54,7 @@ public class ControlsHUDController : IHUD
         }
         else if (!IsVisible() && visible)
         {
-            prevMouseLockState = Utils.isCursorLocked;
+            prevMouseLockState = Utils.IsCursorLocked;
             Utils.UnlockCursor();
             view.gameObject.SetActive(true);
             view.showHideAnimator.Show();

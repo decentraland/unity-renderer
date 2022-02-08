@@ -22,7 +22,13 @@ public class SceneTests : IntegrationTestSuite_Legacy
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
         DataStore.i.debugConfig.isDebugMode.Set(true);
-        DCL.Configuration.EnvironmentSettings.DEBUG = true;
+    }
+
+    protected override ServiceLocator InitializeServiceLocator()
+    {
+        var result = base.InitializeServiceLocator();
+        result.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
+        return result;
     }
 
     [UnityTest]
@@ -114,7 +120,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         sceneController.UnloadScene(loadedSceneID);
 
         yield return new WaitForAllMessagesProcessed();
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.5f);
 
         Assert.IsTrue(Environment.i.world.state.loadedScenes.ContainsKey(loadedSceneID) == false);
 

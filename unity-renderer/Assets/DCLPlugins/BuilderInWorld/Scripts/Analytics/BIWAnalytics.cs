@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
@@ -10,7 +11,6 @@ using UnityEngine;
 /// </summary>
 public static class BIWAnalytics
 {
-
     #region BuilderPanel
 
     public static void PlayerOpenPanel(int landsOwned, int landsOperator)
@@ -162,6 +162,7 @@ public static class BIWAnalytics
 
             items.Add( JsonConvert.SerializeObject(item));
         }
+
         events.Add("items", JsonConvert.SerializeObject(items));
         SendEditorEvent("new_object_placed", events);
     }
@@ -260,7 +261,7 @@ public static class BIWAnalytics
 
     private static void SendEvent(string eventName, Dictionary<string, string> events)
     {
-        if (Analytics.i != null)
-            Analytics.i.SendAnalytic(eventName, events);
+        IAnalytics analytics = DCL.Environment.i.platform.serviceProviders.analytics;
+        analytics.SendAnalytic(eventName, events);
     }
 }

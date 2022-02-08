@@ -94,7 +94,7 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
         if (Time.timeSinceLevelLoad < nexTimeToReceiveInput)
             return;
 
-        if (Utils.isCursorLocked || modeController.IsGodModeActive())
+        if (Utils.IsCursorLocked || modeController.IsGodModeActive())
             CheckEditModeInput();
         modeController.CheckInput();
     }
@@ -136,7 +136,7 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
         if (!BIWUtils.IsPointerOverUIElement())
             context.editorContext.editorHUD.HideExtraBtns();
 
-        if (Utils.isCursorLocked || modeController.IsGodModeActive())
+        if (Utils.IsCursorLocked || modeController.IsGodModeActive())
         {
             if (buttonID == 0)
             {

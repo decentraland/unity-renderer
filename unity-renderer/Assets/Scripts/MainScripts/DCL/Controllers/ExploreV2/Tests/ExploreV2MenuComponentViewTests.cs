@@ -166,4 +166,17 @@ public class ExploreV2MenuComponentViewTests
         // Assert
         Assert.IsTrue(closeButtonClicked, "The close button was not clicked.");
     }
+
+    [Test]
+    public void ConfigureRealmSelectorModalCorrectly()
+    {
+        // Arrange
+
+        // Act
+        RealmSelectorComponentView testModal = exploreV2MenuComponent.ConfigureRealmSelectorModal();
+
+        // Assert
+        Assert.IsNotNull(testModal);
+        Assert.AreEqual(ExploreV2MenuComponentView.REALM_SELECTOR_MODAL_ID, testModal.gameObject.name);
+    }
 }

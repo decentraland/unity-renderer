@@ -38,9 +38,10 @@ public class PortableExperienceTaskbarItem : MonoBehaviour
         button.Initialize();
         contextMenu.ConfigureMenu(portableExperienceId, portableExperienceName, taskbarController);
 
+        icon.color = Color.clear;
+
         if (!string.IsNullOrEmpty(portableExperienceIconUrl))
         {
-            icon.enabled = false;
             loading.SetActive(true);
             ThumbnailsManager.GetThumbnail(portableExperienceIconUrl, OnIconReady);
         }
@@ -51,7 +52,7 @@ public class PortableExperienceTaskbarItem : MonoBehaviour
         if (iconAsset != null)
         {
             icon.sprite = ThumbnailsManager.CreateSpriteFromTexture(iconAsset.texture);
-            icon.enabled = true;
+            icon.color = Color.white;
             loading.SetActive(false);
         }
     }

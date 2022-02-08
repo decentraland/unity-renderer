@@ -7,7 +7,6 @@ namespace DCL.SettingsCommon
     {
         private const string DISPLAY_NAME = "displayName";
         private const string BLOOM = "bloom";
-        private const string COLOR_GRADING = "colorGrading";
         private const string FPS_CAP = "fpsCap";
         private const string SOFT_SHADOWS = "softShadows";
         private const string ENABLE_DETAIL_OBJECT_CULLING = "enableDetailObjectCulling";
@@ -54,7 +53,6 @@ namespace DCL.SettingsCommon
         {
             settingsByKey.SetString(DISPLAY_NAME, currentSettings.displayName);
             settingsByKey.SetBool(BLOOM, currentSettings.bloom);
-            settingsByKey.SetBool(COLOR_GRADING, currentSettings.colorGrading);
             settingsByKey.SetBool(FPS_CAP, currentSettings.fpsCap);
             settingsByKey.SetBool(SOFT_SHADOWS, currentSettings.softShadows);
             settingsByKey.SetBool(ENABLE_DETAIL_OBJECT_CULLING, currentSettings.enableDetailObjectCulling);
@@ -81,7 +79,6 @@ namespace DCL.SettingsCommon
             {
                 settings.displayName = settingsByKey.GetString(DISPLAY_NAME, defaultSettings.displayName);
                 settings.bloom = settingsByKey.GetBool(BLOOM, defaultSettings.bloom);
-                settings.colorGrading = settingsByKey.GetBool(COLOR_GRADING, defaultSettings.colorGrading);
                 settings.fpsCap = settingsByKey.GetBool(FPS_CAP, defaultSettings.fpsCap);
                 settings.softShadows = settingsByKey.GetBool(SOFT_SHADOWS, defaultSettings.softShadows);
                 settings.enableDetailObjectCulling = settingsByKey.GetBool(ENABLE_DETAIL_OBJECT_CULLING, defaultSettings.enableDetailObjectCulling);

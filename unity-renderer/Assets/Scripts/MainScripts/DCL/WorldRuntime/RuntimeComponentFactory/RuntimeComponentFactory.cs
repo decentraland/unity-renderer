@@ -17,7 +17,10 @@ namespace DCL
 
         public IPoolableComponentFactory poolableComponentFactory { get; private set; }
 
-        public void Initialize() { CoroutineStarter.Start(InitializeCoroutine()); }
+        public void Initialize()
+        {
+            CoroutineStarter.Start(InitializeCoroutine());
+        }
 
         IEnumerator InitializeCoroutine()
         {
@@ -51,6 +54,7 @@ namespace DCL
             builders.Add((int) CLASS_ID.BASIC_MATERIAL, BuildComponent<BasicMaterial>);
             builders.Add((int) CLASS_ID.PBR_MATERIAL, BuildComponent<PBRMaterial>);
             builders.Add((int) CLASS_ID.TEXTURE, BuildComponent<DCLTexture>);
+            builders.Add((int) CLASS_ID.AVATAR_TEXTURE, BuildComponent<DCLAvatarTexture>);
 
             // Audio
             builders.Add((int) CLASS_ID.AUDIO_CLIP, BuildComponent<DCLAudioClip>);
@@ -81,6 +85,8 @@ namespace DCL
             builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_UP, BuildUUIDComponent<OnPointerUp>);
             builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_DOWN, BuildUUIDComponent<OnPointerDown>);
             builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_CLICK, BuildUUIDComponent<OnClick>);
+            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER, BuildUUIDComponent<OnPointerHoverEnter>);
+            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT, BuildUUIDComponent<OnPointerHoverExit>);
 
             // Others
             builders.Add((int) CLASS_ID_COMPONENT.AVATAR_SHAPE, BuildPoolableComponent);
@@ -88,6 +94,9 @@ namespace DCL
             builders.Add((int) CLASS_ID_COMPONENT.GIZMOS, BuildPoolableComponent);
             builders.Add((int) CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA, BuildPoolableComponent);
             builders.Add((int) CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION, BuildPoolableComponent);
+            builders.Add((int) CLASS_ID_COMPONENT.CAMERA_MODE_AREA, BuildComponent<CameraModeArea>);
+
+            CoroutineStarter.Start(InitializeCoroutine());
         }
 
         private IComponent BuildPoolableComponent(int classId) { return poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT) classId); }
@@ -117,6 +126,10 @@ namespace DCL
             IComponent newComponent = builders[classId](classId);
 
             return newComponent;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

@@ -10,7 +10,6 @@ namespace DCL
     {
         [Header("References")]
         [SerializeField] Button closeButton;
-        [SerializeField] InputAction_Trigger closeAction;
         [SerializeField] internal ScrollRect scrollRect;
         [SerializeField] Transform scrollRectContentTransform;
         [SerializeField] internal TextMeshProUGUI currentSceneNameText;
@@ -43,16 +42,14 @@ namespace DCL
                     return;
 
                 MapRenderer.i.atlas.UpdateCulling();
-                toastView.OnCloseClick();
+                CloseToast();
             });
 
             toastView.OnGotoClicked += () => navmapVisible.Set(false);
 
             MapRenderer.OnParcelClicked += TriggerToast;
-            MapRenderer.OnParcelHold += TriggerToast;
-            MapRenderer.OnParcelHoldCancel += () => { toastView.OnCloseClick(); };
+            MapRenderer.OnCursorFarFromParcel += CloseToast;
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
-            closeAction.OnTriggered += OnCloseAction;
             navmapVisible.OnChange += OnNavmapVisibleChanged;
 
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
@@ -73,10 +70,9 @@ namespace DCL
         private void OnDestroy()
         {
             MapRenderer.OnParcelClicked -= TriggerToast;
-            MapRenderer.OnParcelHold -= TriggerToast;
+            MapRenderer.OnCursorFarFromParcel -= CloseToast;
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             navmapVisible.OnChange -= OnNavmapVisibleChanged;
-            closeAction.OnTriggered += OnCloseAction;
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
         }
 
@@ -149,7 +145,10 @@ namespace DCL
             }
             else
             {
-                toastView.OnCloseClick();
+                if (minimapViewport == null)
+                    return;
+
+                CloseToast();
 
                 MapRenderer.i.atlas.viewport = minimapViewport;
                 MapRenderer.i.transform.SetParent(mapRendererMinimapParent);
@@ -169,7 +168,6 @@ namespace DCL
             OnToggle?.Invoke(visible);
         }
 
-        private void OnCloseAction(DCLAction_Trigger action) { navmapVisible.Set(false); }
         void UpdateCurrentSceneData(Vector2Int current, Vector2Int previous)
         {
             const string format = "{0},{1}";
@@ -179,12 +177,16 @@ namespace DCL
 
         void TriggerToast(int cursorTileX, int cursorTileY)
         {
+            if(toastView.isOpen)
+                CloseToast();
             var sceneInfo = mapMetadata.GetSceneInfo(cursorTileX, cursorTileY);
             if (sceneInfo == null)
                 WebInterface.RequestScenesInfoAroundParcel(new Vector2(cursorTileX, cursorTileY), 15);
 
             toastView.Populate(new Vector2Int(cursorTileX, cursorTileY), sceneInfo);
         }
+
+        private void CloseToast() { toastView.OnCloseClick(); }
 
         public void SetExitButtonActive(bool isActive) { closeButton.gameObject.SetActive(isActive); }
 

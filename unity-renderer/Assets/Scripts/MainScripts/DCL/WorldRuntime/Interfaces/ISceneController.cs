@@ -4,15 +4,12 @@ using DCL.Models;
 
 namespace DCL
 {
-    public interface ISceneController : IMessageProcessHandler, IMessageQueueHandler
+    public interface ISceneController : IMessageProcessHandler, IMessageQueueHandler, IService
     {
         bool enabled { get; set; }
         bool deferredMessagesDecoding { get; set; }
         bool prewarmSceneMessagesPool { get; set; }
         bool prewarmEntitiesPool { get; set; }
-        void Initialize();
-        void Start();
-        void Dispose();
         void Update();
         void LateUpdate();
         void ParseQuery(object payload, string sceneId);

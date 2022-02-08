@@ -8,17 +8,24 @@ using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class BIWCatalogShould
+public class BIWCatalogShould : IntegrationTestSuite_Legacy
 {
     private AssetCatalogBridge assetCatalogBridge;
 
     [UnitySetUp]
-    protected IEnumerator SetUp()
+    protected override IEnumerator SetUp()
     {
+        yield return base.SetUp();
         BIWCatalogManager.Init();
         assetCatalogBridge = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
         yield return null;
     }
+
+    protected override ServiceLocator InitializeServiceLocator()
+    {
+        return DCL.ServiceLocatorTestFactory.CreateMocked();
+    }
+
 
     [Test]
     public void BuilderInWorldSearch()

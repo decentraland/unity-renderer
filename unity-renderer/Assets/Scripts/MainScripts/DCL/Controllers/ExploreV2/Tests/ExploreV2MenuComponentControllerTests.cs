@@ -48,7 +48,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.placesAndEventsSectionController = null;
 
         // Act
-        exploreV2MenuController.CreateControllers();
+        exploreV2MenuController.InitializePlacesAndEventsSection();
 
         // Assert
         Assert.IsNotNull(exploreV2MenuController.placesAndEventsSectionController);
@@ -327,11 +327,10 @@ public class ExploreV2MenuComponentControllerTests
     {
         // Arrange
         string testRealmName = "TestName";
-        string testRealmLayer = "TestLayer";
         DataStore.i.realm.playerRealm.Set(new CurrentRealmModel
         {
             serverName = testRealmName,
-            layer = testRealmLayer
+            layer = null
         });
 
         List<RealmModel> testRealmList = new List<RealmModel>();
@@ -339,7 +338,7 @@ public class ExploreV2MenuComponentControllerTests
         testRealmList.Add(new RealmModel
         {
             serverName = testRealmName,
-            layer = testRealmLayer,
+            layer = null,
             usersCount = testUsersCount
         });
         DataStore.i.realm.realmsInfo.Set(testRealmList.ToArray());
@@ -347,9 +346,41 @@ public class ExploreV2MenuComponentControllerTests
         // Act
         exploreV2MenuController.UpdateRealmInfo(DataStore.i.realm.playerRealm.Get(), null);
 
-        //Assert
-        exploreV2MenuView.currentRealmViewer.Received().SetRealm($"{testRealmName}-{testRealmLayer}");
+        // Assert
+        exploreV2MenuView.currentRealmViewer.Received().SetRealm(testRealmName);
+        exploreV2MenuView.currentRealmSelectorModal.Received().SetCurrentRealm(testRealmName);
         exploreV2MenuView.currentRealmViewer.Received().SetNumberOfUsers(testUsersCount);
+    }
+
+    [Test]
+    public void UpdateAvailableRealmsInfoCorrectly()
+    {
+        // Arrange
+        RealmModel[] testRealms = 
+        { 
+            new RealmModel
+            {
+                serverName = "TestRealm1",
+                usersCount = 10
+            },
+            new RealmModel
+            {
+                serverName = "TestRealm2",
+                usersCount = 20
+            },
+            new RealmModel
+            {
+                serverName = "TestRealm3",
+                usersCount = 30
+            }
+        };
+
+        // Act
+        exploreV2MenuController.UpdateAvailableRealmsInfo(testRealms);
+
+        // Assert
+        Assert.AreEqual(3, exploreV2MenuController.currentAvailableRealms.Count);
+        exploreV2MenuView.currentRealmSelectorModal.Received().SetAvailableRealms(exploreV2MenuController.currentAvailableRealms);
     }
 
     [Test]
@@ -362,6 +393,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.UpdateProfileInfo(testUserProfile);
 
         //Assert
+        exploreV2MenuView.currentProfileCard.Received().SetIsClaimedName(testUserProfile.hasClaimedName);
         exploreV2MenuView.currentProfileCard.Received().SetProfileName(testUserProfile.userName);
         exploreV2MenuView.currentProfileCard.Received().SetProfileAddress(testUserProfile.ethAddress);
         exploreV2MenuView.currentProfileCard.Received().SetProfilePicture(testUserProfile.face128SnapshotURL);
@@ -374,6 +406,7 @@ public class ExploreV2MenuComponentControllerTests
     {
         // Arrange
         exploreV2MenuController.isOpen.Set(true);
+        DataStore.i.exploreV2.isSomeModalOpen.Set(false);
 
         // Act
         exploreV2MenuController.OnCloseButtonPressed(fromShortcut);

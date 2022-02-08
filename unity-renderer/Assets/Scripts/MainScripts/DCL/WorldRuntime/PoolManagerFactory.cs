@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace DCL
 {
@@ -12,7 +12,7 @@ namespace DCL
                 return;
 
             GameObject go = new GameObject();
-            Pool pool = PoolManager.i.AddPool(EMPTY_GO_POOL_NAME, go, maxPrewarmCount: 2000, isPersistent: true);
+            Pool pool = PoolManager.i.AddPool(EMPTY_GO_POOL_NAME, go, maxPrewarmCount: 1000, isPersistent: true);
 
             if (prewarm)
                 pool.ForcePrewarm();

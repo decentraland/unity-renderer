@@ -54,10 +54,22 @@ public class ShortcutsController : IDisposable
     }
 
     private void ToggleControlsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.controlsVisible.Set(!DataStore.i.HUDs.controlsVisible.Get()); }
-    private void ToggleAvatarEditorTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.avatarEditorVisible.Set(!DataStore.i.HUDs.avatarEditorVisible.Get()); }
+    
+    private void ToggleAvatarEditorTriggered(DCLAction_Trigger action) 
+    {
+        if (!DataStore.i.HUDs.isAvatarEditorInitialized.Get())
+            return;
+
+        DataStore.i.HUDs.avatarEditorVisible.Set(!DataStore.i.HUDs.avatarEditorVisible.Get()); 
+    }
+
     private void ToggleAvatarNamesTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.avatarNamesVisible.Set(!DataStore.i.HUDs.avatarNamesVisible.Get()); }
+
     private void ToggleQuestPanel(DCLAction_Trigger action)
     {
+        if (!DataStore.i.Quests.isInitialized.Get())
+            return;
+
         bool value = !DataStore.i.HUDs.questsPanelVisible.Get();
         SendQuestToggledAnalytic(value);
         DataStore.i.HUDs.questsPanelVisible.Set(value);
@@ -80,8 +92,22 @@ public class ShortcutsController : IDisposable
     }
 
     private void ToggleExpressionsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.emotesVisible.Set(!DataStore.i.HUDs.emotesVisible.Get()); }
-    private void ToggleNavMapTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.navmapVisible.Set(!DataStore.i.HUDs.navmapVisible.Get()); }
-    private void TogglePlacesAndEventsTriggered(DCLAction_Trigger action) { DataStore.i.exploreV2.placesAndEventsVisible.Set(!DataStore.i.exploreV2.placesAndEventsVisible.Get()); }
+    
+    private void ToggleNavMapTriggered(DCLAction_Trigger action) 
+    {
+        if (!DataStore.i.HUDs.isNavMapInitialized.Get())
+            return;
+
+        DataStore.i.HUDs.navmapVisible.Set(!DataStore.i.HUDs.navmapVisible.Get()); 
+    }
+
+    private void TogglePlacesAndEventsTriggered(DCLAction_Trigger action)
+    {
+        if (!DataStore.i.exploreV2.isPlacesAndEventsSectionInitialized.Get())
+            return;
+
+        DataStore.i.exploreV2.placesAndEventsVisible.Set(!DataStore.i.exploreV2.placesAndEventsVisible.Get());
+    }
 
     public void Dispose() { Unsubscribe(); }
 

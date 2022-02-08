@@ -249,6 +249,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         creatorController.OnCatalogItemPlaced -= OnAssetSpawn;
         entityHandler.OnDeleteSelectedEntities -= OnAssetDelete;
         modeController.OnChangedEditModeState -= OnChangedEditModeState;
+
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= OnEntityBoundsCheckerStatusChanged;
 
         if (DCL.Tutorial.TutorialController.i != null)

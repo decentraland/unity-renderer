@@ -237,7 +237,7 @@ namespace Tests.BuildModeHUDControllers
             sceneCatalogController.OpenCatalog();
 
             // Assert
-            Assert.IsFalse(Utils.isCursorLocked, "The cursor is locked!");
+            Assert.IsFalse(Utils.IsCursorLocked, "The cursor is locked!");
             sceneCatalogController.sceneCatalogView.Received(1).SetActive(true);
         }
 

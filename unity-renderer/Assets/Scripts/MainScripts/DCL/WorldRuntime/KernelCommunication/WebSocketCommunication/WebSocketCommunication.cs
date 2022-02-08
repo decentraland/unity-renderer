@@ -24,42 +24,65 @@ public class WebSocketCommunication : IKernelCommunication
 
     public bool isServerReady => ws.IsListening;
 
-    private string StartServer(int port, int maxPort)
+    private string StartServer(int port, int maxPort, bool withSSL)
     {
         if (port > maxPort)
         {
             throw new SocketException((int)SocketError.AddressAlreadyInUse);
         }
-        string wssServerUrl = $"ws://localhost:{port}/";
+        string wssServerUrl;
         string wssServiceId = "dcl";
-        string wssUrl = wssServerUrl + wssServiceId;
         try
         {
-            ws = new WebSocketServer(wssServerUrl);
+            if (withSSL)
+            {
+                wssServerUrl = $"wss://localhost:{port}/";
+                ws = new WebSocketServer(wssServerUrl)
+                {
+                    SslConfiguration =
+                    {
+                        ServerCertificate = CertificateUtils.CreateSelfSignedCert(),
+                        ClientCertificateRequired = false,
+                        CheckCertificateRevocation = false,
+                        ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                    },
+                    KeepClean = false
+                };
+            }
+            else
+            {
+                wssServerUrl = $"ws://localhost:{port}/";
+                ws = new WebSocketServer(wssServerUrl);
+            }
+
             ws.AddWebSocketService<DCLWebSocketService>("/" + wssServiceId);
             ws.Start();
         }
         catch (InvalidOperationException e)
         {
             ws.Stop();
-            SocketException se = (SocketException)e.InnerException;
-            if (se is { SocketErrorCode: SocketError.AddressAlreadyInUse })
+            if (withSSL) // Search for available ports only if we're using SSL
             {
-                return StartServer(port + 1, maxPort);
+                SocketException se = (SocketException)e.InnerException;
+                if (se is { SocketErrorCode: SocketError.AddressAlreadyInUse })
+                {
+                    return StartServer(port + 1, maxPort, withSSL);
+                }
             }
             throw new InvalidOperationException(e.Message, e.InnerException);
         }
 
+        string wssUrl = wssServerUrl + wssServiceId;
         return wssUrl;
     }
 
-    public WebSocketCommunication()
+    public WebSocketCommunication(bool withSSL = false, int startPort = 5000, int endPort = 5100)
     {
         InitMessageTypeToBridgeName();
 
         DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
-        string url = StartServer(5000, 5100);
+        string url = StartServer(startPort, endPort, withSSL);
 
         Debug.Log("WebSocket Server URL: " + url);
 
@@ -119,6 +142,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["StopBotsMovement"] = "Main";
         messageTypeToBridgeName["RemoveBot"] = "Main";
         messageTypeToBridgeName["ClearBots"] = "Main";
+        messageTypeToBridgeName["ToggleSceneBoundingBoxes"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 

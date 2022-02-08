@@ -7,12 +7,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Configuration;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace DCL.Helpers
 {
@@ -117,8 +119,8 @@ namespace DCL.Helpers
                 CoroutineStarter.Start(ForceUpdateLayoutRoutine(rt));
             else
             {
-                Utils.InverseTransformChildTraversal<RectTransform>(
-                    (x) => { Utils.ForceRebuildLayoutImmediate(x); },
+                InverseTransformChildTraversal<RectTransform>(
+                    (x) => { ForceRebuildLayoutImmediate(x); },
                     rt);
             }
         }
@@ -155,8 +157,8 @@ namespace DCL.Helpers
         {
             yield return null;
 
-            Utils.InverseTransformChildTraversal<RectTransform>(
-                (x) => { Utils.ForceRebuildLayoutImmediate(x); },
+            InverseTransformChildTraversal<RectTransform>(
+                (x) => { ForceRebuildLayoutImmediate(x); },
                 rt);
         }
 
@@ -198,7 +200,7 @@ namespace DCL.Helpers
             }
         }
 
-        public static T GetOrCreateComponent<T>(this GameObject gameObject) where T : UnityEngine.Component
+        public static T GetOrCreateComponent<T>(this GameObject gameObject) where T : Component
         {
             T component = gameObject.GetComponent<T>();
 
@@ -215,7 +217,7 @@ namespace DCL.Helpers
             //NOTE(Brian): This closure is called when the download is a success.
             void SuccessInternal(IWebRequestAsyncOperation request) { OnSuccess?.Invoke(DownloadHandlerTexture.GetContent(request.webRequest)); }
 
-            var asyncOp = DCL.Environment.i.platform.webRequest.GetTexture(
+            var asyncOp = Environment.i.platform.webRequest.GetTexture(
                 url: textureURL,
                 OnSuccess: SuccessInternal,
                 OnFail: OnFail,
@@ -230,7 +232,7 @@ namespace DCL.Helpers
             {
                 JsonUtility.FromJsonOverwrite(json, objectToOverwrite);
             }
-            catch (System.ArgumentException e)
+            catch (ArgumentException e)
             {
                 Debug.LogError("ArgumentException Fail!... Json = " + json + " " + e.ToString());
                 return false;
@@ -239,7 +241,7 @@ namespace DCL.Helpers
             return true;
         }
 
-        public static T FromJsonWithNulls<T>(string json) { return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json); }
+        public static T FromJsonWithNulls<T>(string json) { return JsonConvert.DeserializeObject<T>(json); }
 
         public static T SafeFromJson<T>(string json)
         {
@@ -253,7 +255,7 @@ namespace DCL.Helpers
                 {
                     returningValue = JsonUtility.FromJson<T>(json);
                 }
-                catch (System.ArgumentException e)
+                catch (ArgumentException e)
                 {
                     Debug.LogError("ArgumentException Fail!... Json = " + json + " " + e.ToString());
                 }
@@ -264,7 +266,7 @@ namespace DCL.Helpers
             return returningValue;
         }
 
-        public static GameObject AttachPlaceholderRendererGameObject(UnityEngine.Transform targetTransform)
+        public static GameObject AttachPlaceholderRendererGameObject(Transform targetTransform)
         {
             var placeholderRenderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<MeshRenderer>();
 
@@ -276,16 +278,16 @@ namespace DCL.Helpers
             return placeholderRenderer.gameObject;
         }
 
-        public static void SafeDestroy(UnityEngine.Object obj)
+        public static void SafeDestroy(Object obj)
         {
             if (obj is Transform)
                 return;
             
 #if UNITY_EDITOR
             if (Application.isPlaying)
-                UnityEngine.Object.Destroy(obj);
+                Object.Destroy(obj);
             else
-                UnityEngine.Object.DestroyImmediate(obj, false);
+                Object.DestroyImmediate(obj, false);
 #else
                 UnityEngine.Object.Destroy(obj);
 #endif
@@ -345,34 +347,40 @@ namespace DCL.Helpers
             public static T GetFromJsonArray(string jsonArray)
             {
                 string newJson = $"{{ \"value\": {jsonArray}}}";
-                return JsonUtility.FromJson<Utils.DummyJsonUtilityFromArray<T>>(newJson).value;
+                return JsonUtility.FromJson<DummyJsonUtilityFromArray<T>>(newJson).value;
             }
         }
 
         private static int lockedInFrame = -1;
         public static bool LockedThisFrame() => lockedInFrame == Time.frameCount;
 
+        private static bool isCursorLocked;
         //NOTE(Brian): Made as an independent flag because the CI doesn't work well with the Cursor.lockState check.
-        public static bool isCursorLocked { get; private set; } = false;
+        public static bool IsCursorLocked
+        {
+            get => isCursorLocked;
+            private set
+            {
+                if (isCursorLocked == value) return;
+                isCursorLocked = value;
+                OnCursorLockChanged?.Invoke(isCursorLocked);
+            }
+        }
+
+        public static event Action<bool> OnCursorLockChanged; 
 
         public static void LockCursor()
         {
 #if WEB_PLATFORM
             //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
             //             behaviour using strategy pattern instead of this.
-            if (isCursorLocked)
+            if (IsCursorLocked)
             {
                 return;
             }
-            if (requestedUnlock || requestedLock)
-            {
-                return;
-            }
-            requestedLock = true;
-#else
-            isCursorLocked = true;
-            Cursor.visible = false;
 #endif
+            Cursor.visible = false;
+            IsCursorLocked = true;
             Cursor.lockState = CursorLockMode.Locked;
             lockedInFrame = Time.frameCount;
 
@@ -384,19 +392,13 @@ namespace DCL.Helpers
 #if WEB_PLATFORM
             //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
             //             behaviour using strategy pattern instead of this.
-            if (!isCursorLocked)
+            if (!IsCursorLocked)
             {
                 return;
             }
-            if (requestedUnlock || requestedLock)
-            {
-                return;
-            }
-            requestedUnlock = true;
-#else
-            isCursorLocked = false;
-            Cursor.visible = true;
 #endif
+            Cursor.visible = true;
+            IsCursorLocked = false;
             Cursor.lockState = CursorLockMode.None;
 
             EventSystem.current?.SetSelectedGameObject(null);
@@ -406,21 +408,13 @@ namespace DCL.Helpers
 
         //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
         //             behaviour using strategy pattern instead of this.
-        private static bool requestedUnlock = false;
-        private static bool requestedLock = false;
-
         // NOTE: This should come from browser's pointerlockchange callback
         public static void BrowserSetCursorState(bool locked)
         {
-            if (!locked && !requestedUnlock)
-            {
-                Cursor.lockState = CursorLockMode.None;
-            }
-
-            isCursorLocked = locked;
+            Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
+            
+            IsCursorLocked = locked;
             Cursor.visible = !locked;
-            requestedUnlock = false;
-            requestedLock = false;
         }
 
         #endregion
@@ -429,7 +423,7 @@ namespace DCL.Helpers
         {
             foreach (Transform child in transform)
             {
-                UnityEngine.Object.Destroy(child.gameObject);
+                Object.Destroy(child.gameObject);
             }
         }
 
@@ -530,5 +524,32 @@ namespace DCL.Helpers
         /// <param name="volume">Linear volume (0 to 1)</param>
         /// <returns>Value for audio mixer group volume</returns>
         public static float ToAudioMixerGroupVolume(float volume) { return (ToVolumeCurve(volume) * 80f) - 80f; }
+        
+        public static IEnumerator Wait(float delay, Action onFinishCallback)
+        {
+            yield return new WaitForSeconds(delay);
+            onFinishCallback.Invoke();
+        }
+
+        public static string GetHierarchyPath(this Transform transform)
+        {
+            if (transform.parent == null)
+                return transform.name;
+            return $"{transform.parent.GetHierarchyPath()}/{transform.name}";
+        }
+
+        public static bool TryFindChildRecursively(this Transform transform, string name, out Transform foundChild)
+        {
+            foundChild = transform.Find(name);
+            if (foundChild != null)
+                return true;
+
+            foreach (Transform child in transform)
+            {
+                if (TryFindChildRecursively(child, name, out foundChild))
+                    return true;
+            }
+            return false;
+        }
     }
 }

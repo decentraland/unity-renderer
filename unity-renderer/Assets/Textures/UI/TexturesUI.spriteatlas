@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2263191
+    totalSpriteSurfaceArea: 2527792
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -93,6 +93,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a26c049177d1b423cbf29f2f44dd73c2, type: 3}
   - {fileID: 21300000, guid: db7198b10e7b549a68d088ccdf7377cf, type: 3}
   - {fileID: 21300000, guid: a6b6c8b1877c9c7498c971402965bdc0, type: 3}
+  - {fileID: 21300000, guid: 25cfbec1e937f574abd4894b73b3ad4f, type: 3}
   - {fileID: 21300000, guid: 094ba0d1e5a654e69b2896b2e8b7393e, type: 3}
   - {fileID: 21300000, guid: e5f450e18a0554063b4f01e5da2e1885, type: 3}
   - {fileID: 21300000, guid: 0699c2e18ea2d4e91819b548fbe61f1a, type: 3}
@@ -187,6 +188,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f00094572a9874a0e92b4d347ce91bba, type: 3}
   - {fileID: 21300000, guid: 243dd557f2b614bc5ba2599f40d20448, type: 3}
   - {fileID: 21300000, guid: 7b4468575e3ab49e1aec3edd88298137, type: 3}
+  - {fileID: 21300000, guid: 87a25a674771b42209ef0ae9b6b6bce7, type: 3}
   - {fileID: 21300000, guid: f5f102872b9fb41c6a606b3f038538aa, type: 3}
   - {fileID: 21300000, guid: 058e0097872914023991446b014562ef, type: 3}
   - {fileID: 21300000, guid: b2755fa77563aad42bfdaa03c0e54746, type: 3}
@@ -277,6 +279,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: cea1ac0c0c969478ea2054b9a06f7c86, type: 3}
   - {fileID: 21300000, guid: 90be4f1cf715b4378954ea0510aeb9ba, type: 3}
   - {fileID: 21300000, guid: 9879272c733ec44189c11c901f5b3500, type: 3}
+  - {fileID: 21300000, guid: 4954043cce4126343ae4a4459625cb4a, type: 3}
   - {fileID: 21300000, guid: 794d4e3c645a24df9a6a20eeb079a67d, type: 3}
   - {fileID: 21300000, guid: 76f0904c525d34fb19418122b6e13768, type: 3}
   - {fileID: 21300000, guid: 850b544ce13ea4b4cba1f449693f1f07, type: 3}
@@ -311,6 +314,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 24dc203e4e3c4422c92496e4ea5fb524, type: 3}
   - {fileID: 21300000, guid: ffc3be3e8ae37400bb01f74051bbc912, type: 3}
   - {fileID: 21300000, guid: 8141c84e8680a488d8dd05453596b0cc, type: 3}
+  - {fileID: 21300000, guid: 2c936c4ed0d0fad44ade3455d950ebb4, type: 3}
   - {fileID: 21300000, guid: 590e1b5ec5d7e45379b7d1f4f3f4e1af, type: 3}
   - {fileID: 21300000, guid: 9542616ed37ec4213b07f1127bd8d938, type: 3}
   - {fileID: 21300000, guid: b01bb67eac45b4ce4b289efdfb7c1847, type: 3}
@@ -333,6 +337,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 80e8a7bf545776a4da55bccd80ec6fc0, type: 3}
   - {fileID: 21300000, guid: 54cbe9bf5928342d490167f954f07710, type: 3}
   - {fileID: 21300000, guid: 394362cf579a347f0b72a304db178ccb, type: 3}
+  - {fileID: 21300000, guid: 64036ccffced12d48a00a842b7c6f3e8, type: 3}
   - {fileID: 21300000, guid: 851b72df6e5bd4b91a42eb20ae6323f0, type: 3}
   - {fileID: 21300000, guid: 780ed9eff07384ade9aaa318dbbe63b7, type: 3}
   m_PackedSpriteNamesToIndex:
@@ -367,6 +372,7 @@ SpriteAtlas:
   - BlockedUser
   - ManaIcon
   - RectangleGreen
+  - WarpIcon
   - NFTUniqueFrame
   - CancelButton
   - EllipseOutline2Gradient
@@ -461,6 +467,7 @@ SpriteAtlas:
   - QuestIcon
   - Switch32
   - ContainerRadius11Shadow
+  - CameraIconSmall
   - BuilderIcon
   - VoiceChatDisable
   - RoundedContainer23
@@ -551,6 +558,7 @@ SpriteAtlas:
   - OutlineRedButton
   - ManaContainer
   - ArrowDown
+  - CurrentRealmContainer
   - InfoIcon
   - MarketplaceOff
   - Shadow4
@@ -585,6 +593,7 @@ SpriteAtlas:
   - ContainerRectBottom
   - CardBlockIcon
   - Button10
+  - RealmsHeader
   - BottomRect12
   - ContainerRectTop
   - Button6
@@ -607,6 +616,7 @@ SpriteAtlas:
   - InputNormal
   - Container24
   - Checkmark
+  - RealmsIcon
   - CloseButton
   - OutlineGreyButton
   m_RenderDataMap: {}

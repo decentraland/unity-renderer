@@ -6,7 +6,7 @@ namespace DCL
 {
     public class UserBenchmarkToggler : MonoBehaviour
     {
-        const string SHORTCUT_TEXT = "[Y] Debug Panel [P] Settings [I] Backpack";
+        const string SHORTCUT_TEXT = "[Y] Debug Panel";
 
         public UserBenchmarkController userBenchmarkController;
         Text text;

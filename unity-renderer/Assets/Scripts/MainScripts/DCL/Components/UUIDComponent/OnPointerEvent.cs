@@ -9,7 +9,7 @@ using Ray = UnityEngine.Ray;
 
 namespace DCL.Components
 {
-    public enum PointerEventType
+    public enum PointerInputEventType
     {
         NONE,
         CLICK,
@@ -19,13 +19,18 @@ namespace DCL.Components
 
     public interface IPointerEvent : IMonoBehaviour
     {
-        void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit);
-        PointerEventType GetEventType();
         IDCLEntity entity { get; }
-        WebInterface.ACTION_BUTTON GetActionButton();
         void SetHoverState(bool state);
         bool IsAtHoverDistance(float distance);
         bool IsVisible();
+    }
+
+    public interface IPointerInputEvent : IPointerEvent
+    {
+        void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit);
+        PointerInputEventType GetEventType();
+        WebInterface.ACTION_BUTTON GetActionButton();
+        bool ShouldShowHoverFeedback();
     }
 
     public class OnPointerEventHandler : IDisposable
@@ -72,7 +77,7 @@ namespace DCL.Components
         public void Dispose() { eventColliders.Dispose(); }
     }
 
-    public class OnPointerEvent : UUIDComponent, IPointerEvent
+    public class OnPointerEvent : UUIDComponent, IPointerInputEvent
     {
         public static bool enableInteractionHoverFeedback = true;
 
@@ -157,6 +162,12 @@ namespace DCL.Components
             return null;
         }
 
+        public bool ShouldShowHoverFeedback()
+        {
+            Model model = this.model as Model;
+            return model.showFeedback;
+        }
+
         void OnDestroy()
         {
             if (entity != null)
@@ -167,6 +178,6 @@ namespace DCL.Components
 
         public virtual void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit) { }
 
-        public virtual PointerEventType GetEventType() { return PointerEventType.NONE; }
+        public virtual PointerInputEventType GetEventType() { return PointerInputEventType.NONE; }
     }
 }

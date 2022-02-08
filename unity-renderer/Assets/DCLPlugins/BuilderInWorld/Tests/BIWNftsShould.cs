@@ -17,15 +17,12 @@ public class BIWNftsShould : IntegrationTestSuite
     private ParcelScene scene;
     private const string ENTITY_ID = "1";
 
-    protected override WorldRuntimeContext CreateRuntimeContext()
+    protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        return DCL.Tests.WorldRuntimeContextFactory.CreateWithCustomMocks
-        (
-            sceneController: new SceneController(),
-            state: new WorldState(),
-            componentFactory: new RuntimeComponentFactory(),
-            sceneBoundsChecker: new SceneBoundsChecker()
-        );
+        serviceLocator.Register<ISceneController>(() => new SceneController());
+        serviceLocator.Register<IWorldState>(() => new WorldState());
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
+        serviceLocator.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
     }
 
     [UnitySetUp]

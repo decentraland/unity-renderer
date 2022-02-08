@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Models;
 using Ray = UnityEngine.Ray;
 
@@ -20,7 +21,7 @@ namespace DCL
 
         InteractionHoverCanvasController hoverController;
         RaycastHitInfo lastPointerDownEventHitInfo;
-        IPointerEvent pointerUpEvent;
+        IPointerInputEvent pointerInputUpEvent;
         IRaycastHandler raycastHandler = new RaycastHandler();
 
         Camera charCamera;
@@ -28,7 +29,7 @@ namespace DCL
         GameObject lastHoveredObject = null;
         GameObject newHoveredGO = null;
 
-        IPointerEvent newHoveredEvent = null;
+        IPointerEvent newHoveredInputEvent = null;
         IPointerEvent[] lastHoveredEventList = null;
 
         RaycastHit hitInfo;
@@ -59,6 +60,9 @@ namespace DCL
             RetrieveCamera();
 
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            Utils.OnCursorLockChanged += HandleCursorLockChanges;
+            
+            HideOrShowCursor(Utils.IsCursorLocked);
         }
 
         private IRaycastPointerClickHandler clickHandler;
@@ -70,6 +74,7 @@ namespace DCL
 
             if (!CommonScriptableObjects.rendererState.Get() || charCamera == null)
                 return;
+            if (!Utils.IsCursorLocked) return;
 
             IWorldState worldState = Environment.i.world.state;
 
@@ -99,7 +104,7 @@ namespace DCL
             if (!didHit || uiIsBlocking)
             {
                 clickHandler = null;
-                UnhoverLastHoveredObject(hoverController);
+                UnhoverLastHoveredObject();
                 return;
             }
 
@@ -107,66 +112,92 @@ namespace DCL
             if (raycastHandlerTarget != null)
             {
                 ResolveGenericRaycastHandlers(raycastHandlerTarget);
-                UnhoverLastHoveredObject(hoverController);
+                UnhoverLastHoveredObject();
                 return;
             }
 
             if (CollidersManager.i.GetColliderInfo(hitInfo.collider, out ColliderInfo info))
-                newHoveredEvent = info.entity.gameObject.GetComponentInChildren<IPointerEvent>();
+                newHoveredInputEvent = info.entity.gameObject.GetComponentInChildren<IPointerEvent>();
             else
-                newHoveredEvent = hitInfo.collider.GetComponentInChildren<IPointerEvent>();
+                newHoveredInputEvent = hitInfo.collider.GetComponentInChildren<IPointerEvent>();
 
             clickHandler = null;
 
             if (!EventObjectCanBeHovered(info, hitInfo.distance))
             {
-                UnhoverLastHoveredObject(hoverController);
+                UnhoverLastHoveredObject();
                 return;
             }
 
-            newHoveredGO = newHoveredEvent.GetTransform().gameObject;
+            newHoveredGO = newHoveredInputEvent.GetTransform().gameObject;
 
             if (newHoveredGO != lastHoveredObject)
             {
-                UnhoverLastHoveredObject(hoverController);
+                UnhoverLastHoveredObject();
 
                 lastHoveredObject = newHoveredGO;
-                lastHoveredEventList = newHoveredGO.GetComponents<IPointerEvent>();
+
+                lastHoveredEventList = newHoveredInputEvent.entity.gameObject.transform.Cast<Transform>()
+                                                           .Select(child => child.GetComponent<IPointerEvent>())
+                                                           .Where(pointerComponent => pointerComponent != null)
+                                                           .ToArray();
+
+                // NOTE: this case is for the Avatar, since it hierarchy differs from other ECS components
+                if (lastHoveredEventList?.Length == 0)
+                {
+                    lastHoveredEventList = newHoveredGO.GetComponents<IPointerEvent>();
+                }
+                
                 OnPointerHoverStarts?.Invoke();
             }
 
             // OnPointerDown/OnClick and OnPointerUp should display their hover feedback at different moments
             if (lastHoveredEventList != null && lastHoveredEventList.Length > 0)
             {
+                bool isEntityShowingHoverFeedback = false;
+                
                 for (int i = 0; i < lastHoveredEventList.Length; i++)
                 {
-                    IPointerEvent e = lastHoveredEventList[i];
+                    if (lastHoveredEventList[i] is IPointerInputEvent e)
+                    {
+                        bool eventButtonIsPressed = InputController_Legacy.i.IsPressed(e.GetActionButton());
 
-                    bool eventButtonIsPressed = InputController_Legacy.i.IsPressed(e.GetActionButton());
+                        bool isClick = e.GetEventType() == PointerInputEventType.CLICK;
+                        bool isDown = e.GetEventType() == PointerInputEventType.DOWN;
+                        bool isUp = e.GetEventType() == PointerInputEventType.UP;
 
-                    bool isClick = e.GetEventType() == PointerEventType.CLICK;
-                    bool isDown = e.GetEventType() == PointerEventType.DOWN;
-                    bool isUp = e.GetEventType() == PointerEventType.UP;
-
-                    if (isUp && eventButtonIsPressed)
-                        e.SetHoverState(true);
-                    else if ((isDown || isClick) && !eventButtonIsPressed)
-                        e.SetHoverState(true);
+                        if (isUp && eventButtonIsPressed)
+                        {
+                            e.SetHoverState(true);
+                            isEntityShowingHoverFeedback = isEntityShowingHoverFeedback || e.ShouldShowHoverFeedback();
+                        }
+                        else if ((isDown || isClick) && !eventButtonIsPressed)
+                        {
+                            e.SetHoverState(true);
+                            isEntityShowingHoverFeedback = isEntityShowingHoverFeedback || e.ShouldShowHoverFeedback();
+                        }
+                        else if (!isEntityShowingHoverFeedback)
+                        {
+                            e.SetHoverState(false);
+                        }
+                    }
                     else
-                        e.SetHoverState(false);
+                    {
+                        lastHoveredEventList[i].SetHoverState(true);
+                    }
                 }
             }
 
             newHoveredGO = null;
-            newHoveredEvent = null;
+            newHoveredInputEvent = null;
         }
 
         private bool EventObjectCanBeHovered(ColliderInfo colliderInfo, float distance)
         {
-            return newHoveredEvent != null &&
-                   newHoveredEvent.IsAtHoverDistance(distance) &&
-                   newHoveredEvent.IsVisible() &&
-                   AreSameEntity(newHoveredEvent, colliderInfo);
+            return newHoveredInputEvent != null &&
+                   newHoveredInputEvent.IsAtHoverDistance(distance) &&
+                   newHoveredInputEvent.IsVisible() &&
+                   AreSameEntity(newHoveredInputEvent, colliderInfo);
         }
 
         private void ResolveGenericRaycastHandlers(IRaycastPointerHandler raycastHandlerTarget)
@@ -203,12 +234,12 @@ namespace DCL
             }
         }
 
-        void UnhoverLastHoveredObject(InteractionHoverCanvasController interactionHoverCanvasController)
+        void UnhoverLastHoveredObject()
         {
             if (lastHoveredObject == null)
             {
-                if ( interactionHoverCanvasController != null )
-                    interactionHoverCanvasController.SetHoverState(false);
+                if ( hoverController != null )
+                    hoverController.SetHoverState(false);
 
                 return;
             }
@@ -226,7 +257,7 @@ namespace DCL
             lastHoveredObject = null;
         }
 
-        public void Cleanup()
+        public void Dispose()
         {
             for (int i = 0; i < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; i++)
             {
@@ -240,7 +271,7 @@ namespace DCL
 
             lastHoveredObject = null;
             newHoveredGO = null;
-            newHoveredEvent = null;
+            newHoveredInputEvent = null;
             lastHoveredEventList = null;
 
             if (CursorController.i != null)
@@ -250,6 +281,7 @@ namespace DCL
             }
 
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+            Utils.OnCursorLockChanged -= HandleCursorLockChanges;
         }
 
         void RetrieveCamera()
@@ -270,7 +302,7 @@ namespace DCL
                 if (Utils.LockedThisFrame())
                     return;
 
-                if (!Utils.isCursorLocked || !renderingEnabled)
+                if (!Utils.IsCursorLocked || !renderingEnabled)
                     return;
             }
 
@@ -309,7 +341,7 @@ namespace DCL
             RaycastResultInfo raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, worldState.loadedScenes[worldState.currentSceneId]);
             raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
-            if (pointerUpEvent != null)
+            if (pointerInputUpEvent != null)
             {
                 // Raycast for pointer event components
                 RaycastResultInfo raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, pointerEventLayer, worldState.loadedScenes[worldState.currentSceneId]);
@@ -319,10 +351,10 @@ namespace DCL
 
                 if (!isOnClickComponentBlocked && isSameEntityThatWasPressed && enablePointerEvent)
                 {
-                    pointerUpEvent.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
+                    pointerInputUpEvent.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
                 }
 
-                pointerUpEvent = null;
+                pointerInputUpEvent = null;
             }
 
             ReportGlobalPointerUpEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, worldState.currentSceneId);
@@ -368,28 +400,28 @@ namespace DCL
                 else
                     hitGameObject = collider.gameObject;
 
-                var events = hitGameObject.GetComponentsInChildren<IPointerEvent>();
+                var events = hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
 
                 for (var i = 0; i < events.Length; i++)
                 {
-                    IPointerEvent e = events[i];
+                    IPointerInputEvent e = events[i];
                     bool areSameEntity = AreSameEntity(e, info);
 
                     switch (e.GetEventType())
                     {
-                        case PointerEventType.CLICK:
+                        case PointerInputEventType.CLICK:
                             if (areSameEntity && enablePointerEvent)
                                 e.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
                             break;
-                        case PointerEventType.DOWN:
+                        case PointerInputEventType.DOWN:
                             if (areSameEntity && enablePointerEvent)
                                 e.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
                             break;
-                        case PointerEventType.UP:
+                        case PointerInputEventType.UP:
                             if (areSameEntity && enablePointerEvent)
-                                pointerUpEvent = e;
+                                pointerInputUpEvent = e;
                             else
-                                pointerUpEvent = null;
+                                pointerInputUpEvent = null;
                             break;
                     }
                 }
@@ -466,7 +498,7 @@ namespace DCL
             }
         }
 
-        bool AreSameEntity(IPointerEvent pointerEvent, ColliderInfo colliderInfo) { return pointerEvent != null && colliderInfo.entity != null && pointerEvent.entity == colliderInfo.entity; }
+        bool AreSameEntity(IPointerEvent pointerInputEvent, ColliderInfo colliderInfo) { return pointerInputEvent != null && colliderInfo.entity != null && pointerInputEvent.entity == colliderInfo.entity; }
 
         bool IsBlockingOnClick(RaycastHitInfo targetOnClickHit, RaycastHitInfo potentialBlockerHit)
         {
@@ -511,6 +543,22 @@ namespace DCL
             {
                 return colliderInfoA.entity == colliderInfoB.entity;
             }
+        }
+        
+        private void HandleCursorLockChanges(bool isLocked)
+        {
+            HideOrShowCursor(isLocked);
+
+            if (!isLocked)
+                UnhoverLastHoveredObject();
+        }
+
+        private void HideOrShowCursor(bool isCursorLocked)
+        {
+            if (isCursorLocked)
+                CursorController.i?.Show();
+            else
+                CursorController.i?.Hide();
         }
     }
 }

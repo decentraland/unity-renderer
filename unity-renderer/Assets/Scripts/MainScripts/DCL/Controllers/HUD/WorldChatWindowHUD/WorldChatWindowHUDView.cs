@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using DCL;
 
 public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
 {
@@ -50,6 +51,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
     {
         chatHudView.scrollRect.enabled = true;
         group.alpha = 1;
+        DataStore.i.HUDs.chatInputVisible.Set(true);
         isInPreview = false;
         chatHudView.SetFadeoutMode(false);
         OnDeactivatePreview?.Invoke();
@@ -59,6 +61,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
     {
         chatHudView.scrollRect.enabled = false;
         group.alpha = 0;
+        DataStore.i.HUDs.chatInputVisible.Set(false);
         isInPreview = true;
         chatHudView.SetFadeoutMode(true);
         OnActivatePreview?.Invoke();

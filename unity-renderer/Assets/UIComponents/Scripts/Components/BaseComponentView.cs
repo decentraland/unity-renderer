@@ -32,6 +32,11 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void OnEnable();
 
     /// <summary>
+    /// It is called each time the component is disabled.
+    /// </summary>
+    void OnDisable();
+
+    /// <summary>
     /// It is called just after the UI component has been initialized.
     /// </summary>
     void Start();
@@ -101,6 +106,8 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     }
 
     public virtual void OnEnable() { StartCoroutine(RaiseOnScreenSizeChangedAfterDelay()); }
+
+    public virtual void OnDisable() { OnLoseFocus(); }
 
     public virtual void Start() { }
 

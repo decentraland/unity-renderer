@@ -680,7 +680,6 @@ namespace Builder
                 shadowResolution = UnityEngine.Rendering.Universal.ShadowResolution._256,
                 cameraDrawDistance = 100,
                 bloom = true,
-                colorGrading = true,
                 reflectionResolution = QualitySettings.ReflectionResolution.Res_256
             };
             Settings.i.qualitySettings.Apply(settings);

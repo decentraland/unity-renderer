@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
@@ -8,27 +9,20 @@ using NUnit.Framework;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
 
 public class SceneMetricsControllerShould : IntegrationTestSuite
 {
     private ParcelScene scene;
 
-    protected override WorldRuntimeContext CreateRuntimeContext()
+    protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
-        (
-            new SceneController(),
-            new WorldState(),
-            new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory),
-            new SceneBoundsChecker() // Only used for GetOriginalMaterials(). We should remove this dependency on the future.
-        );
-    }
-
-    protected override PlatformContext CreatePlatformContext()
-    {
-        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
-            WebRequestController.Create(),
-            new ServiceProviders());
+        serviceLocator.Register<ISceneController>(() => new SceneController());
+        serviceLocator.Register<IWorldState>(() => new WorldState());
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory));
+        serviceLocator.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
+        serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
+        serviceLocator.Register<IServiceProviders>(() => new ServiceProviders());
     }
 
     [UnitySetUp]
@@ -39,6 +33,11 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
         scene = TestUtils.CreateTestScene();
         scene.contentProvider = new ContentProvider_Dummy();
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+
+        // TODO(Brian): Move these variants to a DataStore object to avoid having to reset them
+        //              like this.
+        CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
+        CommonScriptableObjects.rendererState.Set(true);
     }
 
     [UnityTest]
@@ -147,6 +146,8 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     }
 
     [UnityTest]
+    [Explicit]
+    [Category("Explicit")]
     public IEnumerator CountNFTShapes()
     {
         var entity = TestUtils.CreateSceneEntity(scene);

@@ -16,10 +16,19 @@ namespace Tests
             var prefab = Resources.Load<UnpublishPopupView>("UnpublishPopup/UnpublishPopupView");
             view = UnityEngine.Object.Instantiate(prefab);
             controller = new UnpublishPopupController(view);
+
+            // This is needed because BuilderMainPanelController uses the Analytics utils, which in turn use
+            // Environment.i.serviceProviders.analytics
+            ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+            Environment.Setup(serviceLocator);
         }
 
         [TearDown]
-        public void TearDown() { controller.Dispose(); }
+        public void TearDown()
+        {
+            Environment.Dispose();
+            controller.Dispose();
+        }
 
         [Test]
         public void ShowConfirmationPopupCorrectly()

@@ -2,7 +2,6 @@
 using AssetPromiseKeeper_Tests;
 using DCL;
 using DCL.Helpers;
-using DCL.Tests;
 
 namespace AssetPromiseKeeper_AudioClip_Tests
 {
@@ -11,16 +10,11 @@ namespace AssetPromiseKeeper_AudioClip_Tests
         Asset_AudioClip,
         AssetLibrary_RefCounted<Asset_AudioClip>>
     {
-
         protected override IEnumerator SetUp()
         {
-            Environment.SetupWithBuilders(
-                messagingBuilder: MessagingContextFactory.CreateMocked,
-                platformBuilder: () => PlatformContextFactory.CreateWithGenericMocks(WebRequestController.Create()),
-                worldRuntimeBuilder: WorldRuntimeContextFactory.CreateMocked,
-                hudBuilder: HUDContextFactory.CreateDefault
-            );
-
+            ServiceLocator serviceLocator = DCL.ServiceLocatorTestFactory.CreateMocked();
+            serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
+            Environment.Setup(serviceLocator);
             return base.SetUp();
         }
 

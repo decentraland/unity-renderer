@@ -20,7 +20,7 @@ using Object = UnityEngine.Object;
 
 public static class BIWTestUtils
 {
-    public static ISceneReferences CreateMocekdInitialSceneReference()
+    public static ISceneReferences CreateMockedInitialSceneReference()
     {
         ISceneReferences sceneReferences = SceneReferences.i;
 
@@ -98,7 +98,7 @@ public static class BIWTestUtils
             Substitute.For<IBIWSaveController>(),
             Substitute.For<IBIWRaycastController>(),
             Substitute.For<IBIWGizmosController>(),
-            CreateMocekdInitialSceneReference()
+            CreateMockedInitialSceneReference()
         );
         return context;
     }
@@ -125,7 +125,7 @@ public static class BIWTestUtils
         IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
         IBIWRaycastController raycastController = Substitute.For<IBIWRaycastController>();
         IBIWGizmosController gizmosController = Substitute.For<IBIWGizmosController>();
-        ISceneReferences sceneReferences = CreateMocekdInitialSceneReference();
+        ISceneReferences sceneReferences = CreateMockedInitialSceneReference();
 
         foreach (var mock in mocks)
         {

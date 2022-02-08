@@ -2,10 +2,11 @@
     "name": "Clipboard",
     "rootNamespace": "",
     "references": [
-        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-        "GUID:e99faafecbf8dd74d8130597511b9b27",
-        "GUID:e5b8a8ed154ad624f99bcb73d3284a90",
-        "GUID:8c63f342fdbca7e1fbf6a616655e1c54"
+      "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+      "GUID:e99faafecbf8dd74d8130597511b9b27",
+      "GUID:e5b8a8ed154ad624f99bcb73d3284a90",
+      "GUID:8c63f342fdbca7e1fbf6a616655e1c54",
+      "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

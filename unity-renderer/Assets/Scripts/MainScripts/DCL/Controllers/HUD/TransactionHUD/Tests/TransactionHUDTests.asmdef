@@ -1,0 +1,28 @@
+{
+    "name": "TransactionHUDTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:760a1d365aad58044916992b072cf2a6",
+        "GUID:e6f5b34eba99b4ed9836f899578ee258",
+        "GUID:029e05fd02d6c49d5ac9dd7e3725a35b",
+        "GUID:d854a4b265f0e4ab6b27af4b554b3d0a",
+        "GUID:bd51ff2b035ce4ab4be7c38c43c88889"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

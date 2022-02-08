@@ -48,9 +48,9 @@ namespace DCL
 
         public static GameObject CreateSettingsController() => LoadAndInstantiate("SettingsController");
 
-        public static GameObject CreateEnvironment()
+        public static GameObject CreateEnvironment(string prefabPath = "Environment")
         {
-            GameObject result = LoadAndInstantiate("Environment");
+            GameObject result = LoadAndInstantiate(prefabPath);
             var env = result.GetComponent<EnvironmentReferences>();
             SceneReferences.i.environmentLight = env.environmentLight;
             SceneReferences.i.postProcessVolume = env.postProcessVolume;
@@ -60,9 +60,14 @@ namespace DCL
 
         public static GameObject CreateBridges()
         {
-            var bridges = LoadAndInstantiate("Bridges");
-            SceneReferences.i.bridgeGameObject = bridges;
-            return bridges;
+            if (SceneReferences.i.bridgeGameObject == null)
+            {
+                var bridges = LoadAndInstantiate("Bridges");
+                SceneReferences.i.bridgeGameObject = bridges;
+                return bridges;
+            }
+
+            return SceneReferences.i.bridgeGameObject;
         }
 
         public static GameObject CreateEventSystem() => LoadAndInstantiate("EventSystem");

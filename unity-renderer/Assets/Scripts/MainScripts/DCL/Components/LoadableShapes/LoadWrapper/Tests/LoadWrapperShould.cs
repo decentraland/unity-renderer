@@ -14,7 +14,10 @@ using Object = UnityEngine.Object;
 
 public class LoadWrapperShould : IntegrationTestSuite
 {
-    protected override PlatformContext CreatePlatformContext() { return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(WebRequestController.Create()); }
+    protected override void InitializeServices(ServiceLocator serviceLocator)
+    {
+        serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
+    }
 
     [UnityTest]
     public IEnumerator UnloadWhenEntityDestroyedBeforeFinishing()

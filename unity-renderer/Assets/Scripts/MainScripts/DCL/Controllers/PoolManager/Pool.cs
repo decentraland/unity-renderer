@@ -65,7 +65,8 @@ namespace DCL
             if (maxPrewarmCount <= objectsCount)
                 return;
 
-            for (int i = 0; i < Mathf.Max(0, maxPrewarmCount - objectsCount); i++)
+            int objectsToInstantiate = Mathf.Max(0, maxPrewarmCount - objectsCount);
+            for (int i = 0; i < objectsToInstantiate; i++)
             {
                 Instantiate();
             }
