@@ -1156,7 +1156,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: Decentraland servers are run by the community. Each server is an independent
-    realm. Wrap in between them to meet your friends or visir exclusive events in
+    realm. Warp in between them to meet your friends or visit exclusive events in
     dedicated environments.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
