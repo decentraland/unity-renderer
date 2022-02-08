@@ -71,7 +71,7 @@ public class WithManyComponents_SceneMetricsCounterShould : IntegrationTestSuite
 
         AssertMetricsModel(scene,
             triangles: 1126,
-            materials: 2,
+            materials: 1,
             entities: 4,
             meshes: 4,
             bodies: 4,
@@ -83,7 +83,7 @@ public class WithManyComponents_SceneMetricsCounterShould : IntegrationTestSuite
 
         AssertMetricsModel(scene,
             triangles: 4,
-            materials: 1,
+            materials: 0,
             entities: 1,
             meshes: 1,
             bodies: 1,

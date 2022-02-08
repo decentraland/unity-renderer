@@ -53,7 +53,12 @@ namespace DCL.Components
                 return;
 
             entity.RemoveSharedComponent(typeof(PBRMaterial));
-            base.AttachTo(entity);
+            base.AttachTo(entity, overridenAttachedType);
+        }
+
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
+        {
+            base.DetachFrom(entity, overridenAttachedType);
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -186,6 +191,12 @@ namespace DCL.Components
         public override void Dispose()
         {
             dclTexture?.DetachFrom(this);
+
+            while ( attachedEntities.Count > 0 )
+            {
+                DetachFrom(attachedEntities.First());
+            }
+
             Object.Destroy(material);
             base.Dispose();
         }

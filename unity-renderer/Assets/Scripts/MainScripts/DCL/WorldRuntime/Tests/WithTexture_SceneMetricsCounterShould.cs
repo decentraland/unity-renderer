@@ -134,8 +134,8 @@ public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneM
 
         sceneMetrics = scene.metricsCounter.currentCount;
 
-        Assert.That( sceneMetrics.materials, Is.EqualTo(0) );
-        Assert.That( sceneMetrics.textures, Is.EqualTo(0) );
+        Assert.That( sceneMetrics.materials, Is.EqualTo(0), "Material count fail" );
+        Assert.That( sceneMetrics.textures, Is.EqualTo(0), "Texture count fail" );
     }
 
 

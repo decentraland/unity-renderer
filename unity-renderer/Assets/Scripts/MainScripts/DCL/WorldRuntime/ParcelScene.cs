@@ -445,18 +445,16 @@ namespace DCL.Controllers
         /**
           * This method is called when we need to attach a disposable component to the entity
           */
-        public void SharedComponentAttach(string entityId, string id)
+        public void SharedComponentAttach(string entityId, string componentId)
         {
-            IDCLEntity decentralandEntity = GetEntityForUpdate(entityId);
+            IDCLEntity entity = GetEntityForUpdate(entityId);
 
-            if (decentralandEntity == null)
-            {
+            if (entity == null)
                 return;
-            }
 
-            if (disposableComponents.TryGetValue(id, out ISharedComponent sharedComponent))
+            if (disposableComponents.TryGetValue(componentId, out ISharedComponent sharedComponent))
             {
-                sharedComponent.AttachTo(decentralandEntity);
+                sharedComponent.AttachTo(entity);
             }
         }
 

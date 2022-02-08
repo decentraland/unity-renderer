@@ -21,7 +21,7 @@ public class WithParametrizedShape_SceneMetricsCounterShould : IntegrationTestSu
 
         AssertMetricsModel(scene,
             triangles: 101,
-            materials: 1,
+            materials: 0,
             entities: 1,
             meshes: 1,
             bodies: 1,
@@ -42,7 +42,7 @@ public class WithParametrizedShape_SceneMetricsCounterShould : IntegrationTestSu
 
         AssertMetricsModel(scene,
             triangles: 101,
-            materials: 1,
+            materials: 0,
             entities: 1,
             meshes: 1,
             bodies: 1,
@@ -126,7 +126,7 @@ public class WithParametrizedShape_SceneMetricsCounterShould : IntegrationTestSu
 
         AssertMetricsModel(scene,
             triangles: 4,
-            materials: 1,
+            materials: 0,
             entities: 1,
             meshes: 1,
             bodies: 1,
