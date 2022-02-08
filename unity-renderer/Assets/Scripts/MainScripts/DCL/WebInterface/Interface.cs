@@ -604,19 +604,15 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class SpawnPortableExperiencePayload
-        {
-            public string id;
-            public string name;
-            public string baseUrl;
-            public ContentServerUtils.MappingPair[] mappings;
-            public string icon;
-        }
-
-        [System.Serializable]
         public class KillPortableExperiencePayload
         {
             public string portableExperienceId;
+        }
+
+        [System.Serializable]
+        public class SetDisabledPortableExperiencesPayload
+        {
+            public string[] idsToDisable;
         }
 
         [System.Serializable]
@@ -806,8 +802,8 @@ namespace DCL.Interface
         private static StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
         private static CloseUserAvatarPayload closeUserAvatarPayload = new CloseUserAvatarPayload();
         private static StringPayload stringPayload = new StringPayload();
-        private static SpawnPortableExperiencePayload spawnPortableExperiencePayload = new SpawnPortableExperiencePayload();
         private static KillPortableExperiencePayload killPortableExperiencePayload = new KillPortableExperiencePayload();
+        private static SetDisabledPortableExperiencesPayload setDisabledPortableExperiencesPayload = new SetDisabledPortableExperiencesPayload();
         private static RequestWearablesPayload requestWearablesPayload = new RequestWearablesPayload();
         private static SearchENSOwnerPayload searchEnsOwnerPayload = new SearchENSOwnerPayload();
         private static HeadersPayload headersPayload = new HeadersPayload();
@@ -1474,16 +1470,16 @@ namespace DCL.Interface
             SendMessage("CloseUserAvatar", closeUserAvatarPayload);
         }
 
-        public static void SpawnPortableExperience(SpawnPortableExperiencePayload pexData)
-        {
-            spawnPortableExperiencePayload = pexData;
-            SendMessage("SpawnPortableExperience", spawnPortableExperiencePayload);
-        }
-
         public static void KillPortableExperience(string portableExperienceId)
         {
             killPortableExperiencePayload.portableExperienceId = portableExperienceId;
             SendMessage("KillPortableExperience", killPortableExperiencePayload);
+        }
+
+        public static void SetDisabledPortableExperiences(string[] idsToDisable)
+        {
+            setDisabledPortableExperiencesPayload.idsToDisable = idsToDisable;
+            SendMessage("SetDisabledPortableExperiences", setDisabledPortableExperiencesPayload);
         }
 
         public static void RequestWearables(

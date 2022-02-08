@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Interface;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public interface IExperiencesViewerComponentController : IDisposable
@@ -17,9 +18,11 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
     internal BaseVariable<Transform> isInitialized => DataStore.i.experiencesViewer.isInitialized;
     internal BaseVariable<bool> isOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
+    public BaseDictionary<string, WearableItem> wearableCatalog => DataStore.i.common.wearables;
 
     internal ExperiencesViewerComponentView view;
     internal UserProfile userProfile;
+    internal CatalogController catalog;
     internal ISceneController sceneController;
     internal Dictionary<string, IParcelScene> activePEXScenes = new Dictionary<string, IParcelScene>();
     internal List<string> pausedPEXScenesIds = new List<string>();
@@ -81,30 +84,20 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
     {
         if (isPlaying)
         {
-            activePEXScenes.TryGetValue(pexId, out IParcelScene scene);
-            if (scene != null)
-            {
-                GlobalScene pexSceneToPlay = scene as GlobalScene;
-                WebInterface.SpawnPortableExperience(new WebInterface.SpawnPortableExperiencePayload
-                {
-                    id = pexSceneToPlay.sceneData.id,
-                    name = pexSceneToPlay.sceneName,
-                    baseUrl = pexSceneToPlay.sceneData.baseUrl,
-                    mappings = pexSceneToPlay.sceneData.contents.ToArray(),
-                    icon = pexSceneToPlay.iconUrl
-                });
-            }
+            WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.Where(x => x != pexId).ToArray());
         }
         else
         {
-            if (!pausedPEXScenesIds.Contains(pexId))
+            WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.Concat(new List<string> { pexId }).ToArray());
+
+            // We only keep the experience paused in the list if our avatar has the related wearable equipped
+            if (userProfile.avatar.wearables.Contains(pexId))
             {
-                // We only keep the experience paused in the list if our avatar has the related wearable equipped
-                if (userProfile.avatar.wearables.Contains(pexId))
+                if (!pausedPEXScenesIds.Contains(pexId))
                     pausedPEXScenesIds.Add(pexId);
             }
 
-            WebInterface.KillPortableExperience(pexId);
+            WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
         }
     }
 
@@ -191,8 +184,8 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
 
         foreach (var pex in activePEXScenes)
         {
-            // We remove from the list all those experiences that not belong to any equipped wearable
-            if (!userProfile.avatar.wearables.Contains(pex.Key))
+            // We remove from the list all those experiences related to wearables that are not equipped
+            if (wearableCatalog.ContainsKey(pex.Key) && !userProfile.avatar.wearables.Contains(pex.Key))
                 experiencesIdsToRemove.Add(pex.Key);
         }
 
@@ -204,6 +197,8 @@ public class ExperiencesViewerComponentController : IExperiencesViewerComponentC
         }
 
         numOfLoadedExperiences.Set(activePEXScenes.Count);
+
+        WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
     }
 
     internal virtual ExperiencesViewerComponentView CreateView() => ExperiencesViewerComponentView.Create();
