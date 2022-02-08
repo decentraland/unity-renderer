@@ -58,14 +58,8 @@ namespace DCL.Skybox
 
         private List<string> renderingOrderList;
 
-        private string tempString = "";
-        private float x_offset = 0;
         private float leftPanelWidth;
-        private float rightPanelWidth;
-        private SkyboxEditorToolsParts selectedPart = SkyboxEditorToolsParts.BG_Layer;
-        private int baseSkyboxSelectedIndex;
         private List<RightPanelPins> rightPanelPins = new List<RightPanelPins>() { new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = "Background Layer" } };
-        private string rightPanelHeadingTxt = "Background Layer";
 
         [MenuItem("Window/Skybox Editor v2")]
         static void Init()
@@ -129,7 +123,6 @@ namespace DCL.Skybox
             // Right Panel
             topLeft = toolSize.topPanelLeftStart + width + toolSize.panelsPadding;
             width = position.width - toolSize.toolRightPadding - topLeft;
-            //EditorGUI.DrawRect(new Rect(topLeft, top, width, height), toolSize.panelBGColor);
             GUILayout.BeginArea(new Rect(topLeft + toolSize.rightPanelPadding.xMin, top + toolSize.rightPanelPadding.yMin, width - toolSize.rightPanelPadding.xMax, height - toolSize.rightPanelPadding.yMax));
             RenderPinnedRightPanel(topLeft + toolSize.rightPanelPadding.xMin, top + toolSize.rightPanelPadding.yMin, width - toolSize.rightPanelPadding.xMax, height - toolSize.rightPanelPadding.yMax);
             GUILayout.EndArea();
@@ -232,17 +225,14 @@ namespace DCL.Skybox
             // Timeline Tags
             EditorGUILayout.BeginHorizontal();
 
-            style = new GUIStyle(EditorStyles.toolbarButton);
-            style.alignment = TextAnchor.MiddleCenter;
+            style = new GUIStyle();
+            style.alignment = TextAnchor.MiddleLeft;
             style.fixedWidth = (position.width - toolSize.toolRightPadding) / 2;
-            Rect r = EditorGUILayout.BeginVertical(style);
-            if (GUI.Button(r, GUIContent.none))
+            EditorGUILayout.BeginVertical(style);
+            if (GUILayout.Button("Timeline Tags", GUILayout.Width(100)))
             {
                 AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Timeline_Tags, name = "Timeline Tags" });
-                //selectedPart = SkyboxEditorToolsParts.Timeline_Tags;
-                //rightPanelHeadingTxt = "Timeline Tags";
             }
-            EditorGUILayout.LabelField("Timeline Tags");
             EditorGUILayout.EndVertical();
 
             style = new GUIStyle();
@@ -354,43 +344,33 @@ namespace DCL.Skybox
             leftPanelScrollPos = EditorGUILayout.BeginScrollView(leftPanelScrollPos);
             EditorGUILayout.BeginVertical();
             // Render BG Layer Button
-            if (GUILayout.Button("BG Layer", EditorStyles.toolbarButton))
+            if (GUILayout.Button("Background Layer", EditorStyles.toolbarButton))
             {
                 AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = "Background Layer" });
-                //selectedPart = SkyboxEditorToolsParts.BG_Layer;
-                //rightPanelHeadingTxt = "Background Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Ambient Layer", EditorStyles.toolbarButton))
             {
                 AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Ambient_Layer, name = "Ambient Layer" });
-                //selectedPart = SkyboxEditorToolsParts.Ambient_Layer;
-                //rightPanelHeadingTxt = "Ambient Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Avatar Layer", EditorStyles.toolbarButton))
             {
                 AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Avatar_Layer, name = "Avatar Layer" });
-                //selectedPart = SkyboxEditorToolsParts.Avatar_Layer;
-                //rightPanelHeadingTxt = "Avatar Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Fog Layer", EditorStyles.toolbarButton))
             {
                 AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Fog_Layer, name = "Fog Layer" });
-                //selectedPart = SkyboxEditorToolsParts.Fog_Layer;
-                //rightPanelHeadingTxt = "Fog Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Directional Light Layer", EditorStyles.toolbarButton))
             {
                 AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Directional_Light_Layer, name = "Directional Light Layer" });
-                //selectedPart = SkyboxEditorToolsParts.Directional_Light_Layer;
-                //rightPanelHeadingTxt = "Directional Light Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
@@ -419,9 +399,6 @@ namespace DCL.Skybox
                 if (GUILayout.Button(selectedConfiguration.layers[i].nameInEditor, GUILayout.Width(toolSize.layerButtonWidth)))
                 {
                     AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Base_Skybox, name = selectedConfiguration.layers[i].nameInEditor, baseSkyboxSelectedIndex = i });
-                    //selectedPart = SkyboxEditorToolsParts.Base_Skybox;
-                    //baseSkyboxSelectedIndex = i;
-                    //rightPanelHeadingTxt = selectedConfiguration.layers[i].nameInEditor;
                 }
 
                 selectedConfiguration.layers[i].slotID = EditorGUILayout.Popup(selectedConfiguration.layers[i].slotID, renderingOrderList.ToArray(), GUILayout.Width(toolSize.layerRenderWidth));
@@ -556,7 +533,7 @@ namespace DCL.Skybox
             style.normal.textColor = toolSize.rightPanelHeadingTextColor.textColor;
             EditorGUILayout.LabelField(text, style, GUILayout.Width(200));
 
-            string btnTxt = (obj.pinned) ? "Un-Pin" : "Pin";
+            string btnTxt = (obj.pinned) ? "Unpin" : "Pin";
             if (GUILayout.Button(btnTxt, GUILayout.Width(50)))
             {
                 obj.pinned = !obj.pinned;
@@ -908,11 +885,11 @@ namespace DCL.Skybox
                 switch (selectedConfiguration.fogMode)
                 {
                     case FogMode.Linear:
-                        RenderFloatField("Start Distance:", ref selectedConfiguration.fogStartDistance);
-                        RenderFloatField("End Distance:", ref selectedConfiguration.fogEndDistance);
+                        RenderFloatField("Start Distance", ref selectedConfiguration.fogStartDistance);
+                        RenderFloatField("End Distance", ref selectedConfiguration.fogEndDistance);
                         break;
                     default:
-                        RenderFloatField("Density: ", ref selectedConfiguration.fogDensity);
+                        RenderFloatField("Density", ref selectedConfiguration.fogDensity);
                         break;
                 }
             }
@@ -954,7 +931,7 @@ namespace DCL.Skybox
                 EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
                 // Text field for name of event
-                EditorGUILayout.LabelField("Name: ", GUILayout.Width(50));
+                EditorGUILayout.LabelField("Name", GUILayout.Width(50));
                 selectedConfiguration.timelineTags[i].tag = EditorGUILayout.TextField(selectedConfiguration.timelineTags[i].tag, GUILayout.Width(70));
 
                 // Start time
@@ -1117,7 +1094,6 @@ namespace DCL.Skybox
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Layer Name: ", GUILayout.Width(150), GUILayout.ExpandWidth(false));
             layer.nameInEditor = EditorGUILayout.TextField(layer.nameInEditor, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-            rightPanelHeadingTxt = layer.nameInEditor;
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Separator();
