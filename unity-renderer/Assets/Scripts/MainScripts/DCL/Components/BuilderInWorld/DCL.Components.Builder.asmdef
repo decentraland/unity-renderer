@@ -1,5 +1,5 @@
 {
-  "name": "DCL.Components.BuilderInWorld",
+  "name": "DCL.Components.Builder",
   "rootNamespace": "",
   "references": [
     "GUID:1dd0780aa6be12b428c8005d0bee46b8",
