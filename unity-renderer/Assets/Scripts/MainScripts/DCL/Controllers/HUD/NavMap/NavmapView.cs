@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using UnityEngine.UI;
 using DCL.Interface;
 using DCL.Helpers;
@@ -30,12 +31,16 @@ namespace DCL
         public static event System.Action<bool> OnToggle;
         private const float MAP_ZOOM_MAX_SCALE = 1;
         private const float MAP_ZOOM_MIN_SCALE = 0.3f;
-        private const float MOUSE_WHEEL_THRESHOLD = 0.0000001f;
+        private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
         private const float MAP_ZOOM_LEVELS = 4;
         private RectTransform containerRectTransform;
         private float zoomDelta;
         private int defaultZoomLevel;
         private int currentZoomLevel;
+        private float scale = 1f;
+
+        private bool isScaling = false;
+        private float scaleDuration = 0.2f;
 
         void Start()
         {
@@ -68,7 +73,6 @@ namespace DCL
             ResetCameraZoom();
             Initialize();
         }
-        private float scale = 1f;
 
         private void ResetCameraZoom()
         {
@@ -82,40 +86,40 @@ namespace DCL
         {
             if (value > -MOUSE_WHEEL_THRESHOLD && value < MOUSE_WHEEL_THRESHOLD) return;
             if (!navmapVisible.Get()) return;
+            if (isScaling) return;
 
             if (value > 0 && currentZoomLevel <= MAP_ZOOM_LEVELS)
             {
                 currentZoomLevel++;
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(containerRectTransform, Input.mousePosition, Camera.main, out var localPointInRect);
-                SetPivot(containerRectTransform, localPointInRect);
-                scale = zoomDelta * currentZoomLevel;
-                containerRectTransform.localScale = new Vector3(scale, scale, scale);
+                StartCoroutine(ScaleOverTime());
             }
-            else if (value < 0 && currentZoomLevel > 1)
+            if (value < 0 && currentZoomLevel > 1)
             {
                 currentZoomLevel--;
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(containerRectTransform, Input.mousePosition, Camera.main, out var localPointInRect);
-                SetPivot(containerRectTransform, localPointInRect);
-                scale = zoomDelta * currentZoomLevel;
-                containerRectTransform.localScale = new Vector3(scale, scale, scale);
+                StartCoroutine(ScaleOverTime());
             }
         }
 
-        private void SetPivot(RectTransform rectTransform, Vector2 localPoint)
+        private IEnumerator ScaleOverTime()
         {
-            Rect targetRect = rectTransform.rect;
+            isScaling = true;
+            scale = zoomDelta * currentZoomLevel;
+            Vector3 targetScale = new Vector3(scale, scale, scale);
 
-            Vector2 newPivot = new Vector2((localPoint.x - targetRect.x) / (targetRect.xMax - targetRect.x), 
-                (localPoint.y - targetRect.y) / (targetRect.yMax - targetRect.y));
+            float counter = 0;
 
-            Vector2 deltaPivot = (rectTransform.pivot - newPivot) * scale;
+            Vector3 startScaleSize = containerRectTransform.localScale;
 
-            Vector2 rectSize = targetRect.size;
+            while (counter < scaleDuration)
+            {
+                counter += Time.deltaTime;
+                containerRectTransform.localScale = Vector3.Lerp(startScaleSize, targetScale, counter / scaleDuration);
+                yield return null;
+            }
 
-            rectTransform.pivot = newPivot;
-            rectTransform.localPosition += new Vector3(deltaPivot.x * rectSize.x, deltaPivot.y * rectSize.y) * -1f;
+            isScaling = false;
         }
-
+         
         private void OnNavmapVisibleChanged(bool current, bool previous) { SetVisible(current); }
 
         public void Initialize()
