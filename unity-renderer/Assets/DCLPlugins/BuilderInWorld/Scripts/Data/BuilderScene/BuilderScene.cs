@@ -24,7 +24,11 @@ namespace DCL.Builder
             this.sceneType = sceneType;
         }
 
-        public void UpdateManifestFromScene() { manifest.scene = ManifestTranslator.ParcelSceneToWebBuilderScene((ParcelScene)scene); }
+        public void UpdateManifestFromScene()
+        {
+            manifest.scene = ManifestTranslator.ParcelSceneToWebBuilderScene((ParcelScene)scene);
+            manifest.project.scene_id = manifest.scene.id;
+        }
 
         public void SetScene(IParcelScene scene) { this.scene = scene; }
         
