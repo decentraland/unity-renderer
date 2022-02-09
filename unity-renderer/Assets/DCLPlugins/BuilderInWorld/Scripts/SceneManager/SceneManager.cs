@@ -278,13 +278,31 @@ namespace DCL.Builder
 
         public void StartFlowFromProject(Manifest.Manifest manifest)
         {
-            DataStore.i.HUDs.loadingHUD.visible.Set(true);
-
             bool hasBeenCreatedThisSession = !string.IsNullOrEmpty(DataStore.i.builderInWorld.lastProjectIdCreated.Get()) && DataStore.i.builderInWorld.lastProjectIdCreated.Get() == manifest.project.id;
             DataStore.i.builderInWorld.lastProjectIdCreated.Set("");
             
             BuilderScene builderScene = new BuilderScene(manifest, IBuilderScene.SceneType.PROJECT,hasBeenCreatedThisSession);
             StartFlow(builderScene, SOURCE_BUILDER_PANEl);
+        }
+
+        public void StartFlowFromLandCoords(Vector2Int coords)
+        {
+            Scene deployedScene = GetDeployedSceneFromParcel(coords);
+            string landCoords = deployedScene.@base.x + "," + deployedScene.@base.y;
+            Vector2Int parcelSize = BIWUtils.GetSceneSize(deployedScene.parcels);
+
+            StartFromLand(landCoords, deployedScene, parcelSize, SOURCE_BUILDER_PANEl);
+        }
+
+        public void ShowBuilderLoading() 
+        {    
+            initialLoadingController.Show();
+            initialLoadingController.SetPercentage(0f);
+        }
+
+        public void HideBuilderLoading()
+        {
+            initialLoadingController.Hide();
         }
 
         public void StartExitMode()
@@ -388,8 +406,7 @@ namespace DCL.Builder
             inputController.inputTypeMode = InputTypeMode.BUILD_MODE_LOADING;
 
             //We configure the loading part
-            initialLoadingController.Show();
-            initialLoadingController.SetPercentage(0f);
+            ShowBuilderLoading();
 
             DataStore.i.common.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
@@ -483,6 +500,21 @@ namespace DCL.Builder
             return false;
         }
 
+        internal Scene GetDeployedSceneFromParcel(Vector2Int coords)
+        {
+            List<Scene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
+            foreach (Scene scene in allDeployedScenesWithAccess)
+            {
+                List<Vector2Int> scenes = scene.parcels.ToList();
+                foreach (Vector2Int parcel in scenes)
+                {
+                    if (coords.x == parcel.x && coords.y == parcel.y)
+                        return scene;
+                }
+            }
+            return null;
+        }
+        
         internal Scene GetDeployedSceneFromParcel(IParcelScene sceneToCheck)
         {
             List<Scene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
@@ -568,6 +600,11 @@ namespace DCL.Builder
             string landCoords = targetScene.sceneData.basePosition.x + "," + targetScene.sceneData.basePosition.y;
             Vector2Int parcelSize = BIWUtils.GetSceneSize(targetScene);
 
+            StartFromLand(landCoords, deployedScene, parcelSize, source);
+        }
+
+        private void StartFromLand(string landCoords, Scene deployedScene, Vector2Int parcelSize, string source)
+        {
             Promise<InitialStateResponse> manifestPromise = initialStateManager.GetInitialManifest(context.builderAPIController, landCoords, deployedScene, parcelSize);
 
             manifestPromise.Then(response =>

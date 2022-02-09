@@ -318,12 +318,14 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private void CreateNewProject(ProjectData project)
     {
+        context.sceneManager.ShowBuilderLoading();
         Promise<ProjectData> projectPromise = context.builderAPIController.CreateNewProject(project);
 
         projectPromise.Then( OpenEditorFromNewProject);
 
         projectPromise.Catch( errorString =>
         {
+            context.sceneManager.HideBuilderLoading();
             BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR + errorString);
         });
     }
@@ -540,13 +542,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal void OnGoToEditScene(Vector2Int coords)
     {
-        bool isGoingToTeleport = BIWTeleportAndEdit.TeleportAndEdit(coords);
-        if (isGoingToTeleport)
-        {
-            SetVisibility(false);
-        }
-
-        OnJumpInOrEdit?.Invoke();
+        SetVisibility(false);
+        context.sceneManager.StartFlowFromLandCoords(coords);
     }
 
     private void StartFetchInterval()

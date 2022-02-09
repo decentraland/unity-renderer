@@ -378,10 +378,11 @@ public static partial class BIWUtils
         projectData.created_at = DateTime.Now;
         projectData.thumbnail = "thumbnail.png";
 
-        manifest.project = projectData;
-
         //We create an empty scene
         manifest.scene = CreateEmtpyBuilderScene(size.x, size.y);
+
+        projectData.scene_id = manifest.scene.id;
+        manifest.project = projectData;
         return manifest;
     }
 

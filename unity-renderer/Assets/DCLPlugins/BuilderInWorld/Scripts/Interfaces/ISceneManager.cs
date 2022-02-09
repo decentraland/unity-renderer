@@ -27,5 +27,21 @@ namespace DCL.Builder
         /// </summary>
         /// <param name="manifest"></param>
         void StartFlowFromProject(Manifest.Manifest manifest);
+
+        /// <summary>
+        /// This will start the flow to edit a land where you are currently
+        /// </summary>
+        /// <param name="coords"></param>
+        void StartFlowFromLandCoords(Vector2Int coords);
+
+        /// <summary>
+        /// This will show the loading screen of the builder with 0%
+        /// </summary>
+        void ShowBuilderLoading();
+
+        /// <summary>
+        /// Hide the builder loading
+        /// </summary>
+        void HideBuilderLoading();
     }
 }
