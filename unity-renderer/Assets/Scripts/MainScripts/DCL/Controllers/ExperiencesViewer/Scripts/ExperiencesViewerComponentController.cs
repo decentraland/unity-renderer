@@ -153,6 +153,7 @@ namespace DCL.ExperiencesViewer
             if (activePEXScenes.ContainsKey(scene.sceneData.id))
             {
                 activePEXScenes[scene.sceneData.id] = scene;
+                pausedPEXScenesIds.Remove(scene.sceneData.id);
 
                 if (experienceToUpdate != null)
                     experienceToUpdate.SetUIVisibility(true);
