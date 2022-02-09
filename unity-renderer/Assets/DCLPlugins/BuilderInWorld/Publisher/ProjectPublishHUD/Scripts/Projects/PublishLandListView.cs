@@ -30,6 +30,7 @@ public class PublishLandListView : ListView<LandWithAccess>
     
     public void SetContent(int cols, int rows, List<LandWithAccess>lands)
     {
+        contentPanelTransform.gameObject.SetActive( lands.Count > 0);
         projectCols = cols;
         projectRows = rows;
         selectedSet = false;

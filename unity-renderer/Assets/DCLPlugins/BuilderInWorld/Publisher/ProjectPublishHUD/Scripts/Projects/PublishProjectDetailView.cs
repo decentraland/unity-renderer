@@ -63,6 +63,7 @@ namespace DCL.Builder
 
     public class PublishProjectDetailView : BaseComponentView, IPublishProjectDetailView
     {
+        private const float SECONDS_TO_HIDE_TOP_TOAST = 4.5f;
         public event Action<PublishInfo.ProjectRotation> OnProjectRotateChange;
         public event Action OnCancel;
         public event Action<PublishInfo> OnPublishButtonPressed;
@@ -91,7 +92,10 @@ namespace DCL.Builder
         [SerializeField] internal ProjectPublishToast toastView;
         [SerializeField] internal PublishMapView mapView;
         [SerializeField] internal SearchLandView searchView;
-
+        [SerializeField] internal Button miniSearchView;
+        [SerializeField] internal TextMeshProUGUI topToastText;
+        [SerializeField] internal GameObject topToastGameObject;
+        
         [SerializeField] internal RawImage sceneScreenshotImage;
 
         internal IBuilderScene scene;
@@ -101,6 +105,7 @@ namespace DCL.Builder
 
         internal Vector2Int selectedCoords;
         internal bool areCoordsSelected = false;
+        private Coroutine toastTopHideCoroutine;
 
         public override void RefreshControl()
         {
@@ -129,6 +134,7 @@ namespace DCL.Builder
 
             rotateLeftButton.onClick.AddListener( RotateLeft);
             rotateRightButton.onClick.AddListener( RotateRight);
+            miniSearchView.onClick.AddListener(HideTopToast);
 
             gameObject.SetActive(false);
         }
@@ -153,6 +159,7 @@ namespace DCL.Builder
 
             rotateLeftButton.onClick.RemoveAllListeners();
             rotateRightButton.onClick.RemoveAllListeners();
+            miniSearchView.onClick.RemoveAllListeners();
         }
 
         private void DeactivateSearch()
@@ -192,11 +199,30 @@ namespace DCL.Builder
             landListView.SetActive(true);
         }
 
+        private void ShowTopToast(string text)
+        {
+            topToastText.text = text;
+            topToastGameObject.SetActive(true);
+            searchView.gameObject.SetActive(false);
+            miniSearchView.gameObject.SetActive(true);
+
+            toastTopHideCoroutine = StartCoroutine(WaitAndHideTopToast());
+        }
+
+        private void HideTopToast()
+        {
+            if (toastTopHideCoroutine != null)
+                StopCoroutine(toastTopHideCoroutine);
+            topToastGameObject.SetActive(false);
+            searchView.gameObject.SetActive(true);
+            miniSearchView.gameObject.SetActive(false);
+        }
+        
         private void ParcelClicked(Vector2Int parcel)
         {
             if (!availableLandsToPublish.Contains(parcel))
             {
-                BIWUtils.ShowGenericNotification("The project can't be placed in this land");
+                ShowTopToast("Projects can't be placed in a Land you don't own.");
                 return;
             }
 
@@ -359,12 +385,6 @@ namespace DCL.Builder
             CoroutineStarter.Start(WaitFrameToPositionMap(coord));
         }
 
-        IEnumerator WaitFrameToPositionMap(Vector2Int coords)
-        {
-            yield return null;
-            mapView.GoToCoords(coords);
-        }
-
         public void Show()
         {
             gameObject.SetActive(true);
@@ -406,6 +426,18 @@ namespace DCL.Builder
         {
             Hide();
             CancelPublish();
+        }
+        
+        IEnumerator WaitFrameToPositionMap(Vector2Int coords)
+        {
+            yield return null;
+            mapView.GoToCoords(coords);
+        }
+
+        IEnumerator WaitAndHideTopToast()
+        {
+            yield return new WaitForSeconds(SECONDS_TO_HIDE_TOP_TOAST);
+            HideTopToast();
         }
     }
 }

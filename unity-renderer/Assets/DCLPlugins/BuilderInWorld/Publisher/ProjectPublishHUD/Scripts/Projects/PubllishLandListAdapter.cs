@@ -16,13 +16,8 @@ public class PubllishLandListAdapter : MonoBehaviour
     public event Action<LandWithAccess> OnLandSelected;
 
     [SerializeField] internal TextMeshProUGUI landNameTxt;
-    [SerializeField] internal TextMeshProUGUI coordsTxt;
-    [SerializeField] internal TextMeshProUGUI parcelsAmountTxt;
 
     [SerializeField] internal Button selectButton;
-
-    [SerializeField] internal GameObject disabledImage;
-    [SerializeField] internal GameObject selectedImage;
 
     internal LandWithAccess land;
     internal AdapterState currentState;
@@ -38,9 +33,7 @@ public class PubllishLandListAdapter : MonoBehaviour
     {
         this.land = land;
 
-        landNameTxt.text = land.name;
-        coordsTxt.text = BIWUtils.Vector2INTToString(land.baseCoords);
-        parcelsAmountTxt.text = land.parcels.Length + " parcels";
+        landNameTxt.text = land.name + " <color=#716B7C>"+BIWUtils.Vector2INTToString(land.baseCoords)+"</color>";
 
         SetState(state);
     }
@@ -48,20 +41,6 @@ public class PubllishLandListAdapter : MonoBehaviour
     public void SetState(AdapterState state)
     {
         currentState = state;
-
-        selectedImage.SetActive(false);
-        disabledImage.SetActive(false);
-
-        switch (state)
-        {
-            case AdapterState.ENABLE:
-                disabledImage.SetActive(false);
-                break;
-            case AdapterState.DISABLE:
-                disabledImage.SetActive(true);
-                break;
-        }
-
     }
 
     public void ItemSelected() { OnLandSelected?.Invoke(land); }

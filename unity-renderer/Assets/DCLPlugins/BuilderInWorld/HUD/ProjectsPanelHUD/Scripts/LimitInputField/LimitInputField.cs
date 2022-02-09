@@ -18,10 +18,7 @@ public class LimitInputField : MonoBehaviour
     [SerializeField] private bool isMandatory = false;
     [SerializeField] private Color normalColor;
     [SerializeField] private Color errorColor;
-
-    [SerializeField] private Sprite inputFieldNormalBackgroundSprite;
-    [SerializeField] private Sprite inputFieldErrorBackgroundSprite;
-    [SerializeField] private Sprite inputFieldFocusBackgroundSprite;
+    [SerializeField] private Color focusColor;
 
     [SerializeField] private Image inputFieldbackgroundImg;
     [SerializeField] private TMP_InputField inputField;
@@ -29,6 +26,7 @@ public class LimitInputField : MonoBehaviour
 
     internal bool hasPassedLimit = false;
     internal bool hasBeenEmpty = false;
+    internal bool hasFocus = false;
     private string currentValue = "";
 
     private void Start()
@@ -56,18 +54,32 @@ public class LimitInputField : MonoBehaviour
 
     private void InputLostFocus(string value)
     {
-        if (value.Length > characterLimit)
-            inputFieldbackgroundImg.sprite = inputFieldErrorBackgroundSprite;
+        hasFocus = false;
+        
+        if (hasPassedLimit)
+        {
+            inputFieldbackgroundImg.enabled = true;
+            inputFieldbackgroundImg.color = errorColor;
+        }
         else
-            inputFieldbackgroundImg.sprite = inputFieldNormalBackgroundSprite;
+        {
+            inputFieldbackgroundImg.enabled = false;
+        }
     }
 
     private void InputFocused(string value)
     {
-        if (value.Length > characterLimit)
-            inputFieldbackgroundImg.sprite = inputFieldErrorBackgroundSprite;
+        hasFocus = true;
+        
+        if (hasPassedLimit)
+        {
+            inputFieldbackgroundImg.enabled = true;
+            inputFieldbackgroundImg.color = errorColor;
+        }
         else
-            inputFieldbackgroundImg.sprite = inputFieldFocusBackgroundSprite;
+        {
+            inputFieldbackgroundImg.enabled = false;
+        }
         OnInputFocused?.Invoke();
     }
 
@@ -92,7 +104,17 @@ public class LimitInputField : MonoBehaviour
 
         if (limitText != null)
             limitText.color = normalColor;
-        inputFieldbackgroundImg.sprite = inputFieldFocusBackgroundSprite;
+
+        if (hasFocus)
+        {
+            inputFieldbackgroundImg.enabled = true;
+            inputFieldbackgroundImg.color = focusColor;
+        }
+        else
+        {
+            inputFieldbackgroundImg.enabled = false;
+        }
+        
         OnInputAvailable?.Invoke();
         hasPassedLimit = false;
         hasBeenEmpty = false;
@@ -114,7 +136,8 @@ public class LimitInputField : MonoBehaviour
 
         if (limitText != null)
             limitText.color = errorColor;
-        inputFieldbackgroundImg.sprite = inputFieldErrorBackgroundSprite;
+        inputFieldbackgroundImg.enabled = true;
+        inputFieldbackgroundImg.color = errorColor;
 
         OnLimitReached?.Invoke();
         hasPassedLimit = true;
