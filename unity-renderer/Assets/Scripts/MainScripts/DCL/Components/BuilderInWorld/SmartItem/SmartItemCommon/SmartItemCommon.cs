@@ -12,6 +12,7 @@ namespace DCL.Components
     {
         [NonSerialized]
         public string actionableId;
+
         public string entityId;
         public string actionId;
         public Dictionary<object, object> values = new Dictionary<object, object>();
