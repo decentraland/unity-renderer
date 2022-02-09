@@ -24,7 +24,10 @@ namespace DCL
 
         [SerializeField] private float parcelHightlightScale = 1.25f;
         [SerializeField] private Button ParcelHighlightButton;
-        [SerializeField] private MapParcelHighlight highlight;
+        [SerializeField] private MapParcelHighlight highlight;      
+        [SerializeField] private RawImage parcelHighlightImage;
+        [SerializeField] private RawImage parcelHighlighImagePrefab;
+        [SerializeField] private RawImage selectParcelHighlighImagePrefab;
 
         private float parcelSizeInMap;
         private Vector3Variable playerWorldPosition => CommonScriptableObjects.playerWorldPosition;
@@ -38,8 +41,6 @@ namespace DCL
         [HideInInspector] public bool showCursorCoords = true;
         public Vector3 playerGridPosition => Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get());
         public MapAtlas atlas;
-        public RawImage parcelHighlightImage;
-        public RawImage redParcelHighlighImagePrefab;
         public TextMeshProUGUI highlightedParcelText;
         public Transform overlayContainer;
         public Transform globalUserMarkerContainer;
@@ -83,7 +84,8 @@ namespace DCL
         public static System.Action OnCursorFarFromParcel;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-        private Dictionary<Vector2Int, RawImage> redHighlightedLands = new Dictionary<Vector2Int, RawImage>();
+        private Dictionary<Vector2Int, RawImage> highlightedLands = new Dictionary<Vector2Int, RawImage>();
+        private Vector2Int lastSelectedLand;
 
         private bool isInitialized = false;
 
@@ -143,8 +145,12 @@ namespace DCL
                     usersInfoPool.ForcePrewarm();
             }
         }
+        
+        public void SetParcelHighlightActive(bool isAtive) => parcelHighlightImage.enabled = isAtive;
+        
+        public Vector3 GetParcelHighlightTransform() => parcelHighlightImage.transform.position;
 
-        public void SetHighlighSize(Vector2Int[] parcels) { highlight.ChangeHighlighSize(parcels); }
+        public void SetHighlighSize(Vector2Int size) { highlight.ChangeHighlighSize(size); }
 
         public void SetHighlightStyle(MapParcelHighlight.HighlighStyle style) { highlight.SetStyle(style); }
 
@@ -182,28 +188,54 @@ namespace DCL
 
         public void CleanLandsHighlights()
         {
-            foreach (KeyValuePair<Vector2Int, RawImage> kvp in redHighlightedLands)
+            foreach (KeyValuePair<Vector2Int, RawImage> kvp in highlightedLands)
             {
                 Destroy(kvp.Value.gameObject);
             }
 
-            redHighlightedLands.Clear (); //To Clear out the dictionary
+            highlightedLands.Clear (); //To Clear out the dictionary
         }
-        public void HighlightLandsInRed(List<Vector2Int> landsToHighlight)
+
+        public void SelectLand(Vector2Int coordsToSelect, Vector2Int size )
+        {
+            if (highlightedLands.ContainsKey(lastSelectedLand))
+            {
+                Destroy(highlightedLands[lastSelectedLand].gameObject);
+                highlightedLands.Remove(lastSelectedLand);  
+                CreateHighlightParcel(parcelHighlighImagePrefab,lastSelectedLand, Vector2Int.one);
+            }
+            
+            if (highlightedLands.ContainsKey(coordsToSelect))
+            {
+                Destroy(highlightedLands[coordsToSelect].gameObject);
+                highlightedLands.Remove(coordsToSelect);
+            }
+
+            CreateHighlightParcel(selectParcelHighlighImagePrefab, coordsToSelect,size);
+
+            lastSelectedLand = coordsToSelect;
+        }
+        
+        public void HighlightLands(List<Vector2Int> landsToHighlight)
         {
             CleanLandsHighlights();
 
             foreach (Vector2Int coords in landsToHighlight)
             {
-                if (redHighlightedLands.ContainsKey(coords))
+                if (highlightedLands.ContainsKey(coords))
                     continue;
 
-                var redParcel = Instantiate(redParcelHighlighImagePrefab, overlayContainer, true).GetComponent<RawImage>();
-                redParcel.rectTransform.localScale = new Vector3(parcelHightlightScale, parcelHightlightScale, 1f);
-                redParcel.rectTransform.SetAsLastSibling();
-                redParcel.rectTransform.anchoredPosition = MapUtils.GetTileToLocalPosition(coords.x, coords.y);
-                redHighlightedLands.Add(coords, redParcel);
+                CreateHighlightParcel(parcelHighlighImagePrefab,coords, Vector2Int.one);
             }
+        }
+
+        private void CreateHighlightParcel(RawImage prefab,Vector2Int coords, Vector2Int size)
+        {
+            var highlightItem = Instantiate(prefab, overlayContainer, true).GetComponent<RawImage>();
+            highlightItem.rectTransform.localScale = new Vector3(parcelHightlightScale*size.x, parcelHightlightScale*size.y, 1f);
+            highlightItem.rectTransform.SetAsLastSibling();
+            highlightItem.rectTransform.anchoredPosition = MapUtils.GetTileToLocalPosition(coords.x, coords.y);
+            highlightedLands.Add(coords, highlightItem);
         }
 
         void Update()
@@ -323,6 +355,14 @@ namespace DCL
                 icon.title.text = sceneInfo.name;
 
             scenesOfInterestMarkers.Add(sceneInfo, go);
+        }
+
+        public void SetPointOfInterestActive(bool areActive)
+        {
+            foreach (GameObject pointOfInterestGameObject in scenesOfInterestMarkers.Values)
+            {
+                pointOfInterestGameObject.SetActive(areActive);
+            }
         }
 
         private void OnOtherPlayersAdded(string userId, Player player)

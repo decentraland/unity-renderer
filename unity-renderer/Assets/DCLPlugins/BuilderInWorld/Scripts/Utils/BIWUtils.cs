@@ -26,7 +26,47 @@ public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
+    public static LayerMask GetBIWCulling(LayerMask currentCulling)
+    {
+        currentCulling += BIWSettings.FX_LAYER;
+        return currentCulling;
+    }
+    
     public static string Vector2INTToString(Vector2Int vector) { return vector.x + "," + vector.y; }
+
+    public static List<Vector2Int> GetLandsToPublishProject(LandWithAccess[] lands, IBuilderScene scene)
+    {
+        List<Vector2Int> availableLandsToPublish = new List<Vector2Int>();
+        List<Vector2Int> totalParcels = new List<Vector2Int>();
+        foreach (LandWithAccess land in lands)
+        {
+            totalParcels.AddRange(land.parcels.ToList());
+        }
+
+        Vector2Int sceneSize = GetSceneSize(scene.scene.sceneData.parcels);
+        foreach (Vector2Int parcel in totalParcels)
+        {
+            List<Vector2Int> necessaryParcelsToOwn = new List<Vector2Int>();
+            for (int x = 1; x < sceneSize.x; x++)
+            {
+                for (int y = 1; y < sceneSize.y; y++)
+                {
+                    necessaryParcelsToOwn.Add(new Vector2Int(parcel.x + x, parcel.y + y));
+                }
+            }
+
+            int amountOfParcelFounds = 0;
+            foreach (Vector2Int parcelToCheck in totalParcels)
+            {
+                if (necessaryParcelsToOwn.Contains(parcelToCheck))
+                    amountOfParcelFounds++;
+            }
+
+            if (amountOfParcelFounds == necessaryParcelsToOwn.Count)
+                availableLandsToPublish.Add(parcel);
+        }
+        return availableLandsToPublish;
+    }
 
     public static Vector2Int GetRowsAndColumsFromLand(LandWithAccess landWithAccess)
     {
@@ -194,6 +234,17 @@ public static partial class BIWUtils
         return cachedModel;
     }
 
+    public static Manifest CreateManifestFromProjectDataAndScene(ProjectData data, WebBuilderScene scene)
+    {
+        Manifest manifest = new Manifest();
+        manifest.version = BIWSettings.MANIFEST_VERSION;
+        manifest.project = data;
+        manifest.scene = scene;
+
+        manifest.project.scene_id = manifest.scene.id;
+        return manifest;
+    }
+
     public static Manifest CreateManifestFromProject(ProjectData projectData)
     {
         Manifest manifest = new Manifest();
@@ -239,6 +290,7 @@ public static partial class BIWUtils
         projectData.cols = size.y;
         projectData.updated_at = DateTime.Now;
         projectData.created_at = DateTime.Now;
+        projectData.thumbnail = "thumbnail.png";
 
         manifest.project = projectData;
 
@@ -663,6 +715,22 @@ public static partial class BIWUtils
                 }
             },
             headers: headers);
+
+        return asyncOperation;
+    }
+
+    public static IWebRequestAsyncOperation MakeGetTextureCall(string url, Promise<Texture2D> callPromise)
+    {
+        var asyncOperation = Environment.i.platform.webRequest.GetTexture(
+            url: url,
+            OnSuccess: (webRequestResult) =>
+            {
+                callPromise.Resolve(DownloadHandlerTexture.GetContent(webRequestResult.webRequest));
+            },
+            OnFail: (webRequestResult) =>
+            {
+                callPromise.Reject(webRequestResult.webRequest.error);
+            });
 
         return asyncOperation;
     }

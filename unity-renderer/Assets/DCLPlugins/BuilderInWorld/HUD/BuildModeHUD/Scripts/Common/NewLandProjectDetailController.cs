@@ -46,8 +46,11 @@ namespace DCL.Builder
 
         public void Dispose()
         {
-            view.OnCreatePressed -= CreateProject;
-            view.OnSceneNameChange -= ValidatePublicationInfo;
+            if (view != null)
+            {
+                view.OnCreatePressed -= CreateProject;
+                view.OnSceneNameChange -= ValidatePublicationInfo;
+            }
         }
 
         private void CreateProject(string sceneName, string sceneDescription)

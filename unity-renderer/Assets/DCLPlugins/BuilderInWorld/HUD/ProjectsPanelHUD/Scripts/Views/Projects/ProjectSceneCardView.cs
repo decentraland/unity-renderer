@@ -5,16 +5,17 @@ using DCL.Builder;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.Builder
 {
 
-    internal interface IProjectSceneCardView : IDisposable
+    public interface IProjectSceneCardView : IDisposable
     {
         /// <summary>
         ///  Setting button pressed
         /// </summary>
-        event Action<ProjectData> OnSettingsPressed;
+        event Action<IProjectSceneCardView> OnSettingsPressed;
 
         /// <summary>
         /// Data of the project card
@@ -45,11 +46,11 @@ namespace DCL.Builder
         const int THMBL_MARKETPLACE_WIDTH = 196;
         const int THMBL_MARKETPLACE_HEIGHT = 143;
         const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
-
-        public event Action<ProjectData> OnSettingsPressed;
+        static readonly Vector3 CONTEXT_MENU_OFFSET = new Vector3(6.24f, 12f, 0);
+        public event Action<IProjectSceneCardView> OnSettingsPressed;
 
         public Scene scene => sceneData;
-        public Vector3 contextMenuButtonPosition { get; }
+        public Vector3 contextMenuButtonPosition => contextSettingButton.transform.position + CONTEXT_MENU_OFFSET;
 
         [Header("Design Variables")]
         [SerializeField] private  float animationSpeed = 6f;
@@ -63,6 +64,7 @@ namespace DCL.Builder
 
         [SerializeField] internal TextMeshProUGUI sceneNameTxt;
         [SerializeField] internal TextMeshProUGUI sceneCoordsTxt;
+        [SerializeField] internal Button contextSettingButton;
 
         [SerializeField] internal CanvasGroup canvasGroup;
 
@@ -74,6 +76,8 @@ namespace DCL.Builder
         private Scene sceneData;
 
         private Coroutine animCoroutine;
+
+        private void Awake() { contextSettingButton.onClick.AddListener(ContextMenuSettingsPressed); }
 
         public void Setup(Scene scene, bool outdated)
         {
@@ -97,6 +101,8 @@ namespace DCL.Builder
 
         public void Dispose()
         {
+            contextSettingButton.onClick.RemoveAllListeners();
+
             CoroutineStarter.Stop(animCoroutine);
             AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
         }
@@ -108,6 +114,8 @@ namespace DCL.Builder
 
             animCoroutine = CoroutineStarter.Start( SetActiveAnimation(from, to));
         }
+
+        public void ContextMenuSettingsPressed() { OnSettingsPressed?.Invoke(this); }
 
         private void SetThumbnail(string thumbnailUrl)
         {

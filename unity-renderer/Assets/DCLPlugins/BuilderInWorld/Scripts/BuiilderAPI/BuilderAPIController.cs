@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using DCL;
 using DCL.Builder;
 using DCL.Builder.Manifest;
@@ -13,7 +11,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.SocialPlatforms.Impl;
 
 public class BuilderAPIController : IBuilderAPIController
 {
@@ -22,6 +19,7 @@ public class BuilderAPIController : IBuilderAPIController
     internal const string CATALOG_ENDPOINT = "/assetPacks";
     internal const string ASSETS_ENDPOINT = "/assets?";
     internal const string GET_PROJECTS_ENDPOINT = "/projects";
+    internal const string DELETE_PROJECTS_ENDPOINT = "/projects/{ID}";
     internal const string PROJECT_MANIFEST_ID_ENDPOINT = "/projects/{ID}/manifest";
     internal const string PROJECT_MANIFEST_COORDS_ENDPOINT = "/manifests";
     internal const string PROJECT_THUMBNAIL_ENDPOINT = "/projects/{ID}/media";
@@ -31,6 +29,7 @@ public class BuilderAPIController : IBuilderAPIController
     internal const string GET = "get";
     internal const string PUT = "put";
     internal const string POST = "post";
+    internal const string DELETE = "delete";
 
     public event Action<IWebRequestAsyncOperation> OnWebRequestCreated;
 
@@ -100,11 +99,14 @@ public class BuilderAPIController : IBuilderAPIController
                     break;
                 case PUT:
                     request.body = body;
-                    CoroutineStarter.Start(CallWeb(request, resultPromise, contentType));
+                    CoroutineStarter.Start(CallWeb(request, resultPromise, contentType, PUT));
                     break;
                 case POST:
                     request.body = body;
-                    CoroutineStarter.Start(CallWeb(request, resultPromise, contentType, false));
+                    CoroutineStarter.Start(CallWeb(request, resultPromise, contentType, POST));
+                    break;
+                case DELETE:
+                    CoroutineStarter.Start(CallWeb(request, resultPromise, contentType, DELETE));
                     break;
             }
         });
@@ -113,16 +115,22 @@ public class BuilderAPIController : IBuilderAPIController
     }
 
     //This will disappear when we implement the signed fetch call
-    IEnumerator CallWeb (RequestHeader requestHeader, Promise<string> resultPromise, string contentType, bool isPut = true)
+    IEnumerator CallWeb (RequestHeader requestHeader, Promise<string> resultPromise, string contentType, string method)
     {
         UnityWebRequest www = null;
-        if (isPut)
-            www = UnityWebRequest.Put (BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint, requestHeader.body);
-        else
+        switch (method)
         {
-            WWWForm form = new WWWForm();
-            form.AddBinaryData("thumbnail", requestHeader.body);
-            www = UnityWebRequest.Post(BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint, form );
+            case PUT:
+                www = UnityWebRequest.Put (BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint, requestHeader.body);
+                break;
+            case POST:
+                WWWForm form = new WWWForm();
+                form.AddBinaryData("thumbnail", requestHeader.body);
+                www = UnityWebRequest.Post(BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint, form );
+                break;
+            case DELETE:
+                www = UnityWebRequest.Delete(BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint);
+                break;
         }
 
         if (!string.IsNullOrEmpty(contentType))
@@ -141,9 +149,17 @@ public class BuilderAPIController : IBuilderAPIController
         }
         else
         {
-            byte[] byteArray = www.downloadHandler.data;
-            string result = System.Text.Encoding.UTF8.GetString(byteArray);
-            resultPromise.Resolve(result);
+            // Note: The builder API doesn't answer with an structure for the DELETE method so we resolve it as an empty string
+            if (www.downloadHandler != null)
+            {
+                byte[] byteArray = www.downloadHandler.data;
+                string result = System.Text.Encoding.UTF8.GetString(byteArray);
+                resultPromise.Resolve(result);
+            }
+            else
+            {
+                resultPromise.Resolve("");
+            }
         }
 
     }
@@ -247,6 +263,26 @@ public class BuilderAPIController : IBuilderAPIController
         return fullNewProjectPromise;
     }
 
+    public Promise<bool> DeleteProject(string id)
+    {
+        Promise<bool> fullPromise = new Promise<bool>();
+
+        string endpoint = DELETE_PROJECTS_ENDPOINT.Replace("{ID}", id);
+        var promise =  CallUrl(DELETE, endpoint);
+
+        promise.Then(result =>
+        {
+            fullPromise.Resolve(true);
+        });
+
+        promise.Catch(error =>
+        {
+            fullPromise.Reject(error);
+        });
+
+        return fullPromise;
+    }
+
     public Promise<Manifest> GetManifestByCoords(string landCoords)
     {
         Promise<Manifest> fullNewProjectPromise = new Promise<Manifest>();
@@ -269,7 +305,8 @@ public class BuilderAPIController : IBuilderAPIController
                     manifest = JsonConvert.DeserializeObject<Manifest>(result);
                     fullNewProjectPromise.Resolve(manifest);
                 }
-                else if (x["data"].First["version"] != null)
+                // Sometimes the API respond that OK but the data is empty so we need to check that 
+                else if (x["data"].HasValues && x["data"].First["version"] != null)
                 {
                     APIResponse response = JsonConvert.DeserializeObject<APIResponse>(result);
                     manifest = JsonConvert.DeserializeObject<Manifest[]>(response.data.ToString())[0];
@@ -399,7 +436,7 @@ public class BuilderAPIController : IBuilderAPIController
         return fullCatalogPromise;
     }
 
-    public Promise<List<ProjectData>> GetAllManifests()
+    public Promise<List<ProjectData>> GetAllProjectsData()
     {
         Promise<List<ProjectData>> fullCatalogPromise = new Promise< List<ProjectData>>();
 

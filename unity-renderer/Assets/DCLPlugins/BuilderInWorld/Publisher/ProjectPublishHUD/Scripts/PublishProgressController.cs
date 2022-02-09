@@ -12,6 +12,11 @@ namespace DCL.Builder
         /// </summary>
         event Action OnConfirm;
 
+        /// <summary>
+        /// The back button has been pressed
+        /// </summary>
+        event Action OnBackPressed;
+
         void Initialize();
 
         void Dispose();
@@ -26,12 +31,12 @@ namespace DCL.Builder
         /// </summary>
         /// <param name="publishedScene"></param>
         void DeploySuccess();
-        
+
         /// <summary>
         /// Set the scene to publish
         /// </summary>
         /// <param name="scene"></param>
-        void SetScene(IBuilderScene scene);
+        void SetInfoToPublish(IBuilderScene scene, PublishInfo info);
 
         /// <summary>
         /// This is called when the deployment has failed with the error as parameter
@@ -43,6 +48,7 @@ namespace DCL.Builder
     public class PublishProgressController : IPublishProgressController
     {
         public event Action OnConfirm;
+        public event Action OnBackPressed;
 
         private const string PROGRESS_PREFAB_PATH = "PublishProgressView";
 
@@ -53,17 +59,24 @@ namespace DCL.Builder
             view = GameObject.Instantiate(Resources.Load<PublishProgressView>(PROGRESS_PREFAB_PATH));
 
             view.OnViewClosed += ViewClosed;
+            view.OnBackPressed += BackPressed;
             view.OnPublishConfirmButtonPressed += ConfirmPressed;
         }
 
         public void Dispose()
         {
             view.OnViewClosed -= ViewClosed;
+            view.OnBackPressed -= BackPressed;
             view.OnPublishConfirmButtonPressed -= ConfirmPressed;
-            
+
             view.Dispose();
         }
 
+        private void BackPressed()
+        {
+            OnBackPressed?.Invoke();
+        }
+        
         public void ShowConfirmDeploy() { view.ConfirmDeployment(); }
 
         private void ConfirmPressed()
@@ -72,18 +85,12 @@ namespace DCL.Builder
             view.PublishStarted();
         }
 
-        public void DeploySuccess()
-        {
-            view.ProjectPublished();
-        }
-        
-        public void SetScene(IBuilderScene scene) { view.SetScene(scene); }
+        public void DeploySuccess() { view.ProjectPublished(); }
+
+        public void SetInfoToPublish(IBuilderScene scene, PublishInfo info) { view.SetPublishInfo(scene, info); }
 
         public void DeployError(string error) { view.PublishError(error); }
 
-        private void ViewClosed()
-        {
-            view.Hide();
-        }
+        private void ViewClosed() { view.Hide(); }
     }
 }

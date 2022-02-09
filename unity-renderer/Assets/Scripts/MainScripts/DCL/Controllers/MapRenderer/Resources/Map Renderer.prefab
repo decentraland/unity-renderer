@@ -229,12 +229,14 @@ MonoBehaviour:
   parcelHoldTimeInSeconds: 1
   ParcelHighlightButton: {fileID: 3511145948971381255}
   highlight: {fileID: 7765750690706878977}
+  parcelHighlightImage: {fileID: 5226131346438990493}
+  parcelHighlighImagePrefab: {fileID: 2348616308724949633, guid: 7fde7ef488a1cd449aeceb98a72d8470,
+    type: 3}
+  selectParcelHighlighImagePrefab: {fileID: 2348616308724949633, guid: de10b7ec0d61e314f97d8c8b4b8875c4,
+    type: 3}
   cursorMapCoords: {x: 0, y: 0, z: 0}
   showCursorCoords: 1
   atlas: {fileID: 8867674412829076673}
-  parcelHighlightImage: {fileID: 5226131346438990493}
-  redParcelHighlighImagePrefab: {fileID: 2348616308724949633, guid: 7fde7ef488a1cd449aeceb98a72d8470,
-    type: 3}
   highlightedParcelText: {fileID: 7940259258301411768}
   overlayContainer: {fileID: 90597117798403300}
   globalUserMarkerContainer: {fileID: 3332934504654532118}
@@ -426,7 +428,6 @@ GameObject:
   - component: {fileID: 7765750690706878977}
   - component: {fileID: 5226131346438990493}
   - component: {fileID: 3511145948971381255}
-  - component: {fileID: 3157737206284254225}
   m_Layer: 5
   m_Name: ParcelHighlight
   m_TagString: Untagged
@@ -443,7 +444,7 @@ RectTransform:
   m_GameObject: {fileID: 6407972158151617183}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 2624566956026777839}
   m_Father: {fileID: 90597117798403300}
@@ -551,18 +552,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &3157737206284254225
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6407972158151617183}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 413fab35308355b478a5a9cccba2120b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &7164109601661372131
 GameObject:
   m_ObjectHideFlags: 0

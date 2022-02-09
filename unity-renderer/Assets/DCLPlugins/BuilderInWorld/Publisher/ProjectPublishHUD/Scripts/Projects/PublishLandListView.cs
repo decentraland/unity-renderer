@@ -16,14 +16,25 @@ public class PublishLandListView : ListView<LandWithAccess>
     private int projectCols;
 
     private bool selectedSet = false;
+    private RectTransform rectTransform;
 
-    public void SetContent(int cols, int rows, LandWithAccess[] lands)
+    public void Awake()
+    {
+        rectTransform = GetComponent<RectTransform>();
+    }
+
+    public void SetActive(bool isActive)
+    {
+        gameObject.SetActive(isActive);
+    }
+    
+    public void SetContent(int cols, int rows, List<LandWithAccess>lands)
     {
         projectCols = cols;
         projectRows = rows;
         selectedSet = false;
 
-        SetContent(lands.ToList());
+        SetContent(lands);
     }
 
     public override void AddAdapters()
@@ -44,33 +55,20 @@ public class PublishLandListView : ListView<LandWithAccess>
 
     internal void SelectedLand(LandWithAccess land)
     {
-        PubllishLandListAdapter newSelectedAdapter = null;
-        PubllishLandListAdapter lastSelectedAdapter = null;
         foreach (PubllishLandListAdapter adapter in adapterList)
         {
-            if (adapter.GetState() == PubllishLandListAdapter.AdapterState.SELECTED)
-            {
-                adapter.SetState(PubllishLandListAdapter.AdapterState.ENABLE);
-                lastSelectedAdapter = adapter;
-            }
+            if (adapter.GetLand() != land)
+                continue;
 
-            if (adapter.GetLand() == land)
+            if (adapter.GetState() == PubllishLandListAdapter.AdapterState.ENABLE)
             {
-                if (adapter.GetState() == PubllishLandListAdapter.AdapterState.ENABLE)
-                {
-                    adapter.SetState(PubllishLandListAdapter.AdapterState.SELECTED);
-                    newSelectedAdapter = adapter;
-                    OnLandSelected?.Invoke(land);
-                }
-                else
-                {
-                    OnWrongLandSelected?.Invoke(land);
-                }
+                OnLandSelected?.Invoke(land);
+            }
+            else
+            {
+                OnWrongLandSelected?.Invoke(land);
             }
         }
-
-        if (newSelectedAdapter == null)
-            lastSelectedAdapter?.SetState(PubllishLandListAdapter.AdapterState.ENABLE);
     }
 
     internal void CreateAdapter(LandWithAccess land)
@@ -78,15 +76,20 @@ public class PublishLandListView : ListView<LandWithAccess>
         Vector2Int rowsAndColum = BIWUtils.GetRowsAndColumsFromLand(land);
         PubllishLandListAdapter instanciatedAdapter = Instantiate(adapter, contentPanelTransform).GetComponent<PubllishLandListAdapter>();
         var status = rowsAndColum.x >= projectCols && rowsAndColum.y >= projectRows && BIWUtils.HasSquareSize(land) ? PubllishLandListAdapter.AdapterState.ENABLE : PubllishLandListAdapter.AdapterState.DISABLE;
-        if (status == PubllishLandListAdapter.AdapterState.ENABLE && !selectedSet)
-        {
-            status = PubllishLandListAdapter.AdapterState.SELECTED;
-            selectedSet = true;
-            OnLandSelected?.Invoke(land);
-        }
 
         instanciatedAdapter.SetContent(land, status);
         instanciatedAdapter.OnLandSelected += SelectedLand;
         adapterList.Add(instanciatedAdapter);
+    }
+    
+    private void Update() { HideIfClickedOutside(); }
+    
+    private void HideIfClickedOutside()
+    {
+        if (Input.GetMouseButtonDown(0) &&
+            !RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition))
+        {
+            SetActive(false);
+        }
     }
 }

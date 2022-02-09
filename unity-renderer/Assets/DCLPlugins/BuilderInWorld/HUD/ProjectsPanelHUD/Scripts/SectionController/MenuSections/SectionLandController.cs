@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
@@ -13,7 +14,6 @@ namespace DCL.Builder
         public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionLandsView";
 
         private const string BUILDER_LAND_URL_FORMAT = "https://builder.decentraland.org/land/{0}";
-        private const string MARKETPLACE_URL = "https://market.decentraland.org/";
 
         public event Action<string> OnRequestOpenUrl;
         public event Action<Vector2Int> OnRequestGoToCoords;
@@ -212,7 +212,7 @@ namespace DCL.Builder
 
         private void OnJumpInPressed(Vector2Int coords) { OnRequestGoToCoords?.Invoke(coords); }
 
-        private void OnOpenMarketplacePressed() { OnRequestOpenUrl?.Invoke(MARKETPLACE_URL); }
+        private void OnOpenMarketplacePressed() { OnRequestOpenUrl?.Invoke(BIWSettings.MARKETPLACE_URL); }
 
         private void OnEditPressed(Vector2Int coords) { OnRequestEditSceneAtCoords?.Invoke(coords); }
     }

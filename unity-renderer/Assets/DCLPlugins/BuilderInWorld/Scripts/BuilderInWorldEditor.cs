@@ -30,6 +30,8 @@ public class BuilderInWorldEditor : IBIWEditor
 
     private BuilderInWorldBridge builderInWorldBridge;
     private BuilderInWorldAudioHandler biwAudioHandler;
+    private DCL.Camera.CameraController mainCameraController;
+
     internal IContext context;
 
     private readonly List<IBIWController> controllers = new List<IBIWController>();
@@ -62,6 +64,7 @@ public class BuilderInWorldEditor : IBIWEditor
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
 
+        mainCameraController = context.sceneReferences.cameraController.GetComponent<DCL.Camera.CameraController>();
         biwAudioHandler = UnityEngine.Object.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
         biwAudioHandler.Initialize(context);
         biwAudioHandler.gameObject.SetActive(false);
@@ -100,10 +103,8 @@ public class BuilderInWorldEditor : IBIWEditor
             context.editorContext.editorHUD.OnProjectNameAndDescriptionChanged -= ChangeProjectNameAndDescription;
             context.editorContext.editorHUD.OnTutorialAction -= StartTutorial;
         }
-
-
+        
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
-
         BIWNFTController.i.Dispose();
 
         CleanItems();
@@ -199,10 +200,10 @@ public class BuilderInWorldEditor : IBIWEditor
     {
         sceneToEdit.manifest.project.title = name;
         sceneToEdit.manifest.project.description = description;
-        
+
         saveController.ForceSave();
     }
-    
+
     public void EnterEditMode(IBuilderScene builderScene)
     {
         sceneToEdit = builderScene;
@@ -225,6 +226,9 @@ public class BuilderInWorldEditor : IBIWEditor
             if (sceneToEdit.HasBeenCreatedThisSession())
                 context.editorContext.editorHUD.NewSceneForLand(sceneToEdit);
         }
+
+        var culling = mainCameraController.GetCulling();
+        mainCameraController.SetCulling(  BIWUtils.GetBIWCulling(culling));
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
         DataStore.i.builderInWorld.showTaskBar.Set(true);
@@ -259,6 +263,10 @@ public class BuilderInWorldEditor : IBIWEditor
         DataStore.i.builderInWorld.showTaskBar.Set(true);
 
         ParcelSettings.VISUAL_LOADING_ENABLED = true;
+
+        var culling = mainCameraController.GetCulling();
+        culling -= BIWSettings.FX_LAYER;
+        mainCameraController.SetCulling(culling);
 
         outlinerController.CancelAllOutlines();
 

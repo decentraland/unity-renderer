@@ -18,4 +18,24 @@ public class BuildModeHUDInitializationModel
     public IBuildModeConfirmationModalController buildModeConfirmationModalController;
     public ISaveHUDController saveHUDController;
     public INewProjectDetailController newProjectDetailsController;
+
+    public void Dispose()
+    {
+        newProjectDetailsController.Dispose();
+        saveHUDController.Dispose();
+        buildModeConfirmationModalController.Dispose();
+        topActionsButtonsController.Dispose();
+        inspectorController.Dispose();
+        catalogBtnController.Dispose();
+        inspectorBtnController.Dispose();
+        publishBtnController.Dispose();
+        dragAndDropSceneObjectController.Dispose();
+        shortcutsController.Dispose();
+        firstPersonModeController.Dispose();
+        entityInformationController.Dispose();
+        quickBarController.Dispose();
+        sceneCatalogController.Dispose();
+        feedbackTooltipController.Dispose();
+        tooltipController.Dispose();
+    }
 }

@@ -192,20 +192,13 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     private void ConfigureQuickBarController() { controllers.quickBarController.OnCatalogItemAssigned += QuickBarCatalogItemAssigned; }
     private void ConfigureNewProjectController() { controllers.newProjectDetailsController.OnNameAndDescriptionSet += NameAndDescriptionOfNewProjectSet; }
-    
     private void QuickBarCatalogItemAssigned(CatalogItem item) { BIWAnalytics.QuickAccessAssigned(item, GetCatalogSectionSelected().ToString()); }
 
-    private void NameAndDescriptionOfNewProjectSet(string name, string description)
-    {
-        OnProjectNameAndDescriptionChanged?.Invoke(name,description);
-    }
+    private void NameAndDescriptionOfNewProjectSet(string name, string description) { OnProjectNameAndDescriptionChanged?.Invoke(name, description); }
 
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 
-    public void NewSceneForLand(IBuilderScene sceneWithSceenshot)
-    {
-        controllers.newProjectDetailsController.SetActive(true);
-    }
+    public void NewSceneForLand(IBuilderScene sceneWithSceenshot) { controllers.newProjectDetailsController.SetActive(true); }
 
     internal void CancelNewProjectDetails() { controllers.newProjectDetailsController.SetActive(false); }
 
@@ -216,6 +209,15 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
             subTitle,
             cancelButtonText,
             confirmButtonText);
+    }
+
+    public void UnsuscribeFromEvents()
+    {
+        UnsubscribeConfirmationModal();
+
+        controllers.newProjectDetailsController.OnNameAndDescriptionSet -= NameAndDescriptionOfNewProjectSet;
+        controllers.quickBarController.OnCatalogItemAssigned -= QuickBarCatalogItemAssigned;
+        OnLogoutAction -= controllers.saveHUDController.StopAnimation;
     }
 
     public void ExitStart()
@@ -239,8 +241,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
         controllers.buildModeConfirmationModalController.SetActive(false, BuildModeModalType.EXIT);
 
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
+        UnsubscribeConfirmationModal();
     }
 
     internal void ConfirmExitModal(BuildModeModalType modalType)
@@ -250,8 +251,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
         OnLogoutAction?.Invoke();
 
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
+        UnsubscribeConfirmationModal();
     }
 
     private void UnsubscribeConfirmationModal()
@@ -472,6 +472,9 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     public void Dispose()
     {
+        UnsuscribeFromEvents();
+        controllers.Dispose();
+
         if (view == null)
             return;
         else if (view.viewGO != null)
