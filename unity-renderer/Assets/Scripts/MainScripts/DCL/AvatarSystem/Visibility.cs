@@ -1,71 +1,94 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AvatarSystem
 {
     public class Visibility : IVisibility
     {
-        private Renderer combinedRenderer = null;
-        private Renderer[] facialFeatures = null;
+        internal readonly HashSet<string> globalConstrains = new HashSet<string>();
+        internal readonly HashSet<string> combinedRendererConstrains = new HashSet<string>();
+        internal readonly HashSet<string> facialFeaturesConstrains = new HashSet<string>();
 
-        private bool explicitVisibility = true;
-        private bool loadingReady = true;
-        private bool combinedRendererVisibility = true;
-        private bool facialFeaturesVisibility = true;
+        private Renderer combinedRenderer = null;
+        private List<Renderer> facialFeatures = null;
 
         /// <summary>
         /// Bind a set of renderers, previous renderers enabled wont be modified
         /// </summary>
         /// <param name="combinedRenderer"></param>
         /// <param name="facialFeatures"></param>
-        public void Bind(Renderer combinedRenderer, Renderer[] facialFeatures)
+        public void Bind(Renderer combinedRenderer, List<Renderer> facialFeatures)
         {
             this.combinedRenderer = combinedRenderer;
             this.facialFeatures = facialFeatures;
-            UpdateVisibility();
+            UpdateCombinedRendererVisibility();
+            UpdateFacialFeatureVisibility();
         }
 
-        public void SetExplicitVisibility(bool explicitVisibility)
+        public void AddGlobalConstrain(string key)
         {
-            this.explicitVisibility = explicitVisibility;
-            UpdateVisibility();
+            globalConstrains.Add(key);
+            UpdateCombinedRendererVisibility();
+            UpdateFacialFeatureVisibility();
         }
 
-        public void SetLoadingReady(bool loadingReady)
+        public void RemoveGlobalConstrain(string key)
         {
-            this.loadingReady = loadingReady;
-            UpdateVisibility();
-        }
-        public void SetCombinedRendererVisibility(bool combinedRendererVisibility)
-        {
-            this.combinedRendererVisibility = combinedRendererVisibility;
-            UpdateVisibility();
-        }
-        public void SetFacialFeaturesVisibility(bool facialFeaturesVisibility)
-        {
-            this.facialFeaturesVisibility = facialFeaturesVisibility;
-            UpdateVisibility();
+            globalConstrains.Remove(key);
+            UpdateCombinedRendererVisibility();
+            UpdateFacialFeatureVisibility();
         }
 
-        private void UpdateVisibility()
+        public void AddCombinedRendererConstrain(string key)
         {
-            if (combinedRenderer != null)
+            combinedRendererConstrains.Add(key);
+            UpdateCombinedRendererVisibility();
+        }
+
+        public void RemoveCombinedRendererConstrain(string key)
+        {
+            combinedRendererConstrains.Remove(key);
+            UpdateCombinedRendererVisibility();
+        }
+
+        public void AddFacialFeaturesConstrain(string key)
+        {
+            facialFeaturesConstrains.Add(key);
+            UpdateFacialFeatureVisibility();
+        }
+
+        public void RemoveFacialFeaturesConstrain(string key)
+        {
+            facialFeaturesConstrains.Remove(key);
+            UpdateFacialFeatureVisibility();
+        }
+
+        internal void UpdateCombinedRendererVisibility()
+        {
+            if (combinedRenderer == null)
+                return;
+
+            combinedRenderer.enabled = globalConstrains.Count == 0 && combinedRendererConstrains.Count == 0;
+        }
+
+        internal void UpdateFacialFeatureVisibility()
+        {
+            if (facialFeatures == null)
+                return;
+
+            bool facialFeaturesVisibility = globalConstrains.Count == 0 && facialFeaturesConstrains.Count == 0;
+            for (int i = 0; i < facialFeatures.Count; i++)
             {
-                bool combinedRendererComposedVisibility = explicitVisibility && loadingReady && combinedRendererVisibility;
-                combinedRenderer.enabled = combinedRendererComposedVisibility;
-            }
-
-            if (facialFeatures != null)
-            {
-                bool facialFeaturesComposedVisibility = explicitVisibility && loadingReady && facialFeaturesVisibility;
-                for (int i = 0; i < facialFeatures.Length; i++)
-                {
-                    facialFeatures[i].enabled = facialFeaturesComposedVisibility;
-                }
+                facialFeatures[i].enabled = facialFeaturesVisibility;
             }
         }
 
         public void Dispose()
         {
+            globalConstrains.Clear();
+            combinedRendererConstrains.Clear();
+            facialFeaturesConstrains.Clear();
+
             combinedRenderer = null;
             facialFeatures = null;
         }

@@ -1,9 +1,9 @@
-using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
 
-[System.Serializable]
+[Serializable]
 public class WearableItem
 {
     [Serializable]
@@ -49,6 +49,21 @@ public class WearableItem
     public int issuedId;
 
     private readonly Dictionary<string, string> cachedI18n = new Dictionary<string, string>();
+    private readonly Dictionary<string, ContentProvider> cachedContentProviers =
+        new Dictionary<string, ContentProvider>();
+
+    private readonly string[] skinImplicitCategories =
+    {
+        WearableLiterals.Categories.EYES,
+        WearableLiterals.Categories.MOUTH,
+        WearableLiterals.Categories.EYEBROWS,
+        WearableLiterals.Categories.HAIR,
+        WearableLiterals.Categories.UPPER_BODY,
+        WearableLiterals.Categories.LOWER_BODY,
+        WearableLiterals.Categories.FEET,
+        WearableLiterals.Misc.HEAD,
+        WearableLiterals.Categories.FACIAL_HAIR
+    };
 
     public bool TryGetRepresentation(string bodyshapeId, out Representation representation)
     {
@@ -72,8 +87,6 @@ public class WearableItem
         return null;
     }
 
-    private readonly Dictionary<string, ContentProvider> cachedContentProviers = new Dictionary<string, ContentProvider>();
-
     public ContentProvider GetContentProvider(string bodyShapeType)
     {
         var representation = GetRepresentation(bodyShapeType);
@@ -96,7 +109,8 @@ public class WearableItem
         return new ContentProvider
         {
             baseUrl = baseUrl,
-            contents = contents.Select(mapping => new ContentServerUtils.MappingPair() { file = mapping.key, hash = mapping.hash }).ToList()
+            contents = contents.Select(mapping => new ContentServerUtils.MappingPair()
+                {file = mapping.key, hash = mapping.hash}).ToList()
         };
     }
 
@@ -130,25 +144,43 @@ public class WearableItem
     {
         var representation = GetRepresentation(bodyShapeType);
 
-        if (representation?.overrideHides == null || representation.overrideHides.Length == 0)
-            return data.hides;
+        string[] hides;
 
-        return representation.overrideHides;
+        if (representation?.overrideHides == null || representation.overrideHides.Length == 0)
+            hides = data.hides;
+        else
+            hides = representation.overrideHides;
+
+        if (IsSkin())
+        {
+            hides = hides == null
+                ? skinImplicitCategories
+                : hides.Concat(skinImplicitCategories).Distinct().ToArray();
+        }
+
+        return hides;
     }
 
-    public bool IsCollectible() { return !string.IsNullOrEmpty(rarity); }
+    public bool DoesHide(string category, string bodyShape) => GetHidesList(bodyShape).Any(s => s == category);
+
+    public bool IsCollectible()
+    {
+        return !string.IsNullOrEmpty(rarity);
+    }
+
+    public bool IsSkin() => data.category == WearableLiterals.Categories.SKIN;
 
     public bool IsSmart()
     {
         if (data?.representations == null) return false;
-        
+
         for (var i = 0; i < data.representations.Length; i++)
         {
             var representation = data.representations[i];
             var containsGameJs = representation.contents?.Any(pair => pair.key.EndsWith("game.js")) ?? false;
             if (containsGameJs) return true;
         }
-        
+
         return false;
     }
 
@@ -181,7 +213,10 @@ public class WearableItem
         return int.MaxValue;
     }
 
-    public string ComposeThumbnailUrl() { return baseUrl + thumbnail; }
+    public string ComposeThumbnailUrl()
+    {
+        return baseUrl + thumbnail;
+    }
 
     public static HashSet<string> ComposeHiddenCategories(string bodyShapeId, WearableItem[] wearables)
     {
@@ -214,28 +249,28 @@ public class WearableItem
     }
 }
 
-[System.Serializable]
+[Serializable]
 public class WearablesRequestResponse
 {
     public WearableItem[] wearables;
     public string context;
 }
 
-[System.Serializable]
+[Serializable]
 public class WearablesRequestFailed
 {
     public string error;
     public string context;
 }
 
-[System.Serializable]
+[Serializable]
 public class WearableContent
 {
     public string file;
     public string hash;
 }
 
-[System.Serializable]
+[Serializable]
 public class i18n
 {
     public string code;

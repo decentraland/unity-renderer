@@ -73,7 +73,8 @@ namespace Test.AvatarSystem
             var wearableIds = new List<string>();
 
             await TestUtils.ThrowsAsync<Exception>(avatar.Load(wearableIds, settings));
-            visibility.Received().SetLoadingReady(false);
+            visibility.Received().AddGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
+            visibility.DidNotReceive().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             curator.Received().Curate(settings, wearableIds, Arg.Any<CancellationToken>());
             loader.DidNotReceiveWithAnyArgs()
                   .Load(default, default, default, default, default, default);
@@ -113,7 +114,7 @@ namespace Test.AvatarSystem
         {
             var settings = new AvatarSettings { bodyshapeId = "bodyshapeId" };
             SkinnedMeshRenderer combinedRenderer = CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>();
-            SkinnedMeshRenderer[] facialFeatures = { CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>() };
+            List<Renderer> facialFeatures = new List<Renderer> { CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>() };
             Renderer gpuSkinnedRenderer = CreatePrimitive(container.transform).GetComponent<Renderer>();
             loader.combinedRenderer.Returns(combinedRenderer);
             loader.facialFeaturesRenderers.Returns(facialFeatures);
@@ -128,7 +129,8 @@ namespace Test.AvatarSystem
             gpuSkinning.Received().Prepare(combinedRenderer);
             gpuSkinningThrottler.Received().Bind(gpuSkinning);
             visibility.Received().Bind(gpuSkinnedRenderer, facialFeatures);
-            visibility.Received().SetLoadingReady(true);
+            visibility.Received().AddGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
+            visibility.Received().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             lod.Received().Bind(gpuSkinnedRenderer);
             gpuSkinningThrottler.Received().Start();
             Assert.AreEqual(IAvatar.Status.Loaded, avatar.status);
