@@ -551,5 +551,16 @@ namespace DCL.Helpers
             }
             return false;
         }
+
+        public static bool IsPointerOverUIElement(Vector3 mousePosition)
+        {
+            var eventData = new PointerEventData(EventSystem.current);
+            eventData.position = mousePosition;
+            var results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(eventData, results);
+            return results.Count > 1;
+        }
+
+        public static bool IsPointerOverUIElement() { return IsPointerOverUIElement(Input.mousePosition); }
     }
 }
