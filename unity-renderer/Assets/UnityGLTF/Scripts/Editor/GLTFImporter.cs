@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.AssetImporters;
 using UnityEngine;
@@ -71,6 +72,11 @@ namespace UnityGLTF
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
+            ImportAsset(ctx).Forget();
+        }
+
+        private async UniTask ImportAsset(AssetImportContext ctx)
+        {
             string sceneName = null;
             GameObject gltfScene = null;
             UnityEngine.Mesh[] meshes = null;
@@ -84,7 +90,7 @@ namespace UnityGLTF
                 assetPath = assetPath.Replace('\\', ps);
 
                 sceneName = Path.GetFileNameWithoutExtension(assetPath);
-                gltfScene = CreateGLTFScene(assetPath);
+                gltfScene = await CreateGLTFScene(assetPath);
 
                 // Remove empty roots
                 if (_removeEmptyRootObjects)
@@ -518,7 +524,7 @@ namespace UnityGLTF
         public static event System.Action<GLTFRoot> OnGLTFRootIsConstructed;
         public static event System.Action<GLTFSceneImporter> OnGLTFWillLoad;
 
-        private GameObject CreateGLTFScene(string projectFilePath)
+        private async UniTask<GameObject> CreateGLTFScene(string projectFilePath)
         {
             ILoader fileLoader = new GLTFFileLoader(Path.GetDirectoryName(projectFilePath));
             using (var stream = File.OpenRead(projectFilePath))
@@ -539,7 +545,7 @@ namespace UnityGLTF
 
                 OnGLTFWillLoad?.Invoke(loader);
 
-                loader.LoadScene(CancellationToken.None).GetAwaiter().GetResult();
+                await loader.LoadScene(CancellationToken.None);
                 return loader.lastLoadedScene;
             }
         }
