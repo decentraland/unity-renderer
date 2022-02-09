@@ -6,7 +6,7 @@ using UnityEngine;
 public class FriendsHUDController : IHUD
 {
     internal const string PLAYER_PREFS_SEEN_FRIEND_COUNT = "SeenFriendsCount";
-    public FriendsHUDView view { get; private set; }
+    public IFriendsHUDView view { get; private set; }
 
     IFriendsController friendsController;
     public event System.Action<string> OnPressWhisper;
@@ -26,15 +26,13 @@ public class FriendsHUDController : IHUD
             this.friendsController.OnUpdateUserStatus += OnUpdateUserStatus;
             this.friendsController.OnFriendNotFound += OnFriendNotFound;
         }
-
-        view.friendRequestsList.OnFriendRequestApproved += Entry_OnRequestAccepted;
-        view.friendRequestsList.OnCancelConfirmation += Entry_OnRequestCancelled;
-        view.friendRequestsList.OnRejectConfirmation += Entry_OnRequestRejected;
-        view.friendRequestsList.OnFriendRequestSent += Entry_OnRequestSent;
-
-        view.friendsList.OnWhisper += Entry_OnWhisper;
-
-        view.friendsList.OnDeleteConfirmation += Entry_OnDelete;
+        
+        view.OnFriendRequestApproved += Entry_OnRequestAccepted;
+        view.OnCancelConfirmation += Entry_OnRequestCancelled;
+        view.OnRejectConfirmation += Entry_OnRequestRejected;
+        view.OnFriendRequestSent += Entry_OnRequestSent;
+        view.OnWhisper += Entry_OnWhisper;
+        view.OnDeleteConfirmation += Entry_OnDelete;
 
         if (ownUserProfile != null)
         {
@@ -87,9 +85,9 @@ public class FriendsHUDController : IHUD
 
     private void OnUpdateUserStatus(string userId, FriendsController.UserStatus newStatus)
     {
-        var model = new FriendEntry.Model();
+        var model = new FriendEntryBase.Model();
 
-        FriendEntryBase entry = view.friendsList.GetEntry(userId) ?? view.friendRequestsList.GetEntry(userId);
+        FriendEntryBase entry = view.GetEntry(userId);
 
         if (entry != null)
             model = entry.model;
@@ -110,11 +108,10 @@ public class FriendsHUDController : IHUD
             model.realmLayerName = string.Empty;
         }
 
-        view.friendsList.UpdateEntry(userId, model);
-        view.friendRequestsList.UpdateEntry(userId, model);
+        view.UpdateEntry(userId, model);
     }
 
-    void OnFriendNotFound(string name) { view.friendRequestsList.DisplayFriendUserNotFound(); }
+    void OnFriendNotFound(string name) { view.DisplayFriendUserNotFound(); }
 
     private void OnUpdateFriendship(string userId, FriendshipAction friendshipAction)
     {
@@ -126,9 +123,8 @@ public class FriendsHUDController : IHUD
             return;
         }
 
-        FriendEntryBase.Model friendEntryModel = new FriendEntry.Model();
-
-        FriendEntryBase entry = view.friendsList.GetEntry(userId) ?? view.friendRequestsList.GetEntry(userId);
+        FriendEntryBase.Model friendEntryModel = new FriendEntryBase.Model();
+        FriendEntryBase entry = view.GetEntry(userId);
 
         if (entry != null)
             friendEntryModel = entry.model;
@@ -139,48 +135,21 @@ public class FriendsHUDController : IHUD
         if (ownUserProfile != null && ownUserProfile.blocked != null)
             friendEntryModel.blocked = ownUserProfile.blocked.Contains(userId);
 
-        switch (friendshipAction)
-        {
-            case FriendshipAction.NONE:
-                view.friendRequestsList.RemoveEntry(userId);
-                view.friendsList.RemoveEntry(userId);
-                break;
-            case FriendshipAction.APPROVED:
-                view.friendRequestsList.RemoveEntry(userId);
-                view.friendsList.CreateOrUpdateEntryDeferred(userId, friendEntryModel);
-                break;
-            case FriendshipAction.REJECTED:
-                view.friendRequestsList.RemoveEntry(userId);
-                break;
-            case FriendshipAction.CANCELLED:
-                view.friendRequestsList.RemoveEntry(userId);
-                break;
-            case FriendshipAction.REQUESTED_FROM:
-                view.friendRequestsList.CreateOrUpdateEntry(userId, friendEntryModel, true);
-                break;
-            case FriendshipAction.REQUESTED_TO:
-                view.friendRequestsList.CreateOrUpdateEntry(userId,  friendEntryModel, false);
-                break;
-            case FriendshipAction.DELETED:
-                view.friendRequestsList.RemoveEntry(userId);
-                view.friendsList.RemoveEntry(userId);
-                break;
-        }
-
+        view.UpdateFriendshipStatus(userId, friendshipAction, friendEntryModel);
         UpdateNotificationsCounter();
     }
 
     private void UpdateNotificationsCounter()
     {
         //NOTE(Brian): If friends tab is already active, update and save this value instantly
-        if (view.friendsList.gameObject.activeInHierarchy)
+        if (view.IsFriendListFocused())
         {
             PlayerPrefsUtils.SetInt(PLAYER_PREFS_SEEN_FRIEND_COUNT, friendsController.friendCount);
             PlayerPrefsUtils.Save();
         }
 
         var pendingFriendRequestsSO = NotificationScriptableObjects.pendingFriendRequests;
-        int receivedRequestsCount = view.friendRequestsList.receivedRequestsList.Count();
+        int receivedRequestsCount = view.GetReceivedFriendRequestCount();
 
         if (pendingFriendRequestsSO != null)
         {
@@ -255,10 +224,7 @@ public class FriendsHUDController : IHUD
             this.friendsController.OnUpdateUserStatus -= OnUpdateUserStatus;
         }
 
-        if (view != null)
-        {
-            UnityEngine.Object.Destroy(view.gameObject);
-        }
+        view?.Destroy();
 
         if (this.ownUserProfile != null)
             ownUserProfile.OnUpdate -= OnUserProfileUpdate;
@@ -266,14 +232,14 @@ public class FriendsHUDController : IHUD
 
     public void SetVisibility(bool visible)
     {
-        view.gameObject.SetActive(visible);
+        if (visible)
+            view.Show();
+        else
+            view.Hide();
 
         if (visible)
         {
             UpdateNotificationsCounter();
-
-            if (view.friendsButton.interactable)
-                view.friendsButton.onClick.Invoke();
 
             OnFriendsOpened?.Invoke();
 

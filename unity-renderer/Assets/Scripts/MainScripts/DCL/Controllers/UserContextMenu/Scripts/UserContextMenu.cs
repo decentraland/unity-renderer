@@ -139,6 +139,10 @@ public class UserContextMenu : MonoBehaviour
         }
     }
 
+    public void ClickPassportButton() => passportButton.onClick.Invoke();
+    
+    public void ClickReportButton() => reportButton.onClick.Invoke();
+
     private void OnPassportButtonPressed()
     {
         OnPassport?.Invoke(userId);

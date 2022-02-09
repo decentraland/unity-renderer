@@ -272,10 +272,10 @@ public class TaskbarHUDController : IHUD
             return;
         }
 
-        if (controller.view.transform.parent == view.leftWindowContainer)
+        if (controller.view.Transform.parent == view.leftWindowContainer)
             return;
 
-        controller.view.transform.SetParent(view.leftWindowContainer, false);
+        controller.view.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
 
         friendsHud = controller;
@@ -286,7 +286,7 @@ public class TaskbarHUDController : IHUD
             MarkWorldChatAsReadIfOtherWindowIsOpen();
         };
 
-        friendsHud.view.friendsList.OnDeleteConfirmation += (userIdToRemove) => { view.chatHeadsGroup.RemoveChatHead(userIdToRemove); };
+        friendsHud.view.OnDeleteConfirmation += (userIdToRemove) => { view.chatHeadsGroup.RemoveChatHead(userIdToRemove); };
     }
 
     internal void InitializeExperiencesViewer(Transform currentViewTransform, Transform previousViewTransform)
@@ -436,7 +436,7 @@ public class TaskbarHUDController : IHUD
 
     private bool AnyWindowsDifferentThanChatIsOpen()
     {
-        return (friendsHud != null && friendsHud.view.gameObject.activeSelf) ||
+        return (friendsHud != null && friendsHud.view.IsActive()) ||
                (privateChatWindowHud != null && privateChatWindowHud.view.gameObject.activeSelf);
     }
 

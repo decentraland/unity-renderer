@@ -197,7 +197,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         controller.view.backButton.onClick.Invoke();
         yield return null;
 
-        Assert.AreEqual(true, friendsHudController.view.gameObject.activeSelf);
+        Assert.AreEqual(true, friendsHudController.view.IsActive());
 
         friendsHudController.Dispose();
         notificationsController.Dispose();

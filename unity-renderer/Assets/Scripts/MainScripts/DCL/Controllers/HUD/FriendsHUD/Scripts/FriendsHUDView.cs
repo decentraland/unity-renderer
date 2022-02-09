@@ -1,15 +1,49 @@
+using System;
 using DCL.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
-public class FriendsHUDView : MonoBehaviour
+public class FriendsHUDView : MonoBehaviour, IFriendsHUDView
 {
     public const string NOTIFICATIONS_ID = "Friends";
     static readonly int ANIM_PROPERTY_SELECTED = Animator.StringToHash("Selected");
     const string VIEW_PATH = "FriendsHUD";
     const int PREINSTANTIATED_FRIENDS_ENTRIES = 25;
     const int PREINSTANTIATED_FRIENDS_REQUEST_ENTRIES = 5;
+    
+    public event Action<FriendRequestEntry> OnFriendRequestApproved
+    {
+        add => friendRequestsList.OnFriendRequestApproved += value;
+        remove => friendRequestsList.OnFriendRequestApproved -= value;
+    }
+    public event Action<FriendRequestEntry> OnCancelConfirmation
+    {
+        add => friendRequestsList.OnCancelConfirmation += value;
+        remove => friendRequestsList.OnCancelConfirmation -= value;
+    }
+    public event Action<FriendRequestEntry> OnRejectConfirmation
+    {
+        add => friendRequestsList.OnRejectConfirmation += value;
+        remove => friendRequestsList.OnRejectConfirmation -= value;
+    }
+    public event Action<string> OnFriendRequestSent
+    {
+        add => friendRequestsList.OnFriendRequestSent += value;
+        remove => friendRequestsList.OnFriendRequestSent -= value;
+    }
+    public event Action<FriendEntry> OnWhisper
+    {
+        add => friendsList.OnWhisper += value;
+        remove => friendsList.OnWhisper -= value;
+    }
+    public event Action<string> OnDeleteConfirmation
+    {
+        add => friendsList.OnDeleteConfirmation += value;
+        remove => friendsList.OnDeleteConfirmation -= value;
+    }
+    public event Action OnClose;
 
     public Button closeButton;
     public Button friendsButton;
@@ -21,8 +55,8 @@ public class FriendsHUDView : MonoBehaviour
     public float notificationsDuration = 3f;
 
     FriendsHUDController controller;
-
-    public event System.Action OnClose;
+    
+    public RectTransform Transform => transform as RectTransform;
 
     public static FriendsHUDView Create(FriendsHUDController controller)
     {
@@ -31,13 +65,84 @@ public class FriendsHUDView : MonoBehaviour
         return view;
     }
 
-    internal List<FriendEntryBase> GetAllEntries()
+    public List<FriendEntryBase> GetAllEntries()
     {
         var result = new List<FriendEntryBase>();
         result.AddRange(friendsList.GetAllEntries());
         result.AddRange(friendRequestsList.GetAllEntries());
         return result;
     }
+
+    public FriendEntryBase GetEntry(string userId)
+    {
+        return friendsList.GetEntry(userId) ?? friendRequestsList.GetEntry(userId);
+    }
+
+    public void UpdateEntry(string userId, FriendEntryBase.Model model)
+    {
+        friendsList.UpdateEntry(userId, model);
+        friendRequestsList.UpdateEntry(userId, model);
+    }
+
+    public void DisplayFriendUserNotFound() => friendRequestsList.DisplayFriendUserNotFound();
+
+    public bool IsFriendListFocused() => friendsList.gameObject.activeInHierarchy;
+
+    public int GetReceivedFriendRequestCount() => friendRequestsList.receivedRequestsList.Count();
+
+    public void Destroy() => Destroy(gameObject);
+    
+    public void Show()
+    {
+        gameObject.SetActive(true);
+        
+        if (friendsButton.interactable)
+            friendsButton.onClick.Invoke();
+    }
+
+    public void Hide() => gameObject.SetActive(false);
+    
+    public void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction,
+        FriendEntryBase.Model friendEntryModel)
+    {
+        switch (friendshipAction)
+        {
+            case FriendshipAction.NONE:
+                friendRequestsList.RemoveEntry(userId);
+                friendsList.RemoveEntry(userId);
+                break;
+            case FriendshipAction.APPROVED:
+                friendRequestsList.RemoveEntry(userId);
+                friendsList.CreateOrUpdateEntryDeferred(userId, friendEntryModel);
+                break;
+            case FriendshipAction.REJECTED:
+                friendRequestsList.RemoveEntry(userId);
+                break;
+            case FriendshipAction.CANCELLED:
+                friendRequestsList.RemoveEntry(userId);
+                break;
+            case FriendshipAction.REQUESTED_FROM:
+                friendRequestsList.CreateOrUpdateEntry(userId, friendEntryModel, true);
+                break;
+            case FriendshipAction.REQUESTED_TO:
+                friendRequestsList.CreateOrUpdateEntry(userId,  friendEntryModel, false);
+                break;
+            case FriendshipAction.DELETED:
+                friendRequestsList.RemoveEntry(userId);
+                friendsList.RemoveEntry(userId);
+                break;
+        }
+    }
+
+    public void Search(string userId) => friendRequestsList.friendSearchInputField.onSubmit.Invoke(userId);
+    
+    public bool IsActive() => gameObject.activeInHierarchy;
+
+    public void ShowCurrentFriendPassport() => friendsList.contextMenuPanel.ClickPassportButton();
+
+    public void ReportCurrentFriend() => friendsList.contextMenuPanel.ClickReportButton();
+
+    public bool IsFriendListCreationReady() => friendsList.creationQueue.Count == 0;
 
     public void ShowSpinner()
     {

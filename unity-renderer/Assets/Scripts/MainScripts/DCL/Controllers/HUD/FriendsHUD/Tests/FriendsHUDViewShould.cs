@@ -5,7 +5,6 @@ using UnityEngine.TestTools;
 
 public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
 {
-    FriendsHUDController controller;
     FriendsHUDView view;
 
     [UnitySetUp]
@@ -13,32 +12,29 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
 
-        controller = new FriendsHUDController();
-        controller.Initialize(null, null);
-        this.view = controller.view;
+        view = FriendsHUDView.Create(null);
 
         Assert.IsTrue(view != null, "Friends hud view is null?");
-        Assert.IsTrue(controller != null, "Friends hud controller is null?");
     }
 
     protected override IEnumerator TearDown()
     {
-        controller.Dispose();
+        view.Destroy();
         yield return base.TearDown();
     }
 
     [Test]
     public void ChangeContentWhenClickingTabs()
     {
-        controller.view.friendsButton.onClick.Invoke();
+        view.friendsButton.onClick.Invoke();
 
-        Assert.IsTrue(controller.view.friendsList.gameObject.activeSelf);
-        Assert.IsFalse(controller.view.friendRequestsList.gameObject.activeSelf);
+        Assert.IsTrue(view.friendsList.gameObject.activeSelf);
+        Assert.IsFalse(view.friendRequestsList.gameObject.activeSelf);
 
-        controller.view.friendRequestsButton.onClick.Invoke();
+        view.friendRequestsButton.onClick.Invoke();
 
-        Assert.IsFalse(controller.view.friendsList.gameObject.activeSelf);
-        Assert.IsTrue(controller.view.friendRequestsList.gameObject.activeSelf);
+        Assert.IsFalse(view.friendsList.gameObject.activeSelf);
+        Assert.IsTrue(view.friendRequestsList.gameObject.activeSelf);
     }
 
     [UnityTest]
@@ -49,23 +45,23 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
 
         RequestCreateFriendEntry(id1, "Pravus", PresenceStatus.ONLINE);
         RequestCreateFriendEntry(id2, "Brian", PresenceStatus.OFFLINE);
-        yield return new WaitUntil(() => controller.view.friendsList.creationQueue.Count == 0);
+        yield return new WaitUntil(() => view.friendsList.creationQueue.Count == 0);
         var entry1 = GetFriendEntry( id1);
         var entry2 = GetFriendEntry( id2);
 
         Assert.IsNotNull(entry1);
         Assert.AreEqual(entry1.model.userName, entry1.playerNameText.text);
-        Assert.AreEqual(controller.view.friendsList.onlineFriendsList.container, entry1.transform.parent);
+        Assert.AreEqual(view.friendsList.onlineFriendsList.container, entry1.transform.parent);
 
         Assert.IsNotNull(entry2);
         Assert.AreEqual(entry2.model.userName, entry2.playerNameText.text);
-        Assert.AreEqual(controller.view.friendsList.offlineFriendsList.container, entry2.transform.parent);
+        Assert.AreEqual(view.friendsList.offlineFriendsList.container, entry2.transform.parent);
 
         var model2 = entry2.model;
         model2.status = PresenceStatus.ONLINE;
-        controller.view.friendsList.CreateOrUpdateEntryDeferred(id2, model2);
+        view.friendsList.CreateOrUpdateEntryDeferred(id2, model2);
 
-        Assert.AreEqual(controller.view.friendsList.onlineFriendsList.container, entry2.transform.parent);
+        Assert.AreEqual(view.friendsList.onlineFriendsList.container, entry2.transform.parent);
     }
 
     [Test]
@@ -73,13 +69,13 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
     {
         string id1 = "userId-1";
 
-        controller.view.friendRequestsList.CreateOrUpdateEntry(id1, new FriendEntry.Model(), isReceived: true);
+        view.friendRequestsList.CreateOrUpdateEntry(id1, new FriendEntry.Model(), isReceived: true);
 
-        Assert.IsNotNull(controller.view.friendRequestsList.GetEntry(id1));
+        Assert.IsNotNull(view.friendRequestsList.GetEntry(id1));
 
-        controller.view.friendRequestsList.RemoveEntry(id1);
+        view.friendRequestsList.RemoveEntry(id1);
 
-        Assert.IsNull(controller.view.friendRequestsList.GetEntry(id1));
+        Assert.IsNull(view.friendRequestsList.GetEntry(id1));
     }
 
     [Test]
@@ -93,14 +89,14 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
 
         Assert.IsNotNull(entry1);
         Assert.AreEqual("Pravus", entry1.playerNameText.text);
-        Assert.AreEqual(controller.view.friendRequestsList.receivedRequestsList.container, entry1.transform.parent);
+        Assert.AreEqual(view.friendRequestsList.receivedRequestsList.container, entry1.transform.parent);
 
         Assert.IsNotNull(entry2);
         Assert.AreEqual("Brian", entry2.playerNameText.text);
-        Assert.AreEqual(controller.view.friendRequestsList.sentRequestsList.container, entry2.transform.parent);
+        Assert.AreEqual(view.friendRequestsList.sentRequestsList.container, entry2.transform.parent);
 
-        controller.view.friendRequestsList.UpdateEntry(id2, entry2.model, true);
-        Assert.AreEqual(controller.view.friendRequestsList.receivedRequestsList.container, entry2.transform.parent);
+        view.friendRequestsList.UpdateEntry(id2, entry2.model, true);
+        Assert.AreEqual(view.friendRequestsList.receivedRequestsList.container, entry2.transform.parent);
     }
 
     [UnityTest]
@@ -112,7 +108,7 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
         RequestCreateFriendEntry("user3", "Wanda Nara", PresenceStatus.OFFLINE);
         RequestCreateFriendEntry("user4", "Mirtha Legrand", PresenceStatus.OFFLINE);
 
-        yield return new WaitUntil(() => controller.view.friendsList.creationQueue.Count == 0);
+        yield return new WaitUntil(() => view.friendsList.creationQueue.Count == 0);
 
         Assert.AreEqual(2, view.friendsList.onlineFriendsList.Count());
         Assert.AreEqual(2, view.friendsList.offlineFriendsList.Count());
@@ -129,7 +125,7 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
     {
         string id1 = "userId-1";
         RequestCreateFriendEntry(id1, "Pravus");
-        yield return new WaitUntil(() => controller.view.friendsList.creationQueue.Count == 0);
+        yield return new WaitUntil(() => view.friendsList.creationQueue.Count == 0);
         var entry = GetFriendEntry(id1);
 
         bool onMenuToggleCalled = false;
@@ -151,7 +147,7 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
     {
         string id1 = "userId-1";
         RequestCreateFriendEntry(id1, "Ted Bundy");
-        yield return new WaitUntil(() => controller.view.friendsList.creationQueue.Count == 0);
+        yield return new WaitUntil(() => view.friendsList.creationQueue.Count == 0);
         var entry = GetFriendEntry(id1);
 
         entry.menuButton.onClick.Invoke();
@@ -226,10 +222,10 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
             userName = name,
         };
 
-        controller.view.friendsList.CreateOrUpdateEntryDeferred(id, model1);
+        view.friendsList.CreateOrUpdateEntryDeferred(id, model1);
     }
 
-    FriendEntry GetFriendEntry(string id) { return controller.view.friendsList.GetEntry(id) as FriendEntry; }
+    FriendEntry GetFriendEntry(string id) { return view.friendsList.GetEntry(id) as FriendEntry; }
 
     FriendRequestEntry CreateFriendRequestEntry(string id, string name, bool isReceived)
     {
@@ -238,8 +234,8 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
             userName = name,
         };
 
-        controller.view.friendRequestsList.CreateOrUpdateEntry(id, model1, isReceived);
+        view.friendRequestsList.CreateOrUpdateEntry(id, model1, isReceived);
 
-        return controller.view.friendRequestsList.GetEntry(id) as FriendRequestEntry;
+        return view.friendRequestsList.GetEntry(id) as FriendRequestEntry;
     }
 }

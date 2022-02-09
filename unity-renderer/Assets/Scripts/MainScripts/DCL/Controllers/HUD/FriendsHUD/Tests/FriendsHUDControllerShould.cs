@@ -11,7 +11,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
     UserProfileController userProfileController;
     private NotificationsController notificationsController;
     FriendsHUDController controller;
-    FriendsHUDView view;
+    IFriendsHUDView view;
     FriendsController_Mock friendsController;
 
     [UnitySetUp]
@@ -26,7 +26,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         controller = new FriendsHUDController();
         friendsController = new FriendsController_Mock();
         controller.Initialize(friendsController, UserProfile.GetOwnUserProfile());
-        this.view = controller.view;
+        view = controller.view;
 
         Assert.IsTrue(view != null, "Friends hud view is null?");
         Assert.IsTrue(controller != null, "Friends hud controller is null?");
@@ -79,9 +79,9 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
 
         entry.menuButton.onClick.Invoke();
 
-        Assert.IsTrue(controller.view.friendsList.contextMenuPanel.gameObject.activeSelf);
+        Assert.IsTrue(view.IsFriendListFocused());
 
-        controller.view.friendsList.contextMenuPanel.reportButton.onClick.Invoke();
+        view.ReportCurrentFriend();
 
         Assert.IsTrue(reportPlayerSent);
 
@@ -101,7 +101,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         entry.menuButton.onClick.Invoke();
         Assert.AreNotEqual(id, currentPlayerId.Get());
 
-        view.friendsList.contextMenuPanel.passportButton.onClick.Invoke();
+        view.ShowCurrentFriendPassport();
 
         Assert.AreEqual(id, currentPlayerId.Get());
     }
@@ -127,7 +127,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
 
         WebInterface.OnMessageFromEngine += callback;
 
-        view.friendRequestsList.friendSearchInputField.onSubmit.Invoke(id);
+        view.Search(id);
 
         Assert.IsTrue(messageSent);
 
@@ -143,7 +143,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         Assert.IsNotNull(entry);
 
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.DELETED);
-        entry = controller.view.friendsList.GetEntry(id) as FriendEntry;
+        entry = controller.view.GetEntry(id) as FriendEntry;
         Assert.IsNull(entry);
     }
 
@@ -158,7 +158,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_FROM);
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.REJECTED);
 
-        var entry = controller.view.friendRequestsList.GetEntry(id);
+        var entry = controller.view.GetEntry(id);
         Assert.IsNull(entry);
     }
 
@@ -169,10 +169,10 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id);
 
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_TO);
-        var entry = controller.view.friendRequestsList.GetEntry(id);
+        var entry = controller.view.GetEntry(id);
         Assert.IsNotNull(entry);
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.CANCELLED);
-        entry = controller.view.friendRequestsList.GetEntry(id);
+        entry = controller.view.GetEntry(id);
         Assert.IsNull(entry);
     }
 

@@ -76,9 +76,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         friendsHudController.Initialize(null, null);
         controller.AddFriendsWindow(friendsHudController);
 
-        Assert.IsTrue(friendsHudController.view.transform.parent == view.leftWindowContainer,
+        Assert.IsTrue(friendsHudController.view.Transform.parent == view.leftWindowContainer,
             "Friends window isn't inside taskbar window container!");
-        Assert.IsTrue(friendsHudController.view.gameObject.activeSelf, "Friends window is disabled!");
+        Assert.IsTrue(friendsHudController.view.IsActive(), "Friends window is disabled!");
     }
 
     [Test]
@@ -108,7 +108,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         friendsHudController.Initialize(friendsController, UserProfile.GetOwnUserProfile());
         controller.AddFriendsWindow(friendsHudController);
 
-        rt = friendsHudController.view.transform as RectTransform;
+        rt = friendsHudController.view.Transform as RectTransform;
         Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
@@ -154,7 +154,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view.chatButton.toggleButton.onClick.Invoke();
 
         Assert.IsTrue(controller.worldChatWindowHud.view.gameObject.activeInHierarchy);
-        Assert.IsFalse(controller.friendsHud.view.gameObject.activeInHierarchy);
+        Assert.IsFalse(controller.friendsHud.view.IsActive());
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
     }
 }
