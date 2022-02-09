@@ -15,6 +15,14 @@ namespace DCL.Components
         private Action<Rendereable> successWrapperEvent;
         private Action<Exception> failWrapperEvent;
 
+        private const string AB_FEATURE_FLAG_NAME = "asset_bundles";
+        private bool useAssetBundles = true;
+
+        public LoadWrapper_GLTF()
+        {
+            useAssetBundles = UseAssetBundles();
+        }
+
         public override void Load(string targetUrl, Action<LoadWrapper> OnSuccess, Action<LoadWrapper, Exception> OnFail)
         {
             if (loadHelper != null)
@@ -57,7 +65,13 @@ namespace DCL.Components
 
             loadHelper.OnSuccessEvent += successWrapperEvent;
             loadHelper.OnFailEvent += failWrapperEvent;
-            loadHelper.Load(targetUrl);
+            loadHelper.Load(targetUrl, useAssetBundles);
+        }
+
+        private bool UseAssetBundles()
+        {
+            var featureFlags = DataStore.i.featureFlags.flags.Get();
+            return featureFlags != null && featureFlags.IsFeatureEnabled(AB_FEATURE_FLAG_NAME);
         }
 
         private void OnFailWrapper(Action<LoadWrapper, Exception> OnFail, Exception exception)
