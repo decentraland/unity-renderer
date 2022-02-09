@@ -23,6 +23,11 @@ public interface IExperiencesViewerComponentView
     event Action<string, bool> onSomeExperienceExecutionChanged;
 
     /// <summary>
+    /// It represents the container transform of the component.
+    /// </summary>
+    Transform experienceViewerTransform { get; }
+
+    /// <summary>
     /// Set the available experiences component with a list of experiences.
     /// </summary>
     /// <param name="experiences">List of experiences (model) to be loaded.</param>
@@ -81,6 +86,8 @@ public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesVie
 
     internal Pool experiencesPool;
     internal Coroutine uiHiddenToastCoroutine;
+
+    public Transform experienceViewerTransform => transform;
 
     public override void Awake()
     {

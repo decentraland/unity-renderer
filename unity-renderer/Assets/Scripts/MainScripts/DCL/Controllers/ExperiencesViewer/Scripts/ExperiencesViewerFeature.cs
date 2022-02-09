@@ -8,7 +8,7 @@ public class ExperiencesViewerFeature : IPlugin
     public ExperiencesViewerFeature()
     {
         experiencesViewerComponentController = CreateController();
-        experiencesViewerComponentController.Initialize();
+        experiencesViewerComponentController.Initialize(DCL.Environment.i.world.sceneController);
     }
 
     internal virtual IExperiencesViewerComponentController CreateController() => new ExperiencesViewerComponentController();
