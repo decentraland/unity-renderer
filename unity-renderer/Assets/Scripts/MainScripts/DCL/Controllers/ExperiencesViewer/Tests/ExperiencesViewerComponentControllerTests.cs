@@ -1,79 +1,81 @@
-using DCL;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 
-public class ExperiencesViewerComponentControllerTests
+namespace DCL.ExperiencesViewer.Tests
 {
-    private ExperiencesViewerComponentController experiencesViewerComponentController;
-    private IExperiencesViewerComponentView experiencesViewerComponentView;
-    private ISceneController sceneController;
-
-    [SetUp]
-    public void SetUp()
+    public class ExperiencesViewerComponentControllerTests
     {
-        experiencesViewerComponentView = Substitute.For<IExperiencesViewerComponentView>();
-        sceneController = Substitute.For<ISceneController>();
-        experiencesViewerComponentController = Substitute.ForPartsOf<ExperiencesViewerComponentController>();
-        experiencesViewerComponentController.Configure().CreateView().Returns(info => experiencesViewerComponentView);
-        experiencesViewerComponentController.Initialize(sceneController);
-    }
+        private ExperiencesViewerComponentController experiencesViewerComponentController;
+        private IExperiencesViewerComponentView experiencesViewerComponentView;
+        private ISceneController sceneController;
 
-    [TearDown]
-    public void TearDown() { experiencesViewerComponentController.Dispose(); }
+        [SetUp]
+        public void SetUp()
+        {
+            experiencesViewerComponentView = Substitute.For<IExperiencesViewerComponentView>();
+            sceneController = Substitute.For<ISceneController>();
+            experiencesViewerComponentController = Substitute.ForPartsOf<ExperiencesViewerComponentController>();
+            experiencesViewerComponentController.Configure().CreateView().Returns(info => experiencesViewerComponentView);
+            experiencesViewerComponentController.Initialize(sceneController);
+        }
 
-    [Test]
-    public void InitializeCorrectly()
-    {
-        // Assert
-        Assert.AreEqual(experiencesViewerComponentView, experiencesViewerComponentController.view);
-        Assert.AreEqual(experiencesViewerComponentView.experienceViewerTransform, DataStore.i.experiencesViewer.isInitialized.Get());
-    }
+        [TearDown]
+        public void TearDown() { experiencesViewerComponentController.Dispose(); }
 
-    [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void SetVisibilityCorrectly(bool isVisible)
-    {
-        // Act
-        experiencesViewerComponentController.SetVisibility(isVisible);
+        [Test]
+        public void InitializeCorrectly()
+        {
+            // Assert
+            Assert.AreEqual(experiencesViewerComponentView, experiencesViewerComponentController.view);
+            Assert.AreEqual(experiencesViewerComponentView.experienceViewerTransform, DataStore.i.experiencesViewer.isInitialized.Get());
+        }
 
-        // Assert
-        experiencesViewerComponentView.Received().SetVisible(isVisible);
-        Assert.AreEqual(isVisible, DataStore.i.experiencesViewer.isOpen.Get());
-    }
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetVisibilityCorrectly(bool isVisible)
+        {
+            // Act
+            experiencesViewerComponentController.SetVisibility(isVisible);
 
-    [Test]
-    public void RaiseOnCloseButtonPressedCorrectly()
-    {
-        // Act
-        experiencesViewerComponentController.OnCloseButtonPressed();
+            // Assert
+            experiencesViewerComponentView.Received().SetVisible(isVisible);
+            Assert.AreEqual(isVisible, DataStore.i.experiencesViewer.isOpen.Get());
+        }
 
-        // Assert
-        experiencesViewerComponentView.Received().SetVisible(false);
-        Assert.IsFalse(DataStore.i.experiencesViewer.isOpen.Get());
-    }
+        [Test]
+        public void RaiseOnCloseButtonPressedCorrectly()
+        {
+            // Act
+            experiencesViewerComponentController.OnCloseButtonPressed();
 
-    [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseIsOpenChangedCorrectly(bool isOpen)
-    {
-        // Act
-        experiencesViewerComponentController.IsOpenChanged(isOpen, false);
+            // Assert
+            experiencesViewerComponentView.Received().SetVisible(false);
+            Assert.IsFalse(DataStore.i.experiencesViewer.isOpen.Get());
+        }
 
-        // Assert
-        experiencesViewerComponentView.Received().SetVisible(isOpen);
-        Assert.AreEqual(isOpen, DataStore.i.experiencesViewer.isOpen.Get());
-    }
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void RaiseIsOpenChangedCorrectly(bool isOpen)
+        {
+            // Act
+            experiencesViewerComponentController.IsOpenChanged(isOpen, false);
 
-    [Test]
-    public void CheckCurrentActivePortableExperiencesCorrectly()
-    {
-        // Act
-        experiencesViewerComponentController.CheckCurrentActivePortableExperiences();
+            // Assert
+            experiencesViewerComponentView.Received().SetVisible(isOpen);
+            Assert.AreEqual(isOpen, DataStore.i.experiencesViewer.isOpen.Get());
+        }
 
-        // Assert
-        Assert.AreEqual(experiencesViewerComponentController.activePEXScenes.Count, DataStore.i.experiencesViewer.numOfLoadedExperiences.Get());
+        [Test]
+        public void CheckCurrentActivePortableExperiencesCorrectly()
+        {
+            // Act
+            experiencesViewerComponentController.CheckCurrentActivePortableExperiences();
+
+            // Assert
+            Assert.AreEqual(experiencesViewerComponentController.activePEXScenes.Count, DataStore.i.experiencesViewer.numOfLoadedExperiences.Get());
+        }
     }
 }

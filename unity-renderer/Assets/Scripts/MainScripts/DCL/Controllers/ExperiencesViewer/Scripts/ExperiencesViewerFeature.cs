@@ -1,20 +1,23 @@
-/// <summary>
-/// Plugin feature that initialize the Experiences Viewer feature.
-/// </summary>
-public class ExperiencesViewerFeature : IPlugin
+namespace DCL.ExperiencesViewer
 {
-    public IExperiencesViewerComponentController experiencesViewerComponentController;
-
-    public ExperiencesViewerFeature()
+    /// <summary>
+    /// Plugin feature that initialize the Experiences Viewer feature.
+    /// </summary>
+    public class ExperiencesViewerFeature : IPlugin
     {
-        experiencesViewerComponentController = CreateController();
-        experiencesViewerComponentController.Initialize(DCL.Environment.i.world.sceneController);
-    }
+        public IExperiencesViewerComponentController experiencesViewerComponentController;
 
-    internal virtual IExperiencesViewerComponentController CreateController() => new ExperiencesViewerComponentController();
+        public ExperiencesViewerFeature()
+        {
+            experiencesViewerComponentController = CreateController();
+            experiencesViewerComponentController.Initialize(Environment.i.world.sceneController);
+        }
 
-    public void Dispose()
-    {
-        experiencesViewerComponentController.Dispose();
+        internal virtual IExperiencesViewerComponentController CreateController() => new ExperiencesViewerComponentController();
+
+        public void Dispose()
+        {
+            experiencesViewerComponentController.Dispose();
+        }
     }
 }
