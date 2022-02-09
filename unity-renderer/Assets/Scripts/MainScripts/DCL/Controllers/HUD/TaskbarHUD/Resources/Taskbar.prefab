@@ -396,13 +396,9 @@ MonoBehaviour:
   chatHeadsGroup: {fileID: 1163524797233769629}
   experiencesContainer: {fileID: 6163705406466198189}
   experiencesButton: {fileID: 2371533818113636580}
-  rightButtonsHorizontalLayout: {fileID: 7859633553351928332}
-  portableExperienceItem: {fileID: 7008230418994466216, guid: 5e5c6fb3a6d05c6449ad00f42ca5036b,
-    type: 3}
   socialTooltipReference: {fileID: 1592195066899575826}
   taskbarPanelTransf: {fileID: 4515209315500026540}
   taskbarPanelImage: {fileID: 0}
-  rightButtonsContainer: {fileID: 8603069663900459623}
 --- !u!222 &7643556927286160474
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2418,7 +2414,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0.000078201294, y: 0.3}
-  m_SizeDelta: {x: 32, y: 2}
+  m_SizeDelta: {x: 22, y: 2}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &1661424249861601957
 CanvasRenderer:
