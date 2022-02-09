@@ -151,9 +151,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
     public IEnumerator ReactCorrectlyToFriendRejected()
     {
         var id = "test-id-1";
-        yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id);
-        var fentry = TestHelpers_Friends.GetEntry(view, id);
-        Assert.IsNotNull(fentry);
+        yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id, FriendshipAction.NONE);
 
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_FROM);
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.REJECTED);
@@ -166,7 +164,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
     public IEnumerator ReactCorrectlyToFriendCancelled()
     {
         var id = "test-id-1";
-        yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id);
+        yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id, FriendshipAction.NONE);
 
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_TO);
         var entry = controller.view.GetEntry(id);
