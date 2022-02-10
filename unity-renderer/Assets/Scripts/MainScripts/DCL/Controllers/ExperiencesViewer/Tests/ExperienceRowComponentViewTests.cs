@@ -122,16 +122,26 @@ namespace DCL.ExperiencesViewer.Tests
         {
             // Arrange
             experienceRowComponent.model.isUIVisible = !isVisible;
-            experienceRowComponent.showPEXUIButton.gameObject.SetActive(isVisible);
-            experienceRowComponent.hidePEXUIButton.gameObject.SetActive(!isVisible);
+
+            if (isVisible)
+            {
+                experienceRowComponent.showPEXUIButton.Show(true);
+                experienceRowComponent.hidePEXUIButton.Hide(true);
+            }
+            else
+            {
+                experienceRowComponent.showPEXUIButton.Hide(true);
+                experienceRowComponent.hidePEXUIButton.Show(true);
+            }
+
 
             // Act
             experienceRowComponent.SetUIVisibility(isVisible);
 
             // Assert
             Assert.AreEqual(isVisible, experienceRowComponent.model.isUIVisible);
-            Assert.AreEqual(!isVisible, experienceRowComponent.showPEXUIButton.gameObject.activeSelf);
-            Assert.AreEqual(isVisible, experienceRowComponent.hidePEXUIButton.gameObject.activeSelf);
+            Assert.AreEqual(!isVisible, experienceRowComponent.showPEXUIButton.isVisible);
+            Assert.AreEqual(isVisible, experienceRowComponent.hidePEXUIButton.isVisible);
         }
 
         [Test]
@@ -141,14 +151,17 @@ namespace DCL.ExperiencesViewer.Tests
         {
             // Arrange
             experienceRowComponent.model.isPlaying = !isPlaying;
-            experienceRowComponent.showHideUIButtonsContainer.gameObject.SetActive(!isPlaying);
+            if (isPlaying)
+                experienceRowComponent.showHideUIButtonsContainerAnimator.Hide(true);
+            else
+                experienceRowComponent.showHideUIButtonsContainerAnimator.Show(true);
 
             // Act
             experienceRowComponent.SetAsPlaying(isPlaying);
 
             // Assert
             Assert.AreEqual(isPlaying, experienceRowComponent.model.isPlaying);
-            Assert.AreEqual(isPlaying, experienceRowComponent.showHideUIButtonsContainer.gameObject.activeSelf);
+            Assert.AreEqual(isPlaying, experienceRowComponent.showHideUIButtonsContainerAnimator.isVisible);
         }
 
         [Test]

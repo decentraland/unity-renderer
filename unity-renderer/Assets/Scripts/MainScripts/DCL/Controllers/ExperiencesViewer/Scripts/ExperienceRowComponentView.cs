@@ -68,7 +68,7 @@ namespace DCL.ExperiencesViewer
         [Header("Prefab References")]
         [SerializeField] internal ImageComponentView iconImage;
         [SerializeField] internal TMP_Text nameText;
-        [SerializeField] internal GameObject showHideUIButtonsContainer;
+        [SerializeField] internal ShowHideAnimator showHideUIButtonsContainerAnimator;
         [SerializeField] internal ButtonComponentView showPEXUIButton;
         [SerializeField] internal ButtonComponentView hidePEXUIButton;
         [SerializeField] internal Toggle startStopPEXToggle;
@@ -158,10 +158,20 @@ namespace DCL.ExperiencesViewer
             model.isUIVisible = isVisible;
 
             if (showPEXUIButton != null)
-                showPEXUIButton.gameObject.SetActive(!isVisible);
+            {
+                if (isVisible)
+                    showPEXUIButton.Hide();
+                else
+                    showPEXUIButton.Show();
+            }
 
             if (hidePEXUIButton != null)
-                hidePEXUIButton.gameObject.SetActive(isVisible);
+            {
+                if (isVisible)
+                    hidePEXUIButton.Show();
+                else
+                    hidePEXUIButton.Hide();
+            }
         }
 
         public void SetAsPlaying(bool isPlaying)
@@ -171,8 +181,13 @@ namespace DCL.ExperiencesViewer
             if (startStopPEXToggle != null)
                 startStopPEXToggle.isOn = isPlaying;
 
-            if (showHideUIButtonsContainer != null)
-                showHideUIButtonsContainer.SetActive(isPlaying);
+            if (showHideUIButtonsContainerAnimator != null)
+            {
+                if (isPlaying)
+                    showHideUIButtonsContainerAnimator.Show();
+                else
+                    showHideUIButtonsContainerAnimator.Hide();
+            }
         }
 
         public void SetRowColor(Color color)
