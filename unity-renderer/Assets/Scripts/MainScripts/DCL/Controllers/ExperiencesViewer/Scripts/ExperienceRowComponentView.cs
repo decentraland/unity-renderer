@@ -71,8 +71,7 @@ namespace DCL.ExperiencesViewer
         [SerializeField] internal GameObject showHideUIButtonsContainer;
         [SerializeField] internal ButtonComponentView showPEXUIButton;
         [SerializeField] internal ButtonComponentView hidePEXUIButton;
-        [SerializeField] internal ButtonComponentView startPEXButton;
-        [SerializeField] internal ButtonComponentView stopPEXButton;
+        [SerializeField] internal Toggle startStopPEXToggle;
         [SerializeField] internal Image backgroundImage;
 
         [Header("Configuration")]
@@ -169,11 +168,8 @@ namespace DCL.ExperiencesViewer
         {
             model.isPlaying = isPlaying;
 
-            if (startPEXButton != null)
-                startPEXButton.gameObject.SetActive(!isPlaying);
-
-            if (stopPEXButton != null)
-                stopPEXButton.gameObject.SetActive(isPlaying);
+            if (startStopPEXToggle != null)
+                startStopPEXToggle.isOn = isPlaying;
 
             if (showHideUIButtonsContainer != null)
                 showHideUIButtonsContainer.SetActive(isPlaying);
@@ -202,8 +198,7 @@ namespace DCL.ExperiencesViewer
 
             showPEXUIButton?.onClick.RemoveAllListeners();
             hidePEXUIButton?.onClick.RemoveAllListeners();
-            startPEXButton?.onClick.RemoveAllListeners();
-            stopPEXButton?.onClick.RemoveAllListeners();
+            startStopPEXToggle?.onValueChanged.RemoveAllListeners();
         }
 
         internal void ConfigureRowButtons()
@@ -218,15 +213,10 @@ namespace DCL.ExperiencesViewer
                 SetUIVisibility(false);
                 onShowPEXUI?.Invoke(model.id, false);
             });
-            startPEXButton?.onClick.AddListener(() =>
+            startStopPEXToggle?.onValueChanged.AddListener((isOn) =>
             {
-                SetAsPlaying(true);
-                onStartPEX?.Invoke(model.id, true);
-            });
-            stopPEXButton?.onClick.AddListener(() =>
-            {
-                SetAsPlaying(false);
-                onStartPEX?.Invoke(model.id, false);
+                SetAsPlaying(isOn);
+                onStartPEX?.Invoke(model.id, isOn);
             });
         }
     }

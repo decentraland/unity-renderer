@@ -141,8 +141,6 @@ namespace DCL.ExperiencesViewer.Tests
         {
             // Arrange
             experienceRowComponent.model.isPlaying = !isPlaying;
-            experienceRowComponent.startPEXButton.gameObject.SetActive(isPlaying);
-            experienceRowComponent.stopPEXButton.gameObject.SetActive(!isPlaying);
             experienceRowComponent.showHideUIButtonsContainer.gameObject.SetActive(!isPlaying);
 
             // Act
@@ -150,8 +148,6 @@ namespace DCL.ExperiencesViewer.Tests
 
             // Assert
             Assert.AreEqual(isPlaying, experienceRowComponent.model.isPlaying);
-            Assert.AreEqual(!isPlaying, experienceRowComponent.startPEXButton.gameObject.activeSelf);
-            Assert.AreEqual(isPlaying, experienceRowComponent.stopPEXButton.gameObject.activeSelf);
             Assert.AreEqual(isPlaying, experienceRowComponent.showHideUIButtonsContainer.gameObject.activeSelf);
         }
 
@@ -235,53 +231,31 @@ namespace DCL.ExperiencesViewer.Tests
         }
 
         [Test]
-        public void ClickOnStartPEXButtonCorrectly()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ClickOnStartStopPEXToggleCorrectly(bool isOn)
         {
             // Arrange
+            experienceRowComponent.startStopPEXToggle.SetIsOnWithoutNotify(!isOn);
             string testId = "TestId";
             experienceRowComponent.model.id = testId;
-            bool startPEXButtonClicked = false;
+            bool startStopPEXToggleClicked = false;
             string receivedId = string.Empty;
-            bool receivedPlayingFlag = false;
+            bool receivedPlayingFlag = !isOn;
             experienceRowComponent.onStartPEX += (id, isPlaying) =>
             {
-                startPEXButtonClicked = true;
+                startStopPEXToggleClicked = true;
                 receivedId = id;
                 receivedPlayingFlag = isPlaying;
             };
 
             // Act
-            experienceRowComponent.startPEXButton.onClick.Invoke();
+            experienceRowComponent.startStopPEXToggle.onValueChanged.Invoke(isOn);
 
             // Assert
-            Assert.IsTrue(startPEXButtonClicked);
+            Assert.IsTrue(startStopPEXToggleClicked);
             Assert.AreEqual(testId, receivedId);
-            Assert.IsTrue(receivedPlayingFlag);
-        }
-
-        [Test]
-        public void ClickOnStopPEXButtonCorrectly()
-        {
-            // Arrange
-            string testId = "TestId";
-            experienceRowComponent.model.id = testId;
-            bool stopPEXButtonClicked = false;
-            string receivedId = string.Empty;
-            bool receivedPlayingFlag = true;
-            experienceRowComponent.onStartPEX += (id, isPlaying) =>
-            {
-                stopPEXButtonClicked = true;
-                receivedId = id;
-                receivedPlayingFlag = isPlaying;
-            };
-
-            // Act
-            experienceRowComponent.stopPEXButton.onClick.Invoke();
-
-            // Assert
-            Assert.IsTrue(stopPEXButtonClicked);
-            Assert.AreEqual(testId, receivedId);
-            Assert.IsFalse(receivedPlayingFlag);
+            Assert.AreEqual(isOn, receivedPlayingFlag);
         }
     }
 }
