@@ -64,7 +64,7 @@ namespace DCL
             deferredDecodingCoroutine = CoroutineStarter.Start(DeferredDecodingAndEnqueue());
 #else
             CancellationToken tokenSourceToken = tokenSource.Token;
-            TaskUtils.Run(async () => await ThreadedDeferredDecodeAndEnqueue(tokenSourceToken), cancellationToken: tokenSourceToken).Forget();
+            TaskUtils.Run(async () => await WatchForNewChunksToDecode(tokenSourceToken), cancellationToken: tokenSourceToken).Forget();
 #endif
         }
         private void PrewarmSceneMessagesPool()
@@ -442,9 +442,7 @@ namespace DCL
                 }
             }
         }
-
-        // Note (Pato): is this the best way to thread a permanent decoder?
-        private async UniTask ThreadedDeferredDecodeAndEnqueue(CancellationToken cancellationToken)
+        private async UniTask WatchForNewChunksToDecode(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -479,41 +477,13 @@ namespace DCL
 
                     if (availableMessage)
                     {
-                        //messagesToProcess.Enqueue(Decode(payload, freeMessage));a
                         EnqueueSceneMessage(Decode(payload, freeMessage));
                     }
                     else
                     {
-                        //messagesToProcess.Enqueue(Decode(payload, new QueuedSceneMessage_Scene()));
                         EnqueueSceneMessage(Decode(payload, new QueuedSceneMessage_Scene()));
                     }
                 }
-            }
-        }
-
-        private IEnumerator DeferredEnqueue()
-        {
-            while (!tokenSource.IsCancellationRequested)
-            {
-                while (messagesToProcess.TryDequeue(out QueuedSceneMessage_Scene message) && !tokenSource.IsCancellationRequested)
-                {
-                    EnqueueSceneMessage(message);
-                }
-
-                yield return null;
-            }
-        }
-
-        private async UniTask ThreadedDeferredEnqueue(CancellationToken cancellationToken)
-        {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                while (messagesToProcess.TryDequeue(out QueuedSceneMessage_Scene message) && !tokenSource.IsCancellationRequested)
-                {
-                    EnqueueSceneMessage(message);
-                }
-
-                await UniTask.Yield();
             }
         }
 
