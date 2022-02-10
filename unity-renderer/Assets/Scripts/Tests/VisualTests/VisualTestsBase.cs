@@ -44,6 +44,8 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
 
         VisualTestUtils.snapshotIndex = 0;
 
+        VisualTestUtils.SetTestingRenderSettings();
+
         // Position character inside parcel (0,0)
         camera = TestUtils.CreateComponentWithGameObject<Camera>("CameraContainer");
         camera.clearFlags = CameraClearFlags.Skybox;
