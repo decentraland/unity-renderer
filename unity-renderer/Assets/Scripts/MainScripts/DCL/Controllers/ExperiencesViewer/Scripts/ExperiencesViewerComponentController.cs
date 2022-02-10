@@ -121,8 +121,7 @@ namespace DCL.ExperiencesViewer
                 }
                 else
                 {
-                    WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.Concat(new List<string> { pexId }).ToArray());
-                    WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
+                    WebInterface.KillPortableExperience(pexId);
                 }
             }
         }
