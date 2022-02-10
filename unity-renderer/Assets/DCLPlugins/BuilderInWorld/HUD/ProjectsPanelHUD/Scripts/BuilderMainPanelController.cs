@@ -365,10 +365,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
             FetchPanelInfo();
             StartFetchInterval();
-            if (DataStore.i.builderInWorld.isDevBuild.Get())
-                sectionsController.OpenSection(SectionId.PROJECTS);
-            else
-                sectionsController.OpenSection(SectionId.SCENES);
+            
+            sectionsController.OpenSection(SectionId.PROJECTS);
         }
         else
         {

@@ -33,7 +33,12 @@ public class PubllishLandListAdapter : MonoBehaviour
     {
         this.land = land;
 
-        landNameTxt.text = land.name + " <color=#716B7C>"+BIWUtils.Vector2INTToString(land.baseCoords)+"</color>";
+        string text = land.name;
+        string coordsText = BIWUtils.Vector2INTToString(land.baseCoords);
+        if(!text.Contains(coordsText))
+            text += " <color=#716B7C>"+coordsText+"</color>";
+        
+        landNameTxt.text = text;
 
         SetState(state);
     }

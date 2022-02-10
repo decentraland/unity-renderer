@@ -16,12 +16,15 @@ public class LimitInputField : MonoBehaviour
 
     [SerializeField] private int characterLimit;
     [SerializeField] private bool isMandatory = false;
+    [SerializeField] private bool stopInputFromLimit = false;
+    [SerializeField] private string placeHolderText = "";
     [SerializeField] private Color normalColor;
     [SerializeField] private Color errorColor;
     [SerializeField] private Color focusColor;
 
     [SerializeField] private Image inputFieldbackgroundImg;
     [SerializeField] private TMP_InputField inputField;
+    [SerializeField] private TextMeshProUGUI inputFieldPlaceHolderText;
     [SerializeField] private TextMeshProUGUI limitText;
 
     internal bool hasPassedLimit = false;
@@ -55,6 +58,8 @@ public class LimitInputField : MonoBehaviour
     private void InputLostFocus(string value)
     {
         hasFocus = false;
+        if(string.IsNullOrEmpty(currentValue) && inputFieldPlaceHolderText != null)
+            inputFieldPlaceHolderText.text = placeHolderText;
         
         if (hasPassedLimit)
         {
@@ -69,30 +74,41 @@ public class LimitInputField : MonoBehaviour
 
     private void InputFocused(string value)
     {
+        if(inputFieldPlaceHolderText != null)
+            inputFieldPlaceHolderText.text = "";
         hasFocus = true;
+      
+        inputFieldbackgroundImg.enabled = true;
         
         if (hasPassedLimit)
-        {
-            inputFieldbackgroundImg.enabled = true;
             inputFieldbackgroundImg.color = errorColor;
-        }
         else
-        {
-            inputFieldbackgroundImg.enabled = false;
-        }
+            inputFieldbackgroundImg.color = focusColor;
+        
         OnInputFocused?.Invoke();
     }
 
     internal void InputChanged(string newValue)
     {
+        if (hasPassedLimit && newValue.Length > currentValue.Length && stopInputFromLimit)
+        {
+            inputField.SetTextWithoutNotify(currentValue);
+            return;
+        }
         currentValue = newValue;
         limitText?.SetText(newValue.Length + "/" + characterLimit);
         if (newValue.Length > characterLimit)
+        {
             LimitReached();
+        }
         else if (currentValue.Length == 0)
+        {
             Empty();
+        }
         else
+        {
             InputAvailable();
+        }
 
         OnInputChange?.Invoke(newValue);
     }

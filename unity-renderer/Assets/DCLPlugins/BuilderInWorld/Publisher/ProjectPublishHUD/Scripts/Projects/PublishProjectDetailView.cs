@@ -134,9 +134,10 @@ namespace DCL.Builder
 
             rotateLeftButton.onClick.AddListener( RotateLeft);
             rotateRightButton.onClick.AddListener( RotateRight);
-            miniSearchView.onClick.AddListener(HideTopToast);
+            miniSearchView.onClick.AddListener(ShowSearchBar);
 
             gameObject.SetActive(false);
+            searchView.gameObject.SetActive(false);
         }
 
         public override void Dispose()
@@ -203,10 +204,24 @@ namespace DCL.Builder
         {
             topToastText.text = text;
             topToastGameObject.SetActive(true);
-            searchView.gameObject.SetActive(false);
-            miniSearchView.gameObject.SetActive(true);
+            HideSearchBar();
 
             toastTopHideCoroutine = StartCoroutine(WaitAndHideTopToast());
+        }
+
+        private void ShowSearchBar()
+        {
+            searchView.gameObject.SetActive(true);
+            miniSearchView.gameObject.SetActive(false);
+            HideTopToast();
+        }
+        
+        private void HideSearchBar()
+        {
+            searchView.gameObject.SetActive(false);
+            miniSearchView.gameObject.SetActive(true);
+            landListView.HideEmptyContent();
+            landListView.SetActive(false);
         }
 
         private void HideTopToast()
@@ -214,8 +229,6 @@ namespace DCL.Builder
             if (toastTopHideCoroutine != null)
                 StopCoroutine(toastTopHideCoroutine);
             topToastGameObject.SetActive(false);
-            searchView.gameObject.SetActive(true);
-            miniSearchView.gameObject.SetActive(false);
         }
         
         private void ParcelClicked(Vector2Int parcel)
