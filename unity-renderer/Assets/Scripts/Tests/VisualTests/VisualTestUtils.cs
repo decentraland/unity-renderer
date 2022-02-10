@@ -372,6 +372,10 @@ namespace DCL.Helpers
                 RenderSettings.sun.color = Color.white;
                 RenderSettings.sun.transform.rotation = Quaternion.Euler(Vector3.one * 45);
             }
+
+            Shader.SetGlobalVector(ShaderUtils.LightDir, new Vector3(-0.1f, 0.8f, -0.4f));
+            Shader.SetGlobalColor(ShaderUtils.LightColor, Color.white);
+            Shader.SetGlobalColor(ShaderUtils.TintColor, new Color(0.64f, 0.57f, 0.54f));
         }
     }
 }
