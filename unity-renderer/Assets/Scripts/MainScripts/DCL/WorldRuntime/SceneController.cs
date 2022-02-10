@@ -64,9 +64,7 @@ namespace DCL
             deferredDecodingCoroutine = CoroutineStarter.Start(DeferredDecodingAndEnqueue());
 #else
             CancellationToken tokenSourceToken = tokenSource.Token;
-            //CoroutineStarter.Start(DeferredEnqueue());
-            // TaskUtils.Run(async () => await ThreadedDeferredEnqueue(tokenSourceToken), cancellationToken: tokenSourceToken).Forget();
-            TaskUtils.Run(async () => await ThreadedDeferredDecoding(tokenSourceToken), cancellationToken: tokenSourceToken).Forget();
+            TaskUtils.Run(async () => await ThreadedDeferredDecodeAndEnqueue(tokenSourceToken), cancellationToken: tokenSourceToken).Forget();
 #endif
         }
         private void PrewarmSceneMessagesPool()
@@ -446,7 +444,7 @@ namespace DCL
         }
 
         // Note (Pato): is this the best way to thread a permanent decoder?
-        private async UniTask ThreadedDeferredDecoding(CancellationToken cancellationToken)
+        private async UniTask ThreadedDeferredDecodeAndEnqueue(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -454,7 +452,7 @@ namespace DCL
                 {
                     if (chunksToDecode.Count > 0)
                     {
-                        await TaskUtils.Run( () => ThreadedDecode(cancellationToken), cancellationToken: cancellationToken);
+                        await TaskUtils.Run( () => ThreadedDecodeAndEnqueue(cancellationToken), cancellationToken: cancellationToken);
                     }
                 }
                 catch (Exception e)
@@ -465,7 +463,7 @@ namespace DCL
                 await UniTask.Yield();
             }
         }
-        private void ThreadedDecode(CancellationToken cancellationToken)
+        private void ThreadedDecodeAndEnqueue(CancellationToken cancellationToken)
         {
             while (chunksToDecode.TryDequeue(out string chunk))
             {

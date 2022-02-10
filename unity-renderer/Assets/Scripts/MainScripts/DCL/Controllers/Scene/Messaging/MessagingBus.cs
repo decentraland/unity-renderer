@@ -73,82 +73,85 @@ namespace DCL
 
         public void Enqueue(QueuedSceneMessage message, QueueMode queueMode = QueueMode.Reliable)
         {
-            if (message == null)
-                throw new Exception("A null message?");
-            
-            bool enqueued = true;
-
-            // When removing an entity we have to ensure that the enqueued lossy messages after it are processed and not replaced
-            if (message is QueuedSceneMessage_Scene queuedSceneMessage && queuedSceneMessage.payload is Protocol.RemoveEntity removeEntityPayload)
+            lock (unreliableMessages)
             {
-                List<string> unreliableMessagesToRemove = new List<string>();
-                foreach (string key in unreliableMessages.Keys)
+                if (message == null)
+                    throw new Exception("A null message?");
+
+                bool enqueued = true;
+
+                // When removing an entity we have to ensure that the enqueued lossy messages after it are processed and not replaced
+                if (message is QueuedSceneMessage_Scene queuedSceneMessage && queuedSceneMessage.payload is Protocol.RemoveEntity removeEntityPayload)
                 {
-                    if (key.Contains(removeEntityPayload.entityId)) //Key of unreliableMessages is a mixture of entityId
+                    List<string> unreliableMessagesToRemove = new List<string>();
+
+                    foreach (string key in unreliableMessages.Keys)
                     {
-                        unreliableMessagesToRemove.Add(key);
+                        if (key.Contains(removeEntityPayload.entityId)) //Key of unreliableMessages is a mixture of entityId
+                        {
+                            unreliableMessagesToRemove.Add(key);
+                        }
+                    }
+
+                    for (int index = 0; index < unreliableMessagesToRemove.Count; index++)
+                    {
+                        string key = unreliableMessagesToRemove[index];
+
+                        if (unreliableMessages.ContainsKey(key))
+                        {
+                            unreliableMessages.Remove(key);
+                        }
                     }
                 }
 
-                for (int index = 0; index < unreliableMessagesToRemove.Count; index++)
+                if (queueMode == QueueMode.Reliable)
                 {
-                    string key = unreliableMessagesToRemove[index];
-                    if (unreliableMessages.ContainsKey(key))
-                    {
-                        unreliableMessages.Remove(key);
-                    }
+                    message.isUnreliable = false;
+                    AddReliableMessage(message);
                 }
-            }
-
-            if (queueMode == QueueMode.Reliable)
-            {
-                message.isUnreliable = false;
-                AddReliableMessage(message);
-            }
-            else
-            {
-                message.isUnreliable = true;
-
-                LinkedListNode<QueuedSceneMessage> node = null;
-
-                message.unreliableMessageKey = message.tag;
-
-                if (unreliableMessages.ContainsKey(message.unreliableMessageKey))
+                else
                 {
-                    node = unreliableMessages[message.unreliableMessageKey];
+                    LinkedListNode<QueuedSceneMessage> node = null;
+                    message.isUnreliable = true;
+                    message.unreliableMessageKey = message.tag;
 
-                    if (node.List != null)
+                    if (unreliableMessages.ContainsKey(message.unreliableMessageKey))
                     {
-                        node.Value = message;
-                        enqueued = false;
-                        unreliableMessagesReplaced++;
+                        node = unreliableMessages[message.unreliableMessageKey];
+
+                        if (node.List != null)
+                        {
+                            node.Value = message;
+                            enqueued = false;
+                            unreliableMessagesReplaced++;
+                        }
+                    }
+
+                    if (enqueued)
+                    {
+                        node = AddReliableMessage(message);
+                        unreliableMessages[message.unreliableMessageKey] = node;
                     }
                 }
 
                 if (enqueued)
                 {
-                    node = AddReliableMessage(message);
-                    unreliableMessages[message.unreliableMessageKey] = node;
-                }
-            }
+                    if (message.type == QueuedSceneMessage.Type.SCENE_MESSAGE)
+                    {
+                        QueuedSceneMessage_Scene sm = message as QueuedSceneMessage_Scene;
+                        ProfilingEvents.OnMessageWillQueue?.Invoke(sm.method);
+                    }
 
-            if (enqueued)
-            {
-                if (message.type == QueuedSceneMessage.Type.SCENE_MESSAGE)
-                {
-                    QueuedSceneMessage_Scene sm = message as QueuedSceneMessage_Scene;
-                    ProfilingEvents.OnMessageWillQueue?.Invoke(sm.method);
-                }
+                    if (type == MessagingBusType.INIT)
+                    {
+                        manager.pendingInitMessagesCount++;
+                    }
 
-                if (type == MessagingBusType.INIT)
-                {
-                    manager.pendingInitMessagesCount++;
-                }
-
-                if (owner != null)
-                {
-                    owner.enabled = true;
-                    manager.MarkBusesDirty();
+                    if (owner != null)
+                    {
+                        owner.enabled = true;
+                        manager.MarkBusesDirty();
+                    }
                 }
             }
         }
@@ -166,15 +169,21 @@ namespace DCL
 
             while (enabled && pendingMessagesCount > 0 && Time.realtimeSinceStartup - startTime < timeBudget)
             {
-                LinkedListNode<QueuedSceneMessage> pendingMessagesFirst = pendingMessages.First;
+                LinkedListNode<QueuedSceneMessage> pendingMessagesFirst;
+
+                lock (pendingMessages)
+                {
+                    pendingMessagesFirst = pendingMessages.First;
+                }
 
                 // Note (Kinerius): This may be caused by 2 threads fighting for messages
                 if (pendingMessagesFirst == null)
                 {
                     pendingMessagesCount = 0;
+
                     continue;
                 }
-                
+
                 QueuedSceneMessage m = pendingMessagesFirst.Value;
 
                 RemoveFirstReliableMessage();
@@ -227,18 +236,22 @@ namespace DCL
                     case QueuedSceneMessage.Type.LOAD_PARCEL:
                         handler.LoadParcelScenesExecute(m.message);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("LoadScene");
+
                         break;
                     case QueuedSceneMessage.Type.UNLOAD_PARCEL:
                         handler.UnloadParcelSceneExecute(m.message);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadScene");
+
                         break;
                     case QueuedSceneMessage.Type.UPDATE_PARCEL:
                         handler.UpdateParcelScenesExecute(m.message);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("UpdateScene");
+
                         break;
                     case QueuedSceneMessage.Type.UNLOAD_SCENES:
                         handler.UnloadAllScenes();
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadAllScenes");
+
                         break;
                 }
 
@@ -269,23 +282,37 @@ namespace DCL
         {
             manager.pendingMessagesCount++;
             pendingMessagesCount++;
-            return pendingMessages.AddLast(message);
+
+            LinkedListNode<QueuedSceneMessage> addReliableMessage;
+
+            lock (pendingMessages)
+            {
+                addReliableMessage  = pendingMessages.AddLast(message);
+            }
+
+            return addReliableMessage;
         }
 
         private void RemoveFirstReliableMessage()
         {
-            if (pendingMessages.First != null)
+            lock (pendingMessages)
             {
-                pendingMessages.RemoveFirst();
-                pendingMessagesCount--;
-                manager.pendingMessagesCount--;
+                if (pendingMessages.First != null)
+                {
+                    pendingMessages.RemoveFirst();
+                    pendingMessagesCount--;
+                    manager.pendingMessagesCount--;
+                }
             }
         }
 
         private void RemoveUnreliableMessage(QueuedSceneMessage message)
         {
-            if (unreliableMessages.ContainsKey(message.unreliableMessageKey))
-                unreliableMessages.Remove(message.unreliableMessageKey);
+            lock (unreliableMessages)
+            {
+                if (unreliableMessages.ContainsKey(message.unreliableMessageKey))
+                    unreliableMessages.Remove(message.unreliableMessageKey);
+            }
         }
 
         private void LogMessage(QueuedSceneMessage m, MessagingBus bus, bool logType = true)
