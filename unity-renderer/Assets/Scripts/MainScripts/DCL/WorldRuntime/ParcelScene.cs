@@ -50,6 +50,7 @@ namespace DCL.Controllers
         {
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
+            metricsCounter = new SceneMetricsCounter(DataStore.i.sceneWorldObjects);
         }
 
         private void OnDestroy()
@@ -93,6 +94,9 @@ namespace DCL.Controllers
             }
 
             DataStore.i.sceneWorldObjects.AddScene(sceneData.id);
+
+            metricsCounter.Configure(sceneData.id, sceneData.basePosition, sceneData.parcels.Length);
+            metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
         }

@@ -587,14 +587,6 @@ namespace DCL
                 worldState.loadedScenes.Add(sceneToLoad.id, newScene);
                 worldState.scenesSortedByDistance.Add(newScene);
 
-                newScene.metricsCounter = new SceneMetricsCounter(
-                    DataStore.i.sceneWorldObjects,
-                    newScene.sceneData.id,
-                    newScene.sceneData.basePosition,
-                    newScene.sceneData.parcels.Length);
-
-                newScene.metricsCounter.Enable();
-
                 sceneSortDirty = true;
 
                 OnNewSceneAdded?.Invoke(newScene);
@@ -814,16 +806,6 @@ namespace DCL
                 OnNewPortableExperienceSceneAdded?.Invoke(newScene);
 
             worldState.globalSceneIds.Add(newGlobalSceneId);
-
-            // TODO: Define metrics criteria for global scenes
-            newScene.metricsCounter = new SceneMetricsCounter(
-                DataStore.i.sceneWorldObjects,
-                newGlobalSceneId,
-                Vector2Int.zero,
-                10000);
-
-            // metricsCounter is disabled for global scenes
-            // newScene.metricsCounter.Enable();
 
             Environment.i.messaging.manager.AddControllerIfNotExists(this, newGlobalSceneId, isGlobal: true);
 

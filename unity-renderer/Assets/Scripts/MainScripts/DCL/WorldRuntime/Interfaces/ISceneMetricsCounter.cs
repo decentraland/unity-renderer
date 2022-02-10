@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL.Models;
+using UnityEngine;
 
 namespace DCL
 {
@@ -16,5 +17,7 @@ namespace DCL
         void SendEvent();
 
         bool IsInsideTheLimits();
+
+        void Configure(string sceneId, Vector2Int scenePosition, int sceneParcelCount);
     }
 }

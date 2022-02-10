@@ -58,10 +58,20 @@ namespace DCL
 
         public SceneMetricsCounter(DataStore_WorldObjects dataStore, string sceneId, Vector2Int scenePosition, int sceneParcelCount)
         {
+            this.data = dataStore;
+            Configure(sceneId, scenePosition, sceneParcelCount);
+        }
+
+        public SceneMetricsCounter(DataStore_WorldObjects dataStore)
+        {
+            this.data = dataStore;
+        }
+
+        public void Configure(string sceneId, Vector2Int scenePosition, int sceneParcelCount)
+        {
             this.sceneId = sceneId;
             this.scenePosition = scenePosition;
             this.sceneParcelCount = sceneParcelCount;
-            this.data = dataStore;
 
             Assert.IsTrue( !string.IsNullOrEmpty(sceneId), "Scene must have an ID!" );
             maxCountValue = ComputeMaxCount();
