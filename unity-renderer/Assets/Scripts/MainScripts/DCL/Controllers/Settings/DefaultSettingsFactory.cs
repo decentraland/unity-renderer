@@ -26,7 +26,8 @@ namespace DCL.SettingsCommon
             hideUI = false,
             showAvatarNames = true,
             dynamicProceduralSkybox = true,
-            skyboxTime = 0.0f
+            skyboxTime = 0.0f,
+            firstPersonCameraFOV = 60
         };
 
         private AudioSettings defaultAudioSettings = new AudioSettings
