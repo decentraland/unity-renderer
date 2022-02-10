@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2540536
+    totalSpriteSurfaceArea: 2544632
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -146,6 +146,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3bdf32a4d196e1d429119d1477906987, type: 3}
   - {fileID: 21300000, guid: c983eea4ebd9d43579acbb2e5c500480, type: 3}
   - {fileID: 21300000, guid: a13564b4fa74e4061bafd65fb9bfdc46, type: 3}
+  - {fileID: 21300000, guid: 198562c4af29e18439f1360875165550, type: 3}
   - {fileID: 21300000, guid: 9a24f3c4fd700a545a40ac4d0df7eeae, type: 3}
   - {fileID: 21300000, guid: a97a0ec41c10cdf4991c0112c64b2e84, type: 3}
   - {fileID: 21300000, guid: acc672d4bfa668c40b5d8b96e9b94a7a, type: 3}
@@ -431,6 +432,7 @@ SpriteAtlas:
   - DclLogoLine3
   - Camera
   - NFTEmpty
+  - Outline2Bottom12
   - PlayIcon
   - CheckmarkGreen
   - Ellipse38Stroke
