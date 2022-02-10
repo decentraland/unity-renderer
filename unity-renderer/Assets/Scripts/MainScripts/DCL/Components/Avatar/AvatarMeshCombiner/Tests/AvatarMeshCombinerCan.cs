@@ -32,6 +32,7 @@ public class AvatarMeshCombinerCan
         var materialAsset = Material.CreateOpaque();
 
         var output = AvatarMeshCombiner.CombineSkinnedMeshes(firstRenderer.sharedMesh.bindposes,
+            firstRenderer.rootBone,
             firstRenderer.bones,
             renderersToCombine,
             materialAsset );

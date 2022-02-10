@@ -77,11 +77,12 @@ namespace DCL
         /// </ul>
         /// </summary>
         /// <param name="bindPoses">Bindposes that will be used by all the renderers.</param>
+        /// <param name="rootBone">Root bone used by all the renderers</param>
         /// <param name="bones">Bones that will be used by all the renderers.</param>
         /// <param name="renderers">Renderers to be combined.</param>
         /// <param name="materialAsset">Material asset to be used in the resulting Output object. This Material will be instantiated for each sub-mesh generated.</param>
         /// <returns>An Output object with the mesh and materials. Output.isValid will return true if the combining is successful.</returns>
-        public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset)
+        public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform rootBone, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset)
         {
             Output result = new Output();
 
@@ -91,6 +92,36 @@ namespace DCL
             // We need wearables in T pose to properly combine the avatar mesh. 
             //
             AvatarMeshCombinerUtils.ResetBones(bindPoses, bones);
+
+            //This works in the provided tests, not in world (yet)
+            //We reset each bones only once
+            HashSet<Transform> processedBones = new HashSet<Transform>();
+            foreach (SkinnedMeshRenderer skr in renderers)
+            {
+                if (skr.rootBone == rootBone)
+                {
+                    skr.sharedMesh.bindposes = bindPoses;
+                    continue;
+                }
+                Transform[] bonesToReset = skr.bones.Where(x => !processedBones.Contains(x)).ToArray();
+                if (bonesToReset.Length > 0)
+                {
+                    processedBones.UnionWith(bonesToReset);
+                    AvatarMeshCombinerUtils.ResetBones(skr.sharedMesh.bindposes, bonesToReset);
+                }
+
+                Matrix4x4[] transformedBindposes = new Matrix4x4[skr.sharedMesh.bindposes.Length];
+                Vector3 eulerDiff = rootBone.localEulerAngles - skr.rootBone.localEulerAngles;
+                Vector3 scaleDiff = Vector3.one.Divide(rootBone.localScale.Divide(skr.rootBone.localScale));
+                Matrix4x4 transformation = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(eulerDiff), scaleDiff);
+                for (int i = 0; i < transformedBindposes.Length; i++)
+                {
+                    transformedBindposes[i] = (transformation * bindPoses[i].inverse).inverse;
+                }
+
+                skr.bones = bones;
+                skr.sharedMesh.bindposes = transformedBindposes;
+            }
 
             //
             // Get combined layers. Layers are groups of renderers that have a id -> tex mapping.
@@ -155,5 +186,7 @@ namespace DCL
 
             return result;
         }
+
+        public static Vector3 Divide(this Vector3 v1, Vector3 v2) { return new Vector3(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z); }
     }
 }

@@ -17,6 +17,8 @@ namespace AvatarSystem
 
         public static bool UseAssetBundles()
         {
+            // AB for wearables strip their bones
+            return false;
             var featureFlags = DataStore.i.featureFlags.flags.Get();
             return featureFlags != null && featureFlags.IsFeatureEnabled(AB_FEATURE_FLAG_NAME);
         }

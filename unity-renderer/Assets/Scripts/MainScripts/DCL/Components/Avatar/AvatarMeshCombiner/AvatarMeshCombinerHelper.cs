@@ -110,6 +110,7 @@ namespace DCL
 
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
                 bonesContainer.sharedMesh.bindposes,
+                bonesContainer.rootBone,
                 bonesContainer.bones,
                 renderers,
                 materialAsset);
