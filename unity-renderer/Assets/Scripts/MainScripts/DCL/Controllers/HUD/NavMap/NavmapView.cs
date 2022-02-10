@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using DCL.Interface;
 using DCL.Helpers;
 using TMPro;
+using System;
 
 namespace DCL
 {
@@ -17,6 +18,8 @@ namespace DCL
         [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
         [SerializeField] internal NavmapToastView toastView;
         [SerializeField] internal InputAction_Measurable mouseWheelAction;
+        [SerializeField] internal InputAction_Hold zoomIn;
+        [SerializeField] internal InputAction_Hold zoomOut;
 
         InputAction_Trigger.Triggered selectParcelDelegate;
         RectTransform minimapViewport;
@@ -70,6 +73,8 @@ namespace DCL
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
             mouseWheelAction.OnValueChanged += OnMouseWheelChangeValue;
+            zoomIn.OnStarted += OnZoomPlusMinus;
+            zoomOut.OnStarted += OnZoomPlusMinus;
             ResetCameraZoom();
             Initialize();
         }
@@ -82,9 +87,26 @@ namespace DCL
             containerRectTransform.localScale = new Vector3(scale, scale, scale);
         }
 
+        private void OnZoomPlusMinus(DCLAction_Hold action)
+        {
+            if (action.Equals(DCLAction_Hold.ZoomIn))
+            {
+                CalculateZoomLevelAndDirection(1);
+            }
+            else if (action.Equals(DCLAction_Hold.ZoomOut)) 
+            {
+                CalculateZoomLevelAndDirection(-1);
+            }
+        }
+
         private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
         {
             if (value > -MOUSE_WHEEL_THRESHOLD && value < MOUSE_WHEEL_THRESHOLD) return;
+            CalculateZoomLevelAndDirection(value);
+        }
+
+        private void CalculateZoomLevelAndDirection(float value)
+        {
             if (!navmapVisible.Get()) return;
             if (isScaling) return;
 
@@ -137,6 +159,8 @@ namespace DCL
             navmapVisible.OnChange -= OnNavmapVisibleChanged;
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
             mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
+            zoomIn.OnStarted -= OnZoomPlusMinus;
+            zoomOut.OnStarted -= OnZoomPlusMinus;
         }
 
         internal void SetVisible(bool visible)

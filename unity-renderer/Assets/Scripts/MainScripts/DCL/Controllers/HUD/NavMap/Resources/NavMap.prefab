@@ -3131,6 +3131,8 @@ MonoBehaviour:
   currentSceneCoordsText: {fileID: 8417015326604837885}
   toastView: {fileID: 4118697293185831752}
   mouseWheelAction: {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
+  zoomIn: {fileID: 11400000, guid: a11a0b29d3b1143e2a9948ef2bf8d2eb, type: 2}
+  zoomOut: {fileID: 11400000, guid: c01fe13e1029e4cf3beba2417ddc7684, type: 2}
 --- !u!225 &3578851569800893368
 CanvasGroup:
   m_ObjectHideFlags: 0
