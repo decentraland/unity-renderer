@@ -18,6 +18,12 @@ public interface ILandPublisherController
     void Initialize(ILandPublisherView landPublisherView);
 
     /// <summary>
+    /// Set the view active
+    /// </summary>
+    /// <param name="isActive"></param>
+    void SetActive(bool isActive);
+
+    /// <summary>
     /// This will start the flow of the publishing
     /// </summary>
     /// <param name="scene"></param>

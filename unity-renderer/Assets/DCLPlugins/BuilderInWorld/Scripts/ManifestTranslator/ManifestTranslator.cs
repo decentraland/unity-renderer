@@ -131,7 +131,7 @@ namespace DCL.Builder
                     {
                         statelesComponent.value = entityComponent.Value.GetModel();
                     }
-                    
+
                     statlesEntity.components.Add(statelesComponent);
                 }
 
@@ -307,14 +307,22 @@ namespace DCL.Builder
             return newName;
         }
 
-        public static ParcelScene ManifestToParcelScene(Manifest.Manifest manifest)
+        public static IParcelScene ManifestToParcelSceneWithOnlyData(Manifest.Manifest manifest)
         {
             GameObject parcelGameObject = new GameObject("Builder Scene SceneId: " + manifest.scene.id);
             ParcelScene scene = parcelGameObject.AddComponent<ParcelScene>();
 
             //We remove the old assets to they don't collide with the new ones
             BIWUtils.RemoveAssetsFromCurrentScene();
+            
+            //The data is built so we set the data of the scene 
+            scene.SetData(CreateSceneDataFromScene(manifest));
 
+            return scene;
+        }
+
+        private static LoadParcelScenesMessage.UnityParcelScene CreateSceneDataFromScene(Manifest.Manifest manifest)
+        {
             //We add the assets from the scene to the catalog
             var assets = manifest.scene.assets.Values.ToArray();
             AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(assets);
@@ -333,14 +341,14 @@ namespace DCL.Builder
             parcelData.parcels =  new Vector2Int[manifest.project.rows * manifest.project.cols];
 
             //We assign the parcels position
-            for (int index = 0; index == parcelData.parcels.Length; index++)
+            for (int index = 0; index < parcelData.parcels.Length; index++)
             {
                 parcelData.parcels[index] = new Vector2Int(x, y);
-                y++;
-                if (y == manifest.project.rows)
+                x++;
+                if (x == manifest.project.rows)
                 {
-                    x++;
-                    y = CommonScriptableObjects.playerCoords.Get().y;
+                    y++;
+                    x = 0;
                 }
             }
 
@@ -359,8 +367,19 @@ namespace DCL.Builder
             //We add the mappings to the scene
             BIWUtils.AddSceneMappings(contentDictionary, BIWUrlUtils.GetUrlSceneObjectContent(), parcelData);
 
+            return parcelData;
+        }
+        
+        public static IParcelScene ManifestToParcelScene(Manifest.Manifest manifest)
+        {
+            GameObject parcelGameObject = new GameObject("Builder Scene SceneId: " + manifest.scene.id);
+            ParcelScene scene = parcelGameObject.AddComponent<ParcelScene>();
+
+            //We remove the old assets to they don't collide with the new ones
+            BIWUtils.RemoveAssetsFromCurrentScene();
+            
             //The data is built so we set the data of the scene 
-            scene.SetData(parcelData);
+            scene.SetData(CreateSceneDataFromScene(manifest));
 
             // We iterate all the entities to create the entity in the scene
             foreach (BuilderEntity builderEntity in manifest.scene.entities.Values)

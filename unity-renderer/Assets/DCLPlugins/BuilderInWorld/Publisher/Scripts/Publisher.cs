@@ -1,16 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Cysharp.Threading.Tasks;
 using DCL.Configuration;
 using DCL.Helpers;
+using DCL.Interface;
 using UnityEngine;
 
 namespace DCL.Builder
 {
     public class Publisher : IPublisher
     {
+        private const string NO_LAND_TO_PUBLISH_TEXT = "Your scene is bigger than any Land you own.\nBrowse the Marketplace and buy some new Land where you can deploy";
+        private const string BIGGER_LAND_TO_PUBLISH_TEXT = "To publish a scene first you need a Land where you can deploy it. Browse the marketplace to get some and show the world what you have created";
+
         private IPublishProjectController projectPublisher;
         private ILandPublisherController landPublisher;
         private IPublishProgressController progressController;
@@ -22,6 +25,7 @@ namespace DCL.Builder
 
         private IBuilderScene builderSceneToDeploy;
         private PublishInfo publishInfo;
+        private IBuilderScene.SceneType lastTypeWhoStartedPublish;
 
         public void Initialize(IContext context)
         {
@@ -38,6 +42,7 @@ namespace DCL.Builder
             landPublisher.OnPublishPressed += PublishLandScene;
             projectPublisher.OnPublishPressed += ConfirmDeployment;
             progressController.OnConfirm += StartDeployment;
+            progressController.OnBackPressed += BackToPublishInfo;
 
             builderInWorldBridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
 
@@ -45,11 +50,12 @@ namespace DCL.Builder
                 builderInWorldBridge.OnPublishEnd += PublishEnd;
         }
 
-        public void Dipose()
+        public void Dispose()
         {
             landPublisher.OnPublishPressed -= PublishLandScene;
             projectPublisher.OnPublishPressed -= ConfirmDeployment;
             progressController.OnConfirm -= StartDeployment;
+            progressController.OnBackPressed -= BackToPublishInfo;
 
             if (builderInWorldBridge != null)
                 builderInWorldBridge.OnPublishEnd -= PublishEnd;
@@ -59,8 +65,41 @@ namespace DCL.Builder
             progressController.Dispose();
         }
 
+        private void BackToPublishInfo()
+        {
+            switch (lastTypeWhoStartedPublish)
+            {
+                case IBuilderScene.SceneType.PROJECT:
+                    projectPublisher.SetActive(true);
+                    break;
+                case IBuilderScene.SceneType.LAND:
+                    landPublisher.SetActive(true);
+                    break;
+            }
+        }
+
         public void StartPublish(IBuilderScene scene)
         {
+            if (!HasLands())
+            {
+                context.commonHUD.GetPopUp()
+                       .ShowPopUpWithoutTitle(NO_LAND_TO_PUBLISH_TEXT, "BUY LAND", "BACK", () =>
+                       {
+                           WebInterface.OpenURL(BIWSettings.MARKETPLACE_URL);
+                       }, null);
+                return;
+            }
+
+            if (!CanPublishInLands(scene))
+            {
+                context.commonHUD.GetPopUp()
+                       .ShowPopUpWithoutTitle(NO_LAND_TO_PUBLISH_TEXT, "BUY LAND", "BACK", () =>
+                       {
+                           WebInterface.OpenURL(BIWSettings.MARKETPLACE_URL);
+                       }, null);
+                return;
+            }
+
             switch (scene.sceneType)
             {
                 case IBuilderScene.SceneType.PROJECT:
@@ -70,6 +109,16 @@ namespace DCL.Builder
                     landPublisher.StartPublishFlow(scene);
                     break;
             }
+
+            lastTypeWhoStartedPublish = scene.sceneType;
+        }
+
+        internal bool HasLands() { return DataStore.i.builderInWorld.landsWithAccess.Get().Length > 0; }
+
+        internal bool CanPublishInLands(IBuilderScene scene)
+        {
+            List<Vector2Int> availableLandsToPublish = BIWUtils.GetLandsToPublishProject(DataStore.i.builderInWorld.landsWithAccess.Get(), scene);
+            return availableLandsToPublish.Count > 0;
         }
 
         internal void PublishLandScene(IBuilderScene scene)
@@ -84,7 +133,7 @@ namespace DCL.Builder
         {
             builderSceneToDeploy = scene;
             publishInfo = info;
-            progressController.SetScene(scene);
+            progressController.SetInfoToPublish(scene, info);
             progressController.ShowConfirmDeploy();
         }
 
@@ -165,7 +214,7 @@ namespace DCL.Builder
             }
             string successString = isOk ? "Success" : message;
             BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
-            
+
             if (isOk)
                 builderSceneToDeploy = null;
         }

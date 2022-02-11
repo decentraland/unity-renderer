@@ -32,6 +32,11 @@ namespace DCL.Builder
         event Action OnViewClosed;
 
         /// <summary>
+        /// Whe should go back to the previous view
+        /// </summary>
+        event Action OnBackPressed;
+
+        /// <summary>
         /// Show the confirm publish pop up
         /// </summary>
         void ConfirmDeployment();
@@ -61,7 +66,7 @@ namespace DCL.Builder
         /// Sets the project to display
         /// </summary>
         /// <param name="publishedProject"></param>
-        void SetScene(IBuilderScene publishedProject);
+        void SetPublishInfo(IBuilderScene publishedProject, PublishInfo info);
 
         /// <summary>
         /// Dispose the view
@@ -84,6 +89,7 @@ namespace DCL.Builder
         
         public event Action OnPublishConfirmButtonPressed;
         public event Action OnViewClosed;
+        public event Action OnBackPressed;
 
         [Header("General references")]
         [SerializeField] internal TMP_Text mainTitleTextView;
@@ -99,7 +105,6 @@ namespace DCL.Builder
         [Header("Publish Progress references")]
         [SerializeField] internal GameObject progressGameObject;
         [SerializeField] internal LoadingBar loadingBar;
-        
         [Header("Error references")]
         [SerializeField] internal TMP_Text errorTextView;
         [SerializeField] internal GameObject errorGameObject;
@@ -109,21 +114,21 @@ namespace DCL.Builder
         [Header("Success references")]
         [SerializeField] internal Button okButton;
         [SerializeField] internal GameObject successGameObject;
-        
         private IPublishProgressView.PublishStatus currentStatus;
         private float currentProgress = 0;
         private Coroutine fakeProgressCoroutine;
         private IBuilderScene currentScene;
-        
+        private PublishInfo currentInfo;
+
         public override void RefreshControl() { }
 
         public override void Awake()
         {
             base.Awake();
             cancelButton.onClick.AddListener(Close);
-            noButton.onClick.AddListener(Close);
+            noButton.onClick.AddListener(Back);
             okButton.onClick.AddListener(Close);
-            
+
             yesButton.onClick.AddListener(ConfirmPublish);
             retryButton.onClick.AddListener(ConfirmPublish);
 
@@ -171,10 +176,11 @@ namespace DCL.Builder
             }
         }
 
-        public void SetScene(IBuilderScene publishedProject)
+        public void SetPublishInfo(IBuilderScene publishedProject, PublishInfo info)
         {
             screenshotImage.texture = publishedProject.sceneScreenshotTexture;
             currentScene = publishedProject;
+            currentInfo = info;
         }
 
         public void ProjectPublished() { ChangeStatus(IPublishProgressView.PublishStatus.SUCCESS); }
@@ -182,12 +188,12 @@ namespace DCL.Builder
         internal string GetConfirmSubtitleText(string baseText)
         {
             string title = currentScene.manifest.project.title;
-            string posX = currentScene.scene.sceneData.basePosition.x.ToString();
-            string posY = currentScene.scene.sceneData.basePosition.y.ToString();
+            string posX = currentInfo.coordsToPublish.x.ToString();
+            string posY = currentInfo.coordsToPublish.y.ToString();
 
             return string.Format(baseText, title, posX, posY);
         }
-        
+
         public void ShowConfirmPopUp()
         {
             confirmGameObject.SetActive(true);
@@ -196,12 +202,9 @@ namespace DCL.Builder
             gameObject.SetActive(true);
             modal.Show();
         }
-        
-        public void ConfirmDeployment()
-        {
-            ChangeStatus(IPublishProgressView.PublishStatus.CONFIRM);
-        }
-        
+
+        public void ConfirmDeployment() { ChangeStatus(IPublishProgressView.PublishStatus.CONFIRM); }
+
         public void ShowProgressView()
         {
             mainTitleTextView.text = PUBLISHING_MAIN_TEXT;
@@ -227,7 +230,6 @@ namespace DCL.Builder
         public void ShowPublishError()
         {
             mainTitleTextView.text = ERROR_MAIN_TEXT;
-            
             errorGameObject.SetActive(true);
         }
 
@@ -235,6 +237,12 @@ namespace DCL.Builder
         {
             currentStatus = status;
             ShowCurrentStatus();
+        }
+
+        public void Back()
+        {
+            modal.Hide();
+            OnBackPressed?.Invoke();
         }
 
         public void Close()
@@ -246,10 +254,7 @@ namespace DCL.Builder
         [ContextMenu("Start Deployment")]
         public void ConfirmPublish() { OnPublishConfirmButtonPressed?.Invoke(); }
 
-        public void PublishStarted()
-        {
-            ChangeStatus(IPublishProgressView.PublishStatus.PUBLISHING);
-        }
+        public void PublishStarted() { ChangeStatus(IPublishProgressView.PublishStatus.PUBLISHING); }
 
         public void Hide()
         {

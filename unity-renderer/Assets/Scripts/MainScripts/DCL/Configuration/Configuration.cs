@@ -12,6 +12,10 @@ namespace DCL.Configuration
 
         public const string BASE_URL_BUILDER_PROJECT_THUMBNAIL = "https://builder-api.decentraland.{ENV}/v1/projects/{id}/media/";
 
+        //Useful links
+        public const string MARKETPLACE_URL = "https://market.decentraland.org/lands";
+        public const string GUEST_WALLET_INFO = "https://docs.decentraland.org/examples/get-a-wallet/";
+
         //Deployment constants
         public const string DEPLOYMENT_DEFINITION_FILE = "scene-state-definition.json";
         public const string DEPLOYMENT_SCENE_FILE = "scene.json";
@@ -30,13 +34,14 @@ namespace DCL.Configuration
         public static readonly LayerMask COLLIDER_SELECTION_LAYER = LayerMask.GetMask("OnBuilderPointerClick");
         public static readonly LayerMask GIZMOS_LAYER = LayerMask.GetMask("Gizmo");
         public static readonly LayerMask GROUND_LAYER = LayerMask.GetMask("Ground");
+        public static readonly LayerMask FX_LAYER = LayerMask.GetMask("FX");
 
         // Screenshot settings
         public const int SCENE_SNAPSHOT_WIDTH_RES = 854;
         public const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
 
-        public const int AERIAL_SCREENSHOT_WIDTH = 328;
-        public const int AERIAL_SCREENSHOT_HEIGHT = 328;
+        public const int AERIAL_SCREENSHOT_WIDTH = 315;
+        public const int AERIAL_SCREENSHOT_HEIGHT = 253;
 
         // Identifiers
         public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";

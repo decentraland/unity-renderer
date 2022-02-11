@@ -21,6 +21,14 @@ namespace DCL.Builder
         public event Action OnRequestContextMenuHide;
         public event Action OnCreateProjectRequest;
 
+        public override SearchBarConfig searchBarConfig { get; protected set; } = new SearchBarConfig()
+        {
+            showFilterContributor = false,
+            showFilterOperator = false,
+            showFilterOwner = false,
+            showResultLabel = true
+        };
+        
         public override ISectionSearchHandler searchHandler => sceneSearchHandler;
 
         private readonly SectionProjectView view;

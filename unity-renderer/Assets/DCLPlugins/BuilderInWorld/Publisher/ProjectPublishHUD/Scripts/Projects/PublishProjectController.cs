@@ -19,6 +19,12 @@ namespace DCL.Builder
         /// <param name="builderScene"></param>
         void StartPublishFlow(IBuilderScene builderScene);
 
+        /// <summary>
+        /// Set the view active
+        /// </summary>
+        /// <param name="isActive"></param>
+        void SetActive(bool isActive);
+
         void Initialize();
         void Dispose();
     }
@@ -61,6 +67,15 @@ namespace DCL.Builder
 
             detailView.SetProjectToPublish(sceneToPublish);
             detailView.Show();
+            detailView.ResetView();
+        }
+
+        public void SetActive(bool isActive)
+        {
+            if (isActive)
+                detailView.Show();
+            else
+                ViewClosed();
         }
 
         private void ViewClosed() { detailView.Hide(); }

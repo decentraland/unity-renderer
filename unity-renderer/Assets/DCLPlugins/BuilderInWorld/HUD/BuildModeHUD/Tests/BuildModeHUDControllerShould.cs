@@ -32,7 +32,8 @@ namespace Tests.BuildModeHUDControllers
                 buildModeConfirmationModalController = Substitute.For<IBuildModeConfirmationModalController>(),
                 topActionsButtonsController = Substitute.For<ITopActionsButtonsController>(),
                 saveHUDController = Substitute.For<ISaveHUDController>(),
-                newProjectDetailsController = Substitute.For<INewProjectDetailController>()
+                newProjectDetailsController = Substitute.For<INewProjectDetailController>(),
+                feedbackTooltipController =  Substitute.For<ITooltipController>()
             };
 
             builderEditorHudController = Substitute.ForPartsOf<BuilderEditorHUDController>();

@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using DCL.Builder;
+using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
