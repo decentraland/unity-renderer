@@ -23,7 +23,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     public override void Start()
     {
         base.Start();
-        
+
         searchBar.OnSearchText += FilterFriends;
     }
 
@@ -95,14 +95,15 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         gameObject.SetActive(false);
     }
 
-    public void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction, FriendEntryBase.Model friendEntryModel)
+    public void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction,
+        FriendEntryBase.Model friendEntryModel)
     {
         throw new NotImplementedException();
     }
 
     public void Search(string userId)
     {
-        searchBar.SubmitSearch(userId);
+        FilterFriends(userId);
     }
 
     public bool IsActive()
@@ -119,24 +120,25 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     {
         throw new NotImplementedException();
     }
-    
+
     public override void RefreshControl()
     {
         if (model.isLoadingSpinnerActive)
             ShowSpinner();
         else
             HideSpinner();
-        
+
         if (model.visible)
             Show();
         else
             Hide();
-        
+
         Search(model.searchContent);
     }
-    
+
     private void FilterFriends(string search)
     {
+        friendsTab.Filter(search);
     }
 
     [Serializable]

@@ -3295,8 +3295,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loadingSpinner: {fileID: 1933096059089960218}
-  searchBar: {fileID: 0}
-  friendsTab: {fileID: 0}
+  searchBar: {fileID: 3267833669652882210}
+  friendsTab: {fileID: 1506520024761695117}
   model:
     isLoadingSpinnerActive: 0
     visible: 1
@@ -5941,6 +5941,7 @@ MonoBehaviour:
   model:
     idleTimeToTriggerSearch: 1
     placeHolderText: Search friend
+    text: 
 --- !u!114 &626493676000672185
 MonoBehaviour:
   m_ObjectHideFlags: 0

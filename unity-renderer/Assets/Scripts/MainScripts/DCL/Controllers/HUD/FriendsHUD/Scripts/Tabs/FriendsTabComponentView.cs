@@ -127,6 +127,12 @@ public class FriendsTabComponentView : BaseComponentView
         else
             offlineFriendsList.Collapse();
     }
+    
+    public void Filter(string search)
+    {
+        offlineFriendsList.Filter(search);
+        onlineFriendsList.Filter(search);
+    }
 
     private void UpdateEmptyOrFilledState()
     {

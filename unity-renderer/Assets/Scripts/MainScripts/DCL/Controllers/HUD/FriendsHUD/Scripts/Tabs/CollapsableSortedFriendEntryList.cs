@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using DCL.Helpers;
 using UnityEngine;
 
 public class CollapsableSortedFriendEntryList : MonoBehaviour
@@ -13,7 +15,7 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
     private string amountOriginalText;
 
     public void Expand() => toggleButton.Toggle(true);
-    
+
     public void Collapse() => toggleButton.Toggle(false);
 
     public int Count()
@@ -66,9 +68,24 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
             Remove(userId);
             RemoveTimestamp(userId);
         }
-        
+
         entries.Clear();
         sortedTimestamps.Clear();
+    }
+
+    public void Filter(string search)
+    {
+        var regex = new Regex(search);
+
+        foreach (var entry in entries)
+        {
+            var isMatch = regex.IsMatch(entry.Key)
+                          || regex.IsMatch(entry.Value.model.userName)
+                          || regex.IsMatch(entry.Value.model.realm);
+            entry.Value.gameObject.SetActive(isMatch);
+        }
+        
+        Utils.ForceRebuildLayoutImmediate((RectTransform) container);
     }
 
     private void SortTimestamps()
