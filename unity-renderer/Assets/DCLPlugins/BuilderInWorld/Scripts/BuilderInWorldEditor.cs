@@ -12,6 +12,8 @@ using Environment = DCL.Environment;
 
 public class BuilderInWorldEditor : IBIWEditor
 {
+    internal const string AVATAR_HIDE_CONSTRAINT = "BuilderInWorld_Avatar_Invisible";
+    
     private GameObject cursorGO;
     private GameObject[] groundVisualsGO;
 
@@ -41,6 +43,7 @@ public class BuilderInWorldEditor : IBIWEditor
 
     private bool isInit = false;
     private Material previousSkyBoxMaterial;
+    private PlayerAvatarController avatarRenderer;
 
     private float startEditorTimeStamp = 0;
     internal IBuilderScene sceneToEdit;
@@ -70,6 +73,8 @@ public class BuilderInWorldEditor : IBIWEditor
         biwAudioHandler.gameObject.SetActive(false);
 
         floorHandler.OnAllParcelsFloorLoaded += NewSceneFloorLoaded;
+        
+        avatarRenderer = context.sceneReferences.playerAvatarController.GetComponent<PlayerAvatarController>();
     }
 
     public void InitReferences(SceneReferences sceneReferences)
@@ -246,12 +251,16 @@ public class BuilderInWorldEditor : IBIWEditor
 
         previousSkyBoxMaterial = RenderSettings.skybox;
         RenderSettings.skybox = skyBoxMaterial;
+        
+        DeactivateAvatars();
 
         foreach (var groundVisual in groundVisualsGO)
         {
             groundVisual.SetActive(false);
         }
 
+        DataStore.i.player.otherPlayers.OnAdded += DeactivatePlayerAvatar;
+        
         startEditorTimeStamp = Time.realtimeSinceStartup;
 
         BIWAnalytics.AddSceneInfo(sceneToEdit.scene.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit.scene).ToString(), BIWUtils.GetSceneSize(sceneToEdit.scene));
@@ -298,7 +307,42 @@ public class BuilderInWorldEditor : IBIWEditor
             biwAudioHandler.gameObject.SetActive(false);
         DataStore.i.common.appMode.Set(AppMode.DEFAULT);
         DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
+
+        ActivateAvatars();
+        
         BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
+    }
+
+    internal void ActivateAvatars()
+    {
+        avatarRenderer.SetAvatarVisibility(true);
+
+        foreach (Player player in DataStore.i.player.otherPlayers.GetValues())
+        {
+            ActivatePlayerAvatar(null,player);
+        }
+    }
+
+    internal void ActivatePlayerAvatar(string id,Player player)
+    {
+        player.avatar.RemoveVisibilityConstrain(AVATAR_HIDE_CONSTRAINT);
+        player.playerName.RemoveVisibilityConstaint(AVATAR_HIDE_CONSTRAINT);
+    }    
+    
+    internal void DeactivatePlayerAvatar(string id,Player player)
+    {
+        player.avatar.AddVisibilityConstrain(AVATAR_HIDE_CONSTRAINT);
+        player.playerName.AddVisibilityConstaint(AVATAR_HIDE_CONSTRAINT);
+    }
+
+    internal void DeactivateAvatars()
+    {
+        avatarRenderer.SetAvatarVisibility(false);
+
+        foreach (Player player in DataStore.i.player.otherPlayers.GetValues())
+        {
+            DeactivatePlayerAvatar(null, player);
+        }
     }
 
     public void EnterBiwControllers()
