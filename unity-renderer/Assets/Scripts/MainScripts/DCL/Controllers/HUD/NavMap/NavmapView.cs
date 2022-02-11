@@ -32,8 +32,8 @@ namespace DCL
 
         public BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
         public static event System.Action<bool> OnToggle;
-        private const float MAP_ZOOM_MAX_SCALE = 1;
-        private const float MAP_ZOOM_MIN_SCALE = 0.3f;
+        private const float MAP_ZOOM_MAX_SCALE = 0.7f;
+        private const float MAP_ZOOM_MIN_SCALE = 0.2f;
         private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
         private const float MAP_ZOOM_LEVELS = 4;
         private RectTransform containerRectTransform;
@@ -82,8 +82,8 @@ namespace DCL
         private void ResetCameraZoom()
         {
             zoomDelta = (MAP_ZOOM_MAX_SCALE - MAP_ZOOM_MIN_SCALE) / MAP_ZOOM_LEVELS;
-            currentZoomLevel = defaultZoomLevel = Mathf.CeilToInt(MAP_ZOOM_LEVELS / 2);
-            scale = defaultZoomLevel * zoomDelta;
+            currentZoomLevel = defaultZoomLevel = Mathf.FloorToInt(MAP_ZOOM_LEVELS / 2);
+            scale = MAP_ZOOM_MIN_SCALE + defaultZoomLevel * zoomDelta;
             containerRectTransform.localScale = new Vector3(scale, scale, scale);
         }
 
@@ -110,12 +110,12 @@ namespace DCL
             if (!navmapVisible.Get()) return;
             if (isScaling) return;
 
-            if (value > 0 && currentZoomLevel <= MAP_ZOOM_LEVELS)
+            if (value > 0 && currentZoomLevel < MAP_ZOOM_LEVELS)
             {
                 currentZoomLevel++;
                 StartCoroutine(ScaleOverTime());
             }
-            if (value < 0 && currentZoomLevel > 1)
+            if (value < 0 && currentZoomLevel >= 1)
             {
                 currentZoomLevel--;
                 StartCoroutine(ScaleOverTime());
@@ -125,7 +125,7 @@ namespace DCL
         private IEnumerator ScaleOverTime()
         {
             isScaling = true;
-            scale = zoomDelta * currentZoomLevel;
+            scale = MAP_ZOOM_MIN_SCALE+ zoomDelta * currentZoomLevel;
             Vector3 targetScale = new Vector3(scale, scale, scale);
 
             float counter = 0;
