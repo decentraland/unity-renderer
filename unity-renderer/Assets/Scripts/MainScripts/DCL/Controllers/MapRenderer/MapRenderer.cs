@@ -162,10 +162,6 @@ namespace DCL
         }
         
         public void SetPlayerIconActive(bool isActive) => playerPositionIcon.gameObject.SetActive(isActive);
-        
-        public void SetParcelHighlightActive(bool isActive) => parcelHighlightImage.enabled = isActive;
-        
-        public Vector3 GetParcelHighlightTransform() => parcelHighlightImage.transform.position;
 
         public void SetHighlighSize(Vector2Int size) { highlight.ChangeHighlighSize(size); }
 
