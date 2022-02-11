@@ -545,6 +545,9 @@ namespace DCL.Skybox
             // Horizon Plane color
             RenderColorGradientField(selectedConfiguration.horizonPlaneColor, "Horizon Plane Color", 0, 24);
 
+            // Horizon light intensity
+            RenderFloatFieldAsSlider("Light Intensity", ref selectedConfiguration.horizonLightIntensity, 0, 1);
+
             // Horizon Height
             RenderTransitioningFloat(selectedConfiguration.horizonPlaneHeight, "Horizon Plane Height", "%", "value", true, -1, 0);
 
@@ -552,6 +555,7 @@ namespace DCL.Skybox
 
             // Plane smooth range
             RenderMinMaxSlider("Plane Smoothness", ref selectedConfiguration.horizonPlaneSmoothRange.x, ref selectedConfiguration.horizonPlaneSmoothRange.y, 0, 1);
+
         }
 
         void RenderAmbientLayer()

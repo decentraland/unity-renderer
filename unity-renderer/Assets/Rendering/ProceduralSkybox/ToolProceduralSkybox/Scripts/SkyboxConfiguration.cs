@@ -34,6 +34,7 @@ namespace DCL.Skybox
         public Gradient horizonPlaneColor = new Gradient();
         public List<TransitioningFloat> horizonPlaneHeight = new List<TransitioningFloat>();
         public Vector2 horizonPlaneSmoothRange = new Vector2(0, 0);
+        public float horizonLightIntensity = 0;
 
         // Ambient Color
         public bool ambientTrilight = true;
@@ -99,6 +100,7 @@ namespace DCL.Skybox
             selectedMat.SetColor(SkyboxShaderUtils.HorizonPlaneColor, horizonPlaneColor.Evaluate(normalizedDayTime));
             selectedMat.SetFloat(SkyboxShaderUtils.HorizonPlaneHeight, GetTransitionValue(horizonPlaneHeight, percentage, 0.0f));
             selectedMat.SetVector(SkyboxShaderUtils.PlaneSmoothRange, horizonPlaneSmoothRange);
+            selectedMat.SetFloat(SkyboxShaderUtils.HorizonLightIntensity, horizonLightIntensity);
 
 
             // Apply Ambient colors to the rendering settings
