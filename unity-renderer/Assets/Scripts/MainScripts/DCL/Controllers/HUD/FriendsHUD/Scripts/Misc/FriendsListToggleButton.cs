@@ -17,10 +17,17 @@ public class FriendsListToggleButton : MonoBehaviour
             Toggle();
     }
 
-    void Toggle()
+    public void Toggle(bool toggled)
     {
-        containerRectTransform.gameObject.SetActive(!containerRectTransform.gameObject.activeSelf);
-        toggleButtonIcon.localScale = new Vector3(toggleButtonIcon.localScale.x, -toggleButtonIcon.localScale.y, 1f);
+        containerRectTransform.gameObject.SetActive(toggled);
+        var absScale = Mathf.Abs(toggleButtonIcon.localScale.y);
+        var scale = toggled ? absScale : -absScale;
+        toggleButtonIcon.localScale = new Vector3(toggleButtonIcon.localScale.x, scale, 1f);
         Utils.ForceRebuildLayoutImmediate(containerRectTransform);
+    }
+
+    private void Toggle()
+    {
+        Toggle(!containerRectTransform.gameObject.activeSelf);
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IFriendsHUDView
+public interface IFriendsHUDComponentView
 {
     event Action<FriendRequestEntry> OnFriendRequestApproved;
     event Action<FriendRequestEntry> OnCancelConfirmation;

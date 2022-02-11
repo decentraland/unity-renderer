@@ -11,7 +11,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
     UserProfileController userProfileController;
     private NotificationsController notificationsController;
     FriendsHUDController controller;
-    IFriendsHUDView view;
+    IFriendsHUDComponentView view;
     FriendsController_Mock friendsController;
 
     [UnitySetUp]

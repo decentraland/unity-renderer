@@ -6,7 +6,7 @@ using UnityEngine;
 public class FriendsHUDController : IHUD
 {
     internal const string PLAYER_PREFS_SEEN_FRIEND_COUNT = "SeenFriendsCount";
-    public IFriendsHUDView view { get; private set; }
+    public IFriendsHUDComponentView view { get; private set; }
 
     IFriendsController friendsController;
     public event System.Action<string> OnPressWhisper;

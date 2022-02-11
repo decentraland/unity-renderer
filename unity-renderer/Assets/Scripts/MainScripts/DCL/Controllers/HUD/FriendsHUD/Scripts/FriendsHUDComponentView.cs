@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
-public class FriendsHUDUIComponent : BaseComponentView, IFriendsHUDView
+public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentView
 {
+    [SerializeField] private GameObject loadingSpinner;
+    [SerializeField] private SearchBarComponentView searchBar;
+    [SerializeField] private FriendsTabComponentView friendsTab;
+    [SerializeField] private Model model;
+
     public event Action<FriendRequestEntry> OnFriendRequestApproved;
     public event Action<FriendRequestEntry> OnCancelConfirmation;
     public event Action<FriendRequestEntry> OnRejectConfirmation;
@@ -12,16 +18,32 @@ public class FriendsHUDUIComponent : BaseComponentView, IFriendsHUDView
     public event Action<string> OnDeleteConfirmation;
     public event Action OnClose;
 
-    public RectTransform Transform { get; }
-    
+    public RectTransform Transform => transform as RectTransform;
+
+    public override void Start()
+    {
+        base.Start();
+        
+        searchBar.OnSearchText += FilterFriends;
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        searchBar.OnSearchText -= FilterFriends;
+    }
+
     public void HideSpinner()
     {
-        throw new NotImplementedException();
+        loadingSpinner.SetActive(false);
+        model.isLoadingSpinnerActive = false;
     }
 
     public void ShowSpinner()
     {
-        throw new NotImplementedException();
+        loadingSpinner.SetActive(true);
+        model.isLoadingSpinnerActive = true;
     }
 
     public List<FriendEntryBase> GetAllEntries()
@@ -36,7 +58,7 @@ public class FriendsHUDUIComponent : BaseComponentView, IFriendsHUDView
 
     public void UpdateEntry(string userId, FriendEntryBase.Model model)
     {
-        throw new NotImplementedException();
+        friendsTab.Set(userId, model);
     }
 
     public void DisplayFriendUserNotFound()
@@ -59,19 +81,18 @@ public class FriendsHUDUIComponent : BaseComponentView, IFriendsHUDView
         throw new NotImplementedException();
     }
 
-    public void Destroy()
-    {
-        throw new NotImplementedException();
-    }
+    public void Destroy() => Object.Destroy(gameObject);
 
     public void Show()
     {
-        throw new NotImplementedException();
+        model.visible = true;
+        gameObject.SetActive(true);
     }
 
     public void Hide()
     {
-        throw new NotImplementedException();
+        model.visible = false;
+        gameObject.SetActive(false);
     }
 
     public void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction, FriendEntryBase.Model friendEntryModel)
@@ -81,7 +102,7 @@ public class FriendsHUDUIComponent : BaseComponentView, IFriendsHUDView
 
     public void Search(string userId)
     {
-        throw new NotImplementedException();
+        searchBar.SubmitSearch(userId);
     }
 
     public bool IsActive()
@@ -101,6 +122,28 @@ public class FriendsHUDUIComponent : BaseComponentView, IFriendsHUDView
     
     public override void RefreshControl()
     {
-        throw new NotImplementedException();
+        if (model.isLoadingSpinnerActive)
+            ShowSpinner();
+        else
+            HideSpinner();
+        
+        if (model.visible)
+            Show();
+        else
+            Hide();
+        
+        Search(model.searchContent);
+    }
+    
+    private void FilterFriends(string search)
+    {
+    }
+
+    [Serializable]
+    private struct Model
+    {
+        public bool isLoadingSpinnerActive;
+        public bool visible;
+        public string searchContent;
     }
 }

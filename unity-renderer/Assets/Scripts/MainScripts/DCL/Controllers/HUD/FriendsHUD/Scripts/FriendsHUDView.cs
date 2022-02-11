@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class FriendsHUDView : MonoBehaviour, IFriendsHUDView
+public class FriendsHUDView : MonoBehaviour, IFriendsHUDComponentView
 {
     public const string NOTIFICATIONS_ID = "Friends";
     static readonly int ANIM_PROPERTY_SELECTED = Animator.StringToHash("Selected");
@@ -54,7 +54,7 @@ public class FriendsHUDView : MonoBehaviour, IFriendsHUDView
 
     public float notificationsDuration = 3f;
 
-    FriendsHUDController controller;
+    private FriendsHUDController controller;
     
     public RectTransform Transform => transform as RectTransform;
 
