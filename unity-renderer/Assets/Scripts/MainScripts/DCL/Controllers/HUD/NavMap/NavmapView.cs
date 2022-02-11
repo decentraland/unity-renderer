@@ -126,6 +126,7 @@ namespace DCL
         {
             isScaling = true;
             scale = MAP_ZOOM_MIN_SCALE+ zoomDelta * currentZoomLevel;
+            MapRenderer.i.scaleFactor = scale;
             Vector3 targetScale = new Vector3(scale, scale, scale);
 
             float counter = 0;
@@ -211,6 +212,7 @@ namespace DCL
                 if (!DataStore.i.exploreV2.isInitialized.Get())
                     Utils.UnlockCursor();
 
+                MapRenderer.i.scaleFactor = scale;
                 minimapViewport = MapRenderer.i.atlas.viewport;
                 mapRendererMinimapParent = MapRenderer.i.transform.parent;
                 atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;

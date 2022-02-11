@@ -39,6 +39,8 @@ namespace DCL
         public static System.Action<int, int> OnParcelClicked;
         public static System.Action OnCursorFarFromParcel;
 
+        public float scaleFactor = 1f;
+
         // Used as a reference of the coordinates origin in-map and as a parcel width/height reference
         public RectTransform centeredReferenceParcel;
 
@@ -234,7 +236,7 @@ namespace DCL
 
         void UpdateParcelHold()
         {
-            if(Vector3.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE)
+            if(Vector3.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE / (scaleFactor * 3))
             {
                 OnCursorFarFromParcel?.Invoke();
             }
