@@ -16,5 +16,6 @@ namespace AvatarSystem
         SkinnedMeshRenderer feetRenderer { get; }
         SkinnedMeshRenderer upperBodyRenderer { get; }
         SkinnedMeshRenderer lowerBodyRenderer { get; }
+        bool IsValid(WearableItem bodyshape, WearableItem eyebrows, WearableItem eyes, WearableItem mouth);
     }
 }

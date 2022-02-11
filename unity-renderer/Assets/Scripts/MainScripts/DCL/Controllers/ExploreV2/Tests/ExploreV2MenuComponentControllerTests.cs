@@ -21,7 +21,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController = Substitute.ForPartsOf<ExploreV2MenuComponentController>();
         exploreV2MenuController.Configure().CreateView().Returns(info => exploreV2MenuView);
         exploreV2MenuController.Configure().CreateAnalyticsController().Returns(info => exploreV2Analytics);
-        exploreV2MenuController.Initialize_Internal(true, false);
+        exploreV2MenuController.Initialize();
     }
 
     [TearDown]

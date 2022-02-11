@@ -35,8 +35,6 @@ public class DCLCharacterController : MonoBehaviour
 
     new Collider collider;
 
-    float deltaTime = 0.032f;
-    float deltaTimeCap = 0.032f; // 32 milliseconds = 30FPS, 16 millisecodns = 60FPS
     float lastUngroundedTime = 0f;
     float lastJumpButtonPressedTime = 0f;
     float lastMovementReportTime;
@@ -255,8 +253,6 @@ public class DCLCharacterController : MonoBehaviour
 
     internal void LateUpdate()
     {
-        deltaTime = Mathf.Min(deltaTimeCap, Time.deltaTime);
-
         if (transform.position.y < minimumYPosition)
         {
             SetPosition(characterPosition.worldPosition);
@@ -271,7 +267,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             velocity.x = 0f;
             velocity.z = 0f;
-            velocity.y += gravity * deltaTime;
+            velocity.y += gravity * Time.deltaTime;
 
             bool previouslyGrounded = isGrounded;
 
@@ -281,7 +277,7 @@ public class DCLCharacterController : MonoBehaviour
             if (isGrounded)
             {
                 isJumping = false;
-                velocity.y = gravity * deltaTime; // to avoid accumulating gravity in velocity.y while grounded
+                velocity.y = gravity * Time.deltaTime; // to avoid accumulating gravity in velocity.y while grounded
             }
             else if (previouslyGrounded && !isJumping)
             {
@@ -340,7 +336,7 @@ public class DCLCharacterController : MonoBehaviour
             //NOTE(Brian): Transform has to be in sync before the Move call, otherwise this call
             //             will reset the character controller to its previous position.
             Environment.i.platform.physicsSyncController?.Sync();
-            characterController.Move(velocity * deltaTime);
+            characterController.Move(velocity * Time.deltaTime);
         }
 
         SetPosition(PositionUtils.UnityToWorldPosition(transform.position));
@@ -354,8 +350,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             SaveLateUpdateGroundTransforms();
         }
-
-        OnUpdateFinish?.Invoke(deltaTime);
+        OnUpdateFinish?.Invoke(Time.deltaTime);
     }
 
     private void SaveLateUpdateGroundTransforms()
