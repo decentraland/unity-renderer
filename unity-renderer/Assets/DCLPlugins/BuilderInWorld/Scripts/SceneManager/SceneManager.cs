@@ -562,6 +562,7 @@ namespace DCL.Builder
             DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
 
             context.editor.EnterEditMode(sceneToEdit);
+            DataStore.i.player.canPlayerMove.Set(false);
             BIWAnalytics.EnterEditor( Time.realtimeSinceStartup - beginStartFlowTimeStamp);
         }
 
@@ -576,7 +577,7 @@ namespace DCL.Builder
             context.editor.ExitEditMode();
 
             builderInWorldBridge.StopIsolatedMode();
-
+            DataStore.i.player.canPlayerMove.Set(true);
             DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
         }
 

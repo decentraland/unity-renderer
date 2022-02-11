@@ -255,6 +255,9 @@ public class DCLCharacterController : MonoBehaviour
 
     internal void LateUpdate()
     {
+        if(!DataStore.i.player.canPlayerMove.Get())
+            return;
+        
         deltaTime = Mathf.Min(deltaTimeCap, Time.deltaTime);
 
         if (transform.position.y < minimumYPosition)
