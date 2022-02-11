@@ -99,7 +99,7 @@ namespace DCL.Builder
                        }, null);
                 return;
             }
-
+            
             switch (scene.sceneType)
             {
                 case IBuilderScene.SceneType.PROJECT:
@@ -159,7 +159,7 @@ namespace DCL.Builder
                 CatalystSceneEntityMetadata sceneJson = CreateSceneJson(scene, info);
 
                 // Group all entities files
-                StatelessManifest statelessManifest = ManifestTranslator.ParcelSceneToStatelessManifest(scene.scene);
+                StatelessManifest statelessManifest = ManifestTranslator.WebBuilderSceneToStatelessManifest(scene.manifest.scene);
 
                 // This files are not encoded
                 Dictionary<string, object> entityFiles = new Dictionary<string, object>

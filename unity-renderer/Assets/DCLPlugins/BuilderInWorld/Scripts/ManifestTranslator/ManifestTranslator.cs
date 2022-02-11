@@ -102,6 +102,47 @@ namespace DCL.Builder
             return builderScene;
         }
 
+        public static StatelessManifest WebBuilderSceneToStatelessManifest(WebBuilderScene scene)
+        {
+            StatelessManifest manifest = new StatelessManifest();
+            manifest.schemaVersion = 1;
+            
+            foreach (var entity in scene.entities.Values)
+            {
+                Entity statlesEntity = new Entity();
+                statlesEntity.id = entity.id;
+
+                foreach (string componentId in entity.components)
+                {
+                    foreach (BuilderComponent component in scene.components.Values)
+                    {
+                        if(component.id != componentId)
+                            continue;
+                        
+                        Component statelesComponent = new Component();
+                        statelesComponent.type = component.type;
+
+                        // Transform component is handle a bit different due to quaternion serializations
+                        // if (component.type == "Transform")
+                        // {
+                        //     ProtocolV2.TransformComponent entityTransformComponentModel = component.data;
+                        // }
+                        // else
+                        // {
+                        //     statelesComponent.value = component.data;
+                        // }
+                        statelesComponent.value = component.data;
+                        
+                        statlesEntity.components.Add(statelesComponent);
+                    }
+                }
+
+                manifest.entities.Add(statlesEntity);
+            }
+
+            return manifest;
+        }
+        
         public static StatelessManifest ParcelSceneToStatelessManifest(IParcelScene scene)
         {
             StatelessManifest manifest = new StatelessManifest();
