@@ -69,7 +69,6 @@ public class NewProjectFlowController : INewProjectFlowController
     {
         DataStore.i.builderInWorld.isCreatingProject.Set(false);
     }
-    
     public void Dispose()
     {
         view.OnTittleAndDescriptionSet -= SetTitleAndDescription;
@@ -92,7 +91,7 @@ public class NewProjectFlowController : INewProjectFlowController
         projectData = new ProjectData();
         projectData.id = Guid.NewGuid().ToString();
         projectData.eth_address = UserProfile.GetOwnUserProfile().ethAddress;
-        DataStore.i.builderInWorld.isCreatingProject.Set(true);
+DataStore.i.builderInWorld.isCreatingProject.Set(true);
         view.ShowNewProjectTitleAndDescrition();
     }
 

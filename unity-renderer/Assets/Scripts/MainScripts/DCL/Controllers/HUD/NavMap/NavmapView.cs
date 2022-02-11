@@ -145,6 +145,9 @@ namespace DCL
             }
             else
             {
+                if (minimapViewport == null)
+                    return;
+
                 CloseToast();
 
                 MapRenderer.i.atlas.viewport = minimapViewport;

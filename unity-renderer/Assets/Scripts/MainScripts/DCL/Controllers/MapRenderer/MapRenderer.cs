@@ -146,6 +146,10 @@ namespace DCL
                     usersInfoPool.ForcePrewarm();
             }
         }
+        
+        public void SetParcelHighlightActive(bool isAtive) => parcelHighlightImage.enabled = isAtive;
+        
+        public Vector3 GetParcelHighlightTransform() => parcelHighlightImage.transform.position;
 
         public void SetOtherPlayersIconActive(bool isActive)
         {

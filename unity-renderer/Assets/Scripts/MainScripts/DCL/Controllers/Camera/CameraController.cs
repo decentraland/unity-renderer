@@ -25,6 +25,8 @@ namespace DCL.Camera
         [Header("InputActions")]
         [SerializeField]
         internal InputAction_Trigger cameraChangeAction;
+        [SerializeField]
+        internal InputAction_Measurable mouseWheelAction;
 
         internal Dictionary<CameraMode.ModeId, CameraStateBase> cachedModeToVirtualCamera;
 
@@ -37,6 +39,8 @@ namespace DCL.Camera
         public event CameraBlendFinished onCameraBlendFinished;
 
         private bool wasBlendingLastFrame;
+
+        private float mouseWheelThreshold = 0.04f;
 
         private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
         private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
@@ -69,6 +73,7 @@ namespace DCL.Camera
             }
 
             cameraChangeAction.OnTriggered += OnCameraChangeAction;
+            mouseWheelAction.OnValueChanged += OnMouseWheelChangeValue;
             worldOffset.OnChange += OnWorldReposition;
             CommonScriptableObjects.cameraMode.OnChange += OnCameraModeChange;
 
@@ -84,8 +89,6 @@ namespace DCL.Camera
 
             wasBlendingLastFrame = false;
         }
-
-        private float prevRenderScale = 1.0f;
 
         void OnFullscreenUIVisibilityChange(bool visibleState, bool prevVisibleState)
         {
@@ -123,6 +126,18 @@ namespace DCL.Camera
             {
                 cam.OnBlock(current);
             }
+        }
+
+        private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
+        {
+            if (value > -mouseWheelThreshold && value < mouseWheelThreshold) return;
+            if (Utils.IsPointerOverUIElement()) return;
+
+            if (CommonScriptableObjects.cameraMode == CameraMode.ModeId.FirstPerson && value < -mouseWheelThreshold)
+                SetCameraMode(CameraMode.ModeId.ThirdPerson);   
+
+            if (CommonScriptableObjects.cameraMode == CameraMode.ModeId.ThirdPerson && value > mouseWheelThreshold)
+                SetCameraMode(CameraMode.ModeId.FirstPerson);
         }
 
         private void OnCameraChangeAction(DCLAction_Trigger action)
@@ -217,6 +232,7 @@ namespace DCL.Camera
 
             worldOffset.OnChange -= OnWorldReposition;
             cameraChangeAction.OnTriggered -= OnCameraChangeAction;
+            mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
             CommonScriptableObjects.cameraBlocked.OnChange -= CameraBlocked_OnChange;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
