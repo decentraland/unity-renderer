@@ -7,7 +7,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
         public event Action<RequestBase<T>> OnSuccess;
         public event Action<RequestBase<T>> OnFail;
 
-        public bool resolved { private set; get; }
+        public bool resolved { private set; get; }  
         public bool rejected { private set; get; }
         public bool pending => !rejected && !resolved;
         public string error { private set; get; }

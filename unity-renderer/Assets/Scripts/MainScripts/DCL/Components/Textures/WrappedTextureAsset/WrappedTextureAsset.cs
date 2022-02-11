@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine.Networking;
 
@@ -7,14 +8,20 @@ namespace DCL
 {
     public interface IWrappedTextureHelper
     {
-        IEnumerator GetHeader(string url, string headerField, Action<string> OnSuccess, Action<string> OnFail);
-        IEnumerator Fetch(string url, Action<IPromiseLike_TextureAsset> OnSuccess, Action<Exception> OnFail = null);
-        IEnumerator Fetch(string contentType, string url, Action<IPromiseLike_TextureAsset> OnSuccess, Action<Exception> OnFail = null);
+        IEnumerator GetHeaders(string url, HashSet<string> headerField, Action<Dictionary<string, string>> OnSuccess,
+            Action<string> OnFail);
+
+        IEnumerator FetchGif(string url, Action<AssetPromise_Gif> OnSuccess,
+            Action<Exception> OnFail = null);
+
+        IEnumerator FetchImage(string url, Action<AssetPromise_Texture> OnSuccess,
+            Action<Exception> OnFail = null);
     }
 
     public class WrappedTextureUtils : IWrappedTextureHelper
     {
-        public IEnumerator GetHeader(string url, string headerField, Action<string> OnSuccess, Action<string> OnFail)
+        public IEnumerator GetHeaders(string url, HashSet<string> headerField,
+            Action<Dictionary<string, string>> OnSuccess, Action<string> OnFail)
         {
             using (var headReq = UnityWebRequest.Head(url))
             {
@@ -22,7 +29,14 @@ namespace DCL
 
                 if (headReq.WebRequestSucceded())
                 {
-                    OnSuccess?.Invoke(headReq.GetResponseHeader(headerField));
+                    var result = new Dictionary<string, string>();
+
+                    foreach (var key in headerField)
+                    {
+                        result.Add(key, headReq.GetResponseHeader(key));
+                    }
+
+                    OnSuccess?.Invoke(result);
                 }
                 else
                 {
@@ -31,35 +45,28 @@ namespace DCL
             }
         }
 
-        public IEnumerator Fetch(string url, Action<IPromiseLike_TextureAsset> OnSuccess, Action<Exception> OnFail = null)
+        public IEnumerator FetchGif(string url, Action<AssetPromise_Gif> OnSuccess,
+            Action<Exception> OnFail = null)
         {
-            string contentType = null;
-            yield return GetHeader(url, "Content-Type", type => contentType = type, null);
-            yield return Fetch(contentType, url, OnSuccess, OnFail);
+            AssetPromise_Gif gifPromise = new AssetPromise_Gif(url);
+            gifPromise.OnSuccessEvent += texture => { OnSuccess?.Invoke(gifPromise); };
+            gifPromise.OnFailEvent += (x, error) => OnFail?.Invoke(error);
+
+            AssetPromiseKeeper_Gif.i.Keep(gifPromise);
+
+            yield return gifPromise;
         }
 
-        public IEnumerator Fetch(string contentType, string url, Action<IPromiseLike_TextureAsset> OnSuccess, Action<Exception> OnFail = null)
+        public IEnumerator FetchImage(string url, Action<AssetPromise_Texture> OnSuccess,
+            Action<Exception> OnFail = null)
         {
-            if (contentType == "image/gif")
-            {
-                AssetPromise_Gif gifPromise = new AssetPromise_Gif(url);
-                gifPromise.OnSuccessEvent += texture => { OnSuccess?.Invoke(new PromiseLike_Gif(gifPromise)); };
-                gifPromise.OnFailEvent += (x, error) => OnFail?.Invoke(error);
+            AssetPromise_Texture texturePromise = new AssetPromise_Texture(url);
+            texturePromise.OnSuccessEvent += texture => { OnSuccess?.Invoke(texturePromise); };
+            texturePromise.OnFailEvent += (x, error) => OnFail?.Invoke(error);
 
-                AssetPromiseKeeper_Gif.i.Keep(gifPromise);
+            AssetPromiseKeeper_Texture.i.Keep(texturePromise);
 
-                yield return gifPromise;
-            }
-            else
-            {
-                AssetPromise_Texture texturePromise = new AssetPromise_Texture(url);
-                texturePromise.OnSuccessEvent += texture => { OnSuccess?.Invoke(new PromiseLike_Texture(texturePromise)); };
-                texturePromise.OnFailEvent += (x, error) => OnFail?.Invoke(error);
-
-                AssetPromiseKeeper_Texture.i.Keep(texturePromise);
-
-                yield return texturePromise;
-            }
+            yield return texturePromise;
         }
     }
 }

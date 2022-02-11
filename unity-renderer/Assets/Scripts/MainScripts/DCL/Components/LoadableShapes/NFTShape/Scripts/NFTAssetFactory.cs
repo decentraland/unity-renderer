@@ -6,20 +6,15 @@ namespace NFTShape_Internal
 {
     public static class NFTAssetFactory
     {
-        public static INFTAsset CreateAsset(ITexture asset, NFTShapeConfig shapeConfig,
-            Action<Texture2D> textureUpdateCallback, GifPlayer gifPlayer)
+        public static NFTGifAsset CreateGifAsset(Asset_Gif gif, NFTShapeConfig shapeConfig, GifPlayer gifPlayer)
         {
-            if (asset == null)
-            {
-                return null;
-            }
+            return new NFTGifAsset(gif, shapeConfig.hqGifResolution, gifPlayer);
+        }
 
-            if (asset is Asset_Gif gif)
-            {
-                return new NFTGifAsset(gif, shapeConfig.hqGifResolution, gifPlayer);
-            }
-
-            return new NFTImageAsset(asset, shapeConfig.hqImgResolution, textureUpdateCallback);
+        public static NFTImageAsset CreateImageAsset(Asset_Texture texture, NFTShapeConfig shapeConfig,
+            Action<Texture2D> textureUpdateCallback)
+        {
+            return new NFTImageAsset(texture, shapeConfig.hqImgResolution, textureUpdateCallback);
         }
     }
 }

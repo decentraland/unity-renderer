@@ -6,8 +6,9 @@ namespace NFTShape_Internal
 {
     public class NFTShapeHQImageConfig
     {
-        public NFTInfo nftInfo;
-        public NFTShapeConfig nftConfig;
+        public string name;
+        public string imageUrl;
+        public NFTShapeConfig config;
         public NFTShapeLoaderController controller;
         public INFTAsset asset;
     }
@@ -50,11 +51,11 @@ namespace NFTShape_Internal
             isCameraInFront = camera == null ||
                               Vector3.Dot(nftControllerT.forward,
                                   nftControllerT.position - camera.transform.position)
-                              > config.nftConfig.hqImgInFrontDotProdMinValue;
+                              > config.config.hqImgInFrontDotProdMinValue;
 
-            if (config.nftConfig.verbose)
+            if (config.config.verbose)
             {
-                Debug.Log($"Camera is in front of {config.nftInfo.name}? {isCameraInFront}");
+                Debug.Log($"Camera is in front of {config.name}? {isCameraInFront}");
             }
 
             if (!isCameraInFront)
@@ -65,11 +66,11 @@ namespace NFTShape_Internal
 
             isPlayerLooking = camera == null ||
                               Vector3.Dot(nftControllerT.forward, camera.transform.forward) >=
-                              config.nftConfig.hqImgFacingDotProdMinValue;
+                              config.config.hqImgFacingDotProdMinValue;
 
-            if (config.nftConfig.verbose)
+            if (config.config.verbose)
             {
-                Debug.Log($"Player is looking at {config.nftInfo.name}? {isPlayerLooking}");
+                Debug.Log($"Player is looking at {config.name}? {isPlayerLooking}");
             }
 
             if (isPlayerLooking)
@@ -102,16 +103,16 @@ namespace NFTShape_Internal
                 return;
 
             isPlayerNear = ((current - config.controller.collider.ClosestPoint(current)).sqrMagnitude
-                            <= (config.nftConfig.hqImgMinDistance * config.nftConfig.hqImgMinDistance));
+                            <= (config.config.hqImgMinDistance * config.config.hqImgMinDistance));
 
             if (!isPlayerNear)
             {
                 RestorePreviewTextureIfInHQ();
             }
 
-            if (config.nftConfig.verbose)
+            if (config.config.verbose)
             {
-                Debug.Log($"Player position relative to {config.nftInfo.name} is near? {isPlayerNear}");
+                Debug.Log($"Player position relative to {config.name} is near? {isPlayerNear}");
             }
         }
 
@@ -120,31 +121,31 @@ namespace NFTShape_Internal
             if (asset.isHQ)
                 return;
 
-            string url = $"{config.nftInfo.imageUrl}=s{asset.hqResolution}";
+            string url = $"{config.imageUrl}=s{asset.hqResolution}";
 
             Action debugSuccess = null;
             Action<Exception> debugFail = null;
 
-            if (config.nftConfig.verbose)
+            if (config.config.verbose)
             {
-                debugSuccess = () => Debug.Log($"Success: Fetch {config.nftInfo.name} HQ image");
-                debugFail = error => Debug.Log($"Fail: Fetch {config.nftInfo.name} HQ image, Exception: {error}");
+                debugSuccess = () => Debug.Log($"Success: Fetch {config.name} HQ image");
+                debugFail = error => Debug.Log($"Fail: Fetch {config.name} HQ image, Exception: {error}");
             }
 
             asset.FetchAndSetHQAsset(url, debugSuccess, debugFail);
 
-            if (config.nftConfig.verbose)
+            if (config.config.verbose)
             {
-                Debug.Log($"Fetch {config.nftInfo.name} HQ image");
+                Debug.Log($"Fetch {config.name} HQ image");
             }
         }
 
         private void RestorePreviewTexture()
         {
             asset.RestorePreviewAsset();
-            if (config.nftConfig.verbose)
+            if (config.config.verbose)
             {
-                Debug.Log($"Restore {config.nftInfo.name} preview image");
+                Debug.Log($"Restore {config.name} preview image");
             }
         }
 
