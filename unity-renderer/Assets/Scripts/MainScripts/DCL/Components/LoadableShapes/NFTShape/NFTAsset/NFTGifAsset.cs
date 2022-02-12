@@ -1,12 +1,13 @@
 using System;
 using DCL;
+using UnityEngine;
 
 namespace NFTShape_Internal
 {
     public class NFTGifAsset : INFTAsset
     {
+        private const int RESOLUTION_HQ = 512;
         public bool isHQ => hqGifPromise != null;
-        public int hqResolution { get; }
         public ITexture previewAsset => previewGif;
         public ITexture hqAsset => hqGifPromise?.asset;
 
@@ -14,12 +15,20 @@ namespace NFTShape_Internal
 
         private readonly GifPlayer gifPlayer;
         private readonly Asset_Gif previewGif;
+        public event Action<Texture2D> OnTextureUpdate;
 
-        public NFTGifAsset(Asset_Gif previewGif, int hqResolution, GifPlayer gifPlayer)
+        public NFTGifAsset(Asset_Gif previewGif)
         {
             this.previewGif = previewGif;
-            this.hqResolution = hqResolution;
-            this.gifPlayer = gifPlayer;
+            this.gifPlayer = new GifPlayer(previewGif);
+
+            gifPlayer.Play();
+            gifPlayer.OnFrameTextureChanged += OnFrameTextureChanged;
+        }
+
+        void OnFrameTextureChanged(Texture2D texture)
+        {
+            OnTextureUpdate?.Invoke(texture);
         }
 
         public void Dispose()
@@ -29,11 +38,13 @@ namespace NFTShape_Internal
                 AssetPromiseKeeper_Gif.i.Forget(hqGifPromise);
                 hqGifPromise = null;
             }
+
+            gifPlayer.Dispose();
         }
 
         public void FetchAndSetHQAsset(string url, Action onSuccess, Action<Exception> onFail)
         {
-            hqGifPromise = new AssetPromise_Gif(url);
+            hqGifPromise = new AssetPromise_Gif($"{url}=s{RESOLUTION_HQ}");
 
             hqGifPromise.OnSuccessEvent += (asset) =>
             {

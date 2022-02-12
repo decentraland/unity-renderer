@@ -1,5 +1,4 @@
 ﻿using System;
-using DCL.Helpers.NFT;
 using UnityEngine;
 
 namespace NFTShape_Internal
@@ -8,14 +7,14 @@ namespace NFTShape_Internal
     {
         public string name;
         public string imageUrl;
-        public NFTShapeConfig config;
+        public NFTShapeConfig nftShapeConfig;
         public NFTShapeLoaderController controller;
         public INFTAsset asset;
     }
 
     public class NFTShapeHQImageHandler : IDisposable
     {
-        readonly NFTShapeHQImageConfig config;
+        readonly NFTShapeHQImageConfig hqImageConfig;
         readonly INFTAsset asset;
         readonly Camera camera;
         readonly Transform nftControllerT;
@@ -42,7 +41,7 @@ namespace NFTShape_Internal
 
         public void Update()
         {
-            if (config.controller.collider is null)
+            if (hqImageConfig.controller.collider is null)
                 return;
 
             if (!isPlayerNear)
@@ -51,11 +50,11 @@ namespace NFTShape_Internal
             isCameraInFront = camera == null ||
                               Vector3.Dot(nftControllerT.forward,
                                   nftControllerT.position - camera.transform.position)
-                              > config.config.hqImgInFrontDotProdMinValue;
+                              > hqImageConfig.nftShapeConfig.hqImgInFrontDotProdMinValue;
 
-            if (config.config.verbose)
+            if (hqImageConfig.nftShapeConfig.verbose)
             {
-                Debug.Log($"Camera is in front of {config.name}? {isCameraInFront}");
+                Debug.Log($"Camera is in front of {hqImageConfig.name}? {isCameraInFront}");
             }
 
             if (!isCameraInFront)
@@ -66,11 +65,11 @@ namespace NFTShape_Internal
 
             isPlayerLooking = camera == null ||
                               Vector3.Dot(nftControllerT.forward, camera.transform.forward) >=
-                              config.config.hqImgFacingDotProdMinValue;
+                              hqImageConfig.nftShapeConfig.hqImgFacingDotProdMinValue;
 
-            if (config.config.verbose)
+            if (hqImageConfig.nftShapeConfig.verbose)
             {
-                Debug.Log($"Player is looking at {config.name}? {isPlayerLooking}");
+                Debug.Log($"Player is looking at {hqImageConfig.name}? {isPlayerLooking}");
             }
 
             if (isPlayerLooking)
@@ -83,13 +82,13 @@ namespace NFTShape_Internal
             }
         }
 
-        private NFTShapeHQImageHandler(NFTShapeHQImageConfig config)
+        private NFTShapeHQImageHandler(NFTShapeHQImageConfig hqImageConfig)
         {
-            this.config = config;
-            this.asset = config.asset;
+            this.hqImageConfig = hqImageConfig;
+            this.asset = hqImageConfig.asset;
 
             camera = Camera.main;
-            nftControllerT = config.controller.transform;
+            nftControllerT = hqImageConfig.controller.transform;
 
             CommonScriptableObjects.playerUnityPosition.OnChange += OnPlayerPositionChanged;
             OnPlayerPositionChanged(CommonScriptableObjects.playerUnityPosition, Vector3.zero);
@@ -99,20 +98,21 @@ namespace NFTShape_Internal
         {
             isPlayerNear = false;
 
-            if (config.controller == null || config.controller.collider == null)
+            if (hqImageConfig.controller == null || hqImageConfig.controller.collider == null)
                 return;
 
-            isPlayerNear = ((current - config.controller.collider.ClosestPoint(current)).sqrMagnitude
-                            <= (config.config.hqImgMinDistance * config.config.hqImgMinDistance));
+            isPlayerNear = ((current - hqImageConfig.controller.collider.ClosestPoint(current)).sqrMagnitude
+                            <= (hqImageConfig.nftShapeConfig.hqImgMinDistance *
+                                hqImageConfig.nftShapeConfig.hqImgMinDistance));
 
             if (!isPlayerNear)
             {
                 RestorePreviewTextureIfInHQ();
             }
 
-            if (config.config.verbose)
+            if (hqImageConfig.nftShapeConfig.verbose)
             {
-                Debug.Log($"Player position relative to {config.name} is near? {isPlayerNear}");
+                Debug.Log($"Player position relative to {hqImageConfig.name} is near? {isPlayerNear}");
             }
         }
 
@@ -121,31 +121,30 @@ namespace NFTShape_Internal
             if (asset.isHQ)
                 return;
 
-            string url = $"{config.imageUrl}=s{asset.hqResolution}";
-
             Action debugSuccess = null;
             Action<Exception> debugFail = null;
 
-            if (config.config.verbose)
+            if (hqImageConfig.nftShapeConfig.verbose)
             {
-                debugSuccess = () => Debug.Log($"Success: Fetch {config.name} HQ image");
-                debugFail = error => Debug.Log($"Fail: Fetch {config.name} HQ image, Exception: {error}");
+                debugSuccess = () => Debug.Log($"Success: Fetch {hqImageConfig.name} HQ image");
+                debugFail = error => Debug.Log($"Fail: Fetch {hqImageConfig.name} HQ image, Exception: {error}");
             }
 
-            asset.FetchAndSetHQAsset(url, debugSuccess, debugFail);
+            // TODO(Brian): Asset is not supposed to fetch. Move this fetching mechanism to this class or elsewhere.
+            asset.FetchAndSetHQAsset(hqImageConfig.imageUrl, debugSuccess, debugFail);
 
-            if (config.config.verbose)
+            if (hqImageConfig.nftShapeConfig.verbose)
             {
-                Debug.Log($"Fetch {config.name} HQ image");
+                Debug.Log($"Fetch {hqImageConfig.name} HQ image");
             }
         }
 
         private void RestorePreviewTexture()
         {
             asset.RestorePreviewAsset();
-            if (config.config.verbose)
+            if (hqImageConfig.nftShapeConfig.verbose)
             {
-                Debug.Log($"Restore {config.name} preview image");
+                Debug.Log($"Restore {hqImageConfig.name} preview image");
             }
         }
 

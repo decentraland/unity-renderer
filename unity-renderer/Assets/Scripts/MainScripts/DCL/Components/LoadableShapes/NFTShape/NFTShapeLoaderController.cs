@@ -58,9 +58,6 @@ public class NFTShapeLoaderController : MonoBehaviour
     private string darURLRegistry;
     private string darURLAsset;
 
-    private AssetPromise_Texture imagePromise = null;
-    private AssetPromise_Gif gifPromise = null;
-
     public Material frameMaterial { private set; get; } = null;
     public Material imageMaterial { private set; get; } = null;
     public Material backgroundMaterial { private set; get; } = null;
@@ -74,7 +71,7 @@ public class NFTShapeLoaderController : MonoBehaviour
     bool isDestroyed = false;
 
     private Coroutine fetchNftImageCoroutine;
-    internal IWrappedTextureHelper wrappedTextureHelper;
+    internal INftAssetLoadHelper nftAssetLoadHelper;
 
     void Awake()
     {
@@ -106,7 +103,7 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         InitializePerlinNoise();
         nftInfoFetcher = new NFTInfoFetcher();
-        wrappedTextureHelper = new WrappedTextureUtils();
+        nftAssetLoadHelper = new NftAssetLoadHelper();
     }
 
     private void Start() { spinner.layer = LayerMask.NameToLayer("ViewportCullingIgnored"); }
@@ -185,107 +182,44 @@ public class NFTShapeLoaderController : MonoBehaviour
         FinishLoading(false);
     }
 
-    private void PrepareFrame(Texture2D previewTexture, INFTAsset nftAsset, string nftName, string nftImageUrl)
+    private void PrepareFrame(INFTAsset nftAsset, string nftName, string nftImageUrl)
     {
-        SetFrameImage(previewTexture, resizeFrameMesh: true);
+        SetFrameImage(nftAsset.previewAsset.texture, resizeFrameMesh: true);
 
         var hqImageHandlerConfig = new NFTShapeHQImageConfig()
         {
             controller = this,
-            config = config,
+            nftShapeConfig = config,
             name = nftName,
             imageUrl = nftImageUrl,
             asset = nftAsset
         };
 
         hqTextureHandler = NFTShapeHQImageHandler.Create(hqImageHandlerConfig);
-    }
-
-    private IEnumerator FetchNFTImageInternal(string url, string nftName, System.Action<bool> OnFinished)
-    {
-        if (string.IsNullOrEmpty(url))
-            yield break;
-
-        string contentType = null;
-        HashSet<string> headers = new HashSet<string>() {"Content-Type", "Content-Length"};
-        Dictionary<string, string> responseHeaders = new Dictionary<string, string>();
-
-        yield return wrappedTextureHelper.GetHeaders(url, headers, result => responseHeaders = result, null);
-
-        contentType = responseHeaders["Content-Type"];
-        long contentLength = long.Parse(responseHeaders["Content-Length"]);
-
-        bool isGif = contentType == "image/gif";
-
-        if (isGif)
-        {
-            yield return wrappedTextureHelper.FetchGif(url, (promise) =>
-            {
-                UnloadContents();
-                this.gifPromise = promise;
-                SetupGifPlayer(promise.asset);
-                var nftAsset = NFTAssetFactory.CreateGifAsset(promise.asset, config, gifPlayer);
-                PrepareFrame(promise.asset.texture, nftAsset, nftName, url);
-                OnFinished?.Invoke(true);
-            });
-        }
-        else
-        {
-            const long PREVIEW_IMAGE_SIZE_LIMIT = 500000;
-
-            if (contentLength > PREVIEW_IMAGE_SIZE_LIMIT)
-            {
-                OnFinished?.Invoke(false);
-                yield break;
-            }
-
-            yield return wrappedTextureHelper.FetchImage(url, (promise) =>
-            {
-                UnloadContents();
-                this.imagePromise = promise;
-                var nftAsset = NFTAssetFactory.CreateImageAsset(promise.asset, config, UpdateTexture);
-                PrepareFrame(promise.asset.texture, nftAsset, nftName, url);
-                OnFinished?.Invoke(true);
-            });
-        }
-
-        OnFinished?.Invoke(false);
-    }
-
-    void UnloadContents()
-    {
-        if (gifPromise != null)
-            AssetPromiseKeeper_Gif.i.Forget(gifPromise);
-
-        if (imagePromise != null)
-            AssetPromiseKeeper_Texture.i.Forget(imagePromise);
-
-        gifPromise = null;
-        imagePromise = null;
+        nftAsset.OnTextureUpdate += UpdateTexture;
     }
 
     internal IEnumerator FetchNFTImageCoroutine(NFTInfo nftInfo)
     {
         yield return new DCL.WaitUntil(() => (CommonScriptableObjects.playerUnityPosition - transform.position).sqrMagnitude < (config.loadingMinDistance * config.loadingMinDistance));
 
-        bool success = false;
-
         // We download the "preview" 256px image
-        if (!string.IsNullOrEmpty(nftInfo.previewImageUrl))
-        {
-            yield return FetchNFTImageInternal(nftInfo.previewImageUrl, nftInfo.name, (result) => success = result);
-        }
+        yield return nftAssetLoadHelper.Fetch(
+            nftInfo.previewImageUrl,
+            (result) =>
+            {
+                PrepareFrame(result, nftInfo.name, nftInfo.previewImageUrl);
+                FinishLoading(true);
+            },
+            (exc) =>
+            {
+                Debug.LogError(string.Format(COULD_NOT_FETCH_NFT_IMAGE, darURLRegistry, darURLAsset,
+                    nftInfo.previewImageUrl));
 
-        if (!success)
-        {
-            Debug.LogError(string.Format(COULD_NOT_FETCH_NFT_IMAGE, darURLRegistry, darURLAsset,
-                nftInfo.previewImageUrl));
-            ShowErrorFeedback(true);
-            OnLoadingAssetFail?.Invoke();
-            yield break;
-        }
-
-        FinishLoading(success);
+                ShowErrorFeedback(true);
+                OnLoadingAssetFail?.Invoke();
+                FinishLoading(false);
+            });
     }
 
     void FinishLoading(bool loadedSuccessfully)
@@ -335,7 +269,7 @@ public class NFTShapeLoaderController : MonoBehaviour
     {
         isDestroyed = true;
 
-        UnloadContents();
+        nftAssetLoadHelper.Dispose();
 
         nftInfoFetcher.Dispose();
 
@@ -364,14 +298,7 @@ public class NFTShapeLoaderController : MonoBehaviour
             Object.Destroy(imageMaterial);
         }
     }
-
-    private void SetupGifPlayer(Asset_Gif asset)
-    {
-        gifPlayer = new GifPlayer(asset);
-        gifPlayer.Play();
-        gifPlayer.OnFrameTextureChanged += UpdateTexture;
-    }
-
+    
     private void ShowLoading(bool isVisible)
     {
         if (spinner == null)
