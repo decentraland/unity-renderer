@@ -89,7 +89,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     string marketUrl = null;
 
     private bool isDestroyed = false;
-    internal INftAssetLoadHelper nftAssetLoadHelper;
+    internal INFTAssetLoadHelper nftAssetLoadHelper;
 
     private void Awake()
     {
@@ -281,8 +281,8 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         if (nftAssetLoadHelper != null)
             nftAssetLoadHelper.Dispose();
 
-        nftAssetLoadHelper = new NftAssetLoadHelper();
-        yield return nftAssetLoadHelper.Fetch(
+        nftAssetLoadHelper = new NFTAssetLoadHelper();
+        yield return nftAssetLoadHelper.LoadNFTAsset(
             nftInfo.previewImageUrl,
             OnSuccess: nftAsset =>
             {

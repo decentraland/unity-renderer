@@ -7,17 +7,17 @@ using UnityEngine.Networking;
 
 namespace DCL
 {
-    public interface INftAssetLoadHelper : IDisposable
+    public interface INFTAssetLoadHelper : IDisposable
     {
-        IEnumerator Fetch(string url, Action<INFTAsset> OnSuccess, Action<Exception> OnFail);
+        IEnumerator LoadNFTAsset(string url, Action<INFTAsset> OnSuccess, Action<Exception> OnFail);
     }
 
-    public class NftAssetLoadHelper : INftAssetLoadHelper
+    public class NFTAssetLoadHelper : INFTAssetLoadHelper
     {
         private AssetPromise_Texture imagePromise = null;
         private AssetPromise_Gif gifPromise = null;
 
-        public IEnumerator Fetch(string url, Action<INFTAsset> OnSuccess, Action<Exception> OnFail)
+        public IEnumerator LoadNFTAsset(string url, Action<INFTAsset> OnSuccess, Action<Exception> OnFail)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -25,15 +25,13 @@ namespace DCL
                 yield break;
             }
 
-            string contentType = null;
             HashSet<string> headers = new HashSet<string>() {"Content-Type", "Content-Length"};
             Dictionary<string, string> responseHeaders = new Dictionary<string, string>();
 
             yield return GetHeaders(url, headers, result => responseHeaders = result, null);
 
-            contentType = responseHeaders["Content-Type"];
+            string contentType = responseHeaders["Content-Type"];
             long contentLength = long.Parse(responseHeaders["Content-Length"]);
-
             bool isGif = contentType == "image/gif";
 
             if (isGif)
@@ -41,12 +39,12 @@ namespace DCL
                 yield return FetchGif(url,
                     OnSuccess: (promise) =>
                     {
-                        UnloadContents();
+                        UnloadPromises();
                         this.gifPromise = promise;
                         INFTAsset nftAsset = NFTAssetFactory.CreateGifAsset(promise.asset);
                         OnSuccess?.Invoke(nftAsset);
                     },
-                    OnFail: (exc) => { OnFail?.Invoke(exc); }
+                    OnFail: (exception) => { OnFail?.Invoke(exception); }
                 );
 
                 yield break;
@@ -63,7 +61,7 @@ namespace DCL
             yield return FetchImage(url,
                 OnSuccess: (promise) =>
                 {
-                    UnloadContents();
+                    UnloadPromises();
                     this.imagePromise = promise;
                     INFTAsset nftAsset = NFTAssetFactory.CreateImageAsset(promise.asset);
                     OnSuccess?.Invoke(nftAsset);
@@ -73,30 +71,30 @@ namespace DCL
 
         public void Dispose()
         {
-            UnloadContents();
+            UnloadPromises();
         }
 
         private IEnumerator GetHeaders(string url, HashSet<string> headerField,
             Action<Dictionary<string, string>> OnSuccess, Action<string> OnFail)
         {
-            using (var headReq = UnityWebRequest.Head(url))
+            using (var request = UnityWebRequest.Head(url))
             {
-                yield return headReq.SendWebRequest();
+                yield return request.SendWebRequest();
 
-                if (headReq.WebRequestSucceded())
+                if (request.WebRequestSucceded())
                 {
                     var result = new Dictionary<string, string>();
 
                     foreach (var key in headerField)
                     {
-                        result.Add(key, headReq.GetResponseHeader(key));
+                        result.Add(key, request.GetResponseHeader(key));
                     }
 
                     OnSuccess?.Invoke(result);
                 }
                 else
                 {
-                    OnFail?.Invoke(headReq.error);
+                    OnFail?.Invoke(request.error);
                 }
             }
         }
@@ -125,7 +123,7 @@ namespace DCL
             yield return texturePromise;
         }
 
-        void UnloadContents()
+        void UnloadPromises()
         {
             if (gifPromise != null)
                 AssetPromiseKeeper_Gif.i.Forget(gifPromise);

@@ -37,7 +37,10 @@ public class NFTShapeLoaderController : MonoBehaviour
     public GameObject errorFeedback;
 
     [HideInInspector] public bool alreadyLoadedAsset = false;
-    [HideInInspector] public INFTInfoFetcher nftInfoFetcher;
+    [HideInInspector] public INFTInfoLoadHelper nftInfoLoadHelper;
+    internal INFTAssetLoadHelper nftAssetLoadHelper;
+    private NFTShapeHQImageHandler hqTextureHandler = null;
+    private Coroutine loadNftAssetCoroutine;
 
     public event System.Action OnLoadingAssetSuccess;
     public event System.Action OnLoadingAssetFail;
@@ -62,54 +65,28 @@ public class NFTShapeLoaderController : MonoBehaviour
     public Material imageMaterial { private set; get; } = null;
     public Material backgroundMaterial { private set; get; } = null;
 
-    int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
-    int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
+    readonly int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
+    readonly int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
 
-    GifPlayer gifPlayer = null;
-    NFTShapeHQImageHandler hqTextureHandler = null;
 
     bool isDestroyed = false;
 
-    private Coroutine fetchNftImageCoroutine;
-    internal INftAssetLoadHelper nftAssetLoadHelper;
 
     void Awake()
     {
-        Material[] meshMaterials = new Material[materials.Length];
-        for (int i = 0; i < materials.Length; i++)
-        {
-            switch (materials[i].type)
-            {
-                case NFTShapeMaterial.MaterialType.BACKGROUND:
-                    backgroundMaterial = new Material(materials[i].material);
-                    meshMaterials[i] = backgroundMaterial;
-                    break;
-                case NFTShapeMaterial.MaterialType.FRAME:
-                    frameMaterial = materials[i].material;
-                    meshMaterials[i] = frameMaterial;
-                    break;
-                case NFTShapeMaterial.MaterialType.IMAGE:
-                    imageMaterial = new Material(materials[i].material);
-                    meshMaterials[i] = imageMaterial;
-                    break;
-            }
-        }
-
-
-        meshRenderer.materials = meshMaterials;
-
         // NOTE: we use half scale to keep backward compatibility cause we are using 512px to normalize the scale with a 256px value that comes from the images
         meshRenderer.transform.localScale = new Vector3(0.5f, 0.5f, 1);
 
-        InitializePerlinNoise();
-        nftInfoFetcher = new NFTInfoFetcher();
-        nftAssetLoadHelper = new NftAssetLoadHelper();
+        InitializeMaterials();
+        nftInfoLoadHelper = new NFTInfoLoadHelper();
+        nftAssetLoadHelper = new NFTAssetLoadHelper();
     }
 
     private void Start() { spinner.layer = LayerMask.NameToLayer("ViewportCullingIgnored"); }
 
     void Update() { hqTextureHandler?.Update(); }
 
+    
     public void LoadAsset(string url, bool loadEvenIfAlreadyLoaded = false)
     {
         if (string.IsNullOrEmpty(url) || (!loadEvenIfAlreadyLoaded && alreadyLoadedAsset))
@@ -168,15 +145,15 @@ public class NFTShapeLoaderController : MonoBehaviour
     private void FetchNFTContents()
     {
         ShowLoading(true);
-        nftInfoFetcher.FetchNFTImage(darURLRegistry, darURLAsset, FetchNFTContentsSuccess, FetchNFTContentsFail);
+        nftInfoLoadHelper.FetchNFTInfo(darURLRegistry, darURLAsset, FetchNFTInfoSuccess, FetchNFTInfoFail);
     }
 
-    private void FetchNFTContentsSuccess(NFTInfo nftInfo)
+    private void FetchNFTInfoSuccess(NFTInfo nftInfo)
     {
-        fetchNftImageCoroutine = StartCoroutine(FetchNFTImageCoroutine(nftInfo));
+        loadNftAssetCoroutine = StartCoroutine(LoadNFTAssetCoroutine(nftInfo));
     }
 
-    private void FetchNFTContentsFail()
+    private void FetchNFTInfoFail()
     {
         ShowErrorFeedback(true);
         FinishLoading(false);
@@ -199,12 +176,12 @@ public class NFTShapeLoaderController : MonoBehaviour
         nftAsset.OnTextureUpdate += UpdateTexture;
     }
 
-    internal IEnumerator FetchNFTImageCoroutine(NFTInfo nftInfo)
+    internal IEnumerator LoadNFTAssetCoroutine(NFTInfo nftInfo)
     {
         yield return new DCL.WaitUntil(() => (CommonScriptableObjects.playerUnityPosition - transform.position).sqrMagnitude < (config.loadingMinDistance * config.loadingMinDistance));
 
         // We download the "preview" 256px image
-        yield return nftAssetLoadHelper.Fetch(
+        yield return nftAssetLoadHelper.LoadNFTAsset(
             nftInfo.previewImageUrl,
             (result) =>
             {
@@ -265,40 +242,6 @@ public class NFTShapeLoaderController : MonoBehaviour
         imageMaterial.SetColor(COLOR_SHADER_PROPERTY, Color.white);
     }
 
-    void OnDestroy()
-    {
-        isDestroyed = true;
-
-        nftAssetLoadHelper.Dispose();
-
-        nftInfoFetcher.Dispose();
-
-        if (fetchNftImageCoroutine != null)
-            StopCoroutine(fetchNftImageCoroutine);
-
-        if (hqTextureHandler != null)
-        {
-            hqTextureHandler.Dispose();
-            hqTextureHandler = null;
-        }
-
-        if (gifPlayer != null)
-        {
-            gifPlayer.OnFrameTextureChanged -= UpdateTexture;
-            gifPlayer.Dispose();
-        }
-
-        if (backgroundMaterial != null)
-        {
-            Object.Destroy(backgroundMaterial);
-        }
-
-        if (imageMaterial != null)
-        {
-            Object.Destroy(imageMaterial);
-        }
-    }
-    
     private void ShowLoading(bool isVisible)
     {
         if (spinner == null)
@@ -318,8 +261,31 @@ public class NFTShapeLoaderController : MonoBehaviour
         errorFeedback.SetActive(isVisible);
     }
 
-    void InitializePerlinNoise()
+    void InitializeMaterials()
     {
+        Material[] meshMaterials = new Material[materials.Length];
+        for (int i = 0; i < materials.Length; i++)
+        {
+            switch (materials[i].type)
+            {
+                case NFTShapeMaterial.MaterialType.BACKGROUND:
+                    backgroundMaterial = new Material(materials[i].material);
+                    meshMaterials[i] = backgroundMaterial;
+                    break;
+                case NFTShapeMaterial.MaterialType.FRAME:
+                    frameMaterial = materials[i].material;
+                    meshMaterials[i] = frameMaterial;
+                    break;
+                case NFTShapeMaterial.MaterialType.IMAGE:
+                    imageMaterial = new Material(materials[i].material);
+                    meshMaterials[i] = imageMaterial;
+                    break;
+            }
+        }
+
+
+        meshRenderer.materials = meshMaterials;
+
         if (frameMaterial == null)
             return;
 
