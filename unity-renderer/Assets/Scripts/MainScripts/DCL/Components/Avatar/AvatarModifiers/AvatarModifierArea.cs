@@ -243,11 +243,8 @@ public class AvatarModifierArea : BaseComponent
 
         if (excludedColliders == null)
         {
-            excludedColliders = new HashSet<Collider>() { player.collider };
+            excludedColliders = new HashSet<Collider>();
         }
-        else if (!excludedColliders.Contains(player.collider))
-        {
-            excludedColliders.Add(player.collider);
-        }
+        excludedColliders.Add(player.collider);
     }
 }

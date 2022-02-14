@@ -25,10 +25,11 @@ public class BoxTriggerArea : TriggerArea
             return null;
         }
 
+        bool hasExcludeList = excludeColliders != null;
         HashSet<GameObject> result = new HashSet<GameObject>();
         foreach (Collider collider in colliders)
         {
-            if (excludeColliders != null && excludeColliders.Contains(collider))
+            if (hasExcludeList && excludeColliders.Contains(collider))
             {
                 continue;
             }
