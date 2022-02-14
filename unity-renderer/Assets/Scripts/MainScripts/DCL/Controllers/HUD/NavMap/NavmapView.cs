@@ -5,6 +5,7 @@ using DCL.Interface;
 using DCL.Helpers;
 using TMPro;
 using System;
+using UnityEngine.EventSystems;
 
 namespace DCL
 {
@@ -110,6 +111,7 @@ namespace DCL
             {
                 CalculateZoomLevelAndDirection(-1);
             }
+            EventSystem.current.SetSelectedGameObject(null);
         }
 
         private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
