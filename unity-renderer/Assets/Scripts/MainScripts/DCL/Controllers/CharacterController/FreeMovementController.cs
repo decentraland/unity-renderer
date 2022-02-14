@@ -19,8 +19,6 @@ public class FreeMovementController : MonoBehaviour
     bool isSprinting = false;
     bool isActive;
 
-    float deltaTime = 0.032f;
-
     Vector3 velocity = Vector3.zero;
 
     private Vector3NullableVariable characterForward => CommonScriptableObjects.characterForward;
@@ -78,7 +76,7 @@ public class FreeMovementController : MonoBehaviour
             velocity += forwardTarget * speed;
             CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
 
-            characterController.Move(velocity * deltaTime);
+            characterController.Move(velocity * Time.deltaTime);
         }
 
         return velocity;

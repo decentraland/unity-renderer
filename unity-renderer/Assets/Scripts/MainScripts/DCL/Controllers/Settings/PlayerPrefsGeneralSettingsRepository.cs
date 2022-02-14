@@ -15,6 +15,7 @@ namespace DCL.SettingsCommon
         public const string VOICE_CHAT_ALLOW = "voiceChatAllow";
         public const string PROCEDURAL_SKYBOX_MODE = "ProceduralSkyboxMode";
         public const string SKYBOX_TIME = "skyboxTime";
+        public const string FIRST_PERSON_CAMERA_FOV = "firstPersonCameraFOV";
 
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
         private readonly GeneralSettings defaultSettings;
@@ -55,6 +56,7 @@ namespace DCL.SettingsCommon
             settingsByKey.SetEnum(VOICE_CHAT_ALLOW, currentSettings.voiceChatAllow);
             settingsByKey.SetBool(PROCEDURAL_SKYBOX_MODE, currentSettings.dynamicProceduralSkybox);
             settingsByKey.SetFloat(SKYBOX_TIME, currentSettings.skyboxTime);
+            settingsByKey.SetFloat(FIRST_PERSON_CAMERA_FOV, currentSettings.firstPersonCameraFOV);
         }
 
         public bool HasAnyData() => !Data.Equals(defaultSettings);
@@ -76,6 +78,7 @@ namespace DCL.SettingsCommon
                 settings.voiceChatAllow = settingsByKey.GetEnum(VOICE_CHAT_ALLOW, defaultSettings.voiceChatAllow);
                 settings.dynamicProceduralSkybox = settingsByKey.GetBool(PROCEDURAL_SKYBOX_MODE, defaultSettings.dynamicProceduralSkybox);
                 settings.skyboxTime = settingsByKey.GetFloat(SKYBOX_TIME, defaultSettings.skyboxTime);
+                settings.firstPersonCameraFOV = settingsByKey.GetFloat(FIRST_PERSON_CAMERA_FOV, defaultSettings.firstPersonCameraFOV);
             }
             catch (Exception e)
             {

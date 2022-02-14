@@ -530,5 +530,37 @@ namespace DCL.Helpers
             yield return new WaitForSeconds(delay);
             onFinishCallback.Invoke();
         }
+
+        public static string GetHierarchyPath(this Transform transform)
+        {
+            if (transform.parent == null)
+                return transform.name;
+            return $"{transform.parent.GetHierarchyPath()}/{transform.name}";
+        }
+
+        public static bool TryFindChildRecursively(this Transform transform, string name, out Transform foundChild)
+        {
+            foundChild = transform.Find(name);
+            if (foundChild != null)
+                return true;
+
+            foreach (Transform child in transform)
+            {
+                if (TryFindChildRecursively(child, name, out foundChild))
+                    return true;
+            }
+            return false;
+        }
+
+        public static bool IsPointerOverUIElement(Vector3 mousePosition)
+        {
+            var eventData = new PointerEventData(EventSystem.current);
+            eventData.position = mousePosition;
+            var results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(eventData, results);
+            return results.Count > 1;
+        }
+
+        public static bool IsPointerOverUIElement() { return IsPointerOverUIElement(Input.mousePosition); }
     }
 }
