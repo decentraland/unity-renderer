@@ -64,7 +64,11 @@ namespace DCL.Builder
 
         internal void BackPressed() { OnBackPressed?.Invoke(); }
 
-        internal void EnableNextButton() { nextButton.SetInteractable(true); }
+        internal void EnableNextButton()
+        {
+            if(titleInputField.IsInputAvailable() && descriptionInputField.IsInputAvailable())
+                nextButton.SetInteractable(true);
+        }
 
         internal void DisableNextButton() { nextButton.SetInteractable(false); }
 
