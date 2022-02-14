@@ -38,13 +38,9 @@ namespace DCL
 
         public BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
         public static event System.Action<bool> OnToggle;
-        private const float MAP_ZOOM_MAX_SCALE = 0.7f;
-        private const float MAP_ZOOM_MIN_SCALE = 0.2f;
         private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
         private const float MAP_ZOOM_LEVELS = 4;
         private RectTransform containerRectTransform;
-        private float zoomDelta;
-        private int defaultZoomLevel;
         private int currentZoomLevel;
         private float scale = 1f;
 
@@ -95,9 +91,8 @@ namespace DCL
 
         private void ResetCameraZoom()
         {
-            zoomDelta = (MAP_ZOOM_MAX_SCALE - MAP_ZOOM_MIN_SCALE) / MAP_ZOOM_LEVELS;
-            currentZoomLevel = defaultZoomLevel = Mathf.FloorToInt(MAP_ZOOM_LEVELS / 2);
-            scale = zoomCurve.Evaluate(currentZoomLevel);//MAP_ZOOM_MIN_SCALE + defaultZoomLevel * zoomDelta;
+            currentZoomLevel = Mathf.FloorToInt(MAP_ZOOM_LEVELS / 2);
+            scale = zoomCurve.Evaluate(currentZoomLevel);
             containerRectTransform.localScale = new Vector3(scale, scale, scale);
             HandleZoomButtonsAspect();
         }
@@ -137,7 +132,6 @@ namespace DCL
                 StartCoroutine(ScaleOverTime());
             }
             HandleZoomButtonsAspect();
-            Debug.Log("Level: " + currentZoomLevel);
         }
 
         private void HandleZoomButtonsAspect() {
@@ -167,14 +161,12 @@ namespace DCL
         private IEnumerator ScaleOverTime()
         {
             isScaling = true;
-            scale = zoomCurve.Evaluate(currentZoomLevel);//MAP_ZOOM_MIN_SCALE + zoomDelta * currentZoomLevel;
+            scale = zoomCurve.Evaluate(currentZoomLevel);
             MapRenderer.i.scaleFactor = scale;
             Vector3 startScaleSize = containerRectTransform.localScale;
             Vector3 targetScale = new Vector3(scale, scale, scale);
-            //zoomCurve.Evaluate();
-
+            
             float counter = 0;
-
 
             while (counter < scaleDuration)
             {
