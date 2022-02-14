@@ -42,7 +42,8 @@ namespace DCL.Models
             return renderer.bounds;
         }
 
-        public static int ComputeTotalTriangles(HashSet<Renderer> renderers, Dictionary<Mesh, int> meshToTriangleCount)
+        public static int ComputeTotalTriangles(IEnumerable<Renderer> renderers,
+            Dictionary<Mesh, int> meshToTriangleCount)
         {
             int result = 0;
 
@@ -68,13 +69,12 @@ namespace DCL.Models
             return result;
         }
 
-        public static Dictionary<Mesh, int> ExtractMeshToTriangleMap(List<Mesh> meshes)
+        public static Dictionary<Mesh, int> ExtractMeshToTriangleMap(IEnumerable<Mesh> meshes)
         {
             Dictionary<Mesh, int> result = new Dictionary<Mesh, int>();
 
-            for ( int i = 0; i < meshes.Count; i++ )
+            foreach (var mesh in meshes)
             {
-                Mesh mesh = meshes[i];
                 result[mesh] = mesh.triangles.Length;
             }
 
@@ -90,7 +90,7 @@ namespace DCL.Models
             return new HashSet<Renderer>(container.GetComponentsInChildren<Renderer>(true));
         }
 
-        public static HashSet<Material> ExtractUniqueMaterials(HashSet<Renderer> renderers)
+        public static HashSet<Material> ExtractUniqueMaterials(IEnumerable<Renderer> renderers)
         {
             if ( hologramShader == null )
                 hologramShader = Shader.Find("DCL/FX/Hologram");
@@ -100,7 +100,7 @@ namespace DCL.Models
             ) );
         }
 
-        public static HashSet<Texture> ExtractUniqueTextures(HashSet<Material> materials)
+        public static HashSet<Texture> ExtractUniqueTextures(IEnumerable<Material> materials)
         {
             return new HashSet<Texture>(
                 materials.SelectMany(
@@ -123,7 +123,7 @@ namespace DCL.Models
                     } ) );
         }
 
-        public static HashSet<Mesh> ExtractUniqueMeshes(HashSet<Renderer> renderers)
+        public static HashSet<Mesh> ExtractUniqueMeshes(IEnumerable<Renderer> renderers)
         {
             List<Mesh> result = new List<Mesh>();
 
