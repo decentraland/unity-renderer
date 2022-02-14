@@ -5757,8 +5757,8 @@ MonoBehaviour:
     adaptVerticallyItemSizeToContainer: 1
     itemSize: {x: 0, y: 0}
     spaceBetweenItems: {x: 5, y: 5}
-    minWidthForFlexibleItems: 20
-    minHeightForFlexibleItems: 20
+    minWidthForFlexibleItems: 2
+    minHeightForFlexibleItems: 2
     recommendedWidthForFlexibleItems: 69
     recommendedHeightForFlexibleItems: 69
     sameHeightAndWidhtFlexibleItem: 1
