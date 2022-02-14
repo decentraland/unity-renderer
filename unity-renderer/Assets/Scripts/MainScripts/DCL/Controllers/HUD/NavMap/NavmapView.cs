@@ -116,20 +116,22 @@ namespace DCL
             CalculateZoomLevelAndDirection(value);
         }
 
+        Vector3 previousScaleSize;
+
         private void CalculateZoomLevelAndDirection(float value)
         {
             if (!navmapVisible.Get()) return;
             if (isScaling) return;
-
+            previousScaleSize = new Vector3(scale, scale, scale);
             if (value > 0 && currentZoomLevel < MAP_ZOOM_LEVELS)
             {
                 currentZoomLevel++;
-                StartCoroutine(ScaleOverTime());
+                StartCoroutine(ScaleOverTime(previousScaleSize));
             }
             if (value < 0 && currentZoomLevel >= 1)
             {
                 currentZoomLevel--;
-                StartCoroutine(ScaleOverTime());
+                StartCoroutine(ScaleOverTime(previousScaleSize));
             }
             HandleZoomButtonsAspect();
         }
@@ -158,12 +160,12 @@ namespace DCL
             }
         }
 
-        private IEnumerator ScaleOverTime()
+        private IEnumerator ScaleOverTime(Vector3 startScaleSize)
         {
             isScaling = true;
             scale = zoomCurve.Evaluate(currentZoomLevel);
             MapRenderer.i.scaleFactor = scale;
-            Vector3 startScaleSize = containerRectTransform.localScale;
+            //Vector3 startScaleSize = containerRectTransform.localScale;
             Vector3 targetScale = new Vector3(scale, scale, scale);
             
             float counter = 0;
