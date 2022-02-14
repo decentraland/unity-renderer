@@ -75,6 +75,7 @@ public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultEmotePicture;
+    [SerializeField] internal Sprite nonEmoteAssignedPicture;
     [SerializeField] internal EmoteCardComponentModel model;
 
     public event Action<string, bool> onSelected;
@@ -156,7 +157,16 @@ public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView
         }
     }
 
-    public void SetEmoteId(string id) { model.id = id; }
+    public void SetEmoteId(string id) 
+    { 
+        model.id = id;
+
+        if (string.IsNullOrEmpty(id))
+        {
+            if (nonEmoteAssignedPicture != null)
+                SetEmotePicture(nonEmoteAssignedPicture);
+        }
+    }
 
     public void SetEmotePicture(Sprite sprite)
     {

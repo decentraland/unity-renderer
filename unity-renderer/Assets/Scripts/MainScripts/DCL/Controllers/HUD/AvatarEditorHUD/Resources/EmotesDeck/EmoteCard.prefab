@@ -440,7 +440,9 @@ MonoBehaviour:
   equipButton: {fileID: 817381266452389729}
   cardSelectionFrame: {fileID: 5655671977484723128}
   cardAnimator: {fileID: 4546752560841343705}
-  defaultEmotePicture: {fileID: 21300000, guid: 5d13ba01ae9054dae9e711ecae65f4d0,
+  defaultEmotePicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
+    type: 3}
+  nonEmoteAssignedPicture: {fileID: 21300000, guid: 5d13ba01ae9054dae9e711ecae65f4d0,
     type: 3}
   model:
     id: TestId

@@ -40,5 +40,6 @@ public class EmoteSlotViewerComponentView : BaseComponentView, IEmoteSlotViewerC
             return;
 
         selectedSlotText.text = slotNumber.ToString();
+        selectedSlotText.gameObject.SetActive(slotNumber >= 0);
     }
 }

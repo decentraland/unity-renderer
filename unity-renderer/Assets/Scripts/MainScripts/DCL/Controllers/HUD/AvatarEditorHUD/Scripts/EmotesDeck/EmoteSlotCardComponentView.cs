@@ -127,9 +127,9 @@ public class EmoteSlotCardComponentView : BaseComponentView, IEmoteSlotCardCompo
     { 
         model.emoteId = id;
 
-        if (nonEmoteAssignedPicture != null)
+        if (string.IsNullOrEmpty(id))
         {
-            if (string.IsNullOrEmpty(id))
+            if (nonEmoteAssignedPicture != null)
                 SetEmotePicture(nonEmoteAssignedPicture);
         }
     }
