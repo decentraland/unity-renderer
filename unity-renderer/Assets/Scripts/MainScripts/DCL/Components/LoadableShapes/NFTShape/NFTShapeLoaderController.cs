@@ -261,7 +261,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         errorFeedback.SetActive(isVisible);
     }
 
-    void InitializeMaterials()
+    void InitializeMaterials() 
     {
         Material[] meshMaterials = new Material[materials.Length];
         for (int i = 0; i < materials.Length; i++)

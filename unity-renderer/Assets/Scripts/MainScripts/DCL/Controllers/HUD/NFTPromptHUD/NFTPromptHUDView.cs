@@ -81,9 +81,6 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
     Coroutine fetchNFTImageRoutine = null;
 
-    // private IPromiseLike_TextureAsset imagePromise = null;
-    // private GifPlayer gifPlayer = null;
-
     private string nftTokenId;
     bool backgroundColorSet = false;
     string marketUrl = null;
@@ -303,40 +300,6 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
             },
             OnFail:
             (exc) => { ShowImageErrorFeedback(true); });
-
-        // if (!imageFound)
-        // {
-        //     yield return nftAssetLoadHelper.Fetch(nftInfo.originalImageUrl,
-        //         promise =>
-        //         {
-        //             imagePromise?.Forget();
-        //             imagePromise = promise;
-        //             imageFound = true;
-        //         });
-        // }
-
-        // if (imageFound && imagePromise?.asset != null)
-        // {
-        //     Texture2D texture = imagePromise.asset.texture;
-        //     imageNft.texture = texture;
-        //
-        //     if ((imagePromise.asset is Asset_Gif gif))
-        //     {
-        //         SetupGifPlayer(gif);
-        //     }
-        //     if (!backgroundColorSet)
-        //     {
-        //         SetTransparentBackground();
-        //     }
-        //
-        //     SetNFTImageSize(texture);
-        //     imageNft.gameObject.SetActive(true);
-        //     ShowImageLoading(false);
-        // }
-        // else
-        // {
-        //     ShowImageErrorFeedback(true);
-        // }
     }
 
     private void UpdateTexture(Texture2D texture)
@@ -436,28 +399,6 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
         nftAssetLoadHelper.Dispose();
     }
-
-    // private void ForgetPromises()
-    // {
-    //     if (imagePromise != null)
-    //     {
-    //         imagePromise.Forget();
-    //         imagePromise = null;
-    //     }
-    //     gifPlayer?.Dispose();
-    //     gifPlayer = null;
-    // }
-    //
-    // private void SetupGifPlayer(Asset_Gif gif)
-    // {
-    //     if (gifPlayer == null)
-    //     {
-    //         gifPlayer = new GifPlayer();
-    //         gifPlayer.OnFrameTextureChanged += (texture) => { imageNft.texture = texture; };
-    //     }
-    //     gifPlayer.SetGif(gif);
-    //     gifPlayer.Play(true);
-    // }
 
     private void OnViewAllOwnersPressed() { OnViewAllPressed?.Invoke(); }
 
