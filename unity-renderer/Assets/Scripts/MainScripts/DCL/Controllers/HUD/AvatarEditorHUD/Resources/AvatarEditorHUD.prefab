@@ -6255,7 +6255,7 @@ PrefabInstance:
     - target: {fileID: 5176895287733378623, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b, type: 3}
@@ -7583,7 +7583,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -9435,7 +9435,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -9703,7 +9703,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -10013,7 +10013,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -10438,7 +10438,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -10716,7 +10716,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -11846,7 +11846,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -12541,7 +12541,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -12814,7 +12814,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -13112,7 +13112,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -14225,7 +14225,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -14350,7 +14350,7 @@ PrefabInstance:
     - target: {fileID: 5176895287733378623, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b, type: 3}
@@ -14535,7 +14535,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -14798,7 +14798,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -17240,7 +17240,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -18936,7 +18936,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -19276,7 +19276,7 @@ PrefabInstance:
     - target: {fileID: 5176895286672640022, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_ScrollSensitivity
-      value: 85
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5176895286948397563, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
