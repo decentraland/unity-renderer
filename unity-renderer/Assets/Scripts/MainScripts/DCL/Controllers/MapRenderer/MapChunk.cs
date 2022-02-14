@@ -19,8 +19,6 @@ namespace DCL
         protected bool isLoadingOrLoaded = false;
         private WebRequestAsyncOperation loadOp;
 
-        private void Start() { targetImage.color = Color.clear; }
-
         public virtual WebRequestAsyncOperation LoadChunkImage()
         {
             isLoadingOrLoaded = true;
@@ -37,6 +35,7 @@ namespace DCL
                     return;
 
                 targetImage.texture = result;
+                targetImage.texture.wrapMode = TextureWrapMode.Clamp;
                 targetImage.SetNativeSize();
                 targetImage.color = Color.white;
             });

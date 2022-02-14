@@ -45,8 +45,9 @@ public class WebSocketCommunication : IKernelCommunication
                         ClientCertificateRequired = false,
                         CheckCertificateRevocation = false,
                         ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
-                    }
-                };                
+                    },
+                    KeepClean = false
+                };
             }
             else
             {
