@@ -32,8 +32,15 @@ namespace DCL
 
             HashSet<string> headers = new HashSet<string>() {CONTENT_TYPE, CONTENT_LENGTH};
             Dictionary<string, string> responseHeaders = new Dictionary<string, string>();
+            string headerRequestError = string.Empty;
 
-            yield return GetHeaders(url, headers, result => responseHeaders = result, null);
+            yield return GetHeaders(url, headers, result => responseHeaders = result, (x) => headerRequestError = x);
+
+            if (!string.IsNullOrEmpty(headerRequestError))
+            {
+                OnFail?.Invoke(new Exception($"Error fetching headers! ({headerRequestError})"));
+                yield break;
+            }
 
             string contentType = responseHeaders[CONTENT_TYPE];
             long contentLength = long.Parse(responseHeaders[CONTENT_LENGTH]);

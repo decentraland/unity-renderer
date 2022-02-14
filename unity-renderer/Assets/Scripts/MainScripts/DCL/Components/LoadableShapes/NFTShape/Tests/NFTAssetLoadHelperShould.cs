@@ -13,8 +13,8 @@ using UnityEngine.TestTools;
 
 internal class NFTAssetLoadHelper_Mock : NFTAssetLoadHelper
 {
-    public long contentLengthToReturn;
-    public string contentTypeToReturn;
+    public long contentLengthToReturn = 100;
+    public string contentTypeToReturn = "image/png";
 
     public bool hasLoadedAsset => gifPromise != null || imagePromise != null;
 
@@ -141,8 +141,10 @@ public class NFTAssetLoadHelperShould : IntegrationTestSuite
     [UnityTest]
     public IEnumerator UnloadImagesWhenDisposed()
     {
-        yield return loadHelper.LoadNFTAsset("fake_url_1", (x) => { }, (x) => { });
+        bool success = false;
+        yield return loadHelper.LoadNFTAsset("fake_url_1", (x) => success = true, (x) => Debug.Log(x));
 
+        Assert.That(success, Is.True);
         Assert.That(loadHelper.hasLoadedAsset, Is.True);
 
         loadHelper.Dispose();
