@@ -20,6 +20,10 @@ namespace DCL
         [SerializeField] internal InputAction_Measurable mouseWheelAction;
         [SerializeField] internal InputAction_Hold zoomIn;
         [SerializeField] internal InputAction_Hold zoomOut;
+        [SerializeField] internal Button zoomInButton;
+        [SerializeField] internal Button zoomOutButton;
+        [SerializeField] internal Image zoomInPlus;
+        [SerializeField] internal Image zoomOutMinus;
 
         InputAction_Trigger.Triggered selectParcelDelegate;
         RectTransform minimapViewport;
@@ -44,6 +48,8 @@ namespace DCL
 
         private bool isScaling = false;
         private float scaleDuration = 0.2f;
+        private Color normalColor = new Color(0f,0f,0f,1f);
+        private Color disabledColor = new Color(0f,0f,0f,0.5f);
 
         void Start()
         {
@@ -75,6 +81,12 @@ namespace DCL
             mouseWheelAction.OnValueChanged += OnMouseWheelChangeValue;
             zoomIn.OnStarted += OnZoomPlusMinus;
             zoomOut.OnStarted += OnZoomPlusMinus;
+            zoomInButton.onClick.AddListener(() => {
+                OnZoomPlusMinus(DCLAction_Hold.ZoomIn);
+            });
+            zoomOutButton.onClick.AddListener(() => {
+                OnZoomPlusMinus(DCLAction_Hold.ZoomOut);
+            });
             ResetCameraZoom();
             Initialize();
         }
@@ -85,6 +97,7 @@ namespace DCL
             currentZoomLevel = defaultZoomLevel = Mathf.FloorToInt(MAP_ZOOM_LEVELS / 2);
             scale = MAP_ZOOM_MIN_SCALE + defaultZoomLevel * zoomDelta;
             containerRectTransform.localScale = new Vector3(scale, scale, scale);
+            HandleZoomButtonsAspect();
         }
 
         private void OnZoomPlusMinus(DCLAction_Hold action)
@@ -119,6 +132,31 @@ namespace DCL
             {
                 currentZoomLevel--;
                 StartCoroutine(ScaleOverTime());
+            }
+            HandleZoomButtonsAspect();
+        }
+
+        private void HandleZoomButtonsAspect() {
+            if (currentZoomLevel < MAP_ZOOM_LEVELS)
+            {
+                zoomInButton.interactable = true;
+                zoomInPlus.color = normalColor;
+            }
+            else
+            {
+                zoomInButton.interactable = false;
+                zoomInPlus.color = disabledColor;
+            }
+
+            if (currentZoomLevel >= 1)
+            {
+                zoomOutButton.interactable = true;
+                zoomOutMinus.color = normalColor;
+            }
+            else
+            {
+                zoomOutButton.interactable = false;
+                zoomOutMinus.color = disabledColor;
             }
         }
 
