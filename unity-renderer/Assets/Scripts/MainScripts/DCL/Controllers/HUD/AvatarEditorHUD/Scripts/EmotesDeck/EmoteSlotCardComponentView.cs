@@ -51,6 +51,7 @@ public class EmoteSlotCardComponentView : BaseComponentView, IEmoteSlotCardCompo
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultEmotePicture;
+    [SerializeField] internal Sprite nonEmoteAssignedPicture;
     [SerializeField] internal Color defaultBackgroundColor;
     [SerializeField] internal Color selectedBackgroundColor;
     [SerializeField] internal Color defaultTextColor;
@@ -70,7 +71,6 @@ public class EmoteSlotCardComponentView : BaseComponentView, IEmoteSlotCardCompo
     public void Configure(BaseComponentModel newModel)
     {
         model = (EmoteSlotCardComponentModel)newModel;
-
         RefreshControl();
     }
 
@@ -79,7 +79,7 @@ public class EmoteSlotCardComponentView : BaseComponentView, IEmoteSlotCardCompo
         if (model == null)
             return;
 
-        SetEmoteId(model.id);
+        SetEmoteId(model.emoteId);
 
         if (model.pictureSprite != null)
             SetEmotePicture(model.pictureSprite);
@@ -123,7 +123,16 @@ public class EmoteSlotCardComponentView : BaseComponentView, IEmoteSlotCardCompo
         }
     }
 
-    public void SetEmoteId(string id) { model.id = id; }
+    public void SetEmoteId(string id) 
+    { 
+        model.emoteId = id;
+
+        if (nonEmoteAssignedPicture != null)
+        {
+            if (string.IsNullOrEmpty(id))
+                SetEmotePicture(nonEmoteAssignedPicture);
+        }
+    }
 
     public void SetEmotePicture(Sprite sprite)
     {

@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,14 +6,14 @@ using UnityEngine.UI;
 public interface IEmoteCardComponentView
 {
     /// <summary>
+    /// It will be triggered when the emote card is selected/unselected.
+    /// </summary>
+    event Action<string, bool> onSelected;
+
+    /// <summary>
     /// Event that will be triggered when the equip button is clicked.
     /// </summary>
     Button.ButtonClickedEvent onEquipClick { get; }
-
-    /// <summary>
-    /// Event that will be triggered when the open details button is clicked.
-    /// </summary>
-    Button.ButtonClickedEvent onOpenDetailsClick { get; }
 
     /// <summary>
     /// Set the emote id in the card.
@@ -35,20 +36,26 @@ public interface IEmoteCardComponentView
     /// <summary>
     /// Set the emote as equipped or not.
     /// </summary>
-    /// <param name="isEquipped">True for equip it.</param>
-    void SetEmoteAsEquipped(bool isEquipped);
+    /// <param name="isFavorite">True for set it as favorite.</param>
+    void SetEmoteAsFavorite(bool isFavorite);
 
     /// <summary>
-    /// Set the emote as selected or not.
+    /// Set the emote as assigned in selected slot or not.
     /// </summary>
-    /// <param name="isSelected">True for select it.</param>
-    void SetEmoteAsSelected(bool isSelected);
+    /// <param name="isAssigned">True for select it.</param>
+    void SetEmoteAsAssignedInSelectedSlot(bool isAssigned);
 
     /// <summary>
     /// Assign a slot number to the emote.
     /// </summary>
     /// <param name="slotNumber">Slot number to assign.</param>
     void AssignSlot(int slotNumber);
+
+    /// <summary>
+    /// Set the emote as selected.
+    /// </summary>
+    /// <param name="isSelected">True for selecting it.</param>
+    void SetEmoteAsSelected(bool isSelected);
 }
 
 public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView, IComponentModelConfig
@@ -60,8 +67,8 @@ public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView
     [SerializeField] internal ImageComponentView favActivatedImage;
     [SerializeField] internal ImageComponentView favDeactivatedImage;
     [SerializeField] internal TMP_Text assignedSlotNumberText;
-    [SerializeField] internal ImageComponentView selectedMarkImage;
-    [SerializeField] internal ButtonComponentView openDetailsButton;
+    [SerializeField] internal ImageComponentView assignedInCurrentSlotMarkImage;
+    [SerializeField] internal ButtonComponentView mainButton;
     [SerializeField] internal ButtonComponentView equipButton;
     [SerializeField] internal GameObject cardSelectionFrame;
     [SerializeField] internal Animator cardAnimator;
@@ -70,7 +77,7 @@ public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView
     [SerializeField] internal Sprite defaultEmotePicture;
     [SerializeField] internal EmoteCardComponentModel model;
 
-    public Button.ButtonClickedEvent onOpenDetailsClick => openDetailsButton?.onClick;
+    public event Action<string, bool> onSelected;
     public Button.ButtonClickedEvent onEquipClick => equipButton?.onClick;
 
     public override void Awake()
@@ -87,7 +94,6 @@ public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView
     public void Configure(BaseComponentModel newModel)
     {
         model = (EmoteCardComponentModel)newModel;
-
         RefreshControl();
     }
 
@@ -105,14 +111,18 @@ public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView
         else
             OnEmoteImageLoaded(null);
 
-        SetEmoteAsEquipped(model.isEquipped);
-        SetEmoteAsSelected(model.isSelected);
+        SetEmoteAsFavorite(model.isFavorite);
+        SetEmoteAsAssignedInSelectedSlot(model.isAssignedInSelectedSlot);
         AssignSlot(model.assignedSlot);
+        SetEmoteAsSelected(model.isSelected);
     }
 
     public override void OnFocus()
     {
         base.OnFocus();
+
+        if (model.isSelected)
+            return;
 
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(true);
@@ -124,6 +134,9 @@ public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView
     public override void OnLoseFocus()
     {
         base.OnLoseFocus();
+
+        if (model.isSelected)
+            return;
 
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(false);
@@ -177,35 +190,19 @@ public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView
         emoteImage.SetImage(uri);
     }
 
-    public void SetEmoteAsEquipped(bool isEquipped)
+    public void SetEmoteAsFavorite(bool isFavorite)
     {
-        model.isEquipped = isEquipped;
+        model.isFavorite = isFavorite;
 
-        if (favActivatedImage != null)
-        {
-            if (isEquipped)
-                favActivatedImage.Show();
-            else
-                favActivatedImage.Hide();
-        }
-
-        if (favDeactivatedImage != null)
-        {
-            if (isEquipped)
-                favDeactivatedImage.Hide();
-            else
-                favDeactivatedImage.Show();
-        }
+        RefreshFavoriteMarkVisibility();
     }
 
-    public void SetEmoteAsSelected(bool isSelected)
+    public void SetEmoteAsAssignedInSelectedSlot(bool isAssigned)
     {
-        model.isSelected = isSelected;
+        model.isAssignedInSelectedSlot = isAssigned;
 
-        if (selectedMarkImage != null)
-            selectedMarkImage.gameObject.SetActive(isSelected);
-
-        RefreshAssignedSlotVisibility();
+        RefreshAssignedInCurrentSlotMarkVisibility();
+        RefreshAssignedSlotTextVisibility();
     }
 
     public void AssignSlot(int slotNumber)
@@ -217,15 +214,73 @@ public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView
 
         assignedSlotNumberText.text = slotNumber.ToString();
 
-        RefreshAssignedSlotVisibility();
+        RefreshAssignedSlotTextVisibility();
     }
 
-    internal void RefreshAssignedSlotVisibility()
+    public void SetEmoteAsSelected(bool isSelected)
+    {
+        model.isSelected = isSelected;
+
+        if (cardSelectionFrame != null && !isFocused)
+            cardSelectionFrame.SetActive(isSelected);
+
+        if (cardAnimator != null && !isFocused)
+            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, isSelected);
+
+        onSelected?.Invoke(model.id, isSelected);
+        RefreshEquipButtonVisibility();
+        RefreshAssignedSlotTextVisibility();
+    }
+
+    internal void RefreshFavoriteMarkVisibility()
+    {
+        if (favActivatedImage != null)
+        {
+            if (model.isFavorite)
+                favActivatedImage.Show();
+            else
+                favActivatedImage.Hide();
+        }
+
+        if (favDeactivatedImage != null)
+        {
+            if (model.isFavorite)
+                favDeactivatedImage.Hide();
+            else
+                favDeactivatedImage.Show();
+        }
+    }
+
+    internal void RefreshAssignedSlotTextVisibility()
     {
         if (assignedSlotNumberText == null)
             return;
 
-        assignedSlotNumberText.gameObject.SetActive(!model.isSelected && model.assignedSlot >= 0);
+        assignedSlotNumberText.gameObject.SetActive(
+            !model.isAssignedInSelectedSlot && 
+            !model.isSelected &&
+            model.assignedSlot >= 0);
+    }
+
+    internal void RefreshAssignedInCurrentSlotMarkVisibility()
+    {
+        if (assignedInCurrentSlotMarkImage == null)
+            return;
+
+        assignedInCurrentSlotMarkImage.gameObject.SetActive(model.isAssignedInSelectedSlot);
+        RefreshAssignedSlotTextVisibility();
+        RefreshEquipButtonVisibility();
+    }
+
+    internal void RefreshEquipButtonVisibility()
+    {
+        if (equipButton == null)
+            return;
+
+        if (model.isSelected && !model.isAssignedInSelectedSlot)
+            equipButton.Show();
+        else
+            equipButton.Hide();
     }
 
     internal void OnEmoteImageLoaded(Sprite sprite)

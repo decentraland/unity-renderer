@@ -4,7 +4,7 @@ using UnityEngine;
 [Serializable]
 internal class EmoteSlotCardComponentModel : BaseComponentModel
 {
-    public string id;
+    public string emoteId;
     public Sprite pictureSprite;
     public string pictureUri;
     public bool isSelected = false;
