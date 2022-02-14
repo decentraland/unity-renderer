@@ -400,10 +400,12 @@ public class InputController : MonoBehaviour
                         InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Hold.ZoomIn:
-                    InputProcessor.FromKey(action, InputSettings.PlusKeyCode, InputProcessor.Modifier.None);
+                    InputProcessor.FromKey(action, KeyCode.KeypadPlus, InputProcessor.Modifier.None);
+                    InputProcessor.FromKey(action, KeyCode.Plus, InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Hold.ZoomOut:
-                    InputProcessor.FromKey(action, InputSettings.MinusKeyCode, InputProcessor.Modifier.None);
+                    InputProcessor.FromKey(action, KeyCode.KeypadMinus, InputProcessor.Modifier.None);
+                    InputProcessor.FromKey(action, KeyCode.Minus, InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Hold.FreeCameraMode:
                     //Disable until the fine-tuning is ready
