@@ -397,7 +397,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         ownersTooltip.OnFocus -= OnOwnersTooltipGainFocus;
         ownersPopup.OnClosePopup -= OnOwnersPopupClose;
 
-        nftAssetLoadHelper.Dispose();
+        nftAssetLoadHelper?.Dispose();
     }
 
     private void OnViewAllOwnersPressed() { OnViewAllPressed?.Invoke(); }
