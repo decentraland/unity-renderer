@@ -236,7 +236,7 @@ namespace DCL
 
         void UpdateParcelHold()
         {
-            if(Vector3.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE / (scaleFactor * 3))
+            if(Vector3.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE / (scaleFactor * 2.5f))
             {
                 OnCursorFarFromParcel?.Invoke();
             }
