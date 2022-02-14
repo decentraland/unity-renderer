@@ -25,6 +25,7 @@ namespace DCL
         [SerializeField] internal Button zoomOutButton;
         [SerializeField] internal Image zoomInPlus;
         [SerializeField] internal Image zoomOutMinus;
+        [SerializeField] internal AnimationCurve zoomCurve;
 
         InputAction_Trigger.Triggered selectParcelDelegate;
         RectTransform minimapViewport;
@@ -96,7 +97,7 @@ namespace DCL
         {
             zoomDelta = (MAP_ZOOM_MAX_SCALE - MAP_ZOOM_MIN_SCALE) / MAP_ZOOM_LEVELS;
             currentZoomLevel = defaultZoomLevel = Mathf.FloorToInt(MAP_ZOOM_LEVELS / 2);
-            scale = MAP_ZOOM_MIN_SCALE + defaultZoomLevel * zoomDelta;
+            scale = zoomCurve.Evaluate(currentZoomLevel);//MAP_ZOOM_MIN_SCALE + defaultZoomLevel * zoomDelta;
             containerRectTransform.localScale = new Vector3(scale, scale, scale);
             HandleZoomButtonsAspect();
         }
@@ -136,6 +137,7 @@ namespace DCL
                 StartCoroutine(ScaleOverTime());
             }
             HandleZoomButtonsAspect();
+            Debug.Log("Level: " + currentZoomLevel);
         }
 
         private void HandleZoomButtonsAspect() {
@@ -165,13 +167,14 @@ namespace DCL
         private IEnumerator ScaleOverTime()
         {
             isScaling = true;
-            scale = MAP_ZOOM_MIN_SCALE+ zoomDelta * currentZoomLevel;
+            scale = zoomCurve.Evaluate(currentZoomLevel);//MAP_ZOOM_MIN_SCALE + zoomDelta * currentZoomLevel;
             MapRenderer.i.scaleFactor = scale;
+            Vector3 startScaleSize = containerRectTransform.localScale;
             Vector3 targetScale = new Vector3(scale, scale, scale);
+            //zoomCurve.Evaluate();
 
             float counter = 0;
 
-            Vector3 startScaleSize = containerRectTransform.localScale;
 
             while (counter < scaleDuration)
             {
