@@ -8,6 +8,7 @@ using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace DCL.Builder
@@ -122,17 +123,38 @@ namespace DCL.Builder
                         Component statelesComponent = new Component();
                         statelesComponent.type = component.type;
 
-                        // Transform component is handle a bit different due to quaternion serializations
-                        // if (component.type == "Transform")
-                        // {
-                        //     ProtocolV2.TransformComponent entityTransformComponentModel = component.data;
-                        // }
-                        // else
-                        // {
-                        //     statelesComponent.value = component.data;
-                        // }
-                        statelesComponent.value = component.data;
-                        
+                        if (statelesComponent.type == "NFTShape")
+                        {
+                            string url;
+                            try
+                            {
+                                // Builder use a different way to load the NFT so we convert it to our system
+                                url = ((NFTShapeBuilderRepresentantion) component.data).url;
+                            }
+                            catch (Exception e)
+                            {
+                                // Builder handles the components differently if they come from another site, if we can't do it correctly, we go this way
+                                JObject jObject = JObject.Parse(component.data.ToString());
+                                url = jObject["url"].ToString();
+                            }
+                            string assedId = url.Replace(BIWSettings.NFT_ETHEREUM_PROTOCOL, "");
+                            int index = assedId.IndexOf("/", StringComparison.Ordinal);
+                            string partToremove = assedId.Substring(index);
+                            assedId = assedId.Replace(partToremove, "");
+
+                            // We need to use this kind of representation because the color from unity is not serializable to SDK standard
+                            NFTShapeStatelessRepresentantion nftModel = new NFTShapeStatelessRepresentantion();
+                            nftModel.color = new NFTShapeStatelessRepresentantion.ColorRepresentantion(0.6404918f, 0.611472f, 0.8584906f);
+                            nftModel.src = url;
+                            nftModel.assetId = assedId;
+                            
+                            statelesComponent.value = nftModel;
+                        }
+                        else
+                        {
+                            statelesComponent.value = component.data;
+                        }
+
                         statlesEntity.components.Add(statelesComponent);
                     }
                 }

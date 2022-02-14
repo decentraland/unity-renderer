@@ -241,13 +241,13 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         float itemHeight = model.recommendedHeightForFlexibleItems;
 
         if (itemWidth * amountsOfHorizontalItemsPerRow + extraSpaceToRemoveX >= width)
-            itemWidth = width / amountsOfHorizontalItemsPerRow - extraSpaceToRemoveX;
+            itemWidth = (width - extraSpaceToRemoveX) / amountsOfHorizontalItemsPerRow;
 
         if (itemWidth < model.minWidthForFlexibleItems)
             itemWidth = model.minWidthForFlexibleItems;
 
         if (itemHeight * amountsOfVerticalItemsPerColumn + extraSpaceToRemoveY >= height)
-            itemHeight = height / amountsOfVerticalItemsPerColumn - extraSpaceToRemoveY;
+            itemHeight = (height - extraSpaceToRemoveY) / amountsOfVerticalItemsPerColumn;
 
         if (itemHeight < model.minHeightForFlexibleItems)
             itemHeight = model.minHeightForFlexibleItems;

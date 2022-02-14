@@ -136,6 +136,13 @@ namespace DCL.Builder
             rotateRightButton.onClick.AddListener( RotateRight);
             miniSearchView.onClick.AddListener(ShowSearchBar);
 
+            nameInputField.OnEmptyValue += DisableNextButton;
+            nameInputField.OnLimitReached += DisableNextButton;
+            nameInputField.OnInputAvailable += EnableNextButton;
+            
+            descriptionInputField.OnLimitReached += DisableNextButton;
+            descriptionInputField.OnInputAvailable += EnableNextButton;
+
             gameObject.SetActive(false);
             searchView.gameObject.SetActive(false);
         }
@@ -161,6 +168,13 @@ namespace DCL.Builder
             rotateLeftButton.onClick.RemoveAllListeners();
             rotateRightButton.onClick.RemoveAllListeners();
             miniSearchView.onClick.RemoveAllListeners();
+            
+            nameInputField.OnLimitReached -= DisableNextButton;
+            nameInputField.OnInputAvailable -= EnableNextButton;
+            nameInputField.OnEmptyValue -= DisableNextButton;
+            
+            descriptionInputField.OnLimitReached -= DisableNextButton;
+            descriptionInputField.OnInputAvailable -= EnableNextButton;
         }
 
         private void DeactivateSearch()
@@ -283,6 +297,7 @@ namespace DCL.Builder
                     break;
                 case 1: // Choose land to deploy
                     searchView.ClearSearch();
+                    HideSearchBar();
                     secondStep.SetActive(true);
                     if (availableLandsToPublish.Count > 0)
                         GoToCoords(availableLandsToPublish[0]);
@@ -338,8 +353,11 @@ namespace DCL.Builder
         {
             this.scene = scene;
 
-            // We reset the selected coords and disable the publish button until the coords are selected
+            // Reset common views
             toastView.Hide(true);
+            HideSearchBar();
+            
+            // We reset the selected coords and disable the publish button until the coords are selected
             areCoordsSelected = false;
             publishButton.interactable = false;
 
@@ -384,6 +402,7 @@ namespace DCL.Builder
         {
             landListView.SetActive(false);
             searchView.ClearSearch();
+            HideSearchBar();
             
             // We select the land
             LandSelected(land.baseCoords);
@@ -421,6 +440,14 @@ namespace DCL.Builder
             modal.Hide();
             mapView.SetVisible(false);
         }
+
+        internal void EnableNextButton()
+        {
+            if(nameInputField.IsInputAvailable() && descriptionInputField.IsInputAvailable())
+                nextButton.interactable = true;
+        }
+
+        internal void DisableNextButton() { nextButton.interactable = false; }
 
         private void PublishButtonPressed()
         {

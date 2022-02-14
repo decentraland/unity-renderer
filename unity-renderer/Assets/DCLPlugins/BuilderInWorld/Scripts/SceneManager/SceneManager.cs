@@ -12,6 +12,7 @@ using DCL.Builder.Manifest;
 using DCL.Components;
 using DCL.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DCL.Builder
 {
@@ -215,7 +216,9 @@ namespace DCL.Builder
 
                         case "NFTShape":
                             //Builder use a different way to load the NFT so we convert it to our system
-                            string url = JsonConvert.DeserializeObject<string>(component.data.ToString());
+                            JObject jObject = JObject.Parse(component.data.ToString());
+                         
+                            string url = jObject["url"].ToString();
                             string assedId = url.Replace(BIWSettings.NFT_ETHEREUM_PROTOCOL, "");
                             int index = assedId.IndexOf("/", StringComparison.Ordinal);
                             string partToremove = assedId.Substring(index);
@@ -239,6 +242,10 @@ namespace DCL.Builder
                         case "LockedOnEdit":
                             DCLLockedOnEdit.Model lockedModel = JsonConvert.DeserializeObject<DCLLockedOnEdit.Model>(component.data.ToString());
                             EntityComponentsUtils.AddLockedOnEditComponent(sceneToEdit.scene , entity, lockedModel, Guid.NewGuid().ToString());
+                            break;
+                        case "Script":
+                            SmartItemComponent.Model smartModel = JsonConvert.DeserializeObject<SmartItemComponent.Model>(component.data.ToString());
+                            sceneToEdit.scene.EntityComponentCreateOrUpdateWithModel(entity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, smartModel);
                             break;
                     }
                 }

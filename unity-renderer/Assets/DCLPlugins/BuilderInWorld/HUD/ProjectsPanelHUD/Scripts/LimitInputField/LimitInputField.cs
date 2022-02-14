@@ -51,6 +51,7 @@ public class LimitInputField : MonoBehaviour
     {
         currentValue = value;
         inputField.SetTextWithoutNotify(value);
+        InputChanged(value, false);
     }
 
     public void SetError() { LimitReached(); }
@@ -90,6 +91,11 @@ public class LimitInputField : MonoBehaviour
 
     internal void InputChanged(string newValue)
     {
+        InputChanged(newValue, true);
+    }
+    
+    internal void InputChanged(string newValue, bool invokeCallback)
+    {
         if (hasPassedLimit && newValue.Length > currentValue.Length && stopInputFromLimit)
         {
             inputField.SetTextWithoutNotify(currentValue);
@@ -110,9 +116,12 @@ public class LimitInputField : MonoBehaviour
             InputAvailable();
         }
 
-        OnInputChange?.Invoke(newValue);
+        if(invokeCallback)
+            OnInputChange?.Invoke(newValue);
     }
 
+    public bool IsInputAvailable() => !hasPassedLimit;
+    
     public void InputAvailable()
     {
         if (!hasPassedLimit && !hasBeenEmpty)
@@ -131,9 +140,10 @@ public class LimitInputField : MonoBehaviour
             inputFieldbackgroundImg.enabled = false;
         }
         
-        OnInputAvailable?.Invoke();
         hasPassedLimit = false;
-        hasBeenEmpty = false;
+        hasBeenEmpty = false;    
+        
+        OnInputAvailable?.Invoke();
     }
 
     internal void Empty()

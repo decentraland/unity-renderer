@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 
 public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 {
-    private const string DELETE_PROJECT_CONFIRM_TEXT = "Are you sure that you want to delete {0} project?\nThis can't be undone";
+    private const string DELETE_PROJECT_CONFIRM_TEXT = "Are you sure that you want to delete {0} project?";
     private const string CREATING_PROJECT_ERROR = "Error creating a new project: ";
     private const string OBTAIN_PROJECT_ERROR = "Error obtaining the project: ";
 

@@ -103,6 +103,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
                 context.cameraController.TakeSceneAerialScreenshot( sceneToEdit, (aerialSceenshot) =>
                 {
                     builderScene.aerialScreenshotTexture = aerialSceenshot;
+                    builderScene.UpdateManifestFromScene();
                     context.publisher.StartPublish(builderScene);
                 });
             }
