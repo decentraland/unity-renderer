@@ -25,14 +25,19 @@ namespace DCL
                 yield break;
             }
 
-            HashSet<string> headers = new HashSet<string>() {"Content-Type", "Content-Length"};
+            const string CONTENT_TYPE = "Content-Type";
+            const string CONTENT_LENGTH = "Content-Length";
+            const string CONTENT_TYPE_GIF = "image/gif";
+            const long PREVIEW_IMAGE_SIZE_LIMIT = 500000;
+
+            HashSet<string> headers = new HashSet<string>() {CONTENT_TYPE, CONTENT_LENGTH};
             Dictionary<string, string> responseHeaders = new Dictionary<string, string>();
 
             yield return GetHeaders(url, headers, result => responseHeaders = result, null);
 
-            string contentType = responseHeaders["Content-Type"];
-            long contentLength = long.Parse(responseHeaders["Content-Length"]);
-            bool isGif = contentType == "image/gif";
+            string contentType = responseHeaders[CONTENT_TYPE];
+            long contentLength = long.Parse(responseHeaders[CONTENT_LENGTH]);
+            bool isGif = contentType == CONTENT_TYPE_GIF;
 
             if (isGif)
             {
@@ -41,17 +46,14 @@ namespace DCL
                     {
                         UnloadPromises();
                         this.gifPromise = promise;
-                        INFTAsset nftAsset = NFTAssetFactory.CreateGifAsset(promise.asset);
-                        OnSuccess?.Invoke(nftAsset);
+                        OnSuccess?.Invoke(new NFTAsset_Gif(promise.asset));
                     },
                     OnFail: (exception) => { OnFail?.Invoke(exception); }
                 );
 
                 yield break;
             }
-
-            const long PREVIEW_IMAGE_SIZE_LIMIT = 500000;
-
+            
             if (contentLength > PREVIEW_IMAGE_SIZE_LIMIT)
             {
                 OnFail?.Invoke(new System.Exception($"Image is too big! {contentLength} > {PREVIEW_IMAGE_SIZE_LIMIT}"));
@@ -63,8 +65,7 @@ namespace DCL
                 {
                     UnloadPromises();
                     this.imagePromise = promise;
-                    INFTAsset nftAsset = NFTAssetFactory.CreateImageAsset(promise.asset);
-                    OnSuccess?.Invoke(nftAsset);
+                    OnSuccess?.Invoke(new NFTAsset_Image(promise.asset));
                 },
                 OnFail: (exc) => { OnFail?.Invoke(exc); });
         }
@@ -74,7 +75,7 @@ namespace DCL
             UnloadPromises();
         }
 
-        private IEnumerator GetHeaders(string url, HashSet<string> headerField,
+        protected virtual IEnumerator GetHeaders(string url, HashSet<string> headerField,
             Action<Dictionary<string, string>> OnSuccess, Action<string> OnFail)
         {
             using (var request = UnityWebRequest.Head(url))
@@ -99,7 +100,7 @@ namespace DCL
             }
         }
 
-        private IEnumerator FetchGif(string url, Action<AssetPromise_Gif> OnSuccess,
+        protected virtual IEnumerator FetchGif(string url, Action<AssetPromise_Gif> OnSuccess,
             Action<Exception> OnFail = null)
         {
             AssetPromise_Gif gifPromise = new AssetPromise_Gif(url);
@@ -111,7 +112,7 @@ namespace DCL
             yield return gifPromise;
         }
 
-        private IEnumerator FetchImage(string url, Action<AssetPromise_Texture> OnSuccess,
+        protected virtual IEnumerator FetchImage(string url, Action<AssetPromise_Texture> OnSuccess,
             Action<Exception> OnFail = null)
         {
             AssetPromise_Texture texturePromise = new AssetPromise_Texture(url);
@@ -123,7 +124,7 @@ namespace DCL
             yield return texturePromise;
         }
 
-        void UnloadPromises()
+        protected virtual void UnloadPromises()
         {
             if (gifPromise != null)
                 AssetPromiseKeeper_Gif.i.Forget(gifPromise);

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NFTShape_Internal
 {
-    public class NFTGifAsset : INFTAsset
+    public class NFTAsset_Gif : INFTAsset
     {
         private const int RESOLUTION_HQ = 512;
         public bool isHQ => hqGifPromise != null;
@@ -17,7 +17,7 @@ namespace NFTShape_Internal
         private readonly Asset_Gif previewGif;
         public event Action<Texture2D> OnTextureUpdate;
 
-        public NFTGifAsset(Asset_Gif previewGif)
+        public NFTAsset_Gif(Asset_Gif previewGif)
         {
             this.previewGif = previewGif;
             this.gifPlayer = new GifPlayer(previewGif);

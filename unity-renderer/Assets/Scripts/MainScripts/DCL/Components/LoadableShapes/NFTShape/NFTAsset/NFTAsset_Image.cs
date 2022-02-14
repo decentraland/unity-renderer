@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NFTShape_Internal
 {
-    public class NFTImageAsset : INFTAsset
+    public class NFTAsset_Image : INFTAsset
     {
         private const int RESOLUTION_HQ = 1024;
         public bool isHQ => hqTexture != null;
@@ -14,7 +14,7 @@ namespace NFTShape_Internal
         private AssetPromise_Texture hqTexture;
         public event Action<Texture2D> OnTextureUpdate;
 
-        public NFTImageAsset(Asset_Texture previewTexture)
+        public NFTAsset_Image(Asset_Texture previewTexture)
         {
             previewAsset = previewTexture;
         }

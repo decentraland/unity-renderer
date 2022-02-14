@@ -7,12 +7,10 @@ using DCL.Helpers.NFT;
 using Newtonsoft.Json;
 using NFTShape_Internal;
 using UnityEngine;
-using UnityGLTF.Loader;
 
-public interface INFTInfoLoadHelper
+public interface INFTInfoLoadHelper : IDisposable
 {
     void FetchNFTInfo(string address, string id, Action<NFTInfo> OnSuccess, Action OnFail);
-    void Dispose();
 }
 
 public class NFTInfoLoadHelper : INFTInfoLoadHelper
@@ -38,10 +36,7 @@ public class NFTInfoLoadHelper : INFTInfoLoadHelper
     private IEnumerator FetchNFTInfoCoroutine(string address, string id, Action<NFTInfo> OnSuccess, Action OnFail)
     {
         yield return NFTUtils.FetchNFTInfo(address, id,
-            (info) =>
-            {
-                OnSuccess?.Invoke(info);
-            },
+            (info) => { OnSuccess?.Invoke(info); },
             (error) =>
             {
                 Debug.LogError($"Couldn't fetch NFT: '{address}/{id}' {error}");
