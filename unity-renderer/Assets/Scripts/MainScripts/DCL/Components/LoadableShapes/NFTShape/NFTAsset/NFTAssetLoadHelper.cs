@@ -14,8 +14,8 @@ namespace DCL
 
     public class NFTAssetLoadHelper : INFTAssetLoadHelper
     {
-        private AssetPromise_Texture imagePromise = null;
-        private AssetPromise_Gif gifPromise = null;
+        protected AssetPromise_Texture imagePromise = null;
+        protected AssetPromise_Gif gifPromise = null;
 
         public IEnumerator LoadNFTAsset(string url, Action<INFTAsset> OnSuccess, Action<Exception> OnFail)
         {
