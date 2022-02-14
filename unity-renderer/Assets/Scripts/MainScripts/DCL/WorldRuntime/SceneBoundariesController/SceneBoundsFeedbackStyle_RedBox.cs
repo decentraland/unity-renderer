@@ -72,8 +72,6 @@ namespace DCL.Controllers
             if (meshesInfo == null)
                 return;
 
-            Debug.Log("Removing  " + meshesInfo.innerGameObject);
-
             if (!invalidMeshesInfo.ContainsKey(meshesInfo.innerGameObject))
                 return;
 
@@ -101,8 +99,6 @@ namespace DCL.Controllers
         {
             if (meshesInfo == null)
                 return;
-
-            Debug.Log("Adding " + meshesInfo.innerGameObject);
 
             if (invalidMeshesInfo.ContainsKey(meshesInfo.innerGameObject))
                 return;
