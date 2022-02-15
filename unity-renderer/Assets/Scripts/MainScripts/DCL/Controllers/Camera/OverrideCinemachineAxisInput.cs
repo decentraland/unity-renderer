@@ -18,6 +18,7 @@ public class OverrideCinemachineAxisInput : MonoBehaviour
     [SerializeField] private AxisToMeasurableAction[] axisToMeasurableActions;
     private Dictionary<string, InputAction_Measurable> cachedAxisToMeasurableActions;
     private InputSpikeFixer inputSpikeFixer;
+    public bool invertMouseY = false;
 
     private void Awake()
     {
@@ -32,6 +33,10 @@ public class OverrideCinemachineAxisInput : MonoBehaviour
             return 0;
         
         float value = cachedAxisToMeasurableActions[axisName].GetValue();
+        if (axisName.Equals("Mouse Y") && invertMouseY) 
+        {
+            value = -value;
+        }
         return inputSpikeFixer.GetValue(value);
     }
     
