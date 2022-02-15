@@ -294,7 +294,7 @@ namespace UnityGLTF
                     profiling = Time.realtimeSinceStartup;
                     frames = Time.frameCount;
                 }
-                
+
                 await CreateScene(sceneIndex, showSceneObj, token);
 
                 token.ThrowIfCancellationRequested();
@@ -328,8 +328,6 @@ namespace UnityGLTF
                             Object.DestroyImmediate(skeleton);
                     }
                 }
-                
-                Debug.Log($"<color=black>Created GLTF {id}</color>");
             }
             catch (Exception e) when (!(e is OperationCanceledException))
             {
@@ -470,7 +468,7 @@ namespace UnityGLTF
 
             TextureCreationSettings settings = GetTextureCreationSettingsForTexture(texture, linear);
             string imageId = GenerateImageId(image.Uri, sourceId, settings);
-            
+
             if ((image.Uri == null || !PersistentAssetCache.HasImage(imageId)) && _assetCache.ImageStreamCache[sourceId] == null)
             {
                 // we only load the streams if not a base64 uri, meaning the data is in the uri
@@ -526,7 +524,7 @@ namespace UnityGLTF
                 _gltfRoot ??= new GLTFRoot();
 
                 cancellationToken.ThrowIfCancellationRequested();
-                
+
                 await TaskUtils.RunThrottledCoroutine(GLTFParser.ParseJsonDelayed(_gltfStream.Stream, _gltfRoot, _gltfStream.StartPosition),
                     exception => throw exception,
                     throttlingCounter.EvaluateTimeBudget);
@@ -658,7 +656,7 @@ namespace UnityGLTF
 
                 await ConstructUnityTexture(settings, stream, imageCacheIndex, cancellationToken);
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
         }
 
@@ -700,7 +698,7 @@ namespace UnityGLTF
                     await ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
                 }
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
 
             if (stream is FileStream fileStream)
@@ -711,7 +709,7 @@ namespace UnityGLTF
                     await ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
                 }
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
         }
 
@@ -1276,7 +1274,7 @@ namespace UnityGLTF
                     await ConstructNode(nodeToLoad, node.Id, token, CreatedObject.transform);
                 }
             }
-            
+
             foreach (var gltfMaterial in pendingImageBuffers)
             {
                 await ConstructMaterialImageBuffers(gltfMaterial, token);

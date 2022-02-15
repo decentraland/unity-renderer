@@ -124,43 +124,22 @@ namespace DCL.ABConverter
             float timer = Time.realtimeSinceStartup;
             bool shouldGenerateAssetBundles = generateAssetBundles;
             bool assetsAlreadyDumped = false;
-            
-            var assetsToImport = new List<string>();
 
             //TODO(Brian): Use async-await instead of Application.update
             void UpdateLoop()
             {
                 try
                 {
+                    //(Kinerius): Now that the loading of GLTFs is async, we wait for them to finish and then we store
+                    //          the result on a static list so the gltf importer can make use of them in a sync manner
                     if (gltfToWait.Count > 0)
                     {
-                        var dump = new List<string>();
-
-                        foreach ((string key, GLTFSceneImporter value) in gltfToWait)
-                        {
-                            if (!value.IsRunning)
-                            {
-                                var path = key;
-
-                                string dataPath = Application.dataPath.Replace('\\', '/');;
-                                path = path.Replace('\\', '/');
-
-                                if (path.StartsWith(dataPath)) path =  "Assets" + path.Substring(dataPath.Length);
-                                
-                                GLTFImporter.PreloadedGLTFObjects.Add(path, value.lastLoadedScene);
-                                assetsToImport.Add(key);
-                                dump.Add(key);
-                            }
-                        }
-
-                        foreach (string s in dump)
-                        {
-                            gltfToWait.Remove(s);
-                        }
+                        CheckForLoadedGLTFs();
 
                         return;
                     }
-
+                    
+                    //(Kinerius): After GLTFs are done loading, we are allowed to import them
                     if (assetsToImport.Count > 0)
                     {
                         for (int i = 0; i < assetsToImport.Count; i++)
@@ -200,31 +179,10 @@ namespace DCL.ABConverter
                         return;
                     }
 
-                    List<Stream> streamsToDispose = new List<Stream>();
-
-                    foreach (var streamDataKvp in PersistentAssetCache.StreamCacheByUri)
-                    {
-                        if (streamDataKvp.Value.stream != null)
-                            streamsToDispose.Add(streamDataKvp.Value.stream);
-                    }
-
-                    foreach (var s in streamsToDispose)
-                    {
-                        s.Dispose();
-                    }
-
-                    foreach (var stream in openStreams)
-                    {
-                        stream.Dispose();
-                    }
-
-                    PersistentAssetCache.ClearImageCache();
-
+                    CleanupCache();
+                    
                     env.assetDatabase.Refresh();
                     env.assetDatabase.SaveAssets();
-
-                    MarkAllAssetBundles(assetsToMark);
-                    MarkShaderAssetBundle();
 
                     EditorApplication.update -= UpdateLoop;
 
@@ -279,6 +237,63 @@ namespace DCL.ABConverter
             }
 
             EditorApplication.update += UpdateLoop;
+        }
+        
+        
+        private void CleanupCache()
+        {
+            List<Stream> streamsToDispose = new List<Stream>();
+
+            foreach (var streamDataKvp in PersistentAssetCache.StreamCacheByUri)
+            {
+                if (streamDataKvp.Value.stream != null)
+                    streamsToDispose.Add(streamDataKvp.Value.stream);
+            }
+
+            foreach (var s in streamsToDispose)
+            {
+                s.Dispose();
+            }
+
+            foreach (var stream in openStreams)
+            {
+                stream.Dispose();
+            }
+
+            PersistentAssetCache.ClearImageCache();
+            MarkAllAssetBundles(assetsToMark);
+            MarkShaderAssetBundle();
+        }
+        
+        /// <summary>
+        /// Check for GLTFs being loaded and then add the resulting GameObject to GLTFImporter static list for later usage
+        /// </summary>
+        private void CheckForLoadedGLTFs()
+        {
+            var dumpList = new List<string>();
+
+            foreach ((string gltfUrl, GLTFSceneImporter importer) in gltfToWait)
+            {
+                if (!importer.IsRunning)
+                {
+                    var path = gltfUrl;
+                    string dataPath = Application.dataPath.Replace('\\', '/');
+                    
+                    path = path.Replace('\\', '/');
+
+                    if (path.StartsWith(dataPath))
+                        path =  "Assets" + path.Substring(dataPath.Length);
+
+                    GLTFImporter.PreloadedGLTFObjects.Add(path, importer.lastLoadedScene);
+                    assetsToImport.Add(gltfUrl);
+                    dumpList.Add(gltfUrl);
+                }
+            }
+
+            foreach (string s in dumpList)
+            {
+                gltfToWait.Remove(s);
+            }
         }
 
         public void ConvertDumpedAssets(Action<ErrorCodes> OnFinish = null)
@@ -682,6 +697,7 @@ namespace DCL.ABConverter
         }
 
         private List<FileStream> openStreams = new List<FileStream>();
+        private List<string> assetsToImport = new List<string>();
         private GLTFSceneImporter CreateGLTFScene(string projectFilePath)
         {
             ILoader fileLoader = new GLTFFileLoader(Path.GetDirectoryName(projectFilePath));
