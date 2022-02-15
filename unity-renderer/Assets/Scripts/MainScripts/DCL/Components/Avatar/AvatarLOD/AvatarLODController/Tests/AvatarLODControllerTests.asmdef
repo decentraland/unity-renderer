@@ -1,29 +1,30 @@
 {
-  "name": "AvatarLODControllerTests",
-  "rootNamespace": "",
-  "references": [
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:28f74c468a54948bfa9f625c5d428f56",
-    "GUID:09421665db03949048c48febfea4311f",
-    "GUID:c34e38f41494f834abff029ddf82af43",
-    "GUID:46cbc133d57a24117993396eb0fbbc5a",
-    "GUID:27619889b8ba8c24980f49ee34dbb44a",
-    "GUID:85e616515af784fe2928e17f05a0b684",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "NSubstitute.dll",
-    "nunit.framework.dll",
-    "System.Threading.Tasks.Extensions.dll"
-  ],
-  "autoReferenced": true,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "AvatarLODControllerTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:09421665db03949048c48febfea4311f",
+        "GUID:c34e38f41494f834abff029ddf82af43",
+        "GUID:46cbc133d57a24117993396eb0fbbc5a",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:85e616515af784fe2928e17f05a0b684",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:49176a91bbf7f8a4aaf35f6df0643d1a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "nunit.framework.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

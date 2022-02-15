@@ -19,6 +19,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     public Image thumbnail;
     public Image selectionHighlight;
     [SerializeField] private GameObject warningPanel;
+    [SerializeField] private GameObject hideWarningPanel;
     [SerializeField] private GameObject loadingSpinner;
     [SerializeField] internal RectTransform amountContainer;
     [SerializeField] internal Animator loadingAnimator;
@@ -31,8 +32,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     private AvatarEditorHUDView view;
 
-    //Todo change this for a confirmation popup or implement it in a more elegant way
-    public static Func<WearableItem, List<WearableItem>> getEquippedWearablesReplacedByFunc;
+    private Func<WearableItem, bool> getEquippedWearablesReplacedByFunc;
+    private Func<WearableItem, bool> getEquippedWearablesHiddenBy;
 
     public bool selected
     {
@@ -57,6 +58,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         base.Awake();
         thumbnail.sprite = null;
         warningPanel.SetActive(false);
+        hideWarningPanel.SetActive(false);
 
         if (!EnvironmentSettings.RUNNING_TESTS)
             view = GetComponentInParent<AvatarEditorHUDView>();
@@ -81,20 +83,37 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        List<WearableItem> toReplace = getEquippedWearablesReplacedByFunc(wearableItem);
-        if (wearableItem == null || toReplace.Count == 0)
-            return;
-        if (toReplace.Count == 1)
-        {
-            WearableItem w = toReplace[0];
-            if (w.data.category == wearableItem.data.category)
-                return;
-        }
-
-        warningPanel.SetActive(true);
+        if (!ShowReplacementWarningPanel())
+            ShowHidingWarningPanel();
     }
 
-    public void OnPointerExit(PointerEventData eventData) { warningPanel.SetActive(false); }
+    private bool ShowReplacementWarningPanel()
+    {
+        if (getEquippedWearablesReplacedByFunc == null) return false;
+        var shouldShow = getEquippedWearablesReplacedByFunc(wearableItem);
+        warningPanel.SetActive(shouldShow);
+        return shouldShow;
+    }
+    
+    private bool ShowHidingWarningPanel()
+    {
+        if (getEquippedWearablesHiddenBy == null) return false;
+        var shouldShow = getEquippedWearablesHiddenBy(wearableItem);
+        hideWarningPanel.SetActive(shouldShow);
+        return shouldShow;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        warningPanel.SetActive(false);
+        hideWarningPanel.SetActive(false);
+    }
+
+    public void SetHideOtherWerablesToastStrategy(Func<WearableItem, bool> function) =>
+        getEquippedWearablesHiddenBy = function;
+    
+    public void SetReplaceOtherWearablesToastStrategy(Func<WearableItem, bool> function) =>
+        getEquippedWearablesReplacedByFunc = function;
 
     private void OnThumbnailReady(Asset_Texture texture)
     {

@@ -21,4 +21,9 @@ public class AvatarEditorHUDModel
             eyeColor = eyesColor
         };
     }
+
+    public WearableItem GetWearable(string category)
+    {
+        return wearables.FirstOrDefault(x => x.data.category == category);
+    }
 }

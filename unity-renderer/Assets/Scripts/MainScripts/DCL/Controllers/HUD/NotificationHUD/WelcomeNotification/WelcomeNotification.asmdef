@@ -2,10 +2,11 @@
     "name": "WelcomeNotification",
     "rootNamespace": "",
     "references": [
-        "GUID:1de3566cccb280f4a982c59ad0d08c96",
-        "GUID:0e967802b778d404eac1ca5ea340e290",
-        "GUID:e6f5b34eba99b4ed9836f899578ee258",
-        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
+      "GUID:1de3566cccb280f4a982c59ad0d08c96",
+      "GUID:0e967802b778d404eac1ca5ea340e290",
+      "GUID:e6f5b34eba99b4ed9836f899578ee258",
+      "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+      "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
