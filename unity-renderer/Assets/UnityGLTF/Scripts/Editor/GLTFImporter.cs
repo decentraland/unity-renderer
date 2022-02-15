@@ -81,18 +81,24 @@ namespace UnityGLTF
             if (!PreloadedGLTFObjects.ContainsKey(ctx.assetPath))
             {
                 delayCallsCount--;
-
                 throw new Exception("Imported GLTF was not preloaded");
             }
-            
-            ImportAsset(ctx, PreloadedGLTFObjects[ctx.assetPath]);
+
+            GameObject preloadedGltfObject = PreloadedGLTFObjects[ctx.assetPath];
+
+            if (!preloadedGltfObject)
+            {
+                Debug.LogWarning("This asset has already been imported \n{ctx.assetPath}");
+                delayCallsCount--;
+                return;
+            }
+            ImportAsset(ctx, preloadedGltfObject);
         }
 
         private void ImportAsset(AssetImportContext ctx, GameObject gltfScene)
         {
             string sceneName = null;
             UnityEngine.Mesh[] meshes = null;
-
             try
             {
                 // Remove empty roots

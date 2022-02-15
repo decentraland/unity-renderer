@@ -68,6 +68,9 @@ namespace DCL.ABConverter
         private string logBuffer;
 
         private Dictionary<string, GLTFSceneImporter> gltfToWait = new Dictionary<string, GLTFSceneImporter>();
+        private List<FileStream> openStreams = new List<FileStream>();
+        private Queue<string> assetsToImport = new Queue<string>();
+        
 
         public Core(Environment env, ClientSettings settings = null)
         {
@@ -125,6 +128,9 @@ namespace DCL.ABConverter
             bool shouldGenerateAssetBundles = generateAssetBundles;
             bool assetsAlreadyDumped = false;
 
+            assetsToImport.Clear();
+            GLTFImporter.PreloadedGLTFObjects.Clear();
+            
             //TODO(Brian): Use async-await instead of Application.update
             void UpdateLoop()
             {
@@ -142,12 +148,9 @@ namespace DCL.ABConverter
                     //(Kinerius): After GLTFs are done loading, we are allowed to import them
                     if (assetsToImport.Count > 0)
                     {
-                        for (int i = 0; i < assetsToImport.Count; i++)
-                        {
-                            env.assetDatabase.ImportAsset(assetsToImport[i], ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ImportRecursive);
-                        }
-                        
-                        assetsToImport.Clear();
+                        string fullPath = assetsToImport.Dequeue();
+                        env.assetDatabase.ImportAsset(fullPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ImportRecursive);
+                        return;
                     }
 
                     //NOTE(Brian): We have to check this because the ImportAsset for GLTFs is not synchronous, and must execute some delayed calls
@@ -285,7 +288,7 @@ namespace DCL.ABConverter
                         path =  "Assets" + path.Substring(dataPath.Length);
 
                     GLTFImporter.PreloadedGLTFObjects.Add(path, importer.lastLoadedScene);
-                    assetsToImport.Add(gltfUrl);
+                    if(!assetsToImport.Contains(gltfUrl)) assetsToImport.Enqueue(gltfUrl);
                     dumpList.Add(gltfUrl);
                 }
             }
@@ -582,9 +585,8 @@ namespace DCL.ABConverter
                 }
                 else
                 {
-                    /*env.assetDatabase.ImportAsset(assetPath.finalPath, ImportAssetOptions.ForceUpdate);
-                    env.assetDatabase.SaveAssets();*/
-                    
+                    env.assetDatabase.ImportAsset(assetPath.finalPath, ImportAssetOptions.ForceUpdate);
+                    env.assetDatabase.SaveAssets();
                 }
 
                 SetDeterministicAssetDatabaseGuid(assetPath);
@@ -696,8 +698,6 @@ namespace DCL.ABConverter
             return outputPath;
         }
 
-        private List<FileStream> openStreams = new List<FileStream>();
-        private List<string> assetsToImport = new List<string>();
         private GLTFSceneImporter CreateGLTFScene(string projectFilePath)
         {
             ILoader fileLoader = new GLTFFileLoader(Path.GetDirectoryName(projectFilePath));
