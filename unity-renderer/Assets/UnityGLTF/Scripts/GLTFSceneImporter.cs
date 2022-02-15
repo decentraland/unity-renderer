@@ -472,12 +472,7 @@ namespace UnityGLTF
 
             TextureCreationSettings settings = GetTextureCreationSettingsForTexture(texture, linear);
             string imageId = GenerateImageId(image.Uri, sourceId, settings);
-
-            if (!PersistentAssetCache.HasImage(imageId))
-            {
-                Debug.LogError(imageId);
-            }
-
+            
             Debug.Log($"{image.Uri == null} || {!PersistentAssetCache.HasImage(imageId)} && {_assetCache.ImageStreamCache[sourceId] == null}");
             if ((image.Uri == null || !PersistentAssetCache.HasImage(imageId)) && _assetCache.ImageStreamCache[sourceId] == null)
             {
