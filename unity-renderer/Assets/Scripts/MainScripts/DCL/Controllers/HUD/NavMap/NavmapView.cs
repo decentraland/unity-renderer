@@ -165,7 +165,6 @@ namespace DCL
             isScaling = true;
             scale = zoomCurve.Evaluate(currentZoomLevel);
             MapRenderer.i.scaleFactor = scale;
-            //Vector3 startScaleSize = containerRectTransform.localScale;
             Vector3 targetScale = new Vector3(scale, scale, scale);
             
             float counter = 0;
