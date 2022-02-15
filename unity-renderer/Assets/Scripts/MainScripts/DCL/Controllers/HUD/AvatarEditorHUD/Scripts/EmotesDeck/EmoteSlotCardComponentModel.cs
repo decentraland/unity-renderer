@@ -4,7 +4,7 @@ using UnityEngine;
 namespace EmotesDeck
 {
     [Serializable]
-    internal class EmoteSlotCardComponentModel : BaseComponentModel
+    public class EmoteSlotCardComponentModel : BaseComponentModel
     {
         public string emoteId;
         public Sprite pictureSprite;

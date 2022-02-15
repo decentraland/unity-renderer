@@ -8,6 +8,11 @@ namespace EmotesDeck
     public interface IEmoteSlotSelectorComponentView
     {
         /// <summary>
+        /// Get the current selected slot number.
+        /// </summary>
+        int selectedSlot { get; }
+
+        /// <summary>
         /// It will be triggered when a slot is selected. It returns the selected slot number and the assigned emote id.
         /// </summary>
         event Action<int, string> onSlotSelected;
@@ -41,6 +46,8 @@ namespace EmotesDeck
 
         [Header("Configuration")]
         [SerializeField] internal EmoteSlotSelectorComponentModel model;
+
+        public int selectedSlot => model.selectedSlot;
 
         public event Action<int, string> onSlotSelected;
 
@@ -107,11 +114,18 @@ namespace EmotesDeck
 
         public void AssignEmoteIntoSlot(int slotNumber, string emoteId, Sprite pictureSprite)
         {
-            EmoteSlotCardComponentView slotToUpdate = GetAllSlots().FirstOrDefault(x => x.model.slotNumber == slotNumber);
-            if (slotToUpdate != null)
+            List<EmoteSlotCardComponentView> currentSlots = GetAllSlots();
+            foreach (EmoteSlotCardComponentView slot in currentSlots)
             {
-                slotToUpdate.SetEmoteId(emoteId);
-                slotToUpdate.SetEmotePicture(pictureSprite);
+                if (slot.model.slotNumber == slotNumber)
+                {
+                    slot.SetEmoteId(emoteId);
+                    slot.SetEmotePicture(pictureSprite);
+                }
+                else if (slot.model.emoteId == emoteId)
+                {
+                    slot.SetEmoteId(string.Empty);
+                }
             }
         }
 

@@ -8,9 +8,9 @@ namespace EmotesDeck
     public interface IEmoteCardComponentView
     {
         /// <summary>
-        /// It will be triggered when the emote card is selected/unselected.
+        /// Event that will be triggered when the main button is clicked.
         /// </summary>
-        event Action<string, bool> onSelected;
+        Button.ButtonClickedEvent onMainClick { get; }
 
         /// <summary>
         /// Event that will be triggered when the equip button is clicked.
@@ -36,7 +36,7 @@ namespace EmotesDeck
         void SetEmotePicture(string uri);
 
         /// <summary>
-        /// Set the emote as equipped or not.
+        /// Set the emote as favorite or not.
         /// </summary>
         /// <param name="isFavorite">True for set it as favorite.</param>
         void SetEmoteAsFavorite(bool isFavorite);
@@ -80,7 +80,7 @@ namespace EmotesDeck
         [SerializeField] internal Sprite nonEmoteAssignedPicture;
         [SerializeField] internal EmoteCardComponentModel model;
 
-        public event Action<string, bool> onSelected;
+        public Button.ButtonClickedEvent onMainClick => mainButton?.onClick;
         public Button.ButtonClickedEvent onEquipClick => equipButton?.onClick;
 
         public override void Awake()
@@ -239,7 +239,9 @@ namespace EmotesDeck
             if (cardAnimator != null && !isFocused)
                 cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, isSelected);
 
-            onSelected?.Invoke(model.id, isSelected);
+            if (mainButton != null)
+                mainButton.SetInteractable(!isSelected);
+
             RefreshEquipButtonVisibility();
             RefreshAssignedSlotTextVisibility();
         }
