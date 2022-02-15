@@ -77,7 +77,16 @@ namespace UnityGLTF
         public override void OnImportAsset(AssetImportContext ctx)
         {
             delayCallsCount++;
-            Debug.Log($"<color=blue>{ctx.assetPath}</color>");
+
+            if (!PreloadedGLTFObjects.ContainsKey(ctx.assetPath))
+            {
+                delayCallsCount--;
+
+                throw new Exception("Imported GLTF was not preloaded");
+            }
+            
+            Debug.Log($"<color=yellow>Starting to import {ctx.assetPath}</color>");
+
             ImportAsset(ctx, PreloadedGLTFObjects[ctx.assetPath]);
         }
 
@@ -532,6 +541,8 @@ namespace UnityGLTF
             }
 
             ctx.SetMainObject(gltfScene);
+            
+            Debug.Log($"<color=green>Asset successfully imported {ctx.assetPath}</color>");
         }
 
         private string PatchInvalidFileNameChars(string fileName)
