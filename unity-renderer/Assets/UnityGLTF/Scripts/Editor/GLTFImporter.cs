@@ -81,14 +81,16 @@ namespace UnityGLTF
             if (!PreloadedGLTFObjects.ContainsKey(ctx.assetPath))
             {
                 delayCallsCount--;
-                throw new Exception("Imported GLTF was not preloaded");
+
+                return;
+                //throw new Exception("Imported GLTF was not preloaded");
             }
 
             GameObject preloadedGltfObject = PreloadedGLTFObjects[ctx.assetPath];
 
             if (!preloadedGltfObject)
             {
-                Debug.LogWarning("This asset has already been imported \n{ctx.assetPath}");
+                //Debug.LogWarning("This asset has already been imported \n{ctx.assetPath}");
                 delayCallsCount--;
                 return;
             }

@@ -148,7 +148,9 @@ namespace UnityGLTF
         protected AssetCache _assetCache;
         protected ILoader _loader;
         protected bool _isRunning = false;
+        private bool _isCompleted = false;
         public bool IsRunning => _isRunning;
+        public bool IsCompleted => _isCompleted;
 
         public string id;
 
@@ -338,6 +340,7 @@ namespace UnityGLTF
                 lock (this)
                 {
                     _isRunning = false;
+                    _isCompleted = true;
                 }
             }
         }

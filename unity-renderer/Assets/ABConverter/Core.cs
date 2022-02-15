@@ -69,8 +69,6 @@ namespace DCL.ABConverter
 
         private Dictionary<string, GLTFSceneImporter> gltfToWait = new Dictionary<string, GLTFSceneImporter>();
         private List<FileStream> openStreams = new List<FileStream>();
-        private Queue<string> assetsToImport = new Queue<string>();
-        
 
         public Core(Environment env, ClientSettings settings = null)
         {
@@ -128,8 +126,8 @@ namespace DCL.ABConverter
             bool shouldGenerateAssetBundles = generateAssetBundles;
             bool assetsAlreadyDumped = false;
 
-            assetsToImport.Clear();
             GLTFImporter.PreloadedGLTFObjects.Clear();
+            string currentLoadingGLTF = "";
             
             //TODO(Brian): Use async-await instead of Application.update
             void UpdateLoop()
@@ -140,16 +138,32 @@ namespace DCL.ABConverter
                     //          the result on a static list so the gltf importer can make use of them in a sync manner
                     if (gltfToWait.Count > 0)
                     {
-                        CheckForLoadedGLTFs();
+                        var dumpList = new List<string>();
 
-                        return;
-                    }
-                    
-                    //(Kinerius): After GLTFs are done loading, we are allowed to import them
-                    if (assetsToImport.Count > 0)
-                    {
-                        string fullPath = assetsToImport.Dequeue();
-                        env.assetDatabase.ImportAsset(fullPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ImportRecursive);
+                        foreach ((string key, GLTFSceneImporter value) in gltfToWait)
+                        {
+                            if (!value.IsCompleted && string.IsNullOrEmpty(currentLoadingGLTF))
+                            {
+                                value.LoadScene(CancellationToken.None).Preserve().Forget();
+                                currentLoadingGLTF = key;
+                            }
+                            
+                            if (value.IsCompleted)
+                            {
+                                GLTFImporter.PreloadedGLTFObjects.Add(GetRelativePath(key), value.lastLoadedScene);
+                                
+                                env.assetDatabase.ImportAsset(key, ImportAssetOptions.ImportRecursive | ImportAssetOptions.ForceUpdate);
+                                
+                                dumpList.Add(key);
+                                currentLoadingGLTF = null;
+                            }
+                        }
+
+                        foreach (string s in dumpList)
+                        {
+                            gltfToWait.Remove(s);
+                        }
+
                         return;
                     }
 
@@ -241,8 +255,18 @@ namespace DCL.ABConverter
 
             EditorApplication.update += UpdateLoop;
         }
-        
-        
+        private static string GetRelativePath(string key)
+        {
+            var path = key;
+            string dataPath = Application.dataPath.Replace('\\', '/');
+            path = path.Replace('\\', '/');
+
+            if (path.StartsWith(dataPath))
+                path =  "Assets" + path.Substring(dataPath.Length);
+
+            return path;
+        }
+
         private void CleanupCache()
         {
             List<Stream> streamsToDispose = new List<Stream>();
@@ -266,37 +290,6 @@ namespace DCL.ABConverter
             PersistentAssetCache.ClearImageCache();
             MarkAllAssetBundles(assetsToMark);
             MarkShaderAssetBundle();
-        }
-        
-        /// <summary>
-        /// Check for GLTFs being loaded and then add the resulting GameObject to GLTFImporter static list for later usage
-        /// </summary>
-        private void CheckForLoadedGLTFs()
-        {
-            var dumpList = new List<string>();
-
-            foreach ((string gltfUrl, GLTFSceneImporter importer) in gltfToWait)
-            {
-                if (!importer.IsRunning)
-                {
-                    var path = gltfUrl;
-                    string dataPath = Application.dataPath.Replace('\\', '/');
-                    
-                    path = path.Replace('\\', '/');
-
-                    if (path.StartsWith(dataPath))
-                        path =  "Assets" + path.Substring(dataPath.Length);
-
-                    GLTFImporter.PreloadedGLTFObjects.Add(path, importer.lastLoadedScene);
-                    if(!assetsToImport.Contains(gltfUrl)) assetsToImport.Enqueue(gltfUrl);
-                    dumpList.Add(gltfUrl);
-                }
-            }
-
-            foreach (string s in dumpList)
-            {
-                gltfToWait.Remove(s);
-            }
         }
 
         public void ConvertDumpedAssets(Action<ErrorCodes> OnFinish = null)
@@ -719,15 +712,6 @@ namespace DCL.ABConverter
             loader.forceGPUOnlyTex = false;
 
             OnGLTFWillLoad?.Invoke(loader);
-
-            try
-            {
-                loader.LoadScene(CancellationToken.None).Preserve().Forget();
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
 
             return loader;
 
