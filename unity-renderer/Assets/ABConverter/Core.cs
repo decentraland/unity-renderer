@@ -48,6 +48,7 @@ namespace DCL.ABConverter
 
         public readonly State state = new State();
 
+        private const float IMPORTING_TIMEOUT = 60f * 10f;
         private const string MAIN_SHADER_AB_NAME = "MainShader_Delete_Me";
         private const float MAX_TEXTURE_SIZE = 512f;
         private const string VERSION = "2.0";
@@ -169,14 +170,14 @@ namespace DCL.ABConverter
 
                     //NOTE(Brian): We have to check this because the ImportAsset for GLTFs is not synchronous, and must execute some delayed calls
                     //             after the import asset finished. Therefore, we have to make sure those calls finished before continuing.
-                    if (!GLTFImporter.finishedImporting && Time.realtimeSinceStartup - timer < 60)
+                    if (!GLTFImporter.finishedImporting && Time.realtimeSinceStartup - timer < IMPORTING_TIMEOUT)
                     {
                         return;
                     }
 
-                    if (Time.realtimeSinceStartup - timer >= 60)
+                    if (Time.realtimeSinceStartup - timer >= IMPORTING_TIMEOUT)
                     {
-                        Debug.LogError("Timeout!");
+                        Debug.LogError("Importing timeout!");
                     }
 
                     env.assetDatabase.Refresh();
