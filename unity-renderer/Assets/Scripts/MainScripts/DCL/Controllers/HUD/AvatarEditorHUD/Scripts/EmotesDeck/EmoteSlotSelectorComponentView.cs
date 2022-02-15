@@ -3,143 +3,146 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public interface IEmoteSlotSelectorComponentView
+namespace EmotesDeck
 {
-    /// <summary>
-    /// It will be triggered when a slot is selected. It returns the selected slot number and the assigned emote id.
-    /// </summary>
-    event Action<int, string> onSlotSelected;
-
-    /// <summary>
-    /// Select a slot.
-    /// </summary>
-    /// <param name="slotNumber">Slot number to select.</param>
-    void SelectSlot(int slotNumber);
-
-    /// <summary>
-    /// Assign an emote into the selected slot.
-    /// </summary>
-    /// <param name="emoteId">Emote Id to assign.</param>
-    /// <param name="pictureSprite">Emote picture to set.</param>
-    void AssignEmoteIntoSelectedSlot(string emoteId, Sprite pictureSprite);
-
-    /// <summary>
-    /// Assign an emote into a specific slot.
-    /// </summary>
-    /// <param name="slotNumber">Slot number to assign the emote.</param>
-    /// <param name="emoteId">Emote Id to assign.</param>
-    /// <param name="pictureSprite">Emote picture to set.</param>
-    void AssignEmoteIntoSlot(int slotNumber, string emoteId, Sprite pictureSprite);
-}
-
-public class EmoteSlotSelectorComponentView : BaseComponentView, IEmoteSlotSelectorComponentView, IComponentModelConfig
-{
-    [Header("Prefab References")]
-    [SerializeField] internal GridContainerComponentView emotesSlots;
-
-    [Header("Configuration")]
-    [SerializeField] internal EmoteSlotSelectorComponentModel model;
-
-    public event Action<int, string> onSlotSelected;
-
-    public override void Start()
+    public interface IEmoteSlotSelectorComponentView
     {
-        base.Start();
+        /// <summary>
+        /// It will be triggered when a slot is selected. It returns the selected slot number and the assigned emote id.
+        /// </summary>
+        event Action<int, string> onSlotSelected;
 
-        ConfigureSlotButtons();
+        /// <summary>
+        /// Select a slot.
+        /// </summary>
+        /// <param name="slotNumber">Slot number to select.</param>
+        void SelectSlot(int slotNumber);
+
+        /// <summary>
+        /// Assign an emote into the selected slot.
+        /// </summary>
+        /// <param name="emoteId">Emote Id to assign.</param>
+        /// <param name="pictureSprite">Emote picture to set.</param>
+        void AssignEmoteIntoSelectedSlot(string emoteId, Sprite pictureSprite);
+
+        /// <summary>
+        /// Assign an emote into a specific slot.
+        /// </summary>
+        /// <param name="slotNumber">Slot number to assign the emote.</param>
+        /// <param name="emoteId">Emote Id to assign.</param>
+        /// <param name="pictureSprite">Emote picture to set.</param>
+        void AssignEmoteIntoSlot(int slotNumber, string emoteId, Sprite pictureSprite);
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public class EmoteSlotSelectorComponentView : BaseComponentView, IEmoteSlotSelectorComponentView, IComponentModelConfig
     {
-        model = (EmoteSlotSelectorComponentModel)newModel;
-        RefreshControl();
-    }
+        [Header("Prefab References")]
+        [SerializeField] internal GridContainerComponentView emotesSlots;
 
-    public override void RefreshControl()
-    {
-        if (model == null)
-            return;
+        [Header("Configuration")]
+        [SerializeField] internal EmoteSlotSelectorComponentModel model;
 
-        SelectSlot(model.selectedSlot);
-        emotesSlots.RefreshControl();
-    }
+        public event Action<int, string> onSlotSelected;
 
-    public override void Dispose()
-    {
-        base.Dispose();
-
-        UnsubscribeSlotButtons();
-    }
-
-    public void SelectSlot(int slotNumber)
-    {
-        model.selectedSlot = slotNumber;
-
-        if (emotesSlots == null)
-            return;
-
-        List<EmoteSlotCardComponentView> currentSlots = GetAllSlots();
-        foreach (EmoteSlotCardComponentView slot in currentSlots)
+        public override void Start()
         {
-            if (slot.model.slotNumber == slotNumber)
+            base.Start();
+
+            ConfigureSlotButtons();
+        }
+
+        public void Configure(BaseComponentModel newModel)
+        {
+            model = (EmoteSlotSelectorComponentModel)newModel;
+            RefreshControl();
+        }
+
+        public override void RefreshControl()
+        {
+            if (model == null)
+                return;
+
+            SelectSlot(model.selectedSlot);
+            emotesSlots.RefreshControl();
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            UnsubscribeSlotButtons();
+        }
+
+        public void SelectSlot(int slotNumber)
+        {
+            model.selectedSlot = slotNumber;
+
+            if (emotesSlots == null)
+                return;
+
+            List<EmoteSlotCardComponentView> currentSlots = GetAllSlots();
+            foreach (EmoteSlotCardComponentView slot in currentSlots)
             {
-                slot.SetEmoteAsSelected(true);
-                onSlotSelected?.Invoke(slotNumber, slot.model.emoteId);
+                if (slot.model.slotNumber == slotNumber)
+                {
+                    slot.SetEmoteAsSelected(true);
+                    onSlotSelected?.Invoke(slotNumber, slot.model.emoteId);
+                }
+                else
+                {
+                    slot.SetEmoteAsSelected(false);
+                }
             }
-            else
+        }
+
+        public void AssignEmoteIntoSelectedSlot(string emoteId, Sprite pictureSprite)
+        {
+            EmoteSlotCardComponentView slotToUpdate = GetAllSlots().FirstOrDefault(x => x.model.isSelected);
+            if (slotToUpdate != null)
             {
-                slot.SetEmoteAsSelected(false);
+                slotToUpdate.SetEmoteId(emoteId);
+                slotToUpdate.SetEmotePicture(pictureSprite);
             }
         }
-    }
 
-    public void AssignEmoteIntoSelectedSlot(string emoteId, Sprite pictureSprite)
-    {
-        EmoteSlotCardComponentView slotToUpdate = GetAllSlots().FirstOrDefault(x => x.model.isSelected);
-        if (slotToUpdate != null)
+        public void AssignEmoteIntoSlot(int slotNumber, string emoteId, Sprite pictureSprite)
         {
-            slotToUpdate.SetEmoteId(emoteId);
-            slotToUpdate.SetEmotePicture(pictureSprite);
+            EmoteSlotCardComponentView slotToUpdate = GetAllSlots().FirstOrDefault(x => x.model.slotNumber == slotNumber);
+            if (slotToUpdate != null)
+            {
+                slotToUpdate.SetEmoteId(emoteId);
+                slotToUpdate.SetEmotePicture(pictureSprite);
+            }
         }
-    }
 
-    public void AssignEmoteIntoSlot(int slotNumber, string emoteId, Sprite pictureSprite)
-    {
-        EmoteSlotCardComponentView slotToUpdate = GetAllSlots().FirstOrDefault(x => x.model.slotNumber == slotNumber);
-        if (slotToUpdate != null)
+        internal void ConfigureSlotButtons()
         {
-            slotToUpdate.SetEmoteId(emoteId);
-            slotToUpdate.SetEmotePicture(pictureSprite);
+            List<EmoteSlotCardComponentView> currentSlots = GetAllSlots();
+            foreach (EmoteSlotCardComponentView slot in currentSlots)
+            {
+                slot.onClick.AddListener(() => SelectSlot(slot.model.slotNumber));
+            }
         }
-    }
 
-    internal void ConfigureSlotButtons()
-    {
-        List<EmoteSlotCardComponentView> currentSlots = GetAllSlots();
-        foreach (EmoteSlotCardComponentView slot in currentSlots)
+        internal void UnsubscribeSlotButtons()
         {
-            slot.onClick.AddListener(() => SelectSlot(slot.model.slotNumber));
+            List<EmoteSlotCardComponentView> currentSlots = emotesSlots
+                .GetItems()
+                .Select(x => x as EmoteSlotCardComponentView)
+                .ToList();
+
+            foreach (EmoteSlotCardComponentView slot in currentSlots)
+            {
+                slot.onClick.RemoveAllListeners();
+            }
         }
-    }
 
-    internal void UnsubscribeSlotButtons()
-    {
-        List<EmoteSlotCardComponentView> currentSlots = emotesSlots
-            .GetItems()
-            .Select(x => x as EmoteSlotCardComponentView)
-            .ToList();
-
-        foreach (EmoteSlotCardComponentView slot in currentSlots)
+        internal List<EmoteSlotCardComponentView> GetAllSlots()
         {
-            slot.onClick.RemoveAllListeners();
+            return emotesSlots
+                .GetItems()
+                .Select(x => x as EmoteSlotCardComponentView)
+                .ToList();
         }
-    }
-
-    internal List<EmoteSlotCardComponentView> GetAllSlots()
-    {
-        return emotesSlots
-            .GetItems()
-            .Select(x => x as EmoteSlotCardComponentView)
-            .ToList();
     }
 }

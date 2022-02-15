@@ -1,7 +1,10 @@
-﻿using System;
+using System;
 
-[Serializable]
-public class EmoteSlotViewerComponentModel : BaseComponentModel
+namespace EmotesDeck
 {
-    public int selectedSlot;
+    [Serializable]
+    public class EmoteSlotViewerComponentModel : BaseComponentModel
+    {
+        public int selectedSlot;
+    }
 }
