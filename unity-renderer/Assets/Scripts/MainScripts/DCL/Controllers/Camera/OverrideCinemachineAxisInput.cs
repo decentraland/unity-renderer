@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class OverrideCinemachineAxisInput : MonoBehaviour
 {
+    public const string MOUSE_Y_AXIS = "Mouse Y";
 
     [Serializable]
     public struct AxisToMeasurableAction
@@ -33,7 +34,7 @@ public class OverrideCinemachineAxisInput : MonoBehaviour
             return 0;
         
         float value = cachedAxisToMeasurableActions[axisName].GetValue();
-        if (axisName.Equals("Mouse Y") && invertMouseY) 
+        if (axisName.Equals(MOUSE_Y_AXIS) && invertMouseY) 
         {
             value = -value;
         }

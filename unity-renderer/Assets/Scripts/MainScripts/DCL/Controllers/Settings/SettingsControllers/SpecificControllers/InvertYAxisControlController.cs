@@ -9,7 +9,6 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
     {
         public override object GetStoredValue() { return currentGeneralSettings.invertYAxis; }
 
-        // Update is called once per frame
         public override void UpdateSetting(object newValue)
         {
             currentGeneralSettings.invertYAxis = (bool)newValue;
