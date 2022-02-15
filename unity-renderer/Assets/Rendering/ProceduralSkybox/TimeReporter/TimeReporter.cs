@@ -2,13 +2,20 @@ using System;
 using DCL;
 using DCL.Interface;
 
-public class TimeReporter : IDisposable
+public interface ITimeReporter : IDisposable
+{
+    void Configure(float normalizationFactor, float cycle);
+    void ReportTime(float time);
+}
+
+public class TimeReporter : ITimeReporter
 {
     private float timeNormalizationFactor;
     private float cycleTime;
-    private bool wasPaused = true;
+    private bool wasTimeRunning;
 
-    internal event Action<float, bool> OnReport;
+    internal delegate void OnReportEventHandler(float time, bool isPaused);
+    internal event OnReportEventHandler OnReport;
 
     public TimeReporter()
     {
@@ -28,19 +35,19 @@ public class TimeReporter : IDisposable
 
     public void ReportTime(float time)
     {
-        bool isPaused = !DataStore.i.skyboxConfig.useDynamicSkybox.Get();
+        bool isTimeRunning = DataStore.i.skyboxConfig.useDynamicSkybox.Get();
 
         // NOTE: if not paused and pause state didn't change there is no need to report
         // current time since it's being calculated on kernel side
-        if (!isPaused && !wasPaused)
+        if (isTimeRunning && wasTimeRunning)
         {
             return;
         }
 
-        wasPaused = isPaused;
-        OnReport?.Invoke(time, isPaused);
+        wasTimeRunning = isTimeRunning;
+        OnReport?.Invoke(time, !isTimeRunning);
     }
-    
+
     private void DoReport(float time, bool isPaused)
     {
         WebInterface.ReportTime(time, isPaused, timeNormalizationFactor, cycleTime);

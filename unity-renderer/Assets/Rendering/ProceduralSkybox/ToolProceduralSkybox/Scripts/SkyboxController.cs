@@ -45,7 +45,7 @@ namespace DCL.Skybox
         private int syncAfterCount = 10;
 
         // Report to kernel
-        private TimeReporter timeReporter = new TimeReporter();
+        private ITimeReporter timeReporter { get; set; } = new TimeReporter();
 
         public SkyboxController()
         {
