@@ -148,6 +148,7 @@ namespace UnityGLTF
         protected AssetCache _assetCache;
         protected ILoader _loader;
         protected bool _isRunning = false;
+        public bool IsRunning => _isRunning;
 
         public string id;
 
@@ -293,6 +294,8 @@ namespace UnityGLTF
                     profiling = Time.realtimeSinceStartup;
                     frames = Time.frameCount;
                 }
+
+                Debug.Log($"creating scene {id}");
 
                 await CreateScene(sceneIndex, showSceneObj, token);
 
@@ -461,13 +464,21 @@ namespace UnityGLTF
             {
                 while (streamingImagesStaticList.Contains(image.Uri))
                 {
-                    await UniTask.Delay(TimeSpan.FromMilliseconds(25), cancellationToken: token);
+                    Debug.Log("Delay!");
+                    await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: token);
+                    Debug.Log("Delay Done!!");
                 }
             }
 
             TextureCreationSettings settings = GetTextureCreationSettingsForTexture(texture, linear);
             string imageId = GenerateImageId(image.Uri, sourceId, settings);
 
+            if (!PersistentAssetCache.HasImage(imageId))
+            {
+                Debug.LogError(imageId);
+            }
+
+            Debug.Log($"{image.Uri == null} || {!PersistentAssetCache.HasImage(imageId)} && {_assetCache.ImageStreamCache[sourceId] == null}");
             if ((image.Uri == null || !PersistentAssetCache.HasImage(imageId)) && _assetCache.ImageStreamCache[sourceId] == null)
             {
                 // we only load the streams if not a base64 uri, meaning the data is in the uri
@@ -563,6 +574,8 @@ namespace UnityGLTF
 
             InitializeGltfTopLevelObject();
 
+            Debug.Log($"constructing scene {id}");
+
             await ConstructScene(scene, showSceneObj, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -600,6 +613,7 @@ namespace UnityGLTF
                     {
                         await _loader.LoadStream(buffer.Uri, token);
                         bufferDataStream = _loader.LoadedStream;
+                        Debug.Log($"<color=red>Adding buffer {buffer.Uri} {id}</color>");
                         PersistentAssetCache.AddBuffer(buffer.Uri, id, bufferDataStream);
                     }
                 }
@@ -1260,6 +1274,8 @@ namespace UnityGLTF
             CreatedObject.transform.localRotation = Quaternion.identity;
             CreatedObject.transform.localScale = Vector3.one;
 
+            Debug.Log($"constructing nodes {id}");
+
             if (scene?.Nodes != null)
             {
                 for (int i = 0; i < scene.Nodes.Count; ++i)
@@ -1272,11 +1288,15 @@ namespace UnityGLTF
                     await ConstructNode(nodeToLoad, node.Id, token, CreatedObject.transform);
                 }
             }
+            
+            Debug.Log($"constructing materials {id}");
 
             foreach (var gltfMaterial in pendingImageBuffers)
             {
                 await ConstructMaterialImageBuffers(gltfMaterial, token);
             }
+
+            Debug.Log($"constructing meshes {id}");
 
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -1299,6 +1319,8 @@ namespace UnityGLTF
             }
 
             stopWatch.Stop();
+
+            Debug.Log($"constructing animations {id}");
 
             if (_gltfRoot.Animations != null && _gltfRoot.Animations.Count > 0)
             {
@@ -2362,6 +2384,7 @@ namespace UnityGLTF
 
                 if (addImagesToPersistentCaching)
                 {
+                    Debug.Log($"<color=magenta>Adding image to persistent cache {imageId}</color>");
                     source = PersistentAssetCache.AddImage(imageId, _assetCache.ImageCache[sourceId], linear);
                 }
                 else

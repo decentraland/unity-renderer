@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.AssetImporters;
@@ -50,6 +51,7 @@ namespace UnityGLTF
                 {
                     if (rend.sharedMaterials.Length == 0)
                         break;
+
                     if (mat == null)
                         continue;
 
@@ -70,32 +72,27 @@ namespace UnityGLTF
             return materials;
         }
 
+        public static Dictionary<string, GameObject> PreloadedGLTFObjects = new Dictionary<string, GameObject>();
+
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            ImportAsset(ctx).Forget();
+            delayCallsCount++;
+            Debug.Log($"<color=blue>{ctx.assetPath}</color>");
+            ImportAsset(ctx, PreloadedGLTFObjects[ctx.assetPath]);
         }
 
-        private async UniTask ImportAsset(AssetImportContext ctx)
+        private void ImportAsset(AssetImportContext ctx, GameObject gltfScene)
         {
             string sceneName = null;
-            GameObject gltfScene = null;
             UnityEngine.Mesh[] meshes = null;
+
             try
             {
-                char ps = Path.DirectorySeparatorChar;
-
-                string assetPath = ctx.assetPath;
-
-                assetPath = assetPath.Replace('/', ps);
-                assetPath = assetPath.Replace('\\', ps);
-
-                sceneName = Path.GetFileNameWithoutExtension(assetPath);
-                gltfScene = await CreateGLTFScene(assetPath);
-
                 // Remove empty roots
                 if (_removeEmptyRootObjects)
                 {
                     var t = gltfScene.transform;
+
                     while (
                         gltfScene.transform.childCount == 1 &&
                         gltfScene.GetComponents<Component>().Length == 1)
@@ -110,6 +107,7 @@ namespace UnityGLTF
 
                 // Ensure there are no hide flags present (will cause problems when saving)
                 gltfScene.hideFlags &= ~(HideFlags.HideAndDontSave);
+
                 foreach (Transform child in gltfScene.transform)
                 {
                     child.gameObject.hideFlags &= ~(HideFlags.HideAndDontSave);
@@ -137,55 +135,58 @@ namespace UnityGLTF
                 var meshHash = new HashSet<UnityEngine.Mesh>();
                 var meshFilters = gltfScene.GetComponentsInChildren<MeshFilter>();
                 var vertexBuffer = new List<Vector3>();
+
                 meshes = meshFilters.Where(mf => mf.sharedMesh != null)
-                    .Select(mf =>
-                    {
-                        var mesh = mf.sharedMesh;
+                                    .Select(mf =>
+                                    {
+                                        var mesh = mf.sharedMesh;
 
-                        vertexBuffer.Clear();
-                        mesh.GetVertices(vertexBuffer);
-                        for (var i = 0; i < vertexBuffer.Count; ++i)
-                        {
-                            vertexBuffer[i] *= _scaleFactor;
-                        }
+                                        vertexBuffer.Clear();
+                                        mesh.GetVertices(vertexBuffer);
 
-                        mesh.SetVertices(vertexBuffer);
-                        if (_swapUvs)
-                        {
-                            var uv = mesh.uv;
-                            var uv2 = mesh.uv2;
-                            mesh.uv = uv2;
-                            mesh.uv2 = uv2;
-                        }
+                                        for (var i = 0; i < vertexBuffer.Count; ++i)
+                                        {
+                                            vertexBuffer[i] *= _scaleFactor;
+                                        }
 
-                        if (_importNormals == GLTFImporterNormals.None)
-                        {
-                            mesh.normals = new Vector3[0];
-                        }
+                                        mesh.SetVertices(vertexBuffer);
 
-                        if (_importNormals == GLTFImporterNormals.Calculate)
-                        {
-                            mesh.RecalculateNormals();
-                        }
+                                        if (_swapUvs)
+                                        {
+                                            var uv = mesh.uv;
+                                            var uv2 = mesh.uv2;
+                                            mesh.uv = uv2;
+                                            mesh.uv2 = uv2;
+                                        }
 
-                        mesh.UploadMeshData(!_readWriteEnabled);
+                                        if (_importNormals == GLTFImporterNormals.None)
+                                        {
+                                            mesh.normals = new Vector3[0];
+                                        }
 
-                        if (_generateColliders)
-                        {
-                            var collider = mf.gameObject.AddComponent<MeshCollider>();
-                            collider.sharedMesh = mesh;
-                        }
+                                        if (_importNormals == GLTFImporterNormals.Calculate)
+                                        {
+                                            mesh.RecalculateNormals();
+                                        }
 
-                        if (meshHash.Add(mesh))
-                        {
-                            var meshName = string.IsNullOrEmpty(mesh.name) ? mf.gameObject.name : mesh.name;
-                            mesh.name = ObjectNames.GetUniqueName(meshNames.ToArray(), meshName);
-                            meshNames.Add(mesh.name);
-                        }
+                                        mesh.UploadMeshData(!_readWriteEnabled);
 
-                        return mesh;
-                    })
-                    .ToArray();
+                                        if (_generateColliders)
+                                        {
+                                            var collider = mf.gameObject.AddComponent<MeshCollider>();
+                                            collider.sharedMesh = mesh;
+                                        }
+
+                                        if (meshHash.Add(mesh))
+                                        {
+                                            var meshName = string.IsNullOrEmpty(mesh.name) ? mf.gameObject.name : mesh.name;
+                                            mesh.name = ObjectNames.GetUniqueName(meshNames.ToArray(), meshName);
+                                            meshNames.Add(mesh.name);
+                                        }
+
+                                        return mesh;
+                                    })
+                                    .ToArray();
 
                 var renderers = gltfScene.GetComponentsInChildren<Renderer>();
 
@@ -194,6 +195,7 @@ namespace UnityGLTF
                     var folderName = Path.GetDirectoryName(ctx.assetPath);
                     var animationsRoot = string.Concat(folderName, "/", "Animations/");
                     Directory.CreateDirectory(animationsRoot);
+
                     foreach (AnimationClip clip in animationClips)
                     {
                         string fileName = PatchInvalidFileNameChars(clip.name);
@@ -212,6 +214,7 @@ namespace UnityGLTF
                     foreach (var mat in materials)
                     {
                         var matName = string.IsNullOrEmpty(mat.name) ? mat.shader.name : mat.name;
+
                         if (matName == mat.shader.name)
                         {
                             matName = matName.Substring(Mathf.Min(matName.LastIndexOf("/") + 1, matName.Length - 1));
@@ -241,74 +244,76 @@ namespace UnityGLTF
                         var textureHash = new HashSet<Texture2D>();
 
                         textures = materials.SelectMany(mat =>
-                            {
-                                var shader = mat.shader;
-                                if (!shader)
-                                {
-                                    return Enumerable.Empty<Texture2D>();
-                                }
-
-                                var matTextures = new List<Texture2D>();
-
-                                for (var i = 0; i < ShaderUtil.GetPropertyCount(shader); ++i)
-                                {
-                                    if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
-                                    {
-                                        var propertyName = ShaderUtil.GetPropertyName(shader, i);
-                                        var tex = mat.GetTexture(propertyName) as Texture2D;
-
-                                        if (!tex)
-                                            continue;
-
-                                        if (textureHash.Add(tex))
-                                        {
-                                            var texName = tex.name;
-
-                                            if (string.IsNullOrEmpty(texName))
                                             {
-                                                if (propertyName.StartsWith("_"))
+                                                var shader = mat.shader;
+
+                                                if (!shader)
                                                 {
-                                                    texName = propertyName.Substring(Mathf.Min(1, propertyName.Length - 1));
+                                                    return Enumerable.Empty<Texture2D>();
                                                 }
-                                            }
 
-                                            // Ensure name is unique
-                                            texName = ObjectNames.NicifyVariableName(texName);
-                                            texName = ObjectNames.GetUniqueName(textureNames.ToArray(), texName);
+                                                var matTextures = new List<Texture2D>();
 
-                                            tex.name = texName;
-                                            textureNames.Add(texName);
-                                            matTextures.Add(tex);
-                                        }
+                                                for (var i = 0; i < ShaderUtil.GetPropertyCount(shader); ++i)
+                                                {
+                                                    if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
+                                                    {
+                                                        var propertyName = ShaderUtil.GetPropertyName(shader, i);
+                                                        var tex = mat.GetTexture(propertyName) as Texture2D;
 
-                                        List<TexMaterialMap> materialMaps;
+                                                        if (!tex)
+                                                            continue;
 
-                                        if (!texMaterialMap.TryGetValue(tex, out materialMaps))
-                                        {
-                                            materialMaps = new List<TexMaterialMap>();
-                                            texMaterialMap.Add(tex, materialMaps);
-                                        }
+                                                        if (textureHash.Add(tex))
+                                                        {
+                                                            var texName = tex.name;
 
-                                        materialMaps.Add(new TexMaterialMap(mat, propertyName, propertyName == "_BumpMap"));
-                                        if (propertyName == "_BaseMap")
-                                        {
-                                            baseColor.Add(tex);
-                                        }
+                                                            if (string.IsNullOrEmpty(texName))
+                                                            {
+                                                                if (propertyName.StartsWith("_"))
+                                                                {
+                                                                    texName = propertyName.Substring(Mathf.Min(1, propertyName.Length - 1));
+                                                                }
+                                                            }
 
-                                        if (propertyName == "_BumpMap")
-                                        {
-                                            normals.Add(tex);
-                                        }
-                                        else if (propertyName == "_MetallicGlossMap")
-                                        {
-                                            metallics.Add(tex);
-                                        }
-                                    }
-                                }
+                                                            // Ensure name is unique
+                                                            texName = ObjectNames.NicifyVariableName(texName);
+                                                            texName = ObjectNames.GetUniqueName(textureNames.ToArray(), texName);
 
-                                return matTextures;
-                            })
-                            .ToList();
+                                                            tex.name = texName;
+                                                            textureNames.Add(texName);
+                                                            matTextures.Add(tex);
+                                                        }
+
+                                                        List<TexMaterialMap> materialMaps;
+
+                                                        if (!texMaterialMap.TryGetValue(tex, out materialMaps))
+                                                        {
+                                                            materialMaps = new List<TexMaterialMap>();
+                                                            texMaterialMap.Add(tex, materialMaps);
+                                                        }
+
+                                                        materialMaps.Add(new TexMaterialMap(mat, propertyName, propertyName == "_BumpMap"));
+
+                                                        if (propertyName == "_BaseMap")
+                                                        {
+                                                            baseColor.Add(tex);
+                                                        }
+
+                                                        if (propertyName == "_BumpMap")
+                                                        {
+                                                            normals.Add(tex);
+                                                        }
+                                                        else if (propertyName == "_MetallicGlossMap")
+                                                        {
+                                                            metallics.Add(tex);
+                                                        }
+                                                    }
+                                                }
+
+                                                return matTextures;
+                                            })
+                                            .ToList();
 
                         var folderName = Path.GetDirectoryName(ctx.assetPath);
 
@@ -340,8 +345,8 @@ namespace UnityGLTF
                         }
                     }
 
-
                     List<Material> materialCopies = new List<Material>(materials);
+
                     // Save materials as separate assets and rewrite refs
                     if (materials.Count > 0)
                     {
@@ -361,9 +366,11 @@ namespace UnityGLTF
                                 foreach (var r in renderers)
                                 {
                                     var sharedMaterials = r.sharedMaterials;
+
                                     for (var i = 0; i < sharedMaterials.Length; ++i)
                                     {
                                         var sharedMaterial = sharedMaterials[i];
+
                                         if (sharedMaterial.name == mat.name)
                                         {
                                             sharedMaterials[i] = m;
@@ -383,6 +390,7 @@ namespace UnityGLTF
                         if (textures.Count > 0)
                         {
                             delayCallsCount++;
+
                             EditorApplication.delayCall += () =>
                             {
                                 Texture2D[] cachedTextures = PersistentAssetCache.ImageCacheByUri.Values.Select((x) => { return x.Texture; }).ToArray();
@@ -396,6 +404,7 @@ namespace UnityGLTF
                                     bool isExternal = cachedTextures.Contains(tex);
 
                                     string texPath;
+
                                     if (isExternal)
                                     {
                                         texPath = AssetDatabase.GetAssetPath(tex);
@@ -501,6 +510,10 @@ namespace UnityGLTF
 
                 throw new Exception(e.Message + "\n" + e.StackTrace, e);
             }
+            finally
+            {
+                delayCallsCount--;
+            }
 
             // Set main asset
             ctx.AddObjectToAsset("main asset", gltfScene);
@@ -521,35 +534,6 @@ namespace UnityGLTF
             ctx.SetMainObject(gltfScene);
         }
 
-        public static event System.Action<GLTFRoot> OnGLTFRootIsConstructed;
-        public static event System.Action<GLTFSceneImporter> OnGLTFWillLoad;
-
-        private async UniTask<GameObject> CreateGLTFScene(string projectFilePath)
-        {
-            ILoader fileLoader = new GLTFFileLoader(Path.GetDirectoryName(projectFilePath));
-            using (var stream = File.OpenRead(projectFilePath))
-            {
-                GLTFRoot gLTFRoot;
-                GLTFParser.ParseJson(stream, out gLTFRoot);
-
-                OnGLTFRootIsConstructed?.Invoke(gLTFRoot);
-
-                var loader = new GLTFSceneImporter(Path.GetFullPath(projectFilePath), gLTFRoot, fileLoader, new GLTFThrottlingCounter(), stream);
-                loader.addImagesToPersistentCaching = false; // Since we control the PersistentAssetCache during AB Conversion, we don't want the importer to mess with that
-                loader.addMaterialsToPersistentCaching = false;
-                loader.initialVisibility = true;
-                loader.useMaterialTransition = false;
-                loader.maximumLod = _maximumLod;
-                loader.forceGPUOnlyMesh = false;
-                loader.forceGPUOnlyTex = false;
-
-                OnGLTFWillLoad?.Invoke(loader);
-
-                await loader.LoadScene(CancellationToken.None);
-                return loader.lastLoadedScene;
-            }
-        }
-
         private string PatchInvalidFileNameChars(string fileName)
         {
             foreach (char c in System.IO.Path.GetInvalidFileNameChars())
@@ -566,10 +550,12 @@ namespace UnityGLTF
         private void CopyOrNew<T>(T asset, string assetPath, Action<T> replaceReferences) where T : Object
         {
             var existingAsset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+
             if (existingAsset)
             {
                 EditorUtility.CopySerialized(asset, existingAsset);
                 replaceReferences(existingAsset);
+
                 return;
             }
 

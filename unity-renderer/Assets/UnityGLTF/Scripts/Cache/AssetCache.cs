@@ -38,7 +38,9 @@ namespace UnityGLTF.Cache
         public static RefCountedTextureData AddImage(string fullId, Texture2D texture, bool linear = false)
         {
             var refCountedTextureData = new RefCountedTextureData(fullId, texture, linear);
+            Debug.Log($"<color=green>{fullId}</color>");
             ImageCacheByUri[fullId] = refCountedTextureData;
+            Debug.Log("COUNT OF CACHE " + ImageCacheByUri.Count);
             return refCountedTextureData;
         }
 
@@ -83,7 +85,15 @@ namespace UnityGLTF.Cache
                 return;
 
             if (HasImage(fullId))
+            {
+                Debug.Log($"<color=red>{fullId}</color>");
                 ImageCacheByUri.Remove(fullId);
+            }
+        }
+
+        public static void ClearImageCache()
+        {
+            ImageCacheByUri.Clear();
         }
 
         /// <summary>
@@ -96,7 +106,8 @@ namespace UnityGLTF.Cache
 
             if (foundKey == null)
                 return;
-
+            
+            Debug.Log($"<color=red>{foundKey}</color>");
             ImageCacheByUri.Remove(foundKey);
         }
 
