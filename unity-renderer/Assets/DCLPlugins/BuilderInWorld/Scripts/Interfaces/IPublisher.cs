@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,20 @@ namespace DCL.Builder
 {
     public interface IPublisher
     {
+        /// <summary>
+        /// Released each time that the publish is finished
+        /// </summary>
+        event Action<bool> OnPublishFinish;
+
+        /// <summary>
+        /// This will Init the publisher
+        /// </summary>
+        /// <param name="context"></param>
         void Initialize(IContext context);
+        
+        /// <summary>
+        /// This will dispose the publisher
+        /// </summary>
         void Dispose();
 
         /// <summary>

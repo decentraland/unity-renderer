@@ -51,6 +51,12 @@ namespace DCL.Builder
             nextButton.onClick.RemoveListener(NextPressed);
         }
 
+        public void ResetInputs()
+        {
+            titleInputField.SetText("");
+            descriptionInputField.SetText("");
+        }
+        
         internal void NextPressed()
         {
             if (!nextButton.IsInteractable())

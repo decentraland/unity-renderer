@@ -80,6 +80,7 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
     public void ShowNewProjectTitleAndDescrition()
     {
         gameObject.SetActive(true);
+        newProjectFirstStepView.ResetInputs();
         modal.Show();
     }
     

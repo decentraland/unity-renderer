@@ -14,6 +14,8 @@ namespace DCL.Builder
         private const string BIGGER_LAND_TO_PUBLISH_TEXT = "Your scene is bigger than any Land you own.\nBrowse the Marketplace and buy some new Land where you can deploy.";
         private const string NO_LAND_TO_PUBLISH_TEXT = "To publish a scene first you need a Land where you can deploy it. Browse the marketplace to get some and show the world what you have created.";
 
+        public event Action<bool> OnPublishFinish;
+        
         private IPublishProjectController projectPublisher;
         private ILandPublisherController landPublisher;
         private IPublishProgressController progressController;
@@ -26,7 +28,7 @@ namespace DCL.Builder
         private IBuilderScene builderSceneToDeploy;
         private PublishInfo publishInfo;
         private IBuilderScene.SceneType lastTypeWhoStartedPublish;
-
+        
         public void Initialize(IContext context)
         {
             this.context = context;
@@ -125,7 +127,7 @@ namespace DCL.Builder
         {
             PublishInfo publishInfo = new PublishInfo();
             publishInfo.rotation = PublishInfo.ProjectRotation.NORTH;
-            publishInfo.coordsToPublish = scene.scene.sceneData.basePosition;
+            publishInfo.coordsToPublish = scene.landCoordsAsociated;
             ConfirmDeployment(scene, publishInfo);
         }
 
@@ -217,6 +219,8 @@ namespace DCL.Builder
 
             if (isOk)
                 builderSceneToDeploy = null;
+            
+            OnPublishFinish?.Invoke(isOk);
         }
 
         internal CatalystSceneEntityMetadata CreateSceneJson(IBuilderScene builderScene, PublishInfo info)

@@ -93,6 +93,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         StopFetchInterval();
 
+        context.publisher.OnPublishFinish -= PublishFinish;
+        
         sectionsController.OnRequestOpenUrl -= OpenUrl;
         sectionsController.OnRequestGoToCoords -= GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords -= OnGoToEditScene;
@@ -139,6 +141,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     public void Initialize(IContext context)
     {
         this.context = context;
+        this.context.publisher.OnPublishFinish += PublishFinish;
+        
         Initialize(new SectionsController(view.GetSectionContainer()),
             new ScenesViewController(view.GetSceneCardViewPrefab(), view.GetTransform()),
             new LandsController(),
@@ -421,7 +425,15 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         projectsController.AddListener((IProjectsListener) view);
     }
 
-    private void FetchPanelInfo(float landCacheTime = CACHE_TIME_LAND, float scenesCacheTime = CACHE_TIME_SCENES)
+    private void PublishFinish(bool isOk)
+    {
+        if(isOk)
+            FetchPanelInfo(0,0);
+    }
+
+    private void FetchPanelInfo() => FetchPanelInfo(CACHE_TIME_LAND, CACHE_TIME_SCENES);
+    
+    private void FetchPanelInfo(float landCacheTime, float scenesCacheTime)
     {
         if (isFetchingLands || isFetchingProjects)
             return;

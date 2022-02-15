@@ -110,7 +110,7 @@ namespace DCL.Configuration
         public const string EXIT_MODAL_SUBTITLE = "Are you sure you want to exit Builder mode?";
         public const string EXIT_MODAL_CONFIRM_BUTTON = "EXIT";
         public const string EXIT_MODAL_CANCEL_BUTTON = "CANCEL";
-        public const string EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE = "There are unpublished changes in this project. But don't worry, next time you enter the editor you will be able to continue where you left off!";
+        public const string EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE = "There are unpublished changes in this scene. But don't worry, next time you enter the editor you will be able to continue where you left off!";
         public const string EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON = "GOT IT!";
         public const string EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON = "BACK";
 

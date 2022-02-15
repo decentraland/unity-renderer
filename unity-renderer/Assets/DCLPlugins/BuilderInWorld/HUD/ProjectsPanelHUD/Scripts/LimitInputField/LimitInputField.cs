@@ -48,7 +48,10 @@ public class LimitInputField : MonoBehaviour
     }
     
     public void SetText(string value)
-    {
+    { 
+        if(string.IsNullOrEmpty(value) && inputFieldPlaceHolderText != null)
+            inputFieldPlaceHolderText.text = placeHolderText;
+        
         currentValue = value;
         inputField.SetTextWithoutNotify(value);
         InputChanged(value, false);

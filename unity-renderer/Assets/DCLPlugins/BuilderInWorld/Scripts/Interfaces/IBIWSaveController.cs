@@ -8,10 +8,16 @@ using UnityEngine;
 public interface IBIWSaveController : IBIWController
 {
     /// <summary>
+    /// Get the amount of times that the scene has tried to save before the last save
+    /// </summary>
+    /// <returns></returns>
+    int GetSaveAttempsSinceLastSave();
+    
+    /// <summary>
     /// Get the amount of times that the scene has been saved
     /// </summary>
     /// <returns></returns>
-    int GetSaveTimes();
+    int GetTimesSaved();
 
     /// <summary>
     /// Enable or disables the save of the scene

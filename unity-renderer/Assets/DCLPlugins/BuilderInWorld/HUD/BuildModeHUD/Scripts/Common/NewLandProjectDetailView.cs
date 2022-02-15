@@ -80,8 +80,12 @@ namespace DCL.Builder
             createProjectButton.interactable = isActive;
             createProjectButtonText.color = new Color(createProjectButtonText.color.r, createProjectButtonText.color.g, createProjectButtonText.color.b, isActive ? 1f : 0.5f);
         }
-        
-        internal void CreateProject() { OnCreatePressed?.Invoke(sceneNameInput.text, sceneDescriptionInput.text); }
+
+        internal void CreateProject()
+        {
+            OnCreatePressed?.Invoke(sceneNameInput.text, sceneDescriptionInput.text);
+            SetActive(false);
+        }
 
         internal void UpdateSceneNameCharCounter() { sceneNameCharCounterText.text = $"{sceneNameInput.text.Length}/{sceneNameCharLimit}"; }
 

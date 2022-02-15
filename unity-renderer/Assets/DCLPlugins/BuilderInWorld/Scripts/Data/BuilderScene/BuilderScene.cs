@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
@@ -13,6 +14,8 @@ namespace DCL.Builder
 
         public IParcelScene scene { get; internal set; }
         public IBuilderScene.SceneType sceneType { get; }
+        
+        public Vector2Int landCoordsAsociated { get; set; }
 
         private bool isNew = false;
 
@@ -27,6 +30,7 @@ namespace DCL.Builder
         public void UpdateManifestFromScene()
         {
             manifest.scene = ManifestTranslator.ParcelSceneToWebBuilderScene((ParcelScene)scene);
+            manifest.project.updated_at = DateTime.Now;
             manifest.project.scene_id = manifest.scene.id;
         }
 

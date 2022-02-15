@@ -172,11 +172,11 @@ public class BuilderInWorldEditor : IBIWEditor
         InitController(outlinerController);
         InitController(floorHandler);
         InitController(inputHandler);
-        InitController(saveController);
         InitController(actionController);
         InitController(inputWrapper);
         InitController(raycastController);
         InitController(gizmosController);
+        InitController(saveController);
     }
 
     public void InitController(IBIWController controller)

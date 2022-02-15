@@ -7,24 +7,30 @@ public class BIWPublishController : BIWController, IBIWPublishController
 {
     private IBIWEntityHandler entityHandler;
     private IBIWCreatorController creatorController;
+    private IBIWActionController actionController;
 
     private int checkerSceneLimitsOptimizationCounter = 0;
+    private bool hasUnpublishedChanges = false;
 
     private const int FRAMES_BEETWEN_UPDATES = 10;
     private const string FEEDBACK_MESSAGE_ENTITY_ERROR = "Some entities have errors (marked as pink cubes).";
     private const string FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES = "Some entities are outside of the Scene boundaries.";
     private const string FEEDBACK_MESSAGE_TOO_MANY_ENTITIES = "Too many entities in the scene. Check scene limits.";
 
+    internal float publishTimeStamp = 0;
+    
     public override void Initialize(IContext context)
     {
         base.Initialize(context);
 
         entityHandler = context.editorContext.entityHandler;
         creatorController = context.editorContext.creatorController;
+        actionController = context.editorContext.actionController;
 
         if (context.editorContext.editorHUD != null)
             context.editorContext.editorHUD.OnPublishAction += StartPublishFlow;
 
+        context.publisher.OnPublishFinish += PublishFinish;
     }
 
     public override void Update()
@@ -45,10 +51,38 @@ public class BIWPublishController : BIWController, IBIWPublishController
     {
         base.Dispose();
 
+        context.publisher.OnPublishFinish -= PublishFinish;
         if ( context.editorContext.editorHUD != null)
             context.editorContext.editorHUD.OnPublishAction -= StartPublishFlow;
     }
 
+    public override void EnterEditMode(IBuilderScene scene)
+    {
+        base.EnterEditMode(scene);
+        publishTimeStamp = 0;
+    }
+
+    public override void ExitEditMode()
+    {
+        base.ExitEditMode();
+        CheckIfThereAreUnpublishChanges();
+    }
+    
+    public bool HasUnpublishChanges()
+    {
+            CheckIfThereAreUnpublishChanges();
+        return hasUnpublishedChanges;
+    }
+
+    internal void CheckIfThereAreUnpublishChanges()
+    {
+        hasUnpublishedChanges = actionController.HasApplyAnyActionThisSession();
+        if (hasUnpublishedChanges)
+        {
+            hasUnpublishedChanges = actionController.GetLastActionTimestamp() > publishTimeStamp;
+        }
+    }
+    
     public bool CanPublish()
     {
         if (creatorController.IsAnyErrorOnEntities())
@@ -112,7 +146,14 @@ public class BIWPublishController : BIWController, IBIWPublishController
                 context.publisher.StartPublish(builderScene);
             }
         });
+    }
 
+    private void PublishFinish(bool isOk)
+    {
+        if(!isEditModeActive)
+            return;
 
+        hasUnpublishedChanges = false;
+        publishTimeStamp = Time.unscaledTime;
     }
 }

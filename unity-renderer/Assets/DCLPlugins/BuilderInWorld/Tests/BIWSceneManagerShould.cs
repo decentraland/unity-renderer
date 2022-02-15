@@ -64,7 +64,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void StartExitModeScreenShot(IBuilderScene.SceneType sceneType)
     {
         // Arrange
-        mainController.context.editorContext.saveController.Configure().GetSaveTimes().Returns(2);
+        mainController.context.editorContext.saveController.Configure().GetSaveAttempsSinceLastSave().Returns(2);
         builderScene.Configure().sceneType.Returns(sceneType);
         mainController.sceneToEdit = builderScene;
         

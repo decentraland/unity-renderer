@@ -506,7 +506,6 @@ public class BIWGodMode : BIWMode
     public override void OnDeleteEntity(BIWEntity entity)
     {
         base.OnDeleteEntity(entity);
-        saveController.TryToSave();
 
         if (selectedEntities.Count == 0)
             gizmoManager.HideGizmo();

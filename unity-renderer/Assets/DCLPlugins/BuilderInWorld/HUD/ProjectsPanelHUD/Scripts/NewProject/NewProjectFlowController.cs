@@ -101,7 +101,7 @@ DataStore.i.builderInWorld.isCreatingProject.Set(true);
         projectData.description = description;
     }
 
-    public void SetRowsAndColumns(int rows, int columns)
+    public void SetRowsAndColumns(int columns, int rows)
     {
         projectData.rows = rows;
         projectData.cols = columns;

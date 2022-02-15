@@ -24,6 +24,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private IBIWActionController actionController;
     private IBIWCreatorController creatorController;
     private IBIWRaycastController raycastController;
+    private IBIWSaveController saveController;
 
     private BuilderInWorldBridge bridge;
     private Material editMaterial;
@@ -87,6 +88,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         actionController = context.editorContext.actionController;
         creatorController = context.editorContext.creatorController;
         raycastController = context.editorContext.raycastController;
+        saveController = context.editorContext.saveController;
 
         editMaterial = context.projectReferencesAsset.editMaterial;
 
@@ -614,6 +616,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             DeleteEntity(entity, false);
         }
 
+        saveController.TryToSave();
         hudController?.HideEntityInformation();
     }
 
@@ -708,6 +711,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         foreach (BIWEntity entity in entitiesToDelete)
             DeleteEntity(entity, false);
+        
+        saveController.TryToSave();
     }
 
     public void DeleteEntity(string entityId)
@@ -754,6 +759,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     {
         actionController.CreateActionEntityDeleted(entityToDelete);
         DeleteEntity(entityToDelete, true);
+        saveController.TryToSave();
     }
 
     public void DeleteSelectedEntities()
@@ -775,6 +781,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         }
 
         OnDeleteSelectedEntities?.Invoke(entitiesToRemove);
+        saveController.TryToSave();
     }
 
     public void DeleteEntitiesOutsideSceneBoundaries()
@@ -795,6 +802,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         {
             DeleteEntity(entity);
         }
+        
+        saveController.TryToSave();
     }
 
     private void DestroyCollidersForAllEntities()

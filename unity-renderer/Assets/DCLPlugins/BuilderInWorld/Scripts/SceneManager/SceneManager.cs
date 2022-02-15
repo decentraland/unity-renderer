@@ -54,7 +54,6 @@ namespace DCL.Builder
         internal IInitialStateManager initialStateManager;
         internal IBuilderInWorldLoadingController initialLoadingController;
         private float beginStartFlowTimeStamp = 0;
-
         internal bool catalogLoaded = false;
 
         public void Initialize(IContext context)
@@ -295,10 +294,9 @@ namespace DCL.Builder
         public void StartFlowFromLandCoords(Vector2Int coords)
         {
             Scene deployedScene = GetDeployedSceneFromParcel(coords);
-            string landCoords = deployedScene.@base.x + "," + deployedScene.@base.y;
             Vector2Int parcelSize = BIWUtils.GetSceneSize(deployedScene.parcels);
 
-            StartFromLand(landCoords, deployedScene, parcelSize, SOURCE_BUILDER_PANEl);
+            StartFromLand(deployedScene.@base, deployedScene, parcelSize, SOURCE_BUILDER_PANEl);
         }
 
         public void ShowBuilderLoading() 
@@ -314,34 +312,28 @@ namespace DCL.Builder
 
         public void StartExitMode()
         {
-            if (context.editorContext.saveController.GetSaveTimes() > 0)
+            context.cameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
             {
-                context.cameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
+                if (sceneSnapshot != null)
                 {
-                    if (sceneSnapshot != null)
-                    {
-                        sceneToEdit.sceneScreenshotTexture = sceneSnapshot;
+                    sceneToEdit.sceneScreenshotTexture = sceneSnapshot;
 
-                        if (sceneToEdit.manifest != null)
-                            context.builderAPIController.SetThumbnail(sceneToEdit.manifest.project.id, sceneSnapshot);
-                    }
-                });
-
-                if (context.editorContext.editorHUD == null )
-                    return;
-
-                if (sceneToEdit.sceneType != IBuilderScene.SceneType.LAND)
+                    if (sceneToEdit.manifest != null)
+                        context.builderAPIController.SetThumbnail(sceneToEdit.manifest.project.id, sceneSnapshot);
+                }
+            });
+            
+            if (context.editorContext.editorHUD == null )
+                return;
+            
+            if (context.editorContext.publishController.HasUnpublishChanges() && sceneToEdit.sceneType == IBuilderScene.SceneType.LAND)
+            {
+                if (sceneToEdit.sceneType == IBuilderScene.SceneType.LAND)
                     context.editorContext.editorHUD.ConfigureConfirmationModal(
                         BIWSettings.EXIT_MODAL_TITLE,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON);
-                else
-                    context.editorContext.editorHUD.ConfigureConfirmationModal(
-                        BIWSettings.EXIT_MODAL_TITLE,
-                        BIWSettings.EXIT_MODAL_SUBTITLE,
-                        BIWSettings.EXIT_MODAL_CANCEL_BUTTON,
-                        BIWSettings.EXIT_MODAL_CONFIRM_BUTTON);
             }
             else
             {
@@ -474,7 +466,8 @@ namespace DCL.Builder
 
             Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
 
-            sceneToEdit.SetScene(Environment.i.world.state.GetScene(sceneToEditId));
+            var scene = Environment.i.world.state.GetScene(sceneToEditId);
+            sceneToEdit.SetScene(scene);
             sceneMetricsAnalyticsHelper = new BiwSceneMetricsAnalyticsHelper(sceneToEdit.scene);
             sceneToEdit.scene.OnLoadingStateUpdated += UpdateSceneLoadingProgress;
             SendManifestToScene();
@@ -605,20 +598,20 @@ namespace DCL.Builder
             }
 
             Scene deployedScene = GetDeployedSceneFromParcel(targetScene);
-            string landCoords = targetScene.sceneData.basePosition.x + "," + targetScene.sceneData.basePosition.y;
             Vector2Int parcelSize = BIWUtils.GetSceneSize(targetScene);
 
-            StartFromLand(landCoords, deployedScene, parcelSize, source);
+            StartFromLand(targetScene.sceneData.basePosition, deployedScene, parcelSize, source);
         }
 
-        private void StartFromLand(string landCoords, Scene deployedScene, Vector2Int parcelSize, string source)
+        private void StartFromLand(Vector2Int landCoordsVector, Scene deployedScene, Vector2Int parcelSize, string source)
         {
+            string landCoords = landCoordsVector.x + "," + landCoordsVector.y;
             Promise<InitialStateResponse> manifestPromise = initialStateManager.GetInitialManifest(context.builderAPIController, landCoords, deployedScene, parcelSize);
 
             manifestPromise.Then(response =>
             {
-             
                 BuilderScene builderScene = new BuilderScene(response.manifest, IBuilderScene.SceneType.LAND, response.hasBeenCreated);
+                builderScene.landCoordsAsociated = landCoordsVector;
                 StartFlow(builderScene, source);
             });
 
