@@ -234,21 +234,25 @@ namespace DCL.Skybox
                 }
             }
 
-            if (directionalLight != null)
-            {
-                return;
-            }
-
-            // Cache directional light reference
-            directionalLight = GameObject.FindObjectsOfType<Light>(true).Where(s => s.type == LightType.Directional).FirstOrDefault();
-
-            // Make a directional light object if can't find
             if (directionalLight == null)
             {
-                GameObject temp = new GameObject("The Sun_Temp");
-                // Add the light component
-                directionalLight = temp.AddComponent<Light>();
-                directionalLight.type = LightType.Directional;
+                // Cache directional light reference
+                directionalLight = GameObject.FindObjectsOfType<Light>(true).Where(s => s.type == LightType.Directional).FirstOrDefault();
+
+                // Make a directional light object if can't find
+                if (directionalLight == null)
+                {
+                    GameObject temp = new GameObject("The Sun_Temp");
+                    // Add the light component
+                    directionalLight = temp.AddComponent<Light>();
+                    directionalLight.type = LightType.Directional;
+                }
+            }
+
+            // Init 3D
+            if (skyboxCamera == null)
+            {
+                Init3DSetup();
             }
         }
 
@@ -280,19 +284,6 @@ namespace DCL.Skybox
             }
         }
 
-        void TakeControlAtRuntime()
-        {
-            if (SkyboxController.i != null)
-            {
-                isPaused = SkyboxController.i.IsPaused();
-                lifecycleDuration = (float)SkyboxController.i.lifecycleDuration;
-                selectedConfiguration = SkyboxController.i.GetCurrentConfiguration();
-                overridingController = SkyboxController.i.SetOverrideController(true);
-                timeOfTheDay = SkyboxController.i.GetCurrentTimeOfTheDay();
-                UpdateConfigurationsList();
-            }
-        }
-
         void InitializeMaterial()
         {
             matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(5);
@@ -309,18 +300,59 @@ namespace DCL.Skybox
 
         private void UpdateMaterial() { InitializeMaterial(); }
 
-        private SkyboxConfiguration AddNewConfiguration(string name)
+        #region 3D Skybox
+
+        Camera skyboxCamera;
+
+        void Init3DSetup()
         {
-            SkyboxConfiguration temp = null;
-            temp = ScriptableObject.CreateInstance<SkyboxConfiguration>();
-            temp.skyboxID = name;
+            // Get skyboxCamera
+            if (Application.isPlaying)
+            {
+                // Get skybox Camera from heirarchy
+            }
+            else
+            {
+                // Cache skybox camera reference
+                skyboxCamera = GameObject.FindObjectsOfType<Camera>(true).Where(s => s.name == "Skybox Camera").FirstOrDefault();
 
-            string path = AssetDatabase.GenerateUniqueAssetPath("Assets/Rendering/ProceduralSkybox/Resources/Skybox Configurations/" + name + ".asset");
-            AssetDatabase.CreateAsset(temp, path);
-            AssetDatabase.SaveAssets();
+                // Make a skybox camera object if can't find
+                if (skyboxCamera == null)
+                {
+                    GameObject temp = new GameObject("Skybox Camera");
+                    // Add the Camera component
+                    skyboxCamera = temp.AddComponent<Camera>();
 
-            return temp;
+                    skyboxCamera.cullingMask = 1 << LayerMask.NameToLayer("Skybox");
+                }
+            }
+
         }
+
+        #endregion
+
+        #region Runtime Control
+
+        void TakeControlAtRuntime()
+        {
+            if (SkyboxController.i != null)
+            {
+                isPaused = SkyboxController.i.IsPaused();
+                lifecycleDuration = (float)SkyboxController.i.lifecycleDuration;
+                selectedConfiguration = SkyboxController.i.GetCurrentConfiguration();
+                overridingController = SkyboxController.i.SetOverrideController(true);
+                timeOfTheDay = SkyboxController.i.GetCurrentTimeOfTheDay();
+                UpdateConfigurationsList();
+            }
+        }
+
+        void ResumeTime() { isPaused = false; }
+
+        void PauseTime() { isPaused = true; }
+
+        #endregion
+
+        #region Render Configuration and Time
 
         private void RenderConfigurations()
         {
@@ -393,6 +425,44 @@ namespace DCL.Skybox
             GUILayout.EndHorizontal();
         }
 
+        private void RenderTimePanel()
+        {
+
+            GUILayout.Label("Preview", EditorStyles.boldLabel);
+
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Time : " + timeOfTheDay.ToString("f2"), EditorStyles.label, GUILayout.Width(70));
+
+            EditorGUILayout.Space(20);
+
+            EditorGUILayout.BeginVertical();
+            timeOfTheDay = EditorGUILayout.Slider(timeOfTheDay, 0.01f, 24.00f, GUILayout.MinWidth(150));
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("cycle (minutes)", GUILayout.Width(95));
+            lifecycleDuration = EditorGUILayout.FloatField(lifecycleDuration, GUILayout.Width(50));
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.LabelField((GetNormalizedDayTime() * 100).ToString("f2") + "%", GUILayout.MaxWidth(50));
+
+            if (isPaused)
+            {
+                if (GUILayout.Button("Play", GUILayout.ExpandWidth(false)))
+                {
+                    ResumeTime();
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("Pause", GUILayout.ExpandWidth(false)))
+                {
+                    PauseTime();
+                }
+            }
+
+            GUILayout.EndHorizontal();
+        }
+
         private void UpdateConfigurationsList()
         {
             SkyboxConfiguration[] tConfigurations = Resources.LoadAll<SkyboxConfiguration>("Skybox Configurations/");
@@ -432,47 +502,20 @@ namespace DCL.Skybox
             }
         }
 
-        private void RenderTimePanel()
+        private SkyboxConfiguration AddNewConfiguration(string name)
         {
+            SkyboxConfiguration temp = null;
+            temp = ScriptableObject.CreateInstance<SkyboxConfiguration>();
+            temp.skyboxID = name;
 
-            GUILayout.Label("Preview", EditorStyles.boldLabel);
+            string path = AssetDatabase.GenerateUniqueAssetPath("Assets/Rendering/ProceduralSkybox/Resources/Skybox Configurations/" + name + ".asset");
+            AssetDatabase.CreateAsset(temp, path);
+            AssetDatabase.SaveAssets();
 
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Time : " + timeOfTheDay.ToString("f2"), EditorStyles.label, GUILayout.Width(70));
-
-            EditorGUILayout.Space(20);
-
-            EditorGUILayout.BeginVertical();
-            timeOfTheDay = EditorGUILayout.Slider(timeOfTheDay, 0.01f, 24.00f, GUILayout.MinWidth(150));
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("cycle (minutes)", GUILayout.Width(95));
-            lifecycleDuration = EditorGUILayout.FloatField(lifecycleDuration, GUILayout.Width(50));
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.EndVertical();
-
-            EditorGUILayout.LabelField((GetNormalizedDayTime() * 100).ToString("f2") + "%", GUILayout.MaxWidth(50));
-
-            if (isPaused)
-            {
-                if (GUILayout.Button("Play", GUILayout.ExpandWidth(false)))
-                {
-                    ResumeTime();
-                }
-            }
-            else
-            {
-                if (GUILayout.Button("Pause", GUILayout.ExpandWidth(false)))
-                {
-                    PauseTime();
-                }
-            }
-
-            GUILayout.EndHorizontal();
+            return temp;
         }
 
-        void ResumeTime() { isPaused = false; }
-
-        void PauseTime() { isPaused = true; }
+        #endregion
 
         #region Render Base Layeyrs
 
