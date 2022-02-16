@@ -27,13 +27,16 @@ namespace DCL
 
             Texture2D result = null;
 
-            return Utils.FetchTexture(url, false, (x) =>
+            return Utils.FetchTexture(url, true, (x) =>
             {
                 result = x;
 
                 if (result == null)
                     return;
 
+                result.filterMode = FilterMode.Trilinear;
+                result.anisoLevel = 16;
+                result.Apply(true);
                 targetImage.texture = result;
                 targetImage.texture.wrapMode = TextureWrapMode.Clamp;
                 targetImage.SetNativeSize();
