@@ -1135,8 +1135,6 @@ namespace DCL.Interface
         [System.Serializable]
         public class SaveAvatarPayload
         {
-            [Obsolete("This will be removed in kernel in the future")]
-            public string face;
             public string face256;
             public string body;
             public bool isSignUpFlow;
@@ -1200,7 +1198,6 @@ namespace DCL.Interface
             var payload = new SaveAvatarPayload()
             {
                 avatar = avatar,
-                face = System.Convert.ToBase64String(face256Snapshot.EncodeToPNG()),
                 face256 = System.Convert.ToBase64String(face256Snapshot.EncodeToPNG()),
                 body = System.Convert.ToBase64String(bodySnapshot.EncodeToPNG()),
                 isSignUpFlow = isSignUpFlow
