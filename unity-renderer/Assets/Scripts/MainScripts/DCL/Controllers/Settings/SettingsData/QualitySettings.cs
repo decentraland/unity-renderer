@@ -61,9 +61,6 @@ namespace DCL.SettingsCommon
         [Tooltip("Enable 30 FPS capping for more stable framerate")]
         public bool fpsCap;
 
-        [Tooltip("Enable color grading post process")]
-        public bool colorGrading;
-
         [Tooltip("Shadow Distance")]
         [Range(30, 100)]
         public float shadowDistance;

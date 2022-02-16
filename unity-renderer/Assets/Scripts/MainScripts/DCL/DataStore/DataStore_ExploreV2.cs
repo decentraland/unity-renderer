@@ -5,11 +5,13 @@ namespace DCL
     public class DataStore_ExploreV2
     {
         public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
+        public readonly BaseVariable<bool> isPlacesAndEventsSectionInitialized = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> isOpen = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> isInShowAnimationTransiton = new BaseVariable<bool>(false);
         public readonly BaseVariable<int> currentSectionIndex = new BaseVariable<int>(0);
         public readonly BaseVariable<bool> placesAndEventsVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> profileCardIsOpen = new BaseVariable<bool>(false);
+        public readonly BaseVariable<bool> isSomeModalOpen = new BaseVariable<bool>(false);
         public readonly BaseVariable<Transform> configureBackpackInFullscreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> configureMapInFullscreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> configureBuilderInFullscreenMenu = new BaseVariable<Transform>(null);

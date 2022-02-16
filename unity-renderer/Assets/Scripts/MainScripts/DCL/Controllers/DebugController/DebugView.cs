@@ -1,4 +1,3 @@
-﻿using System;
 using UnityEngine;
 
 namespace DCL
@@ -44,6 +43,11 @@ namespace DCL
         public void HideInfoPanel()
         {
             infoPanel.SetVisible(false);
+        }
+
+        public void SetRealm(string realm)
+        {
+            infoPanel.SetRealm(realm);
         }
     }
 }

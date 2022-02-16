@@ -85,6 +85,8 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
         this.exploreV2Analytics = exploreV2Analytics;
+
+        view.ConfigurePools();
     }
 
     internal void FirstLoading()
@@ -167,7 +169,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
-            PlaceCardComponentModel placeCardModel = ExplorePlacesHelpers.CreatePlaceCardModelFromAPIPlace(receivedPlace);
+            PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(receivedPlace);
             places.Add(placeCardModel);
         }
 
@@ -177,7 +179,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
             events.Add(eventCardModel);
         }
 
@@ -210,7 +212,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
-            PlaceCardComponentModel placeCardModel = ExplorePlacesHelpers.CreatePlaceCardModelFromAPIPlace(receivedPlace);
+            PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(receivedPlace);
             places.Add(placeCardModel);
         }
 
@@ -226,7 +228,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
                                                               .ToList();
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
             events.Add(eventCardModel);
         }
 
@@ -255,7 +257,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
-        ExplorePlacesHelpers.JumpInToPlace(placeFromAPI);
+        ExplorePlacesUtils.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
@@ -271,7 +273,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
-        ExploreEventsHelpers.JumpInToEvent(eventFromAPI);
+        ExploreEventsUtils.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));

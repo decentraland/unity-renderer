@@ -13,6 +13,12 @@ namespace UnityGLTF
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
         }
 
+        public bool enabled
+        {
+            get => throttlingCounter.enabled;
+            set => throttlingCounter.enabled = value;
+        }
+
         public double budgetPerFrameInMilliseconds
         {
             get => throttlingCounter.budgetPerFrame * 1000;

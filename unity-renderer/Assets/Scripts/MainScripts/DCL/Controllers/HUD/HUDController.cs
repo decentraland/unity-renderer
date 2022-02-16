@@ -10,6 +10,7 @@ using LoadingHUD;
 using SignupHUD;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Environment = System.Environment;
 
 public class HUDController : IHUDController
 {
@@ -29,10 +30,17 @@ public class HUDController : IHUDController
         groupID = "UIHiddenNotification"
     };
 
-    public void Initialize(IHUDFactory hudFactory)
+    public HUDController (IHUDFactory hudFactory = null)
+    {
+        this.hudFactory = hudFactory;
+    }
+
+    public void Initialize()
     {
         i = this;
-        this.hudFactory = hudFactory;
+
+        if ( this.hudFactory == null )
+            this.hudFactory = DCL.Environment.i.hud.factory;
 
         toggleUIVisibilityTrigger = Resources.Load<InputAction_Trigger>(TOGGLE_UI_VISIBILITY_ASSET_NAME);
         toggleUIVisibilityTrigger.OnTriggered += ToggleUIVisibility_OnTriggered;
@@ -40,6 +48,7 @@ public class HUDController : IHUDController
         CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenOnOnChange;
         UserContextMenu.OnOpenPrivateChatRequest += OpenPrivateChatWindow;
     }
+
 
     public event Action OnTaskbarCreation;
 
@@ -320,6 +329,7 @@ public class HUDController : IHUDController
                     //This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
                     signupHUD.Initialize(avatarEditorHud);
                 }
+
                 break;
             case HUDElementID.LOADING:
                 CreateHudElement(configuration, hudElementId);
@@ -368,6 +378,7 @@ public class HUDController : IHUDController
 
         hudElements[id].SetVisibility(config.visible);
     }
+
     public void Cleanup()
     {
         toggleUIVisibilityTrigger.OnTriggered -= ToggleUIVisibility_OnTriggered;

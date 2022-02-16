@@ -29,6 +29,8 @@ public class AvatarMeshCombinerUtilsCan
         parentMock2.transform.parent = parentMock.transform;
 
         var keeper = new AssetPromiseKeeper_GLTF();
+        keeper.throttlingCounter.enabled = false;
+
         string url = TestAssetsUtils.GetPath() + "/Avatar/Assets/BaseMale.glb";
         WebRequestController webRequestController = WebRequestController.Create();
         AssetPromise_GLTF prom = new AssetPromise_GLTF(url, webRequestController);

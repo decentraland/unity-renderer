@@ -8,7 +8,7 @@ using Ray = UnityEngine.Ray;
 
 namespace DCL.Components
 {
-    public class AvatarOnPointerDown : MonoBehaviour, IPointerEvent, IPoolLifecycleHandler, IAvatarOnPointerDownCollider
+    public class AvatarOnPointerDown : MonoBehaviour, IPointerInputEvent, IPoolLifecycleHandler, IAvatarOnPointerDownCollider
     {
         public new Collider collider;
         private OnPointerEvent.Model model;
@@ -29,7 +29,7 @@ namespace DCL.Components
         {
             bool isHoveringDirty = state != isHovering;
             isHovering = state;
-            eventHandler.SetFeedbackState(model.showFeedback, state && passportEnabled, model.button, model.hoverText);
+            eventHandler?.SetFeedbackState(model.showFeedback, state && passportEnabled, model.button, model.hoverText);
             if (!isHoveringDirty)
                 return;
             if (isHovering)
@@ -102,7 +102,7 @@ namespace DCL.Components
             }
         }
 
-        public PointerEventType GetEventType() { return PointerEventType.DOWN; }
+        public PointerInputEventType GetEventType() { return PointerInputEventType.DOWN; }
 
         void ReEnableOnInfoCardClosed(bool newState, bool prevState)
         {
@@ -119,7 +119,6 @@ namespace DCL.Components
         public void SetPassportEnabled(bool newEnabledState)
         {
             passportEnabled = newEnabledState;
-            eventHandler?.SetFeedbackState(model.showFeedback, false, model.button, model.hoverText);
             isHovering = false;
         }
 
@@ -162,5 +161,10 @@ namespace DCL.Components
             playerScene = WorldStateUtils.GetCurrentScene();
             return playerScene?.IsInsideSceneBoundaries(PositionUtils.UnityToWorldPosition(avatarPlayer.worldPosition)) ?? false;
         }
+
+        public bool ShouldShowHoverFeedback()
+        {
+            return enabled && model.showFeedback;
+        }        
     }
 }

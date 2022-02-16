@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using DCL.Camera;
 using DCL.Controllers;
 using UnityEngine;
@@ -29,34 +30,23 @@ namespace Tests
             return result;
         }
 
-        protected override WorldRuntimeContext CreateRuntimeContext()
+        protected override ServiceLocator InitializeServiceLocator()
         {
-            return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
-            (
-                new PointerEventsController(),
-                new RuntimeComponentFactory(),
-                new WorldState()
-            );
+            ServiceLocator result = DCL.ServiceLocatorTestFactory.CreateMocked();
+            result.Register<IPointerEventsController>( () => new PointerEventsController());
+            result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
+            result.Register<IWorldState>( () => new WorldState());
+            result.Register<IUpdateEventHandler>( () => new UpdateEventHandler());
+            result.Register<IWebRequestController>( WebRequestController.Create );
+            return result;
         }
 
-        protected override PlatformContext CreatePlatformContext()
-        {
-            return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
-            (
-                new UpdateEventHandler(),
-                WebRequestController.Create()
-            );
-        }
-
-        protected override MessagingContext CreateMessagingContext()
-        {
-            return DCL.Tests.MessagingContextFactory.CreateMocked();
-        }
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            Utils.LockCursor();
             scene = TestUtils.CreateTestScene();
 
             Physics.autoSyncTransforms = true;
@@ -72,6 +62,7 @@ namespace Tests
         protected override IEnumerator TearDown()
         {
             Object.Destroy(mainCamera.gameObject);
+            Utils.UnlockCursor();
             yield return base.TearDown();
         }
 
@@ -159,6 +150,60 @@ namespace Tests
             };
             var component = TestUtils.EntityComponentCreate<OnPointerUp, OnPointerUp.Model>(scene, entity,
                 OnPointerUpComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            var meshFilter = entity.gameObject.GetComponentInChildren<MeshFilter>();
+            var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
+
+            Assert.IsTrue(onPointerEventCollider != null, "OnPointerEventCollider should exist under any rendeder");
+
+            Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
+                "OnPointerEventCollider should have the same mesh info as the mesh renderer");
+        }
+
+        [UnityTest]
+        public IEnumerator OnPointerHoverEnterComponentInitializesWithBasicShape()
+        {
+            IDCLEntity entity;
+            BoxShape shape;
+            InstantiateEntityWithShape(out entity, out shape);
+
+            yield return shape.routine;
+
+            string onPointerId = "pointerevent-1";
+            var model = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverEnter.NAME,
+                uuid = onPointerId
+            };
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity,
+                model, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            var meshFilter = entity.gameObject.GetComponentInChildren<MeshFilter>();
+            var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
+
+            Assert.IsTrue(onPointerEventCollider != null, "OnPointerEventCollider should exist under any rendeder");
+
+            Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
+                "OnPointerEventCollider should have the same mesh info as the mesh renderer");
+        }
+
+        [UnityTest]
+        public IEnumerator OnPointerHoverExitComponentInitializesWithBasicShape()
+        {
+            IDCLEntity entity;
+            BoxShape shape;
+            InstantiateEntityWithShape(out entity, out shape);
+
+            yield return shape.routine;
+
+            string onPointerId = "pointerevent-1";
+            var model = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverExit.NAME,
+                uuid = onPointerId
+            };
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, entity,
+                model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             var meshFilter = entity.gameObject.GetComponentInChildren<MeshFilter>();
             var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
@@ -307,6 +352,94 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator OnPointerHoverEnterInitializesWithGLTFShape()
+        {
+            string entityId = "1";
+
+            TestUtils.CreateSceneEntity(scene, entityId);
+
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+            string shapeId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(new
+                {
+                    src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
+                }));
+
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
+
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
+
+            string clickUuid = "pointerevent-1";
+            var model = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverEnter.NAME,
+                uuid = clickUuid
+            };
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+                model, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
+            {
+                var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
+
+                Assert.IsTrue(onPointerEventCollider != null, "OnPointerEventCollider should exist under any rendeder");
+
+                Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
+                    "OnPointerEventCollider should have the same mesh info as the mesh renderer");
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator OnPointerHoverExitInitializesWithGLTFShape()
+        {
+            string entityId = "1";
+
+            TestUtils.CreateSceneEntity(scene, entityId);
+
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+            string shapeId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(new
+                {
+                    src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
+                }));
+
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
+
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
+
+            string clickUuid = "pointerevent-1";
+            var model = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverExit.NAME,
+                uuid = clickUuid
+            };
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+                model, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
+            {
+                var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
+
+                Assert.IsTrue(onPointerEventCollider != null, "OnPointerEventCollider should exist under any rendeder");
+
+                Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
+                    "OnPointerEventCollider should have the same mesh info as the mesh renderer");
+            }
+        }
+
+        [UnityTest]
         public IEnumerator OnClickComponentInitializesWithGLTFShapeAsynchronously()
         {
             string entityId = "1";
@@ -438,6 +571,92 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator OnPointerHoverEnterInitializesWithGLTFShapeAsynchronously()
+        {
+            string entityId = "1";
+            TestUtils.CreateSceneEntity(scene, entityId);
+
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+            TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+                new
+                {
+                    src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
+                }));
+
+            string clickUuid = "pointerevent-1";
+            var model = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverEnter.NAME,
+                uuid = clickUuid
+            };
+            TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+                model, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
+
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
+
+            foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
+            {
+                var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
+
+                Assert.IsTrue(onPointerEventCollider != null, "OnPointerEventCollider should exist under any rendeder");
+
+                Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
+                    "OnPointerEventCollider should have the same mesh info as the mesh renderer");
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator OnPointerHoverExitInitializesWithGLTFShapeAsynchronously()
+        {
+            string entityId = "1";
+            TestUtils.CreateSceneEntity(scene, entityId);
+
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+            TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+                new
+                {
+                    src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
+                }));
+
+            string clickUuid = "pointerevent-1";
+            var model = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverExit.NAME,
+                uuid = clickUuid
+            };
+            TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+                model, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
+
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
+
+            foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
+            {
+                var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
+
+                Assert.IsTrue(onPointerEventCollider != null, "OnPointerEventCollider should exist under any rendeder");
+
+                Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
+                    "OnPointerEventCollider should have the same mesh info as the mesh renderer");
+            }
+        }
+
+        [UnityTest]
         public IEnumerator OnClickComponentInitializesAfterBasicShapeIsAdded()
         {
             string entityId = "1";
@@ -528,6 +747,80 @@ namespace Tests
 
             var component = TestUtils.EntityComponentCreate<OnPointerUp, OnPointerUp.Model>(scene, scene.entities[entityId],
                 OnPointerUpComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            Assert.IsTrue(component.gameObject.GetComponent<Rigidbody>() == null,
+                "the root object shouldn't have a rigidbody attached until a shape is added");
+
+            Assert.IsTrue(scene.entities[entityId].gameObject.transform.Find(OnPointerEventColliders.COLLIDER_NAME) == null,
+                "the OnPointerEventCollider object shouldn't exist until a shape is added");
+
+            TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
+                JsonConvert.SerializeObject(new BoxShape.Model { })
+            );
+
+            var meshFilter = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>();
+            var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
+
+            Assert.IsTrue(onPointerEventCollider != null, "OnPointerEventCollider should exist under any rendeder");
+
+            Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
+                "OnPointerEventCollider should have the same mesh info as the mesh renderer");
+
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator OnPointerHoverEnterComponentInitializesAfterBasicShapeIsAdded()
+        {
+            string entityId = "1";
+            TestUtils.CreateSceneEntity(scene, entityId);
+
+            string clickUuid = "pointerevent-1";
+            var model = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverEnter.NAME,
+                uuid = clickUuid
+            };
+
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+                model, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            Assert.IsTrue(component.gameObject.GetComponent<Rigidbody>() == null,
+                "the root object shouldn't have a rigidbody attached until a shape is added");
+
+            Assert.IsTrue(scene.entities[entityId].gameObject.transform.Find(OnPointerEventColliders.COLLIDER_NAME) == null,
+                "the OnPointerEventCollider object shouldn't exist until a shape is added");
+
+            TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
+                JsonConvert.SerializeObject(new BoxShape.Model { })
+            );
+
+            var meshFilter = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>();
+            var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
+
+            Assert.IsTrue(onPointerEventCollider != null, "OnPointerEventCollider should exist under any rendeder");
+
+            Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
+                "OnPointerEventCollider should have the same mesh info as the mesh renderer");
+
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator OnPointerHoverExitComponentInitializesAfterBasicShapeIsAdded()
+        {
+            string entityId = "1";
+            TestUtils.CreateSceneEntity(scene, entityId);
+
+            string clickUuid = "pointerevent-1";
+            var model = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverExit.NAME,
+                uuid = clickUuid
+            };
+
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+                model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(component.gameObject.GetComponent<Rigidbody>() == null,
                 "the root object shouldn't have a rigidbody attached until a shape is added");
@@ -748,6 +1041,113 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator OnPointerHoverEventIsTriggered()
+        {
+            IDCLEntity entity;
+            BoxShape shape;
+            InstantiateEntityWithShape(out entity, out shape);
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
+
+            mainCamera.transform.position = new Vector3(3, 2, 12);
+            mainCamera.transform.forward = Vector3.up;
+
+            yield return shape.routine;
+
+            const string uuidHoverEnter = "pointerHoverEnterEvent-1";
+            var hoverEnterModel = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverEnter.NAME,
+                uuid = uuidHoverEnter
+            };
+
+            const string uuidHoverExit = "pointerHoverExitEvent-1";
+            var hoverExitModel = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverExit.NAME,
+                uuid = uuidHoverExit
+            };
+
+            var onPointerHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity,
+                hoverEnterModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            var onPointerHoverExitComponent = TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, entity,
+                hoverExitModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            Assert.IsTrue(onPointerHoverEnterComponent != null);
+            Assert.IsTrue(onPointerHoverExitComponent != null);
+
+            string targetEventType = "SceneEvent";
+
+            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> { uuid = uuidHoverEnter };
+            var onPointerHoverExitEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> { uuid = uuidHoverExit };
+
+            var sceneEventHoverEnter = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
+            {
+                sceneId = scene.sceneData.id,
+                payload = onPointerHoverEnterEvent,
+                eventType = "uuidEvent"
+            };
+
+            var sceneEventHoverExit = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
+            {
+                sceneId = scene.sceneData.id,
+                payload = onPointerHoverExitEvent,
+                eventType = "uuidEvent"
+            };
+
+            bool hoverEnterEventTriggered = false;
+            bool hoverExitEventTriggered = false;
+
+            mainCamera.transform.forward = Vector3.right;
+
+            yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEventHoverEnter,
+                () =>
+                {
+                    mainCamera.transform.forward = Vector3.right;
+                },
+                (pointerEvent) =>
+                {
+                    if (hoverEnterEventTriggered)
+                        return true;
+
+                    if (pointerEvent.eventType == sceneEventHoverEnter.eventType &&
+                        pointerEvent.payload.uuid == sceneEventHoverEnter.payload.uuid)
+                    {
+                        hoverEnterEventTriggered = true;
+                        return true;
+                    }
+
+                    return false;
+                });
+
+            Assert.IsTrue(hoverEnterEventTriggered);
+
+            mainCamera.transform.forward = Vector3.up;
+
+            yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEventHoverExit,
+                () =>
+                {
+                    mainCamera.transform.forward = Vector3.up;
+                },
+                (pointerEvent) =>
+                {
+                    if (hoverExitEventTriggered)
+                        return true;
+
+                    if (pointerEvent.eventType == sceneEventHoverExit.eventType &&
+                        pointerEvent.payload.uuid == sceneEventHoverExit.payload.uuid)
+                    {
+                        hoverExitEventTriggered = true;
+                        return true;
+                    }
+
+                    return false;
+                });
+
+            Assert.IsTrue(hoverExitEventTriggered);
+        }
+
+        [UnityTest]
         public IEnumerator OnPointerUpEventNotTriggeredOnInvisibles()
         {
             IDCLEntity entity;
@@ -844,6 +1244,93 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator OnPointerHoverEnterEventNotTriggeredOnInvisibles()
+        {
+            IDCLEntity entity;
+            BoxShape shape;
+            InstantiateEntityWithShape(out entity, out shape);
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
+
+            mainCamera.transform.position = new Vector3(3, 2, 12);
+            mainCamera.transform.forward = Vector3.up;
+
+            yield return shape.routine;
+
+            string onPointerId = "pointerevent-1";
+            var model = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverEnter.NAME,
+                uuid = onPointerId
+            };
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity,
+                model, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            Assert.IsTrue(component != null);
+
+            string targetEventType = "SceneEvent";
+
+            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> { uuid = onPointerId };
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
+            {
+                sceneId = scene.sceneData.id,
+                payload = onPointerHoverEnterEvent,
+                eventType = "uuidEvent"
+            };
+
+            bool eventTriggered1 = false;
+            mainCamera.transform.forward = Vector3.right;
+
+            yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
+                () =>
+                {
+                    mainCamera.transform.forward = Vector3.right;
+                },
+                (pointerEvent) =>
+                {
+                    if (eventTriggered1)
+                        return true;
+
+                    if (pointerEvent.eventType == sceneEvent.eventType &&
+                        pointerEvent.payload.uuid == sceneEvent.payload.uuid)
+                    {
+                        eventTriggered1 = true;
+                        return true;
+                    }
+
+                    return false;
+                });
+
+            Assert.IsTrue(eventTriggered1);
+
+            // turn shape invisible
+            TestUtils.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(new { visible = false }));
+            mainCamera.transform.forward = Vector3.up;
+
+            var pointerHoverReceived = false;
+
+            void MsgFromEngineCallback(string eventType, string eventPayload)
+            {
+                if (string.IsNullOrEmpty(eventPayload) || eventType != targetEventType)
+                    return;
+
+                var pointerEvent = JsonUtility.FromJson<WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>>(eventPayload);
+                if (pointerEvent.eventType == sceneEvent.eventType
+                    && pointerEvent.payload.uuid == sceneEvent.payload.uuid)
+                {
+                    pointerHoverReceived = true;
+                }
+            }
+
+            // Hook up to web interface engine message reporting
+            WebInterface.OnMessageFromEngine += MsgFromEngineCallback;
+            mainCamera.transform.forward = Vector3.right;
+            WebInterface.OnMessageFromEngine -= MsgFromEngineCallback;
+
+            Assert.IsFalse(pointerHoverReceived);
+        }
+
+        [UnityTest]
         public IEnumerator OnPointerDownEventWhenEntityIsBehindOther()
         {
             // Create blocking entity
@@ -931,6 +1418,99 @@ namespace Tests
                     if (pointerEvent.eventType == "uuidEvent" &&
                         pointerEvent.payload.uuid == onPointerId &&
                         pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId)
+                    {
+                        targetEntityHit = true;
+                    }
+
+                    return true;
+                });
+
+            yield return null;
+            Assert.IsTrue(targetEntityHit, "Target entity wasn't hit and no other entity is blocking it");
+        }
+
+        [UnityTest]
+        public IEnumerator OnPointerHoverEnterEventWhenEntityIsBehindOther()
+        {
+            // Create blocking entity
+            IDCLEntity blockingEntity;
+            BoxShape blockingShape;
+            InstantiateEntityWithShape(out blockingEntity, out blockingShape);
+            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
+            yield return blockingShape.routine;
+
+            // Create target entity for hover
+            IDCLEntity hoverTargetEntity;
+            BoxShape hoverTargetShape;
+            InstantiateEntityWithShape(out hoverTargetEntity, out hoverTargetShape);
+            TestUtils.SetEntityTransform(scene, hoverTargetEntity, new Vector3(3, 3, 5), Quaternion.identity, new Vector3(1, 1, 1));
+            yield return hoverTargetShape.routine;
+
+            // Set character position and camera rotation
+            mainCamera.transform.position = new Vector3(3, 3, 1);
+            mainCamera.transform.forward = Vector3.up;
+
+            // Create pointer hover component and add it to target entity
+            string onPointerId = "pointerevent-1";
+            var model = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverEnter.NAME,
+                uuid = onPointerId
+            };
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, hoverTargetEntity,
+                model, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            Assert.IsTrue(component != null);
+
+            string targetEventType = "SceneEvent";
+
+            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> { uuid = onPointerId };
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
+            {
+                sceneId = scene.sceneData.id,
+                payload = onPointerHoverEnterEvent,
+                eventType = "uuidEvent"
+            };
+
+            // Check if target entity is hit behind other entity
+            bool targetEntityHit = false;
+            yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
+                () =>
+                {
+                    mainCamera.transform.forward = Vector3.forward;
+                },
+                (pointerEvent) =>
+                {
+                    if (pointerEvent.eventType == "uuidEvent" &&
+                        pointerEvent.payload.uuid == onPointerId)
+                    {
+                        targetEntityHit = true;
+                    }
+
+                    return true;
+                });
+
+            Assert.IsTrue(!targetEntityHit, "Target entity was hit but other entity was blocking it");
+
+
+            // Move character in front of target entity and rotate camera
+            mainCamera.transform.position = new Vector3(3, 3, 6);
+            mainCamera.transform.forward = Vector3.back;
+
+            yield return null;
+
+            // Check if target entity is hit in front of the camera without being blocked
+            targetEntityHit = false;
+            yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
+                () =>
+                {
+                    mainCamera.transform.forward = Vector3.back;
+                },
+                (pointerEvent) =>
+                {
+                    if (pointerEvent.eventType == "uuidEvent" &&
+                        pointerEvent.payload.uuid == onPointerId)
                     {
                         targetEntityHit = true;
                     }
@@ -1048,6 +1628,103 @@ namespace Tests
             yield return null;
 
             yield return new WaitForSeconds(5.0f);
+
+            Assert.IsTrue(targetEntityHit, "Target entity wasn't hit and no other entity is blocking it");
+        }
+
+        [UnityTest]
+        public IEnumerator OnPointerHoverEnterEventAndPointerBlockerShape()
+        {
+            // Create blocking entity
+            IDCLEntity blockingEntity;
+            BoxShape blockingShape;
+            InstantiateEntityWithShape(out blockingEntity, out blockingShape);
+            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
+
+            yield return blockingShape.routine;
+
+            // Create target entity for hover
+            InstantiateEntityWithShape(out IDCLEntity hoverTargetEntity, out BoxShape hoverTargetShape);
+            TestUtils.SetEntityTransform(scene, hoverTargetEntity, new Vector3(3, 3, 5), Quaternion.identity, new Vector3(1, 1, 1));
+
+            yield return hoverTargetShape.routine;
+
+            // Set character position and camera rotation
+            mainCamera.transform.position = new Vector3(3, 3, 1);
+            mainCamera.transform.forward = Vector3.up;
+
+            yield return null;
+
+            // Create pointer hover component and add it to target entity
+            string onPointerId = "pointerevent-1";
+            var model = new OnPointerHoverEvent.Model()
+            {
+                type = OnPointerHoverEnter.NAME,
+                uuid = onPointerId
+            };
+
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, hoverTargetEntity,
+                model, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            yield return component.routine;
+
+            Assert.IsTrue(component != null);
+            Assert.IsTrue(hoverTargetEntity != null);
+            Assert.IsTrue(component.entity != null);
+
+            string targetEventType = "SceneEvent";
+
+            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> { uuid = onPointerId };
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>> { sceneId = scene.sceneData.id, payload = onPointerHoverEnterEvent, eventType = "uuidEvent" };
+
+            // Check the target entity is not hit behind the 'isPointerBlocker' shape
+            bool targetEntityHit = false;
+            yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
+                () =>
+                {
+                    mainCamera.transform.forward = Vector3.forward;
+                },
+                (pointerEvent) =>
+                {
+                    if (pointerEvent.eventType == "uuidEvent" &&
+                        pointerEvent.payload.uuid == onPointerId)
+                    {
+                        targetEntityHit = true;
+                    }
+
+                    return true;
+                });
+
+            Assert.IsFalse(targetEntityHit, "Target entity was hit but other entity was blocking it");
+
+            mainCamera.transform.forward = Vector3.up;
+
+            // Toggle 'isPointerBlocker' property
+            yield return TestUtils.SharedComponentUpdate(blockingShape, new BoxShape.Model
+            {
+                isPointerBlocker = false
+            });
+
+            // Check the target entity is hit behind the 'isPointerBlocker' shape now
+            targetEntityHit = false;
+            yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
+                () =>
+                {
+                    mainCamera.transform.forward = Vector3.forward;
+                },
+                (pointerEvent) =>
+                {
+                    if (pointerEvent.eventType == "uuidEvent" &&
+                        pointerEvent.payload.uuid == onPointerId)
+                    {
+                        targetEntityHit = true;
+                    }
+
+                    return true;
+                });
+
+            yield return null;
 
             Assert.IsTrue(targetEntityHit, "Target entity wasn't hit and no other entity is blocking it");
         }

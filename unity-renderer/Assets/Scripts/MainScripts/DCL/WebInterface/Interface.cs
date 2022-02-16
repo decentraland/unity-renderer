@@ -23,13 +23,16 @@ namespace DCL.Interface
         public static bool VERBOSE = false;
 
         [System.Serializable]
-        private class ReportPositionPayload
+        public class ReportPositionPayload
         {
             /** Camera position, world space */
             public Vector3 position;
 
-            /** Camera rotation */
+            /** Character rotation */
             public Quaternion rotation;
+            
+            /** Camera rotation */
+            public Quaternion cameraRotation;
 
             /** Camera height, relative to the feet of the avatar or ground */
             public float playerHeight;
@@ -152,6 +155,13 @@ namespace DCL.Interface
         public class CameraModePayload
         {
             public CameraMode.ModeId cameraMode;
+        };
+        
+        [System.Serializable]
+        public class Web3UseResponsePayload
+        {
+            public string id;
+            public bool result;
         };
 
         [System.Serializable]
@@ -753,6 +763,7 @@ namespace DCL.Interface
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
         private static CameraModePayload cameraModePayload = new CameraModePayload();
+        private static Web3UseResponsePayload web3UseResponsePayload = new Web3UseResponsePayload();
         private static IdleStateChangedPayload idleStateChangedPayload = new IdleStateChangedPayload();
         private static OnMetricsUpdate onMetricsUpdate = new OnMetricsUpdate();
         private static OnClickEvent onClickEvent = new OnClickEvent();
@@ -792,6 +803,8 @@ namespace DCL.Interface
         private static AvatarStateBase avatarStatePayload = new AvatarStateBase();
         private static AvatarStateSceneChanged avatarSceneChangedPayload = new AvatarStateSceneChanged();
         public static AvatarOnClickPayload avatarOnClickPayload = new AvatarOnClickPayload();
+        private static UUIDEvent<EmptyPayload> onPointerHoverEnterEvent = new UUIDEvent<EmptyPayload>();
+        private static UUIDEvent<EmptyPayload> onPointerHoverExitEvent = new UUIDEvent<EmptyPayload>();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -812,11 +825,12 @@ namespace DCL.Interface
             SendMessage("AllScenesEvent", allScenesEvent);
         }
 
-        public static void ReportPosition(Vector3 position, Quaternion rotation, float playerHeight)
+        public static void ReportPosition(Vector3 position, Quaternion rotation, float playerHeight, Quaternion cameraRotation)
         {
             positionPayload.position = position;
             positionPayload.rotation = rotation;
             positionPayload.playerHeight = playerHeight;
+            positionPayload.cameraRotation = cameraRotation;
 
             SendMessage("ReportPosition", positionPayload);
         }
@@ -837,6 +851,13 @@ namespace DCL.Interface
             {
                 SendAllScenesEvent("cameraModeChanged", cameraModePayload);
             }
+        }
+        
+        public static void Web3UseResponse(string id, bool result)
+        {
+            web3UseResponsePayload.id = id;
+            web3UseResponsePayload.result = result;
+            SendMessage("Web3UseResponse", web3UseResponsePayload);
         }
 
         public static void ReportIdleStateChanged(bool isIdle)
@@ -1543,6 +1564,18 @@ namespace DCL.Interface
             avatarOnClickPayload.ray.distance = distance;
 
             SendSceneEvent(sceneId, "playerClicked", avatarOnClickPayload);
+        }        
+        
+        public static void ReportOnPointerHoverEnterEvent(string sceneId, string uuid)
+        {
+            onPointerHoverEnterEvent.uuid = uuid;
+            SendSceneEvent(sceneId, "uuidEvent", onPointerHoverEnterEvent);
         }
+ 
+        public static void ReportOnPointerHoverExitEvent(string sceneId, string uuid)
+        {
+            onPointerHoverExitEvent.uuid = uuid;
+            SendSceneEvent(sceneId, "uuidEvent", onPointerHoverExitEvent);
+        }   
     }
 }

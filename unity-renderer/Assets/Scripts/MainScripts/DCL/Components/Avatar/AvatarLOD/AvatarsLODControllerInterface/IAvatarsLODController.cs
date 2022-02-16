@@ -2,8 +2,7 @@ using System;
 
 namespace DCL
 {
-    public interface IAvatarsLODController : IDisposable
+    public interface IAvatarsLODController : IService
     {
-        void Update();
     }
 }

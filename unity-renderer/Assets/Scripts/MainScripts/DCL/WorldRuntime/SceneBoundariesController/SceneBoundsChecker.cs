@@ -12,9 +12,7 @@ namespace DCL.Controllers
     {
         public const int TRIGGER_HIGHPRIO_VALUE = 1000;
         public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
-
         public bool enabled => entitiesCheckRoutine != null;
-
         public float timeBetweenChecks { get; set; } = 0.5f;
 
         // We use Hashset instead of Queue to be able to have a unique representation of each entity when added.
@@ -30,7 +28,15 @@ namespace DCL.Controllers
 
         private ISceneBoundsFeedbackStyle feedbackStyle;
 
-        public SceneBoundsChecker(ISceneBoundsFeedbackStyle feedbackStyle = null) { this.feedbackStyle = feedbackStyle ?? new SceneBoundsFeedbackStyle_Simple(); }
+        public void Initialize()
+        {
+            Start();
+        }
+
+        public SceneBoundsChecker(ISceneBoundsFeedbackStyle feedbackStyle = null)
+        {
+            this.feedbackStyle = feedbackStyle ?? new SceneBoundsFeedbackStyle_Simple();
+        }
 
         public void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle)
         {
@@ -125,6 +131,11 @@ namespace DCL.Controllers
 
             CoroutineStarter.Stop(entitiesCheckRoutine);
             entitiesCheckRoutine = null;
+        }
+
+        public void Dispose()
+        {
+            Stop();
         }
 
         public void AddEntityToBeChecked(IDCLEntity entity)

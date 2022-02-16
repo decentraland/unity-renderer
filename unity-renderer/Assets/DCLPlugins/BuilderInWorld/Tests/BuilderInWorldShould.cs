@@ -11,9 +11,9 @@ public class BuilderInWorldShould : IntegrationTestSuite
 {
     private BuilderInWorldPlugin builderInWorld;
 
-    protected override PlatformContext CreatePlatformContext()
+    protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(new UpdateEventHandler());
+        serviceLocator.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
     }
 
     protected override IEnumerator SetUp()

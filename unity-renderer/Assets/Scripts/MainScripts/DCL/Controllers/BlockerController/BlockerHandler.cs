@@ -29,17 +29,11 @@ namespace DCL.Controllers
         Dictionary<Vector2Int, IPoolableObject> blockers = new Dictionary<Vector2Int, IPoolableObject>();
 
         private IBlockerAnimationHandler animationHandler;
-        private ICullingController cullingController;
         private Transform parent;
 
-        public void Initialize(IBlockerAnimationHandler animationHandler, ICullingController cullingController)
+        public BlockerInstanceHandler(IBlockerAnimationHandler animationHandler)
         {
-            this.cullingController = cullingController;
             this.animationHandler = animationHandler;
-        }
-
-        public BlockerInstanceHandler()
-        {
             RenderProfileManifest.i.OnChangeProfile += OnChangeProfile;
             OnChangeProfile(RenderProfileManifest.i.currentProfile);
         }
@@ -89,7 +83,7 @@ namespace DCL.Controllers
             if (!instant)
                 animationHandler.FadeIn(blockerGo);
 
-            cullingController?.MarkDirty();
+            DCL.Environment.i.platform.cullingController?.MarkDirty();
         }
 
         private void EnsureBlockerPool()

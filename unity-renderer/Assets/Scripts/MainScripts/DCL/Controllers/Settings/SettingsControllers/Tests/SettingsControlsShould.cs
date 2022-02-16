@@ -151,26 +151,6 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         }
 
         [Test]
-        public void ChangeColorGradingCorrectly()
-        {
-            // Arrange
-            settingController = ScriptableObject.CreateInstance<ColorGradingControlController>();
-            settingController.Initialize();
-
-            // Act
-            bool newValue = true;
-            settingController.UpdateSetting(newValue);
-
-            // Assert
-            Assert.AreEqual(newValue, settingController.GetStoredValue(), "colorGrading stored value mismatch");
-            Tonemapping toneMapping;
-            if (SceneReferences.i.postProcessVolume.profile.TryGet<Tonemapping>(out toneMapping))
-            {
-                Assert.AreEqual(newValue, toneMapping.active, "bloom mismatch");
-            }
-        }
-
-        [Test]
         public void ChangeDetailObjectCullingCorrectly()
         {
             // Arrange
@@ -224,6 +204,22 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             Assert.AreEqual(firstPersonCamera.m_Lens.FarClipPlane, newValue, "1st person camera FarClipPlane value mismatch");
             Assert.AreEqual(RenderSettings.fogEndDistance, newValue, "fogEndDistance value mismatch");
             Assert.AreEqual(RenderSettings.fogStartDistance, newValue * 0.8f, "fogStartDistance value mismatch");
+        }
+
+        [Test]
+        public void ChangeCameraFOVCorrectly() 
+        {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<FOVControlController>();
+            settingController.Initialize();
+
+            // Act
+            float newValue = 90f;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "Camera FOV stored value mismatch");
+            Assert.AreEqual(firstPersonCamera.m_Lens.FieldOfView, newValue, "1st person camera FOV value mismatch");
         }
 
         [Test]

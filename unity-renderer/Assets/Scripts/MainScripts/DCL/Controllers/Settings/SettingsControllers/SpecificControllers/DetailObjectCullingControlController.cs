@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Rendering;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
@@ -14,9 +15,14 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             bool newBoolValue = (bool)newValue;
             currentQualitySetting.enableDetailObjectCulling = newBoolValue;
 
-            Environment.i.platform.cullingController.SetObjectCulling(newBoolValue);
-            Environment.i.platform.cullingController.SetShadowCulling(newBoolValue);
-            Environment.i.platform.cullingController.MarkDirty();
+            ICullingController cullingController = Environment.i.platform.cullingController;
+
+            if ( cullingController != null )
+            {
+                cullingController.SetObjectCulling(newBoolValue);
+                cullingController.SetShadowCulling(newBoolValue);
+                cullingController.MarkDirty();
+            }
 
             CommonSettingsScriptableObjects.detailObjectCullingDisabled.Set(!newBoolValue);
         }

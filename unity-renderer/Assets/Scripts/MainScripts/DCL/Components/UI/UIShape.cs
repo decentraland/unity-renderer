@@ -169,7 +169,10 @@ namespace DCL.Components
                 layoutRefreshWatcher = CoroutineStarter.Start(LayoutRefreshWatcher());
         }
 
-        private void OnScreenResize(Vector2Int current, Vector2Int previous) => RefreshAll();
+        private void OnScreenResize(Vector2Int current, Vector2Int previous)
+        {
+            isLayoutDirty = GetRootParent() == this;
+        }
 
         public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
 

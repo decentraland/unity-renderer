@@ -10,4 +10,5 @@ public class ProfileCardComponentModel : BaseComponentModel
     public string profilePictureUri;
     public string profileName;
     public string profileAddress;
+    public bool isClaimedName;
 }

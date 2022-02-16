@@ -67,6 +67,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d7a3560fa0052984ea7dde087142aa53, type: 2}
   - {fileID: 11400000, guid: 0db4c2bbac61e484393294eb733e5113, type: 2}
   - {fileID: 11400000, guid: e0524e692b704d940906a6dec301acac, type: 2}
+  - {fileID: 11400000, guid: 8d33228242d030841a39985073d18769, type: 2}
   holdActions:
   - {fileID: 11400000, guid: 8eddef1fc072ec845aeb62f5e1041b52, type: 2}
   - {fileID: 11400000, guid: 0cfb8d150b7d6934d856665cf924d01d, type: 2}
@@ -80,6 +81,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d1bc201cd2f5a1d4b8f721ccc29d2c0f, type: 2}
   - {fileID: 11400000, guid: c5302665e8f998e4ea2673bba5e22914, type: 2}
   - {fileID: 11400000, guid: 03d744388580e334391bfa394a66e6d7, type: 2}
+  - {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
   builderTriggerTimeActions:
   - {fileID: 11400000, guid: 4f763868020343f469cebb00aaf01960, type: 2}
   - {fileID: 11400000, guid: 02c21a2f1fb6f714f84c2fd94640f53a, type: 2}

@@ -22,6 +22,7 @@ namespace AvatarAttach_Tests
         {
             AvatarAttachHandler handler = Substitute.ForPartsOf<AvatarAttachHandler>();
             handler.model = new AvatarAttachComponent.Model() { avatarId = "Temptation" };
+
             handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = "Temptation" });
             handler.DidNotReceive().Detach();
             handler.DidNotReceive().Attach(Arg.Any<string>(), Arg.Any<AvatarAnchorPointIds>());
@@ -102,8 +103,9 @@ namespace AvatarAttach_Tests
             AvatarAttachHandler handler = Substitute.ForPartsOf<AvatarAttachHandler>();
             handler.IsInsideScene(Arg.Any<Vector3>()).Returns(true);
 
-            handler.Initialize(Substitute.For<IParcelScene>(), entity);
+            handler.Initialize(Substitute.For<IParcelScene>(), entity, Substitute.For<IUpdateEventHandler>());
             handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = userId, anchorPointId = 0 });
+            handler.LateUpdate();
 
             Assert.AreEqual(targetPosition, entityGo.transform.position);
             Assert.AreEqual(targetRotation.eulerAngles, entityGo.transform.rotation.eulerAngles);
@@ -134,8 +136,9 @@ namespace AvatarAttach_Tests
             AvatarAttachHandler handler = Substitute.ForPartsOf<AvatarAttachHandler>();
             handler.IsInsideScene(Arg.Any<Vector3>()).Returns(false);
 
-            handler.Initialize(Substitute.For<IParcelScene>(), entity);
+            handler.Initialize(Substitute.For<IParcelScene>(), entity, Substitute.For<IUpdateEventHandler>());
             handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = userId, anchorPointId = 0 });
+            handler.LateUpdate();
 
             Assert.AreEqual(EnvironmentSettings.MORDOR, entityGo.transform.position);
 

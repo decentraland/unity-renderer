@@ -77,6 +77,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         OnEventsFromAPIUpdated += OnRequestedEventsUpdated;
 
         this.exploreV2Analytics = exploreV2Analytics;
+
+        view.ConfigurePools();
     }
 
     internal void FirstLoading()
@@ -154,7 +156,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
             featuredEvents.Add(eventCardModel);
         }
 
@@ -170,7 +172,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
             trendingEvents.Add(eventCardModel);
         }
 
@@ -185,7 +187,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
             upcomingEvents.Add(eventCardModel);
         }
 
@@ -208,7 +210,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel placeCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel placeCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
             upcomingEvents.Add(placeCardModel);
         }
 
@@ -228,7 +230,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
             goingEvents.Add(eventCardModel);
         }
 
@@ -257,7 +259,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
-        ExploreEventsHelpers.JumpInToEvent(eventFromAPI);
+        ExploreEventsUtils.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));

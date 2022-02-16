@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -21,19 +20,21 @@ namespace DCL.Components
         private IAvatarAnchorPoints anchorPoints;
         private AvatarAnchorPointIds anchorPointId;
 
-        private Coroutine componentUpdate = null;
+        private Action componentUpdate = null;
 
         private readonly GetAnchorPointsHandler getAnchorPointsHandler = new GetAnchorPointsHandler();
         private ISceneBoundsChecker sceneBoundsChecker => Environment.i?.world?.sceneBoundsChecker;
+        private IUpdateEventHandler updateEventHandler;
 
         private Vector2Int? currentCoords = null;
         private bool isInsideScene = true;
         private float lastBoundariesCheckTime = 0;
 
-        public void Initialize(IParcelScene scene, IDCLEntity entity)
+        public void Initialize(IParcelScene scene, IDCLEntity entity, IUpdateEventHandler updateEventHandler)
         {
             this.scene = scene;
             this.entity = entity;
+            this.updateEventHandler = updateEventHandler;
             getAnchorPointsHandler.OnAvatarRemoved += Detach;
         }
 
@@ -72,11 +73,7 @@ namespace DCL.Components
 
         internal virtual void Detach()
         {
-            if (componentUpdate != null)
-            {
-                CoroutineStarter.Stop(componentUpdate);
-                componentUpdate = null;
-            }
+            StopComponentUpdate();
 
             if (entity != null)
             {
@@ -99,42 +96,32 @@ namespace DCL.Components
             this.anchorPoints = anchorPoints;
             this.anchorPointId = anchorPointId;
 
-            if (componentUpdate == null)
-            {
-                componentUpdate = CoroutineStarter.Start(ComponentUpdate());
-            }
+            StartComponentUpdate();
         }
 
-        IEnumerator ComponentUpdate()
+        internal void LateUpdate()
         {
-            currentCoords = null;
-
-            while (true)
+            if (entity == null || scene == null)
             {
-                if (entity == null || scene == null)
+                StopComponentUpdate();
+                return;
+            }
+
+            var anchorPoint = anchorPoints.GetTransform(anchorPointId);
+
+            if (IsInsideScene(CommonScriptableObjects.worldOffset + anchorPoint.position))
+            {
+                entity.gameObject.transform.position = anchorPoint.position;
+                entity.gameObject.transform.rotation = anchorPoint.rotation;
+
+                if (Time.unscaledTime - lastBoundariesCheckTime > BOUNDARIES_CHECK_INTERVAL)
                 {
-                    componentUpdate = null;
-                    yield break;
+                    CheckSceneBoundaries(entity);
                 }
-
-                var anchorPoint = anchorPoints.GetTransform(anchorPointId);
-
-                if (IsInsideScene(CommonScriptableObjects.worldOffset + anchorPoint.position))
-                {
-                    entity.gameObject.transform.position = anchorPoint.position;
-                    entity.gameObject.transform.rotation = anchorPoint.rotation;
-
-                    if (Time.unscaledTime - lastBoundariesCheckTime > BOUNDARIES_CHECK_INTERVAL)
-                    {
-                        CheckSceneBoundaries(entity);
-                    }
-                }
-                else
-                {
-                    entity.gameObject.transform.localPosition = EnvironmentSettings.MORDOR;
-                }
-
-                yield return null;
+            }
+            else
+            {
+                entity.gameObject.transform.localPosition = EnvironmentSettings.MORDOR;
             }
         }
 
@@ -155,6 +142,25 @@ namespace DCL.Components
         {
             sceneBoundsChecker?.AddEntityToBeChecked(entity);
             lastBoundariesCheckTime = Time.unscaledTime;
+        }
+
+        private void StartComponentUpdate()
+        {
+            if (componentUpdate != null)
+                return;
+
+            currentCoords = null;
+            componentUpdate = LateUpdate;
+            updateEventHandler?.AddListener(IUpdateEventHandler.EventType.LateUpdate, componentUpdate);
+        }
+
+        private void StopComponentUpdate()
+        {
+            if (componentUpdate == null)
+                return;
+
+            updateEventHandler?.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, componentUpdate);
+            componentUpdate = null;
         }
     }
 }

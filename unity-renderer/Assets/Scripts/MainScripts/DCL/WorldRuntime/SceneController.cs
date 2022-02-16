@@ -16,8 +16,12 @@ namespace DCL
     public class SceneController : ISceneController
     {
         public static bool VERBOSE = false;
+        const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
 
         public bool enabled { get; set; } = true;
+
+        //TODO(Brian): Move to WorldRuntimePlugin later
+        private LoadingFeedbackController loadingFeedbackController;
 
         private Coroutine deferredDecodingCoroutine;
 
@@ -28,21 +32,33 @@ namespace DCL
             lastSortFrame = 0;
             enabled = true;
 
+            loadingFeedbackController = new LoadingFeedbackController();
+
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
             if (deferredMessagesDecoding) // We should be able to delete this code
-                deferredDecodingCoroutine = CoroutineStarter.Start(DeferredDecoding()); //
+                deferredDecodingCoroutine = CoroutineStarter.Start(DeferredDecoding());
 
             DCLCharacterController.OnCharacterMoved += SetPositionDirty;
 
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneIdChange;
 
-            //TODO(Brian): Move those subscriptions elsewhere.
-            PoolManager.i.OnGet -= Environment.i.platform.physicsSyncController.MarkDirty;
-            PoolManager.i.OnGet += Environment.i.platform.physicsSyncController.MarkDirty;
+            // TODO(Brian): Move this later to Main.cs
+            if ( !EnvironmentSettings.RUNNING_TESTS )
+            {
+                if (prewarmSceneMessagesPool)
+                {
+                    for (int i = 0; i < SCENE_MESSAGES_PREWARM_COUNT; i++)
+                    {
+                        sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene());
+                    }
+                }
 
-            PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
-            PoolManager.i.OnGet += Environment.i.platform.cullingController.objectsTracker.MarkDirty;
+                if (prewarmEntitiesPool)
+                {
+                    PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
+                }
+            }
 
             DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
             DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -63,31 +79,20 @@ namespace DCL
             }
         }
 
-        public void Start()
-        {
-            if (prewarmSceneMessagesPool)
-            {
-                for (int i = 0; i < 100000; i++)
-                {
-                    sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene());
-                }
-            }
-
-            if (prewarmEntitiesPool)
-            {
-                PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
-            }
-        }
-
         public void Dispose()
         {
-            PoolManager.i.OnGet -= Environment.i.platform.physicsSyncController.MarkDirty;
-            PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
-            DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
-            DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
+            loadingFeedbackController.Dispose();
 
             DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+
+            PoolManager.i.OnGet -= Environment.i.platform.physicsSyncController.MarkDirty;
+            PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
+
+            DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
+            DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
+
+            CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneIdChange;
 
             UnloadAllScenes(includePersistent: true);
 
@@ -790,14 +795,7 @@ namespace DCL
 
             if (!string.IsNullOrEmpty(globalScene.icon))
             {
-                if (globalScene.icon.StartsWith("http://") || globalScene.icon.StartsWith("https://"))
-                {
-                    newScene.iconUrl = globalScene.icon;
-                }
-                else
-                {
-                    newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
-                }
+                newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
             }
 
             worldState.loadedScenes.Add(newGlobalSceneId, newScene);

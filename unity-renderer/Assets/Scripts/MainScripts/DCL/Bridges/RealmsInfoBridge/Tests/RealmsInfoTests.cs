@@ -1,7 +1,8 @@
-﻿using NUnit.Framework;
+using DCL;
+using NUnit.Framework;
+using System.Linq;
 using UnityEngine;
 using Variables.RealmsInfo;
-using DCL;
 
 public class RealmsInfoTests
 {
@@ -85,23 +86,22 @@ public class RealmsInfoTests
         bool onChangeTriggered = false;
         RealmModel[] onChangeCurrentValue = null;
 
-        handler.realmsInfo.OnChange += (current, prev) =>
+        handler.realmsInfo.OnSet += (current) =>
         {
             onChangeTriggered = true;
-            onChangeCurrentValue = current;
+            onChangeCurrentValue = current.ToArray();
         };
 
         handler.Set(testModel);
         Assert.IsTrue(onChangeTriggered, "OnChange not triggered");
         Assert.IsTrue(testModel.realms.Length == 2, "Values are not the same");
-        Assert.IsTrue(testModel.realms.Equals(onChangeCurrentValue), "Values are not the same");
         Assert.IsTrue(testModel.realms[0].serverName == SERVER_NAME_1, "Values are not the same");
         Assert.IsTrue(testModel.realms[0].layer == LAYER_1, "Values are not the same");
         Assert.IsTrue(testModel.realms[1].serverName == SERVER_NAME_2, "Values are not the same");
         Assert.IsTrue(testModel.realms[1].layer == LAYER_2, "Values are not the same");
-
-        onChangeTriggered = false;
-        handler.Set(JsonUtility.ToJson(testModel));
-        Assert.IsFalse(onChangeTriggered, "OnChange shouldn't be triggered");
+        for (int i = 0; i < testModel.realms.Length; i++)
+        {
+            Assert.IsTrue(i < onChangeCurrentValue.Length && onChangeCurrentValue[i] == testModel.realms[i]);
+        }
     }
 }

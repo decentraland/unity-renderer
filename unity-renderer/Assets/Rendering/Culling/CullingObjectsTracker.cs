@@ -20,6 +20,12 @@ namespace DCL.Rendering
         bool dirty = true;
         private int ignoredLayersMask;
 
+        public CullingObjectsTracker ()
+        {
+            PoolManager.i.OnGet -= MarkDirty;
+            PoolManager.i.OnGet += MarkDirty;
+        }
+
         /// <summary>
         /// If the dirty flag is true, this coroutine will re-populate all the tracked objects.
         /// </summary>
@@ -29,16 +35,16 @@ namespace DCL.Rendering
                 yield break;
 
             renderers = Object.FindObjectsOfType<Renderer>()
-                              .Where(x => !(x is SkinnedMeshRenderer)
-                                          && !(x is ParticleSystemRenderer)
-                                          && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
-                              .ToArray();
+                .Where(x => !(x is SkinnedMeshRenderer)
+                            && !(x is ParticleSystemRenderer)
+                            && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                .ToArray();
 
             yield return null;
 
             skinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>()
-                                     .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
-                                     .ToArray();
+                .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                .ToArray();
 
             yield return null;
 
@@ -54,14 +60,14 @@ namespace DCL.Rendering
         public void ForcePopulateRenderersList(bool includeInactives)
         {
             renderers = Object.FindObjectsOfType<Renderer>(includeInactives)
-                              .Where(x => !(x is SkinnedMeshRenderer)
-                                          && !(x is ParticleSystemRenderer)
-                                          && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
-                              .ToArray();
+                .Where(x => !(x is SkinnedMeshRenderer)
+                            && !(x is ParticleSystemRenderer)
+                            && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                .ToArray();
 
             skinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>(includeInactives)
-                                     .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
-                                     .ToArray();
+                .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                .ToArray();
         }
 
         public void SetIgnoredLayersMask(int ignoredLayersMask) { this.ignoredLayersMask = ignoredLayersMask; }
@@ -101,6 +107,7 @@ namespace DCL.Rendering
             renderers = null;
             animations = null;
             skinnedRenderers = null;
+            PoolManager.i.OnGet -= MarkDirty;
         }
     }
 }

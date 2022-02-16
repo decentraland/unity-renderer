@@ -3,12 +3,14 @@ using System.Collections.Generic;
 
 namespace DCL
 {
-    public interface IMessagingControllersManager : IDisposable
+    public interface IMessagingControllersManager : IService
     {
         bool hasPendingMessages { get; }
         bool isRunning { get; }
         bool paused { get; set; }
-        void Initialize(IMessageProcessHandler messageHandler);
+        int pendingInitMessagesCount { get; set; }
+        long processedInitMessagesCount { get; set; }
+        int pendingMessagesCount { get; set; }
         void MarkBusesDirty();
         void PopulateBusesToBeProcessed();
         bool ContainsController(string sceneId);

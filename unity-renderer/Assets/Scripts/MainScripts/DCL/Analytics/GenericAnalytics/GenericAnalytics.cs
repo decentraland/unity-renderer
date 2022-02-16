@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 public static class GenericAnalytics
@@ -6,9 +7,8 @@ public static class GenericAnalytics
     {
         FillGenericData(data);
 
-        //TODO wait until environment it's on its own assembly
-        //Environment.i.platform.serviceProviders.analytics;
-        Analytics.i?.SendAnalytic(eventName, data);
+        IAnalytics analytics = DCL.Environment.i.platform.serviceProviders.analytics;
+        analytics.SendAnalytic(eventName, data);
     }
 
     internal static void FillGenericData(Dictionary<string, string> data) { }

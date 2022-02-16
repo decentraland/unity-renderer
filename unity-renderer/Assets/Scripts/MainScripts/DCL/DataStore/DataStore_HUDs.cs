@@ -13,7 +13,7 @@ namespace DCL
         public readonly BaseVariable<bool> emotesVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> isNavMapInitialized = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> navmapVisible = new BaseVariable<bool>(false);
-
+        public readonly BaseVariable<bool> chatInputVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> avatarNamesVisible = new BaseVariable<bool>(true);
         public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);
         public readonly LoadingHUD loadingHUD = new LoadingHUD();

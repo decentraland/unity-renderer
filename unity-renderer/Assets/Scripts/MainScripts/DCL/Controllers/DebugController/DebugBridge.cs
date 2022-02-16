@@ -1,4 +1,5 @@
-﻿using DCL.Components;
+﻿using System;
+using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
@@ -10,6 +11,14 @@ namespace DCL
 {
     public class DebugBridge : MonoBehaviour
     {
+        [Serializable]
+        class ToggleSceneBoundingBoxesPayload
+        {
+            public string sceneId;
+            public bool enabled;
+        }
+        
+
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
         private IDebugController debugController;
 
@@ -117,6 +126,18 @@ namespace DCL
         public void StopBotsMovement() { debugController.StopBotsMovement(); }
         public void RemoveBot(string targetEntityId) { debugController.RemoveBot(targetEntityId); }
         public void ClearBots() { debugController.ClearBots(); }
+        
+        public void ToggleSceneBoundingBoxes(string payload)
+        {
+            ToggleSceneBoundingBoxesPayload data = JsonUtility.FromJson<ToggleSceneBoundingBoxesPayload>(payload);
+            DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneId, data.enabled);
+        }
+
+        public void TogglePreviewMenu(string payload)
+        {
+            PreviewMenuPayload data =  JsonUtility.FromJson<PreviewMenuPayload>(payload);
+            DataStore.i.debugConfig.isPreviewMenuActive.Set(data.enabled);
+        }
 
 #if UNITY_EDITOR
         [ContextMenu("Run Performance Meter Tool for 30 seconds")]

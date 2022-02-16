@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using DCL.SettingsPanelHUD.Sections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,12 +25,17 @@ namespace DCL.SettingsPanelHUD
         [SerializeField] private Button resetAllOkButton;
         [SerializeField] private Button resetAllCancelButton;
         [SerializeField] private GameObject resetAllBlackOverlay;
+        [SerializeField] internal InputAction_Trigger closeResetAllAction;
 
         [Header("Open/Close Settings")]
         [SerializeField] private Button closeButton;
         [SerializeField] private Button backgroundButton;
-        [SerializeField] private InputAction_Trigger closeAction;
         [SerializeField] private InputAction_Trigger openAction;
+
+        [Header("World Preview Window")]
+        [SerializeField] private RectTransform worldPreviewWindowTransform;
+        [SerializeField] private CanvasGroup worldPreviewCanvasGroup;
+        [SerializeField] private RawImage worldPreviewRawImage;
 
         [Header("Others")]
         [SerializeField] private Button tutorialButton;
@@ -42,6 +48,9 @@ namespace DCL.SettingsPanelHUD
         public bool isOpen { get; private set; }
 
         private const string PATH = "SettingsPanelHUD";
+        private const float WORLD_PREVIEW_MIN_WIDTH_TO_BE_SHOWED = 200f;
+        private const float WORLD_PREVIEW_ORIGINAL_WIDTH = 400f;
+        private const float WORLD_PREVIEW_ORIGINAL_HEIGHT = 250f;
 
         private IHUD hudController;
         private ISettingsPanelHUDController settingsPanelController;
@@ -62,6 +71,7 @@ namespace DCL.SettingsPanelHUD
             this.settingsPanelController = settingsPanelController;
 
             openAction.OnTriggered += OpenAction_OnTriggered;
+            closeResetAllAction.OnTriggered += CloseResetAllAction_OnTriggered;
 
             resetAllButton.onClick.AddListener(ShowResetAllConfirmation);
             resetAllCancelButton.onClick.AddListener(HideResetAllConfirmation);
@@ -76,6 +86,9 @@ namespace DCL.SettingsPanelHUD
             settingsAnimator.Hide(true);
 
             tutorialButton.onClick.AddListener(() => OnRestartTutorial?.Invoke());
+
+            DataStore.i.screen.size.OnChange += ScreenSizeChanged;
+            ScreenSizeChanged(DataStore.i.screen.size.Get(), Vector2Int.zero);
         }
 
         public void Initialize(IHUD hudController, ISettingsPanelHUDController settingsPanelController, SettingsSectionList sections)
@@ -87,12 +100,15 @@ namespace DCL.SettingsPanelHUD
         private void OnDestroy()
         {
             openAction.OnTriggered -= OpenAction_OnTriggered;
+            closeResetAllAction.OnTriggered -= CloseResetAllAction_OnTriggered;
 
             if (settingsAnimator)
                 settingsAnimator.OnWillFinishHide -= OnFinishHide;
 
             tutorialButton.onClick.RemoveAllListeners();
             helpAndSupportButton.onClick.RemoveAllListeners();
+
+            DataStore.i.screen.size.OnChange -= ScreenSizeChanged;
         }
 
         private void CreateSections()
@@ -112,18 +128,21 @@ namespace DCL.SettingsPanelHUD
 
         private void ShowResetAllConfirmation()
         {
+            DataStore.i.exploreV2.isSomeModalOpen.Set(true);
             resetAllConfirmation.Show();
             resetAllBlackOverlay.SetActive(true);
         }
 
         private void HideResetAllConfirmation()
         {
+            DataStore.i.exploreV2.isSomeModalOpen.Set(false);
             resetAllConfirmation.Hide();
             resetAllBlackOverlay.SetActive(false);
         }
 
         private void ResetAllSettings()
         {
+            DataStore.i.exploreV2.isSomeModalOpen.Set(false);
             settingsPanelController.ResetAllSettings();
             resetAllConfirmation.Hide();
             resetAllBlackOverlay.SetActive(false);
@@ -133,10 +152,8 @@ namespace DCL.SettingsPanelHUD
 
         public void SetVisibility(bool visible)
         {
-            closeAction.OnTriggered -= CloseAction_OnTriggered;
             if (visible)
             {
-                closeAction.OnTriggered += CloseAction_OnTriggered;
                 settingsAnimator.Show();
                 mainWindow.SetActive(true);
                 HideResetAllConfirmation();
@@ -147,8 +164,9 @@ namespace DCL.SettingsPanelHUD
             {
                 settingsAnimator.Hide();
                 settingsPanelController.SaveSettings();
+                SetWorldPreviewActive(false);
             }
-
+            
             isOpen = visible;
         }
 
@@ -177,14 +195,46 @@ namespace DCL.SettingsPanelHUD
             helpAndSupportButton.onClick.AddListener(() => OnHelpAndSupportClicked?.Invoke());
         }
 
+        public void SetWorldPreviewActive(bool isActive)
+        {
+            isActive = false;
+
+            worldPreviewWindowTransform.gameObject.SetActive(isActive);
+            DataStore.i.camera.outputTexture.Set(isActive ? worldPreviewRawImage.texture as RenderTexture : null);
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(DataStore.i.exploreV2.isOpen.Get() && !isActive);
+        }
+
         private void OpenAction_OnTriggered(DCLAction_Trigger action)
         {
             Utils.UnlockCursor();
             hudController.SetVisibility(!isOpen);
         }
 
-        private void CloseAction_OnTriggered(DCLAction_Trigger action) { CloseSettingsPanel(); }
+        private void CloseResetAllAction_OnTriggered(DCLAction_Trigger action)
+        {
+            HideResetAllConfirmation();
+        }
 
         private void OnFinishHide(ShowHideAnimator animator) { mainWindow.SetActive(false); }
+
+        private void ScreenSizeChanged(Vector2Int current, Vector2Int previous)
+        {
+            StartCoroutine(RefreshWorldPreviewSize());
+        }
+
+        private IEnumerator RefreshWorldPreviewSize()
+        {
+            yield return null;
+
+            float newHeight = Mathf.Clamp(worldPreviewWindowTransform.rect.size.x * WORLD_PREVIEW_ORIGINAL_HEIGHT / WORLD_PREVIEW_ORIGINAL_WIDTH, 0f, 700f);
+
+            worldPreviewWindowTransform.SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Vertical,
+                newHeight);
+
+            worldPreviewCanvasGroup.alpha = worldPreviewWindowTransform.rect.size.x >= WORLD_PREVIEW_MIN_WIDTH_TO_BE_SHOWED ? 1f : 0f;
+
+            Utils.ForceRebuildLayoutImmediate(sectionsContainer as RectTransform);
+        }
     }
 }

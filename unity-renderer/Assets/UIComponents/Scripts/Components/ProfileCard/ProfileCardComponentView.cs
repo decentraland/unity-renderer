@@ -40,6 +40,12 @@ public interface IProfileCardComponentView
     void SetProfileAddress(string newAddress);
 
     /// <summary>
+    /// Set the profile name.
+    /// </summary>
+    /// <param name="newName">Profile name.</param>
+    void SetIsClaimedName(bool isClaimedName);
+
+    /// <summary>
     /// Active or deactive the loading indicator.
     /// </summary>
     /// <param name="isVisible">True for showing the loading indicator.</param>
@@ -87,6 +93,7 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
 
         SetProfileName(model.profileName);
         SetProfileAddress(model.profileAddress);
+        SetIsClaimedName(model.isClaimedName);
     }
 
     public override void Dispose()
@@ -140,7 +147,7 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
         if (profileName == null)
             return;
 
-        profileName.text = !string.IsNullOrEmpty(newName) ? newName : string.Empty;
+        profileName.text = !string.IsNullOrEmpty(newName) ? (model.isClaimedName ? newName : newName.Split('#')[0]) : string.Empty;
     }
 
     public void SetProfileAddress(string newAddress)
@@ -154,6 +161,19 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
             profileAddress.text = newAddress.Length >= 4 ? $"#{newAddress.Substring(newAddress.Length - 4, 4)}" : $"#{newAddress}";
         else
             profileAddress.text = string.Empty;
+    }
+
+    public void SetIsClaimedName(bool isClaimedName)
+    {
+        model.isClaimedName = isClaimedName;
+
+        if (profileName != null)
+            profileName.alignment = isClaimedName ? TextAlignmentOptions.Center : TextAlignmentOptions.Right;
+
+        if (profileAddress != null)
+            profileAddress.gameObject.SetActive(!isClaimedName);
+
+        SetProfileName(model.profileName);
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible) { profileImage.SetLoadingIndicatorVisible(isVisible); }

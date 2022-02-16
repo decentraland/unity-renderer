@@ -2,6 +2,7 @@
     "name": "ProceduralSkybox",
     "rootNamespace": "",
     "references": [
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
         "GUID:7d89318ea12bffe448b0b23980e4cd10",
         "GUID:7fe146b43e76fe745aeaf2020feb54b7",
         "GUID:28f74c468a54948bfa9f625c5d428f56",

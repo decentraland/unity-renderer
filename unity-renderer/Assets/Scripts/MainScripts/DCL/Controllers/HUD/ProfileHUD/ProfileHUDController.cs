@@ -94,6 +94,7 @@ public class ProfileHUDController : IHUD
         DataStore.i.exploreV2.isInitialized.OnChange += ExploreV2Changed;
         ExploreV2Changed(DataStore.i.exploreV2.isInitialized.Get(), false);
     }
+
     protected virtual GameObject GetViewPrefab()
     {
         return Resources.Load<GameObject>("ProfileHUD");
@@ -138,6 +139,7 @@ public class ProfileHUDController : IHUD
         {
             GameObject.Destroy(view.gameObject);
         }
+
         ownUserProfile.OnUpdate -= OnProfileUpdated;
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange -= ChangeVisibilityForBuilderInWorld;
         if (mouseCatcher != null)
@@ -172,9 +174,15 @@ public class ProfileHUDController : IHUD
         while (true)
         {
             yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
+
             Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryPolygonMana(ownUserProfile.userId);
-            yield return promise;
-            SetPolygonManaBalance(promise.value);
+
+            // This can be null if theGraph is mocked
+            if ( promise != null )
+            {
+                yield return promise;
+                SetPolygonManaBalance(promise.value);
+            }
 
             yield return WaitForSecondsCache.Get(FETCH_MANA_INTERVAL);
         }

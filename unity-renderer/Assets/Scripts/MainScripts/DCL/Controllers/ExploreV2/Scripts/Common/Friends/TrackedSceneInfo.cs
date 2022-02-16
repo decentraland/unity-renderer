@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using UnityEngine;
 
-class TrackedSceneInfo : IDisposable
+public class TrackedSceneInfo : IDisposable
 {
     IFriendTrackerHandler view;
 

@@ -12,6 +12,7 @@ public class ExploreEventsCommonTests
     public void SetUp()
     {
         eventsSubSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/EventsSubSection/EventsSubSection")).GetComponent<EventsSubSectionComponentView>();
+        eventsSubSectionComponent.ConfigurePools();
         eventsSubSectionComponent.Start();
 
         testEventCard = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/EventsSubSection/EventCard_Modal")).GetComponent<EventCardComponentView>();
@@ -48,11 +49,11 @@ public class ExploreEventsCommonTests
         eventsSubSectionComponent.eventModal = null;
 
         // Act
-        eventsSubSectionComponent.eventModal = ExploreEventsHelpers.ConfigureEventCardModal(eventsSubSectionComponent.eventCardModalPrefab);
+        eventsSubSectionComponent.eventModal = ExploreEventsUtils.ConfigureEventCardModal(eventsSubSectionComponent.eventCardModalPrefab);
 
         // Assert
         Assert.IsNotNull(eventsSubSectionComponent.eventModal);
-        Assert.AreEqual(ExploreEventsHelpers.EVENT_CARD_MODAL_ID, eventsSubSectionComponent.eventModal.gameObject.name);
+        Assert.AreEqual(ExploreEventsUtils.EVENT_CARD_MODAL_ID, eventsSubSectionComponent.eventModal.gameObject.name);
     }
 
     [Test]
@@ -62,7 +63,7 @@ public class ExploreEventsCommonTests
         eventsSubSectionComponent.featuredEventCardsPool = null;
 
         // Act
-        ExploreEventsHelpers.ConfigureEventCardsPool(
+        ExploreEventsUtils.ConfigureEventCardsPool(
             out eventsSubSectionComponent.featuredEventCardsPool,
             EventsSubSectionComponentView.FEATURED_EVENT_CARDS_POOL_NAME,
             eventsSubSectionComponent.eventCardLongPrefab,
@@ -80,7 +81,7 @@ public class ExploreEventsCommonTests
         EventCardComponentModel testEventInfo = CreateTestEventModel("1");
 
         // Act
-        ExploreEventsHelpers.ConfigureEventCard(testEventCard, testEventInfo, null, null, null, null);
+        ExploreEventsUtils.ConfigureEventCard(testEventCard, testEventInfo, null, null, null, null);
 
         // Assert
         Assert.AreEqual(testEventInfo, testEventCard.model, "The event card model does not match.");
@@ -93,20 +94,20 @@ public class ExploreEventsCommonTests
         EventFromAPIModel testEventFromAPI = CreateTestEventFromAPI("1");
 
         // Act
-        EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(testEventFromAPI);
+        EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(testEventFromAPI);
 
         // Assert
         Assert.AreEqual(testEventFromAPI.id, eventCardModel.eventId);
         Assert.AreEqual(testEventFromAPI.image, eventCardModel.eventPictureUri);
         Assert.AreEqual(testEventFromAPI.live, eventCardModel.isLive);
-        Assert.AreEqual(ExploreEventsHelpers.LIVE_TAG_TEXT, eventCardModel.liveTagText);
-        Assert.AreEqual(ExploreEventsHelpers.FormatEventDate(testEventFromAPI), eventCardModel.eventDateText);
+        Assert.AreEqual(ExploreEventsUtils.LIVE_TAG_TEXT, eventCardModel.liveTagText);
+        Assert.AreEqual(ExploreEventsUtils.FormatEventDate(testEventFromAPI), eventCardModel.eventDateText);
         Assert.AreEqual(testEventFromAPI.name, eventCardModel.eventName);
         Assert.AreEqual(testEventFromAPI.description, eventCardModel.eventDescription);
-        Assert.AreEqual(ExploreEventsHelpers.FormatEventStartDate(testEventFromAPI), eventCardModel.eventStartedIn);
-        Assert.AreEqual(ExploreEventsHelpers.FormatEventStartDateFromTo(testEventFromAPI), eventCardModel.eventStartsInFromTo);
-        Assert.AreEqual(ExploreEventsHelpers.FormatEventOrganized(testEventFromAPI), eventCardModel.eventOrganizer);
-        Assert.AreEqual(ExploreEventsHelpers.FormatEventPlace(testEventFromAPI), eventCardModel.eventPlace);
+        Assert.AreEqual(ExploreEventsUtils.FormatEventStartDate(testEventFromAPI), eventCardModel.eventStartedIn);
+        Assert.AreEqual(ExploreEventsUtils.FormatEventStartDateFromTo(testEventFromAPI), eventCardModel.eventStartsInFromTo);
+        Assert.AreEqual(ExploreEventsUtils.FormatEventOrganized(testEventFromAPI), eventCardModel.eventOrganizer);
+        Assert.AreEqual(ExploreEventsUtils.FormatEventPlace(testEventFromAPI), eventCardModel.eventPlace);
         Assert.AreEqual(testEventFromAPI.total_attendees, eventCardModel.subscribedUsers);
         Assert.AreEqual(false, eventCardModel.isSubscribed);
         Assert.AreEqual(new Vector2Int(testEventFromAPI.coordinates[0], testEventFromAPI.coordinates[1]), eventCardModel.coords);

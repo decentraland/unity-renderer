@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Cinemachine;
 using Cinemachine.Utility;
 using DCL.Camera;
+using DCL.Helpers;
 using UnityEngine;
 
 public class SmoothAxisProvider : MonoBehaviour, AxisState.IInputAxisProvider
@@ -21,8 +22,8 @@ public class SmoothAxisProvider : MonoBehaviour, AxisState.IInputAxisProvider
     {
         inputSpikeFixer = new []
         {
-            new InputSpikeFixer(() => Cursor.lockState),
-            new InputSpikeFixer(() => Cursor.lockState)
+            new InputSpikeFixer(() => Utils.IsCursorLocked ? CursorLockMode.Locked : CursorLockMode.None),
+            new InputSpikeFixer(() => Utils.IsCursorLocked ? CursorLockMode.Locked : CursorLockMode.None)
         };
     }
     void Update()

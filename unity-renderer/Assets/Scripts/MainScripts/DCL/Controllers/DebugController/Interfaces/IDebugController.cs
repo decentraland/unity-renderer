@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,5 +22,6 @@ namespace DCL
         List<Vector3> GetTrackedTeleportPositions();
         List<Vector3> GetTrackedMovements();
         void ShowInfoPanel(string network, string realm);
+        void SetRealm(string realm);
     }
 }

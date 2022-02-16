@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using Variables.RealmsInfo;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DCL
 {
@@ -9,7 +11,7 @@ namespace DCL
         private RealmsInfoModel model = new RealmsInfoModel();
 
         public CurrentRealmVariable playerRealm => DataStore.i.realm.playerRealm;
-        public RealmsVariable realmsInfo => DataStore.i.realm.realmsInfo;
+        public BaseCollection<RealmModel> realmsInfo => DataStore.i.realm.realmsInfo;
 
         public void Set(string json)
         {
@@ -21,7 +23,7 @@ namespace DCL
         {
             model = newModel;
             DataStore.i.realm.playerRealm.Set(model.current?.Clone());
-            DataStore.i.realm.realmsInfo.Set(model.realms);
+            DataStore.i.realm.realmsInfo.Set(newModel.realms != null ? newModel.realms.ToList() : new List<RealmModel>());
         }
     }
 

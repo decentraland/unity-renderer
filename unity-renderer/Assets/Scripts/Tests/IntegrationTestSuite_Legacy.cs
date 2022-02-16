@@ -3,7 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using DCL.Camera;
+using DCL.Controllers;
+using DCL.Helpers.NFT.Markets;
+using DCL.Rendering;
 using DCL.SettingsCommon;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -21,43 +25,45 @@ public class IntegrationTestSuite_Legacy
     protected virtual IEnumerator SetUp()
     {
         DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
+        DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+        AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
+        PoolManager.enablePrewarm = false;
 
         // TODO(Brian): Move these variants to a DataStore object to avoid having to reset them
         //              like this.
         CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
         CommonScriptableObjects.rendererState.Set(true);
-        
+
         Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
         legacySystems = SetUp_LegacySystems();
 
         RenderProfileManifest.i.Initialize();
 
-        Environment.SetupWithBuilders
-        (
-            CreateMessagingContext,
-            CreatePlatformContext,
-            CreateRuntimeContext,
-            HUDContextFactory.CreateDefault
-        );
-
-        SetUp_SceneController();
+        Environment.Setup(InitializeServiceLocator());
 
         yield return SetUp_Camera();
-
-        //TODO(Brian): Remove when the init layer is ready
-        Environment.i.platform.cullingController.Stop();
-        AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = double.MaxValue;
-        yield break;
     }
 
-    protected virtual WorldRuntimeContext CreateRuntimeContext() { return WorldRuntimeContextFactory.CreateDefault(); }
-
-    protected virtual PlatformContext CreatePlatformContext() { return PlatformContextFactory.CreateDefault(); }
-
-    protected virtual MessagingContext CreateMessagingContext()
+    protected virtual ServiceLocator InitializeServiceLocator()
     {
-        return MessagingContextFactory.CreateDefault();
+        var result = ServiceLocatorFactory.CreateDefault();
+        result.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
+        result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
+        result.Register<ICullingController>(() => Substitute.For<ICullingController>());
+
+        result.Register<IServiceProviders>(
+            () =>
+            {
+                var mockedProviders = Substitute.For<IServiceProviders>();
+                mockedProviders.theGraph.Returns( Substitute.For<ITheGraph>() );
+                mockedProviders.analytics.Returns( Substitute.For<IAnalytics>() );
+                mockedProviders.catalyst.Returns( Substitute.For<ICatalyst>() );
+                mockedProviders.openSea.Returns( Substitute.For<INFTMarket>() );
+                return mockedProviders;
+            });
+
+        return result;
     }
 
     protected virtual List<GameObject> SetUp_LegacySystems()
@@ -70,7 +76,7 @@ public class IntegrationTestSuite_Legacy
     protected IEnumerator TearDown_LegacySystems()
     {
         Settings.i.Dispose();
-        
+
         foreach ( var go in legacySystems )
         {
             UnityEngine.Object.Destroy(go);
@@ -116,16 +122,6 @@ public class IntegrationTestSuite_Legacy
 
         if (PoolManager.i != null)
             PoolManager.i.Dispose();
-    }
-
-    public void SetUp_SceneController()
-    {
-        PoolManager.enablePrewarm = false;
-        DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
-        var sceneController = Environment.i.world.sceneController;
-        sceneController.deferredMessagesDecoding = false;
-        sceneController.prewarmSceneMessagesPool = false;
-        sceneController.prewarmEntitiesPool = false;
     }
 
     public virtual IEnumerator SetUp_Camera()

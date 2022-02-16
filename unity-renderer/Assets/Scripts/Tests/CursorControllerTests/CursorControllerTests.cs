@@ -30,33 +30,22 @@ namespace Tests
             return result;
         }
 
-        protected override WorldRuntimeContext CreateRuntimeContext()
+        protected override ServiceLocator InitializeServiceLocator()
         {
-            return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
-            (
-                new PointerEventsController(),
-                new RuntimeComponentFactory(),
-                new WorldState()
-            );
-        }
-
-        protected override PlatformContext CreatePlatformContext()
-        {
-            return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
-            (
-                new UpdateEventHandler(),
-                WebRequestController.Create()
-            );
-        }
-
-        protected override MessagingContext CreateMessagingContext()
-        {
-            return DCL.Tests.MessagingContextFactory.CreateMocked();
+            ServiceLocator result = DCL.ServiceLocatorTestFactory.CreateMocked();
+            result.Register<IPointerEventsController>( () => new PointerEventsController());
+            result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
+            result.Register<IWorldState>( () => new WorldState());
+            result.Register<IUpdateEventHandler>( () => new UpdateEventHandler());
+            result.Register<IWebRequestController>( WebRequestController.Create );
+            return result;
         }
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
+            Utils.LockCursor();
+
             cursorController = TestUtils.CreateComponentWithGameObject<CursorController>("CursorController");
             cursorController.normalCursor = Sprite.Create(Texture2D.whiteTexture, Rect.zero, Vector3.zero);
             cursorController.normalCursor.name = "Normal";
@@ -64,6 +53,7 @@ namespace Tests
             cursorController.hoverCursor.name = "Hover";
             cursorController.cursorImage = cursorController.gameObject.AddComponent<Image>();
             cursorController.cursorImage.enabled = false;
+            cursorController.canvasGroup = cursorController.gameObject.AddComponent<CanvasGroup>();
             cursorController.SetNormalCursor();
 
             yield return base.SetUp();
@@ -86,6 +76,7 @@ namespace Tests
             Object.Destroy(cursorController.hoverCursor);
             Object.Destroy(cursorController.gameObject);
             Object.Destroy(mainCamera.gameObject);
+            Utils.UnlockCursor();
             yield return base.TearDown();
         }
 

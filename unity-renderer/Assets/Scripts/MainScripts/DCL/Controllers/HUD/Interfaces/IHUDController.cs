@@ -1,8 +1,11 @@
 using System;
-public interface IHUDController : IDisposable
+
+namespace DCL
 {
-    void Initialize(IHUDFactory factory);
-    void ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration, string extraPayload = null);
-    IHUD GetHUDElement(HUDElementID id);
-    void Cleanup();
+    public interface IHUDController : IService
+    {
+        void ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration, string extraPayload = null);
+        IHUD GetHUDElement(HUDElementID id);
+        void Cleanup();
+    }
 }

@@ -15,7 +15,17 @@ namespace DCL
 
         public void Setup(string network, string realm)
         {
+            SetNetwork(network);
+            SetRealm(realm);
+        }
+
+        public void SetNetwork(string network)
+        {
             networkText.text = network;
+        }
+
+        public void SetRealm(string realm)
+        {
             realmText.text = realm;
         }
     }

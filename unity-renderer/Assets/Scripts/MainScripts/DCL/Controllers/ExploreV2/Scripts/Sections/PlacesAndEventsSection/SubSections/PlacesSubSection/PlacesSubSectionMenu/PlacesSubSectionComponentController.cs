@@ -63,6 +63,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
         this.exploreV2Analytics = exploreV2Analytics;
+
+        view.ConfigurePools();
     }
 
     internal void FirstLoading()
@@ -125,7 +127,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         List<HotSceneInfo> placesFiltered = placesFromAPI.Take(currentPlacesShowed).ToList();
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
-            PlaceCardComponentModel placeCardModel = ExplorePlacesHelpers.CreatePlaceCardModelFromAPIPlace(receivedPlace);
+            PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(receivedPlace);
             places.Add(placeCardModel);
         }
 
@@ -148,7 +150,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
-            PlaceCardComponentModel placeCardModel = ExplorePlacesHelpers.CreatePlaceCardModelFromAPIPlace(receivedPlace);
+            PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(receivedPlace);
             places.Add(placeCardModel);
         }
 
@@ -181,7 +183,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
-        ExplorePlacesHelpers.JumpInToPlace(placeFromAPI);
+        ExplorePlacesUtils.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);

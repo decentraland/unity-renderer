@@ -12,6 +12,8 @@ namespace DCL.Models
         UUID_ON_CLICK = 9,
         UUID_ON_DOWN = 10,
         UUID_ON_UP = 11,
+        UUID_ON_HOVER_ENTER = 12,
+        UUID_ON_HOVER_EXIT = 13,
         TEXT_SHAPE = 21,
         AVATAR_SHAPE = 56,
         ANIMATOR = 33,
@@ -22,6 +24,7 @@ namespace DCL.Models
         AUDIO_STREAM = 202,
         AVATAR_MODIFIER_AREA = 205,
         AVATAR_ATTACH = 206,
+        CAMERA_MODE_AREA = 207,
         QUEST_TRACKING_INFORMATION = 1417815519 // This corresponds with dcl-ecs-quests
     }
 
@@ -61,6 +64,8 @@ namespace DCL.Models
 
         VIDEO_CLIP = 70,
         VIDEO_TEXTURE = 71,
+
+        AVATAR_TEXTURE = 72,
 
         AUDIO_CLIP = 200,
 
