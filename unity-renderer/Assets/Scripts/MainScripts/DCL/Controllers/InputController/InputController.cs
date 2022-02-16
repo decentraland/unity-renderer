@@ -28,6 +28,16 @@ public enum DCLAction_Trigger
     ToggleQuestsPanelHud = 129,
     ToggleAvatarNamesHud = 130,
     TogglePlacesAndEventsHud = 131,
+    ToggleShortcut0 = 132,
+    ToggleShortcut1 = 133,
+    ToggleShortcut2 = 134,
+    ToggleShortcut3 = 135,
+    ToggleShortcut4 = 136,
+    ToggleShortcut5 = 137,
+    ToggleShortcut6 = 138,
+    ToggleShortcut7 = 139,
+    ToggleShortcut8 = 140,
+    ToggleShortcut9 = 141,
 
     OpenExpressions = 200,
     Expression_Wave = 201,
@@ -246,6 +256,36 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.TogglePlacesAndEventsHud:
                     InputProcessor.FromKey(action, KeyCode.X, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleShortcut0:
+                    InputProcessor.FromKey(action, KeyCode.Alpha0, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleShortcut1:
+                    InputProcessor.FromKey(action, KeyCode.Alpha1, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleShortcut2:
+                    InputProcessor.FromKey(action, KeyCode.Alpha2, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleShortcut3:
+                    InputProcessor.FromKey(action, KeyCode.Alpha3, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleShortcut4:
+                    InputProcessor.FromKey(action, KeyCode.Alpha4, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleShortcut5:
+                    InputProcessor.FromKey(action, KeyCode.Alpha5, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleShortcut6:
+                    InputProcessor.FromKey(action, KeyCode.Alpha6, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleShortcut7:
+                    InputProcessor.FromKey(action, KeyCode.Alpha7, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleShortcut8:
+                    InputProcessor.FromKey(action, KeyCode.Alpha8, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleShortcut9:
+                    InputProcessor.FromKey(action, KeyCode.Alpha9, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
                     InputProcessor.FromKey(action, KeyCode.Alpha1,

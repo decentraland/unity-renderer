@@ -191,7 +191,7 @@ namespace EmotesDeck
                     emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, emoteId, existingEmoteCard.model.pictureSprite);
                 }
 
-                existingEmoteCard.SetEmoteAsAssignedInSelectedSlot(existingEmoteCard.model.assignedSlot == slotNumber);
+                existingEmoteCard.SetEmoteAsAssignedInSelectedSlot(existingEmoteCard.model.assignedSlot == selectedSlot);
             }
 
             onEmoteEquipped?.Invoke(emoteId, slotNumber);

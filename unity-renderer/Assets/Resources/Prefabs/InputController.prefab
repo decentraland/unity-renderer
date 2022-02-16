@@ -68,6 +68,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0db4c2bbac61e484393294eb733e5113, type: 2}
   - {fileID: 11400000, guid: e0524e692b704d940906a6dec301acac, type: 2}
   - {fileID: 11400000, guid: 8d33228242d030841a39985073d18769, type: 2}
+  - {fileID: 11400000, guid: 69a2707a711f19945830855a2ddbe6a3, type: 2}
+  - {fileID: 11400000, guid: a71d4683356113743b56043a86c42e51, type: 2}
+  - {fileID: 11400000, guid: 1edc65f36dc0335488c079c69336ba65, type: 2}
+  - {fileID: 11400000, guid: 326f692b76a4a184e943f745906ed7a4, type: 2}
+  - {fileID: 11400000, guid: c4d8df2288d4adf49a79e39cc5d11ad0, type: 2}
+  - {fileID: 11400000, guid: 927f6fbd0faca3041b3c4b66c33aa50f, type: 2}
+  - {fileID: 11400000, guid: 74cd38d7b70156740a530f93cbb56206, type: 2}
+  - {fileID: 11400000, guid: caebf1a127a4aa94cad3863d28cc7615, type: 2}
+  - {fileID: 11400000, guid: b23cc2f1a18d8874eb20625e94ff5748, type: 2}
+  - {fileID: 11400000, guid: db8b531ea4f6a344d9c517ac52dd5227, type: 2}
   holdActions:
   - {fileID: 11400000, guid: 8eddef1fc072ec845aeb62f5e1041b52, type: 2}
   - {fileID: 11400000, guid: 0cfb8d150b7d6934d856665cf924d01d, type: 2}
