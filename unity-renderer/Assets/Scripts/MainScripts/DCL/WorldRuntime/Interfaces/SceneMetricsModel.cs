@@ -41,6 +41,18 @@
             return result;
         }
 
+        public static SceneMetricsModel operator +(SceneMetricsModel lhs, SceneMetricsModel rhs)
+        {
+            SceneMetricsModel result = lhs.Clone();
+            result.bodies += rhs.bodies;
+            result.entities += rhs.entities;
+            result.materials += rhs.materials;
+            result.textures += rhs.textures;
+            result.meshes += rhs.meshes;
+            result.triangles += rhs.triangles;
+            return result;
+        }
+
         public override string ToString()
         {
             return $"Textures: {textures} - Triangles: {triangles} - Materials: {materials} - Meshes: {meshes} - Bodies: {bodies} - Entities: {entities} - Scene Height: {sceneHeight}";

@@ -81,7 +81,6 @@ namespace DCL.Models
             return result;
         }
 
-        private static Shader hologramShader = null;
         private static List<int> texIdsCache = new List<int>();
         private static List<string> texNameCache = new List<string>();
 
@@ -92,11 +91,8 @@ namespace DCL.Models
 
         public static HashSet<Material> ExtractUniqueMaterials(IEnumerable<Renderer> renderers)
         {
-            if ( hologramShader == null )
-                hologramShader = Shader.Find("DCL/FX/Hologram");
-
             return new HashSet<Material>( renderers.SelectMany( (x) =>
-                x.sharedMaterials.Where( (mat) => mat != null && mat.shader != hologramShader )
+                x.sharedMaterials.Where((mat) => mat != null && mat.shader.name != "DCL/FX/Hologram")
             ) );
         }
 
