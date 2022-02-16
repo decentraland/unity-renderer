@@ -239,9 +239,6 @@ namespace EmotesDeck
             if (cardAnimator != null && !isFocused)
                 cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, isSelected);
 
-            if (mainButton != null)
-                mainButton.SetInteractable(!isSelected);
-
             RefreshEquipButtonVisibility();
             RefreshAssignedSlotTextVisibility();
         }

@@ -16,14 +16,24 @@ namespace EmotesDeck
     public class EmotesDeckComponentController : IEmotesDeckComponentController
     {
         internal BaseVariable<Transform> isInitialized => DataStore.i.emotesDeck.isInitialized;
+        internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
+        internal bool shortcutsCanBeUsed => isStarMenuOpen.Get() && view.isActive;
 
         internal IEmotesDeckComponentView view;
+        internal InputAction_Hold equipInputAction;
+        internal InputAction_Hold favoriteInputAction;
 
         public void Initialize()
         {
             view = CreateView();
             view.onEmoteSelected += OnEmoteSelected;
             view.onEmoteEquipped += OnEmoteEquipped;
+
+            equipInputAction = Resources.Load<InputAction_Hold>("DefaultConfirmAction");
+            equipInputAction.OnFinished += OnEquipInputActionTriggered;
+
+            favoriteInputAction = Resources.Load<InputAction_Hold>("DefaultCancelAction");
+            favoriteInputAction.OnFinished += OnFavoriteInputActionTriggered;
 
             LoadMockedEmotes();
 
@@ -34,6 +44,8 @@ namespace EmotesDeck
         {
             view.onEmoteSelected -= OnEmoteSelected;
             view.onEmoteEquipped -= OnEmoteEquipped;
+            equipInputAction.OnFinished -= OnEquipInputActionTriggered;
+            favoriteInputAction.OnFinished -= OnFavoriteInputActionTriggered;
         }
 
         internal void OnEmoteSelected(string emoteId)
@@ -41,9 +53,29 @@ namespace EmotesDeck
             Debug.Log("SANTI ---> EMOTE SELECTED: " + emoteId);
         }
 
-        internal void OnEmoteEquipped(string emoteId)
+        internal void OnEmoteEquipped(string emoteId, int slotNUmber)
         {
-            Debug.Log("SANTI ---> EMOTE EQUIPPED: " + emoteId);
+            Debug.Log("SANTI ---> EMOTE EQUIPPED: " + emoteId + " | SLOT: " + slotNUmber);
+        }
+
+        internal void OnEquipInputActionTriggered(DCLAction_Hold action)
+        {
+            if (!shortcutsCanBeUsed || view.selectedCard == null)
+                return;
+
+            view.EquipEmote(
+                view.selectedCard.model.id, 
+                view.selectedSlot);
+        }
+
+        internal void OnFavoriteInputActionTriggered(DCLAction_Hold action)
+        {
+            if (!shortcutsCanBeUsed || view.selectedCard == null)
+                return;
+
+            view.SetEmoteAsFavorite(
+                view.selectedCard.model.id, 
+                !view.selectedCard.model.isFavorite);
         }
 
         internal virtual IEmotesDeckComponentView CreateView() => EmotesDeckComponentView.Create();

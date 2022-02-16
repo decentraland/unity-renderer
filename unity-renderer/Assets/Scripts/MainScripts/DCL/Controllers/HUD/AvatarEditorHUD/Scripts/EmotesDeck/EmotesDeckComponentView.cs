@@ -16,7 +16,7 @@ namespace EmotesDeck
         /// <summary>
         /// It will be triggered when an emote is equipped.
         /// </summary>
-        event Action<string> onEmoteEquipped;
+        event Action<string, int> onEmoteEquipped;
 
         /// <summary>
         /// It represents the container transform of the component.
@@ -24,9 +24,19 @@ namespace EmotesDeck
         Transform emotesDeckTransform { get; }
 
         /// <summary>
+        /// Resturn true if the view is currently active.
+        /// </summary>
+        bool isActive { get; }
+
+        /// <summary>
         /// Get the current selected slot number.
         /// </summary>
         int selectedSlot { get; }
+
+        /// <summary>
+        /// Get the current selected card.
+        /// </summary>
+        EmoteCardComponentView selectedCard { get; }
 
         /// <summary>
         /// Set the emotes grid component with a list of emote cards.
@@ -70,12 +80,14 @@ namespace EmotesDeck
         [SerializeField] internal GridContainerComponentView emotesGrid;
 
         public event Action<string> onEmoteSelected;
-        public event Action<string> onEmoteEquipped;
+        public event Action<string, int> onEmoteEquipped;
 
         internal Pool emoteCardsPool;
 
+        public bool isActive => gameObject.activeInHierarchy;
         public Transform emotesDeckTransform => transform;
         public int selectedSlot => emoteSlotSelector.selectedSlot;
+        public EmoteCardComponentView selectedCard { get; private set; }
 
         public override void Awake()
         {
@@ -84,6 +96,16 @@ namespace EmotesDeck
             emoteSlotSelector.onSlotSelected += OnSlotSelected;
 
             ConfigureEmotesPool();
+        }
+
+        public override void OnEnable()
+        {
+            base.OnEnable();
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
         }
 
         public override void Start()
@@ -139,6 +161,9 @@ namespace EmotesDeck
 
         public void SetEmoteAsFavorite(string emoteId, bool isFavorite)
         {
+            if (string.IsNullOrEmpty(emoteId))
+                return;
+
             EmoteCardComponentView emoteCardsToUpdate = GetEmoteCardById(emoteId);
 
             if (emoteCardsToUpdate != null)
@@ -147,6 +172,13 @@ namespace EmotesDeck
 
         public void EquipEmote(string emoteId, int slotNumber)
         {
+            if (string.IsNullOrEmpty(emoteId))
+                return;
+
+            EmoteCardComponentView emoteCardsToUpdate = GetEmoteCardById(emoteId);
+            if (emoteCardsToUpdate != null && emoteCardsToUpdate.model.assignedSlot == slotNumber)
+                return;
+
             List<EmoteCardComponentView> currentEmoteCards = GetAllEmoteCards();
             foreach (var existingEmoteCard in currentEmoteCards)
             {
@@ -161,6 +193,8 @@ namespace EmotesDeck
 
                 existingEmoteCard.SetEmoteAsAssignedInSelectedSlot(existingEmoteCard.model.assignedSlot == slotNumber);
             }
+
+            onEmoteEquipped?.Invoke(emoteId, slotNumber);
         }
 
         internal void ConfigureEmotesPool()
@@ -185,7 +219,7 @@ namespace EmotesDeck
             emoteGO.onMainClick.RemoveAllListeners();
             emoteGO.onMainClick.AddListener(() => OnEmoteSelected(emoteGO.model.id));
             emoteGO.onEquipClick.RemoveAllListeners();
-            emoteGO.onEquipClick.AddListener(() => OnEmoteEquipped(emoteGO.model.id));
+            emoteGO.onEquipClick.AddListener(() => EquipEmote(emoteGO.model.id, selectedSlot));
 
             return emoteGO;
         }
@@ -203,6 +237,11 @@ namespace EmotesDeck
 
         internal void OnEmoteSelected(string emoteId)
         {
+            selectedCard = GetEmoteCardById(emoteId);
+
+            if (selectedCard.model.isSelected)
+                return;
+
             List<EmoteCardComponentView> currentEmoteCards = GetAllEmoteCards();
             foreach (var existingEmoteCard in currentEmoteCards)
             {
@@ -210,12 +249,6 @@ namespace EmotesDeck
             }
 
             onEmoteSelected?.Invoke(emoteId);
-        }
-
-        internal void OnEmoteEquipped(string emoteId)
-        {
-            EquipEmote(emoteId, selectedSlot);
-            onEmoteEquipped?.Invoke(emoteId);
         }
 
         internal List<EmoteCardComponentView> GetAllEmoteCards()
