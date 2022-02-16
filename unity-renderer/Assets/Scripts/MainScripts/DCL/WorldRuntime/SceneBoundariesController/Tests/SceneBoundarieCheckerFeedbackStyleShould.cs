@@ -25,7 +25,7 @@ public class SceneBoundarieCheckerFeedbackStyleShould : IntegrationTestSuite
     public void ChangeFeedbackStyleChange()
     {
         //Arrange
-        var redFlickerStyle = new SceneBoundsFeedbackStyle_RedFlicker();
+        var redFlickerStyle = new SceneBoundsFeedbackStyle_RedBox();
 
         //Act
         Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(redFlickerStyle);
