@@ -705,6 +705,9 @@ public class BIWEntity
 
     public bool IsEntityNFT()
     {
+        if (rootEntity.sharedComponents == null)
+            return false;
+        
         foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in rootEntity.sharedComponents)
         {
             if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)

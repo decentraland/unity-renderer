@@ -80,7 +80,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
                 if (!entity.rootEntity.TryGetSharedComponent(CLASS_ID.GLTF_SHAPE, out ISharedComponent component))
                     Assert.Fail("Floor doesn't contains a GLTFShape!");
 
-                entity.rootEntity.OnShapeUpdated?.Invoke(entity.rootEntity);
+                entity.rootEntity.OnShapeLoaded?.Invoke(entity.rootEntity);
                 Assert.IsFalse(biwFloorHandler.ExistsFloorPlaceHolderForEntity(entity.rootEntity.entityId));
                 break;
             }

@@ -68,7 +68,7 @@ public class ProjectCardViewShould
 
         //Assert
         Assert.AreEqual(ProjectCardView.NOT_PUBLISHED,cardView.projectSyncTxt.text);
-        Assert.AreEqual(false,cardView.syncImage.gameObject);
+        Assert.AreEqual(false,cardView.syncImage.gameObject.activeInHierarchy);
     }
 
     [Test]

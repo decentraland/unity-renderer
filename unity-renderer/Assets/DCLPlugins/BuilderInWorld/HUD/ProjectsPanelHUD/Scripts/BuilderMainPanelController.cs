@@ -140,10 +140,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     public void Initialize(IContext context)
     {
-        this.context = context;
-        this.context.publisher.OnPublishFinish += PublishFinish;
-        
-        Initialize(new SectionsController(view.GetSectionContainer()),
+        Initialize(context,new SectionsController(view.GetSectionContainer()),
             new ScenesViewController(view.GetSceneCardViewPrefab(), view.GetTransform()),
             new LandsController(),
             new ProjectsController(view.GetProjectCardView(), view.GetProjectCardViewContextMenu(), view.GetTransform()),
@@ -152,13 +149,16 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             Environment.i.platform.serviceProviders.catalyst);
     }
 
-    internal void Initialize(ISectionsController sectionsController,
+    internal void Initialize(IContext context,ISectionsController sectionsController,
         IScenesViewController scenesViewController, ILandsController landsesController, IProjectsController projectsController, INewProjectFlowController newProjectFlowController, ITheGraph theGraph, ICatalyst catalyst)
     {
         if (isInitialized)
             return;
 
         isInitialized = true;
+        
+        this.context = context;
+        this.context.publisher.OnPublishFinish += PublishFinish;
 
         this.sectionsController = sectionsController;
         this.scenesViewController = scenesViewController;

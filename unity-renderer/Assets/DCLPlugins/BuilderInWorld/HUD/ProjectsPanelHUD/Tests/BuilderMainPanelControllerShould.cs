@@ -49,7 +49,8 @@ namespace Tests
             catalyst.GetEntities(Arg.Any<string>(), Arg.Any<string[]>()).Returns(new Promise<string>());
             catalyst.GetDeployedScenes(Arg.Any<string[]>()).Returns(new Promise<CatalystSceneEntityPayload[]>());
 
-            controller.Initialize(sectionsController, scenesViewController,
+            IContext context = BIWTestUtils.CreateMockedContext();
+            controller.Initialize(context,sectionsController, scenesViewController,
                 landsesController, projectsController, newProjectFlowController, theGraph, catalyst);
         }
 
@@ -139,20 +140,6 @@ namespace Tests
 
             //Act
             controller.GoToCoords(new Vector2Int(0, 0));
-
-            //Assert
-            Assert.IsTrue(conditionMet);
-        }
-
-        [Test]
-        public void GoToEditScene()
-        {
-            //Arrange
-            conditionMet = false;
-            controller.OnJumpInOrEdit += AssertJump;
-
-            //Act
-            controller.OnGoToEditScene(new Vector2Int(0, 0));
 
             //Assert
             Assert.IsTrue(conditionMet);
