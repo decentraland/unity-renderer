@@ -577,6 +577,9 @@ namespace DCL.Builder
             context.editor.ExitEditMode();
 
             builderInWorldBridge.StopIsolatedMode();
+
+            Utils.UnlockCursor();
+            
             DataStore.i.player.canPlayerMove.Set(true);
             DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
         }
