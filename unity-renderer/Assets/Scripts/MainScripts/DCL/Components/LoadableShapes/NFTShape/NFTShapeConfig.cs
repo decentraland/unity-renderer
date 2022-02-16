@@ -6,7 +6,6 @@ public class NFTShapeConfig : ScriptableObject
     public float hqImgMinDistance = 7;
     public float hqImgFacingDotProdMinValue = 0.4f;
     public float hqImgInFrontDotProdMinValue = 0.2f;
-    public bool verbose = false;
 
 #if UNITY_EDITOR
     private void OnEnable()

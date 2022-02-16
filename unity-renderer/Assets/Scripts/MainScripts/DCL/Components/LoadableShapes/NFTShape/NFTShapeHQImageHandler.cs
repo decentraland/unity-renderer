@@ -14,6 +14,8 @@ namespace NFTShape_Internal
 
     public class NFTShapeHQImageHandler : IDisposable
     {
+        public static bool VERBOSE = true;
+
         readonly NFTShapeHQImageConfig hqImageConfig;
         readonly INFTAsset asset;
         readonly Camera camera;
@@ -52,7 +54,7 @@ namespace NFTShape_Internal
                                   nftControllerT.position - camera.transform.position)
                               > hqImageConfig.nftShapeConfig.hqImgInFrontDotProdMinValue;
 
-            if (hqImageConfig.nftShapeConfig.verbose)
+            if (VERBOSE)
             {
                 Debug.Log($"Camera is in front of {hqImageConfig.name}? {isCameraInFront}");
             }
@@ -67,7 +69,7 @@ namespace NFTShape_Internal
                               Vector3.Dot(nftControllerT.forward, camera.transform.forward) >=
                               hqImageConfig.nftShapeConfig.hqImgFacingDotProdMinValue;
 
-            if (hqImageConfig.nftShapeConfig.verbose)
+            if (VERBOSE)
             {
                 Debug.Log($"Player is looking at {hqImageConfig.name}? {isPlayerLooking}");
             }
@@ -110,7 +112,7 @@ namespace NFTShape_Internal
                 RestorePreviewTextureIfInHQ();
             }
 
-            if (hqImageConfig.nftShapeConfig.verbose)
+            if (VERBOSE)
             {
                 Debug.Log($"Player position relative to {hqImageConfig.name} is near? {isPlayerNear}");
             }
@@ -124,7 +126,7 @@ namespace NFTShape_Internal
             Action debugSuccess = null;
             Action<Exception> debugFail = null;
 
-            if (hqImageConfig.nftShapeConfig.verbose)
+            if (VERBOSE)
             {
                 debugSuccess = () => Debug.Log($"Success: Fetch {hqImageConfig.name} HQ image");
                 debugFail = error => Debug.Log($"Fail: Fetch {hqImageConfig.name} HQ image, Exception: {error}");
@@ -133,7 +135,7 @@ namespace NFTShape_Internal
             // TODO(Brian): Asset is not supposed to fetch. Move this fetching mechanism to this class or elsewhere.
             asset.FetchAndSetHQAsset(hqImageConfig.imageUrl, debugSuccess, debugFail);
 
-            if (hqImageConfig.nftShapeConfig.verbose)
+            if (VERBOSE)
             {
                 Debug.Log($"Fetch {hqImageConfig.name} HQ image");
             }
@@ -142,7 +144,7 @@ namespace NFTShape_Internal
         private void RestorePreviewTexture()
         {
             asset.RestorePreviewAsset();
-            if (hqImageConfig.nftShapeConfig.verbose)
+            if (VERBOSE)
             {
                 Debug.Log($"Restore {hqImageConfig.name} preview image");
             }
