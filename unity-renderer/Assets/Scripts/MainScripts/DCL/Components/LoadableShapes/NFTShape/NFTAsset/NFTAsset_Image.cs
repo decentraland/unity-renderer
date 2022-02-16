@@ -31,7 +31,8 @@ namespace NFTShape_Internal
 
         public void FetchAndSetHQAsset(string url, Action onSuccess, Action<Exception> onFail)
         {
-            hqTexture = new AssetPromise_Texture($"{url}=s{RESOLUTION_HQ}");
+            string finalUrl = $"{url}=s{RESOLUTION_HQ}";
+            hqTexture = new AssetPromise_Texture($"{finalUrl}");
 
             hqTexture.OnSuccessEvent += asset =>
             {

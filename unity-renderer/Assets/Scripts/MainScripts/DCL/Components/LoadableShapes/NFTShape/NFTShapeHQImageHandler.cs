@@ -14,7 +14,7 @@ namespace NFTShape_Internal
 
     public class NFTShapeHQImageHandler : IDisposable
     {
-        public static bool VERBOSE = true;
+        public static bool VERBOSE = false;
 
         readonly NFTShapeHQImageConfig hqImageConfig;
         readonly INFTAsset asset;
@@ -114,7 +114,7 @@ namespace NFTShape_Internal
 
             if (VERBOSE)
             {
-                Debug.Log($"Player position relative to {hqImageConfig.name} is near? {isPlayerNear}");
+                //Debug.Log($"Player position relative to {hqImageConfig.name} is near? {isPlayerNear}");
             }
         }
 

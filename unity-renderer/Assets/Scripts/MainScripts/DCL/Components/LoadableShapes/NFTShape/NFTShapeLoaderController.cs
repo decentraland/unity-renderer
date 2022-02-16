@@ -185,7 +185,7 @@ public class NFTShapeLoaderController : MonoBehaviour
             nftInfo.previewImageUrl,
             (result) =>
             {
-                PrepareFrame(result, nftInfo.name, nftInfo.previewImageUrl);
+                PrepareFrame(result, nftInfo.name, nftInfo.imageUrl);
                 FinishLoading(true);
             },
             (exc) =>

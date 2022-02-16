@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using NFTShape_Internal;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace DCL
@@ -42,6 +43,7 @@ namespace DCL
                 yield break;
             }
 
+            Debug.Log("Loading preview... " + url);
             string contentType = responseHeaders[CONTENT_TYPE];
             long contentLength = long.Parse(responseHeaders[CONTENT_LENGTH]);
             bool isGif = contentType == CONTENT_TYPE_GIF;
