@@ -106,6 +106,8 @@ namespace DCL.Builder
         internal const float SCENE_CARD_SIZE = 84;
         internal const float SCENE_CARD_ITEM_PADDING = 18;
         internal const float SCENE_CARD_TOTAL_PADDING = 36;
+        
+        internal const float MS_TO_IGNORE_DUE_TO_SERVER = 30000;
 
         public event Action<ProjectData> OnEditorPressed;
         public event Action<IProjectCardView> OnSettingsPressed;
@@ -224,7 +226,7 @@ namespace DCL.Builder
                 long projectTimestamp = BIWUtils.ConvertToMilisecondsTimestamp(projectData.updated_at);
                 foreach (Scene scene in scenes)
                 {
-                    if (scene.deployTimestamp < projectTimestamp)
+                    if (scene.deployTimestamp + MS_TO_IGNORE_DUE_TO_SERVER < projectTimestamp)
                     {
                         isSync = false;
                         break;

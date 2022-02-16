@@ -63,9 +63,9 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
     public override void ExitEditMode()
     {
-        if (saveAttemptsSinceLastSave > 0)
+        if (saveAttemptsSinceLastSave > 0 && context.editorContext.publishController.HasUnpublishChanges())
         {
-            ForceSave();
+            ForceSave();    
             ResetNumberOfSaves();
         }
 

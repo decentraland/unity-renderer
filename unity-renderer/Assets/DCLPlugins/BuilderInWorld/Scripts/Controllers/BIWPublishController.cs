@@ -70,7 +70,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
     
     public bool HasUnpublishChanges()
     {
-            CheckIfThereAreUnpublishChanges();
+        CheckIfThereAreUnpublishChanges();
         return hasUnpublishedChanges;
     }
 
