@@ -41,14 +41,12 @@ namespace UnityGLTF.Loader
 
             if (!File.Exists(pathToLoad))
             {
-                Debug.Log($"GLTFSceneImporter - Error - Buffer file not found ({pathToLoad}) -- {fileToLoad}");
+                Debug.LogError($"GLTFSceneImporter - Error - Buffer file not found ({pathToLoad}) -- {fileToLoad}");
                 return;
             }
 
-            await TaskUtils.Run( () =>
-            {
-                LoadedStream = File.OpenRead(pathToLoad);
-            }, cancellationToken: token);
+            await UniTask.Yield();
+            LoadedStream = File.OpenRead(pathToLoad);
         }
 
         public void LoadStreamSync(string gltfFilePath)

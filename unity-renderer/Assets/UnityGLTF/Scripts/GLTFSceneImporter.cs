@@ -148,6 +148,9 @@ namespace UnityGLTF
         protected AssetCache _assetCache;
         protected ILoader _loader;
         protected bool _isRunning = false;
+        private bool _isCompleted = false;
+        public bool IsRunning => _isRunning;
+        public bool IsCompleted => _isCompleted;
 
         public string id;
 
@@ -337,6 +340,7 @@ namespace UnityGLTF
                 lock (this)
                 {
                     _isRunning = false;
+                    _isCompleted = true;
                 }
             }
         }
@@ -461,7 +465,7 @@ namespace UnityGLTF
             {
                 while (streamingImagesStaticList.Contains(image.Uri))
                 {
-                    await UniTask.Delay(TimeSpan.FromMilliseconds(25), cancellationToken: token);
+                    await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: token);
                 }
             }
 
@@ -523,7 +527,7 @@ namespace UnityGLTF
                 _gltfRoot ??= new GLTFRoot();
 
                 cancellationToken.ThrowIfCancellationRequested();
-                
+
                 await TaskUtils.RunThrottledCoroutine(GLTFParser.ParseJsonDelayed(_gltfStream.Stream, _gltfRoot, _gltfStream.StartPosition),
                     exception => throw exception,
                     throttlingCounter.EvaluateTimeBudget);
@@ -600,6 +604,7 @@ namespace UnityGLTF
                     {
                         await _loader.LoadStream(buffer.Uri, token);
                         bufferDataStream = _loader.LoadedStream;
+                        Debug.Log($"<color=red>Adding buffer {buffer.Uri} {id}</color>");
                         PersistentAssetCache.AddBuffer(buffer.Uri, id, bufferDataStream);
                     }
                 }
@@ -654,7 +659,7 @@ namespace UnityGLTF
 
                 await ConstructUnityTexture(settings, stream, imageCacheIndex, cancellationToken);
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
         }
 
@@ -696,7 +701,7 @@ namespace UnityGLTF
                     await ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
                 }
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
 
             if (stream is FileStream fileStream)
@@ -707,7 +712,7 @@ namespace UnityGLTF
                     await ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
                 }
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
         }
 
@@ -2362,6 +2367,7 @@ namespace UnityGLTF
 
                 if (addImagesToPersistentCaching)
                 {
+                    Debug.Log($"<color=magenta>Adding image to persistent cache {imageId}</color>");
                     source = PersistentAssetCache.AddImage(imageId, _assetCache.ImageCache[sourceId], linear);
                 }
                 else
