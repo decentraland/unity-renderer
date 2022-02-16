@@ -5,6 +5,7 @@ using DCL.Models;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityGLTF;
+using UnityGLTF.Scripts;
 
 namespace DCL
 {
@@ -16,7 +17,7 @@ namespace DCL
         protected ContentProvider provider = null;
         public string fileName { get; private set; }
 
-        GLTFComponent gltfComponent = null;
+        IGLTFComponent gltfComponent = null;
         IWebRequestController webRequestController = null;
 
         object id = null;
@@ -68,8 +69,9 @@ namespace DCL
             try
             {
                 gltfComponent = asset.container.AddComponent<GLTFComponent>();
-                gltfComponent.throttlingCounter = AssetPromiseKeeper_GLTF.i.throttlingCounter;
-                gltfComponent.Initialize(webRequestController);
+
+                gltfComponent.Initialize(webRequestController, AssetPromiseKeeper_GLTF.i.throttlingCounter);
+                gltfComponent.RegisterCallbacks(MeshCreated, RendererCreated);
 
                 GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
                 {
@@ -81,12 +83,6 @@ namespace DCL
                         (settings.cachingFlags & MaterialCachingHelper.Mode.CACHE_MATERIALS) != 0,
                     forceGPUOnlyMesh = settings.forceGPUOnlyMesh
                 };
-
-                gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
-                    false, tmpSettings, FileToHash);
-
-                gltfComponent.sceneImporter.OnMeshCreated += MeshCreated;
-                gltfComponent.sceneImporter.OnRendererCreated += RendererCreated;
 
                 gltfComponent.OnSuccess += () =>
                 {
@@ -100,6 +96,9 @@ namespace DCL
                 };
 
                 gltfComponent.OnFail += OnFail;
+                
+                gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
+                    false, tmpSettings, FileToHash);
 
                 asset.name = fileName;
             }

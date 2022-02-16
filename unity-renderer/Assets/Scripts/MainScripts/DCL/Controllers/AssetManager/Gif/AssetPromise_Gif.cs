@@ -26,7 +26,11 @@ namespace DCL
                     }, OnFail));
         }
 
-        protected override void OnCancelLoading() { CoroutineStarter.Stop(loadingRoutine); }
+        protected override void OnCancelLoading()
+        {
+            if (loadingRoutine != null)
+                CoroutineStarter.Stop(loadingRoutine);
+        }
 
         protected override bool AddToLibrary()
         {

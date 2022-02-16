@@ -83,7 +83,14 @@ namespace UnityGLTF.Cache
                 return;
 
             if (HasImage(fullId))
+            {
                 ImageCacheByUri.Remove(fullId);
+            }
+        }
+
+        public static void ClearImageCache()
+        {
+            ImageCacheByUri.Clear();
         }
 
         /// <summary>
@@ -96,7 +103,7 @@ namespace UnityGLTF.Cache
 
             if (foundKey == null)
                 return;
-
+            
             ImageCacheByUri.Remove(foundKey);
         }
 
