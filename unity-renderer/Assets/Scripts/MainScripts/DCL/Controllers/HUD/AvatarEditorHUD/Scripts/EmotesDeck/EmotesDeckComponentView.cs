@@ -9,11 +9,6 @@ namespace EmotesDeck
     public interface IEmotesDeckComponentView
     {
         /// <summary>
-        /// It will be triggered when a slot is selected. It returns the selected slot number and the assigned emote id.
-        /// </summary>
-        event Action<int, string> onSlotSelected;
-
-        /// <summary>
         /// It will be triggered when an emote card is selected.
         /// </summary>
         event Action<string> onEmoteSelected;
@@ -22,6 +17,11 @@ namespace EmotesDeck
         /// It will be triggered when an emote is equipped.
         /// </summary>
         event Action<string> onEmoteEquipped;
+
+        /// <summary>
+        /// It represents the container transform of the component.
+        /// </summary>
+        Transform emotesDeckTransform { get; }
 
         /// <summary>
         /// Get the current selected slot number.
@@ -69,12 +69,12 @@ namespace EmotesDeck
         [SerializeField] internal EmoteSlotViewerComponentView emoteSlotViewer;
         [SerializeField] internal GridContainerComponentView emotesGrid;
 
-        public event Action<int, string> onSlotSelected;
         public event Action<string> onEmoteSelected;
         public event Action<string> onEmoteEquipped;
 
         internal Pool emoteCardsPool;
 
+        public Transform emotesDeckTransform => transform;
         public int selectedSlot => emoteSlotSelector.selectedSlot;
 
         public override void Awake()
@@ -91,7 +91,6 @@ namespace EmotesDeck
             base.Start();
 
             emoteSlotSelector.SelectSlot(DEFAULT_SELECTED_SLOT);
-            SetMockedEmotes();
         }
 
         public override void RefreshControl()
@@ -200,7 +199,6 @@ namespace EmotesDeck
             }
 
             emoteSlotViewer.SetSelectedSlot(slotNumber);
-            onSlotSelected?.Invoke(slotNumber, emoteId);
         }
 
         internal void OnEmoteSelected(string emoteId)
@@ -233,26 +231,12 @@ namespace EmotesDeck
             return GetAllEmoteCards().FirstOrDefault(x => x.model.id == emoteId);
         }
 
-        // ------------- DEBUG ------------------------
-        [ContextMenu("SetMockedEmotes")]
-        public void SetMockedEmotes()
+        internal static IEmotesDeckComponentView Create()
         {
-            List<EmoteCardComponentModel> mockedEmotes = new List<EmoteCardComponentModel>();
+            EmotesDeckComponentView emotesDeckComponentView = Instantiate(Resources.Load<GameObject>("EmotesDeck/EmotesDeckSection")).GetComponent<EmotesDeckComponentView>();
+            emotesDeckComponentView.name = "_EmotesDeckSection";
 
-            for (int i = 0; i < 42; i++)
-            {
-                mockedEmotes.Add(new EmoteCardComponentModel
-                {
-                    id = $"Emote{i}",
-                    pictureUri = $"https://picsum.photos/100?{i}",
-                    isFavorite = false,
-                    isAssignedInSelectedSlot = false,
-                    isSelected = false,
-                    assignedSlot = -1
-                });
-            }
-
-            SetEmotes(mockedEmotes);
+            return emotesDeckComponentView;
         }
     }
 }

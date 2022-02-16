@@ -101,6 +101,10 @@ public class AvatarEditorHUDView : MonoBehaviour
     [SerializeField] private GameObject skinsPopulatedListContainer;
     [SerializeField] private GameObject skinsEmptyListContainer;
 
+    [Header("Emotes Deck")]
+    [SerializeField] internal GameObject emotesCategoryButton;
+    [SerializeField] internal Transform emotesSectionTransform;
+
     internal static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
