@@ -211,6 +211,9 @@ namespace DCL
 
         private void UpdateMetrics()
         {
+            if (string.IsNullOrEmpty(sceneId))
+                return;
+            
             var sceneData = data?.sceneData[sceneId];
 
             if ( sceneData != null )
