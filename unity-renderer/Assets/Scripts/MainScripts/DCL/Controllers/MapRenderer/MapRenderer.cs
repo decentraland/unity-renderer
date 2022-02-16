@@ -18,7 +18,9 @@ namespace DCL
         const string MINIMAP_USER_ICONS_POOL_NAME = "MinimapUserIconsPool";
         const int MINIMAP_USER_ICONS_MAX_PREWARM = 30;
         private const int MAX_CURSOR_PARCEL_DISTANCE = 40;
+        private const int MAX_SCENE_CHARACTER_TITLE = 29;
         private int NAVMAP_CHUNK_LAYER;
+        private const string EMPTY_PARCEL_NAME = "Empty parcel";
 
         public static MapRenderer i { get; private set; }
 
@@ -266,6 +268,9 @@ namespace DCL
             if (scenesOfInterest.Contains(sceneInfo))
                 return;
 
+            if (sceneInfo.name != null && sceneInfo.name.Equals(EMPTY_PARCEL_NAME))
+                return;
+
             scenesOfInterest.Add(sceneInfo);
 
             GameObject go = Object.Instantiate(scenesOfInterestIconPrefab.gameObject, overlayContainer.transform);
@@ -284,7 +289,9 @@ namespace DCL
             MapSceneIcon icon = go.GetComponent<MapSceneIcon>();
 
             if (icon.title != null)
-                icon.title.text = sceneInfo.name;
+            { 
+                icon.title.text = sceneInfo.name.Length > MAX_SCENE_CHARACTER_TITLE ? sceneInfo.name.Substring(0, MAX_SCENE_CHARACTER_TITLE - 1) : sceneInfo.name;
+            }
 
             scenesOfInterestMarkers.Add(sceneInfo, go);
         }
