@@ -130,6 +130,8 @@ namespace DCL.ABConverter
             GLTFImporter.PreloadedGLTFObjects.Clear();
             string currentLoadingGLTF = "";
             
+            assetsToMark.Clear();
+            
             //TODO(Brian): Use async-await instead of Application.update
             void UpdateLoop()
             {
@@ -177,7 +179,7 @@ namespace DCL.ABConverter
 
                     if (Time.realtimeSinceStartup - timer >= IMPORTING_TIMEOUT)
                     {
-                        Debug.LogError("Importing timeout!");
+                        log.Error("Importing timeout!");
                     }
 
                     env.assetDatabase.Refresh();
