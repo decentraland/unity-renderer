@@ -192,9 +192,6 @@ public static class CommonScriptableObjects
     private static BooleanVariable featureKeyTriggersBlockedValue;
     public static BooleanVariable featureKeyTriggersBlocked => GetOrLoad(ref featureKeyTriggersBlockedValue, "ScriptableObjects/FeatureKeyTriggersBlocked");
 
-    private static BooleanVariable motdActiveValue;
-    public static BooleanVariable motdActive => GetOrLoad(ref motdActiveValue, "ScriptableObjects/MOTDActive");
-
     private static BooleanVariable emailPromptActiveValue;
     public static BooleanVariable emailPromptActive => GetOrLoad(ref emailPromptActiveValue, "ScriptableObjects/EmailPromptActive");
 
