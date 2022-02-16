@@ -33,12 +33,14 @@ namespace DCL.Skybox
         public Rect rightPanelPadding;
         public GUIStyleStateVar rightPanelHeadingState;
         public GUIStyleStateVar rightPanelHeadingTextColor;
+        public GUIStyleStateVar transitioningVariableBG;
 
         private void OnValidate()
         {
             // Make new texture and assign to specific style state
             rightPanelHeadingState.AssignTexture();
             rightPanelHeadingTextColor.AssignTexture();
+            transitioningVariableBG.AssignTexture();
         }
 
         [ContextMenu("Assign Values")]

@@ -189,3 +189,7 @@ MonoBehaviour:
     backgroundColor: {r: 0, g: 0, b: 0, a: 1}
     textColor: {r: 0.23393148, g: 0.6226415, b: 0.12570308, a: 1}
     backgroundTex: {fileID: 0}
+  transitioningVariableBG:
+    backgroundColor: {r: 0.38679248, g: 0.38679248, b: 0.38679248, a: 1}
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+    backgroundTex: {fileID: 0}

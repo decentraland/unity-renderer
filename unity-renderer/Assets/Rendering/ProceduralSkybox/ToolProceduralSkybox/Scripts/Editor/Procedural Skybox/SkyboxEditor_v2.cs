@@ -55,13 +55,14 @@ namespace DCL.Skybox
         private GUIStyle renderingMarkerStyle;
         private GUIStyle configurationStyle;
         private GUIStyle percentagePartStyle;
+        private GUIStyle transitioningBoxStyle;
 
         private List<string> renderingOrderList;
 
         private float leftPanelWidth;
         private List<RightPanelPins> rightPanelPins = new List<RightPanelPins>() { new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = "Background Layer" } };
 
-        [MenuItem("Window/Skybox Editor v2")]
+        [MenuItem("Window/Skybox Editor")]
         static void Init()
         {
             SkyboxEditorWindow_v2 window = (SkyboxEditorWindow_v2)EditorWindow.GetWindow(typeof(SkyboxEditorWindow_v2));
@@ -207,11 +208,9 @@ namespace DCL.Skybox
             style.alignment = TextAnchor.MiddleLeft;
 
             style.fixedWidth = position.width - toolSize.toolRightPadding;
-            //style.fixedHeight = toolSize.topPanelHeight;
             EditorGUILayout.BeginHorizontal(style);
 
             style.fixedWidth = (position.width - toolSize.toolRightPadding) / 2;
-            //style.fixedHeight = toolSize.topPanelHeight;
             EditorGUILayout.BeginVertical(style);
             RenderProfileControl();
             EditorGUILayout.EndVertical();
@@ -331,8 +330,6 @@ namespace DCL.Skybox
             lifecycleDuration = EditorGUILayout.FloatField(lifecycleDuration);
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
-
-
         }
 
         #endregion
@@ -624,6 +621,11 @@ namespace DCL.Skybox
                 percentagePartStyle = new GUIStyle();
                 percentagePartStyle.alignment = TextAnchor.MiddleCenter;
             }
+
+            if (transitioningBoxStyle == null)
+            {
+                transitioningBoxStyle = new GUIStyle("box");
+            }
         }
 
         void TakeControlAtRuntime()
@@ -666,77 +668,6 @@ namespace DCL.Skybox
             AssetDatabase.SaveAssets();
 
             return temp;
-        }
-
-        private void RenderConfigurations()
-        {
-            GUILayout.Label("Configurations", EditorStyles.boldLabel);
-
-
-            GUILayout.Label("Loaded: " + selectedConfiguration.skyboxID);
-            GUILayout.BeginHorizontal(configurationStyle);
-
-            if (creatingNewConfig)
-            {
-                GUILayout.Label("Name");
-                newConfigName = EditorGUILayout.TextField(newConfigName, GUILayout.Width(200));
-
-                if (GUILayout.Button("Create", GUILayout.Width(50)))
-                {
-                    // Make new configuration
-                    selectedConfiguration = AddNewConfiguration(newConfigName);
-
-                    // Update configuration list
-                    UpdateConfigurationsList();
-                    creatingNewConfig = false;
-
-                    if (Application.isPlaying && SkyboxController.i != null && overridingController)
-                    {
-                        SkyboxController.i.UpdateConfigurationTimelineEvent(selectedConfiguration);
-                    }
-                }
-
-                if (GUILayout.Button("Cancel", GUILayout.Width(50)))
-                {
-                    creatingNewConfig = false;
-                }
-            }
-            else
-            {
-                EditorGUILayout.BeginVertical();
-                newConfigIndex = EditorGUILayout.Popup(selectedConfigurationIndex, configurationNames.ToArray(), GUILayout.Width(200));
-                selectedConfiguration = (SkyboxConfiguration)EditorGUILayout.ObjectField(selectedConfiguration, typeof(SkyboxConfiguration), false);
-
-                EditorGUILayout.EndVertical();
-
-                if (newConfigIndex != selectedConfigurationIndex)
-                {
-                    selectedConfiguration = configurations[newConfigIndex];
-                    selectedConfigurationIndex = newConfigIndex;
-
-                    if (Application.isPlaying && SkyboxController.i != null && overridingController)
-                    {
-                        SkyboxController.i.UpdateConfigurationTimelineEvent(selectedConfiguration);
-                    }
-                }
-
-                if (selectedConfiguration != configurations[selectedConfigurationIndex])
-                {
-                    UpdateConfigurationsList();
-
-                    if (Application.isPlaying && SkyboxController.i != null && overridingController)
-                    {
-                        SkyboxController.i.UpdateConfigurationTimelineEvent(selectedConfiguration);
-                    }
-                }
-
-                if (GUILayout.Button("+", GUILayout.Width(50)))
-                {
-                    creatingNewConfig = true;
-                }
-            }
-
-            GUILayout.EndHorizontal();
         }
 
         private void UpdateConfigurationsList()
@@ -977,114 +908,6 @@ namespace DCL.Skybox
         #endregion
 
         #region Render Slots and Layers
-
-        void RenderTextureLayers(List<TextureLayer> layers)
-        {
-
-            for (int i = 0; i < layers.Count; i++)
-            {
-                // Name and buttons
-                EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-                layers[i].enabled = EditorGUILayout.Toggle(layers[i].enabled, GUILayout.Width(20), GUILayout.Height(10));
-                GUILayout.Space(10);
-                layers[i].expandedInEditor = EditorGUILayout.Foldout(layers[i].expandedInEditor, GUIContent.none, true, foldoutStyle);
-                layers[i].nameInEditor = EditorGUILayout.TextField(layers[i].nameInEditor, GUILayout.Width(100), GUILayout.ExpandWidth(false));
-
-                // Slot ID
-                layers[i].slotID = EditorGUILayout.Popup(layers[i].slotID, renderingOrderList.ToArray(), GUILayout.Width(50));
-
-                if (i == 0)
-                {
-                    GUI.enabled = false;
-                }
-                if (GUILayout.Button(('\u25B2').ToString(), GUILayout.Width(50), GUILayout.ExpandWidth(false)))
-                {
-                    TextureLayer temp = null;
-
-                    if (i >= 1)
-                    {
-                        temp = layers[i - 1];
-                        layers[i - 1] = layers[i];
-                        layers[i] = temp;
-                    }
-                }
-
-                GUI.enabled = true;
-
-                if (i == layers.Count - 1)
-                {
-                    GUI.enabled = false;
-                }
-
-                if (GUILayout.Button(('\u25BC').ToString(), GUILayout.Width(50), GUILayout.ExpandWidth(false)))
-                {
-                    TextureLayer temp = null;
-                    if (i < (layers.Count - 1))
-                    {
-                        temp = layers[i + 1];
-                        layers[i + 1] = layers[i];
-                        layers[i] = temp;
-                    }
-                    break;
-                }
-
-                GUI.enabled = true;
-
-                if (GUILayout.Button("-", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
-                {
-                    layers.RemoveAt(i);
-                    break;
-                }
-
-                Color circleColor = Color.green;
-                switch (layers[i].renderType)
-                {
-                    case LayerRenderType.Rendering:
-                        circleColor = Color.green;
-                        break;
-                    case LayerRenderType.NotRendering:
-                        circleColor = Color.gray;
-                        break;
-                    case LayerRenderType.Conflict_Playing:
-                        circleColor = Color.yellow;
-                        break;
-                    case LayerRenderType.Conflict_NotPlaying:
-                        circleColor = Color.red;
-                        break;
-                    default:
-                        break;
-                }
-
-                Color normalContentColor = GUI.color;
-                GUI.color = circleColor;
-
-                EditorGUILayout.LabelField(('\u29BF').ToString(), renderingMarkerStyle, GUILayout.Width(20), GUILayout.Height(20));
-
-                GUI.color = normalContentColor;
-
-                EditorGUILayout.EndHorizontal();
-
-                if (layers[i].expandedInEditor)
-                {
-                    EditorGUILayout.Separator();
-                    EditorGUI.indentLevel++;
-                    RenderTextureLayer(layers[i]);
-
-                    EditorGUI.indentLevel--;
-                }
-
-                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-
-                GUILayout.Space(32);
-            }
-
-            GUI.enabled = true;
-
-            if (GUILayout.Button("+", GUILayout.MaxWidth(20)))
-            {
-                layers.Add(new TextureLayer("Tex Layer " + (layers.Count + 1)));
-            }
-        }
 
         void RenderTextureLayer(TextureLayer layer)
         {
@@ -1444,7 +1267,7 @@ namespace DCL.Skybox
 
         void RenderTransitioningVector3(List<TransitioningVector3> list, string label, string percentTxt, string valueText, float layerStartTime = 0, float layerEndTime = 24)
         {
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.BeginHorizontal(transitioningBoxStyle, GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(120), GUILayout.ExpandWidth(false));
             EditorGUILayout.BeginVertical();
 
@@ -1463,7 +1286,7 @@ namespace DCL.Skybox
 
             for (int i = 0; i < list.Count; i++)
             {
-                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+                EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
                 if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
                 {
@@ -1482,41 +1305,33 @@ namespace DCL.Skybox
                 GUILayout.Space(10);
                 list[i].value = EditorGUILayout.Vector3Field("", list[i].value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
 
-                GUILayout.Space(20);
-                if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                GUILayout.Space(10);
+                if (GUILayout.Button("-", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     list.RemoveAt(i);
                 }
 
-                if (i == (list.Count - 1))
+                GUILayout.Space(10);
+                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
-                    GUILayout.Space(20);
-                    if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                    Vector3 tLastPos = Vector3.zero;
+                    if (list.Count != 0)
                     {
-                        Vector3 tLastPos = Vector3.zero;
-                        if (list.Count != 0)
-                        {
-                            tLastPos = list[list.Count - 1].value;
-                        }
-                        list.Add(new TransitioningVector3(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLastPos));
+                        tLastPos = list[i].value;
                     }
+                    list.Insert(i + 1, new TransitioningVector3(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLastPos));
                 }
 
-                GUILayout.EndHorizontal();
+                EditorGUILayout.EndHorizontal();
             }
 
             EditorGUILayout.EndVertical();
-            GUILayout.EndHorizontal();
-
-            Rect lastRect = GUILayoutUtility.GetLastRect();
-            lastRect.y -= 5;
-            lastRect.height += 10;
-            GUI.Box(lastRect, "", EditorStyles.helpBox);
+            EditorGUILayout.EndHorizontal();
         }
 
         void RenderTransitioningVector2(List<TransitioningVector2> list, string label, string percentTxt, string valueText, float layerStartTime = 0, float layerEndTime = 24)
         {
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.BeginHorizontal(transitioningBoxStyle, GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(120), GUILayout.ExpandWidth(false));
             EditorGUILayout.BeginVertical();
 
@@ -1535,7 +1350,7 @@ namespace DCL.Skybox
 
             for (int i = 0; i < list.Count; i++)
             {
-                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+                EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
                 if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
                 {
@@ -1549,44 +1364,35 @@ namespace DCL.Skybox
 
                 GUILayout.Label(valueText, GUILayout.ExpandWidth(false));
 
-                GUILayout.Space(10);
-                list[i].value = EditorGUILayout.Vector2Field("", list[i].value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+                list[i].value = EditorGUILayout.Vector2Field("", list[i].value, GUILayout.Width(120), GUILayout.ExpandWidth(false));
 
-                GUILayout.Space(20);
-                if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                GUILayout.Space(10);
+                if (GUILayout.Button("-", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     list.RemoveAt(i);
                 }
 
-                if (i == (list.Count - 1))
+                GUILayout.Space(10);
+                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
-                    GUILayout.Space(20);
-                    if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                    Vector2 tLastPos = Vector2.zero;
+                    if (list.Count != 0)
                     {
-                        Vector2 tLastPos = Vector2.zero;
-                        if (list.Count != 0)
-                        {
-                            tLastPos = list[list.Count - 1].value;
-                        }
-                        list.Add(new TransitioningVector2(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLastPos));
+                        tLastPos = list[i].value;
                     }
+                    list.Insert(i + 1, new TransitioningVector2(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLastPos));
                 }
-
-                GUILayout.EndHorizontal();
+                EditorGUILayout.EndHorizontal();
             }
-
             EditorGUILayout.EndVertical();
-            GUILayout.EndHorizontal();
-
-            Rect lastRect = GUILayoutUtility.GetLastRect();
-            lastRect.y -= 5;
-            lastRect.height += 10;
-            GUI.Box(lastRect, "", EditorStyles.helpBox);
+            EditorGUILayout.EndHorizontal();
         }
 
         void RenderTransitioningFloat(List<TransitioningFloat> list, string label, string percentTxt, string valueText, bool slider = false, float min = 0, float max = 1, float layerStartTime = 0, float layerEndTime = 24)
         {
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            transitioningBoxStyle.normal.background = toolSize.transitioningVariableBG.backgroundTex;
+
+            GUILayout.BeginHorizontal(transitioningBoxStyle, GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(120), GUILayout.ExpandWidth(false));
             EditorGUILayout.BeginVertical();
 
@@ -1622,32 +1428,29 @@ namespace DCL.Skybox
 
                 if (slider)
                 {
-                    list[i].value = EditorGUILayout.Slider(list[i].value, min, max, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+                    list[i].value = EditorGUILayout.Slider(list[i].value, min, max, GUILayout.Width(120), GUILayout.ExpandWidth(false));
                 }
                 else
                 {
-                    list[i].value = EditorGUILayout.FloatField("", list[i].value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+                    list[i].value = EditorGUILayout.FloatField("", list[i].value, GUILayout.Width(70), GUILayout.ExpandWidth(false));
                 }
 
 
-                GUILayout.Space(20);
-                if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                GUILayout.Space(10);
+                if (GUILayout.Button("-", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     list.RemoveAt(i);
                 }
 
-                if (i == (list.Count - 1))
+                GUILayout.Space(10);
+                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
-                    GUILayout.Space(20);
-                    if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                    float tLast = 0;
+                    if (list.Count != 0)
                     {
-                        float tLast = 0;
-                        if (list.Count != 0)
-                        {
-                            tLast = list[list.Count - 1].value;
-                        }
-                        list.Add(new TransitioningFloat(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLast));
+                        tLast = list[i].value;
                     }
+                    list.Insert(i + 1, new TransitioningFloat(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLast));
                 }
 
                 GUILayout.EndHorizontal();
@@ -1655,11 +1458,6 @@ namespace DCL.Skybox
 
             EditorGUILayout.EndVertical();
             GUILayout.EndHorizontal();
-
-            Rect lastRect = GUILayoutUtility.GetLastRect();
-            lastRect.y -= 5;
-            lastRect.height += 10;
-            GUI.Box(lastRect, "", EditorStyles.helpBox);
         }
 
         void RenderColorGradientField(Gradient color, string label = "color", float startTime = -1, float endTime = -1, bool hdr = false)
@@ -1684,24 +1482,25 @@ namespace DCL.Skybox
 
         void RenderTransitioningQuaternionAsVector3(List<TransitioningQuaternion> list, string label, string percentTxt, string valueText, Func<Quaternion> GetCurrentRotation, float layerStartTime = 0, float layerEndTime = 24)
         {
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.BeginHorizontal(transitioningBoxStyle, GUILayout.ExpandWidth(false));
+
             GUILayout.Label(label, GUILayout.Width(120), GUILayout.ExpandWidth(false));
 
-            GUILayout.BeginVertical();
+            EditorGUILayout.BeginVertical();
 
             if (list.Count == 0)
             {
-                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+                EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
                 if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     list.Add(new TransitioningQuaternion(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, GetCurrentRotation()));
                 }
-                GUILayout.EndHorizontal();
+                EditorGUILayout.EndHorizontal();
             }
 
             for (int i = 0; i < list.Count; i++)
             {
-                GUILayout.BeginHorizontal();
+                EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
                 {
                     timeOfTheDay = GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, list[i].percentage / 100);
@@ -1718,37 +1517,28 @@ namespace DCL.Skybox
                 // Convert Quaternion to Vector3
                 list[i].value = Quaternion.Euler(EditorGUILayout.Vector3Field("", list[i].value.eulerAngles, GUILayout.ExpandWidth(false)));
 
-                if (GUILayout.Button("Capture", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button("Snap", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
                 {
                     selectedConfiguration.directionalLightLayer.lightDirection[i].percentage = GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100;
                     selectedConfiguration.directionalLightLayer.lightDirection[i].value = GetCurrentRotation();
                     break;
                 }
 
-                if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button("-", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     list.RemoveAt(i);
                     break;
                 }
 
-                if (i == (list.Count - 1))
+                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
-                    GUILayout.Space(20);
-                    if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
-                    {
-                        list.Add(new TransitioningQuaternion(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, GetCurrentRotation()));
-                    }
+                    list.Insert(i + 1, new TransitioningQuaternion(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, GetCurrentRotation()));
                 }
 
-                GUILayout.EndHorizontal();
+                EditorGUILayout.EndHorizontal();
             }
-            GUILayout.EndVertical();
-            GUILayout.EndHorizontal();
-
-            Rect lastRect = GUILayoutUtility.GetLastRect();
-            lastRect.y -= 5;
-            lastRect.height += 10;
-            GUI.Box(lastRect, "", EditorStyles.helpBox);
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndHorizontal();
         }
 
         void RenderPercentagePart(float layerStartTime, float layerEndTime, ref float percentage)
