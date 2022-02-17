@@ -177,14 +177,30 @@ namespace Emotes
         // ------------- DEBUG ------------------------
         private void LoadMockedEmotes()
         {
-            List<EmoteCardComponentModel> mockedEmotes = new List<EmoteCardComponentModel>();
+            List<string> mockedImages = new List<string>
+            {
+                "https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png",
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png",
+                "https://www.freeiconspng.com/thumbs/dancing-silhouette-icon/boy-dancing-silhouette-icon-11.png",
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Karate_silhouette.svg/919px-Karate_silhouette.svg.png",
+                "https://i.pinimg.com/originals/36/47/41/364741529064fa6f0ecdd12bfa10b0b4.png",
+                "https://freesvg.org/img/1538176837.png",
+                "http://assets.stickpng.com/images/5e8f089aee3ef200041aa0dc.png",
+                "https://static.wikia.nocookie.net/parody/images/4/4c/AladdinSilhouette.png/revision/latest/scale-to-width-down/250?cb=20201103184833",
+                "https://freesvg.org/img/woman-silhouette-3.png",
+                "https://images.squarespace-cdn.com/content/v1/55947ac3e4b0fa882882cd65/1487633176391-U7VZNFVFYFI8KKCKCYP1/NS_0020.png",
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png",
+                "https://www.clipartqueen.com/image-files/female-silhouettes-young-woman-with-hat.png",
+                "https://www.pikpng.com/pngl/b/144-1445872_png-file-size-man-holding-flag-silhouette-clipart.png"
+            };
 
-            for (int i = 0; i < 33; i++)
+            List<EmoteCardComponentModel> mockedEmotes = new List<EmoteCardComponentModel>();
+            for (int i = 0; i < mockedImages.Count; i++)
             {
                 mockedEmotes.Add(new EmoteCardComponentModel
                 {
                     id = $"Emote{i}",
-                    pictureUri = $"https://picsum.photos/100?{i}",
+                    pictureUri = mockedImages[i],
                     isFavorite = false,
                     isAssignedInSelectedSlot = false,
                     isSelected = false,

@@ -446,7 +446,7 @@ MonoBehaviour:
   selectedBackgroundImage: {fileID: 2883155882574912486}
   defaultEmotePicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
     type: 3}
-  nonEmoteAssignedPicture: {fileID: 21300000, guid: 5d13ba01ae9054dae9e711ecae65f4d0,
+  nonEmoteAssignedPicture: {fileID: 21300000, guid: 6b35c647bc47eb94486089adcb53c8b9,
     type: 3}
   defaultBackgroundColor: {r: 0.92549026, g: 0.9215687, b: 0.9294118, a: 1}
   selectedBackgroundColor: {r: 1, g: 0.454902, b: 0.22352943, a: 1}
@@ -454,7 +454,7 @@ MonoBehaviour:
   selectedTextColor: {r: 1, g: 1, b: 1, a: 1}
   model:
     emoteId: 
-    pictureSprite: {fileID: 21300000, guid: 68d82b8cf8077f7449f27a2f03121b1a, type: 3}
+    pictureSprite: {fileID: 21300000, guid: 6b35c647bc47eb94486089adcb53c8b9, type: 3}
     pictureUri: 
     isSelected: 0
     slotNumber: 0
@@ -804,13 +804,13 @@ PrefabInstance:
         type: 3}
       propertyPath: model.sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 68d82b8cf8077f7449f27a2f03121b1a,
+      objectReference: {fileID: 21300000, guid: 6b35c647bc47eb94486089adcb53c8b9,
         type: 3}
     - target: {fileID: 5573392751968575400, guid: 4849d2ed3b5a18948bf3cd46256869a4,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 68d82b8cf8077f7449f27a2f03121b1a,
+      objectReference: {fileID: 21300000, guid: 6b35c647bc47eb94486089adcb53c8b9,
         type: 3}
     - target: {fileID: 6302203761313059702, guid: 4849d2ed3b5a18948bf3cd46256869a4,
         type: 3}

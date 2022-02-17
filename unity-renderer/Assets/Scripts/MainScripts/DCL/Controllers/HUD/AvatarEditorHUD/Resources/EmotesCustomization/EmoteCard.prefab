@@ -442,7 +442,7 @@ MonoBehaviour:
   cardAnimator: {fileID: 4546752560841343705}
   defaultEmotePicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
     type: 3}
-  nonEmoteAssignedPicture: {fileID: 21300000, guid: 5d13ba01ae9054dae9e711ecae65f4d0,
+  nonEmoteAssignedPicture: {fileID: 21300000, guid: 6b35c647bc47eb94486089adcb53c8b9,
     type: 3}
   model:
     id: TestId
