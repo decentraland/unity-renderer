@@ -364,26 +364,10 @@ namespace UnityGLTF
         public void Load(string url) { throw new NotImplementedException(); }
 
         public void SetPrioritized() { prioritizeDownload = true; }
-
-#if UNITY_EDITOR
-        // In production it will always be false
-        private bool isQuitting = false;
-
-        // We need to check if application is quitting in editor
-        // to prevent the pool from releasing objects that are
-        // being destroyed 
-        void Awake() { Application.quitting += OnIsQuitting; }
-
-        void OnIsQuitting()
-        {
-            Application.quitting -= OnIsQuitting;
-            isQuitting = true;
-        }
-#endif
         private void OnDestroy()
         {
-#if UNITY_EDITOR
-            if (isQuitting)
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isWorldBeingDestroyed.Get())
                 return;
 #endif
             isDestroyed = true;

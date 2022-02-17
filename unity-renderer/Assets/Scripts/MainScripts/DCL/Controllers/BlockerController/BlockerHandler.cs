@@ -49,8 +49,10 @@ namespace DCL.Controllers
 
         public void ShowBlocker(Vector2Int pos, bool instant = false)
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isWorldBeingDestroyed.Get())
                 return;
+#endif
             
             if (blockerPrefabDirty)
             {
