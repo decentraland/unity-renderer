@@ -3,7 +3,7 @@ using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
 
-public class DecentralandEntityShould
+public class DCLEntityShould
 {
     [Test]
     public void CleanUpEntityComponents()
