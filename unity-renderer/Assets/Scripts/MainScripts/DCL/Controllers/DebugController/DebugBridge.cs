@@ -17,6 +17,7 @@ namespace DCL
             public string sceneId;
             public bool enabled;
         }
+        
 
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
         private IDebugController debugController;
@@ -130,6 +131,12 @@ namespace DCL
         {
             ToggleSceneBoundingBoxesPayload data = JsonUtility.FromJson<ToggleSceneBoundingBoxesPayload>(payload);
             DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneId, data.enabled);
+        }
+
+        public void TogglePreviewMenu(string payload)
+        {
+            PreviewMenuPayload data =  JsonUtility.FromJson<PreviewMenuPayload>(payload);
+            DataStore.i.debugConfig.isPreviewMenuActive.Set(data.enabled);
         }
 
 #if UNITY_EDITOR
