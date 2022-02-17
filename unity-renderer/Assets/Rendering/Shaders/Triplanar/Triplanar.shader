@@ -11,7 +11,7 @@ Shader "DCL/FX/Triplanar"
     SubShader
     {
 		
-        Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
+        Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" }
 
 		Cull Back
 		HLSLINCLUDE
@@ -25,7 +25,7 @@ Shader "DCL/FX/Triplanar"
 
         	Name "Base"
 			Blend One Zero
-			ZWrite On
+			ZWrite Off
 			ZTest LEqual
 			Offset 0 , 0
 			ColorMask RGBA
