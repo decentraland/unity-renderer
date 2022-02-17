@@ -201,12 +201,6 @@ public static class CommonScriptableObjects
     private static BooleanVariable voiceChatDisabledValue;
     public static BooleanVariable voiceChatDisabled => GetOrLoad(ref voiceChatDisabledValue, "ScriptableObjects/VoiceChatDisabled");
 
-    private static BooleanVariable proceduralSkyboxDisabledValue;
-    public static BooleanVariable proceduralSkyboxDisabled => GetOrLoad(ref proceduralSkyboxDisabledValue, "ScriptableObjects/ProceduralSkyboxDisabled");
-
-    private static BooleanVariable proceduralSkyboxEnabledValue;
-    public static BooleanVariable proceduralSkyboxEnabled => GetOrLoad(ref proceduralSkyboxEnabledValue, "ScriptableObjects/ProceduralSkyboxEnabled");
-
     public static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {
         if (variable == null)

@@ -95,6 +95,7 @@ namespace AvatarSystem
                         break;
                 }
             }
+
             return (bodyshape, eyes, eyebrows, mouth, resultWearables);
         }
 
@@ -122,9 +123,10 @@ namespace AvatarSystem
             SkinnedMeshRenderer eyes = null;
             SkinnedMeshRenderer eyebrows = null;
             SkinnedMeshRenderer mouth = null;
-            for (int i = 0; i < rendereable.renderers.Count; i++)
+
+            foreach (Renderer r in rendereable.renderers)
             {
-                if (!(rendereable.renderers[i] is SkinnedMeshRenderer renderer))
+                if (!(r is SkinnedMeshRenderer renderer))
                     continue;
 
                 string parentName = renderer.transform.parent.name.ToLower();
@@ -144,6 +146,7 @@ namespace AvatarSystem
                 else if (parentName.Contains("mouth"))
                     mouth = renderer;
             }
+
             return (head, upperBody, lowerBody, feet, eyes, eyebrows, mouth);
         }
 
@@ -164,6 +167,7 @@ namespace AvatarSystem
                 {
                     continue;
                 }
+
                 filteredWearables.Add(wearable);
                 hiddenCategories.UnionWith(wearable.GetHidesList(bodyshapeId));
             }

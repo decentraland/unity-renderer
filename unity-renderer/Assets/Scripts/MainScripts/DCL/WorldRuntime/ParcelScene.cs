@@ -13,7 +13,6 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene, ISceneMessageProcessor
     {
-        public static bool VERBOSE = false;
         public Dictionary<string, IDCLEntity> entities { get; private set; } = new Dictionary<string, IDCLEntity>();
         public Dictionary<string, ISharedComponent> disposableComponents { get; private set; } = new Dictionary<string, ISharedComponent>();
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
@@ -51,6 +50,7 @@ namespace DCL.Controllers
         {
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
+            metricsCounter = new SceneMetricsCounter(DataStore.i.sceneWorldObjects);
         }
 
         private void OnDestroy()
@@ -93,7 +93,9 @@ namespace DCL.Controllers
                 gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
             }
 
-            metricsCounter = new SceneMetricsCounter(this);
+            DataStore.i.sceneWorldObjects.AddScene(sceneData.id);
+
+            metricsCounter.Configure(sceneData.id, sceneData.basePosition, sceneData.parcels.Length);
             metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
@@ -147,6 +149,7 @@ namespace DCL.Controllers
             {
                 RemoveAllEntitiesImmediate();
                 PoolManager.i.Cleanup(true, true);
+                DataStore.i.sceneWorldObjects.RemoveScene(sceneData.id);
             }
             else
             {
@@ -160,6 +163,7 @@ namespace DCL.Controllers
                 else
                 {
                     Destroy(this.gameObject);
+                    DataStore.i.sceneWorldObjects.RemoveScene(sceneData.id);
                 }
             }
 
@@ -188,7 +192,7 @@ namespace DCL.Controllers
             if (parcels.Count == 0)
                 return false;
 
-            float heightLimit = metricsCounter.GetLimits().sceneHeight;
+            float heightLimit = metricsCounter.maxCount.sceneHeight;
 
             if (height > heightLimit)
                 return false;
@@ -201,7 +205,7 @@ namespace DCL.Controllers
             if (parcels.Count == 0)
                 return false;
 
-            float heightLimit = metricsCounter.GetLimits().sceneHeight;
+            float heightLimit = metricsCounter.maxCount.sceneHeight;
             if (height > heightLimit)
                 return false;
 
@@ -279,6 +283,8 @@ namespace DCL.Controllers
 
             entities.Add(id, newEntity);
 
+            DataStore.i.sceneWorldObjects.sceneData[sceneData.id].owners.Add(id);
+
             OnEntityAdded?.Invoke(newEntity);
 
             return newEntity;
@@ -297,6 +303,13 @@ namespace DCL.Controllers
                 }
 
                 entities.Remove(id);
+
+                var data = DataStore.i.sceneWorldObjects.sceneData;
+
+                if (data.ContainsKey(sceneData.id))
+                {
+                    data[sceneData.id].owners.Remove(id);
+                }
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else
@@ -436,18 +449,16 @@ namespace DCL.Controllers
         /**
           * This method is called when we need to attach a disposable component to the entity
           */
-        public void SharedComponentAttach(string entityId, string id)
+        public void SharedComponentAttach(string entityId, string componentId)
         {
-            IDCLEntity decentralandEntity = GetEntityForUpdate(entityId);
+            IDCLEntity entity = GetEntityForUpdate(entityId);
 
-            if (decentralandEntity == null)
-            {
+            if (entity == null)
                 return;
-            }
 
-            if (disposableComponents.TryGetValue(id, out ISharedComponent sharedComponent))
+            if (disposableComponents.TryGetValue(componentId, out ISharedComponent sharedComponent))
             {
-                sharedComponent.AttachTo(decentralandEntity);
+                sharedComponent.AttachTo(entity);
             }
         }
 

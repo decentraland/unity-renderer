@@ -604,7 +604,6 @@ namespace UnityGLTF
                     {
                         await _loader.LoadStream(buffer.Uri, token);
                         bufferDataStream = _loader.LoadedStream;
-                        Debug.Log($"<color=red>Adding buffer {buffer.Uri} {id}</color>");
                         PersistentAssetCache.AddBuffer(buffer.Uri, id, bufferDataStream);
                     }
                 }
@@ -2387,7 +2386,6 @@ namespace UnityGLTF
 
                 if (addImagesToPersistentCaching)
                 {
-                    Debug.Log($"<color=magenta>Adding image to persistent cache {imageId}</color>");
                     source = PersistentAssetCache.AddImage(imageId, _assetCache.ImageCache[sourceId], linear);
                 }
                 else

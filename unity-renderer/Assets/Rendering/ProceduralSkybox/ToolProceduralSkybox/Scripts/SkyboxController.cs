@@ -66,9 +66,6 @@ namespace DCL.Skybox
                 directionalLight.type = LightType.Directional;
             }
 
-            CommonScriptableObjects.proceduralSkyboxDisabled.Set(false);
-            CommonScriptableObjects.proceduralSkyboxEnabled.Set(true);
-
             GetOrCreateEnvironmentProbe();
 
             // Get current time from the server
@@ -201,7 +198,6 @@ namespace DCL.Skybox
                 return;
             }
             // set skyboxConfig to true
-            DataStore.i.skyboxConfig.useProceduralSkybox.Set(true);
             DataStore.i.skyboxConfig.configToLoad.Set(current.proceduralSkyboxConfig.configToLoad);
             DataStore.i.skyboxConfig.lifecycleDuration.Set(current.proceduralSkyboxConfig.lifecycleDuration);
             DataStore.i.skyboxConfig.jumpToTime.Set(current.proceduralSkyboxConfig.fixedTime);
@@ -242,17 +238,7 @@ namespace DCL.Skybox
             // Apply time
             lifecycleDuration = DataStore.i.skyboxConfig.lifecycleDuration.Get();
 
-            if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
-            {
-                if (!ApplyConfig())
-                {
-                    RenderProfileManifest.i.currentProfile.Apply();
-                }
-            }
-            else
-            {
-                RenderProfileManifest.i.currentProfile.Apply();
-            }
+            ApplyConfig();
 
             // if Paused
             if (DataStore.i.skyboxConfig.jumpToTime.Get() >= 0)
@@ -414,10 +400,7 @@ namespace DCL.Skybox
             selectedMat = matLayer.material;
             slotCount = matLayer.numberOfSlots;
 
-            if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
-            {
-                RenderSettings.skybox = selectedMat;
-            }
+            RenderSettings.skybox = selectedMat;
 
             // Update loaded config
             loadedConfig = configToLoad;
@@ -435,7 +418,7 @@ namespace DCL.Skybox
                 AssignCameraInstancetoProbe();
             }
 
-            if (configuration == null || isPaused || !DataStore.i.skyboxConfig.useProceduralSkybox.Get())
+            if (configuration == null || isPaused)
             {
                 return;
             }
@@ -474,12 +457,7 @@ namespace DCL.Skybox
 
         public void Dispose()
         {
-
-            CommonScriptableObjects.proceduralSkyboxDisabled.Set(true);
-            CommonScriptableObjects.proceduralSkyboxEnabled.Set(false);
-
             // set skyboxConfig to false
-            DataStore.i.skyboxConfig.useProceduralSkybox.Set(false);
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
 
             DataStore.i.worldTimer.OnTimeChanged -= GetTimeFromTheServer;

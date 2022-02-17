@@ -43,7 +43,6 @@ namespace DCL
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
                 performanceMetricsController = new PerformanceMetricsController();
-                RenderProfileManifest.i.Initialize();
                 SetupServices();
 
                 DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;

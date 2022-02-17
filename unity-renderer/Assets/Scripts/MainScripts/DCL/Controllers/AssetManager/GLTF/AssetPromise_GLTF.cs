@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
 using DCL.Models;
@@ -21,18 +22,27 @@ namespace DCL
         IWebRequestController webRequestController = null;
 
         object id = null;
+        private List<int> texIdsCache;
 
         public AssetPromise_GLTF(string url)
-            : this(new ContentProvider_Dummy(), url, null, Environment.i.platform.webRequest) { }
+            : this(new ContentProvider_Dummy(), url, null, Environment.i.platform.webRequest)
+        {
+        }
 
         public AssetPromise_GLTF(string url, IWebRequestController webRequestController)
-            : this(new ContentProvider_Dummy(), url, null, webRequestController) { }
+            : this(new ContentProvider_Dummy(), url, null, webRequestController)
+        {
+        }
 
         public AssetPromise_GLTF(ContentProvider provider, string url, string hash = null)
-            : this(provider, url, hash, Environment.i.platform.webRequest) { }
+            : this(provider, url, hash, Environment.i.platform.webRequest)
+        {
+        }
 
         public AssetPromise_GLTF(ContentProvider provider, string url, IWebRequestController webRequestController)
-            : this(provider, url, null, webRequestController) { }
+            : this(provider, url, null, webRequestController)
+        {
+        }
 
         public AssetPromise_GLTF(ContentProvider provider, string url, string hash, IWebRequestController webRequestController)
         {
@@ -57,8 +67,8 @@ namespace DCL
         {
             if (asset?.container != null)
             {
-                asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
-                settings.ApplyAfterLoad(asset.container.transform);
+                asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
+                settings.ApplyAfterLoad(asset.renderers.ToList());
             }
         }
 
@@ -93,6 +103,8 @@ namespace DCL
                     {
                         asset.totalTriangleCount =
                             MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
+                        asset.materials = MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers);
+                        asset.textures = MeshesInfoUtils.ExtractUniqueTextures(asset.materials);
                     }
 
                     OnSuccess.Invoke();
@@ -138,7 +150,9 @@ namespace DCL
 
         protected override void OnReuse(Action OnSuccess)
         {
-            asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
+            // Materials and textures are reused, so they are not extracted again
+            asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
+
             //NOTE(Brian):  Show the asset using the simple gradient feedback.
             asset.Show(settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION, OnSuccess);
         }
