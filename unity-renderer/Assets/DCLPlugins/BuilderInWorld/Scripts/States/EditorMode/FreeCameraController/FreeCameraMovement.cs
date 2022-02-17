@@ -307,6 +307,8 @@ namespace DCL.Camera
 
             if (takeScreenshotCoroutine != null)
                 CoroutineStarter.Stop(takeScreenshotCoroutine);
+
+            Settings.i.generalSettings.OnChanged += UpdateLocalGeneralSettings;
         }
 
         private void Update()
