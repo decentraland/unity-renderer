@@ -16,6 +16,7 @@ namespace DCL
             pluginSystem.Register(() => new DebugShapesBoundingBoxDisplayer());
             pluginSystem.Register(() => new TransactionFeature());
             pluginSystem.Register(() => new PreviewMenuPlugin());
+            pluginSystem.Register(() => new SkyboxController());
             pluginSystem.RegisterWithFlag(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag(() => new PlacesAndEventsFeature(), "explorev2");
