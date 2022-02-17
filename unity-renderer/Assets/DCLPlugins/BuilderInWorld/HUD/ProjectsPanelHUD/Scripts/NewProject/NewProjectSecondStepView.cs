@@ -53,9 +53,14 @@ namespace DCL.Builder
         {
             //We ensure that the minimum size of the row is 1
             if (string.IsNullOrEmpty(value) || value == "0")
+            {
                 rows = 1;
+                rowsInputField.SetText(rows.ToString());
+            }
             else
+            {
                 rows = Mathf.Abs(Int32.Parse(value));
+            }
             ValueChanged(rowsInputField);
         }
 
@@ -63,9 +68,14 @@ namespace DCL.Builder
         {
             //We ensure that the minimum size of the column is 1
             if (string.IsNullOrEmpty(value) || value == "0")
+            {
                 colums = 1;
+                columsInputField.SetText(colums.ToString());
+            }
             else
+            {
                 colums = Mathf.Abs(Int32.Parse(value));
+            }
             ValueChanged(columsInputField);
         }
 
