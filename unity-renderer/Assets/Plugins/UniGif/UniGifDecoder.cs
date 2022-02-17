@@ -48,16 +48,12 @@ public static partial class UniGif
             tasks[i] = TaskUtils.Run( () =>
             {
                 decodedDataBuffer.Add(index, GetDecodedData(gifData.m_imageBlockList[index]));
-            }, cancellationToken: token);
+            }, token);
         }
 
-        await UniTask.SwitchToMainThread();
+        await UniTask.SwitchToMainThread(token);
 
-        token.ThrowIfCancellationRequested();
-        
-        await UniTask.WhenAll(tasks);
-        
-        token.ThrowIfCancellationRequested();
+        await UniTask.WhenAll(tasks).AttachExternalCancellation(token);
         
         for (int i = 0; i < blockListCount; i++)
         {
@@ -69,11 +65,9 @@ public static partial class UniGif
 
             disposalMethodList.Add(GetDisposalMethod(graphicCtrlEx));
 
-            Color32 bgColor;
-            List<byte[]> colorTable = GetColorTableAndSetBgColor(gifData, gifData.m_imageBlockList[i], transparentIndex, out bgColor);
+            List<byte[]> colorTable = GetColorTableAndSetBgColor(gifData, gifData.m_imageBlockList[i], transparentIndex, out Color32 bgColor);
 
-            bool filledTexture;
-            Texture2D tex = CreateTexture2D(gifData, gifTexList, imgIndex, disposalMethodList, bgColor, filterMode, wrapMode, out filledTexture);
+            Texture2D tex = CreateTexture2D(gifData, gifTexList, imgIndex, disposalMethodList, bgColor, filterMode, wrapMode, out bool filledTexture);
 
             // Set pixel data
             int dataIndex = 0;
@@ -87,13 +81,9 @@ public static partial class UniGif
                 SetTexturePixelRow(tex, y, gifDataMImageBlock, decodedData, ref dataIndex, colorTable, bgColor, transparentIndex, filledTexture, texWidth, texHeight);
                 if (y % MAX_ROWS_PER_FRAME == 0)
                 {
-                    await UniTask.WaitForEndOfFrame();
-                    
-                    token.ThrowIfCancellationRequested();
+                    await UniTask.Yield(token);
                 }
             }
-            
-            token.ThrowIfCancellationRequested();
 
             tex.Apply();
 
@@ -105,10 +95,7 @@ public static partial class UniGif
             imgIndex++;
         }
 
-        if (callback != null)
-        {
-            callback(gifTexList);
-        }
+        callback?.Invoke(gifTexList);
     }
 
     #region Call from DecodeTexture methods
@@ -374,13 +361,10 @@ public static partial class UniGif
     /// <returns>Decoded data array</returns>
     private static byte[] DecodeGifLZW(List<byte> compData, int lzwMinimumCodeSize, int needDataSize)
     {
-        int clearCode = 0;
-        int finishCode = 0;
 
         // Initialize dictionary
         Dictionary<int, string> dic = new Dictionary<int, string>();
-        int lzwCodeSize = 0;
-        InitDictionary(dic, lzwMinimumCodeSize, out lzwCodeSize, out clearCode, out finishCode);
+        InitDictionary(dic, lzwMinimumCodeSize, out int lzwCodeSize, out int clearCode, out int finishCode);
 
         // Convert to bit array
         byte[] compDataArr = compData.ToArray();
