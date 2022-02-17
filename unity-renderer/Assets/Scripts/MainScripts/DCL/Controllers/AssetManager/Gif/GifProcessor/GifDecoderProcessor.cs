@@ -70,7 +70,6 @@ namespace DCL
                 //          improving the smoothness and the experience, this could be further improved by prioritizing
                 //          the processing of gifs whether im close or looking at them like GLFTs
                 await UniTask.WaitUntil(() => isRunning == false, cancellationToken: token);
-                Debug.Log("Starting to decode with GifDecoder");
 
                 isRunning = true;
                 isRunningInternal = true;
@@ -86,16 +85,13 @@ namespace DCL
                 else
                 {
                     gifStream = new GifStream( await DownloadGifAndReadStream(token));
-                    Debug.Log($"Downloaded GIF in {stopwatch.ElapsedMilliseconds}ms {url}");
                 }
 
                 var images = await ReadStream(gifStream, token);
-                Debug.Log($"Decoded GIF in {stopwatch.ElapsedMilliseconds}ms {url}");
 
+                token.ThrowIfCancellationRequested();
                 await TaskUtils.RunThrottledCoroutine(ProcessGifData(images, gifStream.Header.width, gifStream.Header.height), fail, throttlingCounter.EvaluateTimeBudget)
                                .AttachExternalCancellation(token);
-
-                Debug.Log($"Loaded GIF in {stopwatch.ElapsedMilliseconds}ms {url}");
 
                 loadSuccsess(gifFrameData);
 
@@ -137,22 +133,14 @@ namespace DCL
                 yield return skipFrameIfDepletedTimeBudget;
             }
         }
-
-        private const string EDITOR_USER_AGENT =
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36";
-
-        private const string EDITOR_REFERRER = "https://play.decentraland.org";
+        
         private async UniTask<byte[]> DownloadGifAndReadStream(CancellationToken token)
         {
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-#if (UNITY_EDITOR) || (UNITY_STANDALONE)
-            headers.Add("User-Agent", EDITOR_USER_AGENT);
-            headers.Add("referrer", EDITOR_REFERRER);
-#endif
-            var operation = webRequestController.Get(url, headers: headers, timeout: 15, disposeOnCompleted: false);
+            var operation = webRequestController.Get(url, timeout: 15, disposeOnCompleted: false);
             await UniTask.WaitUntil( () => operation.isDone || operation.isDisposed || operation.isSucceded, cancellationToken: token);
             return operation.webRequest.downloadHandler.data;
         }
+        
         private static UniTask<List<RawImage>> ReadStream(GifStream gifStream, CancellationToken token)
         {
             return TaskUtils.Run( () =>

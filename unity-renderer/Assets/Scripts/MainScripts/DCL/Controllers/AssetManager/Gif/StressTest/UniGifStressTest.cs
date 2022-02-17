@@ -68,7 +68,7 @@ public class UniGifStressTest : MonoBehaviour
         }
 
 
-        await decoder.Load(OnLoadComplete, _ => { }, CancellationToken.None);
+        await decoder.Load(OnLoadComplete, _ => { }, source.Token);
     }
     private void OnLoadComplete(GifFrameData[] obj)
     {
