@@ -283,8 +283,19 @@ namespace DCL
             }
 
             centerTile /= (float)sceneInfo.parcels.Count;
+            float distance = float.PositiveInfinity;
+            Vector2 centerParcel = Vector2.zero;
+            foreach (var parcel in sceneInfo.parcels)
+            {
+                if (Vector2.Distance(centerTile, parcel) < distance)
+                {
+                    distance = Vector2.Distance(centerParcel, parcel);
+                    centerParcel = parcel;
+                }
+                
+            }
 
-            (go.transform as RectTransform).anchoredPosition = MapUtils.GetTileToLocalPosition(centerTile.x, centerTile.y);
+            (go.transform as RectTransform).anchoredPosition = MapUtils.GetTileCenterToLocalPosition(centerParcel.x, centerParcel.y);
 
             MapSceneIcon icon = go.GetComponent<MapSceneIcon>();
 
