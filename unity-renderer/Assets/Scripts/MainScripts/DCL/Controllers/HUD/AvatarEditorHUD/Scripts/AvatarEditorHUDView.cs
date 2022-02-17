@@ -101,7 +101,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     [SerializeField] private GameObject skinsPopulatedListContainer;
     [SerializeField] private GameObject skinsEmptyListContainer;
 
-    [Header("Emotes Deck")]
+    [Header("Emotes Customization")]
     [SerializeField] internal GameObject emotesCategoryButton;
     [SerializeField] internal Transform emotesSectionTransform;
 

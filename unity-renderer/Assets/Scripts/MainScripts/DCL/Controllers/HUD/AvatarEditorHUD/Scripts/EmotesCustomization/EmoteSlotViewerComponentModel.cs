@@ -1,6 +1,6 @@
 using System;
 
-namespace EmotesDeck
+namespace Emotes
 {
     [Serializable]
     public class EmoteSlotViewerComponentModel : BaseComponentModel

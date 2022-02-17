@@ -1,6 +1,6 @@
 using DCL.Tutorial;
 using DCL.Skybox;
-using EmotesDeck;
+using Emotes;
 
 namespace DCL
 {
@@ -20,7 +20,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag(() => new PlacesAndEventsFeature(), "explorev2");
             pluginSystem.RegisterWithFlag(() => new SkyboxController(), "procedural_skybox");
-            pluginSystem.RegisterWithFlag(() => new EmotesDeckFeature(), "emotes_deck");
+            pluginSystem.RegisterWithFlag(() => new EmotesCustomizationFeature(), "emotes_customization");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

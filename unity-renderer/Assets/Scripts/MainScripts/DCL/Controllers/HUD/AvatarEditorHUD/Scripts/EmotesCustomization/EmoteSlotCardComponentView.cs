@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace EmotesDeck
+namespace Emotes
 {
     public interface IEmoteSlotCardComponentView
     {

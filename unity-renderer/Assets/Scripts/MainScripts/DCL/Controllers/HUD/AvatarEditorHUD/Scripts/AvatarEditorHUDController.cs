@@ -35,7 +35,7 @@ public class AvatarEditorHUDController : IHUD
     BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     BaseVariable<Transform> configureBackpackInFullscreenMenu => DataStore.i.exploreV2.configureBackpackInFullscreenMenu;
     BaseVariable<bool> exploreV2IsOpen => DataStore.i.exploreV2.isOpen;
-    BaseVariable<Transform> isEmotesDeckInitialized => DataStore.i.emotesDeck.isInitialized;
+    BaseVariable<Transform> isEmotesSectonInitialized => DataStore.i.emotes.isInitialized;
     private bool isSkinsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_skins");
 
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
@@ -53,7 +53,7 @@ public class AvatarEditorHUDController : IHUD
     private float lastTimeOwnedWearablesChecked = 0;
     private float prevRenderScale = 1.0f;
     private Camera mainCamera;
-    private Transform emotesDeckTransform;
+    private Transform emotesSectionTransform;
 
     public AvatarEditorHUDView view;
 
@@ -89,8 +89,8 @@ public class AvatarEditorHUDController : IHUD
         this.userProfile.OnUpdate += LoadUserProfile;
 
         view.emotesCategoryButton.SetActive(false);
-        isEmotesDeckInitialized.OnChange += InitializeEmotesDeckSection;
-        InitializeEmotesDeckSection(isEmotesDeckInitialized.Get(), null);
+        isEmotesSectonInitialized.OnChange += InitializeEmotesSection;
+        InitializeEmotesSection(isEmotesSectonInitialized.Get(), null);
 
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
     }
@@ -641,7 +641,7 @@ public class AvatarEditorHUDController : IHUD
         configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
         exploreV2IsOpen.OnChange -= ExploreV2IsOpenChanged;
-        isEmotesDeckInitialized.OnChange -= InitializeEmotesDeckSection;
+        isEmotesSectonInitialized.OnChange -= InitializeEmotesSection;
 
         CleanUp();
     }
@@ -739,13 +739,13 @@ public class AvatarEditorHUDController : IHUD
         return true;
     }
 
-    private void InitializeEmotesDeckSection(Transform currentViewTransform, Transform previousViewTransform)
+    private void InitializeEmotesSection(Transform currentViewTransform, Transform previousViewTransform)
     {
         if (currentViewTransform == null)
             return;
 
-        emotesDeckTransform = currentViewTransform;
-        emotesDeckTransform.SetParent(view.emotesSectionTransform, false);
+        emotesSectionTransform = currentViewTransform;
+        emotesSectionTransform.SetParent(view.emotesSectionTransform, false);
 
         view.emotesCategoryButton.SetActive(true);
     }

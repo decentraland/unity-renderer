@@ -3,23 +3,23 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace EmotesDeck
+namespace Emotes
 {
-    public interface IEmotesDeckComponentController : IDisposable
+    public interface IEmotesCustomizationComponentController : IDisposable
     {
         /// <summary>
-        /// Initializes the emotes deck controller.
+        /// Initializes the emotes customization controller.
         /// </summary>
         void Initialize();
     }
 
-    public class EmotesDeckComponentController : IEmotesDeckComponentController
+    public class EmotesCustomizationComponentController : IEmotesCustomizationComponentController
     {
-        internal BaseVariable<Transform> isInitialized => DataStore.i.emotesDeck.isInitialized;
+        internal BaseVariable<Transform> isInitialized => DataStore.i.emotes.isInitialized;
         internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
         internal bool shortcutsCanBeUsed => isStarMenuOpen.Get() && view.isActive;
 
-        internal IEmotesDeckComponentView view;
+        internal IEmotesCustomizationComponentView view;
         internal InputAction_Hold equipInputAction;
         internal InputAction_Hold favoriteInputAction;
         internal InputAction_Trigger shortcut0InputAction;
@@ -42,7 +42,7 @@ namespace EmotesDeck
             ConfigureShortcuts();
             LoadMockedEmotes();
 
-            isInitialized.Set(view.emotesDeckTransform);
+            isInitialized.Set(view.viewTransform);
         }
 
         public void Dispose()
@@ -172,7 +172,7 @@ namespace EmotesDeck
             }
         }
 
-        internal virtual IEmotesDeckComponentView CreateView() => EmotesDeckComponentView.Create();
+        internal virtual IEmotesCustomizationComponentView CreateView() => EmotesCustomizationComponentView.Create();
 
         // ------------- DEBUG ------------------------
         private void LoadMockedEmotes()

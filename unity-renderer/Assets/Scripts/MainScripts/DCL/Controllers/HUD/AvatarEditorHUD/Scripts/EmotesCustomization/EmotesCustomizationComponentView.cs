@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace EmotesDeck
+namespace Emotes
 {
-    public interface IEmotesDeckComponentView
+    public interface IEmotesCustomizationComponentView
     {
         /// <summary>
         /// It will be triggered when an emote card is selected.
@@ -21,7 +21,7 @@ namespace EmotesDeck
         /// <summary>
         /// It represents the container transform of the component.
         /// </summary>
-        Transform emotesDeckTransform { get; }
+        Transform viewTransform { get; }
 
         /// <summary>
         /// Resturn true if the view is currently active.
@@ -65,9 +65,9 @@ namespace EmotesDeck
         void EquipEmote(string emoteId, int slotNumber);
     }
 
-    public class EmotesDeckComponentView : BaseComponentView, IEmotesDeckComponentView
+    public class EmotesCustomizationComponentView : BaseComponentView, IEmotesCustomizationComponentView
     {
-        internal const string EMOTE_CARDS_POOL_NAME = "EmotesDeck_EmoteCardsPool";
+        internal const string EMOTE_CARDS_POOL_NAME = "EmotesCustomization_EmoteCardsPool";
         internal const int EMOTE_CARDS_POOL_PREWARM = 40;
         internal const int DEFAULT_SELECTED_SLOT = 1;
 
@@ -85,7 +85,7 @@ namespace EmotesDeck
         internal Pool emoteCardsPool;
 
         public bool isActive => gameObject.activeInHierarchy;
-        public Transform emotesDeckTransform => transform;
+        public Transform viewTransform => transform;
         public int selectedSlot => emoteSlotSelector.selectedSlot;
         public EmoteCardComponentView selectedCard { get; private set; }
 
@@ -264,12 +264,12 @@ namespace EmotesDeck
             return GetAllEmoteCards().FirstOrDefault(x => x.model.id == emoteId);
         }
 
-        internal static IEmotesDeckComponentView Create()
+        internal static IEmotesCustomizationComponentView Create()
         {
-            EmotesDeckComponentView emotesDeckComponentView = Instantiate(Resources.Load<GameObject>("EmotesDeck/EmotesDeckSection")).GetComponent<EmotesDeckComponentView>();
-            emotesDeckComponentView.name = "_EmotesDeckSection";
+            EmotesCustomizationComponentView emotesCustomizationComponentView = Instantiate(Resources.Load<GameObject>("EmotesCustomization/EmotesCustomizationSection")).GetComponent<EmotesCustomizationComponentView>();
+            emotesCustomizationComponentView.name = "_EmotesCustomizationSection";
 
-            return emotesDeckComponentView;
+            return emotesCustomizationComponentView;
         }
     }
 }
