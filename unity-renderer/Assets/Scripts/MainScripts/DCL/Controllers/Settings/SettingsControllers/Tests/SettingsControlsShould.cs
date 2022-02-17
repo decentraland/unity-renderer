@@ -454,21 +454,6 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         }
 
         [Test]
-        public void ChangeNightModeCorrectly()
-        {
-            // Arrange
-            settingController = ScriptableObject.CreateInstance<NightModeControlController>();
-            settingController.Initialize();
-
-            // Act
-            bool newValue = true;
-            settingController.UpdateSetting(newValue);
-
-            // Assert
-            Assert.AreEqual(newValue, settingController.GetStoredValue(), "nightMode stored value mismatch");
-        }
-
-        [Test]
         public void ChangeHideUICorrectly()
         {
             // Arrange
