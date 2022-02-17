@@ -86,6 +86,15 @@ namespace DCL.Builder
             projectView.SetActive(false);
         }
 
+        protected override void OnFetchingStateChange(bool isLoading)
+        {
+            base.OnFetchingStateChange(isLoading);
+            if (isLoading)
+            {
+                view.SetLoading();
+            }
+        }
+
         internal void OnSearchResult(List<ISearchInfo> searchInfoScenes)
         {
             if (projectsViews == null)

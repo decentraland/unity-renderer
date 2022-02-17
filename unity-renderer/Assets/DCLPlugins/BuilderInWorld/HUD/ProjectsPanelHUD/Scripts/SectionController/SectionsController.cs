@@ -32,6 +32,7 @@ namespace DCL.Builder
         event Action<Vector2Int> OnRequestEditSceneAtCoords;
         void OpenSection(SectionId id);
         void SetFetchingDataStart();
+        void SetFetchingDataStart<T>() where T : SectionBase;
         void SetFetchingDataEnd<T>() where T : SectionBase;
     }
 
@@ -117,6 +118,7 @@ namespace DCL.Builder
         }
 
         public void SetFetchingDataStart(){ SetIsLoading<SectionBase>(true); }
+        public void SetFetchingDataStart<T>() where T : SectionBase { SetIsLoading<T>(true); }
 
         public void SetFetchingDataEnd<T>() where T : SectionBase { SetIsLoading<T>(false); }
 

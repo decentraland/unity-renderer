@@ -367,10 +367,10 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             else
                 sendPlayerOpenPanelEvent = true;
 
+            sectionsController.OpenSection(SectionId.PROJECTS);
+            
             FetchPanelInfo();
             StartFetchInterval();
-            
-            sectionsController.OpenSection(SectionId.PROJECTS);
         }
         else
         {
@@ -472,6 +472,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal void FetchProjectData()
     {
+        sectionsController.SetFetchingDataStart<SectionProjectController>();
         fetchProjectsPromise = BuilderPanelDataFetcher.FetchProjectData(context.builderAPIController);
         fetchProjectsPromise
             .Then(ProjectsFetched)

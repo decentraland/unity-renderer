@@ -184,6 +184,7 @@ public class BIWEntity
 
     public void CheckErrors()
     {
+        Debug.Log("Start - Is currently with errors " + hasError + "   is because is insdide bourndaries " + isInsideBoundariesError);
         bool isCurrentlyWithError = false;
 
         //If the entity doesn't have a catalog item associated, we can be sure that the item is deleted
@@ -197,11 +198,13 @@ public class BIWEntity
         if (isInsideBoundariesError)
             isCurrentlyWithError = true;
 
-        bool hasErrorPreviously = hasError;
-        hasError = isCurrentlyWithError;
+        if (isCurrentlyWithError != hasError)
+        {
+            hasError = isCurrentlyWithError;
+            Debug.Log("Callback called - Is currently with errors " + hasError + "   is because is insdide bourndaries " + isInsideBoundariesError);
 
-        if (isCurrentlyWithError != hasErrorPreviously)
             OnErrorStatusChange?.Invoke(this);
+        }
     }
 
     public void SetEntityBoundariesError(bool isInsideBoundaries)
@@ -306,7 +309,7 @@ public class BIWEntity
     {
         foreach (List<GameObject> entityColliderGameObject in collidersGameObjectDictionary.Values)
         {
-            for (int i = entityColliderGameObject.Count - 1; i > 0; i--)
+            for (int i = 0; i < entityColliderGameObject.Count; i++)
             {
                 GameObject.Destroy(entityColliderGameObject[i]);
             }
