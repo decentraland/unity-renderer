@@ -9,6 +9,7 @@ using DCL.Rendering;
 using DCL.SettingsCommon;
 using NSubstitute;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.TestTools;
 
 public class IntegrationTestSuite_Legacy
@@ -38,7 +39,7 @@ public class IntegrationTestSuite_Legacy
 
         legacySystems = SetUp_LegacySystems();
 
-        RenderProfileManifest.i.Initialize();
+        InitializeDefaultRenderSettings();
 
         Environment.Setup(InitializeServiceLocator());
 
@@ -163,5 +164,24 @@ public class IntegrationTestSuite_Legacy
 
         GameObject gameObject = Object.Instantiate(reference, runtimeGameObjectsRoot.transform, true);
         return gameObject;
+    }
+
+    private void InitializeDefaultRenderSettings()
+    {
+        RenderSettings.customReflection = Resources.Load<Cubemap>("VisualTest Reflection");
+        RenderSettings.ambientMode = AmbientMode.Trilight;
+
+        RenderSettings.skybox = Resources.Load<Material>("VisualTest Skybox");
+        RenderSettings.ambientEquatorColor = new Color(0.98039216f, 0.8352941f, 0.74509805f);
+        RenderSettings.ambientSkyColor = new Color(0.60784316f, 0.92941177f, 1);
+        RenderSettings.ambientGroundColor = Color.white;
+
+        RenderSettings.fogColor = new Color(0.8443396f, 0.93445873f, 1);
+
+        if (RenderSettings.sun != null)
+        {
+            RenderSettings.sun.color =  new Color(0.85882354f, 0.90795577f, 0.9137255f);
+            RenderSettings.sun.transform.rotation = Quaternion.Euler(Vector3.one * 45);
+        }
     }
 }

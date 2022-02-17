@@ -577,8 +577,6 @@ public class AvatarEditorHUDController : IHUD
 
     public void SetVisibility_Internal(bool visible)
     {
-        var currentRenderProfile = RenderProfileManifest.i.currentProfile;
-
         if (!visible && view.isOpen)
         {
             if (DataStore.i.common.isSignUpFlow.Get())
@@ -586,7 +584,6 @@ public class AvatarEditorHUDController : IHUD
 
             Environment.i.messaging.manager.paused = false;
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld);
-            currentRenderProfile.avatarProfile.Apply();
             if (prevMouseLockState && DataStore.i.common.isSignUpFlow.Get())
             {
                 Utils.LockCursor();
@@ -611,7 +608,6 @@ public class AvatarEditorHUDController : IHUD
             LoadOwnedWereables(userProfile);
             Environment.i.messaging.manager.paused = DataStore.i.common.isSignUpFlow.Get();
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor);
-            currentRenderProfile.avatarProfile.Apply();
 
             prevMouseLockState = Utils.IsCursorLocked;
 
@@ -631,7 +627,6 @@ public class AvatarEditorHUDController : IHUD
             OnOpen?.Invoke();
         }
 
-        currentRenderProfile.avatarProfile.Apply();
         view.SetVisibility(visible);
     }
 
