@@ -2367,7 +2367,8 @@ namespace UnityGLTF
 
                 if (addImagesToPersistentCaching)
                 {
-                    Debug.Log($"<color=magenta>Adding image to persistent cache {imageId}</color>");
+                    if(VERBOSE)
+                        Debug.Log($"<color=magenta>Adding image to persistent cache {imageId}</color>");
                     source = PersistentAssetCache.AddImage(imageId, _assetCache.ImageCache[sourceId], linear);
                 }
                 else
