@@ -87,8 +87,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.99999964, y: -1}
-  m_SizeDelta: {x: -8.000001, y: -8}
+  m_AnchoredPosition: {x: 0, y: -1}
+  m_SizeDelta: {x: -10, y: -8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5370433330863021005
 CanvasRenderer:
@@ -195,8 +195,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Land Name <color=#716B7C>140,150</color>
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6b705423dc77d4fceb4122f6d7e571d6, type: 2}
-  m_sharedMaterial: {fileID: -1532326820724739884, guid: 6b705423dc77d4fceb4122f6d7e571d6,
+  m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
+  m_sharedMaterial: {fileID: 1196159134475820439, guid: a02669827dd9144f39b4b164e753a21a,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

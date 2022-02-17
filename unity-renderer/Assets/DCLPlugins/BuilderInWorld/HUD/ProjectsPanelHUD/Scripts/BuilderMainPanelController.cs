@@ -230,8 +230,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         manifest.project.id = Guid.NewGuid().ToString();
         manifest.project.scene_id = scene_id;
         manifest.scene.id = scene_id;
-        manifest.project.created_at = DateTime.Now;
-        manifest.project.updated_at = DateTime.Now;
+        manifest.project.created_at = DateTime.UtcNow;
+        manifest.project.updated_at = DateTime.UtcNow;
 
         screenshotPromise.Then(texture =>
         {

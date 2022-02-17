@@ -27,6 +27,7 @@ namespace DCL
         [SerializeField] private MapParcelHighlight highlight;
         [SerializeField] private Image parcelHighlightImage;
         [SerializeField] private Image parcelHighlighImagePrefab;
+        [SerializeField] private Image parcelHighlighWithContentImagePrefab;
         [SerializeField] private Image selectParcelHighlighImagePrefab;
 
         private float parcelSizeInMap;
@@ -86,6 +87,7 @@ namespace DCL
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private Dictionary<Vector2Int, Image> highlightedLands = new Dictionary<Vector2Int, Image>();
+        private List<Vector2Int> landsWithContent = new List<Vector2Int>();
         private Vector2Int lastSelectedLand;
 
         private bool isInitialized = false;
@@ -207,6 +209,7 @@ namespace DCL
             }
 
             highlightedLands.Clear (); //To Clear out the dictionary
+            landsWithContent.Clear (); //To Clear out the content lands
         }
 
         public void SelectLand(Vector2Int coordsToSelect, Vector2Int size )
@@ -214,8 +217,11 @@ namespace DCL
             if (highlightedLands.ContainsKey(lastSelectedLand))
             {
                 Destroy(highlightedLands[lastSelectedLand].gameObject);
-                highlightedLands.Remove(lastSelectedLand);  
-                CreateHighlightParcel(parcelHighlighImagePrefab,lastSelectedLand, Vector2Int.one);
+                highlightedLands.Remove(lastSelectedLand); 
+                if(!landsWithContent.Contains(lastSelectedLand))
+                    CreateHighlightParcel(parcelHighlighImagePrefab,lastSelectedLand, Vector2Int.one);
+                else
+                    CreateHighlightParcel(parcelHighlighWithContentImagePrefab, lastSelectedLand,size);
             }
             
             if (highlightedLands.ContainsKey(coordsToSelect))
@@ -223,13 +229,12 @@ namespace DCL
                 Destroy(highlightedLands[coordsToSelect].gameObject);
                 highlightedLands.Remove(coordsToSelect);
             }
-
+            
             CreateHighlightParcel(selectParcelHighlighImagePrefab, coordsToSelect,size);
-
             lastSelectedLand = coordsToSelect;
         }
         
-        public void HighlightLands(List<Vector2Int> landsToHighlight)
+        public void HighlightLands(List<Vector2Int> landsToHighlight,List<Vector2Int> landsToHighlightWithContent)
         {
             CleanLandsHighlights();
 
@@ -239,6 +244,16 @@ namespace DCL
                     continue;
 
                 CreateHighlightParcel(parcelHighlighImagePrefab,coords, Vector2Int.one);
+            }
+            
+            foreach (Vector2Int coords in landsToHighlightWithContent)
+            {
+                if (highlightedLands.ContainsKey(coords))
+                    continue;
+
+                if(!landsWithContent.Contains(coords))
+                    landsWithContent.Add(coords);
+                CreateHighlightParcel(parcelHighlighWithContentImagePrefab,coords, Vector2Int.one);
             }
         }
 

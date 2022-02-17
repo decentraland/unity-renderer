@@ -30,7 +30,7 @@ namespace DCL.Builder
         public void UpdateManifestFromScene()
         {
             manifest.scene = ManifestTranslator.ParcelSceneToWebBuilderScene((ParcelScene)scene);
-            manifest.project.updated_at = DateTime.Now;
+            manifest.project.updated_at = DateTime.UtcNow;
             manifest.project.scene_id = manifest.scene.id;
         }
 

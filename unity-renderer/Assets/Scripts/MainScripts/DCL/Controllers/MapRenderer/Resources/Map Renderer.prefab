@@ -231,6 +231,8 @@ MonoBehaviour:
   parcelHighlightImage: {fileID: 8462178434267115536}
   parcelHighlighImagePrefab: {fileID: 5286954057867229531, guid: 7fde7ef488a1cd449aeceb98a72d8470,
     type: 3}
+  parcelHighlighWithContentImagePrefab: {fileID: 5286954057867229531, guid: b666a2e894513ec4e97ff0aa8c9be9dd,
+    type: 3}
   selectParcelHighlighImagePrefab: {fileID: 396097962848855216, guid: de10b7ec0d61e314f97d8c8b4b8875c4,
     type: 3}
   cursorMapCoords: {x: 0, y: 0, z: 0}

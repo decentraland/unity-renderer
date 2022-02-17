@@ -180,13 +180,9 @@ public class EntityListAdapter : MonoBehaviour
 
     private void SetEntityError(BIWEntity entity)
     {
-        Debug.Log("Callback received - Is currently with errors " + entity.hasError + "   is because is insdide bourndaries " + entity.isInsideBoundariesError);
-
         if (entity != currentEntity)
             return;
-
-        Debug.Log("Color apply - Is currently with errors " + entity.hasError + "   is because is insdide bourndaries " + entity.isInsideBoundariesError);
-
+        
         CheckEntityNameColor(entity);
     }
 

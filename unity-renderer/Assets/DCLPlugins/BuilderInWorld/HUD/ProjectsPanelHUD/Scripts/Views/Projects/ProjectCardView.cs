@@ -107,7 +107,7 @@ namespace DCL.Builder
         internal const float SCENE_CARD_ITEM_PADDING = 18;
         internal const float SCENE_CARD_TOTAL_PADDING = 36;
         
-        internal const float MS_TO_IGNORE_DUE_TO_SERVER = 30000;
+        internal const float MS_TO_IGNORE_DUE_TO_SERVER = 0;
 
         public event Action<ProjectData> OnEditorPressed;
         public event Action<IProjectCardView> OnSettingsPressed;

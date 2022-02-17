@@ -184,7 +184,6 @@ public class BIWEntity
 
     public void CheckErrors()
     {
-        Debug.Log("Start - Is currently with errors " + hasError + "   is because is insdide bourndaries " + isInsideBoundariesError);
         bool isCurrentlyWithError = false;
 
         //If the entity doesn't have a catalog item associated, we can be sure that the item is deleted
@@ -201,8 +200,6 @@ public class BIWEntity
         if (isCurrentlyWithError != hasError)
         {
             hasError = isCurrentlyWithError;
-            Debug.Log("Callback called - Is currently with errors " + hasError + "   is because is insdide bourndaries " + isInsideBoundariesError);
-
             OnErrorStatusChange?.Invoke(this);
         }
     }

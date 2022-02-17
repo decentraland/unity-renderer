@@ -206,7 +206,7 @@ namespace DCL.Builder
 
                 // Remove link to a land if exists
                 builderSceneToDeploy.manifest.project.creation_coords = null;
-                builderSceneToDeploy.manifest.project.updated_at = DateTime.Now.AddSeconds(-30);
+                builderSceneToDeploy.manifest.project.updated_at = DateTime.UtcNow;
 
                 // Update project on the builder server
                 context.builderAPIController.SetManifest(builderSceneToDeploy.manifest);

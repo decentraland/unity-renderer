@@ -58,14 +58,18 @@ namespace DCL.Builder
         internal void UpdateOwnedLands()
         {
             List<Vector2Int> landsToHighlight = new List<Vector2Int>();
+            List<Vector2Int> landsToHighlightWithContent = new List<Vector2Int>();
             foreach (var land in DataStore.i.builderInWorld.landsWithAccess.Get())
             {
                 foreach (Vector2Int landParcel in land.parcels)
                 {
-                    landsToHighlight.Add(landParcel);
+                    if(land.scenes.Count > 0 && !land.scenes[0].isEmpty)
+                        landsToHighlightWithContent.Add(landParcel);
+                    else
+                        landsToHighlight.Add(landParcel);
                 }
             }
-            MapRenderer.i.HighlightLands(landsToHighlight);
+            MapRenderer.i.HighlightLands(landsToHighlight, landsToHighlightWithContent);
         }
 
         public void SetProjectSize(Vector2Int[] parcels)
