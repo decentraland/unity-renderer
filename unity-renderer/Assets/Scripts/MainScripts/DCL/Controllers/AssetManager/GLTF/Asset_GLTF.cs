@@ -34,7 +34,13 @@ namespace DCL
             return result;
         }
 
-        public override void Cleanup() { Object.Destroy(container); }
+        public override void Cleanup()
+        {
+            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                return;
+            
+            Object.Destroy(container);
+        }
 
         public void Hide()
         {

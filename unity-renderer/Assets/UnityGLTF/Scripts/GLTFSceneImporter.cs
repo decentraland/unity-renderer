@@ -1092,6 +1092,9 @@ namespace UnityGLTF
             }, cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
+            
+            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                return;
 
             if (optimizeKeyframes)
             {
@@ -1104,6 +1107,9 @@ namespace UnityGLTF
                 }, cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
+                
+                if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                    return;
 
                 // Setting the curves by the keyframe length order fixes weird index overrun issue:
                 // https://forum.unity.com/threads/animationutility-seteditorcurve-cant-add-curve-with-one-keyfram.247372/
@@ -1389,6 +1395,9 @@ namespace UnityGLTF
 
         protected virtual async UniTask ConstructNode(Node node, int nodeIndex, CancellationToken cancellationToken, Transform parent = null)
         {
+            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                return;
+            
             if (_assetCache.NodeCache[nodeIndex] != null)
             {
                 return;
@@ -2094,6 +2103,9 @@ namespace UnityGLTF
 
         protected virtual async UniTask ConstructMaterial( GLTFMaterial def, int materialIndex, CancellationToken cancellationToken)
         {
+            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                return;
+            
             IUniformMap mapper;
             const string specGlossExtName = KHR_materials_pbrSpecularGlossinessExtensionFactory.EXTENSION_NAME;
 

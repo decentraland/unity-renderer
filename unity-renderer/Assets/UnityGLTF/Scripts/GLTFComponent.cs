@@ -219,6 +219,9 @@ namespace UnityGLTF
 
         private async UniTaskVoid Internal_LoadAsset(Settings settings, CancellationToken token)
         {
+            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                return;
+            
             if (!string.IsNullOrEmpty(GLTFUri))
             {
                 if (VERBOSE)

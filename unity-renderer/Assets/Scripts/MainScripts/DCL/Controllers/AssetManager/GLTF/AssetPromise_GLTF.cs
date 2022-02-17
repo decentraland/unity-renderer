@@ -86,6 +86,9 @@ namespace DCL
 
                 gltfComponent.OnSuccess += () =>
                 {
+                    if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                        return;
+                    
                     if (asset != null)
                     {
                         asset.totalTriangleCount =

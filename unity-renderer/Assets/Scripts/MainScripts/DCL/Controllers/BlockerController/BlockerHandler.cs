@@ -49,6 +49,9 @@ namespace DCL.Controllers
 
         public void ShowBlocker(Vector2Int pos, bool instant = false)
         {
+            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                return;
+            
             if (blockerPrefabDirty)
             {
                 blockerPrefabDirty = false;

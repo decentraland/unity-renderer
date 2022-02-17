@@ -89,6 +89,9 @@ namespace UnityGLTF.Loader
             
             await UniTask.WaitUntil( () => asyncOp.isDone || asyncOp.isDisposed || asyncOp.isSucceded, cancellationToken: token);
 
+            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                return;
+            
             token.ThrowIfCancellationRequested();
             
             bool error = false;

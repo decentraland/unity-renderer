@@ -246,6 +246,9 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private void RemoveListeners()
     {
+        if (DataStore.i.common.isWorldBeingDestroyed.Get())
+            return;
+        
         creatorController.OnCatalogItemPlaced -= OnAssetSpawn;
         entityHandler.OnDeleteSelectedEntities -= OnAssetDelete;
         modeController.OnChangedEditModeState -= OnChangedEditModeState;

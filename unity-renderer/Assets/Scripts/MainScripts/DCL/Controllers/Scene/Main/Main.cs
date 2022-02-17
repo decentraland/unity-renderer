@@ -24,7 +24,7 @@ namespace DCL
         protected IKernelCommunication kernelCommunication;
 
         private PluginSystem pluginSystem;
-
+        
         protected virtual void Awake()
         {
             if (i != null)
@@ -48,6 +48,10 @@ namespace DCL
 
                 DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
+            
+#if UNITY_STANDALONE || UNITY_EDITOR
+            Application.quitting += () => DataStore.i.common.isWorldBeingDestroyed.Set(true);
+#endif
 
             SetupPlugins();
 

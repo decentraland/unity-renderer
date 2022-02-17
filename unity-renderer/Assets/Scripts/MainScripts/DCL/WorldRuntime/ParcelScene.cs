@@ -788,6 +788,9 @@ namespace DCL.Controllers
 
         public void RefreshLoadingState()
         {
+            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                return;
+            
             CalculateSceneLoadingState();
 
 #if UNITY_EDITOR
