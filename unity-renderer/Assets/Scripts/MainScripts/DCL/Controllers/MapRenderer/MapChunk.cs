@@ -34,10 +34,12 @@ namespace DCL
                 if (result == null)
                     return;
 
-                result.filterMode = FilterMode.Trilinear;
-                result.anisoLevel = 16;
-                result.Apply(true);
-                targetImage.texture = result;
+                var newTexture = new Texture2D(result.width, result.height, result.format, true);
+                newTexture.SetPixels32(result.GetPixels32(0), 0);
+                newTexture.Apply(true);
+                Destroy(result);
+
+                targetImage.texture = newTexture;
                 targetImage.texture.wrapMode = TextureWrapMode.Clamp;
                 targetImage.SetNativeSize();
                 targetImage.color = Color.white;
