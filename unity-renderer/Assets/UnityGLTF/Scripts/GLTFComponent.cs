@@ -219,8 +219,10 @@ namespace UnityGLTF
 
         private async UniTaskVoid Internal_LoadAsset(Settings settings, CancellationToken token)
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isWorldBeingDestroyed.Get())
                 return;
+#endif
             
             if (!string.IsNullOrEmpty(GLTFUri))
             {
@@ -297,11 +299,14 @@ namespace UnityGLTF
                             else
                                 OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
                         }
-                    
-                        CleanUp();
-                        Destroy(loadingPlaceholder);
-                        Destroy(this);
-                        isDestroyed = true;
+
+                        if (!DataStore.i.common.isWorldBeingDestroyed.Get())
+                        {
+                            CleanUp();
+                            Destroy(loadingPlaceholder);
+                            Destroy(this);
+                            isDestroyed = true;
+                        }
                     }
                 }
             }
