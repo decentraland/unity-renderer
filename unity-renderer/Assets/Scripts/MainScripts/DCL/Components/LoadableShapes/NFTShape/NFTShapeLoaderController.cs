@@ -65,8 +65,8 @@ public class NFTShapeLoaderController : MonoBehaviour
     public Material imageMaterial { private set; get; } = null;
     public Material backgroundMaterial { private set; get; } = null;
 
-    readonly int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
-    readonly int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
+    static readonly int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
+    static readonly int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
 
 
     bool isDestroyed = false;

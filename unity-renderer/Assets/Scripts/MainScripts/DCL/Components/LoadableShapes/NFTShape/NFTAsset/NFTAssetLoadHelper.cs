@@ -43,9 +43,8 @@ namespace DCL
                 yield break;
             }
 
-            Debug.Log("Loading preview... " + url);
             string contentType = responseHeaders[CONTENT_TYPE];
-            long contentLength = long.Parse(responseHeaders[CONTENT_LENGTH]);
+            long.TryParse(responseHeaders[CONTENT_LENGTH], out long contentLength);
             bool isGif = contentType == CONTENT_TYPE_GIF;
 
             if (isGif)

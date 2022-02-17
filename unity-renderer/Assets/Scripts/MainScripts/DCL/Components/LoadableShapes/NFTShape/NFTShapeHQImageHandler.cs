@@ -114,7 +114,7 @@ namespace NFTShape_Internal
 
             if (VERBOSE)
             {
-                //Debug.Log($"Player position relative to {hqImageConfig.name} is near? {isPlayerNear}");
+                Debug.Log($"Player position relative to {hqImageConfig.name} is near? {isPlayerNear}");
             }
         }
 
