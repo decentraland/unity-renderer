@@ -246,8 +246,10 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private void RemoveListeners()
     {
+#if UNITY_STANDALONE || UNITY_EDITOR
         if (DataStore.i.common.isWorldBeingDestroyed.Get())
             return;
+#endif
         
         creatorController.OnCatalogItemPlaced -= OnAssetSpawn;
         entityHandler.OnDeleteSelectedEntities -= OnAssetDelete;
