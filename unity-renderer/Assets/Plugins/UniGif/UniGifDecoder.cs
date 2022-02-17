@@ -7,12 +7,15 @@ http://opensource.org/licenses/mit-license.php
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public static partial class UniGif
 {
@@ -27,7 +30,10 @@ public static partial class UniGif
     /// <returns>IEnumerator</returns>
     private static async UniTask DecodeTexture(GifData gifData, Action<GifFrameData[]> callback, FilterMode filterMode, TextureWrapMode wrapMode, CancellationToken token)
     {
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
         int blockListCount = gifData.m_imageBlockList?.Count ?? 0;
+
         if (gifData.m_imageBlockList == null || blockListCount < 1)
         {
             return;
@@ -38,23 +44,47 @@ public static partial class UniGif
 
         int imgIndex = 0;
 
-        Dictionary<int, byte[]> decodedDataBuffer = new Dictionary<int, byte[]>();
+        ConcurrentDictionary<int, byte[]> decodedDataBuffer = new ConcurrentDictionary<int, byte[]>();
         UniTask[] tasks = new UniTask[blockListCount];
 
+        Debug.Log($"before multi {stopwatch.ElapsedMilliseconds}ms {Thread.CurrentThread}");
+
+        ThreadPool.GetAvailableThreads(out var workerThreads, out var completionPortThreads);
+        
+        Debug.Log($"Available threads {workerThreads} Available Completion port threads {completionPortThreads} total block list {blockListCount}");
         // this is the CPU heavy part
         for (int i = 0; i < blockListCount; i++)
         {
             int index = i;
+
             tasks[i] = TaskUtils.Run( () =>
             {
-                decodedDataBuffer.Add(index, GetDecodedData(gifData.m_imageBlockList[index]));
-            }, token);
+                lock (stopwatch)
+                {
+                    Debug.Log($"Task [{index}] started at {stopwatch.ElapsedMilliseconds}ms {Thread.CurrentThread}");
+                }
+
+                decodedDataBuffer.TryAdd(index, GetDecodedData(gifData.m_imageBlockList[index]));
+
+                lock (stopwatch)
+                {
+                    Debug.Log($"Task [{index}] ended at {stopwatch.ElapsedMilliseconds}ms {Thread.CurrentThread}");
+                }
+            }, token, false);
+
+            Debug.Log($"scheduled task [{i}] {stopwatch.ElapsedMilliseconds}ms {Thread.CurrentThread}");
         }
+
+        Debug.Log($"wait started {stopwatch.ElapsedMilliseconds}ms {Thread.CurrentThread}");
+
+        await UniTask.WaitUntil( () => decodedDataBuffer.Count == blockListCount, cancellationToken: token);
+
+        Debug.Log($"wait ended {stopwatch.ElapsedMilliseconds}ms {Thread.CurrentThread}");
 
         await UniTask.SwitchToMainThread(token);
 
-        await UniTask.WhenAll(tasks).AttachExternalCancellation(token);
-        
+        Debug.Log($"switch to main thread {stopwatch.ElapsedMilliseconds}ms {Thread.CurrentThread}");
+
         for (int i = 0; i < blockListCount; i++)
         {
             byte[] decodedData = decodedDataBuffer[i];
@@ -79,6 +109,7 @@ public static partial class UniGif
             for (int y = texHeight - 1; y >= 0; y--)
             {
                 SetTexturePixelRow(tex, y, gifDataMImageBlock, decodedData, ref dataIndex, colorTable, bgColor, transparentIndex, filledTexture, texWidth, texHeight);
+
                 if (y % MAX_ROWS_PER_FRAME == 0)
                 {
                     await UniTask.Yield(token);
@@ -108,9 +139,11 @@ public static partial class UniGif
         // Combine LZW compressed data
         List<byte> lzwData = new List<byte>();
         int count = imgBlock.m_imageDataList.Count;
+
         for (int i = 0; i < count; i++)
         {
             int length = imgBlock.m_imageDataList[i].m_imageData.Length;
+
             for (int k = 0; k < length; k++)
             {
                 lzwData.Add(imgBlock.m_imageDataList[i].m_imageData[k]);
@@ -126,6 +159,7 @@ public static partial class UniGif
         {
             decodedData = SortInterlaceGifData(decodedData, imgBlock.m_imageWidth);
         }
+
         return decodedData;
     }
 
@@ -159,6 +193,7 @@ public static partial class UniGif
         {
             return gifData.m_graphicCtrlExList[imgBlockIndex];
         }
+
         return null;
     }
 
@@ -168,10 +203,12 @@ public static partial class UniGif
     private static int GetTransparentIndex(GraphicControlExtension? graphicCtrlEx)
     {
         int transparentIndex = -1;
+
         if (graphicCtrlEx != null && graphicCtrlEx.Value.m_transparentColorFlag)
         {
             transparentIndex = graphicCtrlEx.Value.m_transparentColorIndex;
         }
+
         return transparentIndex;
     }
 
@@ -182,10 +219,12 @@ public static partial class UniGif
     {
         // Get delay sec from GraphicControlExtension
         float delaySec = graphicCtrlEx != null ? graphicCtrlEx.Value.m_delayTime / 100f : (1f / 60f);
+
         if (delaySec <= 0f)
         {
             delaySec = 0.1f;
         }
+
         return delaySec;
     }
 
@@ -211,6 +250,7 @@ public static partial class UniGif
         // Check dispose
         ushort disposalMethod = imgIndex > 0 ? disposalMethodList[imgIndex - 1] : (ushort)2;
         int useBeforeIndex = -1;
+
         if (disposalMethod == 0)
         {
             // 0 (No disposal specified)
@@ -226,10 +266,12 @@ public static partial class UniGif
             filledTexture = true;
             Color32[] pix = new Color32[tex.width * tex.height];
             int pixLength = pix.Length;
+
             for (int i = 0; i < pixLength; i++)
             {
                 pix[i] = bgColor;
             }
+
             tex.SetPixels32(pix);
             tex.Apply();
         }
@@ -241,6 +283,7 @@ public static partial class UniGif
                 if (disposalMethodList[i] == 0 || disposalMethodList[i] == 1)
                 {
                     useBeforeIndex = i;
+
                     break;
                 }
             }
@@ -293,6 +336,7 @@ public static partial class UniGif
                 {
                     tex.SetPixel(x, y, bgColor);
                 }
+
                 continue;
             }
 
@@ -302,23 +346,28 @@ public static partial class UniGif
                 if (filledTexture == false)
                 {
                     tex.SetPixel(x, y, bgColor);
+
                     if (dataIndex == decodedDataLength)
                     {
                         Debug.LogError("dataIndex exceeded the size of decodedData. dataIndex:" + dataIndex + " decodedData.Length:" + decodedDataLength + " y:" + y + " x:" + x);
                     }
                 }
+
                 dataIndex++;
+
                 continue;
             }
 
             // Get pixel color from color table
             {
                 byte colorIndex = decodedData[dataIndex];
+
                 if (colorTable == null || colorTableCount <= colorIndex)
                 {
                     if (filledTexture == false)
                     {
                         tex.SetPixel(x, y, bgColor);
+
                         if (colorTable == null)
                         {
                             Debug.LogError("colorIndex exceeded the size of colorTable. colorTable is null. colorIndex:" + colorIndex);
@@ -328,9 +377,12 @@ public static partial class UniGif
                             Debug.LogError("colorIndex exceeded the size of colorTable. colorTable.Count:" + colorTableCount + " colorIndex:" + colorIndex);
                         }
                     }
+
                     dataIndex++;
+
                     continue;
                 }
+
                 byte[] rgb = colorTable[colorIndex];
 
                 // Set alpha
@@ -398,12 +450,14 @@ public static partial class UniGif
                 dicInitFlag = true;
                 bitDataIndex += lzwCodeSize;
                 prevEntry = null;
+
                 continue;
             }
             else if (key == finishCode)
             {
                 // Exit
                 Debug.LogWarning("early stop code. bitDataIndex:" + bitDataIndex + " lzwCodeSize:" + lzwCodeSize + " key:" + key + " dic.Count:" + dic.Count);
+
                 break;
             }
             else if (dic.ContainsKey(key))
@@ -422,6 +476,7 @@ public static partial class UniGif
                 {
                     Debug.LogWarning("It is strange that come here. bitDataIndex:" + bitDataIndex + " lzwCodeSize:" + lzwCodeSize + " key:" + key + " dic.Count:" + dic.Count);
                     bitDataIndex += lzwCodeSize;
+
                     continue;
                 }
             }
@@ -429,6 +484,7 @@ public static partial class UniGif
             {
                 Debug.LogWarning("It is strange that come here. bitDataIndex:" + bitDataIndex + " lzwCodeSize:" + lzwCodeSize + " key:" + key + " dic.Count:" + dic.Count);
                 bitDataIndex += lzwCodeSize;
+
                 continue;
             }
 
@@ -436,6 +492,7 @@ public static partial class UniGif
             // Take out 8 bits from the string.
             byte[] temp = Encoding.Unicode.GetBytes(entry);
             int tempLength = temp.Length;
+
             for (int i = 0; i < tempLength; i++)
             {
                 if (i % 2 == 0)
@@ -500,6 +557,7 @@ public static partial class UniGif
             else if (lzwCodeSize == 12 && dic.Count >= 4096)
             {
                 int nextKey = bitData.GetNumeral(bitDataIndex, lzwCodeSize);
+
                 if (nextKey != clearCode)
                 {
                     dicInitFlag = true;
@@ -548,6 +606,7 @@ public static partial class UniGif
         var newArr = new byte[decodedData.Length];
         // Every 8th. row, starting with row 0.
         int arrLength = newArr.Length;
+
         for (int i = 0; i < arrLength; i++)
         {
             if (rowNo % 8 == 0)
@@ -555,12 +614,15 @@ public static partial class UniGif
                 newArr[i] = decodedData[dataIndex];
                 dataIndex++;
             }
+
             if (i != 0 && i % xNum == 0)
             {
                 rowNo++;
             }
         }
+
         rowNo = 0;
+
         // Every 8th. row, starting with row 4.
         for (int i = 0; i < arrLength; i++)
         {
@@ -569,12 +631,15 @@ public static partial class UniGif
                 newArr[i] = decodedData[dataIndex];
                 dataIndex++;
             }
+
             if (i != 0 && i % xNum == 0)
             {
                 rowNo++;
             }
         }
+
         rowNo = 0;
+
         // Every 4th. row, starting with row 2.
         for (int i = 0; i < arrLength; i++)
         {
@@ -583,12 +648,15 @@ public static partial class UniGif
                 newArr[i] = decodedData[dataIndex];
                 dataIndex++;
             }
+
             if (i != 0 && i % xNum == 0)
             {
                 rowNo++;
             }
         }
+
         rowNo = 0;
+
         // Every 2nd. row, starting with row 1.
         for (int i = 0; i < arrLength; i++)
         {
@@ -597,6 +665,7 @@ public static partial class UniGif
                 newArr[i] = decodedData[dataIndex];
                 dataIndex++;
             }
+
             if (i != 0 && i % xNum == 0)
             {
                 rowNo++;

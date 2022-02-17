@@ -40,7 +40,7 @@ namespace DCL
                 return new JSGifProcessor(url);
             }
 
-            return new UniGifProcessor(url);
+            return new GifDecoderProcessor(url, Environment.i.platform.webRequest);
         }
         private void OnLoadSuccsess(GifFrameData[] frames)
         {
