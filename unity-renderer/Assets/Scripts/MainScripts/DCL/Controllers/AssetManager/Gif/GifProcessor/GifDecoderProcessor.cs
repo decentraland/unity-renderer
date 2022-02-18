@@ -15,7 +15,7 @@ namespace DCL
 {
     public class GifWebRequestException : Exception
     {
-        public GifWebRequestException(string message) : base(message) {}
+        public GifWebRequestException(string message) : base(message) { }
     }
 
     public class GifDecoderProcessor : IGifProcessor
@@ -48,12 +48,14 @@ namespace DCL
         }
 
         public GifDecoderProcessor(Stream stream) { this.stream = stream; }
+        
         public void DisposeGif()
         {
             gifFrameData = null;
             webRequestController.Dispose();
             stream?.Dispose();
         }
+        
         public async UniTask Load(Action<GifFrameData[]> loadSuccsess, Action<Exception> fail, CancellationToken token)
         {
             try
@@ -66,6 +68,7 @@ namespace DCL
                 fail(e);
             }
         }
+        
         private async UniTask StartDecoding(Action<GifFrameData[]> loadSuccsess, Action<Exception> fail, CancellationToken token)
         {
             try
@@ -83,6 +86,7 @@ namespace DCL
                 stopwatch.Start();
 
                 GifStream gifStream;
+
                 if (stream != null)
                 {
                     gifStream = new GifStream(stream);
@@ -95,6 +99,7 @@ namespace DCL
                 var images = await ReadStream(gifStream, token);
 
                 token.ThrowIfCancellationRequested();
+
                 await TaskUtils.RunThrottledCoroutine(ProcessGifData(images, gifStream.Header.width, gifStream.Header.height), fail, throttlingCounter.EvaluateTimeBudget)
                                .AttachExternalCancellation(token);
 
@@ -108,7 +113,7 @@ namespace DCL
             }
             finally
             {
-                if(isRunningInternal)
+                if (isRunningInternal)
                     isRunning = false;
             }
         }
@@ -138,7 +143,7 @@ namespace DCL
                 yield return skipFrameIfDepletedTimeBudget;
             }
         }
-        
+
         private async UniTask<byte[]> DownloadGifAndReadStream(CancellationToken token)
         {
             var operation = webRequestController.Get(url, timeout: 15, disposeOnCompleted: false);
@@ -148,10 +153,10 @@ namespace DCL
             {
                 throw new GifWebRequestException(url);
             }
-            
+
             return operation.webRequest.downloadHandler.data;
         }
-        
+
         private static UniTask<List<RawImage>> ReadStream(GifStream gifStream, CancellationToken token)
         {
             return TaskUtils.Run( () =>
