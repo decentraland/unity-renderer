@@ -403,16 +403,9 @@ namespace DCL.Skybox
             newConfiguration.OnTimelineEvent += Configuration_OnTimelineEvent;
             configuration = newConfiguration;
 
-            // Apply material as per number of Slots.
-            MaterialReferenceContainer.Mat_Layer matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(5);
-            if (matLayer == null)
-            {
-                matLayer = MaterialReferenceContainer.i.materials[0];
-            }
-
-            configuration.ResetMaterial(matLayer.material, matLayer.numberOfSlots);
-            selectedMat = matLayer.material;
-            slotCount = matLayer.numberOfSlots;
+            selectedMat = MaterialReferenceContainer.i.skyboxMat;
+            slotCount = MaterialReferenceContainer.i.skyboxMatSlots;
+            configuration.ResetMaterial(selectedMat, slotCount);
 
             if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
             {

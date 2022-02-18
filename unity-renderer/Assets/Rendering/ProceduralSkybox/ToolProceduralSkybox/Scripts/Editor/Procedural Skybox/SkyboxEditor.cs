@@ -32,7 +32,6 @@ namespace DCL.Skybox
         private bool showDLLayer;
         private bool showAvatarLayer;
         private bool showTimelineTags;
-        private MaterialReferenceContainer.Mat_Layer matLayer = null;
 
         private GUIStyle foldoutStyle;
         private GUIStyle renderingMarkerStyle;
@@ -214,7 +213,7 @@ namespace DCL.Skybox
                 UpdateConfigurationsList();
             }
 
-            if (matLayer == null || selectedMat == null)
+            if (selectedMat == null)
             {
                 UpdateMaterial();
             }
@@ -250,10 +249,7 @@ namespace DCL.Skybox
             }
 
             // Init 3D
-            if (skyboxCamera == null)
-            {
-                Init3DSetup();
-            }
+            Init3DSetup();
         }
 
         private void CheckAndAssignAllStyles()
@@ -286,15 +282,8 @@ namespace DCL.Skybox
 
         void InitializeMaterial()
         {
-            matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(5);
-
-            if (matLayer == null)
-            {
-                matLayer = MaterialReferenceContainer.i.materials[0];
-            }
-
-            selectedMat = matLayer.material;
-            selectedConfiguration.ResetMaterial(selectedMat, matLayer.numberOfSlots);
+            selectedMat = MaterialReferenceContainer.i.skyboxMat;
+            selectedConfiguration.ResetMaterial(selectedMat, MaterialReferenceContainer.i.skyboxMatSlots);
             RenderSettings.skybox = selectedMat;
         }
 
@@ -302,31 +291,31 @@ namespace DCL.Skybox
 
         #region 3D Skybox
 
-        Camera skyboxCamera;
-
+        List<GameObject> domeObjects = new List<GameObject>();
         void Init3DSetup()
         {
-            // Get skyboxCamera
-            if (Application.isPlaying)
-            {
-                // Get skybox Camera from heirarchy
-            }
+            if (Application.isPlaying) { }
             else
             {
-                // Cache skybox camera reference
-                skyboxCamera = GameObject.FindObjectsOfType<Camera>(true).Where(s => s.name == "Skybox Camera").FirstOrDefault();
+                // Make new parent gameobject
+                GameObject skyboxElements = new GameObject("Skybox Elements");
+                skyboxElements.transform.position = Vector3.zero;
 
-                // Make a skybox camera object if can't find
-                if (skyboxCamera == null)
+                if (domeObjects.Count != selectedConfiguration.additional3Dconfig.Count)
                 {
-                    GameObject temp = new GameObject("Skybox Camera");
-                    // Add the Camera component
-                    skyboxCamera = temp.AddComponent<Camera>();
-
-                    skyboxCamera.cullingMask = 1 << LayerMask.NameToLayer("Skybox");
+                    InstantiateDomes();
                 }
             }
+        }
 
+        void InstantiateDomes()
+        {
+            // Check additional 3D  dome array and Instantiate domes
+            for (int i = domeObjects.Count; i < selectedConfiguration.additional3Dconfig.Count; i++)
+            {
+                // Instantiate dome
+
+            }
         }
 
         #endregion
@@ -1496,7 +1485,7 @@ namespace DCL.Skybox
         private void ApplyOnMaterial()
         {
             EnsureDependencies();
-            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), matLayer.numberOfSlots, directionalLight);
+            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)
