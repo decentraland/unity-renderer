@@ -28,6 +28,7 @@ public class OverrideCinemachineAxisInput : MonoBehaviour
         CinemachineCore.GetInputAxis = OverrideGetAxis;
         inputSpikeFixer = new InputSpikeFixer(() => Cursor.lockState);
         DataStore.i.camera.invertYAxis.OnChange += SetInvertYAxis;
+        invertMouseY = DataStore.i.camera.invertYAxis.Get();
     }
 
     private float OverrideGetAxis(string axisName)

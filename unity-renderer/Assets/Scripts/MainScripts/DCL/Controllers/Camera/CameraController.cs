@@ -4,6 +4,7 @@ using System.Linq;
 using Cinemachine;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL;
 using UnityEngine;
 
 namespace DCL.Camera
@@ -14,6 +15,9 @@ namespace DCL.Camera
         internal new UnityEngine.Camera camera;
 
         private Transform cameraTransform;
+
+        [SerializeField]
+        internal CinemachineFreeLook thirdPersonCamera; 
 
         [Header("Virtual Cameras")]
         [SerializeField]
@@ -86,6 +90,9 @@ namespace DCL.Camera
 
             DataStore.i.camera.outputTexture.OnChange += OnOutputTextureChange;
             OnOutputTextureChange(DataStore.i.camera.outputTexture.Get(), null);
+
+            DataStore.i.camera.invertYAxis.OnChange += SetInvertYAxis;
+            SetInvertYAxis(DataStore.i.camera.invertYAxis.Get(), false);
 
             wasBlendingLastFrame = false;
         }
@@ -234,6 +241,11 @@ namespace DCL.Camera
             return camera;
         }
 
+        private void SetInvertYAxis(bool current, bool previous)
+        {
+            thirdPersonCamera.m_YAxis.m_InvertInput = !current;
+        }
+
         private void OnDestroy()
         {
             if (cachedModeToVirtualCamera != null)
@@ -255,6 +267,7 @@ namespace DCL.Camera
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
             CommonScriptableObjects.cameraMode.OnChange -= OnCameraModeChange;
             DataStore.i.camera.outputTexture.OnChange -= OnOutputTextureChange;
+            DataStore.i.camera.invertYAxis.OnChange -= SetInvertYAxis;
         }
 
         [Serializable]
