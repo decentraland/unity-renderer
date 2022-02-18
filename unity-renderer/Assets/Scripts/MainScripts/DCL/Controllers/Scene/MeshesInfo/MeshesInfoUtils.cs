@@ -42,68 +42,110 @@ namespace DCL.Models
             return renderer.bounds;
         }
 
-        public static int ComputeTotalTriangles(List<Renderer> renderers, Dictionary<Mesh, int> meshToTriangleCount)
+        public static int ComputeTotalTriangles(IEnumerable<Renderer> renderers,
+            Dictionary<Mesh, int> meshToTriangleCount)
         {
             int result = 0;
 
-            for ( int i = 0; i < renderers.Count; i++ )
+            foreach ( var renderer in renderers )
             {
-                var r = renderers[i];
-
-                if ( r is MeshRenderer )
+                switch (renderer)
                 {
-                    int triangles = meshToTriangleCount[ r.GetComponent<MeshFilter>().sharedMesh ];
-                    result += triangles;
-                }
+                    case MeshRenderer r:
+                        MeshFilter mf = r.GetComponent<MeshFilter>();
 
-                if ( r is SkinnedMeshRenderer skinnedMeshRenderer )
-                {
-                    result += meshToTriangleCount[ skinnedMeshRenderer.sharedMesh ];
+                        if ( mf == null )
+                            continue;
+
+                        int triangles = meshToTriangleCount[ mf.sharedMesh ];
+                        result += triangles;
+                        break;
+                    case SkinnedMeshRenderer skr:
+                        result += meshToTriangleCount[ skr.sharedMesh ];
+                        break;
                 }
             }
 
             return result;
         }
 
-        public static Dictionary<Mesh, int> ExtractMeshToTriangleMap(List<Mesh> meshes)
+        public static Dictionary<Mesh, int> ExtractMeshToTriangleMap(IEnumerable<Mesh> meshes)
         {
             Dictionary<Mesh, int> result = new Dictionary<Mesh, int>();
 
-            for ( int i = 0; i < meshes.Count; i++ )
+            foreach (var mesh in meshes)
             {
-                Mesh mesh = meshes[i];
                 result[mesh] = mesh.triangles.Length;
             }
 
             return result;
         }
 
-        public static List<Mesh> ExtractMeshes(GameObject gameObject)
+        private static List<int> texIdsCache = new List<int>();
+        private static List<string> texNameCache = new List<string>();
+
+        public static HashSet<Renderer> ExtractUniqueRenderers(GameObject container)
+        {
+            return new HashSet<Renderer>(container.GetComponentsInChildren<Renderer>(true));
+        }
+
+        public static HashSet<Material> ExtractUniqueMaterials(IEnumerable<Renderer> renderers)
+        {
+            return new HashSet<Material>( renderers.SelectMany( (x) =>
+                x.sharedMaterials.Where((mat) => mat != null && mat.shader.name != "DCL/FX/Hologram")
+            ) );
+        }
+
+        public static HashSet<Texture> ExtractUniqueTextures(IEnumerable<Material> materials)
+        {
+            return new HashSet<Texture>(
+                materials.SelectMany(
+                    (mat) =>
+                    {
+                        mat.GetTexturePropertyNameIDs(texIdsCache);
+                        mat.GetTexturePropertyNames(texNameCache);
+                        List<Texture> result = new List<Texture>();
+                        for ( int i = 0; i < texIdsCache.Count; i++ )
+                        {
+                            var tex = mat.GetTexture(texIdsCache[i]);
+
+                            if ( tex != null )
+                            {
+                                result.Add(tex);
+                            }
+                        }
+
+                        return result;
+                    } ) );
+        }
+
+        public static HashSet<Mesh> ExtractUniqueMeshes(IEnumerable<Renderer> renderers)
         {
             List<Mesh> result = new List<Mesh>();
-            List<SkinnedMeshRenderer> skrList = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).ToList();
-            List<MeshFilter> meshFilterList = gameObject.GetComponentsInChildren<MeshFilter>(true).ToList();
 
-            foreach ( var skr in skrList )
+            foreach ( Renderer renderer in renderers )
             {
-                if ( skr.sharedMesh == null )
-                    continue;
+                switch ( renderer )
+                {
+                    case SkinnedMeshRenderer skr:
+                        if ( skr.sharedMesh == null )
+                            continue;
 
-                result.Add(skr.sharedMesh);
-            }
+                        result.Add(skr.sharedMesh);
+                        break;
+                    case MeshRenderer mr:
+                        MeshFilter mf = mr.GetComponent<MeshFilter>();
 
-            foreach ( var meshFilter in meshFilterList )
-            {
-                if ( meshFilter.mesh == null )
-                    continue;
+                        if ( mf.mesh == null )
+                            continue;
 
-                result.Add( meshFilter.mesh );
+                        result.Add( mf.mesh );
+                        break;
+                }
             }
 
             // Ensure meshes are unique
-            result = result.Distinct().ToList();
-
-            return result;
+            return new HashSet<Mesh>(result);
         }
     }
 }

@@ -47,13 +47,13 @@ namespace DCL
 
         protected override void OnReuse(Action OnSuccess)
         {
-            asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
+            asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
             asset.Show(OnSuccess);
         }
 
         protected override void OnAfterLoadOrReuse()
         {
-            asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
+            asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
             settings.ApplyAfterLoad(asset.container.transform);
         }
 
@@ -141,14 +141,14 @@ namespace DCL
 
                 GameObject assetBundleModelGO = UnityEngine.Object.Instantiate(goList[i], asset.container.transform);
 
-                List<Renderer> rendererList = assetBundleModelGO.GetComponentsInChildren<Renderer>(true).ToList();
-
-                asset.renderers.AddRange(rendererList);
-                UploadMeshesToGPU(MeshesInfoUtils.ExtractMeshes(assetBundleModelGO));
+                asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(assetBundleModelGO);
+                asset.materials = MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers);
+                asset.textures = MeshesInfoUtils.ExtractUniqueTextures(asset.materials);
+                UploadMeshesToGPU(MeshesInfoUtils.ExtractUniqueMeshes(asset.renderers));
                 asset.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
 
                 //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
-                yield return MaterialCachingHelper.Process(rendererList, enableRenderers: false, settings.cachingFlags);
+                yield return MaterialCachingHelper.Process(asset.renderers.ToList(), enableRenderers: false, settings.cachingFlags);
 
                 var animators = assetBundleModelGO.GetComponentsInChildren<Animation>(true);
 
@@ -160,13 +160,12 @@ namespace DCL
 #if UNITY_EDITOR
                 assetBundleModelGO.name = subPromise.asset.assetBundleAssetName;
 #endif
-                //assetBundleModelGO.transform.SetParent(asset.container.transform, false);
                 assetBundleModelGO.transform.ResetLocalTRS();
                 yield return null;
             }
         }
 
-        private void UploadMeshesToGPU(List<Mesh> meshesList)
+        private void UploadMeshesToGPU(HashSet<Mesh> meshesList)
         {
             var uploadToGPU = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
             foreach ( Mesh mesh in meshesList )

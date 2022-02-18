@@ -19,7 +19,10 @@ namespace DCL
         TERMS_OF_SERVICE = 9,
         WORLD_CHAT_WINDOW = 10,
         TASKBAR = 11,
+
+        [Obsolete("Deprecated behavior")]
         MESSAGE_OF_THE_DAY = 12,
+        
         FRIENDS = 13,
         OPEN_EXTERNAL_URL_PROMPT = 14,
         PRIVATE_CHAT_WINDOW = 15,
