@@ -1135,8 +1135,6 @@ namespace DCL.Interface
         [System.Serializable]
         public class SaveAvatarPayload
         {
-            public string face;
-            public string face128;
             public string face256;
             public string body;
             public bool isSignUpFlow;
@@ -1195,13 +1193,11 @@ namespace DCL.Interface
             SendMessage("RequestOwnProfileUpdate");
         }
 
-        public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
+        public static void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
         {
             var payload = new SaveAvatarPayload()
             {
                 avatar = avatar,
-                face = System.Convert.ToBase64String(faceSnapshot.EncodeToPNG()),
-                face128 = System.Convert.ToBase64String(face128Snapshot.EncodeToPNG()),
                 face256 = System.Convert.ToBase64String(face256Snapshot.EncodeToPNG()),
                 body = System.Convert.ToBase64String(bodySnapshot.EncodeToPNG()),
                 isSignUpFlow = isSignUpFlow
