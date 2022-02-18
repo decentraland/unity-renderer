@@ -246,7 +246,6 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
 
             // Assert
             Assert.AreEqual(newValue, settingController.GetStoredValue(), "Invert input Y axis stored value mismatch");
-            Assert.AreEqual(cameraController.overrideInput.invertMouseY, newValue, "First person camera invert Y axis mismatch");
             Assert.AreEqual(thirdPersonCamera.m_YAxis.m_InvertInput, !newValue, "Third person camera invert Y axis mismatch");
         }
 

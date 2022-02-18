@@ -12,8 +12,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         public override void UpdateSetting(object newValue)
         {
             currentGeneralSettings.invertYAxis = (bool)newValue;
-            SceneReferences.i.cameraController.overrideInput.invertMouseY = currentGeneralSettings.invertYAxis;
             SceneReferences.i.thirdPersonCamera.m_YAxis.m_InvertInput = !currentGeneralSettings.invertYAxis;
+            DataStore.i.camera.invertYAxis.Set((bool)newValue);
         }
     }
 }

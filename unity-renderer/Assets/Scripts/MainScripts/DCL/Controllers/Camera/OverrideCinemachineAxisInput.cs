@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cinemachine;
+using DCL;
 using DCL.Camera;
 using UnityEngine;
 
@@ -19,13 +20,14 @@ public class OverrideCinemachineAxisInput : MonoBehaviour
     [SerializeField] private AxisToMeasurableAction[] axisToMeasurableActions;
     private Dictionary<string, InputAction_Measurable> cachedAxisToMeasurableActions;
     private InputSpikeFixer inputSpikeFixer;
-    public bool invertMouseY = false;
+    private bool invertMouseY = false;
 
     private void Awake()
     {
         cachedAxisToMeasurableActions = axisToMeasurableActions.ToDictionary(x => x.axisName, x => x.measurableAction);
         CinemachineCore.GetInputAxis = OverrideGetAxis;
         inputSpikeFixer = new InputSpikeFixer(() => Cursor.lockState);
+        DataStore.i.camera.invertYAxis.OnChange += SetInvertYAxis;
     }
 
     private float OverrideGetAxis(string axisName)
@@ -40,5 +42,16 @@ public class OverrideCinemachineAxisInput : MonoBehaviour
         }
         return inputSpikeFixer.GetValue(value);
     }
-    
+
+    private void SetInvertYAxis(bool current, bool previous) 
+    {
+        invertMouseY = current;
+    }
+
+    private void OnDestroy()
+    {
+        DataStore.i.camera.invertYAxis.OnChange -= SetInvertYAxis;
+    }
+
+
 }

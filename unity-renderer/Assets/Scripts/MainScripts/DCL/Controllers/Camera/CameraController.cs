@@ -28,9 +28,6 @@ namespace DCL.Camera
         [SerializeField]
         internal InputAction_Measurable mouseWheelAction;
 
-        [SerializeField]
-        public OverrideCinemachineAxisInput overrideInput;
-
         internal Dictionary<CameraMode.ModeId, CameraStateBase> cachedModeToVirtualCamera;
 
         public delegate void CameraBlendStarted();
