@@ -21,7 +21,6 @@ namespace Emotes
 
         internal IEmotesCustomizationComponentView view;
         internal InputAction_Hold equipInputAction;
-        internal InputAction_Hold favoriteInputAction;
         internal InputAction_Trigger shortcut0InputAction;
         internal InputAction_Trigger shortcut1InputAction;
         internal InputAction_Trigger shortcut2InputAction;
@@ -50,7 +49,6 @@ namespace Emotes
             view.onEmoteSelected -= OnEmoteSelected;
             view.onEmoteEquipped -= OnEmoteEquipped;
             equipInputAction.OnFinished -= OnEquipInputActionTriggered;
-            favoriteInputAction.OnFinished -= OnFavoriteInputActionTriggered;
             shortcut0InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut1InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut2InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
@@ -77,9 +75,6 @@ namespace Emotes
         {
             equipInputAction = Resources.Load<InputAction_Hold>("DefaultConfirmAction");
             equipInputAction.OnFinished += OnEquipInputActionTriggered;
-
-            favoriteInputAction = Resources.Load<InputAction_Hold>("DefaultCancelAction");
-            favoriteInputAction.OnFinished += OnFavoriteInputActionTriggered;
 
             shortcut0InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut0");
             shortcut0InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
@@ -120,16 +115,6 @@ namespace Emotes
             view.EquipEmote(
                 view.selectedCard.model.id, 
                 view.selectedSlot);
-        }
-
-        internal void OnFavoriteInputActionTriggered(DCLAction_Hold action)
-        {
-            if (!shortcutsCanBeUsed || view.selectedCard == null)
-                return;
-
-            view.SetEmoteAsFavorite(
-                view.selectedCard.model.id, 
-                !view.selectedCard.model.isFavorite);
         }
 
         internal void OnNumericShortcutInputActionTriggered(DCLAction_Trigger action)
@@ -209,7 +194,6 @@ namespace Emotes
                 {
                     id = $"Emote{i}",
                     pictureUri = mockedImages[i],
-                    isFavorite = false,
                     isAssignedInSelectedSlot = false,
                     isSelected = false,
                     assignedSlot = -1

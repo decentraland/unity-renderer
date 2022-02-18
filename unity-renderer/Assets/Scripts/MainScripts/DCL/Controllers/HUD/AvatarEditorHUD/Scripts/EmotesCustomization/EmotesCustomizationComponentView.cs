@@ -51,13 +51,6 @@ namespace Emotes
         void AddEmotes(List<EmoteCardComponentModel> emotes);
 
         /// <summary>
-        /// Set an emote as favorite or not.
-        /// </summary>
-        /// <param name="emoteId">Emote Id to update.</param>
-        /// <param name="isFavorite">True for set it as favorite.</param>
-        void SetEmoteAsFavorite(string emoteId, bool isFavorite);
-
-        /// <summary>
         /// Assign an emote into a specific slot.
         /// </summary>
         /// <param name="emoteId">Emote Id to assign.</param>
@@ -157,17 +150,6 @@ namespace Emotes
             {
                 emotesGrid.AddItem(emote);
             }
-        }
-
-        public void SetEmoteAsFavorite(string emoteId, bool isFavorite)
-        {
-            if (string.IsNullOrEmpty(emoteId))
-                return;
-
-            EmoteCardComponentView emoteCardsToUpdate = GetEmoteCardById(emoteId);
-
-            if (emoteCardsToUpdate != null)
-                emoteCardsToUpdate.SetEmoteAsFavorite(isFavorite);
         }
 
         public void EquipEmote(string emoteId, int slotNumber)

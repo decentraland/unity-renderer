@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,12 +35,6 @@ namespace Emotes
         void SetEmotePicture(string uri);
 
         /// <summary>
-        /// Set the emote as favorite or not.
-        /// </summary>
-        /// <param name="isFavorite">True for set it as favorite.</param>
-        void SetEmoteAsFavorite(bool isFavorite);
-
-        /// <summary>
         /// Set the emote as assigned in selected slot or not.
         /// </summary>
         /// <param name="isAssigned">True for select it.</param>
@@ -66,8 +59,6 @@ namespace Emotes
 
         [Header("Prefab References")]
         [SerializeField] internal ImageComponentView emoteImage;
-        [SerializeField] internal ImageComponentView favActivatedImage;
-        [SerializeField] internal ImageComponentView favDeactivatedImage;
         [SerializeField] internal TMP_Text assignedSlotNumberText;
         [SerializeField] internal ImageComponentView assignedInCurrentSlotMarkImage;
         [SerializeField] internal ButtonComponentView mainButton;
@@ -114,7 +105,6 @@ namespace Emotes
             else
                 OnEmoteImageLoaded(null);
 
-            SetEmoteAsFavorite(model.isFavorite);
             SetEmoteAsAssignedInSelectedSlot(model.isAssignedInSelectedSlot);
             AssignSlot(model.assignedSlot);
             SetEmoteAsSelected(model.isSelected);
@@ -202,13 +192,6 @@ namespace Emotes
             emoteImage.SetImage(uri);
         }
 
-        public void SetEmoteAsFavorite(bool isFavorite)
-        {
-            model.isFavorite = isFavorite;
-
-            RefreshFavoriteMarkVisibility();
-        }
-
         public void SetEmoteAsAssignedInSelectedSlot(bool isAssigned)
         {
             model.isAssignedInSelectedSlot = isAssigned;
@@ -241,25 +224,6 @@ namespace Emotes
 
             RefreshEquipButtonVisibility();
             RefreshAssignedSlotTextVisibility();
-        }
-
-        internal void RefreshFavoriteMarkVisibility()
-        {
-            if (favActivatedImage != null)
-            {
-                if (model.isFavorite)
-                    favActivatedImage.Show();
-                else
-                    favActivatedImage.Hide();
-            }
-
-            if (favDeactivatedImage != null)
-            {
-                if (model.isFavorite)
-                    favDeactivatedImage.Hide();
-                else
-                    favDeactivatedImage.Show();
-            }
         }
 
         internal void RefreshAssignedSlotTextVisibility()
