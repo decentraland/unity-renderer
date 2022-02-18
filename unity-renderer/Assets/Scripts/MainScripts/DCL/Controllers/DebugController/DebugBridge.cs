@@ -17,6 +17,7 @@ namespace DCL
             public string sceneId;
             public bool enabled;
         }
+        
 
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
         private IDebugController debugController;
@@ -46,6 +47,16 @@ namespace DCL
                 IParcelScene scene = kvp.Value;
                 debugLogger.Log("Dumping state for scene: " + kvp.Value.sceneData.id);
                 scene.GetWaitingComponentsDebugInfo();
+            }
+        }
+
+        [ContextMenu("Dump Scene Metrics Offenders")]
+        public void DumpSceneMetricsOffenders()
+        {
+            var worstMetricOffenses = DataStore.i.Get<DataStore_SceneMetrics>().worstMetricOffenses;
+            foreach ( var offense in worstMetricOffenses )
+            {
+                debugLogger.Log($"Scene: {offense.Key} ... Metrics: {offense.Value}");
             }
         }
 
@@ -125,11 +136,17 @@ namespace DCL
         public void StopBotsMovement() { debugController.StopBotsMovement(); }
         public void RemoveBot(string targetEntityId) { debugController.RemoveBot(targetEntityId); }
         public void ClearBots() { debugController.ClearBots(); }
-        
+
         public void ToggleSceneBoundingBoxes(string payload)
         {
             ToggleSceneBoundingBoxesPayload data = JsonUtility.FromJson<ToggleSceneBoundingBoxesPayload>(payload);
             DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneId, data.enabled);
+        }
+
+        public void TogglePreviewMenu(string payload)
+        {
+            PreviewMenuPayload data =  JsonUtility.FromJson<PreviewMenuPayload>(payload);
+            DataStore.i.debugConfig.isPreviewMenuActive.Set(data.enabled);
         }
 
 #if UNITY_EDITOR

@@ -70,9 +70,6 @@ public class HUDController : IHUDController
     public PlayerInfoCardHUDController playerInfoCardHud =>
         GetHUDElement(HUDElementID.PLAYER_INFO_CARD) as PlayerInfoCardHUDController;
 
-    public WelcomeHUDController messageOfTheDayHud =>
-        GetHUDElement(HUDElementID.MESSAGE_OF_THE_DAY) as WelcomeHUDController;
-
     public AirdroppingHUDController airdroppingHud =>
         GetHUDElement(HUDElementID.AIRDROPPING) as AirdroppingHUDController;
 
@@ -277,10 +274,6 @@ public class HUDController : IHUDController
                     UpdateHudElement(configuration, hudElementId);
                 }
 
-                break;
-            case HUDElementID.MESSAGE_OF_THE_DAY:
-                CreateHudElement(configuration, hudElementId);
-                messageOfTheDayHud?.Initialize(JsonUtility.FromJson<MessageOfTheDayConfig>(extraPayload));
                 break;
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 CreateHudElement(configuration, hudElementId);

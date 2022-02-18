@@ -111,7 +111,5 @@ public class BIWPublishController : BIWController, IBIWPublishController
                 context.publisher.StartPublish(builderScene);
             }
         });
-
-
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using DCL;
 using DCL.Builder;
 using DCL.Components;
@@ -9,7 +7,6 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 using UnityGLTF;
 
 public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
