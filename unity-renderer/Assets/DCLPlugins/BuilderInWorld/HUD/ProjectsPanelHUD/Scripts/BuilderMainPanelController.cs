@@ -99,7 +99,9 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         sectionsController.OnRequestGoToCoords -= GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords -= OnGoToEditScene;
         sectionsController.OnCreateProjectRequest -= newProjectFlowController.NewProject;
-
+        sectionsController.OnSectionContentEmpty -= SectionContentEmpty;
+        sectionsController.OnSectionContentNotEmpty -= SectionContentNotEmpty;
+        
         scenesViewController.OnJumpInPressed -= GoToCoords;
         scenesViewController.OnRequestOpenUrl -= OpenUrl;
         scenesViewController.OnEditorPressed -= OnGoToEditScene;
@@ -189,6 +191,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         sectionsController.OnRequestGoToCoords += GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords += OnGoToEditScene;
         sectionsController.OnCreateProjectRequest += newProjectFlowController.NewProject;
+        sectionsController.OnSectionContentEmpty += SectionContentEmpty;
+        sectionsController.OnSectionContentNotEmpty += SectionContentNotEmpty;
 
         scenesViewController.OnJumpInPressed += GoToCoords;
         scenesViewController.OnRequestOpenUrl += OpenUrl;
@@ -204,6 +208,10 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
     }
+    
+    private void SectionContentNotEmpty() { view.SetSearchViewVisible(true); }
+
+    private void SectionContentEmpty() { view.SetSearchViewVisible(false); }
 
     private void DuplicateProject(ProjectData data)
     {

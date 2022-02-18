@@ -63,7 +63,18 @@ namespace DCL.Builder
             view.Dispose();
         }
 
-        protected override void OnShow() { view.SetActive(true); }
+        protected override void OnShow()
+        {
+            view.SetActive(true);
+            if (landElementViews.Count == 0)
+            {
+                SetEmptyOrLoading();
+            }
+            else
+            {
+                OnNotEmptyContent?.Invoke();
+            }
+        }
 
         protected override void OnHide() { view.SetActive(false); }
 
@@ -133,10 +144,12 @@ namespace DCL.Builder
             else if (searchInfoLands.Count == 0)
             {
                 view.SetNoSearchResult();
+                OnNotEmptyContent?.Invoke();
             }
             else
             {
                 view.SetFilled();
+                OnNotEmptyContent?.Invoke();
             }
         }
 
@@ -177,10 +190,12 @@ namespace DCL.Builder
             if (isLoading)
             {
                 view.SetLoading();
+                OnNotEmptyContent?.Invoke();
             }
             else
             {
                 view.SetEmpty();
+                OnEmptyContent?.Invoke();
             }
         }
 

@@ -17,6 +17,8 @@ namespace DCL.Builder
 
     internal interface ISectionsController : IDisposable
     {
+        event Action OnSectionContentEmpty;
+        event Action OnSectionContentNotEmpty;
         event Action<SectionBase> OnSectionLoaded;
         event Action<SectionBase> OnSectionShow;
         event Action<SectionBase> OnSectionHide;
@@ -41,6 +43,8 @@ namespace DCL.Builder
     /// </summary>
     internal class SectionsController : ISectionsController
     {
+        public event Action OnSectionContentEmpty;
+        public event Action OnSectionContentNotEmpty;
         public event Action<SectionBase> OnSectionLoaded;
         public event Action<SectionBase> OnSectionShow;
         public event Action<SectionBase> OnSectionHide;
@@ -102,6 +106,9 @@ namespace DCL.Builder
             return section;
         }
 
+        public void ContentEmpty() => OnSectionContentEmpty?.Invoke();
+        public void ContentNotEmpty() => OnSectionContentNotEmpty?.Invoke();
+
         /// <summary>
         /// Opens (make visible) a menu section. It will load it if necessary.
         /// Closes (hides) the previously open section.
@@ -162,6 +169,8 @@ namespace DCL.Builder
             {
                 while (iterator.MoveNext())
                 {
+                    iterator.Current.Value.OnEmptyContent -= ContentEmpty;
+                    iterator.Current.Value.OnNotEmptyContent -= ContentNotEmpty;
                     iterator.Current.Value.Dispose();
                 }
             }
@@ -189,6 +198,9 @@ namespace DCL.Builder
 
         private void SubscribeEvents(SectionBase sectionBase)
         {
+            sectionBase.OnEmptyContent += ContentEmpty;
+            sectionBase.OnNotEmptyContent += ContentNotEmpty;
+            
             if (sectionBase is ISectionOpenSectionRequester openSectionRequester)
             {
                 openSectionRequester.OnRequestOpenSection += OpenSection;

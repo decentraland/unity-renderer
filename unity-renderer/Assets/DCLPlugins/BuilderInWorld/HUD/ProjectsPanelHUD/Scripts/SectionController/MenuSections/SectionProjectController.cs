@@ -17,7 +17,7 @@ namespace DCL.Builder
     internal class SectionProjectController : SectionBase, IProjectsListener, ISectionHideContextMenuRequester,ISectionProjectController
     {
         public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionProjectView";
-
+        
         public event Action OnRequestContextMenuHide;
         public event Action OnCreateProjectRequest;
 
@@ -59,7 +59,27 @@ namespace DCL.Builder
             view.Dispose();
         }
 
-        protected override void OnShow() { view.SetActive(true); }
+        protected override void OnShow()
+        {
+            view.SetActive(true);
+            if (projectsViews.Count == 0)
+            {
+                if (isLoading)
+                {
+                    view.SetLoading();
+                    OnNotEmptyContent?.Invoke();
+                }
+                else
+                {
+                    view.SetEmpty();
+                    OnEmptyContent?.Invoke();
+                }
+            }
+            else
+            {
+                OnNotEmptyContent?.Invoke();
+            }
+        }
 
         protected override void OnHide() { view.SetActive(false); }
 
@@ -124,19 +144,24 @@ namespace DCL.Builder
                 if (isLoading)
                 {
                     view.SetLoading();
+                    OnNotEmptyContent?.Invoke();
                 }
                 else
                 {
                     view.SetEmpty();
+                    OnEmptyContent?.Invoke();
                 }
             }
             else if (searchInfoScenes.Count == 0)
             {
                 view.SetNoSearchResult();
+                
+                OnNotEmptyContent?.Invoke();
             }
             else
             {
                 view.SetFilled();
+                OnNotEmptyContent?.Invoke();
             }
         }
     }

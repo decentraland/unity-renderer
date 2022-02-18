@@ -106,6 +106,7 @@ namespace DCL.Builder
         internal Vector2Int selectedCoords;
         internal bool areCoordsSelected = false;
         private Coroutine toastTopHideCoroutine;
+  
 
         public override void RefreshControl()
         {
@@ -222,7 +223,7 @@ namespace DCL.Builder
 
             toastTopHideCoroutine = StartCoroutine(WaitAndHideTopToast());
         }
-
+        
         private void ShowSearchBar()
         {
             searchView.gameObject.SetActive(true);

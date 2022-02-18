@@ -110,11 +110,8 @@ internal class SearchBarView : MonoBehaviour
         searchHandler = handler;
 
         if (searchHandler == null)
-        {
-            gameObject.SetActive(false);
             return;
-        }
-        gameObject.SetActive(true);
+        
 
         sortDropdown.Clear();
         sortDropdown.AddSortType(handler.sortTypes);

@@ -41,7 +41,6 @@ public class LandPublisherController : ILandPublisherController
     internal const string DEFAULT_SCENE_DESC = "";
 
     internal ILandPublisherView landPublisherView;
-    internal bool isValidated = false;
     internal IBuilderScene sceneToPublish;
 
     public void Initialize()
@@ -56,17 +55,14 @@ public class LandPublisherController : ILandPublisherController
 
         landPublisherView.OnCancel += Cancel;
         landPublisherView.OnPublish += Publish;
-        landPublisherView.OnSceneNameChange += ValidatePublicationInfo;
 
         SetDefaultPublicationInfo();
-        ValidatePublicationInfo(landPublisherView.currentSceneName);
     }
 
     public void Dispose()
     {
         landPublisherView.OnCancel -= Cancel;
         landPublisherView.OnPublish -= Publish;
-        landPublisherView.OnSceneNameChange -= ValidatePublicationInfo;
     }
 
     public void SetActive(bool isActive) { landPublisherView.SetActive(isActive); }
@@ -86,21 +82,11 @@ public class LandPublisherController : ILandPublisherController
 
     public void Publish()
     {
-        if (!isValidated)
-            return;
-
         sceneToPublish.manifest.project.title = landPublisherView.GetSceneName();
         sceneToPublish.manifest.project.description = landPublisherView.GetSceneDescription();
 
         SetActive(false);
         OnPublishPressed?.Invoke(sceneToPublish);
-    }
-
-    public void ValidatePublicationInfo(string sceneName)
-    {
-        isValidated = sceneName.Length > 0;
-        landPublisherView.SetSceneNameValidationActive(!isValidated);
-        landPublisherView.SetPublishButtonActive(isValidated);
     }
 
     public void SetDefaultPublicationInfo()
