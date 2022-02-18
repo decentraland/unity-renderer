@@ -193,7 +193,7 @@ namespace DCL.Builder
         private void StartPublishScene(IBuilderScene scene, Dictionary<string, object > filesToDecode, Dictionary<string, object > files, CatalystSceneEntityMetadata metadata, StatelessManifest statelessManifest )
         {
             startPublishingTimestamp = Time.realtimeSinceStartup;
-            BIWAnalytics.StartScenePublish(scene.scene.metricsCounter.GetModel());
+            BIWAnalytics.StartScenePublish(scene.scene.metricsCounter.currentCount);
             builderInWorldBridge.PublishScene(filesToDecode, files, metadata, statelessManifest);
         }
 
@@ -216,7 +216,7 @@ namespace DCL.Builder
                 progressController.DeployError(message);
             }
             string successString = isOk ? "Success" : message;
-            BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
+            BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.currentCount, successString, Time.realtimeSinceStartup - startPublishingTimestamp);
 
             if (isOk)
                 builderSceneToDeploy = null;
