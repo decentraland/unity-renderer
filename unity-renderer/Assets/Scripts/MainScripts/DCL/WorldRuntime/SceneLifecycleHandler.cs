@@ -134,6 +134,11 @@ namespace DCL.Controllers
 
         private void SetSceneReady()
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                return;
+#endif
+            
             if (state == State.READY)
                 return;
 

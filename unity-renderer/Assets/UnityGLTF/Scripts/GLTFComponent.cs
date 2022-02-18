@@ -271,6 +271,11 @@ namespace UnityGLTF
                 }
                 catch (Exception e) when (!(e is OperationCanceledException))
                 {
+#if UNITY_STANDALONE || UNITY_EDITOR
+                    if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                        return;
+#endif
+                    
                     Debug.LogException(e);
                 }
                 finally
@@ -300,13 +305,10 @@ namespace UnityGLTF
                                 OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
                         }
 
-                        if (!DataStore.i.common.isWorldBeingDestroyed.Get())
-                        {
-                            CleanUp();
-                            Destroy(loadingPlaceholder);
-                            Destroy(this);
-                            isDestroyed = true;
-                        }
+                        CleanUp();
+                        Destroy(loadingPlaceholder);
+                        Destroy(this);
+                        isDestroyed = true;
                     }
                 }
             }

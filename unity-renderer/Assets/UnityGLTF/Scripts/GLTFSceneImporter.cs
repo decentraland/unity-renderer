@@ -509,11 +509,6 @@ namespace UnityGLTF
         {
 
             await _loader.LoadStream(_gltfFileName, token);
-
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                return;
-#endif
             
             token.ThrowIfCancellationRequested();
 
@@ -950,11 +945,6 @@ namespace UnityGLTF
                     // Model 08
                     continue;
                 }
-
-#if UNITY_STANDALONE || UNITY_EDITOR
-                if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                    return;
-#endif
                 
                 var node = nodes[channel.Target.Node.Id];
                 string relativePath = RelativePathFrom(node.transform, root);
@@ -1106,11 +1096,6 @@ namespace UnityGLTF
             }, cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
-            
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                return;
-#endif
 
             if (optimizeKeyframes)
             {
@@ -1123,11 +1108,6 @@ namespace UnityGLTF
                 }, cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
-                
-#if UNITY_STANDALONE || UNITY_EDITOR
-                if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                    return;
-#endif
 
                 // Setting the curves by the keyframe length order fixes weird index overrun issue:
                 // https://forum.unity.com/threads/animationutility-seteditorcurve-cant-add-curve-with-one-keyfram.247372/
@@ -1314,11 +1294,6 @@ namespace UnityGLTF
             {
                 NodeId_Like nodeId = nodesWithMeshes[i];
                 Node node = nodeId.Value;
-
-#if UNITY_STANDALONE || UNITY_EDITOR
-                if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                    return;
-#endif
                 
                 await ConstructMesh(mesh: node.Mesh.Value,
                     parent: _assetCache.NodeCache[nodeId.Id].transform,
@@ -1352,11 +1327,6 @@ namespace UnityGLTF
                     AnimationClip clip = ConstructClip(i, out gltfAnimation, out animationCache);
 
                     await ProcessCurves(CreatedObject.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache, token);
-
-#if UNITY_STANDALONE || UNITY_EDITOR
-                    if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                        return;
-#endif
                     
                     clip.wrapMode = WrapMode.Loop;
 
@@ -1423,11 +1393,6 @@ namespace UnityGLTF
 
         protected virtual async UniTask ConstructNode(Node node, int nodeIndex, CancellationToken cancellationToken, Transform parent = null)
         {
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                return;
-#endif
-            
             if (_assetCache.NodeCache[nodeIndex] != null)
             {
                 return;
@@ -1583,11 +1548,6 @@ namespace UnityGLTF
             {
                 await FindSkeleton(skin.Joints[0].Id, (id) => skeletonId = id);
             }
-            
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                return;
-#endif
 
             for (int i = 0; i < boneCount; i++)
             {
@@ -1777,10 +1737,6 @@ namespace UnityGLTF
             {
                 await ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialIndex, cancellationToken);
             }
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                return;
-#endif
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -2199,10 +2155,6 @@ namespace UnityGLTF
                 {
                     TextureId textureId = pbr.BaseColorTexture.Index;
                     await ConstructTexture(textureId.Value, textureId.Id, false, cancellationToken);
-#if UNITY_STANDALONE || UNITY_EDITOR
-                    if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                        return;
-#endif
                     mrMapper.BaseColorTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
 
                     mrMapper.BaseColorTexCoord = pbr.BaseColorTexture.TexCoord;
@@ -2222,10 +2174,6 @@ namespace UnityGLTF
                 {
                     TextureId textureId = pbr.MetallicRoughnessTexture.Index;
                     await ConstructTexture(textureId.Value, textureId.Id, true, cancellationToken);
-#if UNITY_STANDALONE || UNITY_EDITOR
-                    if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                        return;
-#endif
                     mrMapper.MetallicRoughnessTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                     mrMapper.MetallicRoughnessTexCoord = pbr.MetallicRoughnessTexture.TexCoord;
                     mrMapper.RoughnessFactor = 0;
@@ -2246,10 +2194,6 @@ namespace UnityGLTF
                 {
                     TextureId textureId = specGloss.DiffuseTexture.Index;
                     await ConstructTexture(textureId.Value, textureId.Id, true, cancellationToken);
-#if UNITY_STANDALONE || UNITY_EDITOR
-                    if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                        return;
-#endif
                     sgMapper.DiffuseTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                     sgMapper.DiffuseTexCoord = specGloss.DiffuseTexture.TexCoord;
                     ExtTextureTransformExtension ext = GetTextureTransform(specGloss.DiffuseTexture);
@@ -2269,10 +2213,6 @@ namespace UnityGLTF
                 {
                     TextureId textureId = specGloss.SpecularGlossinessTexture.Index;
                     await ConstructTexture(textureId.Value, textureId.Id, true, cancellationToken);
-#if UNITY_STANDALONE || UNITY_EDITOR
-                    if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                        return;
-#endif
                     sgMapper.SpecularGlossinessTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                 }
             }
@@ -2281,10 +2221,6 @@ namespace UnityGLTF
             {
                 TextureId textureId = def.NormalTexture.Index;
                 await ConstructTexture(textureId.Value, textureId.Id, true, cancellationToken);
-#if UNITY_STANDALONE || UNITY_EDITOR
-                if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                    return;
-#endif
                 mapper.NormalTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                 mapper.NormalTexCoord = def.NormalTexture.TexCoord;
                 mapper.NormalTexScale = def.NormalTexture.Scale;
@@ -2295,10 +2231,6 @@ namespace UnityGLTF
                 mapper.OcclusionTexStrength = def.OcclusionTexture.Strength;
                 TextureId textureId = def.OcclusionTexture.Index;
                 await ConstructTexture(textureId.Value, textureId.Id, true, cancellationToken);
-#if UNITY_STANDALONE || UNITY_EDITOR
-                if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                    return;
-#endif
                 mapper.OcclusionTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
             }
 
@@ -2306,10 +2238,6 @@ namespace UnityGLTF
             {
                 TextureId textureId = def.EmissiveTexture.Index;
                 await ConstructTexture(textureId.Value, textureId.Id, false, cancellationToken);
-#if UNITY_STANDALONE || UNITY_EDITOR
-                if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                    return;
-#endif
                 mapper.EmissiveTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                 mapper.EmissiveTexCoord = def.EmissiveTexture.TexCoord;
             }
