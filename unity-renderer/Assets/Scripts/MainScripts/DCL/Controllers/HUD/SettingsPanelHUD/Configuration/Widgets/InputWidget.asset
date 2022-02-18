@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b3ccae9e4d9011e4da0803905f169221, type: 3}
-  m_Name: GeneralWidget
+  m_Name: InputWidget
   m_EditorClassIdentifier: 
-  title: General
+  title: Input
   widgetPrefab: {fileID: 5794240731996032819, guid: cc8cedcaa38f2424b9f20b88b673f8a9,
     type: 3}
   widgetController: {fileID: 11400000, guid: 58b3a5282c16beb42a91390cf2ddfc85, type: 2}
@@ -20,12 +20,7 @@ MonoBehaviour:
     array:
     - controls:
         array:
-        - {fileID: 11400000, guid: 83813f0a3b25180468ace5f2297b7a3e, type: 2}
-        - {fileID: 11400000, guid: ab5eaa6801a87654a87e47948716e153, type: 2}
-        - {fileID: 11400000, guid: bb6c50358f2355f4f8245f3974b6db3f, type: 2}
+        - {fileID: 11400000, guid: 83f29ed692998ff44b96f9a42111fc9f, type: 2}
     - controls:
         array:
-        - {fileID: 11400000, guid: 3c45a30e818384851ab2b246f44e90ad, type: 2}
-        - {fileID: 11400000, guid: 1ec31801283824f4bb71f46f2af1a7b0, type: 2}
-        - {fileID: 11400000, guid: 891daf979e603094b867bd233e346d3c, type: 2}
-        - {fileID: 11400000, guid: 0430a240bc6f82c4bbe87804db432668, type: 2}
+        - {fileID: 11400000, guid: fd49b40bbacf242d6891faab969fb501, type: 2}
