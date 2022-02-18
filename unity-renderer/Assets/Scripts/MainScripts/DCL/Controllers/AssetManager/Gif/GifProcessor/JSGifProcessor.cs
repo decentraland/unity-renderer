@@ -34,7 +34,6 @@ namespace DCL
 
             token.ThrowIfCancellationRequested();
             await GIFProcessingBridge.i.RequestGIFProcessor(url, OnComplete, this.OnFail).ToUniTask(cancellationToken: token);
-            token.ThrowIfCancellationRequested();
         }
 
         private void OnComplete(GifFrameData[] newTextures)
