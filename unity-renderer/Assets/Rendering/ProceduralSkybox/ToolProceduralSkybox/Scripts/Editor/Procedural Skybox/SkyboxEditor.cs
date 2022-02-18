@@ -292,14 +292,22 @@ namespace DCL.Skybox
         #region 3D Skybox
 
         List<GameObject> domeObjects = new List<GameObject>();
+        GameObject skyboxElements;
         void Init3DSetup()
         {
             if (Application.isPlaying) { }
             else
             {
-                // Make new parent gameobject
-                GameObject skyboxElements = new GameObject("Skybox Elements");
-                skyboxElements.transform.position = Vector3.zero;
+                if (skyboxElements == null)
+                {
+                    skyboxElements = GameObject.Find("Skybox Elements");
+
+                    if (skyboxElements == null)
+                    {
+                        skyboxElements = new GameObject("Skybox Elements");
+                    }
+                    skyboxElements.transform.position = Vector3.zero;
+                }
 
                 if (domeObjects.Count != selectedConfiguration.additional3Dconfig.Count)
                 {
@@ -311,9 +319,17 @@ namespace DCL.Skybox
         void InstantiateDomes()
         {
             // Check additional 3D  dome array and Instantiate domes
-            for (int i = domeObjects.Count; i < selectedConfiguration.additional3Dconfig.Count; i++)
+            for (int i = 0; i < selectedConfiguration.additional3Dconfig.Count; i++)
             {
-                // Instantiate dome
+                if (domeObjects.Count >= (i + 1))
+                {
+                    domeObjects[i].SetActive(true);
+                }
+                else
+                {
+                    GameObject obj = Resources.Load<GameObject>("SkyboxPrefabs/Dome.prefab");
+                    obj.transform.position = Vector3.zero;
+                }
 
             }
         }
