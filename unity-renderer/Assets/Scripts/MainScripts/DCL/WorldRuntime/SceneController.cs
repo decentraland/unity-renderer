@@ -71,7 +71,7 @@ namespace DCL
 
             if (current)
             {
-                Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
+                Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedBox());
             }
             else
             {
@@ -687,6 +687,7 @@ namespace DCL
             Environment.i.messaging.manager.RemoveController(scene.sceneData.id);
 
             scene.Cleanup(!CommonScriptableObjects.rendererState.Get());
+
 
             if (VERBOSE)
             {

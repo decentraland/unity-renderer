@@ -12,7 +12,7 @@ namespace AssetPromiseKeeper_Gif_Tests
         AssetLibrary_RefCounted<Asset_Gif>>
     {
         [UnityTest]
-        public IEnumerator FailCorrectlyWhenGivenWrongURL()
+        public IEnumerator Gif_FailCorrectlyWhenGivenWrongURL()
         {
             var prom = new AssetPromise_Gif("123325");
             Asset_Gif asset = null;

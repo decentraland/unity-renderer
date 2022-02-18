@@ -80,7 +80,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
         }
 
         [UnityTest]
-        public IEnumerator FailCorrectlyWhenGivenWrongURL()
+        public IEnumerator AB_GameObject_FailCorrectlyWhenGivenWrongURL()
         {
             string invalidHash = "Qm_InVaLiD_hAsH";
 

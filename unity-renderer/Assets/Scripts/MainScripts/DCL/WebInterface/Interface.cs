@@ -1204,8 +1204,6 @@ namespace DCL.Interface
             });
         }
 
-        public static void ReportMotdClicked() { SendMessage("MotdConfirmClicked"); }
-
         public static void OpenURL(string url)
         {
 #if UNITY_WEBGL
