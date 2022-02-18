@@ -104,6 +104,11 @@ PrefabInstance:
       propertyPath: m_text
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5989498347712335370, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: m_Pivot.x
@@ -228,6 +233,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
+      propertyPath: model.emoteName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
       propertyPath: model.slotNumber
       value: 4
       objectReference: {fileID: 0}
@@ -250,6 +260,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5989498347712335370, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -375,6 +390,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
+      propertyPath: model.emoteName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
       propertyPath: model.slotNumber
       value: 6
       objectReference: {fileID: 0}
@@ -397,6 +417,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4225269907991774618, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -532,6 +557,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
+      propertyPath: model.emoteName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
       propertyPath: model.slotNumber
       value: 3
       objectReference: {fileID: 0}
@@ -554,6 +584,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5989498347712335370, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -679,6 +714,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
+      propertyPath: model.emoteName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
       propertyPath: model.slotNumber
       value: 9
       objectReference: {fileID: 0}
@@ -701,6 +741,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4225269907991774618, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -836,6 +881,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
+      propertyPath: model.emoteName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
       propertyPath: model.slotNumber
       value: 5
       objectReference: {fileID: 0}
@@ -878,6 +928,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4278190080
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4225269907991774618, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -1013,6 +1068,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
+      propertyPath: model.emoteName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
       propertyPath: model.isSelected
       value: 0
       objectReference: {fileID: 0}
@@ -1036,6 +1096,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7299768730189234663}
     m_Modifications:
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4225269907991774618, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: m_IsActive
@@ -1170,6 +1235,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
+      propertyPath: model.emoteName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
       propertyPath: model.pictureSprite
       value: 
       objectReference: {fileID: 21300000, guid: 6b35c647bc47eb94486089adcb53c8b9,
@@ -1187,6 +1257,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5989498347712335370, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -1312,6 +1387,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
+      propertyPath: model.emoteName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
       propertyPath: model.slotNumber
       value: 2
       objectReference: {fileID: 0}
@@ -1334,6 +1414,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5989498347712335370, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -1459,6 +1544,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
+      propertyPath: model.emoteName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
       propertyPath: model.slotNumber
       value: 7
       objectReference: {fileID: 0}
@@ -1481,6 +1571,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649585802804597545, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5989498347712335370, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -1603,6 +1698,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: EmoteSlotCard8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: model.emoteName
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}

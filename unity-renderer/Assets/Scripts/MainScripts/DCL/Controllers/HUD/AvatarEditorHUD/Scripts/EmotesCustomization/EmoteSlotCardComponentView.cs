@@ -18,6 +18,12 @@ namespace Emotes
         void SetEmoteId(string id);
 
         /// <summary>
+        /// Set the emote name in the card.
+        /// </summary>
+        /// <param name="name">New emote name.</param>
+        void SetEmoteName(string name);
+
+        /// <summary>
         /// Set the emote picture directly from a sprite.
         /// </summary>
         /// <param name="sprite">Emote picture (sprite).</param>
@@ -46,6 +52,7 @@ namespace Emotes
     {
         [Header("Prefab References")]
         [SerializeField] internal ImageComponentView emoteImage;
+        [SerializeField] internal TMP_Text emoteNameText;
         [SerializeField] internal TMP_Text slotNumberText;
         [SerializeField] internal ButtonComponentView mainButton;
         [SerializeField] internal Image defaultBackgroundImage;
@@ -56,8 +63,10 @@ namespace Emotes
         [SerializeField] internal Sprite nonEmoteAssignedPicture;
         [SerializeField] internal Color defaultBackgroundColor;
         [SerializeField] internal Color selectedBackgroundColor;
-        [SerializeField] internal Color defaultTextColor;
-        [SerializeField] internal Color selectedTextColor;
+        [SerializeField] internal Color defaultSlotNumberColor;
+        [SerializeField] internal Color selectedSlotNumberColor;
+        [SerializeField] internal Color defaultEmoteNameColor;
+        [SerializeField] internal Color selectedEmoteNameColor;
         [SerializeField] internal EmoteSlotCardComponentModel model;
 
         public Button.ButtonClickedEvent onClick => mainButton?.onClick;
@@ -81,8 +90,6 @@ namespace Emotes
             if (model == null)
                 return;
 
-            SetEmoteId(model.emoteId);
-
             if (model.pictureSprite != null)
                 SetEmotePicture(model.pictureSprite);
             else if (!string.IsNullOrEmpty(model.pictureUri))
@@ -90,6 +97,8 @@ namespace Emotes
             else
                 OnEmoteImageLoaded(null);
 
+            SetEmoteId(model.emoteId);
+            SetEmoteName(model.emoteName);
             SetEmoteAsSelected(model.isSelected);
             SetSlotNumber(model.slotNumber);
         }
@@ -134,6 +143,16 @@ namespace Emotes
                 if (nonEmoteAssignedPicture != null)
                     SetEmotePicture(nonEmoteAssignedPicture);
             }
+        }
+
+        public void SetEmoteName(string name)
+        {
+            model.emoteName = name;
+
+            if (emoteNameText == null)
+                return;
+
+            emoteNameText.text = name;
         }
 
         public void SetEmotePicture(Sprite sprite)
@@ -207,8 +226,11 @@ namespace Emotes
                 selectedBackgroundImage.color = selectedBackgroundColor;
             }
 
-            if (slotNumberText)
-                slotNumberText.color = isSelected ? selectedTextColor : defaultTextColor;
+            if (slotNumberText != null)
+                slotNumberText.color = isSelected ? selectedSlotNumberColor : defaultSlotNumberColor;
+
+            if (emoteNameText != null)
+                emoteNameText.color = isSelected ? selectedEmoteNameColor : defaultEmoteNameColor;
         }
 
         internal void SetSelectedVisualsForHovering(bool isSelected)
@@ -216,8 +238,11 @@ namespace Emotes
             if (defaultBackgroundImage != null)
                 defaultBackgroundImage.color = isSelected ? selectedBackgroundColor : defaultBackgroundColor;
 
-            if (slotNumberText)
-                slotNumberText.color = isSelected ? selectedTextColor : defaultTextColor;
+            if (slotNumberText != null)
+                slotNumberText.color = isSelected ? selectedSlotNumberColor : defaultSlotNumberColor;
+
+            if (emoteNameText != null)
+                emoteNameText.color = isSelected ? selectedEmoteNameColor : defaultEmoteNameColor;
         }
     }
 }

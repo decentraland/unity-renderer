@@ -112,9 +112,19 @@ namespace Emotes
             if (!shortcutsCanBeUsed || view.selectedCard == null)
                 return;
 
-            view.EquipEmote(
-                view.selectedCard.model.id, 
-                view.selectedSlot);
+            if (!view.selectedCard.model.isAssignedInSelectedSlot)
+            {
+                view.EquipEmote(
+                    view.selectedCard.model.id,
+                    view.selectedCard.model.name,
+                    view.selectedSlot);
+            }
+            else
+            {
+                view.UnequipEmote(
+                    view.selectedCard.model.id,
+                    view.selectedSlot);
+            }
         }
 
         internal void OnNumericShortcutInputActionTriggered(DCLAction_Trigger action)
@@ -125,34 +135,34 @@ namespace Emotes
             switch (action)
             {
                 case DCLAction_Trigger.ToggleShortcut0:
-                    view.EquipEmote(view.selectedCard.model.id, 0);
+                    view.EquipEmote(view.selectedCard.model.id, view.selectedCard.model.name, 0);
                     break;
                 case DCLAction_Trigger.ToggleShortcut1:
-                    view.EquipEmote(view.selectedCard.model.id, 1);
+                    view.EquipEmote(view.selectedCard.model.id, view.selectedCard.model.name, 1);
                     break;
                 case DCLAction_Trigger.ToggleShortcut2:
-                    view.EquipEmote(view.selectedCard.model.id, 2);
+                    view.EquipEmote(view.selectedCard.model.id, view.selectedCard.model.name, 2);
                     break;
                 case DCLAction_Trigger.ToggleShortcut3:
-                    view.EquipEmote(view.selectedCard.model.id, 3);
+                    view.EquipEmote(view.selectedCard.model.id, view.selectedCard.model.name, 3);
                     break;
                 case DCLAction_Trigger.ToggleShortcut4:
-                    view.EquipEmote(view.selectedCard.model.id, 4);
+                    view.EquipEmote(view.selectedCard.model.id, view.selectedCard.model.name, 4);
                     break;
                 case DCLAction_Trigger.ToggleShortcut5:
-                    view.EquipEmote(view.selectedCard.model.id, 5);
+                    view.EquipEmote(view.selectedCard.model.id, view.selectedCard.model.name, 5);
                     break;
                 case DCLAction_Trigger.ToggleShortcut6:
-                    view.EquipEmote(view.selectedCard.model.id, 6);
+                    view.EquipEmote(view.selectedCard.model.id, view.selectedCard.model.name, 6);
                     break;
                 case DCLAction_Trigger.ToggleShortcut7:
-                    view.EquipEmote(view.selectedCard.model.id, 7);
+                    view.EquipEmote(view.selectedCard.model.id, view.selectedCard.model.name, 7);
                     break;
                 case DCLAction_Trigger.ToggleShortcut8:
-                    view.EquipEmote(view.selectedCard.model.id, 8);
+                    view.EquipEmote(view.selectedCard.model.id, view.selectedCard.model.name, 8);
                     break;
                 case DCLAction_Trigger.ToggleShortcut9:
-                    view.EquipEmote(view.selectedCard.model.id, 9);
+                    view.EquipEmote(view.selectedCard.model.id, view.selectedCard.model.name, 9);
                     break;
             }
         }
@@ -193,6 +203,7 @@ namespace Emotes
                 mockedEmotes.Add(new EmoteCardComponentModel
                 {
                     id = $"Emote{i}",
+                    name = $"Emote{i}",
                     pictureUri = mockedImages[i],
                     isAssignedInSelectedSlot = false,
                     isSelected = false,

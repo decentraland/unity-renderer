@@ -54,8 +54,16 @@ namespace Emotes
         /// Assign an emote into a specific slot.
         /// </summary>
         /// <param name="emoteId">Emote Id to assign.</param>
+        /// <param name="emoteName">Emote name to assign.</param>
         /// <param name="slotNumber">Slot number to assign the emote.</param>
-        void EquipEmote(string emoteId, int slotNumber);
+        void EquipEmote(string emoteId, string emoteName, int slotNumber);
+
+        /// <summary>
+        /// Unassign an emote from a specific slot.
+        /// </summary>
+        /// <param name="emoteId">Emote Id to unasign.</param>
+        /// <param name="slotNumber">Slot number to unassign the emote.</param>
+        void UnequipEmote(string emoteId, int slotNumber);
     }
 
     public class EmotesCustomizationComponentView : BaseComponentView, IEmotesCustomizationComponentView
@@ -152,7 +160,7 @@ namespace Emotes
             }
         }
 
-        public void EquipEmote(string emoteId, int slotNumber)
+        public void EquipEmote(string emoteId, string emoteName, int slotNumber)
         {
             if (string.IsNullOrEmpty(emoteId))
                 return;
@@ -170,13 +178,28 @@ namespace Emotes
                 if (existingEmoteCard.model.id == emoteId)
                 {
                     existingEmoteCard.AssignSlot(slotNumber);
-                    emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, emoteId, existingEmoteCard.model.pictureSprite);
+                    emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, emoteId, emoteName, existingEmoteCard.model.pictureSprite);
                 }
 
                 existingEmoteCard.SetEmoteAsAssignedInSelectedSlot(existingEmoteCard.model.assignedSlot == selectedSlot);
             }
 
             onEmoteEquipped?.Invoke(emoteId, slotNumber);
+        }
+
+        public void UnequipEmote(string emoteId, int slotNumber)
+        {
+            if (string.IsNullOrEmpty(emoteId))
+                return;
+
+            EmoteCardComponentView emoteCardsToUpdate = GetEmoteCardById(emoteId);
+            if (emoteCardsToUpdate != null)
+            {
+                emoteCardsToUpdate.AssignSlot(-1);
+                emoteCardsToUpdate.SetEmoteAsAssignedInSelectedSlot(false);
+            }
+
+            emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, string.Empty, string.Empty, null);
         }
 
         internal void ConfigureEmotesPool()
@@ -201,7 +224,9 @@ namespace Emotes
             emoteGO.onMainClick.RemoveAllListeners();
             emoteGO.onMainClick.AddListener(() => OnEmoteSelected(emoteGO.model.id));
             emoteGO.onEquipClick.RemoveAllListeners();
-            emoteGO.onEquipClick.AddListener(() => EquipEmote(emoteGO.model.id, selectedSlot));
+            emoteGO.onEquipClick.AddListener(() => EquipEmote(emoteGO.model.id, emoteGO.model.name, selectedSlot));
+            emoteGO.onUnequipClick.RemoveAllListeners();
+            emoteGO.onUnequipClick.AddListener(() => UnequipEmote(emoteGO.model.id, selectedSlot));
 
             return emoteGO;
         }

@@ -7,6 +7,7 @@ namespace Emotes
     public class EmoteCardComponentModel : BaseComponentModel
     {
         public string id;
+        public string name;
         public Sprite pictureSprite;
         public string pictureUri;
         public bool isAssignedInSelectedSlot = false;

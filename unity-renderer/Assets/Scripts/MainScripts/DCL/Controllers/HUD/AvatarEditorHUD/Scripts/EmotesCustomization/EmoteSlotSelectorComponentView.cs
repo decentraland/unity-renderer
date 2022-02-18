@@ -27,16 +27,18 @@ namespace Emotes
         /// Assign an emote into the selected slot.
         /// </summary>
         /// <param name="emoteId">Emote Id to assign.</param>
+        /// <param name="emoteName">Emote name to assign.</param>
         /// <param name="pictureSprite">Emote picture to set.</param>
-        void AssignEmoteIntoSelectedSlot(string emoteId, Sprite pictureSprite);
+        void AssignEmoteIntoSelectedSlot(string emoteId, string emoteName, Sprite pictureSprite);
 
         /// <summary>
         /// Assign an emote into a specific slot.
         /// </summary>
         /// <param name="slotNumber">Slot number to assign the emote.</param>
         /// <param name="emoteId">Emote Id to assign.</param>
+        /// <param name="emoteName">Emote name to assign.</param>
         /// <param name="pictureSprite">Emote picture to set.</param>
-        void AssignEmoteIntoSlot(int slotNumber, string emoteId, Sprite pictureSprite);
+        void AssignEmoteIntoSlot(int slotNumber, string emoteId, string emoteName, Sprite pictureSprite);
     }
 
     public class EmoteSlotSelectorComponentView : BaseComponentView, IEmoteSlotSelectorComponentView, IComponentModelConfig
@@ -102,29 +104,32 @@ namespace Emotes
             }
         }
 
-        public void AssignEmoteIntoSelectedSlot(string emoteId, Sprite pictureSprite)
+        public void AssignEmoteIntoSelectedSlot(string emoteId, string emoteName, Sprite pictureSprite)
         {
             EmoteSlotCardComponentView slotToUpdate = GetAllSlots().FirstOrDefault(x => x.model.isSelected);
             if (slotToUpdate != null)
             {
-                slotToUpdate.SetEmoteId(emoteId);
+                slotToUpdate.SetEmoteName(emoteName);
                 slotToUpdate.SetEmotePicture(pictureSprite);
+                slotToUpdate.SetEmoteId(emoteId);
             }
         }
 
-        public void AssignEmoteIntoSlot(int slotNumber, string emoteId, Sprite pictureSprite)
+        public void AssignEmoteIntoSlot(int slotNumber, string emoteId, string emoteName, Sprite pictureSprite)
         {
             List<EmoteSlotCardComponentView> currentSlots = GetAllSlots();
             foreach (EmoteSlotCardComponentView slot in currentSlots)
             {
                 if (slot.model.slotNumber == slotNumber)
                 {
-                    slot.SetEmoteId(emoteId);
+                    slot.SetEmoteName(emoteName);
                     slot.SetEmotePicture(pictureSprite);
+                    slot.SetEmoteId(emoteId);
                 }
                 else if (slot.model.emoteId == emoteId)
                 {
                     slot.SetEmoteId(string.Empty);
+                    slot.SetEmoteName(string.Empty);
                 }
             }
         }

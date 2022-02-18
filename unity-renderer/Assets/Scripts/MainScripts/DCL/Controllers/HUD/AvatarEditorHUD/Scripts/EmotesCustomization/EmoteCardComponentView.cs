@@ -17,10 +17,21 @@ namespace Emotes
         Button.ButtonClickedEvent onEquipClick { get; }
 
         /// <summary>
+        /// Event that will be triggered when the unequip button is clicked.
+        /// </summary>
+        Button.ButtonClickedEvent onUnequipClick { get; }
+
+        /// <summary>
         /// Set the emote id in the card.
         /// </summary>
         /// <param name="id">New emote id.</param>
         void SetEmoteId(string id);
+
+        /// <summary>
+        /// Set the emote name in the card.
+        /// </summary>
+        /// <param name="name">New emote name.</param>
+        void SetEmoteName(string name);
 
         /// <summary>
         /// Set the emote picture directly from a sprite.
@@ -56,15 +67,19 @@ namespace Emotes
     public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView, IComponentModelConfig
     {
         internal static readonly int ON_FOCUS_CARD_COMPONENT_BOOL = Animator.StringToHash("OnFocus");
+        internal static readonly int ON_SELECTED_CARD_COMPONENT_BOOL = Animator.StringToHash("OnSelected");
 
         [Header("Prefab References")]
         [SerializeField] internal ImageComponentView emoteImage;
+        [SerializeField] internal TMP_Text emoteNameText;
         [SerializeField] internal TMP_Text assignedSlotNumberText;
         [SerializeField] internal ImageComponentView assignedInCurrentSlotMarkImage;
         [SerializeField] internal ButtonComponentView mainButton;
         [SerializeField] internal ButtonComponentView equipButton;
+        [SerializeField] internal ButtonComponentView unequipButton;
         [SerializeField] internal GameObject cardSelectionFrame;
-        [SerializeField] internal Animator cardAnimator;
+        [SerializeField] internal Animator selectionAnimator;
+        [SerializeField] internal Animator hoverAnimator;
 
         [Header("Configuration")]
         [SerializeField] internal Sprite defaultEmotePicture;
@@ -73,6 +88,7 @@ namespace Emotes
 
         public Button.ButtonClickedEvent onMainClick => mainButton?.onClick;
         public Button.ButtonClickedEvent onEquipClick => equipButton?.onClick;
+        public Button.ButtonClickedEvent onUnequipClick => unequipButton?.onClick;
 
         public override void Awake()
         {
@@ -97,6 +113,7 @@ namespace Emotes
                 return;
 
             SetEmoteId(model.id);
+            SetEmoteName(model.name);
 
             if (model.pictureSprite != null)
                 SetEmotePicture(model.pictureSprite);
@@ -110,6 +127,13 @@ namespace Emotes
             SetEmoteAsSelected(model.isSelected);
         }
 
+        public override void OnEnable()
+        {
+            base.OnEnable();
+
+            RefreshControl();
+        }
+
         public override void OnFocus()
         {
             base.OnFocus();
@@ -120,8 +144,8 @@ namespace Emotes
             if (cardSelectionFrame != null)
                 cardSelectionFrame.SetActive(true);
 
-            if (cardAnimator != null)
-                cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, true);
+            if (hoverAnimator != null)
+                hoverAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, true);
         }
 
         public override void OnLoseFocus()
@@ -134,8 +158,8 @@ namespace Emotes
             if (cardSelectionFrame != null)
                 cardSelectionFrame.SetActive(false);
 
-            if (cardAnimator != null)
-                cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
+            if (hoverAnimator != null)
+                hoverAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
         }
 
         public override void Dispose()
@@ -158,6 +182,16 @@ namespace Emotes
                 if (nonEmoteAssignedPicture != null)
                     SetEmotePicture(nonEmoteAssignedPicture);
             }
+        }
+
+        public void SetEmoteName(string name)
+        {
+            model.name = name;
+
+            if (emoteNameText == null)
+                return;
+
+            emoteNameText.text = name;
         }
 
         public void SetEmotePicture(Sprite sprite)
@@ -196,8 +230,7 @@ namespace Emotes
         {
             model.isAssignedInSelectedSlot = isAssigned;
 
-            RefreshAssignedInCurrentSlotMarkVisibility();
-            RefreshAssignedSlotTextVisibility();
+            RefreshVisualCardStatus();
         }
 
         public void AssignSlot(int slotNumber)
@@ -209,7 +242,7 @@ namespace Emotes
 
             assignedSlotNumberText.text = slotNumber.ToString();
 
-            RefreshAssignedSlotTextVisibility();
+            RefreshVisualCardStatus();
         }
 
         public void SetEmoteAsSelected(bool isSelected)
@@ -219,11 +252,21 @@ namespace Emotes
             if (cardSelectionFrame != null && !isFocused)
                 cardSelectionFrame.SetActive(isSelected);
 
-            if (cardAnimator != null && !isFocused)
-                cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, isSelected);
+            if (hoverAnimator != null && !isFocused)
+                hoverAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, isSelected);
 
-            RefreshEquipButtonVisibility();
+            if (selectionAnimator != null)
+                selectionAnimator.SetBool(ON_SELECTED_CARD_COMPONENT_BOOL, isSelected);
+
+            RefreshVisualCardStatus();
+        }
+
+        internal void RefreshVisualCardStatus()
+        {
             RefreshAssignedSlotTextVisibility();
+            RefreshAssignedInCurrentSlotMarkVisibility();
+            RefreshEmoteNameVisibility();
+            RefreshEquipButtonVisibility();
         }
 
         internal void RefreshAssignedSlotTextVisibility()
@@ -242,20 +285,24 @@ namespace Emotes
             if (assignedInCurrentSlotMarkImage == null)
                 return;
 
-            assignedInCurrentSlotMarkImage.gameObject.SetActive(model.isAssignedInSelectedSlot);
-            RefreshAssignedSlotTextVisibility();
-            RefreshEquipButtonVisibility();
+            assignedInCurrentSlotMarkImage.gameObject.SetActive(model.isAssignedInSelectedSlot && !model.isSelected);
+        }
+
+        internal void RefreshEmoteNameVisibility()
+        {
+            if (emoteNameText == null)
+                return;
+            
+            emoteNameText.gameObject.SetActive(model.isSelected);
         }
 
         internal void RefreshEquipButtonVisibility()
         {
-            if (equipButton == null)
-                return;
+            if (equipButton != null)
+                equipButton.gameObject.SetActive(model.isSelected && !model.isAssignedInSelectedSlot);
 
-            if (model.isSelected && !model.isAssignedInSelectedSlot)
-                equipButton.Show();
-            else
-                equipButton.Hide();
+            if (unequipButton != null)
+                unequipButton.gameObject.SetActive(model.isSelected && model.isAssignedInSelectedSlot);
         }
 
         internal void OnEmoteImageLoaded(Sprite sprite)
