@@ -106,7 +106,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Assert.AreEqual(renderers.Length, promise.asset.renderers.Count);
             for (int i = 0; i < renderers.Length; i++)
             {
-                Assert.AreEqual(renderers[i], promise.asset.renderers[i]);
+                Assert.IsTrue(promise.asset.renderers.Contains(renderers[i]));
             }
 
             Object.Destroy(holder1);

@@ -162,6 +162,8 @@ namespace DCL.Components
                     totalTriangleCount = x.totalTriangleCount,
                     meshes = x.meshes,
                     renderers = x.renderers,
+                    materials = x.materials,
+                    textures = x.textures,
                     meshToTriangleCount = x.meshToTriangleCount
                 };
 
@@ -192,7 +194,7 @@ namespace DCL.Components
             gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl, hash);
             gltfPromise.settings = settings;
 
-            gltfPromise.OnSuccessEvent += (x) =>
+            gltfPromise.OnSuccessEvent += (Asset_GLTF x) =>
             {
                 var r = new Rendereable
                 {
@@ -200,6 +202,8 @@ namespace DCL.Components
                     totalTriangleCount = x.totalTriangleCount,
                     meshes = x.meshes,
                     renderers = x.renderers,
+                    materials = x.materials,
+                    textures = x.textures,
                     meshToTriangleCount = x.meshToTriangleCount
                 };
 
