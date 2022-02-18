@@ -13,6 +13,11 @@ using Debug = UnityEngine.Debug;
 
 namespace DCL
 {
+    public class GifWebRequestException : Exception
+    {
+        public GifWebRequestException(string message) : base(message) {}
+    }
+
     public class GifDecoderProcessor : IGifProcessor
     {
         private struct RawImage
@@ -66,12 +71,12 @@ namespace DCL
             try
             {
                 // (Kinerius): I noticed that overall the loading of multiple gifs at the same time is faster when only 
-                //           one is loading, this also avoids the "burst" of gifs loading at the same time, overall
+                //          one is loading, this also avoids the "burst" of gifs loading at the same time, overall
                 //          improving the smoothness and the experience, this could be further improved by prioritizing
-                //          the processing of gifs whether im close or looking at them like GLFTs
+                //          the processing of gifs whether im close or looking at them like GLFTs.
                 await UniTask.WaitUntil(() => isRunning == false, cancellationToken: token);
 
-                isRunning = true;
+                isRunning = false;
                 isRunningInternal = true;
 
                 var stopwatch = new Stopwatch();
@@ -138,6 +143,12 @@ namespace DCL
         {
             var operation = webRequestController.Get(url, timeout: 15, disposeOnCompleted: false);
             await UniTask.WaitUntil( () => operation.isDone || operation.isDisposed || operation.isSucceded, cancellationToken: token);
+
+            if (!operation.isSucceded)
+            {
+                throw new GifWebRequestException(url);
+            }
+            
             return operation.webRequest.downloadHandler.data;
         }
         
