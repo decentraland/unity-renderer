@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2549508
+    totalSpriteSurfaceArea: 2566348
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -93,6 +93,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a26c049177d1b423cbf29f2f44dd73c2, type: 3}
   - {fileID: 21300000, guid: db7198b10e7b549a68d088ccdf7377cf, type: 3}
   - {fileID: 21300000, guid: a6b6c8b1877c9c7498c971402965bdc0, type: 3}
+  - {fileID: 21300000, guid: 631d90c1a84401a4ab1b438f04f37e24, type: 3}
   - {fileID: 21300000, guid: 25cfbec1e937f574abd4894b73b3ad4f, type: 3}
   - {fileID: 21300000, guid: 094ba0d1e5a654e69b2896b2e8b7393e, type: 3}
   - {fileID: 21300000, guid: e5f450e18a0554063b4f01e5da2e1885, type: 3}
@@ -114,6 +115,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 01b18fd2b4265411bbd6afcd11e373cc, type: 3}
   - {fileID: 21300000, guid: a628efe28360b426c8ca23b43ad06c2b, type: 3}
   - {fileID: 21300000, guid: 04c3edf2ef4a747ffbe6f20a72aac0d9, type: 3}
+  - {fileID: 21300000, guid: 3e119603a7cc61744b63c95d90495efc, type: 3}
   - {fileID: 21300000, guid: 42402c03014144e64b56b0f83f883e5e, type: 3}
   - {fileID: 21300000, guid: ad6eb51354c9f4bd4af55d70ae175139, type: 3}
   - {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
@@ -138,12 +140,15 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0822ae34e463d49f49b978299714fd21, type: 3}
   - {fileID: 21300000, guid: 65d50244ec48c4d31b169fe48412f711, type: 3}
   - {fileID: 21300000, guid: b85ea444031cf415f95fa3022c2305dc, type: 3}
+  - {fileID: 21300000, guid: 2cc1bc54dd98f77459c059ab58670f74, type: 3}
   - {fileID: 21300000, guid: 14d01e642387749e482a6f14133c57b8, type: 3}
   - {fileID: 21300000, guid: 51517794ebfef5b49b08d321c661cee2, type: 3}
   - {fileID: 21300000, guid: d077f9943309847eb8bb9c36ecff7a44, type: 3}
   - {fileID: 21300000, guid: 3bdf32a4d196e1d429119d1477906987, type: 3}
   - {fileID: 21300000, guid: c983eea4ebd9d43579acbb2e5c500480, type: 3}
   - {fileID: 21300000, guid: a13564b4fa74e4061bafd65fb9bfdc46, type: 3}
+  - {fileID: 21300000, guid: 198562c4af29e18439f1360875165550, type: 3}
+  - {fileID: 21300000, guid: 9a24f3c4fd700a545a40ac4d0df7eeae, type: 3}
   - {fileID: 21300000, guid: a97a0ec41c10cdf4991c0112c64b2e84, type: 3}
   - {fileID: 21300000, guid: acc672d4bfa668c40b5d8b96e9b94a7a, type: 3}
   - {fileID: 21300000, guid: 4b77b6d41574d45f5bee5a18bcb3ef7e, type: 3}
@@ -192,6 +197,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 87a25a674771b42209ef0ae9b6b6bce7, type: 3}
   - {fileID: 21300000, guid: f5f102872b9fb41c6a606b3f038538aa, type: 3}
   - {fileID: 21300000, guid: 058e0097872914023991446b014562ef, type: 3}
+  - {fileID: 21300000, guid: c319fd971d09e1745b925fff3aa3012a, type: 3}
   - {fileID: 21300000, guid: b2755fa77563aad42bfdaa03c0e54746, type: 3}
   - {fileID: 21300000, guid: 7404b1b7d6b0f40929ae536f5b39be50, type: 3}
   - {fileID: 21300000, guid: 9af081c7b27544b809eda744a31a2889, type: 3}
@@ -217,6 +223,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 194fcbd882d15453b90e80d668ab4bad, type: 3}
   - {fileID: 21300000, guid: 874182f8d364145bd9836b8e817019eb, type: 3}
   - {fileID: 21300000, guid: 9ed344f88537e43a6b35556d00b77b39, type: 3}
+  - {fileID: 21300000, guid: bc1386f864ce3b64baafbb1e74763408, type: 3}
   - {fileID: 21300000, guid: 87bf14092660947eb9909d5772886279, type: 3}
   - {fileID: 21300000, guid: 314ecf09e6e7447d9aa0421d996754cc, type: 3}
   - {fileID: 21300000, guid: f28ec019b47e944689f27d8e149db2d5, type: 3}
@@ -375,6 +382,7 @@ SpriteAtlas:
   - BlockedUser
   - ManaIcon
   - RectangleGreen
+  - ExperienceIconOn
   - WarpIcon
   - NFTUniqueFrame
   - CancelButton
@@ -396,6 +404,7 @@ SpriteAtlas:
   - VoiceChatOn
   - DisclaimerBackground
   - NFTContainer
+  - ExperienceIconOff
   - ContainerRectLeft20
   - ContainerRadius10@2x
   - DCLLogoColor
@@ -420,12 +429,15 @@ SpriteAtlas:
   - DialogCornerRight
   - ConnectionStatus
   - Container12Shadow20
+  - HideIcon
   - Container12Shadow4
   - DclLogoCircle
   - LockIcon
   - DclLogoLine3
   - Camera
   - NFTEmpty
+  - Outline2Bottom12
+  - PlayIcon
   - CheckmarkGreen
   - Ellipse38Stroke
   - BackpackOff
@@ -474,6 +486,7 @@ SpriteAtlas:
   - CameraIconSmall
   - BuilderIcon
   - VoiceChatDisable
+  - ShowIcon
   - RoundedContainer23
   - MouseLocked
   - FriendsListImage
@@ -499,6 +512,7 @@ SpriteAtlas:
   - TutorialIcon
   - BackButton
   - ContainerShadow
+  - PauseIcon
   - DecentralandLogo
   - RejectButtonHover
   - BackpackOn
