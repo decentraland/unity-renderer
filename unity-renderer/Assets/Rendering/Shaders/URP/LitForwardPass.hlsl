@@ -151,7 +151,7 @@ Varyings LitPassVertex(Attributes input)
     float noCurveDistance = 120.0;
     if (depth > noCurveDistance) {
         float amountY = pow(depth - noCurveDistance, 2.0) * 0.00025;
-        finalPosition = finalPosition + float4(0.0, amountY, 0.0, 0.0);
+        finalPosition = finalPosition + float4(0.0, -amountY, 0.0, 0.0);
         
         output.positionCS = finalPosition;
     }
