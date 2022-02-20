@@ -145,6 +145,25 @@ Varyings LitPassVertex(Attributes input)
 	//NOTE(Brian): needed for FadeDithering
 	output.positionSS = ComputeScreenPos(vertexInput.positionCS);
 
+    // ----- Curved World -----
+    float4 finalPosition = output.positionCS;
+    float depth = length(_WorldSpaceCameraPos.xyz - vertexInput.positionWS);
+    float noCurveDistance = 120.0;
+    if (depth > noCurveDistance) {
+        float amountY = pow(depth - noCurveDistance, 2.0) * 0.00025;
+        finalPosition = finalPosition + float4(0.0, amountY, 0.0, 0.0);
+        
+        output.positionCS = finalPosition;
+    }
+
+    // a different approach: https://forum.unity.com/threads/unity-curved-world-shader.355804/
+    /*float4 vv = mul( _Object2World, v.vertex );
+    vv.xyz -= _WorldSpaceCameraPos.xyz;
+    vv = float4( 0.0f, ((vv.z * vv.z) + (vv.x * vv.x)) * - _Curvature, 0.0f, 0.0f );
+    v.vertex += mul(_World2Object, vv);*/
+    
+    // -----------------------
+
     return output;
 }
 

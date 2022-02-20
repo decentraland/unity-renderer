@@ -154,6 +154,18 @@ Shader "DCL/FX/Triplanar"
         	    o.fogFactorAndVertexLight = half4(fogFactor, vertexLight);
         	    o.clipPos = vertexInput.positionCS;
 
+			    // ----- Curved World -----
+                float4 finalPosition = o.clipPos;
+                float depth = length(_WorldSpaceCameraPos.xyz - vertexInput.positionWS);
+                float noCurveDistance = 120.0;
+                if (depth > noCurveDistance) {
+                    float amountY = pow(depth - noCurveDistance, 2.0) * 0.00025;
+                    finalPosition = finalPosition + float4(0.0, amountY, 0.0, 0.0);
+                    
+                    o.clipPos = finalPosition;
+                }
+                // -----------------------
+
         	#ifdef _MAIN_LIGHT_SHADOWS
         		o.shadowCoord = GetShadowCoord(vertexInput);
         	#endif
