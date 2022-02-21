@@ -1471,6 +1471,8 @@ namespace DCL.Interface
             SendMessage("CloseUserAvatar", closeUserAvatarPayload);
         }
 
+        // Warning: Use this method only for PEXs non-associated to smart wearables.
+        //          For PEX associated to smart wearables use 'SetDisabledPortableExperiences'.
         public static void KillPortableExperience(string portableExperienceId)
         {
             killPortableExperiencePayload.portableExperienceId = portableExperienceId;
