@@ -26,6 +26,7 @@ namespace DCL.SettingsCommon
             hideUI = false,
             showAvatarNames = true,
             dynamicProceduralSkybox = true,
+            invertYAxis = false,
             skyboxTime = 0.0f,
             firstPersonCameraFOV = 60
         };

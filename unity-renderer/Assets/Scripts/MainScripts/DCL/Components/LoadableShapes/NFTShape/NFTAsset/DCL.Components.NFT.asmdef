@@ -1,0 +1,21 @@
+{
+  "name": "DCL.Components.NFT",
+  "rootNamespace": "",
+  "references": [
+    "GUID:a3ceb534947fac14da25035bc5c24788",
+    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+    "GUID:e9cee4050cfa5534d9b26e2782df20be",
+    "GUID:4339091ce1655134b92fc0df855d2084",
+    "GUID:91b3e67997f21408dae5a247c35f91ad",
+    "GUID:760a1d365aad58044916992b072cf2a6"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

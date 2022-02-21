@@ -6,8 +6,6 @@ public class UserProfileModel
     [System.Serializable]
     public class Snapshots
     {
-        public string face;
-        public string face128;
         public string face256;
         public string body;
     }

@@ -528,7 +528,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentProfileCard.SetIsClaimedName(profile.hasClaimedName);
         view.currentProfileCard.SetProfileName(profile.userName);
         view.currentProfileCard.SetProfileAddress(profile.ethAddress);
-        view.currentProfileCard.SetProfilePicture(profile.face128SnapshotURL);
+        view.currentProfileCard.SetProfilePicture(profile.face256SnapshotURL);
     }
 
     internal void OnCloseButtonPressed(bool fromShortcut)
