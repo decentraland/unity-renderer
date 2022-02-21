@@ -67,7 +67,7 @@ public class NewProjectFlowController : INewProjectFlowController
 
     public void SetCreatingProjectStatusToFalse()
     {
-        DataStore.i.builderInWorld.isCreatingProject.Set(false);
+        DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
     }
     public void Dispose()
     {
@@ -91,7 +91,7 @@ public class NewProjectFlowController : INewProjectFlowController
         projectData = new ProjectData();
         projectData.id = Guid.NewGuid().ToString();
         projectData.eth_address = UserProfile.GetOwnUserProfile().ethAddress;
-DataStore.i.builderInWorld.isCreatingProject.Set(true);
+        DataStore.i.builderInWorld.areShortcutsBlocked.Set(true);
         view.ShowNewProjectTitleAndDescrition();
     }
 
@@ -113,7 +113,7 @@ DataStore.i.builderInWorld.isCreatingProject.Set(true);
     {
         projectData.created_at = DateTime.UtcNow;
         projectData.updated_at = DateTime.UtcNow;
-        DataStore.i.builderInWorld.isCreatingProject.Set(false);
+        DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
         view.Reset();
         OnNewProjectCrated?.Invoke(projectData);
         view.Hide();

@@ -87,7 +87,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
     {
         if (creatorController.IsAnyErrorOnEntities())
             return false;
-
+        
         if (!sceneToEdit.metricsCounter.IsInsideTheLimits())
             return false;
 

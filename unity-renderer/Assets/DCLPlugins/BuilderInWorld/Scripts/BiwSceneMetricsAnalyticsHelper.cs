@@ -12,6 +12,7 @@ public class BiwSceneMetricsAnalyticsHelper
 
     private IParcelScene scene;
     private float lastTimeAnalitycsSent = 0;
+    private SceneMetricsModel lastSceneMetrics = new SceneMetricsModel();
     
     public BiwSceneMetricsAnalyticsHelper(IParcelScene sceneOwner)
     {
@@ -26,7 +27,8 @@ public class BiwSceneMetricsAnalyticsHelper
 
     private void OnMetricsUpdated(ISceneMetricsCounter obj)
     {
-        if (Time.unscaledTime < lastTimeAnalitycsSent + MS_BETWEEN_METRICS_EVENT / 1000f)
+        if (Time.unscaledTime < lastTimeAnalitycsSent + MS_BETWEEN_METRICS_EVENT / 1000f ||
+            lastSceneMetrics == scene.metricsCounter.currentCount)
             return;
         
         SendSceneLimitExceededAnalyticsEvent();
@@ -51,5 +53,7 @@ public class BiwSceneMetricsAnalyticsHelper
             BIWAnalytics.SceneLimitsExceeded(metricsModel, metricsLimits);
             currentExceededLimitTypes = exceededLimits;
         }
+
+        lastSceneMetrics = metricsModel;
     }
 }

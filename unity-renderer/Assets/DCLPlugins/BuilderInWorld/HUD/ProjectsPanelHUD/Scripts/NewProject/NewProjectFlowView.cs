@@ -135,7 +135,7 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
         if (currentStep == 0)
         {
             Hide();
-            DataStore.i.builderInWorld.isCreatingProject.Set(false);
+            DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
         }
         else
         {

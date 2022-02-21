@@ -102,6 +102,8 @@ namespace DCL.Builder
                 return;
             }
             
+            DataStore.i.builderInWorld.areShortcutsBlocked.Set(true);
+            
             switch (scene.sceneType)
             {
                 case IBuilderScene.SceneType.PROJECT:
@@ -220,6 +222,8 @@ namespace DCL.Builder
 
             if (isOk)
                 builderSceneToDeploy = null;
+            
+            DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
             
             OnPublishFinish?.Invoke(isOk);
         }
