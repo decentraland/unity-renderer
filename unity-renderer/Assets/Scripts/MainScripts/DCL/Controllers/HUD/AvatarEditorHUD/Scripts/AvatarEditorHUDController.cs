@@ -88,7 +88,7 @@ public class AvatarEditorHUDController : IHUD
         LoadUserProfile(userProfile, true);
         this.userProfile.OnUpdate += LoadUserProfile;
 
-        view.emotesCategoryButton.SetActive(false);
+        view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, false);
         isEmotesSectonInitialized.OnChange += InitializeEmotesSection;
         InitializeEmotesSection(isEmotesSectonInitialized.Get(), null);
 
@@ -740,8 +740,8 @@ public class AvatarEditorHUDController : IHUD
             return;
 
         emotesSectionTransform = currentViewTransform;
-        emotesSectionTransform.SetParent(view.emotesSectionTransform, false);
+        emotesSectionTransform.SetParent(view.emotesSection.transform, false);
 
-        view.emotesCategoryButton.SetActive(true);
+        view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
     }
 }

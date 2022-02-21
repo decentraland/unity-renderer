@@ -902,7 +902,6 @@ MonoBehaviour:
   emoteCardPrefab: {fileID: 5468786788799958835, guid: d5fc22a07beb72545bb19587edcf9ba0,
     type: 3}
   emoteSlotSelector: {fileID: 5504772256985452013}
-  emoteSlotViewer: {fileID: 0}
   emotesGrid: {fileID: 737305017821576015}
 --- !u!1 &2672119976802274059
 GameObject:
@@ -1801,12 +1800,12 @@ PrefabInstance:
     - target: {fileID: 8696649798073764329, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 8696649798073764329, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: -40
       objectReference: {fileID: 0}
     - target: {fileID: 8696649798073764329, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
@@ -1846,12 +1845,12 @@ PrefabInstance:
     - target: {fileID: 8696649798073764329, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8696649798073764329, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 8696649798073764329, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
