@@ -10,6 +10,7 @@ namespace DCL.Skybox
         Satellite
     }
 
+    [System.Serializable]
     public class Config3DBase
     {
         public Additional3DElements configType;

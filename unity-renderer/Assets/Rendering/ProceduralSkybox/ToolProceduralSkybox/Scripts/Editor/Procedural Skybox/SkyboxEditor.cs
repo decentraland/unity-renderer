@@ -292,7 +292,11 @@ namespace DCL.Skybox
         #region 3D Skybox
 
         List<GameObject> domeObjects = new List<GameObject>();
+        int activeDomeObjects = 0;
         GameObject skyboxElements;
+        GameObject domeElements;
+        GameObject domePrefab;
+
         void Init3DSetup()
         {
             if (Application.isPlaying) { }
@@ -300,17 +304,37 @@ namespace DCL.Skybox
             {
                 if (skyboxElements == null)
                 {
+
+
                     skyboxElements = GameObject.Find("Skybox Elements");
 
+                    // If Skybox element doesn't exsist make new object else find dome objects 
                     if (skyboxElements == null)
                     {
+                        Debug.Log("Making Skybox elements");
                         skyboxElements = new GameObject("Skybox Elements");
+                        skyboxElements.layer = LayerMask.NameToLayer("Skybox");
+                        domeElements = new GameObject("Dome Elements");
+                        domeElements.layer = LayerMask.NameToLayer("Skybox");
+                        domeElements.transform.parent = skyboxElements.transform;
+                    }
+                    else
+                    {
+                        Debug.Log("Fetching Skybox elements");
+                        domeElements = skyboxElements.transform.Find("Dome Elements").gameObject;
+                        for (int i = 0; i < domeElements.transform.childCount; i++)
+                        {
+                            domeObjects.Add(domeElements.transform.GetChild(i).gameObject);
+                            domeObjects[i].GetComponent<Renderer>().material = Instantiate<Material>(MaterialReferenceContainer.i.domeMat);
+                        }
                     }
                     skyboxElements.transform.position = Vector3.zero;
                 }
 
-                if (domeObjects.Count != selectedConfiguration.additional3Dconfig.Count)
+                if (activeDomeObjects != selectedConfiguration.additional3Dconfig.Count)
                 {
+                    Debug.Log("Changing dome elements");
+                    activeDomeObjects = 0;
                     InstantiateDomes();
                 }
             }
@@ -321,16 +345,33 @@ namespace DCL.Skybox
             // Check additional 3D  dome array and Instantiate domes
             for (int i = 0; i < selectedConfiguration.additional3Dconfig.Count; i++)
             {
-                if (domeObjects.Count >= (i + 1))
+                if (domeObjects.Count > i)
                 {
                     domeObjects[i].SetActive(true);
                 }
                 else
                 {
-                    GameObject obj = Resources.Load<GameObject>("SkyboxPrefabs/Dome.prefab");
-                    obj.transform.position = Vector3.zero;
+                    domePrefab = Resources.Load<GameObject>("SkyboxPrefabs/Dome");
+                    if (domePrefab == null)
+                    {
+                        Debug.Log("Resoucre loading failed for dome objects");
+                        return;
+                    }
+                    GameObject obj = Instantiate<GameObject>(domePrefab);
+                    obj.layer = LayerMask.NameToLayer("Skybox");
+                    obj.name = "Dome " + (i + 1);
+                    obj.transform.parent = domeElements.transform;
+                    obj.transform.localPosition = Vector3.zero;
+                    obj.GetComponent<Renderer>().material = Instantiate<Material>(MaterialReferenceContainer.i.domeMat);
+                    domeObjects.Add(obj);
                 }
+                activeDomeObjects++;
+            }
 
+            // Close extra dome object
+            for (int i = selectedConfiguration.additional3Dconfig.Count; i < domeObjects.Count; i++)
+            {
+                domeObjects[i].SetActive(false);
             }
         }
 
