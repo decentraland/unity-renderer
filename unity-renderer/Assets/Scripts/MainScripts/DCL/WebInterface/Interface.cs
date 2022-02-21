@@ -666,6 +666,15 @@ namespace DCL.Interface
             public RayInfo ray = new RayInfo();
         }
 
+        [System.Serializable]
+        public class TimeReportPayload
+        {
+            public float timeNormalizationFactor;
+            public float cycleTime;
+            public bool isPaused;
+            public float time;
+        }
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -805,6 +814,7 @@ namespace DCL.Interface
         public static AvatarOnClickPayload avatarOnClickPayload = new AvatarOnClickPayload();
         private static UUIDEvent<EmptyPayload> onPointerHoverEnterEvent = new UUIDEvent<EmptyPayload>();
         private static UUIDEvent<EmptyPayload> onPointerHoverExitEvent = new UUIDEvent<EmptyPayload>();
+        private static TimeReportPayload timeReportPayload = new TimeReportPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -1567,6 +1577,15 @@ namespace DCL.Interface
         {
             onPointerHoverExitEvent.uuid = uuid;
             SendSceneEvent(sceneId, "uuidEvent", onPointerHoverExitEvent);
-        }   
+        }
+
+        public static void ReportTime(float time, bool isPaused, float timeNormalizationFactor, float cycleTime)
+        {
+            timeReportPayload.time = time;
+            timeReportPayload.isPaused = isPaused;
+            timeReportPayload.timeNormalizationFactor = timeNormalizationFactor;
+            timeReportPayload.cycleTime = cycleTime;
+            SendMessage("ReportDecentralandTime", timeReportPayload);
+        }
     }
 }

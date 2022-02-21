@@ -81,19 +81,15 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
     Coroutine fetchNFTImageRoutine = null;
 
-    private IPromiseLike_TextureAsset imagePromise = null;
-    private GifPlayer gifPlayer = null;
-
     private string nftTokenId;
     bool backgroundColorSet = false;
     string marketUrl = null;
 
     private bool isDestroyed = false;
-    internal IWrappedTextureHelper wrappedTextureHelper;
+    internal INFTAssetLoadHelper nftAssetLoadHelper;
 
     private void Awake()
     {
-        wrappedTextureHelper = new WrappedTextureUtils();
         name = "_NFTPromptHUD";
 
         buttonClose.onClick.AddListener(Hide);
@@ -114,13 +110,15 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         {
             Destroy(gameObject);
         }
+
+        nftAssetLoadHelper?.Dispose();
     }
 
     internal void Hide()
     {
         content.SetActive(false);
 
-        ForgetPromises();
+        nftAssetLoadHelper?.Dispose();
 
         if (fetchNFTImageRoutine != null)
             StopCoroutine(fetchNFTImageRoutine);
@@ -277,56 +275,44 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         ShowImageErrorFeedback(false);
         ShowImageLoading(true);
 
-        bool imageFound = false;
+        if (nftAssetLoadHelper != null)
+            nftAssetLoadHelper.Dispose();
 
-        yield return wrappedTextureHelper.Fetch(nftInfo.previewImageUrl,
-            promise =>
+        nftAssetLoadHelper = new NFTAssetLoadHelper();
+        yield return nftAssetLoadHelper.LoadNFTAsset(
+            nftInfo.previewImageUrl,
+            OnSuccess: nftAsset =>
             {
-                imagePromise?.Forget();
-                imagePromise = promise;
-                imageFound = true;
-            });
+                nftAsset.OnTextureUpdate += UpdateTexture;
 
-        if (!imageFound)
-        {
-            yield return wrappedTextureHelper.Fetch(nftInfo.originalImageUrl,
-                promise =>
+                if (!(nftAsset is Asset_Gif))
                 {
-                    imagePromise?.Forget();
-                    imagePromise = promise;
-                    imageFound = true;
-                });
-        }
+                    if (!backgroundColorSet)
+                    {
+                        SetTransparentBackground();
+                    }
+                }
 
-        if (imageFound && imagePromise?.asset != null)
-        {
-            Texture2D texture = imagePromise.asset.texture;
-            imageNft.texture = texture;
+                UpdateTexture(nftAsset.previewAsset.texture);
+                SetNFTImageSize(nftAsset.previewAsset.texture);
+                imageNft.gameObject.SetActive(true);
+                ShowImageLoading(false);
+            },
+            OnFail:
+            (exc) => { ShowImageErrorFeedback(true); });
+    }
 
-            if ((imagePromise.asset is Asset_Gif gif))
-            {
-                SetupGifPlayer(gif);
-            }
-            else if (!backgroundColorSet)
-            {
-                SetTransparentBackground();
-            }
-
-            SetNFTImageSize(texture);
-
-            imageNft.gameObject.SetActive(true);
-            ShowImageLoading(false);
-        }
-        else
-        {
-            ShowImageErrorFeedback(true);
-        }
+    private void UpdateTexture(Texture2D texture)
+    {
+        imageNft.texture = texture;
     }
 
     private void SetNFTImageSize(Texture2D texture)
     {
         RectTransform rt = (RectTransform)imageNft.transform.parent;
+        
         float h, w;
+        
         if (texture.height > texture.width)
         {
             h = rt.rect.height;
@@ -344,6 +330,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     private string ShortDecimals(string value, int decimalCount)
     {
         int pointPosition = value.IndexOf('.');
+        
         if (pointPosition <= 0)
             return value;
 
@@ -410,29 +397,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         ownersTooltip.OnFocus -= OnOwnersTooltipGainFocus;
         ownersPopup.OnClosePopup -= OnOwnersPopupClose;
 
-        ForgetPromises();
-    }
-
-    private void ForgetPromises()
-    {
-        if (imagePromise != null)
-        {
-            imagePromise.Forget();
-            imagePromise = null;
-        }
-        gifPlayer?.Dispose();
-        gifPlayer = null;
-    }
-
-    private void SetupGifPlayer(Asset_Gif gif)
-    {
-        if (gifPlayer == null)
-        {
-            gifPlayer = new GifPlayer();
-            gifPlayer.OnFrameTextureChanged += (texture) => { imageNft.texture = texture; };
-        }
-        gifPlayer.SetGif(gif);
-        gifPlayer.Play(true);
+        nftAssetLoadHelper?.Dispose();
     }
 
     private void OnViewAllOwnersPressed() { OnViewAllPressed?.Invoke(); }
