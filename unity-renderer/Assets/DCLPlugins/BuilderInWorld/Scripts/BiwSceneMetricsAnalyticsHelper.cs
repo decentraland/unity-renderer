@@ -27,8 +27,7 @@ public class BiwSceneMetricsAnalyticsHelper
 
     private void OnMetricsUpdated(ISceneMetricsCounter obj)
     {
-        if (Time.unscaledTime < lastTimeAnalitycsSent + MS_BETWEEN_METRICS_EVENT / 1000f ||
-            lastSceneMetrics == scene.metricsCounter.currentCount)
+        if (Time.unscaledTime < lastTimeAnalitycsSent + MS_BETWEEN_METRICS_EVENT / 1000f)
             return;
         
         SendSceneLimitExceededAnalyticsEvent();

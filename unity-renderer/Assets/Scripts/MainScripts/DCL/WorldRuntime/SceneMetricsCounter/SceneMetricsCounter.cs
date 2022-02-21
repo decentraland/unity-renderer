@@ -33,6 +33,7 @@ namespace DCL
 
         private SceneMetricsModel maxCountValue = new SceneMetricsModel();
         private SceneMetricsModel currentCountValue = new SceneMetricsModel();
+        private SceneMetricsModel lastCountValue = new SceneMetricsModel();
 
         public SceneMetricsModel currentCount
         {
@@ -156,7 +157,6 @@ namespace DCL
 
         public bool IsInsideTheLimits()
         {
-            UpdateMetrics();
             SceneMetricsModel limits = ComputeMaxCount();
             SceneMetricsModel usage = currentCountValue;
 
@@ -266,7 +266,11 @@ namespace DCL
         private void RaiseMetricsUpdate()
         {
             UpdateWorstMetricsOffense();
-            OnMetricsUpdated?.Invoke(this);
+            if (!currentCountValue.Equals(lastCountValue))
+            {
+                lastCountValue = currentCountValue;
+                OnMetricsUpdated?.Invoke(this);
+            }
         }
     }
 }
