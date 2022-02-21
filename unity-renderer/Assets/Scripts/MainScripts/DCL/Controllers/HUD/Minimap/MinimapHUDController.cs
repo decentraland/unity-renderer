@@ -26,6 +26,7 @@ public class MinimapHUDController : IHUD
     public void Initialize() 
     {
         view = CreateView();
+        UpdateData(model);
     }
 
     public void Dispose()
