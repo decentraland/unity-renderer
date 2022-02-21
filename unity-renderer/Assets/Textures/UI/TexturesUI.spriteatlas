@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2549508
+    totalSpriteSurfaceArea: 2639508
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -186,6 +186,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 71bec2279cc084440b3820533c062b92, type: 3}
   - {fileID: 21300000, guid: e42d263701088429292b3462f9d1d21c, type: 3}
   - {fileID: 21300000, guid: 0771864752bc141ab96ff9dcc751419d, type: 3}
+  - {fileID: 21300000, guid: 6b35c647bc47eb94486089adcb53c8b9, type: 3}
   - {fileID: 21300000, guid: f00094572a9874a0e92b4d347ce91bba, type: 3}
   - {fileID: 21300000, guid: 243dd557f2b614bc5ba2599f40d20448, type: 3}
   - {fileID: 21300000, guid: 7b4468575e3ab49e1aec3edd88298137, type: 3}
@@ -468,6 +469,7 @@ SpriteAtlas:
   - ContainerRadius20Shadow
   - PlacesIcon
   - ProfileHudTopContainer
+  - no-image-icon-32
   - QuestIcon
   - Switch32
   - ContainerRadius11Shadow
