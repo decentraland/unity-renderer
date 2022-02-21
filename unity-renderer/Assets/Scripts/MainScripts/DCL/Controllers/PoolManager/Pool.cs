@@ -159,11 +159,6 @@ namespace DCL
 
         public void Release(PoolableObject poolable)
         {
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                return;
-#endif
-
             if (poolable == null || !PoolManager.i.HasPoolable(poolable))
                 return;
 

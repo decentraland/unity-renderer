@@ -41,12 +41,7 @@ namespace DCL.Controllers
         }
 
         public void ShowBlocker(Vector2Int pos, bool instant = false)
-        {
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                return;
-#endif
-            
+        {            
             float centerOffset = ParcelSettings.PARCEL_SIZE / 2;
             PoolableObject blockerPoolable = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
             GameObject blockerGo = blockerPoolable.gameObject;
@@ -121,11 +116,6 @@ namespace DCL.Controllers
 
         public void DestroyAllBlockers()
         {
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
-                return;
-#endif
-            
             var keys = blockers.Keys.ToArray();
 
             for (var i = 0; i < keys.Length; i++)

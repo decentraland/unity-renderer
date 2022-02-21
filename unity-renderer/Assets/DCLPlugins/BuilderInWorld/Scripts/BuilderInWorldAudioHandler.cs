@@ -228,7 +228,15 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private bool EntityHasBeenAddedSinceLastUpdate() { return (entityHandler.GetCurrentSceneEntityCount() > entityCount); }
 
-    private void OnDestroy() { Dispose(); }
+    private void OnDestroy()
+    {
+#if UNITY_STANDALONE || UNITY_EDITOR
+        if (DataStore.i.common.isWorldBeingDestroyed.Get())
+            return;
+#endif
+        
+        Dispose();
+    }
 
     public void Dispose()
     {
@@ -246,11 +254,6 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private void RemoveListeners()
     {
-#if UNITY_STANDALONE || UNITY_EDITOR
-        if (DataStore.i.common.isWorldBeingDestroyed.Get())
-            return;
-#endif
-        
         creatorController.OnCatalogItemPlaced -= OnAssetSpawn;
         entityHandler.OnDeleteSelectedEntities -= OnAssetDelete;
         modeController.OnChangedEditModeState -= OnChangedEditModeState;

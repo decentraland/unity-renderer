@@ -38,8 +38,10 @@ namespace DCL
 
         public override void Cleanup()
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isWorldBeingDestroyed.Get())
                 return;
+#endif
             
             Object.Destroy(container);
         }
