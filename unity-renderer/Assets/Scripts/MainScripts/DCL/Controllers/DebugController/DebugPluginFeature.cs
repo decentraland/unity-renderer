@@ -41,8 +41,8 @@ namespace DCL
             var network = kernelConfig.network;
             if (IsInfoPanelVisible(network))
             {
-                var realm = GetRealmName();
-                debugController.ShowInfoPanel(network, realm);
+                //var realm = GetRealmName();
+                //debugController.ShowInfoPanel(network, realm);
             }
             else
             {

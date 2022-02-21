@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2549508
+    totalSpriteSurfaceArea: 2552008
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -161,6 +161,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7ec9c5651d0c04c2db1086ffdad1a3d0, type: 3}
   - {fileID: 21300000, guid: eefaa765bc937de47a679ed7b97225c2, type: 3}
   - {fileID: 21300000, guid: e0a2bc75af20840e79cb10bba9987431, type: 3}
+  - {fileID: 21300000, guid: 7f27d0851d5e842b299578e8e042207a, type: 3}
   - {fileID: 21300000, guid: 1a32f285ef84d8e44856f0e495cffd4d, type: 3}
   - {fileID: 21300000, guid: 5c569e851fe024c7e8e4b57c07575226, type: 3}
   - {fileID: 21300000, guid: 4308be85a340e4a2b9b19adedb9593f8, type: 3}
@@ -443,6 +444,7 @@ SpriteAtlas:
   - Frame5
   - SmartItemIcon
   - ArrowUp
+  - BugIcon 1
   - RectRadius12Shadow
   - RectRadius12Bottom
   - Label26

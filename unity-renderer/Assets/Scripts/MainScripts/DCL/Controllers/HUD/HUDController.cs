@@ -92,6 +92,8 @@ public class HUDController : IHUDController
 
     public HelpAndSupportHUDController helpAndSupportHud => GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
 
+    public MinimapHUDController minimapHUD => GetHUDElement(HUDElementID.MINIMAP) as MinimapHUDController;
+
     public UsersAroundListHUDController usersAroundListHud => GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
     public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
     public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
@@ -151,7 +153,15 @@ public class HUDController : IHUDController
             case HUDElementID.NONE:
                 break;
             case HUDElementID.MINIMAP:
-                CreateHudElement(configuration, hudElementId);
+                if (minimapHud == null)
+                {
+                    CreateHudElement(configuration, hudElementId);
+
+                    if (minimapHud != null)
+                    {
+                        minimapHud.Initialize();
+                    }
+                }
                 break;
             case HUDElementID.PROFILE_HUD:
                 CreateHudElement(configuration, hudElementId);
