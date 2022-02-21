@@ -206,7 +206,15 @@ namespace DCL.Builder
             List<LandWithAccess> filteredLands = new List<LandWithAccess>();
             foreach (LandWithAccess land in DataStore.i.builderInWorld.landsWithAccess.Get())
             {
-                if (land.name.ToLower().Contains(searchInput.ToLower()) || BIWUtils.Vector2INTToString(land.baseCoords).Contains(searchInput))
+                bool shouldBeAdded = land.name.ToLower().Contains(searchInput.ToLower());
+
+                foreach (Vector2Int landParcel in land.parcels)
+                {
+                    if(BIWUtils.Vector2INTToString(landParcel).Contains(searchInput))
+                        shouldBeAdded = true;
+                }
+                
+                if(shouldBeAdded && !filteredLands.Contains(land))
                     filteredLands.Add(land);
             }
 
@@ -440,8 +448,12 @@ namespace DCL.Builder
 
         public void Hide()
         {
+            if(!modal.isVisible)
+                return;
+            
             modal.Hide();
             mapView.SetVisible(false);
+            CancelPublish();
         }
 
         internal void EnableNextButton()

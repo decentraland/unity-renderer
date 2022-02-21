@@ -4,8 +4,16 @@ using UnityEngine;
 
 public interface ILandPublisherController
 {
+    /// <summary>
+    /// When the publish button has been pressed
+    /// </summary>
     event Action<IBuilderScene> OnPublishPressed;
 
+    /// <summary>
+    /// When the publish action is canceled
+    /// </summary>
+    event Action OnPublishCancel;
+    
     /// <summary>
     /// Init the controller with the default view
     /// </summary>
@@ -33,7 +41,7 @@ public interface ILandPublisherController
 
 public class LandPublisherController : ILandPublisherController
 {
-    public event Action OnCancel;
+    public event Action OnPublishCancel;
     public event Action<IBuilderScene> OnPublishPressed;
 
     internal const string PREFAB_PATH = "Land/LandPublisherView";
@@ -70,7 +78,7 @@ public class LandPublisherController : ILandPublisherController
     public void Cancel()
     {
         SetActive(false);
-        OnCancel?.Invoke();
+        OnPublishCancel?.Invoke();
     }
 
     public void StartPublishFlow(IBuilderScene scene)

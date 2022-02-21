@@ -12,6 +12,11 @@ namespace DCL.Builder
         /// The publish has been confirmed
         /// </summary>
         event Action<IBuilderScene, PublishInfo> OnPublishPressed;
+        
+        /// <summary>
+        /// When the publish action is canceled
+        /// </summary>
+        event Action OnPublishCancel;
 
         /// <summary>
         /// Start the publish flow for a project
@@ -32,6 +37,7 @@ namespace DCL.Builder
     public class PublishProjectController : IPublishProjectController
     {
         public event Action<IBuilderScene, PublishInfo> OnPublishPressed;
+        public event Action OnPublishCancel;
 
         private const string DETAIL_PREFAB_PATH = "Project/PublishPopupView";
 
@@ -78,7 +84,11 @@ namespace DCL.Builder
                 ViewClosed();
         }
 
-        private void ViewClosed() { detailView.Hide(); }
+        private void ViewClosed()
+        {
+            detailView.Hide();
+            OnPublishCancel?.Invoke();
+        }
 
         private void PublishButtonPressedButtonPressed(PublishInfo info)
         {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using DCL.Builder.Manifest;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
@@ -43,6 +44,10 @@ namespace DCL.Builder
 
             landPublisher.OnPublishPressed += PublishLandScene;
             projectPublisher.OnPublishPressed += ConfirmDeployment;
+            
+            landPublisher.OnPublishCancel += Canceled;
+            projectPublisher.OnPublishCancel += Canceled;
+            
             progressController.OnConfirm += StartDeployment;
             progressController.OnBackPressed += BackToPublishInfo;
 
@@ -56,6 +61,10 @@ namespace DCL.Builder
         {
             landPublisher.OnPublishPressed -= PublishLandScene;
             projectPublisher.OnPublishPressed -= ConfirmDeployment;
+            
+            landPublisher.OnPublishCancel -= Canceled;
+            projectPublisher.OnPublishCancel -= Canceled;
+            
             progressController.OnConfirm -= StartDeployment;
             progressController.OnBackPressed -= BackToPublishInfo;
 
@@ -117,6 +126,11 @@ namespace DCL.Builder
             lastTypeWhoStartedPublish = scene.sceneType;
         }
 
+        internal void Canceled()
+        {
+            DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
+        }
+
         internal bool HasLands() { return DataStore.i.builderInWorld.landsWithAccess.Get().Length > 0; }
 
         internal bool CanPublishInLands(IBuilderScene scene)
@@ -143,12 +157,24 @@ namespace DCL.Builder
 
         internal void StartDeployment() { DeployScene(builderSceneToDeploy, publishInfo); }
 
+        internal void ApplyRotation(IBuilderScene scene, PublishInfo.ProjectRotation rotation)
+        {
+            var transform = scene.scene.GetSceneTransform();
+            Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(scene.scene);
+            
+            transform.RotateAround(middlePoint,Vector3.up,90f*(int)rotation);
+            scene.UpdateManifestFromScene();
+        }
+
         internal async void DeployScene(IBuilderScene scene, PublishInfo info)
         {
             try
             {
                 // We assign the scene to deploy
                 builderSceneToDeploy = scene;
+
+                // We apply the rotation of the scene
+                ApplyRotation(scene, info.rotation);
 
                 // Prepare the thumbnail
                 byte[] thumbnail = scene.sceneScreenshotTexture.EncodeToPNG();
@@ -208,7 +234,6 @@ namespace DCL.Builder
 
                 // Remove link to a land if exists
                 builderSceneToDeploy.manifest.project.creation_coords = null;
-                builderSceneToDeploy.manifest.project.updated_at = DateTime.UtcNow;
 
                 // Update project on the builder server
                 context.builderAPIController.SetManifest(builderSceneToDeploy.manifest);

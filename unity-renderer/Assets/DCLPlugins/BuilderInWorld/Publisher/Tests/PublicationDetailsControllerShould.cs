@@ -34,7 +34,7 @@ namespace Tests.BIWPublisherTest
         {
             // Arrange
             bool isCancelClicked = false;
-            landPublisherController.OnCancel += () => isCancelClicked = true;
+            landPublisherController.OnPublishCancel += () => isCancelClicked = true;
 
             // Act
             landPublisherController.Cancel();

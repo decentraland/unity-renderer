@@ -533,6 +533,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnCloseButtonPressed(bool fromShortcut)
     {
+        if(DataStore.i.builderInWorld.areShortcutsBlocked.Get())
+            return;
+        
         if (!fromShortcut)
         {
             SetVisibility(false);

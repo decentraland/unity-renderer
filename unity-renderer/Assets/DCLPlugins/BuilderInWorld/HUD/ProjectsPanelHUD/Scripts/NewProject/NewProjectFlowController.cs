@@ -63,12 +63,14 @@ public class NewProjectFlowController : INewProjectFlowController
     public void Hide()
     {
         view.Hide();
+        DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
     }
 
     public void SetCreatingProjectStatusToFalse()
     {
         DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
     }
+    
     public void Dispose()
     {
         view.OnTittleAndDescriptionSet -= SetTitleAndDescription;
