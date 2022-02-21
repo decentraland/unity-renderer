@@ -22,7 +22,7 @@ namespace DCL
                 return false;
 
             return obj.meshes == meshes && obj.bodies == bodies && obj.materials == materials &&
-                   obj.textures == textures && obj.triangles == triangles && obj.entities == entities && Mathf.Abs(obj.sceneHeight - sceneHeight) < 0.01f;
+                   obj.textures == textures && obj.triangles == triangles && obj.entities == entities && Mathf.Abs(obj.sceneHeight - sceneHeight) < 0.001f;
         }
 
         public static bool operator >(SceneMetricsModel lhs, SceneMetricsModel rhs)

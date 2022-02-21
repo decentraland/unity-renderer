@@ -35,6 +35,8 @@ namespace DCL
         private SceneMetricsModel currentCountValue = new SceneMetricsModel();
         private SceneMetricsModel lastCountValue = new SceneMetricsModel();
 
+        // TODO: We should handle this better, right now if we get the current amount of limits, we update the metrics
+        // So if someone check the current amount when subscribed to the OnMetricsUpdated, we will try to Update the metrics twice
         public SceneMetricsModel currentCount
         {
             get
@@ -263,7 +265,7 @@ namespace DCL
                 logger.Verbose($"New offending scene {sceneId} {scenePosition}!\nmetrics: {currentCountValue}\nlimits: {maxCountValue}\ndelta:{currentOffense}");
             }
         }
-
+        
         private void RaiseMetricsUpdate()
         {
             UpdateWorstMetricsOffense();
