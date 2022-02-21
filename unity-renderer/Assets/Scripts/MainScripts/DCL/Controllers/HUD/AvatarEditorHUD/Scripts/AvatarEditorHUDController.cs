@@ -649,11 +649,11 @@ public class AvatarEditorHUDController : IHUD
 
     public void SetConfiguration(HUDConfiguration configuration) { SetVisibility(configuration.active); }
 
-    public void SaveAvatar(Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot)
+    public void SaveAvatar(Texture2D face256Snapshot, Texture2D bodySnapshot)
     {
         var avatarModel = model.ToAvatarModel();
 
-        WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, face128Snapshot, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
+        WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
         if (DataStore.i.common.isSignUpFlow.Get())
             DataStore.i.HUDs.signupVisible.Set(true);
