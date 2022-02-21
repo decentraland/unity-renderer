@@ -157,6 +157,7 @@ namespace DCL
 
         public bool IsInsideTheLimits()
         {
+            UpdateMetrics();
             SceneMetricsModel limits = ComputeMaxCount();
             SceneMetricsModel usage = currentCountValue;
 
