@@ -89,6 +89,11 @@ namespace UnityGLTF.Loader
             
             await UniTask.WaitUntil( () => asyncOp.isDone || asyncOp.isDisposed || asyncOp.isSucceded, cancellationToken: token);
 
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isApplicationQuitting.Get())
+                return;
+#endif
+            
             token.ThrowIfCancellationRequested();
             
             bool error = false;

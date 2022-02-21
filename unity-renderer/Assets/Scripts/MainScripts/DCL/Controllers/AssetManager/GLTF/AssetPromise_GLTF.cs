@@ -96,6 +96,11 @@ namespace DCL
 
                 gltfComponent.OnSuccess += () =>
                 {
+#if UNITY_STANDALONE || UNITY_EDITOR
+                    if (DataStore.i.common.isApplicationQuitting.Get())
+                        return;
+#endif
+                    
                     if (asset != null)
                     {
                         asset.totalTriangleCount =
