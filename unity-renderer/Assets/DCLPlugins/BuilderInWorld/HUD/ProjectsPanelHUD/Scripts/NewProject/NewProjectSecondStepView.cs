@@ -100,6 +100,7 @@ namespace DCL.Builder
 
         internal void ShowError()
         {
+            nextButton.SetInteractable(false);
             errorGameObject.SetActive(true);
             gridGameObject.SetActive(false);
 
@@ -110,6 +111,7 @@ namespace DCL.Builder
 
         internal void ShowGrid()
         {
+            nextButton.SetInteractable(true);
             errorGameObject.SetActive(false);
             gridGameObject.SetActive(true);
 

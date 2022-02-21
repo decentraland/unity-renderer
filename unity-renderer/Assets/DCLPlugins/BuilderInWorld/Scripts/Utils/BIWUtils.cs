@@ -814,6 +814,7 @@ public static partial class BIWUtils
 
     public static IWebRequestAsyncOperation MakeGetCall(string url, Promise<string> callPromise, Dictionary<string, string> headers)
     {
+        headers["Cache-Control"] = "no-cache";
         var asyncOperation = Environment.i.platform.webRequest.Get(
             url: url,
             OnSuccess: (webRequestResult) =>
@@ -838,7 +839,7 @@ public static partial class BIWUtils
                 }
             },
             headers: headers);
-
+        
         return asyncOperation;
     }
 

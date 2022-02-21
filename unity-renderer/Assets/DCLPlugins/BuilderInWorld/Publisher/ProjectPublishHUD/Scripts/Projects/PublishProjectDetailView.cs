@@ -305,6 +305,7 @@ namespace DCL.Builder
 
                     if (areCoordsSelected)
                     {
+                        LandSelected(selectedCoords);
                         GoToCoords(selectedCoords);
                         toastView.Show(true);
                     }
@@ -425,6 +426,7 @@ namespace DCL.Builder
             modal.Show();
             if (areCoordsSelected)
             {
+                LandSelected(selectedCoords);
                 GoToCoords(selectedCoords);
                 toastView.Show(true);
             }

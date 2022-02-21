@@ -127,17 +127,19 @@ public class BIWPublishController : BIWController, IBIWPublishController
     {
         if (!CanPublish())
             return;
-
+        
+        // We update the manifest with the current scene to send the last state to publish
+        builderScene.UpdateManifestFromScene();
+        
         context.cameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {
             builderScene.sceneScreenshotTexture = sceneSnapshot;
             if (builderScene.sceneType == IBuilderScene.SceneType.PROJECT)
             {
-                //If it is a project, we took an aerial view of the scene too
+                //If it is a project, we took an aerial view of the scene too for the rotation of the scene
                 context.cameraController.TakeSceneAerialScreenshot( sceneToEdit, (aerialSceenshot) =>
                 {
                     builderScene.aerialScreenshotTexture = aerialSceenshot;
-                    builderScene.UpdateManifestFromScene();
                     context.publisher.StartPublish(builderScene);
                 });
             }

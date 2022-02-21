@@ -156,7 +156,6 @@ namespace DCL
 
         public bool IsInsideTheLimits()
         {
-            UpdateMetrics();
             SceneMetricsModel limits = ComputeMaxCount();
             SceneMetricsModel usage = currentCountValue;
 
@@ -211,7 +210,7 @@ namespace DCL
 
         private void UpdateMetrics()
         {
-            if (string.IsNullOrEmpty(sceneId))
+            if (string.IsNullOrEmpty(sceneId) || data == null || !data.sceneData.ContainsKey(sceneId))
                 return;
             
             var sceneData = data?.sceneData[sceneId];

@@ -7,10 +7,12 @@ using UnityEngine;
 
 public class BiwSceneMetricsAnalyticsHelper
 {
+    private const float MS_BETWEEN_METRICS_EVENT = 2000f;
     private string currentExceededLimitTypes = "";
 
     private IParcelScene scene;
-
+    private float lastTimeAnalitycsSent = 0;
+    
     public BiwSceneMetricsAnalyticsHelper(IParcelScene sceneOwner)
     {
         this.scene = sceneOwner;
@@ -24,7 +26,11 @@ public class BiwSceneMetricsAnalyticsHelper
 
     private void OnMetricsUpdated(ISceneMetricsCounter obj)
     {
+        if (Time.unscaledTime < lastTimeAnalitycsSent + MS_BETWEEN_METRICS_EVENT / 1000f)
+            return;
+        
         SendSceneLimitExceededAnalyticsEvent();
+        lastTimeAnalitycsSent = Time.unscaledTime;
     }
 
     private void SendSceneLimitExceededAnalyticsEvent()
