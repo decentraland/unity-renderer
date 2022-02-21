@@ -49,7 +49,7 @@ namespace DCL
             }
             
 #if UNITY_STANDALONE || UNITY_EDITOR
-            Application.quitting += () => DataStore.i.common.isWorldBeingDestroyed.Set(true);
+            Application.quitting += () => DataStore.i.common.isApplicationQuitting.Set(true);
 #endif
 
             SetupPlugins();
@@ -121,7 +121,7 @@ namespace DCL
         {
             DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
 
-            DataStore.i.common.isWorldBeingDestroyed.Set(true);
+            DataStore.i.common.isApplicationQuitting.Set(true);
 
             pluginSystem?.Dispose();
 

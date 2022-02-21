@@ -800,7 +800,7 @@ namespace DCL.Controllers
         public void RefreshLoadingState()
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+            if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
             

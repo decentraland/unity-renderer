@@ -37,7 +37,7 @@ namespace DCL.Controllers
         IEnumerator FadeOutCoroutine(GameObject go, System.Action OnFinish)
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+            if (DataStore.i.common.isApplicationQuitting.Get())
                 yield break;
 #endif
             

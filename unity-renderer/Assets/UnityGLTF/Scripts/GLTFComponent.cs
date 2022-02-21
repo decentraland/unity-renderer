@@ -220,7 +220,7 @@ namespace UnityGLTF
         private async UniTaskVoid Internal_LoadAsset(Settings settings, CancellationToken token)
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+            if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
             
@@ -272,7 +272,7 @@ namespace UnityGLTF
                 catch (Exception e) when (!(e is OperationCanceledException))
                 {
 #if UNITY_STANDALONE || UNITY_EDITOR
-                    if (DataStore.i.common.isWorldBeingDestroyed.Get())
+                    if (DataStore.i.common.isApplicationQuitting.Get())
                         return;
 #endif
                     
@@ -374,7 +374,7 @@ namespace UnityGLTF
         private void OnDestroy()
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+            if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
             isDestroyed = true;

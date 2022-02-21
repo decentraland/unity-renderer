@@ -54,7 +54,7 @@ namespace DCL.Controllers
         public void SetupWorldBlockers()
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+            if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
             
@@ -67,7 +67,7 @@ namespace DCL.Controllers
         public void SetEnabled(bool targetValue)
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+            if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
             
@@ -86,7 +86,7 @@ namespace DCL.Controllers
         public void Dispose()
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isWorldBeingDestroyed.Get())
+            if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
             
