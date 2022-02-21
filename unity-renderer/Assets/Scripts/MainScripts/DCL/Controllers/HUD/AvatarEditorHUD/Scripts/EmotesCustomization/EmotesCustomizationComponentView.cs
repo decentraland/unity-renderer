@@ -77,7 +77,6 @@ namespace Emotes
 
         [Header("Prefab References")]
         [SerializeField] internal EmoteSlotSelectorComponentView emoteSlotSelector;
-        [SerializeField] internal EmoteSlotViewerComponentView emoteSlotViewer;
         [SerializeField] internal GridContainerComponentView emotesGrid;
 
         public event Action<string> onEmoteSelected;
@@ -119,7 +118,6 @@ namespace Emotes
         public override void RefreshControl()
         {
             emoteSlotSelector.RefreshControl();
-            emoteSlotViewer.RefreshControl();
             emotesGrid.RefreshControl();
         }
 
@@ -238,8 +236,6 @@ namespace Emotes
             {
                 existingEmoteCard.SetEmoteAsAssignedInSelectedSlot(existingEmoteCard.model.assignedSlot == slotNumber);
             }
-
-            emoteSlotViewer.SetSelectedSlot(slotNumber);
         }
 
         internal void OnEmoteSelected(string emoteId)

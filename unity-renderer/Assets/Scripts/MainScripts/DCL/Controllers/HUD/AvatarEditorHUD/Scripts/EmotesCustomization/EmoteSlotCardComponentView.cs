@@ -44,16 +44,19 @@ namespace Emotes
         /// <summary>
         /// Set the slot number in the card.
         /// </summary>
-        /// <param name="slotNumber">Slot number of the card.</param>
+        /// <param name="slotNumber">Slot number of the card (between 0 and 9).</param>
         void SetSlotNumber(int slotNumber);
     }
 
     public class EmoteSlotCardComponentView : BaseComponentView, IEmoteSlotCardComponentView, IComponentModelConfig
     {
+        internal const int SLOT_VIEWER_ROTATION_ANGLE = 36;
+
         [Header("Prefab References")]
         [SerializeField] internal ImageComponentView emoteImage;
         [SerializeField] internal TMP_Text emoteNameText;
         [SerializeField] internal TMP_Text slotNumberText;
+        [SerializeField] internal Image slotViewerImage;
         [SerializeField] internal ButtonComponentView mainButton;
         [SerializeField] internal Image defaultBackgroundImage;
         [SerializeField] internal Image selectedBackgroundImage;
@@ -196,12 +199,13 @@ namespace Emotes
 
         public void SetSlotNumber(int slotNumber)
         {
-            model.slotNumber = slotNumber;
+            model.slotNumber = Mathf.Clamp(slotNumber, 0, 9);
 
-            if (slotNumberText == null)
-                return;
+            if (slotNumberText != null)
+                slotNumberText.text = model.slotNumber.ToString();
 
-            slotNumberText.text = slotNumber.ToString();
+            if (slotViewerImage != null)
+                slotViewerImage.transform.rotation = Quaternion.Euler(0, 0, -model.slotNumber * SLOT_VIEWER_ROTATION_ANGLE);
         }
 
         internal void OnEmoteImageLoaded(Sprite sprite)
@@ -231,6 +235,9 @@ namespace Emotes
 
             if (emoteNameText != null)
                 emoteNameText.color = isSelected ? selectedEmoteNameColor : defaultEmoteNameColor;
+
+            if (slotViewerImage != null)
+                slotViewerImage.gameObject.SetActive(isSelected);
         }
 
         internal void SetSelectedVisualsForHovering(bool isSelected)
@@ -243,6 +250,9 @@ namespace Emotes
 
             if (emoteNameText != null)
                 emoteNameText.color = isSelected ? selectedEmoteNameColor : defaultEmoteNameColor;
+
+            if (slotViewerImage != null)
+                slotViewerImage.gameObject.SetActive(isSelected);
         }
     }
 }
