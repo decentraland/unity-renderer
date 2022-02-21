@@ -36,6 +36,7 @@ namespace DCL.ExperiencesViewer
         internal CatalogController catalog;
         internal Dictionary<string, IParcelScene> activePEXScenes = new Dictionary<string, IParcelScene>();
         internal List<string> pausedPEXScenesIds = new List<string>();
+        internal List<string> lastDisablePEXSentToKernel;
 
         public void Initialize(ISceneController sceneController)
         {
@@ -228,7 +229,11 @@ namespace DCL.ExperiencesViewer
 
             numOfLoadedExperiences.Set(activePEXScenes.Count);
 
-            WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
+            if (lastDisablePEXSentToKernel != pausedPEXScenesIds)
+            {
+                lastDisablePEXSentToKernel = pausedPEXScenesIds;
+                WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
+            }
         }
 
         internal virtual IExperiencesViewerComponentView CreateView() => ExperiencesViewerComponentView.Create();
