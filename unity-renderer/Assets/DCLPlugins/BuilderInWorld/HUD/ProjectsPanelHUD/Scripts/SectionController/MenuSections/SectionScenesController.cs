@@ -83,7 +83,7 @@ namespace DCL.Builder
 
         private void OnSearchResult(List<ISearchInfo> searchInfoScenes)
         {
-            if (scenesViews == null)
+            if (scenesViews == null || searchInfoScenes == null)
                 return;
 
             using (var iterator = scenesViews.GetEnumerator())
