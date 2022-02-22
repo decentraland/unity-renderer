@@ -141,6 +141,7 @@ MonoBehaviour:
   - percentage: 0
     value: 0
   horizonPlaneSmoothRange: {x: 0, y: 0.000000022351742}
+  horizonLightIntensity: 0
   ambientTrilight: 1
   ambientSkyColor:
     serializedVersion: 2
@@ -490,7 +491,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 0
-    renderType: 0
+    renderType: 1
     layerType: 1
     enabled: 1
     nameInEditor: Stars
@@ -568,7 +569,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 1
-    renderType: 1
+    renderType: 0
     layerType: 2
     enabled: 1
     nameInEditor: Big Sun
@@ -734,7 +735,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 1
-    renderType: 0
+    renderType: 1
     layerType: 2
     enabled: 1
     nameInEditor: Moon
