@@ -8,6 +8,11 @@ using DCL;
         internal BaseVariable<float> percentage => DataStore.i.HUDs.loadingHUD.percentage;
         internal BaseVariable<bool> showTips => DataStore.i.HUDs.loadingHUD.showTips;
 
+    public LoadingHUDController()
+    {
+        this.Initialize();
+    }
+
         protected internal virtual LoadingHUDView CreateView() { return LoadingHUDView.CreateView(); }
 
         public void Initialize()
