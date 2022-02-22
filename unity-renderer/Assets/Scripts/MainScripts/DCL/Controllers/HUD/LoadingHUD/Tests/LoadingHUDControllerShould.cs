@@ -4,12 +4,10 @@ using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 
-namespace Tests.LoadingHUD
-{
     public class LoadingHUDControllerShould
     {
         private LoadingHUDController hudController;
-        private ILoadingHUDView hudView;
+        private LoadingHUDView hudView;
         private BaseVariable<bool> visible => DataStore.i.HUDs.loadingHUD.visible;
         private BaseVariable<string> message => DataStore.i.HUDs.loadingHUD.message;
         private BaseVariable<float> percentage => DataStore.i.HUDs.loadingHUD.percentage;
@@ -18,7 +16,7 @@ namespace Tests.LoadingHUD
         [SetUp]
         public void SetUp()
         {
-            hudView = Substitute.For<ILoadingHUDView>();
+            hudView = Substitute.For<LoadingHUDView>();
             hudController = Substitute.ForPartsOf<LoadingHUDController>();
             hudController.Configure().CreateView().Returns(info => hudView);
             hudController.Initialize();
@@ -68,4 +66,3 @@ namespace Tests.LoadingHUD
         [TearDown]
         public void TearDown() { DataStore.Clear(); }
     }
-}

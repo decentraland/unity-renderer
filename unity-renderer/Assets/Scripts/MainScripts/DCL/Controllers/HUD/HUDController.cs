@@ -78,6 +78,8 @@ public class HUDController : IHUDController
 
     public TaskbarHUDController taskbarHud => GetHUDElement(HUDElementID.TASKBAR) as TaskbarHUDController;
 
+    public LoadingHUDController loadingHud => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
+
     public WorldChatWindowHUDController worldChatWindowHud =>
         GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowHUDController;
 
@@ -335,9 +337,13 @@ public class HUDController : IHUDController
 
                 break;
             case HUDElementID.LOADING:
-                CreateHudElement(configuration, hudElementId);
-                if (configuration.active)
-                    loadingController.Initialize();
+                if (loadingHud == null)
+                {
+                    CreateHudElement(configuration, hudElementId);
+                    if (loadingHud != null && configuration.active)
+                        loadingController.Initialize();
+
+                }
                 break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message
