@@ -10,6 +10,7 @@ namespace DCL
         void SetDebug();
         void HideFPSPanel();
         void ShowFPSPanel();
+        void SetLocalDCLVersion(string version);
         void SetSceneDebugPanel();
         void SetEngineDebugPanel();
         void RunPerformanceMeterTool(float durationInSeconds);

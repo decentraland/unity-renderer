@@ -29,25 +29,7 @@ namespace DCL
         {
             kernelConfigPromise = KernelConfig.i.EnsureConfigInitialized();
             kernelConfigPromise.Catch(Debug.Log);
-            kernelConfigPromise.Then(OnKernelConfigChanged);
-            KernelConfig.i.OnChange += OnKernelConfigChanged;
             DataStore.i.realm.playerRealm.OnChange += OnPlayerRealmChanged;
-        }
-
-        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { OnKernelConfigChanged(current); }
-
-        private void OnKernelConfigChanged(KernelConfigModel kernelConfig)
-        {
-            var network = kernelConfig.network;
-            if (IsInfoPanelVisible(network))
-            {
-                var realm = GetRealmName();
-                debugController.ShowInfoPanel(network, realm);
-            }
-            else
-            {
-                debugController.HideInfoPanel();
-            }
         }
 
         private void OnPlayerRealmChanged(CurrentRealmModel current, CurrentRealmModel previous)
@@ -55,19 +37,10 @@ namespace DCL
             debugController.SetRealm(GetRealmName());
         }
 
-        private bool IsInfoPanelVisible(string network)
-        {
-#if UNITY_EDITOR
-            return true;
-#endif
-            return !network.ToLower().Contains("mainnet");
-        }
-
         private static string GetRealmName() { return DataStore.i.realm.playerRealm.Get()?.serverName; }
 
         public void Dispose()
         {
-            KernelConfig.i.OnChange -= OnKernelConfigChanged;
             DataStore.i.realm.playerRealm.OnChange -= OnPlayerRealmChanged;
             kernelConfigPromise?.Dispose();
         }

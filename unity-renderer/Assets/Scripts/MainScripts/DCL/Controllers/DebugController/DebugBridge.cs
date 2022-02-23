@@ -35,6 +35,8 @@ namespace DCL
 
         public void ShowFPSPanel() { debugController.ShowFPSPanel(); }
 
+        public void SetLocalDCLVersion(string version) { debugController.SetLocalDCLVersion(version); }
+
         public void SetSceneDebugPanel() { debugController.SetSceneDebugPanel(); }
 
         public void SetEngineDebugPanel() { debugController.SetEngineDebugPanel(); }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using DCL.Helpers;
 using TMPro;
@@ -14,6 +15,8 @@ namespace DCL.FPSDisplay
         [SerializeField] private TextMeshProUGUI label;
         [SerializeField] private RectTransform background;
         [SerializeField] private PerformanceMetricsDataVariable performanceData;
+
+        public string versions = "Kernel: Unity renderer:";
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private int lastPlayerCount;
@@ -33,6 +36,7 @@ namespace DCL.FPSDisplay
             lastPlayerCount = otherPlayers.Count();
             otherPlayers.OnAdded += OnOtherPlayersModified;
             otherPlayers.OnRemoved += OnOtherPlayersModified;
+            DataStore.i.debugConfig.versions.OnChange += SetVersion;
 
             SetupKernelConfig();
             SetupRealm();
@@ -64,6 +68,11 @@ namespace DCL.FPSDisplay
         private void OnKernelConfigChanged(KernelConfigModel kernelConfig) { currentNetwork = kernelConfig.network ?? string.Empty; }
 
         private void OnOtherPlayersModified(string playerName, Player player) { lastPlayerCount = otherPlayers.Count(); }
+
+        private void SetVersion(string current, string previous)
+        {
+            versions = current;
+        }
 
         private void OnDisable()
         {
@@ -104,6 +113,8 @@ namespace DCL.FPSDisplay
             Color fpsColor = FPSColoring.GetDisplayColor(fps);
 
             targetText += GetColor(GetHexColor(Color.white));
+            targetText += GetTitle("Version");
+            targetText += GetLine($"{versions}");
             targetText += GetTitle("Skybox");
             targetText += GetLine($"Config: {DataStore.i.skyboxConfig.configToLoad.Get()}");
             targetText += GetLine($"Duration: {DataStore.i.skyboxConfig.lifecycleDuration.Get()}");

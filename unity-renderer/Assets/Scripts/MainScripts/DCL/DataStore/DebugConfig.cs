@@ -31,6 +31,8 @@ namespace DCL
         [System.NonSerialized]
         public  BaseVariable<bool> isPreviewMenuActive = new BaseVariable<bool>();
 
+        public BaseVariable<string> versions = new BaseVariable<string>();
+
         /// <summary>
         /// True when WSS message pipeline is enabled
         /// </summary>
@@ -46,5 +48,6 @@ namespace DCL
         /// do Debug.Break() and log when processing each message
         /// </summary>
         public bool msgStepByStep = false;
+
     }
 }

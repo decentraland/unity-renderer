@@ -77,6 +77,10 @@ namespace DCL
 
         public void ShowFPSPanel() { isFPSPanelVisible.Set(true); }
 
+        public void SetLocalDCLVersion(string version) {
+            DataStore.i.debugConfig.versions.Set(version);
+        }
+
         public void ShowInfoPanel(string network, string realm)
         {
             if (debugView != null)

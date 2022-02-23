@@ -16,8 +16,10 @@ namespace DCL
         private GameObject sceneDebugPanel;
 
         [SerializeField] private InfoPanel infoPanel;
-
-        private void Awake() { infoPanel.SetVisible(false); }
+        
+        private void Awake() { 
+            infoPanel.SetVisible(false);
+        }
 
         public void ShowFPSPanel() { fpsPanel.SetActive(true); }
 

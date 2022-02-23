@@ -9,6 +9,7 @@ namespace DCL
         {
             var pluginSystem = new PluginSystem();
 
+            pluginSystem.Register(() => new DebugPluginFeature());
             pluginSystem.Register(() => new ShortcutsFeature());
             pluginSystem.Register(() => new ExploreV2Feature());
             pluginSystem.Register(() => new DebugShapesBoundingBoxDisplayer());
