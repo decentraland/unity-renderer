@@ -1,9 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PreviewCameraRotation : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+public class PreviewCameraRotation : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public event System.Action<float> OnHorizontalRotation;
 
@@ -18,6 +19,18 @@ public class PreviewCameraRotation : MonoBehaviour, IDragHandler, IBeginDragHand
     private Coroutine slowDownCoroutine;
 
     private float timer;
+
+    public event Action<bool> OnPointerAction;
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        OnPointerAction?.Invoke(true);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        OnPointerAction?.Invoke(false);
+    }
 
     public void OnBeginDrag(PointerEventData eventData) { AudioScriptableObjects.buttonClick.Play(true); }
 
