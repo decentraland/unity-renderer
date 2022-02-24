@@ -2468,6 +2468,7 @@ MonoBehaviour:
   - {fileID: 1034426690993639428}
   - {fileID: 1640270183633681569}
   - {fileID: 5515553641354158692}
+  - {fileID: 6913155969236009156}
   loadingSpinnerGameObject: {fileID: 4028908633907793762}
   web3Container: {fileID: 233924306434789069}
   web3ContainerEmptyList: {fileID: 3448392586757080317}
@@ -2475,7 +2476,6 @@ MonoBehaviour:
   skinsFeatureContainer: {fileID: 1968554840564726541}
   skinsWeb3Container: {fileID: 7219149564527736666}
   skinsMissingWeb3Container: {fileID: 2385772220033317707}
-  skinsConnectWalletButtonContainer: {fileID: 5438879274802267248}
   skinsPopulatedListContainer: {fileID: 54711892626740455}
   skinsEmptyListContainer: {fileID: 4309226963673443877}
 --- !u!225 &-2971377967518096820
