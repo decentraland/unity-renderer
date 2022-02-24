@@ -14,5 +14,8 @@ namespace DCL.Skybox
     public class Config3DBase
     {
         public Additional3DElements configType;
+        public bool enabled = true;
+        public bool expandedInEditor = false;
+        public string nameInEditor = "";
     }
 }

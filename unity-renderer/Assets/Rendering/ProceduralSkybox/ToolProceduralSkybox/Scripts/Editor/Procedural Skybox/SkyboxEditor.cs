@@ -87,9 +87,11 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Space(5);
 
-            panelScrollPos = EditorGUILayout.BeginScrollView(panelScrollPos, "box");
+            panelScrollPos = EditorGUILayout.BeginScrollView(panelScrollPos);
 
             GUILayout.Space(10);
+
+            EditorGUILayout.BeginVertical("box");
 
             showBackgroundLayer = EditorGUILayout.Foldout(showBackgroundLayer, "BG Layer", true);
             if (showBackgroundLayer)
@@ -144,7 +146,14 @@ namespace DCL.Skybox
 
 
             // Render Layers
-            RenderTextureLayers(selectedConfiguration.layers);
+            RenderTextureLayers(selectedConfiguration.layers, true);
+
+            EditorGUILayout.EndVertical();
+
+            GUILayout.Space(32);
+
+            // Render 3D layers
+            Render3DLayers(selectedConfiguration.additional3Dconfig);
 
             EditorGUILayout.EndScrollView();
             GUILayout.Space(10);
@@ -292,6 +301,7 @@ namespace DCL.Skybox
         #region 3D Skybox
 
         List<GameObject> domeObjects = new List<GameObject>();
+        List<Material> domeMats = new List<Material>();
         int activeDomeObjects = 0;
         GameObject skyboxElements;
         GameObject domeElements;
@@ -304,8 +314,6 @@ namespace DCL.Skybox
             {
                 if (skyboxElements == null)
                 {
-
-
                     skyboxElements = GameObject.Find("Skybox Elements");
 
                     // If Skybox element doesn't exsist make new object else find dome objects 
@@ -326,6 +334,7 @@ namespace DCL.Skybox
                         {
                             domeObjects.Add(domeElements.transform.GetChild(i).gameObject);
                             domeObjects[i].GetComponent<Renderer>().material = Instantiate<Material>(MaterialReferenceContainer.i.domeMat);
+                            domeMats.Add(domeObjects[i].GetComponent<Renderer>().sharedMaterial);
                         }
                     }
                     skyboxElements.transform.position = Vector3.zero;
@@ -337,12 +346,17 @@ namespace DCL.Skybox
                     activeDomeObjects = 0;
                     InstantiateDomes();
                 }
+
+                for (int i = 0; i < selectedConfiguration.additional3Dconfig.Count; i++)
+                {
+                    domeObjects[i].SetActive(selectedConfiguration.additional3Dconfig[i].enabled);
+                }
             }
         }
 
         void InstantiateDomes()
         {
-            // Check additional 3D  dome array and Instantiate domes
+            // Check additional 3D dome array and Instantiate domes
             for (int i = 0; i < selectedConfiguration.additional3Dconfig.Count; i++)
             {
                 if (domeObjects.Count > i)
@@ -362,8 +376,10 @@ namespace DCL.Skybox
                     obj.name = "Dome " + (i + 1);
                     obj.transform.parent = domeElements.transform;
                     obj.transform.localPosition = Vector3.zero;
+                    obj.transform.localScale = obj.transform.localScale + Vector3.one * i;
                     obj.GetComponent<Renderer>().material = Instantiate<Material>(MaterialReferenceContainer.i.domeMat);
                     domeObjects.Add(obj);
+                    domeMats.Add(obj.GetComponent<Renderer>().sharedMaterial);
                 }
                 activeDomeObjects++;
             }
@@ -372,6 +388,86 @@ namespace DCL.Skybox
             for (int i = selectedConfiguration.additional3Dconfig.Count; i < domeObjects.Count; i++)
             {
                 domeObjects[i].SetActive(false);
+            }
+        }
+
+        void Render3DLayers(List<Config3DDome> configs3D)
+        {
+            for (int i = 0; i < configs3D.Count; i++)
+            {
+                // Name and buttons
+                EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+                configs3D[i].enabled = EditorGUILayout.Toggle(configs3D[i].enabled, GUILayout.Width(20), GUILayout.Height(10));
+                GUILayout.Space(10);
+                configs3D[i].expandedInEditor = EditorGUILayout.Foldout(configs3D[i].expandedInEditor, GUIContent.none, true, foldoutStyle);
+                configs3D[i].nameInEditor = EditorGUILayout.TextField(configs3D[i].nameInEditor, GUILayout.Width(100), GUILayout.ExpandWidth(false));
+
+                if (i == 0)
+                {
+                    GUI.enabled = false;
+                }
+                if (GUILayout.Button(('\u25B2').ToString(), GUILayout.Width(50), GUILayout.ExpandWidth(false)))
+                {
+                    Config3DDome temp = null;
+
+                    if (i >= 1)
+                    {
+                        temp = configs3D[i - 1];
+                        configs3D[i - 1] = configs3D[i];
+                        configs3D[i] = temp;
+                    }
+                }
+
+                GUI.enabled = true;
+
+                if (i == configs3D.Count - 1)
+                {
+                    GUI.enabled = false;
+                }
+
+                if (GUILayout.Button(('\u25BC').ToString(), GUILayout.Width(50), GUILayout.ExpandWidth(false)))
+                {
+                    Config3DDome temp = null;
+                    if (i < (configs3D.Count - 1))
+                    {
+                        temp = configs3D[i + 1];
+                        configs3D[i + 1] = configs3D[i];
+                        configs3D[i] = temp;
+                    }
+                    break;
+                }
+
+                GUI.enabled = true;
+
+                if (GUILayout.Button("-", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
+                {
+                    configs3D.RemoveAt(i);
+                    break;
+                }
+                EditorGUILayout.EndHorizontal();
+
+                if (configs3D[i].expandedInEditor)
+                {
+                    EditorGUILayout.Separator();
+
+                    EditorGUILayout.BeginVertical("box");
+                    GUILayout.Space(10);
+                    RenderTextureLayers(configs3D[i].layers, false);
+                    GUILayout.Space(10);
+                    EditorGUILayout.EndVertical();
+                }
+
+
+                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+                GUILayout.Space(32);
+            }
+
+            GUI.enabled = true;
+
+            if (GUILayout.Button("+", GUILayout.MaxWidth(20)))
+            {
+                configs3D.Add(new Config3DDome("Dome " + (configs3D.Count + 1)));
             }
         }
 
@@ -759,20 +855,22 @@ namespace DCL.Skybox
 
         #region Render Slots and Layers
 
-        void RenderTextureLayers(List<TextureLayer> layers)
+        void RenderTextureLayers(List<TextureLayer> layers, bool renderSlots)
         {
 
             for (int i = 0; i < layers.Count; i++)
             {
                 // Name and buttons
-                EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+                EditorGUILayout.BeginHorizontal();
                 layers[i].enabled = EditorGUILayout.Toggle(layers[i].enabled, GUILayout.Width(20), GUILayout.Height(10));
-                GUILayout.Space(10);
                 layers[i].expandedInEditor = EditorGUILayout.Foldout(layers[i].expandedInEditor, GUIContent.none, true, foldoutStyle);
                 layers[i].nameInEditor = EditorGUILayout.TextField(layers[i].nameInEditor, GUILayout.Width(100), GUILayout.ExpandWidth(false));
 
-                // Slot ID
-                layers[i].slotID = EditorGUILayout.Popup(layers[i].slotID, renderingOrderList.ToArray(), GUILayout.Width(50));
+                if (renderSlots)
+                {
+                    // Slot ID
+                    layers[i].slotID = EditorGUILayout.Popup(layers[i].slotID, renderingOrderList.ToArray(), GUILayout.Width(50));
+                }
 
                 if (i == 0)
                 {
@@ -1543,6 +1641,7 @@ namespace DCL.Skybox
         {
             EnsureDependencies();
             selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
+            selectedConfiguration.ApplyDomeConfigurations(domeMats, timeOfTheDay, GetNormalizedDayTime(), 1, directionalLight);
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)

@@ -37,7 +37,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _cubemap_0:
-        m_Texture: {fileID: 8900000, guid: 2a1f2c34a6bb71040aad59820a39f105, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _horizonMask:
@@ -72,6 +72,7 @@ Material:
     - _fadeTime_0: 1
     - _fogIntensity: 0
     - _horizonHeight: 0.96
+    - _horizonPlaneHeight: 0
     - _horizonPlaneSmoothness: 0.12
     - _horizonWidth: 0.3
     - _layerType_0: 4

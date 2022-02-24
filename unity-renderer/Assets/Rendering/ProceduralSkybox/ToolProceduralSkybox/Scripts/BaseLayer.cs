@@ -8,7 +8,7 @@ namespace DCL.Skybox
     [System.Serializable]
     public class TextureLayer
     {
-        public int slotID;                              // Slot ID
+        public int slotID = 0;                              // Slot ID
         public LayerRenderType renderType;
         public LayerType layerType;
         public bool enabled;

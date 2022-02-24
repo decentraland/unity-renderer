@@ -67,7 +67,7 @@ namespace DCL.Skybox
         public List<TimelineTagsDuration> timelineTags = new List<TimelineTagsDuration>();
 
         // 3D Components
-        public List<Config3DBase> additional3Dconfig = new List<Config3DBase>();
+        public List<Config3DDome> additional3Dconfig = new List<Config3DDome>();
 
         private float cycleTime = 24;
 
@@ -144,7 +144,7 @@ namespace DCL.Skybox
             // Check and Fire timeline events
             CheckAndFireTimelineEvents(dayTime);
 
-            ApplyAllSlots(selectedMat, dayTime, normalizedDayTime, slotCount, cycleTime);
+            ApplyAllSlots(selectedMat, layers, dayTime, normalizedDayTime, slotCount, cycleTime);
         }
 
         public void ApplyInWorldAvatarColor(float normalizedDayTime, GameObject directionalLightGO)
@@ -187,11 +187,47 @@ namespace DCL.Skybox
             Shader.SetGlobalColor(ShaderUtils.LightColor, avatarEditorLightColor);
         }
 
-        void ApplyAllSlots(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, float cycleTime = 24)
+        public void ApplyDomeConfigurations(List<Material> materials3D, float dayTime, float normalizedDayTime, int slotCount, Light directionalLightGO = null, float cycleTime = 24)
+        {
+            if (materials3D.Count != additional3Dconfig.Count)
+            {
+                Debug.Log("Material and dome count is not same");
+                return;
+            }
+
+            for (int i = 0; i < materials3D.Count; i++)
+            {
+                if (!additional3Dconfig[i].enabled)
+                {
+                    continue;
+                }
+
+                // Apply config
+                // General Values
+                //materials3D[i].SetColor(SkyboxShaderUtils.LightTint, directionalLightLayer.tintColor.Evaluate(normalizedDayTime));
+                //materials3D[i].SetVector(SkyboxShaderUtils.LightDirection, directionalLightGO.transform.rotation.eulerAngles);
+                //// Apply Base Values
+                //materials3D[i].SetColor(SkyboxShaderUtils.SkyColor, skyColor.Evaluate(normalizedDayTime));
+                //materials3D[i].SetColor(SkyboxShaderUtils.GroundColor, groundColor.Evaluate(normalizedDayTime));
+
+                //// Apply Horizon Values
+                //materials3D[i].SetColor(SkyboxShaderUtils.HorizonColor, horizonColor.Evaluate(normalizedDayTime));
+                //materials3D[i].SetFloat(SkyboxShaderUtils.HorizonHeight, GetTransitionValue(horizonHeight, percentage, 0f));
+                //materials3D[i].SetFloat(SkyboxShaderUtils.HorizonWidth, GetTransitionValue(horizonWidth, percentage, 0f));
+                //materials3D[i].SetTexture(SkyboxShaderUtils.HorizonMask, horizonMask);
+                //materials3D[i].SetVector(SkyboxShaderUtils.HorizonMaskValues, horizonMaskValues);
+                //materials3D[i].SetColor(SkyboxShaderUtils.HorizonPlaneColor, horizonPlaneColor.Evaluate(normalizedDayTime));
+                //materials3D[i].SetFloat(SkyboxShaderUtils.HorizonPlaneHeight, GetTransitionValue(horizonPlaneHeight, percentage, -1f));
+
+                ApplyAllSlots(materials3D[i], additional3Dconfig[i].layers, dayTime, normalizedDayTime, slotCount, cycleTime);
+            }
+        }
+
+        void ApplyAllSlots(Material selectedMat, List<TextureLayer> layers, float dayTime, float normalizedDayTime, int slotCount, float cycleTime = 24)
         {
             for (int i = 0; i < slotCount; i++)
             {
-                TextureLayer layer = GetActiveLayer(dayTime, i);
+                TextureLayer layer = GetActiveLayer(layers, dayTime, i);
 
                 if (layer == null || !layer.enabled)
                 {
@@ -203,7 +239,7 @@ namespace DCL.Skybox
             }
         }
 
-        public TextureLayer GetActiveLayer(float currentTime, int slotID)
+        public TextureLayer GetActiveLayer(List<TextureLayer> layers, float currentTime, int slotID)
         {
             TextureLayer temp = null;
 
