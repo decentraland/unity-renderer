@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
@@ -35,6 +37,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     [SerializeField] internal TextMeshProUGUI username;
     [SerializeField] internal TextMeshProUGUI body;
+    [SerializeField] internal GameObject gotoPanel;
 
     [SerializeField] internal Color worldMessageColor = Color.white;
 
@@ -52,6 +55,9 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     [NonSerialized] public string messageLocalDateTime;
 
+    private const string COORDINATE_MATCH_REGEX = "[-]?\\d{1,3},[-]?\\d{1,3}";
+    Regex filter = new Regex(COORDINATE_MATCH_REGEX);
+
     bool fadeEnabled = false;
     double fadeoutStartTime;
     float hoverPanelTimer = 0;
@@ -65,6 +71,32 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     public event UnityAction<ChatEntry> OnPressRightButton;
     public event UnityAction<ChatEntry> OnTriggerHover;
     public event UnityAction OnCancelHover;
+
+    private List<string> textCoords;
+
+    public void Awake()
+    {
+        textCoords = new List<string>(); 
+    }
+
+    private List<string> GetTextCoordinates(string text)
+    {
+        List<string> matchingWords = new List<string>();
+        foreach (var item in text.Split(' '))
+        {
+            var match = filter.Match(item.ToString());
+            if (match.Success)
+            {
+                matchingWords.Add(match.Value);
+            }
+        }
+        return matchingWords;
+    }
+
+    private bool HasTextCoordinates(string text) 
+    {
+        return GetTextCoordinates(text).Count > 0;
+    }
 
     public void Populate(Model chatEntryModel)
     {
@@ -126,6 +158,12 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             body.text = $"{chatEntryModel.bodyText}";
         }
 
+        if (HasTextCoordinates(body.text)) {
+            GetTextCoordinates(body.text).ForEach(c=> {
+                body.text = body.text.Replace(c,$"<link={c}><color=\"green\">({c})</color></link>");
+            });
+        }
+
         messageLocalDateTime = UnixTimeStampToLocalDateTime(chatEntryModel.timestamp).ToString();
 
         Utils.ForceUpdateLayout(transform as RectTransform);
@@ -174,8 +212,17 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     public void OnPointerClick(PointerEventData pointerEventData)
     {
+        gotoPanel.SetActive(false);
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, null);  // If you are not in a Canvas using Screen Overlay, put your camera instead of null
+            if (linkIndex != -1)
+            {
+                gotoPanel.SetActive(true);
+                TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
+                WebInterface.GoTo(Int32.Parse(linkInfo.GetLinkID().ToString().Split(',')[0]), Int32.Parse(linkInfo.GetLinkID().Split(',')[1]));
+            }
+
             if (model.messageType != ChatMessage.Type.PRIVATE)
                 return;
 
