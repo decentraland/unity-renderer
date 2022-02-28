@@ -2,18 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LoadingHUD
-{
-    public interface ILoadingHUDView
-    {
-        void SetVisible(bool isVisible);
-        void SetMessage(string message);
-        void SetPercentage(float percentage);
-        void SetTips(bool showTips);
-        void Dispose();
-    }
-
-    public class LoadingHUDView : MonoBehaviour, ILoadingHUDView
+    public class LoadingHUDView : MonoBehaviour
     {
         [SerializeField] internal TextMeshProUGUI text;
         [SerializeField] internal Image loadingBar;
@@ -22,14 +11,14 @@ namespace LoadingHUD
 
         private bool isDestroyed = false;
 
-        public static ILoadingHUDView CreateView()
+        public static LoadingHUDView CreateView()
         {
             LoadingHUDView view = Instantiate(Resources.Load<GameObject>("LoadingHUD")).GetComponent<LoadingHUDView>();
             view.gameObject.name = "_LoadingHUD";
             return view;
         }
 
-        private void Awake()
+        public void Initialize()
         {
             SetMessage("");
             SetPercentage(0);
@@ -55,4 +44,3 @@ namespace LoadingHUD
             Destroy(gameObject);
         }
     }
-}
