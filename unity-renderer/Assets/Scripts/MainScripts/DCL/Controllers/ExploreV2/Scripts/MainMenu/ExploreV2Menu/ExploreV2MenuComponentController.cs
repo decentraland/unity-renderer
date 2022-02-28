@@ -592,5 +592,5 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal virtual IExploreV2Analytics CreateAnalyticsController() => new ExploreV2Analytics.ExploreV2Analytics();
 
-    internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
+    protected internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
 }
