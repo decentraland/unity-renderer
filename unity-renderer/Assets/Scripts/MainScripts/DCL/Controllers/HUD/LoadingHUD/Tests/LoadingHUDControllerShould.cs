@@ -15,6 +15,7 @@ public class LoadingHUDControllerShould
     public void SetUp()
     {
         hudController = new LoadingHUDController();
+        hudController.Initialize();
         hudView = hudController.view;
     }
 
