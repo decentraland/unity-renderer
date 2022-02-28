@@ -1054,6 +1054,7 @@ MonoBehaviour:
   messageHoverText: {fileID: 2894773378673333929}
   contextMenu: {fileID: 0}
   confirmationDialog: {fileID: 0}
+  gotoPanel: {fileID: 0}
 --- !u!1 &5971340815546429105
 GameObject:
   m_ObjectHideFlags: 0

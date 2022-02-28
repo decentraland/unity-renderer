@@ -1,12 +1,25 @@
 using DCL.Helpers;
+using DCL.Interface;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using System.Text.RegularExpressions;
+using UnityEngine.EventSystems;
 
 public class PrivateChatHUDView : ChatHUDView
 {
     string ENTRY_PATH_SENT = "ChatEntrySent";
     string ENTRY_PATH_RECEIVED = "ChatEntryReceived";
     string ENTRY_PATH_SEPARATOR = "ChatEntrySeparator";
+
+    private void Awake()
+    {
+        gotoPanel = GetComponentInChildren<GotoPanel>();
+    }
 
     public override void AddEntry(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
@@ -16,7 +29,7 @@ public class PrivateChatHUDView : ChatHUDView
         ChatEntry chatEntry = chatEntryGO.GetComponent<ChatEntry>();
 
         chatEntry.SetFadeout(false);
-        chatEntry.Populate(chatEntryModel);
+        chatEntry.Populate(chatEntryModel, gotoPanel);
 
         chatEntry.OnTriggerHover += OnMessageTriggerHover;
         chatEntry.OnCancelHover += OnMessageCancelHover;

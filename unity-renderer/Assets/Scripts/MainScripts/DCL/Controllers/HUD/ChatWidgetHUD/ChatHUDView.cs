@@ -8,8 +8,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
+using UnityEngine.EventSystems;
 
-public class ChatHUDView : MonoBehaviour
+public class ChatHUDView : MonoBehaviour, IPointerClickHandler
 {
     static string VIEW_PATH = "Chat Widget";
     string ENTRY_PATH = "Chat Entry";
@@ -30,6 +31,8 @@ public class ChatHUDView : MonoBehaviour
 
     [NonSerialized] public List<ChatEntry> entries = new List<ChatEntry>();
     [NonSerialized] public List<DateSeparatorEntry> dateSeparators = new List<DateSeparatorEntry>();
+
+    [SerializeField] public GotoPanel gotoPanel;
 
     ChatMessage currentMessage = new ChatMessage();
     Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
@@ -145,7 +148,7 @@ public class ChatHUDView : MonoBehaviour
         else
             chatEntry.SetFadeout(false);
 
-        chatEntry.Populate(chatEntryModel);
+        chatEntry.Populate(chatEntryModel, gotoPanel);
 
         if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
             chatEntry.OnPress += OnPressPrivateMessage;
@@ -280,5 +283,15 @@ public class ChatHUDView : MonoBehaviour
         }
 
         dateSeparators.Clear();
+    }
+
+    public void OnPointerClick(PointerEventData pointerEventData)
+    {
+        if (pointerEventData.button == PointerEventData.InputButton.Left)
+        {
+            var results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerEventData, results);
+            gotoPanel.container.SetActive(results.Any(r => r.gameObject.Equals(gotoPanel.container.gameObject)));
+        }
     }
 }
