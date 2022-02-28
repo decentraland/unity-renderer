@@ -41,7 +41,7 @@ namespace DCL.Controllers
         }
 
         public void ShowBlocker(Vector2Int pos, bool instant = false)
-        {
+        {            
             float centerOffset = ParcelSettings.PARCEL_SIZE / 2;
             PoolableObject blockerPoolable = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
             GameObject blockerGo = blockerPoolable.gameObject;
