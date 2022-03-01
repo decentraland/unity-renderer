@@ -380,10 +380,10 @@ public class AvatarEditorHUDView : MonoBehaviour
         characterPreviewController.TakeSnapshots(OnSnapshotsReady, OnSnapshotsFailed);
     }
 
-    private void OnSnapshotsReady(Texture2D face, Texture2D face128, Texture2D face256, Texture2D body)
+    private void OnSnapshotsReady(Texture2D face256, Texture2D body)
     {
         doneButton.interactable = true;
-        controller.SaveAvatar(face, face128, face256, body);
+        controller.SaveAvatar(face256, body);
     }
 
     private void OnSnapshotsFailed() { doneButton.interactable = true; }

@@ -20,6 +20,7 @@ namespace DCL.SettingsCommon
         public bool hideUI;
         public bool showAvatarNames;
         public bool dynamicProceduralSkybox;
+        public bool invertYAxis;
         public float skyboxTime;
 
         [Tooltip("First person camera FOV")]

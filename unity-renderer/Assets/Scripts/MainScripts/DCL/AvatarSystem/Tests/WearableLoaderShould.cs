@@ -52,7 +52,7 @@ namespace Test.AvatarSystem
             Rendereable rendereable = new Rendereable
             {
                 container = container,
-                renderers = new List<Renderer> { normalRenderer, hairRenderer, skinRenderer },
+                renderers = new HashSet<Renderer> { normalRenderer, hairRenderer, skinRenderer },
             };
             retriever.rendereable.Returns(rendereable);
 
@@ -87,23 +87,23 @@ namespace Test.AvatarSystem
             Rendereable rendereable = new Rendereable
             {
                 container = container,
-                renderers = new List<Renderer> { normalRenderer, hairRenderer, skinRenderer },
+                renderers = new HashSet<Renderer> { normalRenderer, hairRenderer, skinRenderer },
             };
 
             retriever.Configure()
-                     .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-                     .Returns(
-                         x => // First call configures everything for null, mocking a failing wearable retrieval
-                         {
-                             retriever.rendereable.Returns(x => null);
-                             return new UniTask<Rendereable>(null);
-                         },
-                         x => // Second call configures everything for the prepared rendereable, mocking a successfull fallback retrieval
-                         {
-                             retriever.rendereable.Returns(x => rendereable);
-                             return new UniTask<Rendereable>(rendereable);
-                         }
-                     );
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(
+                    x => // First call configures everything for null, mocking a failing wearable retrieval
+                    {
+                        retriever.rendereable.Returns(x => null);
+                        return new UniTask<Rendereable>(null);
+                    },
+                    x => // Second call configures everything for the prepared rendereable, mocking a successfull fallback retrieval
+                    {
+                        retriever.rendereable.Returns(x => rendereable);
+                        return new UniTask<Rendereable>(rendereable);
+                    }
+                );
 
             //Act
             await loader.Load(container, new AvatarSettings
@@ -137,22 +137,22 @@ namespace Test.AvatarSystem
             Rendereable rendereable = new Rendereable
             {
                 container = container,
-                renderers = new List<Renderer> { normalRenderer, hairRenderer, skinRenderer },
+                renderers = new HashSet<Renderer> { normalRenderer, hairRenderer, skinRenderer },
             };
 
             retriever.Configure()
-                     .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-                     .Returns(
-                         x => // First call configures everything for null, mocking the wearable retrieval
-                         {
-                             throw new Exception();
-                         },
-                         x => // Second call configures everything for the prepared rendereable, mocking the fallback retrieval
-                         {
-                             retriever.rendereable.Returns(x => rendereable);
-                             return new UniTask<Rendereable>(rendereable);
-                         }
-                     );
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(
+                    x => // First call configures everything for null, mocking the wearable retrieval
+                    {
+                        throw new Exception();
+                    },
+                    x => // Second call configures everything for the prepared rendereable, mocking the fallback retrieval
+                    {
+                        retriever.rendereable.Returns(x => rendereable);
+                        return new UniTask<Rendereable>(rendereable);
+                    }
+                );
 
             //Act
             await loader.Load(container, new AvatarSettings
@@ -200,8 +200,8 @@ namespace Test.AvatarSystem
             loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
 
             retriever.Configure()
-                     .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-                     .Returns(x => throw new Exception("Failing on purpose"));
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(x => throw new Exception("Failing on purpose"));
 
             //Act
             await loader.Load(container, new AvatarSettings
@@ -236,8 +236,8 @@ namespace Test.AvatarSystem
             CancellationTokenSource cts = new CancellationTokenSource();
 
             retriever.Configure()
-                     .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-                     .Returns(x => throw new OperationCanceledException());
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(x => throw new OperationCanceledException());
             retriever.ClearReceivedCalls();
 
             await TestUtils.ThrowsAsync<OperationCanceledException>(loader.Load(container, new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.MALE }, cts.Token));

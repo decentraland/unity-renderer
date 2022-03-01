@@ -284,7 +284,7 @@ namespace AvatarEditorHUD_Tests
             controller.WearableClicked("urn:decentraland:off-chain:base-avatars:blue_bandana");
             controller.WearableClicked("urn:decentraland:off-chain:base-avatars:black_jacket");
 
-            controller.SaveAvatar(Texture2D.whiteTexture, Texture2D.whiteTexture, Texture2D.whiteTexture, Texture2D.whiteTexture);
+            controller.SaveAvatar(Texture2D.whiteTexture, Texture2D.whiteTexture);
 
             AssertAvatarModelAgainstAvatarEditorHUDModel(userProfile.avatar, controller.myModel);
         }
