@@ -15,6 +15,7 @@ namespace Tests
         {
             yield return base.SetUp();
             controller = new MinimapHUDController();
+            controller.Initialize();
         }
 
         protected override IEnumerator TearDown()

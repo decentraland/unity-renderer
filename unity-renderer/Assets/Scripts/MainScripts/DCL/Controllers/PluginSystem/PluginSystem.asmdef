@@ -1,5 +1,5 @@
 {
-    "name": "FeatureController",
+    "name": "PluginSystem",
     "rootNamespace": "",
     "references": [
         "GUID:bd51ff2b035ce4ab4be7c38c43c88889",

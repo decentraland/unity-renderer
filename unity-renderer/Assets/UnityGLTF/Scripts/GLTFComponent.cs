@@ -219,6 +219,11 @@ namespace UnityGLTF
 
         private async UniTaskVoid Internal_LoadAsset(Settings settings, CancellationToken token)
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isApplicationQuitting.Get())
+                return;
+#endif
+            
             if (!string.IsNullOrEmpty(GLTFUri))
             {
                 if (VERBOSE)
@@ -266,6 +271,11 @@ namespace UnityGLTF
                 }
                 catch (Exception e) when (!(e is OperationCanceledException))
                 {
+#if UNITY_STANDALONE || UNITY_EDITOR
+                    if (DataStore.i.common.isApplicationQuitting.Get())
+                        return;
+#endif
+                    
                     Debug.LogException(e);
                 }
                 finally
@@ -294,7 +304,7 @@ namespace UnityGLTF
                             else
                                 OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
                         }
-                    
+
                         CleanUp();
                         Destroy(loadingPlaceholder);
                         Destroy(this);
@@ -361,26 +371,10 @@ namespace UnityGLTF
         public void Load(string url) { throw new NotImplementedException(); }
 
         public void SetPrioritized() { prioritizeDownload = true; }
-
-#if UNITY_EDITOR
-        // In production it will always be false
-        private bool isQuitting = false;
-
-        // We need to check if application is quitting in editor
-        // to prevent the pool from releasing objects that are
-        // being destroyed 
-        void Awake() { Application.quitting += OnIsQuitting; }
-
-        void OnIsQuitting()
-        {
-            Application.quitting -= OnIsQuitting;
-            isQuitting = true;
-        }
-#endif
         private void OnDestroy()
         {
-#if UNITY_EDITOR
-            if (isQuitting)
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
             isDestroyed = true;

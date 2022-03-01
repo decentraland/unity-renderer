@@ -141,6 +141,11 @@ namespace DCL
 
         protected void OnLoadFailure(Exception exception)
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isApplicationQuitting.Get())
+                return;
+#endif
+            
             CallAndClearEvents(false, exception);
             Cleanup();
         }
