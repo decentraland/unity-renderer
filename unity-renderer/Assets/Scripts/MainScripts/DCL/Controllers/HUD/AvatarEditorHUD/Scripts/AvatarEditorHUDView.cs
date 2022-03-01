@@ -482,6 +482,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     internal void ConfigureSectionSelector()
     {
+        sectionTitle.text = AVATAR_SECTION_TITLE;
+
         sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
         {
             avatarSection.SetActive(isSelected);
