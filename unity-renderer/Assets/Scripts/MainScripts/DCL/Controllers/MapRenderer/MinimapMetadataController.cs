@@ -15,6 +15,7 @@ public class MinimapMetadataController : MonoBehaviour
     public void UpdateMinimapSceneInformation(string scenesInfoJson)
     {
         var scenesInfo = Utils.ParseJsonArray<MinimapMetadata.MinimapSceneInfo[]>(scenesInfoJson);
+        Debug.Log("Update missing");
 
         foreach (var sceneInfo in scenesInfo)
         {

@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using DCL;
+using System.Collections.Generic;
+using System.Linq;
 
 public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
 {
@@ -67,7 +69,15 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         OnActivatePreview?.Invoke();
     }
 
-    public void OnPointerClick(PointerEventData eventData) { DeactivatePreview(); }
+    public void OnPointerClick(PointerEventData eventData) {
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            var results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(eventData, results);
+            chatHudView.SetGotoPanelStatus(results.Any(r => r.gameObject.Equals(chatHudView.gotoPanel.container.gameObject)));
+        }
+        DeactivatePreview(); 
+    }
 
     public void OnTextInputValueChanged(string text)
     {

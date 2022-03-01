@@ -10,7 +10,7 @@ using UnityEngine.UI;
 using System.Text.RegularExpressions;
 using UnityEngine.EventSystems;
 
-public class ChatHUDView : MonoBehaviour, IPointerClickHandler
+public class ChatHUDView : MonoBehaviour
 {
     static string VIEW_PATH = "Chat Widget";
     string ENTRY_PATH = "Chat Entry";
@@ -284,14 +284,6 @@ public class ChatHUDView : MonoBehaviour, IPointerClickHandler
 
         dateSeparators.Clear();
     }
-
-    public void OnPointerClick(PointerEventData pointerEventData)
-    {
-        if (pointerEventData.button == PointerEventData.InputButton.Left)
-        {
-            var results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerEventData, results);
-            gotoPanel.container.SetActive(results.Any(r => r.gameObject.Equals(gotoPanel.container.gameObject)));
-        }
-    }
+    
+    public void SetGotoPanelStatus(bool isActive) { gotoPanel.container.SetActive(isActive); }
 }

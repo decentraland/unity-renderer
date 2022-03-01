@@ -51,6 +51,8 @@ public class MinimapMetadata : ScriptableObject
 
     public void AddSceneInfo(MinimapSceneInfo sceneInfo)
     {
+
+
         if (scenesInfo.Contains(sceneInfo))
             return;
 

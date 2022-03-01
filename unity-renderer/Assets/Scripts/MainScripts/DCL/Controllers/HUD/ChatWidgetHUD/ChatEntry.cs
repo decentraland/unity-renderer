@@ -54,6 +54,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     [SerializeField] internal float timeToHoverPanel = 1f;
 
     [NonSerialized] public string messageLocalDateTime;
+    MinimapMetadata mapMetadata;
 
     bool fadeEnabled = false;
     double fadeoutStartTime;
@@ -74,6 +75,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     public void Awake()
     {
         textCoords = new List<string>();
+        mapMetadata = MinimapMetadata.GetMetadata();
     }
 
     public void Populate(Model chatEntryModel, GotoPanel gotoPanel)
@@ -139,6 +141,11 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
         if (CoordinateUtils.HasValidTextCoordinates(body.text)) {
             CoordinateUtils.GetTextCoordinates(body.text).ForEach(c=> {
+                int x = Int32.Parse(c.Split(',')[0]), y = Int32.Parse(c.Split(',')[1]);
+                if (mapMetadata.GetSceneInfo(x,y) == null)
+                {
+                    WebInterface.RequestScenesInfoAroundParcel(new Vector2(x,y), 2);
+                }
                 body.text = body.text.Replace(c,$"<link={c}><color=\"green\">{c}</color></link>");
             });
         }
@@ -199,7 +206,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
                 gotoPanel.container.SetActive(true);
                 TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
                 ParcelCoordinates parcelCoordinate = new ParcelCoordinates(Int32.Parse(linkInfo.GetLinkID().ToString().Split(',')[0]), Int32.Parse(linkInfo.GetLinkID().Split(',')[1]));
-                gotoPanel.SetPanelText(parcelCoordinate);
+                gotoPanel.SetPanelInfo(parcelCoordinate);
             }
 
             if (model.messageType != ChatMessage.Type.PRIVATE)
