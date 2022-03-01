@@ -42,8 +42,6 @@ public class AvatarModifierArea : BaseComponent
             { "DISABLE_PASSPORTS", new DisablePassportModifier() }
         };
         model = new Model();
-
-        DataStore.i.player.otherPlayers.OnRemoved += OnOtherPlayersRemoved;
     }
 
     public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -57,6 +55,11 @@ public class AvatarModifierArea : BaseComponent
         ApplyCurrentModel();
 
         return null;
+    }
+
+    private void Awake()
+    {
+        DataStore.i.player.otherPlayers.OnRemoved += OnOtherPlayersRemoved;
     }
 
     private void OnDestroy()
