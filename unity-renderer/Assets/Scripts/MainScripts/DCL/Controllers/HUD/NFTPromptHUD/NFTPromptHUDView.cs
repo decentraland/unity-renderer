@@ -7,6 +7,7 @@ using DCL.Helpers;
 using DCL.Helpers.NFT;
 using DCL.Interface;
 using System.Collections;
+using NFTShape_Internal;
 
 internal interface INFTPromptHUDView : IDisposable
 {
@@ -87,6 +88,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
     private bool isDestroyed = false;
     internal INFTAssetLoadHelper nftAssetLoadHelper;
+    private INFTAsset nftAsset;
 
     private void Awake()
     {
@@ -275,17 +277,19 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         ShowImageErrorFeedback(false);
         ShowImageLoading(true);
 
-        if (nftAssetLoadHelper != null)
-            nftAssetLoadHelper.Dispose();
-
+        nftAssetLoadHelper?.Dispose();
+        nftAsset?.Dispose();
+        
         nftAssetLoadHelper = new NFTAssetLoadHelper();
         yield return nftAssetLoadHelper.LoadNFTAsset(
             nftInfo.previewImageUrl,
             OnSuccess: nftAsset =>
             {
-                nftAsset.OnTextureUpdate += UpdateTexture;
+                this.nftAsset = nftAsset;
+                this.nftAsset.Dispose();
+                this.nftAsset.OnTextureUpdate += UpdateTexture;
 
-                if (!(nftAsset is Asset_Gif))
+                if (!(this.nftAsset is Asset_Gif))
                 {
                     if (!backgroundColorSet)
                     {
@@ -293,8 +297,8 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
                     }
                 }
 
-                UpdateTexture(nftAsset.previewAsset.texture);
-                SetNFTImageSize(nftAsset.previewAsset.texture);
+                UpdateTexture(this.nftAsset.previewAsset.texture);
+                SetNFTImageSize(this.nftAsset.previewAsset.texture);
                 imageNft.gameObject.SetActive(true);
                 ShowImageLoading(false);
             },
@@ -398,6 +402,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         ownersPopup.OnClosePopup -= OnOwnersPopupClose;
 
         nftAssetLoadHelper?.Dispose();
+        nftAsset?.Dispose();
     }
 
     private void OnViewAllOwnersPressed() { OnViewAllPressed?.Invoke(); }
