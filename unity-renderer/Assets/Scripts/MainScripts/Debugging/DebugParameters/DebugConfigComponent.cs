@@ -77,8 +77,8 @@ namespace DCL
         public bool testWearables = false;
         public bool enableTutorial = false;
         public bool builderInWorld = false;
-        public bool enableProceduralSkybox = false;
         public bool soloScene = true;
+        public bool multithreaded = false;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
         private void Awake()
@@ -90,6 +90,8 @@ namespace DCL
             DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
             DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
+            DataStore.i.performance.multithreading.Set(multithreaded);
+            Texture.allowThreadedTextureCreation = multithreaded;
         }
 
         private void Start()
@@ -189,11 +191,6 @@ namespace DCL
             if (builderInWorld)
             {
                 debugString += "ENABLE_BUILDER_IN_WORLD&";
-            }
-
-            if (enableProceduralSkybox)
-            {
-                debugString += "ENABLE_PROCEDURAL_SKYBOX&";
             }
 
             if (!string.IsNullOrEmpty(realm))

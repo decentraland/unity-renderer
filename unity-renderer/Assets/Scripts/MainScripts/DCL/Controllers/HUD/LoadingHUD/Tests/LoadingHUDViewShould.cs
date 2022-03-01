@@ -9,7 +9,11 @@ namespace Tests.LoadingHUD
         private LoadingHUDView hudView;
 
         [SetUp]
-        public void SetUp() { hudView = Object.Instantiate(Resources.Load<GameObject>("LoadingHUD")).GetComponent<LoadingHUDView>(); }
+        public void SetUp() 
+        { 
+            hudView = Object.Instantiate(Resources.Load<GameObject>("LoadingHUD")).GetComponent<LoadingHUDView>(); 
+            hudView.Initialize(); 
+        }
 
         [Test]
         public void AwakeProperly()
