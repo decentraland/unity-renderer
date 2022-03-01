@@ -60,6 +60,7 @@ namespace Emotes
 
         [Header("Prefab References")]
         [SerializeField] internal ImageComponentView emoteImage;
+        [SerializeField] internal Image nonEmoteImage;
         [SerializeField] internal TMP_Text emoteNameText;
         [SerializeField] internal TMP_Text slotNumberText;
         [SerializeField] internal Image slotViewerImage;
@@ -70,7 +71,6 @@ namespace Emotes
 
         [Header("Configuration")]
         [SerializeField] internal Sprite defaultEmotePicture;
-        [SerializeField] internal Sprite nonEmoteAssignedPicture;
         [SerializeField] internal Color defaultBackgroundColor;
         [SerializeField] internal Color selectedBackgroundColor;
         [SerializeField] internal Color defaultSlotNumberColor;
@@ -149,11 +149,11 @@ namespace Emotes
         {
             model.emoteId = id;
 
-            if (string.IsNullOrEmpty(id))
-            {
-                if (nonEmoteAssignedPicture != null)
-                    SetEmotePicture(nonEmoteAssignedPicture);
-            }
+            if (nonEmoteImage != null)
+                nonEmoteImage.gameObject.SetActive(string.IsNullOrEmpty(id));
+
+            if (emoteImage != null)
+                emoteImage.gameObject.SetActive(!string.IsNullOrEmpty(id));
         }
 
         public void SetEmoteName(string name)

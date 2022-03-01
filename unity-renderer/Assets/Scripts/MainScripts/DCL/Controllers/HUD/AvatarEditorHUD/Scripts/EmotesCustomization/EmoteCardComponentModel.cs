@@ -13,5 +13,13 @@ namespace Emotes
         public bool isAssignedInSelectedSlot = false;
         public bool isSelected = false;
         public int assignedSlot = -1;
+        public string rarity;
+    }
+
+    [Serializable]
+    public class EmoteRarity
+    {
+        public string rarity;
+        public Color markColor;
     }
 }

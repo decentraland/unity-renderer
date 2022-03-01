@@ -197,6 +197,17 @@ namespace Emotes
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png",
             };
 
+            List<string> mockedRarities = new List<string>
+            {
+                "rare",
+                "epic",
+                "legendary",
+                "mythic",
+                "unique",
+                "common",
+                ""
+            };
+
             List<EmoteCardComponentModel> mockedEmotes = new List<EmoteCardComponentModel>();
             for (int i = 0; i < mockedImages.Count; i++)
             {
@@ -207,7 +218,8 @@ namespace Emotes
                     pictureUri = mockedImages[i],
                     isAssignedInSelectedSlot = false,
                     isSelected = false,
-                    assignedSlot = -1
+                    assignedSlot = -1,
+                    rarity = mockedRarities[UnityEngine.Random.Range(0, mockedRarities.Count)]
                 });
             }
 

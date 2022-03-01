@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -67,11 +69,16 @@ namespace Emotes
         /// </summary>
         /// <param name="isSelected">True for selecting it.</param>
         void SetEmoteAsSelected(bool isSelected);
+
+        /// <summary>
+        /// Set the type of rarity in the card.
+        /// </summary>
+        /// <param name="rarity">New rarity.</param>
+        void SetRarity(string rarity);
     }
 
     public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView, IComponentModelConfig
     {
-        internal static readonly int ON_FOCUS_CARD_COMPONENT_BOOL = Animator.StringToHash("OnFocus");
         internal static readonly int ON_SELECTED_CARD_COMPONENT_BOOL = Animator.StringToHash("OnSelected");
 
         [Header("Prefab References")]
@@ -86,11 +93,12 @@ namespace Emotes
         [SerializeField] internal ButtonComponentView unequipButton;
         [SerializeField] internal GameObject cardSelectionFrame;
         [SerializeField] internal Animator selectionAnimator;
-        [SerializeField] internal Animator hoverAnimator;
+        [SerializeField] internal Image rarityMark;
 
         [Header("Configuration")]
         [SerializeField] internal Sprite defaultEmotePicture;
         [SerializeField] internal Sprite nonEmoteAssignedPicture;
+        [SerializeField] internal List<EmoteRarity> rarityColors;
         [SerializeField] internal EmoteCardComponentModel model;
 
         public Button.ButtonClickedEvent onMainClick => mainButton?.onClick;
@@ -133,6 +141,7 @@ namespace Emotes
             SetEmoteAsAssignedInSelectedSlot(model.isAssignedInSelectedSlot);
             AssignSlot(model.assignedSlot);
             SetEmoteAsSelected(model.isSelected);
+            SetRarity(model.rarity);
         }
 
         public override void OnEnable()
@@ -153,9 +162,6 @@ namespace Emotes
             {
                 if (cardSelectionFrame != null)
                     cardSelectionFrame.SetActive(true);
-
-                if (hoverAnimator != null)
-                    hoverAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, true);
             }
         }
 
@@ -170,9 +176,6 @@ namespace Emotes
             {
                 if (cardSelectionFrame != null)
                     cardSelectionFrame.SetActive(false);
-
-                if (hoverAnimator != null)
-                    hoverAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
             }
         }
 
@@ -266,13 +269,22 @@ namespace Emotes
             if (cardSelectionFrame != null && !isFocused)
                 cardSelectionFrame.SetActive(isSelected);
 
-            if (hoverAnimator != null && !isFocused)
-                hoverAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, isSelected);
-
             if (selectionAnimator != null)
                 selectionAnimator.SetBool(ON_SELECTED_CARD_COMPONENT_BOOL, isSelected);
 
             RefreshVisualCardStatus();
+        }
+
+        public void SetRarity(string rarity)
+        {
+            model.rarity = rarity;
+
+            if (rarityMark == null)
+                return;
+
+            EmoteRarity emoteRarity = rarityColors.FirstOrDefault(x => x.rarity == rarity);
+            rarityMark.gameObject.SetActive(emoteRarity != null);
+            rarityMark.color = emoteRarity != null ? emoteRarity.markColor : Color.white;
         }
 
         internal void RefreshVisualCardStatus()
