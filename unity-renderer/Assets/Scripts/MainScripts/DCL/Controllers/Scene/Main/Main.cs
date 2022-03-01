@@ -23,7 +23,7 @@ namespace DCL
         private PerformanceMetricsController performanceMetricsController;
         protected IKernelCommunication kernelCommunication;
 
-        private PluginSystem pluginSystem;
+        protected PluginSystem pluginSystem;
         
         protected virtual void Awake()
         {
