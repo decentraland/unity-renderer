@@ -46,6 +46,12 @@ namespace Emotes
         /// </summary>
         /// <param name="slotNumber">Slot number of the card (between 0 and 9).</param>
         void SetSlotNumber(int slotNumber);
+
+        /// <summary>
+        /// Set the emote separator as active or not.
+        /// </summary>
+        /// <param name="isActive">True for activating it.</param>
+        void SetSeparatorActive(bool isActive);
     }
 
     public class EmoteSlotCardComponentView : BaseComponentView, IEmoteSlotCardComponentView, IComponentModelConfig
@@ -60,6 +66,7 @@ namespace Emotes
         [SerializeField] internal ButtonComponentView mainButton;
         [SerializeField] internal Image defaultBackgroundImage;
         [SerializeField] internal Image selectedBackgroundImage;
+        [SerializeField] internal GameObject separatorGO;
 
         [Header("Configuration")]
         [SerializeField] internal Sprite defaultEmotePicture;
@@ -104,6 +111,7 @@ namespace Emotes
             SetEmoteName(model.emoteName);
             SetEmoteAsSelected(model.isSelected);
             SetSlotNumber(model.slotNumber);
+            SetSeparatorActive(model.hasSeparator);
         }
 
         public override void OnFocus()
@@ -206,6 +214,16 @@ namespace Emotes
 
             if (slotViewerImage != null)
                 slotViewerImage.transform.rotation = Quaternion.Euler(0, 0, -model.slotNumber * SLOT_VIEWER_ROTATION_ANGLE);
+        }
+
+        public void SetSeparatorActive(bool isActive)
+        {
+            model.hasSeparator = isActive;
+
+            if (separatorGO == null)
+                return;
+
+            separatorGO.SetActive(isActive);
         }
 
         internal void OnEmoteImageLoaded(Sprite sprite)

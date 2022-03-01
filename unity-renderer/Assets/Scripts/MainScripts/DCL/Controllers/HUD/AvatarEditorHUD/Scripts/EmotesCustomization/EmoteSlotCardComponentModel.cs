@@ -12,5 +12,6 @@ namespace Emotes
         public string pictureUri;
         public bool isSelected = false;
         public int slotNumber = -1;
+        public bool hasSeparator = true;
     }
 }

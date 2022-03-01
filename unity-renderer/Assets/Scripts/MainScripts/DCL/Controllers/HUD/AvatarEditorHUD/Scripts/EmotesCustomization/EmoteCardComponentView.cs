@@ -12,6 +12,11 @@ namespace Emotes
         Button.ButtonClickedEvent onMainClick { get; }
 
         /// <summary>
+        /// Event that will be triggered when the info button is clicked.
+        /// </summary>
+        Button.ButtonClickedEvent onInfoClick { get; }
+
+        /// <summary>
         /// Event that will be triggered when the equip button is clicked.
         /// </summary>
         Button.ButtonClickedEvent onEquipClick { get; }
@@ -71,10 +76,12 @@ namespace Emotes
 
         [Header("Prefab References")]
         [SerializeField] internal ImageComponentView emoteImage;
+        [SerializeField] internal GameObject emoteNameContainer;
         [SerializeField] internal TMP_Text emoteNameText;
         [SerializeField] internal TMP_Text assignedSlotNumberText;
         [SerializeField] internal ImageComponentView assignedInCurrentSlotMarkImage;
         [SerializeField] internal ButtonComponentView mainButton;
+        [SerializeField] internal ButtonComponentView infoButton;
         [SerializeField] internal ButtonComponentView equipButton;
         [SerializeField] internal ButtonComponentView unequipButton;
         [SerializeField] internal GameObject cardSelectionFrame;
@@ -87,6 +94,7 @@ namespace Emotes
         [SerializeField] internal EmoteCardComponentModel model;
 
         public Button.ButtonClickedEvent onMainClick => mainButton?.onClick;
+        public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
         public Button.ButtonClickedEvent onEquipClick => equipButton?.onClick;
         public Button.ButtonClickedEvent onUnequipClick => unequipButton?.onClick;
 
@@ -138,28 +146,34 @@ namespace Emotes
         {
             base.OnFocus();
 
-            if (model.isSelected)
-                return;
+            if (emoteNameContainer != null)
+                emoteNameContainer.SetActive(true);
 
-            if (cardSelectionFrame != null)
-                cardSelectionFrame.SetActive(true);
+            if (!model.isSelected)
+            {
+                if (cardSelectionFrame != null)
+                    cardSelectionFrame.SetActive(true);
 
-            if (hoverAnimator != null)
-                hoverAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, true);
+                if (hoverAnimator != null)
+                    hoverAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, true);
+            }
         }
 
         public override void OnLoseFocus()
         {
             base.OnLoseFocus();
 
-            if (model.isSelected)
-                return;
+            if (emoteNameContainer != null)
+                emoteNameContainer.SetActive(false);
 
-            if (cardSelectionFrame != null)
-                cardSelectionFrame.SetActive(false);
+            if (!model.isSelected)
+            {
+                if (cardSelectionFrame != null)
+                    cardSelectionFrame.SetActive(false);
 
-            if (hoverAnimator != null)
-                hoverAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
+                if (hoverAnimator != null)
+                    hoverAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
+            }
         }
 
         public override void Dispose()
@@ -265,8 +279,7 @@ namespace Emotes
         {
             RefreshAssignedSlotTextVisibility();
             RefreshAssignedInCurrentSlotMarkVisibility();
-            RefreshEmoteNameVisibility();
-            RefreshEquipButtonVisibility();
+            RefreshCardButtonsVisibility();
         }
 
         internal void RefreshAssignedSlotTextVisibility()
@@ -288,16 +301,11 @@ namespace Emotes
             assignedInCurrentSlotMarkImage.gameObject.SetActive(model.isAssignedInSelectedSlot && !model.isSelected);
         }
 
-        internal void RefreshEmoteNameVisibility()
+        internal void RefreshCardButtonsVisibility()
         {
-            if (emoteNameText == null)
-                return;
-            
-            emoteNameText.gameObject.SetActive(model.isSelected);
-        }
+            if (infoButton != null)
+                infoButton.gameObject.SetActive(model.isSelected);
 
-        internal void RefreshEquipButtonVisibility()
-        {
             if (equipButton != null)
                 equipButton.gameObject.SetActive(model.isSelected && !model.isAssignedInSelectedSlot);
 
