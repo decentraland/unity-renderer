@@ -23,8 +23,8 @@ namespace DCL
         private PerformanceMetricsController performanceMetricsController;
         protected IKernelCommunication kernelCommunication;
 
-        private PluginSystem pluginSystem;
-
+        protected PluginSystem pluginSystem;
+        
         protected virtual void Awake()
         {
             if (i != null)
@@ -47,6 +47,10 @@ namespace DCL
 
                 DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
+            
+#if UNITY_STANDALONE || UNITY_EDITOR
+            Application.quitting += () => DataStore.i.common.isApplicationQuitting.Set(true);
+#endif
 
             SetupPlugins();
 
@@ -117,7 +121,7 @@ namespace DCL
         {
             DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
 
-            DataStore.i.common.isWorldBeingDestroyed.Set(true);
+            DataStore.i.common.isApplicationQuitting.Set(true);
 
             pluginSystem?.Dispose();
 

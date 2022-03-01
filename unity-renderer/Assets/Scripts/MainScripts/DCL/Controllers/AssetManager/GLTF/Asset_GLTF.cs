@@ -36,7 +36,15 @@ namespace DCL
             return result;
         }
 
-        public override void Cleanup() { Object.Destroy(container); }
+        public override void Cleanup()
+        {
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isApplicationQuitting.Get())
+                return;
+#endif
+            
+            Object.Destroy(container);
+        }
 
         public void Hide()
         {
