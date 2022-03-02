@@ -510,7 +510,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 10}
   m_SizeDelta: {x: 0, y: -10}
   m_Pivot: {x: 0.5, y: 0}
@@ -660,7 +660,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &661289199007478368
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1247,7 +1247,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 411, y: 0}
+  m_SizeDelta: {x: 400, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7001188241549587995
 GameObject:
@@ -1454,7 +1454,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 820, y: 0}
+  m_SizeDelta: {x: 797, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &150110951080649117
 PrefabInstance:
@@ -1685,12 +1685,12 @@ PrefabInstance:
     - target: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
       propertyPath: model.columnsConfig.Array.data[1].width
-      value: 820
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
       propertyPath: model.columnsConfig.Array.data[2].width
-      value: 100
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
@@ -1705,12 +1705,12 @@ PrefabInstance:
     - target: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
       propertyPath: model.columnsConfig.Array.data[1].isPercentage
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
       propertyPath: model.columnsConfig.Array.data[2].isPercentage
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6534822254751723423, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
@@ -2386,6 +2386,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7299768730189234663, guid: 66043666108feb84996a4049b847b646,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7321425754717908624, guid: 66043666108feb84996a4049b847b646,
         type: 3}
       propertyPath: m_Controller
@@ -2571,12 +2576,12 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 774
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 130
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -2616,7 +2621,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -2636,6 +2641,11 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4071603596337262758, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
+        type: 3}
+      propertyPath: model.constraint
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4071603596337262758, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
@@ -2687,6 +2697,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_CellSize.y
       value: 130
+      objectReference: {fileID: 0}
+    - target: {fileID: 7829080691771640198, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
+        type: 3}
+      propertyPath: m_Constraint
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7829080691771640198, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}

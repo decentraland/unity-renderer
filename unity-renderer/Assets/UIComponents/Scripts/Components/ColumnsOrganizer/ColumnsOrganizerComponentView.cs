@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,5 +92,7 @@ public class ColumnsOrganizerComponentView : BaseComponentView, IColumnsOrganize
         {
             model.uiComponentsToRefreshSize[i].OnScreenSizeChanged();
         }
+
+        Utils.ForceRebuildLayoutImmediate(transform as RectTransform);
     }
 }
