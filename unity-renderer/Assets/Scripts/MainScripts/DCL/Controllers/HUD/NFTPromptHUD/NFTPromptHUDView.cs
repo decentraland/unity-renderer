@@ -114,6 +114,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         }
 
         nftAssetLoadHelper?.Dispose();
+        nftAsset?.Dispose();
     }
 
     internal void Hide()
@@ -121,6 +122,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         content.SetActive(false);
 
         nftAssetLoadHelper?.Dispose();
+        nftAsset?.Dispose();
 
         if (fetchNFTImageRoutine != null)
             StopCoroutine(fetchNFTImageRoutine);
@@ -286,10 +288,10 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
             OnSuccess: nftAsset =>
             {
                 this.nftAsset = nftAsset;
-                this.nftAsset.Dispose();
-                this.nftAsset.OnTextureUpdate += UpdateTexture;
+                nftAsset.Dispose();
+                nftAsset.OnTextureUpdate += UpdateTexture;
 
-                if (!(this.nftAsset is Asset_Gif))
+                if (!(nftAsset is Asset_Gif))
                 {
                     if (!backgroundColorSet)
                     {
@@ -297,8 +299,8 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
                     }
                 }
 
-                UpdateTexture(this.nftAsset.previewAsset.texture);
-                SetNFTImageSize(this.nftAsset.previewAsset.texture);
+                UpdateTexture(nftAsset.previewAsset.texture);
+                SetNFTImageSize(nftAsset.previewAsset.texture);
                 imageNft.gameObject.SetActive(true);
                 ShowImageLoading(false);
             },
