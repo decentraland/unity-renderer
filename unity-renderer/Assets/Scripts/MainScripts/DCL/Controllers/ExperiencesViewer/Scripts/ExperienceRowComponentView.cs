@@ -68,11 +68,9 @@ namespace DCL.ExperiencesViewer
 
     public class ExperienceRowComponentView : BaseComponentView, IExperienceRowComponentView, IComponentModelConfig
     {
-        [Header("Assets References")]
-        [SerializeField] internal Sprite defaultIconSprite;
-
         [Header("Prefab References")]
         [SerializeField] internal ImageComponentView iconImage;
+        [SerializeField] internal ImageComponentView defaultIconImage;
         [SerializeField] internal TMP_Text nameText;
         [SerializeField] internal ShowHideAnimator showHideUIButtonsContainerAnimator;
         [SerializeField] internal ButtonComponentView showPEXUIButton;
@@ -154,9 +152,16 @@ namespace DCL.ExperiencesViewer
                 return;
 
             if (!String.IsNullOrEmpty(uri))
+            {
+                iconImage.gameObject.SetActive(true);
                 iconImage.SetImage(uri);
+                defaultIconImage.gameObject.SetActive(false);
+            }
             else
-                iconImage.SetImage(defaultIconSprite);
+            {
+                iconImage.gameObject.SetActive(false);
+                defaultIconImage.gameObject.SetActive(true);
+            }
         }
 
         public void SetName(string name)
