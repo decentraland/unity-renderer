@@ -288,7 +288,6 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
             OnSuccess: nftAsset =>
             {
                 this.nftAsset = nftAsset;
-                nftAsset.Dispose();
                 nftAsset.OnTextureUpdate += UpdateTexture;
 
                 if (!(nftAsset is Asset_Gif))
