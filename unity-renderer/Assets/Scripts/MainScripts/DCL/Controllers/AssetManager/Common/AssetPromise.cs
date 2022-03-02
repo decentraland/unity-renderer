@@ -125,7 +125,7 @@ namespace DCL
             CallAndClearEvents(true, null);
         }
 
-        protected void OnLoadSuccess()
+        protected virtual void OnLoadSuccess()
         {
             if (AddToLibrary())
             {

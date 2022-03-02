@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -42,6 +43,9 @@ namespace DCL
         {
             if (webRequestOp != null)
                 webRequestOp.Dispose();
+            
+            if (delayedLoadSuccessCallRoutine != null) 
+                CoroutineStarter.Stop(delayedLoadSuccessCallRoutine);
         }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
@@ -88,8 +92,40 @@ namespace DCL
             }
         }
 
-        protected override bool AddToLibrary()
+        protected override void OnLoadSuccess()
         {
+            if (CanCompressTextureThisFrame())
+            {
+                // Debug.Log($"AP_Texture - OnLoadSuccess() - libraryProcessingPromise is null, processing: {url} - frame: {Time.frameCount}");
+                base.OnLoadSuccess();
+            }
+            else if (delayedLoadSuccessCallRoutine == null)
+            {
+                delayedLoadSuccessCallRoutine = CoroutineStarter.Start(DelayLoadSuccessCall());
+            }
+        }
+
+        private Coroutine delayedLoadSuccessCallRoutine;
+        IEnumerator DelayLoadSuccessCall()
+        {
+            // Debug.Log($"AP_Texture - DelayLoadSuccessCall() 1 - libraryProcessingPromise is occupied, delaying: {url} - frame: {Time.frameCount}");
+            yield return new WaitUntil(CanCompressTextureThisFrame);
+            // Debug.Log($"AP_Texture - DelayLoadSuccessCall() 2 - libraryProcessingPromise has been freed! now processing: {url} - frame: {Time.frameCount}");
+            
+            base.OnLoadSuccess();
+            
+            delayedLoadSuccessCallRoutine = null;
+        }
+
+        private bool CanCompressTextureThisFrame()
+        {
+            return (Time.frameCount - lastTexCompressionFrame) > MIN_FRAMES_FOR_TEX_COMPRESSION;
+        }
+
+        private static int lastTexCompressionFrame = 0;
+        const int MIN_FRAMES_FOR_TEX_COMPRESSION = 10;
+        protected override bool AddToLibrary()
+        {   
             if (storeDefaultTextureInAdvance && !UsesDefaultWrapAndFilterMode())
             {
                 if (!library.Contains(idWithDefaultTexSettings))
@@ -97,6 +133,7 @@ namespace DCL
                     // Save default texture asset
                     asset.id = idWithDefaultTexSettings;
                     asset.ConfigureTexture(DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, false);
+                    lastTexCompressionFrame = Time.frameCount;
 
                     if (!library.Add(asset))
                     {
@@ -115,6 +152,7 @@ namespace DCL
 
             asset.id = idWithTexSettings;
             asset.ConfigureTexture(wrapMode, filterMode, storeTexAsNonReadable);
+            lastTexCompressionFrame = Time.frameCount;
 
             if (!library.Add(asset))
             {
