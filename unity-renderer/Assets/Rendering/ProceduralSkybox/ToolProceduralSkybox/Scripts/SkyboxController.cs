@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 using DCL.ServerTime;
+using System.Collections.Generic;
 
 namespace DCL.Skybox
 {
@@ -173,6 +174,86 @@ namespace DCL.Skybox
             RenderSettings.customReflection = null;
         }
 
+        private List<GameObject> domeObjects = new List<GameObject>();
+        private List<Material> domeMats = new List<Material>();
+        private GameObject skyboxElements;
+        private GameObject domeElements;
+        private GameObject domePrefab;
+
+        #region 3D Dome
+        void Init3DSetup()
+        {
+            if (skyboxElements == null)
+            {
+                skyboxElements = GameObject.Find("Skybox Elements");
+
+                // If Skybox element doesn't exsist make new object else find dome objects 
+                if (skyboxElements == null)
+                {
+                    Debug.Log("Making Skybox elements");
+                    skyboxElements = new GameObject("Skybox Elements");
+                    skyboxElements.layer = LayerMask.NameToLayer("Skybox");
+                    domeElements = new GameObject("Dome Elements");
+                    domeElements.layer = LayerMask.NameToLayer("Skybox");
+                    domeElements.transform.parent = skyboxElements.transform;
+                }
+                else
+                {
+                    Debug.Log("Fetching Skybox elements");
+                    domeElements = skyboxElements.transform.Find("Dome Elements").gameObject;
+                    for (int i = 0; i < domeElements.transform.childCount; i++)
+                    {
+                        domeObjects.Add(domeElements.transform.GetChild(i).gameObject);
+                        domeObjects[i].GetComponent<Renderer>().material = GameObject.Instantiate<Material>(MaterialReferenceContainer.i.domeMat);
+                        domeMats.Add(domeObjects[i].GetComponent<Renderer>().sharedMaterial);
+                    }
+                }
+                skyboxElements.transform.position = Vector3.zero;
+            }
+
+            InstantiateDomes();
+
+            for (int i = 0; i < configuration.additional3Dconfig.Count; i++)
+            {
+                domeObjects[i].SetActive(configuration.additional3Dconfig[i].enabled);
+            }
+        }
+
+        void InstantiateDomes()
+        {
+            // Check additional 3D dome array and Instantiate domes
+            for (int i = 0; i < configuration.additional3Dconfig.Count; i++)
+            {
+                if (domeObjects.Count > i)
+                {
+                    domeObjects[i].SetActive(true);
+                }
+                else
+                {
+                    if (domePrefab == null)
+                    {
+                        domePrefab = Resources.Load<GameObject>("SkyboxPrefabs/Dome");
+                    }
+                    GameObject obj = GameObject.Instantiate<GameObject>(domePrefab);
+                    obj.layer = LayerMask.NameToLayer("Skybox");
+                    obj.name = "Dome " + (i + 1);
+                    obj.transform.parent = domeElements.transform;
+                    obj.transform.localPosition = Vector3.zero;
+                    obj.transform.localScale = obj.transform.localScale + Vector3.one * i;
+                    obj.GetComponent<Renderer>().material = GameObject.Instantiate<Material>(MaterialReferenceContainer.i.domeMat);
+                    domeObjects.Add(obj);
+                    domeMats.Add(obj.GetComponent<Renderer>().sharedMaterial);
+                }
+            }
+
+            // Close extra dome object
+            for (int i = configuration.additional3Dconfig.Count; i < domeObjects.Count; i++)
+            {
+                domeObjects[i].SetActive(false);
+            }
+        }
+        #endregion
+
         private void ReflectionResolution_OnChange(int current, int previous) { runtimeReflectionObj.UpdateResolution(current); }
 
         private void AssignCameraInstancetoProbe()
@@ -323,6 +404,10 @@ namespace DCL.Skybox
             timeNormalizationFactor = lifecycleDuration * 60 / cycleTime;
 
             GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
+
+            // Initialize 3D objects
+            Init3DSetup();
+
             return true;
         }
 
@@ -454,6 +539,7 @@ namespace DCL.Skybox
 
             float normalizedDayTime = GetNormalizedDayTime();
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, cycleTime);
+            configuration.ApplyDomeConfigurations(domeMats, timeOfTheDay, GetNormalizedDayTime(), 1, directionalLight);
             ApplyAvatarColor(normalizedDayTime);
 
             // Cycle resets
@@ -491,6 +577,7 @@ namespace DCL.Skybox
             {
                 timeOfTheDay = Mathf.Clamp(newTime, 0, 24);
                 configuration.ApplyOnMaterial(selectedMat, (float)timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
+                configuration.ApplyDomeConfigurations(domeMats, timeOfTheDay, GetNormalizedDayTime(), 1, directionalLight);
                 ApplyAvatarColor(GetNormalizedDayTime());
             }
         }
@@ -528,7 +615,7 @@ namespace DCL.Skybox
         }
 
         // Whenever Skybox editor closed at runtime control returns back to controller with the values in the editor
-        public bool GetControlBackFromEditor(string currentConfig, float timeOfTheday, float lifecycleDuration, bool isPaused)
+        public bool GetControlBackFromEditor(string currentConfig, float timeOfTheday, float lifecycleDuration, bool isPaused, List<GameObject> domeObjects, List<Material> domeMats)
         {
             overrideByEditor = false;
 
@@ -543,6 +630,9 @@ namespace DCL.Skybox
             {
                 ResumeTime(true, timeOfTheday);
             }
+
+            this.domeObjects = domeObjects;
+            this.domeMats = domeMats;
 
             // Call update on skybox config which will call Update config in this class.
             DataStore.i.skyboxConfig.objectUpdated.Set(true, true);
@@ -584,5 +674,24 @@ namespace DCL.Skybox
             return result;
         }
 
+        public List<GameObject> GetDomeObjects()
+        {
+            return domeObjects;
+        }
+
+        public List<Material> GetDomeMats()
+        {
+            return domeMats;
+        }
+
+        public GameObject GetSkyboxElements()
+        {
+            return skyboxElements;
+        }
+
+        public GameObject GetDomeElement()
+        {
+            return domeElements;
+        }
     }
 }

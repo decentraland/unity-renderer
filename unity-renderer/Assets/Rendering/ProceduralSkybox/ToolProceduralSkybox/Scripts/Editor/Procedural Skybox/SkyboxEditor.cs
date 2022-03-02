@@ -38,6 +38,13 @@ namespace DCL.Skybox
         private GUIStyle configurationStyle;
         private GUIStyle percentagePartStyle;
 
+        private List<GameObject> domeObjects = new List<GameObject>();
+        private List<Material> domeMats = new List<Material>();
+        private int activeDomeObjects = 0;
+        private GameObject skyboxElements;
+        private GameObject domeElements;
+        private GameObject domePrefab;
+
         private List<string> renderingOrderList;
 
         public static SkyboxEditorWindow instance { get { return GetWindow<SkyboxEditorWindow>(); } }
@@ -57,7 +64,7 @@ namespace DCL.Skybox
 
             if (Application.isPlaying && SkyboxController.i != null)
             {
-                overridingController = SkyboxController.i.GetControlBackFromEditor(selectedConfiguration.name, timeOfTheDay, lifecycleDuration, isPaused);
+                overridingController = SkyboxController.i.GetControlBackFromEditor(selectedConfiguration.name, timeOfTheDay, lifecycleDuration, isPaused, domeObjects, domeMats);
             }
         }
 
@@ -300,57 +307,46 @@ namespace DCL.Skybox
 
         #region 3D Skybox
 
-        List<GameObject> domeObjects = new List<GameObject>();
-        List<Material> domeMats = new List<Material>();
-        int activeDomeObjects = 0;
-        GameObject skyboxElements;
-        GameObject domeElements;
-        GameObject domePrefab;
-
         void Init3DSetup()
         {
-            if (Application.isPlaying) { }
-            else
+            if (skyboxElements == null)
             {
+                skyboxElements = GameObject.Find("Skybox Elements");
+
+                // If Skybox element doesn't exsist make new object else find dome objects 
                 if (skyboxElements == null)
                 {
-                    skyboxElements = GameObject.Find("Skybox Elements");
-
-                    // If Skybox element doesn't exsist make new object else find dome objects 
-                    if (skyboxElements == null)
-                    {
-                        Debug.Log("Making Skybox elements");
-                        skyboxElements = new GameObject("Skybox Elements");
-                        skyboxElements.layer = LayerMask.NameToLayer("Skybox");
-                        domeElements = new GameObject("Dome Elements");
-                        domeElements.layer = LayerMask.NameToLayer("Skybox");
-                        domeElements.transform.parent = skyboxElements.transform;
-                    }
-                    else
-                    {
-                        Debug.Log("Fetching Skybox elements");
-                        domeElements = skyboxElements.transform.Find("Dome Elements").gameObject;
-                        for (int i = 0; i < domeElements.transform.childCount; i++)
-                        {
-                            domeObjects.Add(domeElements.transform.GetChild(i).gameObject);
-                            domeObjects[i].GetComponent<Renderer>().material = Instantiate<Material>(MaterialReferenceContainer.i.domeMat);
-                            domeMats.Add(domeObjects[i].GetComponent<Renderer>().sharedMaterial);
-                        }
-                    }
-                    skyboxElements.transform.position = Vector3.zero;
+                    Debug.Log("Making Skybox elements");
+                    skyboxElements = new GameObject("Skybox Elements");
+                    skyboxElements.layer = LayerMask.NameToLayer("Skybox");
+                    domeElements = new GameObject("Dome Elements");
+                    domeElements.layer = LayerMask.NameToLayer("Skybox");
+                    domeElements.transform.parent = skyboxElements.transform;
                 }
-
-                if (activeDomeObjects != selectedConfiguration.additional3Dconfig.Count)
+                else
                 {
-                    Debug.Log("Changing dome elements");
-                    activeDomeObjects = 0;
-                    InstantiateDomes();
+                    Debug.Log("Fetching Skybox elements");
+                    domeElements = skyboxElements.transform.Find("Dome Elements").gameObject;
+                    for (int i = 0; i < domeElements.transform.childCount; i++)
+                    {
+                        domeObjects.Add(domeElements.transform.GetChild(i).gameObject);
+                        domeObjects[i].GetComponent<Renderer>().material = Instantiate<Material>(MaterialReferenceContainer.i.domeMat);
+                        domeMats.Add(domeObjects[i].GetComponent<Renderer>().sharedMaterial);
+                    }
                 }
+                skyboxElements.transform.position = Vector3.zero;
+            }
 
-                for (int i = 0; i < selectedConfiguration.additional3Dconfig.Count; i++)
-                {
-                    domeObjects[i].SetActive(selectedConfiguration.additional3Dconfig[i].enabled);
-                }
+            if (activeDomeObjects != selectedConfiguration.additional3Dconfig.Count)
+            {
+                Debug.Log("Changing dome elements");
+                activeDomeObjects = 0;
+                InstantiateDomes();
+            }
+
+            for (int i = 0; i < selectedConfiguration.additional3Dconfig.Count; i++)
+            {
+                domeObjects[i].SetActive(selectedConfiguration.additional3Dconfig[i].enabled);
             }
         }
 
@@ -365,12 +361,11 @@ namespace DCL.Skybox
                 }
                 else
                 {
-                    domePrefab = Resources.Load<GameObject>("SkyboxPrefabs/Dome");
                     if (domePrefab == null)
                     {
-                        Debug.Log("Resoucre loading failed for dome objects");
-                        return;
+                        domePrefab = Resources.Load<GameObject>("SkyboxPrefabs/Dome");
                     }
+
                     GameObject obj = Instantiate<GameObject>(domePrefab);
                     obj.layer = LayerMask.NameToLayer("Skybox");
                     obj.name = "Dome " + (i + 1);
@@ -484,6 +479,13 @@ namespace DCL.Skybox
                 selectedConfiguration = SkyboxController.i.GetCurrentConfiguration();
                 overridingController = SkyboxController.i.SetOverrideController(true);
                 timeOfTheDay = SkyboxController.i.GetCurrentTimeOfTheDay();
+
+                // Take 3D objects
+                domeObjects = SkyboxController.i.GetDomeObjects();
+                domeMats = SkyboxController.i.GetDomeMats();
+                skyboxElements = SkyboxController.i.GetSkyboxElements();
+                domeElements = SkyboxController.i.GetDomeElement();
+
                 UpdateConfigurationsList();
             }
         }
