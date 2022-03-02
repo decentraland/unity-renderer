@@ -258,6 +258,7 @@ RectTransform:
   - {fileID: 7370460429866580545}
   - {fileID: 5849704139342575402}
   - {fileID: 2892441486643698399}
+  - {fileID: 4234645489642484543}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -363,13 +364,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cde53cb7b728be24c9add35f9e8ab56a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultIconSprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+  defaultIconSprite: {fileID: 21300000, guid: 631d90c1a84401a4ab1b438f04f37e24, type: 3}
   iconImage: {fileID: 4249081663039761941}
   nameText: {fileID: 1269688261258585305}
   showHideUIButtonsContainerAnimator: {fileID: 7472436082438651865}
   showPEXUIButton: {fileID: 6765296413345856022}
   hidePEXUIButton: {fileID: 8116933839271937913}
   startStopPEXToggle: {fileID: 1977692354995799973}
+  stopPEXButton: {fileID: 3315308486466811519}
   backgroundImage: {fileID: 7325696701227709463}
   model:
     id: 01
@@ -379,6 +381,176 @@ MonoBehaviour:
     isPlaying: 1
     backgroundColor: {r: 0.92549026, g: 0.9215687, b: 0.9294118, a: 1}
     onHoverColor: {r: 1, g: 1, b: 1, a: 1}
+    allowStartStop: 1
+--- !u!1001 &2889122241483245438
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 5577526729248553953}
+    m_Modifications:
+    - target: {fileID: 439785820983603457, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: model.icon
+      value: 
+      objectReference: {fileID: 21300000, guid: ee23632e4a71040eea4378f310a5eaef,
+        type: 3}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6467206373962124139, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_Name
+      value: StopPEXButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 6467206373962124139, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8811823188519358461, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ee23632e4a71040eea4378f310a5eaef,
+        type: 3}
+    - target: {fileID: 8811823188519358461, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8811823188519358461, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8811823188519358461, guid: 88cd164bd30b4c446917e9faee11dd6a,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 88cd164bd30b4c446917e9faee11dd6a, type: 3}
+--- !u!224 &4234645489642484543 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1359034845905531969, guid: 88cd164bd30b4c446917e9faee11dd6a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2889122241483245438}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3315308486466811519 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 439785820983603457, guid: 88cd164bd30b4c446917e9faee11dd6a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2889122241483245438}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6627407361186138903
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -510,7 +682,7 @@ PrefabInstance:
     - target: {fileID: 8562180139002612471, guid: 88cd164bd30b4c446917e9faee11dd6a,
         type: 3}
       propertyPath: hideOnEnable
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8811823188519358461, guid: 88cd164bd30b4c446917e9faee11dd6a,
         type: 3}
@@ -669,6 +841,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StartStopPEXToggle
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225474628005434785, guid: 4768a7605f725514d85fba8acf39f83e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9008524825783389075, guid: 4768a7605f725514d85fba8acf39f83e,
         type: 3}
@@ -880,13 +1057,13 @@ PrefabInstance:
         type: 3}
       propertyPath: model.sprite
       value: 
-      objectReference: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
+      objectReference: {fileID: 21300000, guid: 631d90c1a84401a4ab1b438f04f37e24,
         type: 3}
     - target: {fileID: 5573392751968575400, guid: 4849d2ed3b5a18948bf3cd46256869a4,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
+      objectReference: {fileID: 21300000, guid: 631d90c1a84401a4ab1b438f04f37e24,
         type: 3}
     - target: {fileID: 6302203761313059702, guid: 4849d2ed3b5a18948bf3cd46256869a4,
         type: 3}

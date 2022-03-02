@@ -58,6 +58,12 @@ namespace DCL.ExperiencesViewer
         /// </summary>
         /// <param name="color">Color to apply.</param>
         void SetOnHoverColor(Color color);
+
+        /// <summary>
+        /// Set the ability of start/stop the experience (with a toggle) or only stop it (with a stop button).
+        /// </summary>
+        /// <param name="isAllowed">True for allowing it.</param>
+        void SetAllowStartStop(bool isAllowed);
     }
 
     public class ExperienceRowComponentView : BaseComponentView, IExperienceRowComponentView, IComponentModelConfig
@@ -72,6 +78,7 @@ namespace DCL.ExperiencesViewer
         [SerializeField] internal ButtonComponentView showPEXUIButton;
         [SerializeField] internal ButtonComponentView hidePEXUIButton;
         [SerializeField] internal Toggle startStopPEXToggle;
+        [SerializeField] internal ButtonComponentView stopPEXButton;
         [SerializeField] internal Image backgroundImage;
 
         [Header("Configuration")]
@@ -89,6 +96,14 @@ namespace DCL.ExperiencesViewer
 
             originalBackgroundColor = backgroundImage.color;
             ConfigureRowButtons();
+        }
+
+        public override void OnEnable()
+        {
+            base.OnEnable();
+
+            SetUIVisibility(model.isUIVisible);
+            SetAsPlaying(model.isPlaying);
         }
 
         public void Configure(BaseComponentModel newModel)
@@ -109,6 +124,7 @@ namespace DCL.ExperiencesViewer
             SetAsPlaying(model.isPlaying);
             SetRowColor(model.backgroundColor);
             SetOnHoverColor(model.onHoverColor);
+            SetAllowStartStop(model.allowStartStop);
         }
 
         public override void OnFocus()
@@ -178,8 +194,11 @@ namespace DCL.ExperiencesViewer
         {
             model.isPlaying = isPlaying;
 
-            if (startStopPEXToggle != null)
+            if (startStopPEXToggle != null && startStopPEXToggle.gameObject.activeSelf)
                 startStopPEXToggle.isOn = isPlaying;
+
+            if (stopPEXButton != null && stopPEXButton.gameObject.activeSelf && !isPlaying)
+                stopPEXButton.gameObject.SetActive(false);
 
             if (showHideUIButtonsContainerAnimator != null)
             {
@@ -207,6 +226,17 @@ namespace DCL.ExperiencesViewer
             onHoverColor = color;
         }
 
+        public void SetAllowStartStop(bool isAllowed)
+        {
+            model.allowStartStop = isAllowed;
+
+            if (startStopPEXToggle != null)
+                startStopPEXToggle.gameObject.SetActive(isAllowed);
+
+            if (stopPEXButton != null)
+                stopPEXButton.gameObject.SetActive(!isAllowed);
+        }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -214,6 +244,7 @@ namespace DCL.ExperiencesViewer
             showPEXUIButton?.onClick.RemoveAllListeners();
             hidePEXUIButton?.onClick.RemoveAllListeners();
             startStopPEXToggle?.onValueChanged.RemoveAllListeners();
+            stopPEXButton?.onClick.RemoveAllListeners();
         }
 
         internal void ConfigureRowButtons()
@@ -223,15 +254,23 @@ namespace DCL.ExperiencesViewer
                 SetUIVisibility(true);
                 onShowPEXUI?.Invoke(model.id, true);
             });
+
             hidePEXUIButton?.onClick.AddListener(() =>
             {
                 SetUIVisibility(false);
                 onShowPEXUI?.Invoke(model.id, false);
             });
+
             startStopPEXToggle?.onValueChanged.AddListener((isOn) =>
             {
                 SetAsPlaying(isOn);
                 onStartPEX?.Invoke(model.id, isOn);
+            });
+
+            stopPEXButton?.onClick.AddListener(() =>
+            {
+                SetAsPlaying(false);
+                onStartPEX?.Invoke(model.id, false);
             });
         }
     }

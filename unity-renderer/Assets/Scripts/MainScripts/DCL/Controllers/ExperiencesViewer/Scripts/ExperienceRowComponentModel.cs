@@ -13,5 +13,6 @@ namespace DCL.ExperiencesViewer
         public bool isPlaying;
         public Color backgroundColor;
         public Color onHoverColor;
+        public bool allowStartStop = true;
     }
 }

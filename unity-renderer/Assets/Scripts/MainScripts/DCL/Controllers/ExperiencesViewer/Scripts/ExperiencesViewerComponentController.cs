@@ -178,7 +178,8 @@ namespace DCL.ExperiencesViewer
                     isPlaying = true,
                     isUIVisible = true,
                     name = newPortableExperienceScene.sceneName,
-                    iconUri = newPortableExperienceScene.iconUrl
+                    iconUri = newPortableExperienceScene.iconUrl,
+                    allowStartStop = userProfile != null && userProfile.avatar.wearables.Contains(newPortableExperienceScene.sceneData.id)
                 };
 
                 view.AddAvailableExperience(experienceToAdd);
