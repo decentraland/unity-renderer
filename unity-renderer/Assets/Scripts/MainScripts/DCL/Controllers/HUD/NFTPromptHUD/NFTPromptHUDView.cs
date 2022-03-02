@@ -7,6 +7,7 @@ using DCL.Helpers;
 using DCL.Helpers.NFT;
 using DCL.Interface;
 using System.Collections;
+using NFTShape_Internal;
 
 internal interface INFTPromptHUDView : IDisposable
 {
@@ -87,6 +88,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
     private bool isDestroyed = false;
     internal INFTAssetLoadHelper nftAssetLoadHelper;
+    private INFTAsset nftAsset;
 
     private void Awake()
     {
@@ -112,6 +114,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         }
 
         nftAssetLoadHelper?.Dispose();
+        nftAsset?.Dispose();
     }
 
     internal void Hide()
@@ -119,6 +122,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         content.SetActive(false);
 
         nftAssetLoadHelper?.Dispose();
+        nftAsset?.Dispose();
 
         if (fetchNFTImageRoutine != null)
             StopCoroutine(fetchNFTImageRoutine);
@@ -275,14 +279,15 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         ShowImageErrorFeedback(false);
         ShowImageLoading(true);
 
-        if (nftAssetLoadHelper != null)
-            nftAssetLoadHelper.Dispose();
-
+        nftAssetLoadHelper?.Dispose();
+        nftAsset?.Dispose();
+        
         nftAssetLoadHelper = new NFTAssetLoadHelper();
         yield return nftAssetLoadHelper.LoadNFTAsset(
             nftInfo.previewImageUrl,
             OnSuccess: nftAsset =>
             {
+                this.nftAsset = nftAsset;
                 nftAsset.OnTextureUpdate += UpdateTexture;
 
                 if (!(nftAsset is Asset_Gif))
@@ -398,6 +403,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         ownersPopup.OnClosePopup -= OnOwnersPopupClose;
 
         nftAssetLoadHelper?.Dispose();
+        nftAsset?.Dispose();
     }
 
     private void OnViewAllOwnersPressed() { OnViewAllPressed?.Invoke(); }
