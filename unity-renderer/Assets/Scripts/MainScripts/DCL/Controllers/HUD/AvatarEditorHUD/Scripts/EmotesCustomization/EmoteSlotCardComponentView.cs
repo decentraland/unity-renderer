@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -52,6 +54,12 @@ namespace Emotes
         /// </summary>
         /// <param name="isActive">True for activating it.</param>
         void SetSeparatorActive(bool isActive);
+
+        /// <summary>
+        /// Set the type of rarity in the card.
+        /// </summary>
+        /// <param name="rarity">New rarity.</param>
+        void SetRarity(string rarity);
     }
 
     public class EmoteSlotCardComponentView : BaseComponentView, IEmoteSlotCardComponentView, IComponentModelConfig
@@ -68,6 +76,7 @@ namespace Emotes
         [SerializeField] internal Image defaultBackgroundImage;
         [SerializeField] internal Image selectedBackgroundImage;
         [SerializeField] internal GameObject separatorGO;
+        [SerializeField] internal Image rarityMark;
 
         [Header("Configuration")]
         [SerializeField] internal Sprite defaultEmotePicture;
@@ -77,6 +86,7 @@ namespace Emotes
         [SerializeField] internal Color selectedSlotNumberColor;
         [SerializeField] internal Color defaultEmoteNameColor;
         [SerializeField] internal Color selectedEmoteNameColor;
+        [SerializeField] internal List<EmoteRarity> rarityColors;
         [SerializeField] internal EmoteSlotCardComponentModel model;
 
         public Button.ButtonClickedEvent onClick => mainButton?.onClick;
@@ -112,6 +122,7 @@ namespace Emotes
             SetEmoteAsSelected(model.isSelected);
             SetSlotNumber(model.slotNumber);
             SetSeparatorActive(model.hasSeparator);
+            SetRarity(model.rarity);
         }
 
         public override void OnFocus()
@@ -224,6 +235,18 @@ namespace Emotes
                 return;
 
             separatorGO.SetActive(isActive);
+        }
+
+        public void SetRarity(string rarity)
+        {
+            model.rarity = rarity;
+
+            if (rarityMark == null)
+                return;
+
+            EmoteRarity emoteRarity = rarityColors.FirstOrDefault(x => x.rarity == rarity);
+            rarityMark.gameObject.SetActive(emoteRarity != null);
+            rarityMark.color = emoteRarity != null ? emoteRarity.markColor : Color.white;
         }
 
         internal void OnEmoteImageLoaded(Sprite sprite)

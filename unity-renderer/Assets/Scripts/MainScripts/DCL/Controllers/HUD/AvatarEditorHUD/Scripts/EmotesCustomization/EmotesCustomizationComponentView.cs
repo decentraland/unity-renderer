@@ -176,7 +176,7 @@ namespace Emotes
                 if (existingEmoteCard.model.id == emoteId)
                 {
                     existingEmoteCard.AssignSlot(slotNumber);
-                    emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, emoteId, emoteName, existingEmoteCard.model.pictureSprite);
+                    emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, emoteId, emoteName, existingEmoteCard.model.pictureSprite, existingEmoteCard.model.rarity);
                 }
 
                 existingEmoteCard.SetEmoteAsAssignedInSelectedSlot(existingEmoteCard.model.assignedSlot == selectedSlot);
@@ -197,7 +197,7 @@ namespace Emotes
                 emoteCardsToUpdate.SetEmoteAsAssignedInSelectedSlot(false);
             }
 
-            emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, string.Empty, string.Empty, null);
+            emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, string.Empty, string.Empty, null, string.Empty);
         }
 
         internal void ConfigureEmotesPool()

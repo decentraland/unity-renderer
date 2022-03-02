@@ -13,5 +13,6 @@ namespace Emotes
         public bool isSelected = false;
         public int slotNumber = -1;
         public bool hasSeparator = true;
+        public string rarity;
     }
 }

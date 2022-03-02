@@ -38,7 +38,8 @@ namespace Emotes
         /// <param name="emoteId">Emote Id to assign.</param>
         /// <param name="emoteName">Emote name to assign.</param>
         /// <param name="pictureSprite">Emote picture to set.</param>
-        void AssignEmoteIntoSlot(int slotNumber, string emoteId, string emoteName, Sprite pictureSprite);
+        /// <param name="rarity">Emote rarity to set.</param>
+        void AssignEmoteIntoSlot(int slotNumber, string emoteId, string emoteName, Sprite pictureSprite, string rarity);
     }
 
     public class EmoteSlotSelectorComponentView : BaseComponentView, IEmoteSlotSelectorComponentView, IComponentModelConfig
@@ -115,7 +116,7 @@ namespace Emotes
             }
         }
 
-        public void AssignEmoteIntoSlot(int slotNumber, string emoteId, string emoteName, Sprite pictureSprite)
+        public void AssignEmoteIntoSlot(int slotNumber, string emoteId, string emoteName, Sprite pictureSprite, string rarity)
         {
             List<EmoteSlotCardComponentView> currentSlots = GetAllSlots();
             foreach (EmoteSlotCardComponentView slot in currentSlots)
@@ -125,11 +126,13 @@ namespace Emotes
                     slot.SetEmoteName(emoteName);
                     slot.SetEmotePicture(pictureSprite);
                     slot.SetEmoteId(emoteId);
+                    slot.SetRarity(rarity);
                 }
                 else if (slot.model.emoteId == emoteId)
                 {
                     slot.SetEmoteId(string.Empty);
                     slot.SetEmoteName(string.Empty);
+                    slot.SetRarity(string.Empty);
                 }
             }
         }
