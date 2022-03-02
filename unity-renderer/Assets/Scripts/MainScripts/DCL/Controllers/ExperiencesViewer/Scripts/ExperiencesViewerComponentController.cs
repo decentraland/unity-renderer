@@ -78,6 +78,7 @@ namespace DCL.ExperiencesViewer
             view.onCloseButtonPressed -= OnCloseButtonPressed;
             view.onSomeExperienceUIVisibilityChanged -= OnSomeExperienceUIVisibilityChanged;
             view.onSomeExperienceExecutionChanged -= OnSomeExperienceExecutionChanged;
+            isOpen.OnChange -= IsOpenChanged;
 
             if (sceneController != null)
             {
