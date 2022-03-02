@@ -119,7 +119,8 @@ namespace DCL
 
         private bool CanCompressTextureThisFrame()
         {
-            return (Time.frameCount - lastTexCompressionFrame) > MIN_FRAMES_FOR_TEX_COMPRESSION;
+            // return (Time.frameCount - lastTexCompressionFrame) > MIN_FRAMES_FOR_TEX_COMPRESSION;
+            return (Time.frameCount - lastTexCompressionFrame) > DataStore.i.debugConfig.minimumFramesWaitBetweenTexCompression;
         }
 
         private static int lastTexCompressionFrame = 0;
