@@ -11,6 +11,11 @@
         public int entities;
         public float sceneHeight;
 
+        public float textureMemory;
+        public float meshMemory;
+        public float audioClipMemory;
+        public float animationClipMemory;
+
         public SceneMetricsModel Clone() { return (SceneMetricsModel) MemberwiseClone(); }
 
         public static bool operator >(SceneMetricsModel lhs, SceneMetricsModel rhs)
@@ -55,7 +60,21 @@
 
         public override string ToString()
         {
-            return $"Textures: {textures} - Triangles: {triangles} - Materials: {materials} - Meshes: {meshes} - Bodies: {bodies} - Entities: {entities} - Scene Height: {sceneHeight}";
+            string result = "";
+
+            result += $"Textures: {textures}";
+            result += $"- Texture Memory: {textureMemory}";
+            result += $"- Triangles: {triangles}";
+            result += $"- Mesh Memory: {meshMemory}";
+            result += $"- Materials: {materials}";
+            result += $"- Meshes: {meshes}";
+            result += $"- Bodies: {bodies}";
+            result += $"- Entities: {entities}";
+            result += $"- Scene Height: {sceneHeight}";
+            result += $"- Audio Memory: {audioClipMemory}";
+            result += $"- Animation Memory: {animationClipMemory}";
+
+            return result;
         }
     }
 }

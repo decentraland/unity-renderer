@@ -89,14 +89,20 @@ namespace DCL
 
             var sceneData = data.sceneData[sceneId];
 
-            sceneData.materials.OnAdded += OnDataChanged;
-            sceneData.materials.OnRemoved += OnDataChanged;
+            sceneData.materials.OnAdded += OnMaterialAdded;
+            sceneData.materials.OnRemoved += OnMaterialRemoved;
 
-            sceneData.textures.OnAdded += OnDataChanged;
-            sceneData.textures.OnRemoved += OnDataChanged;
+            sceneData.textures.OnAdded += OnTextureAdded;
+            sceneData.textures.OnRemoved += OnTextureRemoved;
 
-            sceneData.meshes.OnAdded += OnDataChanged;
-            sceneData.meshes.OnRemoved += OnDataChanged;
+            sceneData.meshes.OnAdded += OnMeshAdded;
+            sceneData.meshes.OnRemoved += OnMeshRemoved;
+
+            sceneData.animationClips.OnAdded += OnAnimationClipAdded;
+            sceneData.animationClips.OnRemoved += OnAnimationClipRemoved;
+
+            sceneData.audioClips.OnAdded += OnAudioClipAdded;
+            sceneData.audioClips.OnRemoved += OnAudioClipRemoved;
 
             sceneData.renderers.OnAdded += OnDataChanged;
             sceneData.renderers.OnRemoved += OnDataChanged;
@@ -119,11 +125,11 @@ namespace DCL
             sceneData.materials.OnAdded -= OnDataChanged;
             sceneData.materials.OnRemoved -= OnDataChanged;
 
-            sceneData.textures.OnAdded -= OnDataChanged;
-            sceneData.textures.OnRemoved -= OnDataChanged;
+            sceneData.textures.OnAdded -= OnTextureAdded;
+            sceneData.textures.OnRemoved -= OnTextureRemoved;
 
-            sceneData.meshes.OnAdded -= OnDataChanged;
-            sceneData.meshes.OnRemoved -= OnDataChanged;
+            sceneData.meshes.OnAdded -= OnMeshAdded;
+            sceneData.meshes.OnRemoved -= OnMeshRemoved;
 
             sceneData.renderers.OnAdded -= OnDataChanged;
             sceneData.renderers.OnRemoved -= OnDataChanged;
@@ -196,6 +202,72 @@ namespace DCL
             UpdateMetrics();
 
             Interface.WebInterface.ReportOnMetricsUpdate(sceneId, currentCountValue.ToMetricsModel(), maxCount.ToMetricsModel());
+        }
+
+        void OnAudioClipAdded(AnimationClip animationClip)
+        {
+            MarkDirty();
+        }
+
+        void OnAudioClipRemoved(AnimationClip animationClip)
+        {
+            MarkDirty();
+        }
+
+        void OnAnimationClipAdded(AnimationClip animationClip)
+        {
+            MarkDirty();
+        }
+
+        void OnAnimationClipRemoved(AnimationClip animationClip)
+        {
+            MarkDirty();
+        }
+
+        void OnMaterialAdded(Material material)
+        {
+            MarkDirty();
+        }
+
+        void OnMaterialRemoved(Material material)
+        {
+            MarkDirty();
+        }
+
+        void OnMeshAdded(Mesh mesh)
+        {
+            MarkDirty();
+        }
+
+        void OnMeshRemoved(Mesh mesh)
+        {
+            MarkDirty();
+        }
+
+        void OnTextureAdded(Texture texture)
+        {
+            MarkDirty();
+
+            if (texture is Texture2D tex2D)
+            {
+                const float MIPMAP_FACTOR = 1.3f;
+                const float BYTES_PER_PIXEL = 4;
+
+                currentCountValue.textureMemory += tex2D.width * tex2D.height * BYTES_PER_PIXEL * MIPMAP_FACTOR;
+            }
+        }
+
+        void OnTextureRemoved(Texture texture)
+        {
+            MarkDirty();
+
+            if (texture is Texture2D tex2D)
+            {
+                const float MIPMAP_FACTOR = 1.3f;
+                const float BYTES_PER_PIXEL = 4;
+
+                currentCountValue.textureMemory -= tex2D.width * tex2D.height * BYTES_PER_PIXEL * MIPMAP_FACTOR;
+            }
         }
 
         void OnDataChanged<T>(T obj)
