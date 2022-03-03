@@ -19,8 +19,6 @@ public class BlockerHandlerCan
     [SetUp]
     protected void SetUp()
     {
-        RenderProfileManifest.i.Initialize();
-
         sceneHandler = Substitute.For<ISceneHandler>();
 
         var allLoadedParcelCoords = new HashSet<Vector2Int>();

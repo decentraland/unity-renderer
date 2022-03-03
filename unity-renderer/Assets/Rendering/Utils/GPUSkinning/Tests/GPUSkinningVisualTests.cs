@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AvatarSystem;
 using DCL;
 using DCL.Helpers;
 using GPUSkinning;
@@ -11,24 +12,28 @@ using UnityEngine.TestTools;
 
 public class GPUSkinningVisualTests : VisualTestsBase
 {
-    private CatalogController catalogController;
     private BaseDictionary<string, WearableItem> catalog;
-    private readonly HashSet<WearableController> toCleanUp = new HashSet<WearableController>();
     private Material avatarMaterial;
     private Color skinColor;
     private Color hairColor;
+    private GameObject newCatalog;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
+        EnsureCatalog();
         catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-        toCleanUp.Clear();
 
-        avatarMaterial = Resources.Load<Material>("Materials/Avatar Material");
+        avatarMaterial = Resources.Load<Material>("Avatar Material");
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#F2C2A5", out skinColor));
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#1C1C1C", out hairColor));
         Assert.NotNull(avatarMaterial);
+    }
+
+    void EnsureCatalog()
+    {
+        if (CatalogController.i == null)
+            newCatalog = TestUtils.CreateComponentWithGameObject<CatalogController>("Catalog Controller").gameObject;
     }
 
     [UnityTest, VisualTest]
@@ -61,6 +66,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
 
         AvatarMeshCombinerHelper gpuSkinningCombiner = new AvatarMeshCombinerHelper();
         gpuSkinningCombiner.uploadMeshToGpu = false;
+        gpuSkinningCombiner.prepareMeshForGpuSkinning = true;
 
         GameObject gpuSkinningGO = CreateTestGameObject("_Original", new Vector3(7, 0, 8));
         yield return LoadWearable("urn:decentraland:off-chain:base-avatars:bee_t_shirt", WearableLiterals.BodyShapes.FEMALE, gpuSkinningGO, gpuSkinningCombiner);
@@ -71,7 +77,8 @@ public class GPUSkinningVisualTests : VisualTestsBase
         gpuSkinningState.time = 0.5f;
         gpuSkinningAnim.Sample();
 
-        SimpleGPUSkinning gpuSkinning = new SimpleGPUSkinning(gpuSkinningCombiner.renderer);
+        SimpleGPUSkinning gpuSkinning = new SimpleGPUSkinning();
+        gpuSkinning.Prepare(gpuSkinningCombiner.renderer);
         yield return null;
         gpuSkinning.Update();
 
@@ -84,20 +91,19 @@ public class GPUSkinningVisualTests : VisualTestsBase
         catalog.TryGetValue(wearableId, out WearableItem wearableItem);
         Assert.NotNull(wearableItem);
 
-        WearableController wearable = new WearableController(wearableItem);
-        toCleanUp.Add(wearable);
+        WearableLoader wearableLoader = new WearableLoader(new WearableRetriever(), wearableItem);
 
-        bool succeeded = false;
-        bool failed = false;
+        wearableLoader.Load(container, new AvatarSettings
+        {
+            bodyshapeId = bodyShapeId,
+            skinColor = skinColor,
+            hairColor = hairColor
+        });
 
-        wearable.Load(bodyShapeId, container.transform, x => succeeded = true, (x, e) => failed = true);
+        yield return new WaitUntil(() => wearableLoader.status == IWearableLoader.Status.Succeeded);
 
-        yield return new WaitUntil(() => succeeded || failed);
 
-        wearable.SetAssetRenderersEnabled(true);
-        wearable.SetupHairAndSkinColors(skinColor, hairColor);
-
-        var rends = wearable.GetRenderers();
+        List<SkinnedMeshRenderer> rends = wearableLoader.rendereable.renderers.OfType<SkinnedMeshRenderer>().ToList();
         combiner.Combine(rends[0], rends.ToArray(), new Material(avatarMaterial));
 
         combiner.container.transform.SetParent(rends[0].transform.parent);
@@ -106,13 +112,8 @@ public class GPUSkinningVisualTests : VisualTestsBase
 
     protected override IEnumerator TearDown()
     {
-        Object.Destroy(catalogController.gameObject);
-
-        foreach (WearableController wearable in toCleanUp)
-        {
-            wearable.CleanUp();
-        }
-
+        if (newCatalog == null)
+            Object.Destroy(newCatalog);
         yield return base.TearDown();
     }
 }

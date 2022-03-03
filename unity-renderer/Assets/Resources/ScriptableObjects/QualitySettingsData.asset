@@ -24,7 +24,6 @@ MonoBehaviour:
     cameraDrawDistance: 100
     bloom: 0
     fpsCap: 1
-    colorGrading: 1
     shadowDistance: 45
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 85
@@ -41,7 +40,6 @@ MonoBehaviour:
     cameraDrawDistance: 150
     bloom: 1
     fpsCap: 1
-    colorGrading: 1
     shadowDistance: 60
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 50
@@ -58,7 +56,6 @@ MonoBehaviour:
     cameraDrawDistance: 250
     bloom: 1
     fpsCap: 0
-    colorGrading: 1
     shadowDistance: 70
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 50
@@ -75,7 +72,6 @@ MonoBehaviour:
     cameraDrawDistance: 500
     bloom: 1
     fpsCap: 0
-    colorGrading: 1
     shadowDistance: 100
     enableDetailObjectCulling: 0
     detailObjectCullingLimit: 0

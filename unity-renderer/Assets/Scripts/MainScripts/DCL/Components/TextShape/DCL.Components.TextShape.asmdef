@@ -1,0 +1,25 @@
+{
+  "name": "DCL.Components.TextShape",
+  "rootNamespace": "",
+  "references": [
+    "GUID:6055be8ebefd69e48b49212b09b47b2f",
+    "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
+    "GUID:97d8897529779cb49bebd400c7f402a6",
+    "GUID:a881b57670b1d2747a6d7f9e32b63230",
+    "GUID:19c3df1967929405fba735480b3da9a7",
+    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+    "GUID:683117a525827a04f981afa3fe1b61cf",
+    "GUID:760a1d365aad58044916992b072cf2a6",
+    "GUID:8af21c3a612af2645a9953d4b9b3f6d5",
+    "GUID:1dd0780aa6be12b428c8005d0bee46b8"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
