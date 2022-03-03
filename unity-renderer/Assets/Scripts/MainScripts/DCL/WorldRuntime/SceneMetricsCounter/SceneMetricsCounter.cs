@@ -292,7 +292,7 @@ namespace DCL
         {
             float size = Profiler.GetRuntimeMemorySizeLong(mesh);
             Debug.unityLogger.logEnabled = true;
-            Debug.Log("Mesh Size: " + size);
+            Debug.Log($"Mesh Size: {size} ... is readable: {mesh.isReadable} ... vert count: {mesh.vertexCount}");
             Debug.unityLogger.logEnabled = false;
             return size;
         }
