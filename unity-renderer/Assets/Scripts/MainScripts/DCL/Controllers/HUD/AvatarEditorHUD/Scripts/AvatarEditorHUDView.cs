@@ -432,6 +432,8 @@ public class AvatarEditorHUDView : MonoBehaviour
         if (hairColorSelector != null)
             hairColorSelector.OnColorChanged -= controller.HairColorClicked;
 
+        characterPreviewRotation.OnPointerAction -= SetCanScroll;
+        
         if (this != null)
             Destroy(gameObject);
 

@@ -98,6 +98,7 @@ public class CharacterPreviewController : MonoBehaviour
         loadingCts?.Cancel();
         loadingCts?.Dispose();
         loadingCts = null;
+        mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
         avatar?.Dispose();
     }
 
