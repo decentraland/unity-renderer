@@ -73,6 +73,7 @@ namespace DCL
             MapRenderer.OnCursorFarFromParcel += CloseToast;
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
             navmapVisible.OnChange += OnNavmapVisibleChanged;
+            DataStore.i.exploreV2.isOpen.OnChange += UpdateOnExploreChange;
 
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
@@ -87,6 +88,17 @@ namespace DCL
             });
             ResetCameraZoom();
             Initialize();
+        }
+
+        private void UpdateOnExploreChange(bool current, bool previous)
+        {
+            if (current)
+                return;
+
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
+            waitingForFullscreenHUDOpen = false;
+
+            SetVisible(false);
         }
 
         private void ResetCameraZoom()
@@ -198,10 +210,13 @@ namespace DCL
             mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
             zoomIn.OnStarted -= OnZoomPlusMinus;
             zoomOut.OnStarted -= OnZoomPlusMinus;
+            DataStore.i.exploreV2.isOpen.OnChange -= UpdateOnExploreChange;
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
         }
 
         internal void SetVisible(bool visible)
         {
+            Debug.Log($"Set visible {visible} and is waiting {waitingForFullscreenHUDOpen}");
             if (waitingForFullscreenHUDOpen)
                 return;
 
