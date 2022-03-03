@@ -200,7 +200,6 @@ public class FriendsHUDView : MonoBehaviour, IFriendsHUDComponentView
 
     public void OnCloseButtonPressed()
     {
-        controller.SetVisibility(false);
         OnClose?.Invoke();
     }
 

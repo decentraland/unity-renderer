@@ -4,13 +4,16 @@ using System.Linq;
 using DCL;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FriendsTabComponentView : BaseComponentView
 {
     private const int CREATION_AMOUNT_PER_FRAME = 5;
     private const int PRE_INSTANTIATED_ENTRIES = 25;
     private const string FRIEND_ENTRIES_POOL_NAME_PREFIX = "FriendEntriesPool_";
-    
+
+    [SerializeField] private GameObject enabledHeader;
+    [SerializeField] private GameObject disabledHeader;
     [SerializeField] private GameObject emptyStateContainer;
     [SerializeField] private GameObject filledStateContainer;
     [SerializeField] private FriendEntry entryPrefab;
@@ -18,17 +21,49 @@ public class FriendsTabComponentView : BaseComponentView
     [SerializeField] private CollapsableSortedFriendEntryList offlineFriendsList;
     [SerializeField] private TMP_Text onlineFriendsCountText;
     [SerializeField] private TMP_Text offlineFriendsCountText;
+    [SerializeField] private SearchBarComponentView searchBar;
     [SerializeField] private Model model;
 
     private readonly Dictionary<string, FriendEntryBase.Model> creationQueue = new Dictionary<string, FriendEntryBase.Model>();
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
-    private readonly Dictionary<string, FriendEntryBase> entries = new Dictionary<string, FriendEntryBase>();
+    private readonly Dictionary<string, FriendEntry> entries = new Dictionary<string, FriendEntry>();
 
     private Pool entryPool;
     private string lastProcessedFriend;
+
+    public Dictionary<string, FriendEntry> Entries => entries;
+
+    public bool DidDeferredCreationCompleted => creationQueue.Count == 0;
     
     public event Action<FriendEntry> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
+
+    public override void OnEnable()
+    {
+        base.OnEnable();
+        searchBar.OnSearchText += Filter;
+        
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        searchBar.OnSearchText -= Filter;
+    }
+
+    public void Show()
+    {
+        gameObject.SetActive(true);
+        enabledHeader.SetActive(true);
+        disabledHeader.SetActive(false);
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+        enabledHeader.SetActive(false);
+        disabledHeader.SetActive(true);
+    }
 
     public override void Update()
     {
@@ -52,9 +87,9 @@ public class FriendsTabComponentView : BaseComponentView
         UpdateEmptyOrFilledState();
     }
 
-    public bool Remove(string userId)
+    public void Remove(string userId)
     {
-        if (!entries.ContainsKey(userId)) return false;
+        if (!entries.ContainsKey(userId)) return;
 
         if (pooleableEntries.TryGetValue(userId, out var pooleableObject))
         {
@@ -70,16 +105,16 @@ public class FriendsTabComponentView : BaseComponentView
         
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
-
-        return true;
     }
 
-    public bool Set(string userId, FriendEntryBase.Model model)
+    public FriendEntry Get(string userId) => entries.ContainsKey(userId) ? entries[userId] : null;
+
+    public void Set(string userId, FriendEntryBase.Model model)
     {
         if (creationQueue.ContainsKey(userId))
         {
             creationQueue[userId] = model;
-            return false;
+            return;
         }
         
         if (!entries.ContainsKey(userId))
@@ -106,8 +141,6 @@ public class FriendsTabComponentView : BaseComponentView
         
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
-
-        return true;
     }
 
     public override void RefreshControl()
@@ -132,6 +165,11 @@ public class FriendsTabComponentView : BaseComponentView
     {
         offlineFriendsList.Filter(search);
         onlineFriendsList.Filter(search);
+    }
+    
+    public void Enqueue(string userId, FriendEntryBase.Model model)
+    {
+        creationQueue[userId] = model;
     }
 
     private void UpdateEmptyOrFilledState()
@@ -198,11 +236,6 @@ public class FriendsTabComponentView : BaseComponentView
     //
     //     lastProcessedFriend = friend.userId;
     // }
-
-    public void CreateOrUpdateEntryDeferred(string userId, FriendEntryBase.Model model)
-    {
-        creationQueue[userId] = model;
-    }
 
     private Pool GetEntryPool()
     {

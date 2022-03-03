@@ -33,6 +33,7 @@ public class FriendsHUDController : IHUD
         view.OnFriendRequestSent += Entry_OnRequestSent;
         view.OnWhisper += Entry_OnWhisper;
         view.OnDeleteConfirmation += Entry_OnDelete;
+        view.OnClose += HandleViewClosed;
 
         if (ownUserProfile != null)
         {
@@ -54,6 +55,8 @@ public class FriendsHUDController : IHUD
             }
         }
     }
+
+    private void HandleViewClosed() => SetVisibility(false);
 
     private void FriendsController_OnInitialized()
     {
@@ -217,16 +220,18 @@ public class FriendsHUDController : IHUD
 
     public void Dispose()
     {
-        if (this.friendsController != null)
+        if (friendsController != null)
         {
-            this.friendsController.OnInitialized -= FriendsController_OnInitialized;
-            this.friendsController.OnUpdateFriendship -= OnUpdateFriendship;
-            this.friendsController.OnUpdateUserStatus -= OnUpdateUserStatus;
+            friendsController.OnInitialized -= FriendsController_OnInitialized;
+            friendsController.OnUpdateFriendship -= OnUpdateFriendship;
+            friendsController.OnUpdateUserStatus -= OnUpdateUserStatus;
         }
 
+        if (view != null)
+            view.OnClose -= HandleViewClosed;
         view?.Destroy();
 
-        if (this.ownUserProfile != null)
+        if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OnUserProfileUpdate;
     }
 

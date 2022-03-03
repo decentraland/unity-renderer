@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
+using UnityEngine.UI;
 
 public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentView
 {
     [SerializeField] private GameObject loadingSpinner;
-    [SerializeField] private SearchBarComponentView searchBar;
+    [SerializeField] private Button closeButton;
+    [SerializeField] private Button friendsTabFocusButton;
+    [SerializeField] private Button friendRequestsTabFocusButton;
     [SerializeField] private FriendsTabComponentView friendsTab;
+    [SerializeField] private FriendRequestsTabComponentView friendRequestsTab;
     [SerializeField] private Model model;
 
     public event Action<FriendRequestEntry> OnFriendRequestApproved;
@@ -20,18 +23,17 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public RectTransform Transform => transform as RectTransform;
 
-    public override void Start()
+    public override void Awake()
     {
-        base.Start();
+        base.Awake();
 
-        searchBar.OnSearchText += FilterFriends;
-    }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-
-        searchBar.OnSearchText -= FilterFriends;
+        friendsTabFocusButton.onClick.AddListener(() => FocusTab(0));
+        friendRequestsTabFocusButton.onClick.AddListener(() => FocusTab(1));
+        closeButton.onClick.AddListener(() =>
+        {
+            OnClose?.Invoke();
+            Hide();
+        });
     }
 
     public void HideSpinner()
@@ -48,12 +50,15 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public List<FriendEntryBase> GetAllEntries()
     {
-        throw new NotImplementedException();
+        var result = new List<FriendEntryBase>();
+        result.AddRange(friendsTab.Entries.Values);
+        result.AddRange(friendRequestsTab.Entries.Values);
+        return result;
     }
 
     public FriendEntryBase GetEntry(string userId)
     {
-        throw new NotImplementedException();
+        return (FriendEntryBase) friendsTab.Get(userId) ?? friendRequestsTab.Get(userId);
     }
 
     public void UpdateEntry(string userId, FriendEntryBase.Model model)
@@ -61,27 +66,15 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         friendsTab.Set(userId, model);
     }
 
-    public void DisplayFriendUserNotFound()
-    {
-        throw new NotImplementedException();
-    }
+    public void DisplayFriendUserNotFound() => friendRequestsTab.ShowUserNotFoundNotification();
 
-    public bool IsFriendListFocused()
-    {
-        throw new NotImplementedException();
-    }
+    public bool IsFriendListFocused() => friendsTab.gameObject.activeInHierarchy;
 
-    public bool IsFriendListCreationReady()
-    {
-        throw new NotImplementedException();
-    }
+    public bool IsFriendListCreationReady() => friendsTab.DidDeferredCreationCompleted;
 
-    public int GetReceivedFriendRequestCount()
-    {
-        throw new NotImplementedException();
-    }
+    public int GetReceivedFriendRequestCount() => friendRequestsTab.ReceivedRequestsList.Count();
 
-    public void Destroy() => Object.Destroy(gameObject);
+    public void Destroy() => Destroy(gameObject);
 
     public void Show()
     {
@@ -98,7 +91,33 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     public void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction,
         FriendEntryBase.Model friendEntryModel)
     {
-        throw new NotImplementedException();
+        switch (friendshipAction)
+        {
+            case FriendshipAction.NONE:
+                friendRequestsTab.Remove(userId);
+                friendsTab.Remove(userId);
+                break;
+            case FriendshipAction.APPROVED:
+                friendRequestsTab.Remove(userId);
+                friendsTab.Enqueue(userId, friendEntryModel);
+                break;
+            case FriendshipAction.REJECTED:
+                friendRequestsTab.Remove(userId);
+                break;
+            case FriendshipAction.CANCELLED:
+                friendRequestsTab.Remove(userId);
+                break;
+            case FriendshipAction.REQUESTED_FROM:
+                friendRequestsTab.Set(userId, friendEntryModel, true);
+                break;
+            case FriendshipAction.REQUESTED_TO:
+                friendRequestsTab.Set(userId,  friendEntryModel, false);
+                break;
+            case FriendshipAction.DELETED:
+                friendRequestsTab.Remove(userId);
+                friendsTab.Remove(userId);
+                break;
+        }
     }
 
     public void Search(string userId)
@@ -106,10 +125,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         FilterFriends(userId);
     }
 
-    public bool IsActive()
-    {
-        throw new NotImplementedException();
-    }
+    public bool IsActive() => gameObject.activeInHierarchy;
 
     public void ShowCurrentFriendPassport()
     {
@@ -134,6 +150,25 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
             Hide();
 
         Search(model.searchContent);
+        FocusTab(model.focusedTabIndex);
+    }
+
+    private void FocusTab(int index)
+    {
+        model.focusedTabIndex = index;
+
+        if (index == 0)
+        {
+            friendsTab.Show();
+            friendRequestsTab.Hide();
+        }
+        else if (index == 1)
+        {
+            friendsTab.Hide();
+            friendRequestsTab.Show();
+        }
+        else
+            throw new IndexOutOfRangeException();
     }
 
     private void FilterFriends(string search)
@@ -144,6 +179,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     [Serializable]
     private struct Model
     {
+        public int focusedTabIndex;
         public bool isLoadingSpinnerActive;
         public bool visible;
         public string searchContent;
