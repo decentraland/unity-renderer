@@ -678,11 +678,14 @@ namespace UnityGLTF
             texture = CheckAndReduceTextureSize(texture);
             _assetCache.ImageCache[imageCacheIndex] = texture;
 
+            // We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
+#if !UNITY_STANDALONE || UNITY_EDITOR
             if ( Application.isPlaying )
             {
                 //NOTE(Brian): This breaks importing in editor mode
                 texture.Compress(false);
             }
+#endif
 
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
