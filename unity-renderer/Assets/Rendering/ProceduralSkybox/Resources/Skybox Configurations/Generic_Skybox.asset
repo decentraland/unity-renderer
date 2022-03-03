@@ -1008,7 +1008,7 @@ MonoBehaviour:
       timeSpan_End: 24
       fadingInTime: 0
       fadingOutTime: 0
-      tintPercentage: 74.2
+      tintPercentage: 0
       renderDistance: []
       texture: {fileID: 0}
       textureNormal: {fileID: 0}
