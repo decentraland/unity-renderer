@@ -35,8 +35,9 @@ namespace Emotes
         public void Initialize()
         {
             view = CreateView();
-            view.onEmoteSelected += OnEmoteSelected;
+            view.onEmoteClicked += OnEmoteAnimationRaised;
             view.onEmoteEquipped += OnEmoteEquipped;
+            view.onEmoteUnequipped += OnEmoteUnequipped;
             
             ConfigureShortcuts();
             LoadMockedEmotes();
@@ -46,8 +47,9 @@ namespace Emotes
 
         public void Dispose()
         {
-            view.onEmoteSelected -= OnEmoteSelected;
+            view.onEmoteClicked -= OnEmoteAnimationRaised;
             view.onEmoteEquipped -= OnEmoteEquipped;
+            view.onEmoteUnequipped -= OnEmoteUnequipped;
             equipInputAction.OnFinished -= OnEquipInputActionTriggered;
             shortcut0InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut1InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
@@ -61,14 +63,19 @@ namespace Emotes
             shortcut9InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
         }
 
-        internal void OnEmoteSelected(string emoteId)
+        internal void OnEmoteAnimationRaised(string emoteId)
         {
-            Debug.Log("SANTI ---> EMOTE SELECTED: " + emoteId);
+            Debug.Log("SANTI ---> EMOTE ANIMATION RAISED: " + emoteId);
         }
 
         internal void OnEmoteEquipped(string emoteId, int slotNUmber)
         {
             Debug.Log("SANTI ---> EMOTE EQUIPPED: " + emoteId + " | SLOT: " + slotNUmber);
+        }
+
+        internal void OnEmoteUnequipped(string emoteId, int slotNUmber)
+        {
+            Debug.Log("SANTI ---> EMOTE UNEQUIPPED: " + emoteId + " | SLOT: " + slotNUmber);
         }
 
         internal void ConfigureShortcuts()

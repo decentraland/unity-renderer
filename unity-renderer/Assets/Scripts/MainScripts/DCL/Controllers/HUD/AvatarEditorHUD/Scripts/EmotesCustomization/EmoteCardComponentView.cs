@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -27,6 +28,11 @@ namespace Emotes
         /// Event that will be triggered when the unequip button is clicked.
         /// </summary>
         Button.ButtonClickedEvent onUnequipClick { get; }
+
+        /// <summary>
+        /// It will be triggered when an emote card is selected.
+        /// </summary>
+        event Action<string> onEmoteSelected;
 
         /// <summary>
         /// Set the emote id in the card.
@@ -105,6 +111,8 @@ namespace Emotes
         public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
         public Button.ButtonClickedEvent onEquipClick => equipButton?.onClick;
         public Button.ButtonClickedEvent onUnequipClick => unequipButton?.onClick;
+        
+        public event Action<string> onEmoteSelected;
 
         public override void Awake()
         {
@@ -158,11 +166,7 @@ namespace Emotes
             if (emoteNameContainer != null)
                 emoteNameContainer.SetActive(true);
 
-            if (!model.isSelected)
-            {
-                if (cardSelectionFrame != null)
-                    cardSelectionFrame.SetActive(true);
-            }
+            SetEmoteAsSelected(true);
         }
 
         public override void OnLoseFocus()
@@ -172,11 +176,7 @@ namespace Emotes
             if (emoteNameContainer != null)
                 emoteNameContainer.SetActive(false);
 
-            if (!model.isSelected)
-            {
-                if (cardSelectionFrame != null)
-                    cardSelectionFrame.SetActive(false);
-            }
+            SetEmoteAsSelected(false);
         }
 
         public override void Dispose()
@@ -266,13 +266,17 @@ namespace Emotes
         {
             model.isSelected = isSelected;
 
-            if (cardSelectionFrame != null && !isFocused)
-                cardSelectionFrame.SetActive(isSelected);
+            cardSelectionFrame.SetActive(isSelected);
 
             if (selectionAnimator != null)
                 selectionAnimator.SetBool(ON_SELECTED_CARD_COMPONENT_BOOL, isSelected);
 
             RefreshVisualCardStatus();
+
+            if (isSelected)
+                onEmoteSelected?.Invoke(model.id);
+            else
+                onEmoteSelected?.Invoke(null);
         }
 
         public void SetRarity(string rarity)
