@@ -222,11 +222,13 @@ namespace Emotes
                 {
                     id = $"Emote{i}",
                     name = $"Emote{i}",
+                    description = $"Description of the Emote{i}...",
                     pictureUri = mockedImages[i],
                     isAssignedInSelectedSlot = false,
                     isSelected = false,
                     assignedSlot = -1,
-                    rarity = mockedRarities[UnityEngine.Random.Range(0, mockedRarities.Count)]
+                    rarity = mockedRarities[UnityEngine.Random.Range(0, mockedRarities.Count)],
+                    isInL2 = true
                 });
             }
 
