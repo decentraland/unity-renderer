@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AvatarExpressions
+  m_Name: EmotesAtlas
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -39,5 +39,5 @@ SpriteAtlas:
   m_PackedSprites: []
   m_PackedSpriteNamesToIndex: []
   m_RenderDataMap: {}
-  m_Tag: AvatarExpressions
+  m_Tag: EmotesAtlas
   m_IsVariant: 0
