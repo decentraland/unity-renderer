@@ -51,7 +51,13 @@ namespace DCL.Skybox
 
         #region Unity Callbacks
 
-        private void OnEnable() { EnsureDependencies(); }
+        private void OnEnable()
+        {
+            EnsureDependencies();
+            Undo.undoRedoPerformed += MyUndoCallback;
+        }
+
+        private void MyUndoCallback() { Repaint(); }
 
         private void OnDestroy()
         {
@@ -81,6 +87,9 @@ namespace DCL.Skybox
             GUILayout.Space(32);
             RenderTimePanel();
             GUILayout.Space(12);
+
+            // Record Undo
+            EditorGUI.BeginChangeCheck();
 
             showTimelineTags = EditorGUILayout.Foldout(showTimelineTags, "Timeline Tags", true);
 
@@ -162,9 +171,17 @@ namespace DCL.Skybox
             // Render 3D layers
             Render3DLayers(selectedConfiguration.additional3Dconfig);
 
+            if (EditorGUI.EndChangeCheck())
+            {
+                Debug.Log("Object Recorded");
+                //Undo.RegisterCompleteObjectUndo(selectedConfiguration, "config changed");
+                Undo.RecordObject(selectedConfiguration, "config changed");
+            }
+
             EditorGUILayout.EndScrollView();
             GUILayout.Space(10);
             GUILayout.EndArea();
+
 
             if (GUI.changed)
             {
