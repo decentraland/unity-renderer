@@ -603,7 +603,14 @@ public class AvatarEditorHUDController : IHUD
         else if (visible && !view.isOpen)
         {
             if (DataStore.i.common.isSignUpFlow.Get())
+            {
                 DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
+                view.sectionSelector.Hide(true);
+            }
+            else
+            {
+                view.sectionSelector.Show(true);
+            }
 
             LoadOwnedWereables(userProfile);
             Environment.i.messaging.manager.paused = DataStore.i.common.isSignUpFlow.Get();
