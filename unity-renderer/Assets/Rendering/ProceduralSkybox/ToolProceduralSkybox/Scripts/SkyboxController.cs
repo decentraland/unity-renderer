@@ -44,6 +44,9 @@ namespace DCL.Skybox
         private int syncCounter = 0;
         private int syncAfterCount = 10;
 
+        // Report to kernel
+        private ITimeReporter timeReporter { get; set; } = new TimeReporter();
+
         public SkyboxController()
         {
             i = this;
@@ -65,9 +68,6 @@ namespace DCL.Skybox
                 directionalLight = temp.AddComponent<Light>();
                 directionalLight.type = LightType.Directional;
             }
-
-            CommonScriptableObjects.proceduralSkyboxDisabled.Set(false);
-            CommonScriptableObjects.proceduralSkyboxEnabled.Set(true);
 
             GetOrCreateEnvironmentProbe();
 
@@ -201,7 +201,6 @@ namespace DCL.Skybox
                 return;
             }
             // set skyboxConfig to true
-            DataStore.i.skyboxConfig.useProceduralSkybox.Set(true);
             DataStore.i.skyboxConfig.configToLoad.Set(current.proceduralSkyboxConfig.configToLoad);
             DataStore.i.skyboxConfig.lifecycleDuration.Set(current.proceduralSkyboxConfig.lifecycleDuration);
             DataStore.i.skyboxConfig.jumpToTime.Set(current.proceduralSkyboxConfig.fixedTime);
@@ -242,17 +241,7 @@ namespace DCL.Skybox
             // Apply time
             lifecycleDuration = DataStore.i.skyboxConfig.lifecycleDuration.Get();
 
-            if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
-            {
-                if (!ApplyConfig())
-                {
-                    RenderProfileManifest.i.currentProfile.Apply();
-                }
-            }
-            else
-            {
-                RenderProfileManifest.i.currentProfile.Apply();
-            }
+            ApplyConfig();
 
             // if Paused
             if (DataStore.i.skyboxConfig.jumpToTime.Get() >= 0)
@@ -321,6 +310,7 @@ namespace DCL.Skybox
 
             // Convert minutes in seconds and then normalize with cycle time
             timeNormalizationFactor = lifecycleDuration * 60 / cycleTime;
+            timeReporter.Configure(timeNormalizationFactor, cycleTime);
 
             GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
             return true;
@@ -414,10 +404,7 @@ namespace DCL.Skybox
             selectedMat = matLayer.material;
             slotCount = matLayer.numberOfSlots;
 
-            if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
-            {
-                RenderSettings.skybox = selectedMat;
-            }
+            RenderSettings.skybox = selectedMat;
 
             // Update loaded config
             loadedConfig = configToLoad;
@@ -435,7 +422,7 @@ namespace DCL.Skybox
                 AssignCameraInstancetoProbe();
             }
 
-            if (configuration == null || isPaused || !DataStore.i.skyboxConfig.useProceduralSkybox.Get())
+            if (configuration == null || isPaused)
             {
                 return;
             }
@@ -458,6 +445,7 @@ namespace DCL.Skybox
 
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
             DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
+            timeReporter.ReportTime(timeOfTheDay);
 
             float normalizedDayTime = GetNormalizedDayTime();
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, cycleTime);
@@ -474,12 +462,7 @@ namespace DCL.Skybox
 
         public void Dispose()
         {
-
-            CommonScriptableObjects.proceduralSkyboxDisabled.Set(true);
-            CommonScriptableObjects.proceduralSkyboxEnabled.Set(false);
-
             // set skyboxConfig to false
-            DataStore.i.skyboxConfig.useProceduralSkybox.Set(false);
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
 
             DataStore.i.worldTimer.OnTimeChanged -= GetTimeFromTheServer;
@@ -489,6 +472,8 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.useDynamicSkybox.OnChange -= UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange -= FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange -= ReflectionResolution_OnChange;
+
+            timeReporter.Dispose();
         }
 
         public void PauseTime(bool overrideTime = false, float newTime = 0)
@@ -500,6 +485,7 @@ namespace DCL.Skybox
                 configuration.ApplyOnMaterial(selectedMat, (float)timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
                 ApplyAvatarColor(GetNormalizedDayTime());
             }
+            timeReporter.ReportTime(timeOfTheDay);
         }
 
         public void ResumeTime(bool overrideTime = false, float newTime = 0)

@@ -267,6 +267,7 @@ public class ProfileHUDView : MonoBehaviour
     {
         connectedWalletSection.SetActive(active);
         nonConnectedWalletSection.SetActive(!active);
+        buttonLogOut.gameObject.SetActive(active);
     }
 
     private void ForceLayoutToRefreshSize() { LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout); }
