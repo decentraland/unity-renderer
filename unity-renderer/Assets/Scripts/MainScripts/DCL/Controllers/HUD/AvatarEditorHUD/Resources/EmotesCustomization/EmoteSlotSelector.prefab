@@ -1119,6 +1119,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: EmoteSlotCard1
       objectReference: {fileID: 0}
+    - target: {fileID: 7339447326239381492, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
       propertyPath: model.rarity
@@ -1456,6 +1461,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: EmoteSlotCard2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7339447326239381492, guid: fc8ae579143d63741bc0f33c409ca892,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8875235463942680543, guid: fc8ae579143d63741bc0f33c409ca892,
         type: 3}
@@ -1917,7 +1927,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -1942,7 +1952,7 @@ PrefabInstance:
     - target: {fileID: 4071603596337262758, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: model.itemSize.y
-      value: 51
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 4071603596337262758, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -1977,7 +1987,7 @@ PrefabInstance:
     - target: {fileID: 7829080691771640198, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_CellSize.y
-      value: 51
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7829080691771640198, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
