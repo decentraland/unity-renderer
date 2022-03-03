@@ -497,6 +497,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
             if (isSelected)
                 sectionTitle.text = EMOTES_SECTION_TITLE;
+
+            characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
         });
     }
 
