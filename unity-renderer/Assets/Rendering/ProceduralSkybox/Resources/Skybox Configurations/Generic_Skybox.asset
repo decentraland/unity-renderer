@@ -1012,7 +1012,7 @@ MonoBehaviour:
       renderDistance: []
       texture: {fileID: 0}
       textureNormal: {fileID: 0}
-      cubemap: {fileID: 8900000, guid: 7529afcac85c84886af2e8998f5a86a8, type: 3}
+      cubemap: {fileID: 8900000, guid: 2a1f2c34a6bb71040aad59820a39f105, type: 3}
       color:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
