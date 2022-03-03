@@ -28,6 +28,7 @@ namespace DCL.Components
 
         public event System.Action<IDCLEntity> OnAttach;
         public event System.Action<IDCLEntity> OnDetach;
+        public event System.Action<BaseDisposable> OnDispose;
         public event Action<BaseDisposable> OnAppliedChanges;
 
         public HashSet<IDCLEntity> attachedEntities = new HashSet<IDCLEntity>();
@@ -94,7 +95,11 @@ namespace DCL.Components
             }
         }
 
-        public virtual void Dispose() { DetachFromEveryEntity(); }
+        public virtual void Dispose()
+        {
+            OnDispose?.Invoke(this);
+            DetachFromEveryEntity();
+        }
 
         public virtual BaseModel GetModel() => model;
 

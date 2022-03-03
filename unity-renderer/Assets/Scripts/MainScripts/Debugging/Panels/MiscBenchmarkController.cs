@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using DCL.Controllers;
 using UnityEngine;
+using UnityGLTF;
 
 namespace DCL
 {
@@ -148,8 +149,8 @@ namespace DCL
                     ParcelScene scene = v.Value as ParcelScene;
                     if (scene.metricsCounter != null)
                     {
-                        meshesCount += scene.metricsCounter.GetModel().meshes;
-                        materialCount += scene.metricsCounter.GetModel().materials;
+                        meshesCount += scene.metricsCounter.currentCount.meshes;
+                        materialCount += scene.metricsCounter.currentCount.materials;
                     }
 
                     sharedCount += scene.disposableComponents.Count;
@@ -172,7 +173,7 @@ namespace DCL
                 statsPanel.SetCellText(1, (int) Rows.ENTITY_OBJECTS_COUNT, entityCount.ToString());
                 statsPanel.SetCellText(1, (int) Rows.MATERIAL_COUNT, materialCount.ToString());
                 statsPanel.SetCellText(1, (int) Rows.MESHES_COUNT, meshesCount.ToString());
-                statsPanel.SetCellText(1, (int) Rows.GLTF_BEING_LOADED, UnityGLTF.GLTFComponent.downloadingCount.ToString() + " ... In Queue: " + UnityGLTF.GLTFComponent.queueCount.ToString());
+                statsPanel.SetCellText(1, (int) Rows.GLTF_BEING_LOADED, GLTFComponent.downloadingCount.ToString() + " ... In Queue: " + GLTFComponent.queueCount.ToString());
                 statsPanel.SetCellText(1, (int) Rows.AB_BEING_LOADED, AssetPromise_AB.downloadingCount.ToString() + " ...  In Queue: " + AssetPromise_AB.queueCount.ToString());
                 statsPanel.SetCellText(1, (int) Rows.RENDERER_UNLOCK_SEGS, RenderingController.firstActivationTime.ToString(CultureInfo.InvariantCulture));
 

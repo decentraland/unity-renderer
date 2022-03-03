@@ -46,8 +46,6 @@ namespace Tests
         {
             return new UserProfileModel.Snapshots()
             {
-                face = faceUrl,
-                face128 = faceUrl,
                 face256 = faceUrl
             };
         }

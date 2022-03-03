@@ -12,7 +12,7 @@ namespace AssetPromiseKeeper_AudioClip_Tests
         AssetLibrary_RefCounted<Asset_AudioClip>>
     {
         [UnityTest]
-        public IEnumerator FailCorrectlyWhenGivenWrongURL()
+        public IEnumerator AudioClip_FailCorrectlyWhenGivenWrongURL()
         {
             var provider = new ContentProvider_Dummy();
 
