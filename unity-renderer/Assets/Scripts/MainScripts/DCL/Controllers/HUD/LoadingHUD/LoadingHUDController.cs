@@ -1,14 +1,16 @@
 using DCL;
 
+namespace LoadingHUD
+{
     public class LoadingHUDController : IHUD
     {
-        internal LoadingHUDView view;
+        internal ILoadingHUDView view;
         internal BaseVariable<bool> visible => DataStore.i.HUDs.loadingHUD.visible;
         internal BaseVariable<string> message => DataStore.i.HUDs.loadingHUD.message;
         internal BaseVariable<float> percentage => DataStore.i.HUDs.loadingHUD.percentage;
         internal BaseVariable<bool> showTips => DataStore.i.HUDs.loadingHUD.showTips;
 
-        protected internal virtual LoadingHUDView CreateView() { return LoadingHUDView.CreateView(); }
+        internal virtual ILoadingHUDView CreateView() => LoadingHUDView.CreateView();
 
         public void Initialize()
         {
@@ -51,3 +53,4 @@ using DCL;
 
         internal void SetViewVisible(bool isVisible) { view?.SetVisible(isVisible); }
     }
+}

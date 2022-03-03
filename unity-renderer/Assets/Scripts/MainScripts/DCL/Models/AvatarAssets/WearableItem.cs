@@ -1,9 +1,9 @@
+using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
 
-[Serializable]
+[System.Serializable]
 public class WearableItem
 {
     [Serializable]
@@ -48,27 +48,6 @@ public class WearableItem
     public int issuedId;
 
     private readonly Dictionary<string, string> cachedI18n = new Dictionary<string, string>();
-    private readonly Dictionary<string, ContentProvider> cachedContentProviers =
-        new Dictionary<string, ContentProvider>();
-
-    private readonly string[] skinImplicitCategories =
-    {
-        WearableLiterals.Categories.EYES,
-        WearableLiterals.Categories.MOUTH,
-        WearableLiterals.Categories.EYEBROWS,
-        WearableLiterals.Categories.HAIR,
-        WearableLiterals.Categories.UPPER_BODY,
-        WearableLiterals.Categories.LOWER_BODY,
-        WearableLiterals.Categories.FEET,
-        WearableLiterals.Misc.HEAD,
-        WearableLiterals.Categories.FACIAL_HAIR
-    };
-
-    public bool TryGetRepresentation(string bodyshapeId, out Representation representation)
-    {
-        representation = GetRepresentation(bodyshapeId);
-        return representation != null;
-    }
 
     public Representation GetRepresentation(string bodyShapeType)
     {
@@ -85,6 +64,8 @@ public class WearableItem
 
         return null;
     }
+
+    private readonly Dictionary<string, ContentProvider> cachedContentProviers = new Dictionary<string, ContentProvider>();
 
     public ContentProvider GetContentProvider(string bodyShapeType)
     {
@@ -108,8 +89,7 @@ public class WearableItem
         return new ContentProvider
         {
             baseUrl = baseUrl,
-            contents = contents.Select(mapping => new ContentServerUtils.MappingPair()
-                {file = mapping.key, hash = mapping.hash}).ToList()
+            contents = contents.Select(mapping => new ContentServerUtils.MappingPair() { file = mapping.key, hash = mapping.hash }).ToList()
         };
     }
 
@@ -143,43 +123,25 @@ public class WearableItem
     {
         var representation = GetRepresentation(bodyShapeType);
 
-        string[] hides;
-
         if (representation?.overrideHides == null || representation.overrideHides.Length == 0)
-            hides = data.hides;
-        else
-            hides = representation.overrideHides;
+            return data.hides;
 
-        if (IsSkin())
-        {
-            hides = hides == null
-                ? skinImplicitCategories
-                : hides.Concat(skinImplicitCategories).Distinct().ToArray();
-        }
-
-        return hides;
+        return representation.overrideHides;
     }
 
-    public bool DoesHide(string category, string bodyShape) => GetHidesList(bodyShape).Any(s => s == category);
-
-    public bool IsCollectible()
-    {
-        return !string.IsNullOrEmpty(rarity);
-    }
-
-    public bool IsSkin() => data.category == WearableLiterals.Categories.SKIN;
+    public bool IsCollectible() { return !string.IsNullOrEmpty(rarity); }
 
     public bool IsSmart()
     {
         if (data?.representations == null) return false;
-
+        
         for (var i = 0; i < data.representations.Length; i++)
         {
             var representation = data.representations[i];
             var containsGameJs = representation.contents?.Any(pair => pair.key.EndsWith("game.js")) ?? false;
             if (containsGameJs) return true;
         }
-
+        
         return false;
     }
 
@@ -212,22 +174,20 @@ public class WearableItem
         return int.MaxValue;
     }
 
-    public string ComposeThumbnailUrl()
-    {
-        return baseUrl + thumbnail;
-    }
+    public string ComposeThumbnailUrl() { return baseUrl + thumbnail; }
 
-    public static HashSet<string> ComposeHiddenCategories(string bodyShapeId, WearableItem[] wearables)
+    public static HashSet<string> CompoundHidesList(string bodyShapeId, List<WearableItem> wearables)
     {
         HashSet<string> result = new HashSet<string>();
         //Last wearable added has priority over the rest
-        for (int index = 0; index < wearables.Length; index++)
+        for (int i = wearables.Count - 1; i >= 0; i--)
         {
-            WearableItem wearableItem = wearables[index];
+            var wearableItem = wearables[i];
+
             if (result.Contains(wearableItem.data.category)) //Skip hidden elements to avoid two elements hiding each other
                 continue;
 
-            string[] wearableHidesList = wearableItem.GetHidesList(bodyShapeId);
+            var wearableHidesList = wearableItem.GetHidesList(bodyShapeId);
             if (wearableHidesList != null)
             {
                 result.UnionWith(wearableHidesList);
@@ -248,28 +208,28 @@ public class WearableItem
     }
 }
 
-[Serializable]
+[System.Serializable]
 public class WearablesRequestResponse
 {
     public WearableItem[] wearables;
     public string context;
 }
 
-[Serializable]
+[System.Serializable]
 public class WearablesRequestFailed
 {
     public string error;
     public string context;
 }
 
-[Serializable]
+[System.Serializable]
 public class WearableContent
 {
     public string file;
     public string hash;
 }
 
-[Serializable]
+[System.Serializable]
 public class i18n
 {
     public string code;

@@ -19,6 +19,7 @@ namespace DCL.Controllers
     public class BlockerInstanceHandler : IBlockerInstanceHandler
     {
         static GameObject blockerPrefab;
+        private bool blockerPrefabDirty;
 
         const string PARCEL_BLOCKER_POOL_NAME = "ParcelBlocker";
 
@@ -33,15 +34,27 @@ namespace DCL.Controllers
         public BlockerInstanceHandler(IBlockerAnimationHandler animationHandler)
         {
             this.animationHandler = animationHandler;
-            blockerPrefab = Resources.Load<GameObject>("LoadingBlocker_Green");
-            EnsureBlockerPool();
-            //TODO We lost the purple blockers when implementing the procedural skybox
-            // We could set a color in their shader dynamically,
-            // similar to how we set toon shader material in the Editor to disable the skybox
+            RenderProfileManifest.i.OnChangeProfile += OnChangeProfile;
+            OnChangeProfile(RenderProfileManifest.i.currentProfile);
+        }
+
+        private void OnChangeProfile(RenderProfileWorld profile)
+        {
+            if (profile == null)
+                return;
+
+            blockerPrefabDirty = true;
+            blockerPrefab = profile.loadingBlockerPrefab;
         }
 
         public void ShowBlocker(Vector2Int pos, bool instant = false)
-        {            
+        {
+            if (blockerPrefabDirty)
+            {
+                blockerPrefabDirty = false;
+                EnsureBlockerPool();
+            }
+
             float centerOffset = ParcelSettings.PARCEL_SIZE / 2;
             PoolableObject blockerPoolable = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
             GameObject blockerGo = blockerPoolable.gameObject;

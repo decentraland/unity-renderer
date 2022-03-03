@@ -45,9 +45,8 @@ public class WebSocketCommunication : IKernelCommunication
                         ClientCertificateRequired = false,
                         CheckCertificateRevocation = false,
                         ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
-                    },
-                    KeepClean = false
-                };
+                    }
+                };                
             }
             else
             {
@@ -143,7 +142,6 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["RemoveBot"] = "Main";
         messageTypeToBridgeName["ClearBots"] = "Main";
         messageTypeToBridgeName["ToggleSceneBoundingBoxes"] = "Main";
-        messageTypeToBridgeName["TogglePreviewMenu"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 

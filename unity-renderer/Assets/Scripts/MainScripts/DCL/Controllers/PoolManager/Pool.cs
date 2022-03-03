@@ -51,6 +51,9 @@ namespace DCL
 
         public Pool(string name, int maxPrewarmCount)
         {
+#if UNITY_EDITOR
+            Application.quitting += OnIsQuitting;
+#endif
             if (PoolManager.USE_POOL_CONTAINERS)
                 container = new GameObject("Pool - " + name);
 
@@ -159,6 +162,11 @@ namespace DCL
 
         public void Release(PoolableObject poolable)
         {
+#if UNITY_EDITOR
+            if (isQuitting)
+                return;
+#endif
+
             if (poolable == null || !PoolManager.i.HasPoolable(poolable))
                 return;
 
@@ -266,8 +274,8 @@ namespace DCL
 
         public void DisablePoolableObject(PoolableObject poolable)
         {
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isApplicationQuitting.Get())
+#if UNITY_EDITOR
+            if (isQuitting)
                 return;
 #endif
             GameObject go = poolable.gameObject;
@@ -312,5 +320,19 @@ namespace DCL
         }
 
         public bool IsValid() { return original != null; }
+
+#if UNITY_EDITOR
+        // In production it will always be false
+        private bool isQuitting = false;
+
+        // We need to check if application is quitting in editor
+        // to prevent the pool from releasing objects that are
+        // being destroyed 
+        void OnIsQuitting()
+        {
+            Application.quitting -= OnIsQuitting;
+            isQuitting = true;
+        }
+#endif
     }
 };

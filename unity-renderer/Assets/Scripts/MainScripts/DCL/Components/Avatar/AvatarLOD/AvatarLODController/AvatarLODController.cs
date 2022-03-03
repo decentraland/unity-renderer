@@ -8,69 +8,112 @@ namespace DCL
     public interface IAvatarLODController : IDisposable
     {
         Player player { get; }
-        void SetLOD0();
-        void SetLOD1();
-        void SetLOD2();
-        public void SetAnimationThrottling(int framesBetweenUpdates);
+        void SetFullAvatar();
+        void SetSimpleAvatar();
+        void SetImpostor();
         void SetInvisible();
         void UpdateImpostorTint(float distanceToMainPlayer);
+        void SetThrottling(int framesBetweenUpdates);
         void SetNameVisible(bool visible);
     }
 
     public class AvatarLODController : IAvatarLODController
     {
-        private string VISIBILITY_CONSTRAIN = "behind_camera_or_out_of_limits";
+        internal enum State
+        {
+            Invisible,
+            FullAvatar,
+            SimpleAvatar,
+            Impostor,
+        }
+
+        private const float TRANSITION_DURATION = 0.5f;
+
         public Player player { get; }
+
+        internal float avatarFade;
+        internal float impostorFade;
+
+        internal bool SSAOEnabled;
+        internal bool facialFeaturesEnabled;
+
+        internal Coroutine currentTransition = null;
+        internal State? lastRequestedState = null;
 
         public AvatarLODController(Player player)
         {
             this.player = player;
-            if (player?.avatar == null)
+            avatarFade = 1;
+            impostorFade = 0;
+            SSAOEnabled = true;
+            facialFeaturesEnabled = true;
+            if (player?.renderer == null)
                 return;
-            player.avatar.SetLODLevel(0);
+            player.renderer.SetAvatarFade(avatarFade);
+            player.renderer.SetImpostorFade(impostorFade);
         }
 
-        public void SetLOD0()
+        public void SetFullAvatar()
         {
-            if (player?.avatar == null)
+            if (lastRequestedState == State.FullAvatar)
                 return;
 
+            lastRequestedState = State.FullAvatar;
+            if (player?.renderer == null)
+                return;
+            
             player.onPointerDownCollider.SetColliderEnabled(true);
-            player.avatar.SetLODLevel(0);
-            player.avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
+
+            SetAvatarFeatures(true, true);
+            StartTransition(1, 0);
         }
 
-        public void SetLOD1()
+        public void SetSimpleAvatar()
         {
-            if (player?.avatar == null)
+            if (lastRequestedState == State.SimpleAvatar)
                 return;
 
+            lastRequestedState = State.SimpleAvatar;
+            if (player?.renderer == null)
+                return;
+            
             player.onPointerDownCollider.SetColliderEnabled(true);
-            player.avatar.SetLODLevel(1);
-            player.avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
+
+            SetAvatarFeatures(false, false);
+            StartTransition(1, 0);
         }
 
-        public void SetLOD2()
+        public void SetImpostor()
         {
-            if (player?.avatar == null)
+            if (lastRequestedState == State.Impostor)
                 return;
 
+            lastRequestedState = State.Impostor;
+            if (player?.renderer == null)
+                return;
+            
             player.onPointerDownCollider.SetColliderEnabled(false);
-            player.avatar.SetLODLevel(2);
-            player.avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
+
+            SetAvatarFeatures(false, false);
+            StartTransition(0, 1);
         }
 
         public void SetInvisible()
         {
-            if (player?.avatar == null)
+            if (lastRequestedState == State.Invisible)
                 return;
 
-            player.avatar.AddVisibilityConstrain(VISIBILITY_CONSTRAIN);
+            lastRequestedState = State.Invisible;
+            if (player?.renderer == null)
+                return;
+
             player.onPointerDownCollider.SetColliderEnabled(false);
+            
+            SetAvatarFeatures(false, false);
+            StartTransition(0, 0, TRANSITION_DURATION * 1.5f);
         }
 
-        public void SetAnimationThrottling(int framesBetweenUpdates) { player.avatar.SetAnimationThrottling(framesBetweenUpdates); }
-
+        public void SetThrottling(int framesBetweenUpdates) { player?.renderer?.SetThrottling(framesBetweenUpdates); }
         public void SetNameVisible(bool visible)
         {
             if (visible)
@@ -78,8 +121,65 @@ namespace DCL
             else
                 player?.playerName.Hide();
         }
-        public void UpdateImpostorTint(float distanceToMainPlayer) { player.avatar.SetImpostorTint(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer)); }
 
-        public void Dispose() { }
+        private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade, float transitionDuration = TRANSITION_DURATION)
+        {
+            CoroutineStarter.Stop(currentTransition);
+            currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade, transitionDuration));
+        }
+
+        internal IEnumerator Transition(float targetAvatarFade, float targetImpostorFade, float transitionDuration = TRANSITION_DURATION)
+        {
+            while (!player.renderer.isReady)
+            {
+                yield return null;
+            }
+
+            player.renderer.SetAvatarFade(avatarFade);
+            player.renderer.SetImpostorFade(impostorFade);
+            player.renderer.SetRendererEnabled(true);
+            player.renderer.SetImpostorVisibility(true);
+
+            while (!Mathf.Approximately(avatarFade, targetAvatarFade) || !Mathf.Approximately(impostorFade, targetImpostorFade))
+            {
+                avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, (1f / transitionDuration) * Time.deltaTime);
+                impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, (1f / transitionDuration) * Time.deltaTime);
+                player.renderer.SetAvatarFade(avatarFade);
+                player.renderer.SetImpostorFade(impostorFade);
+                yield return null;
+            }
+
+            avatarFade = targetAvatarFade;
+            impostorFade = targetImpostorFade;
+
+            bool avatarVisibility = !Mathf.Approximately(avatarFade, 0);
+            player.renderer.SetRendererEnabled(avatarVisibility);
+            bool impostorVisibility = !Mathf.Approximately(impostorFade, 0);
+            player.renderer.SetImpostorVisibility(impostorVisibility);
+            currentTransition = null;
+        }
+
+        private void SetAvatarFeatures(bool newSSAOEnabled, bool newFacialFeaturesEnabled)
+        {
+            if (SSAOEnabled != newSSAOEnabled)
+            {
+                player.renderer.SetSSAOEnabled(newSSAOEnabled);
+                SSAOEnabled = newSSAOEnabled;
+            }
+
+            if (facialFeaturesEnabled != newFacialFeaturesEnabled)
+            {
+                player.renderer.SetFacialFeaturesVisible(newFacialFeaturesEnabled);
+                facialFeaturesEnabled = newFacialFeaturesEnabled;
+            }
+        }
+
+        public void UpdateImpostorTint(float distanceToMainPlayer) { player.renderer.SetImpostorColor(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer)); }
+
+        public void Dispose()
+        {
+            lastRequestedState = null;
+            CoroutineStarter.Stop(currentTransition);
+        }
     }
 }

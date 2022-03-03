@@ -10,9 +10,18 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         public override void Initialize()
         {
             base.Initialize();
+
+            KernelConfig.i.EnsureConfigInitialized()
+                        .Then(config =>
+                        {
+                            KernelConfig.i.OnChange += OnKernelConfigChanged;
+                            OnKernelConfigChanged(config, null);
+                        });
+
             DataStore.i.avatarsLOD.maxAvatars.Set(currentQualitySetting.maxHQAvatars);
         }
 
+        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { Resources.Load<BooleanVariable>("ScriptableObjects/AvatarLODsDisabled").Set(!current.features.enableAvatarLODs); }
         public override object GetStoredValue() { return currentQualitySetting.maxHQAvatars; }
 
         public override void UpdateSetting(object newValue)

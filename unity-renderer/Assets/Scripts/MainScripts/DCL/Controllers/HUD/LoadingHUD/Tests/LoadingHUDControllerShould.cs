@@ -1,58 +1,71 @@
 using DCL;
 using LoadingHUD;
+using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
-using UnityEngine;
 
-public class LoadingHUDControllerShould
+namespace Tests.LoadingHUD
 {
-    private LoadingHUDController hudController;
-    private LoadingHUDView hudView;
-    private BaseVariable<bool> visible => DataStore.i.HUDs.loadingHUD.visible;
-    private BaseVariable<string> message => DataStore.i.HUDs.loadingHUD.message;
-    private BaseVariable<bool> showTips => DataStore.i.HUDs.loadingHUD.showTips;
-
-    [SetUp]
-    public void SetUp()
+    public class LoadingHUDControllerShould
     {
-        hudController = new LoadingHUDController();
-        hudController.Initialize();
-        hudView = hudController.view;
-    }
+        private LoadingHUDController hudController;
+        private ILoadingHUDView hudView;
+        private BaseVariable<bool> visible => DataStore.i.HUDs.loadingHUD.visible;
+        private BaseVariable<string> message => DataStore.i.HUDs.loadingHUD.message;
+        private BaseVariable<float> percentage => DataStore.i.HUDs.loadingHUD.percentage;
+        private BaseVariable<bool> showTips => DataStore.i.HUDs.loadingHUD.showTips;
 
-    [Test]
-    public void InitializeProperly()
-    {
-        Assert.AreEqual(hudView, hudController.view);
-    }
+        [SetUp]
+        public void SetUp()
+        {
+            hudView = Substitute.For<ILoadingHUDView>();
+            hudController = Substitute.ForPartsOf<LoadingHUDController>();
+            hudController.Configure().CreateView().Returns(info => hudView);
+            hudController.Initialize();
+        }
 
-    [Test]
-    public void ReactToLoadingHUDVisibleTrue()
-    {
-        visible.Set(true, true); //Force event notification
-        Assert.AreEqual(hudView.gameObject.activeInHierarchy, true);
-    }
+        [Test]
+        public void InitializeProperly()
+        {
+            Assert.AreEqual(hudView, hudController.view);
+        }
 
-    [Test]
-    public void ReactToLoadingHUDVisibleFalse()
-    {
-        visible.Set(false, true); //Force event notification
-        Assert.AreEqual(hudView.gameObject.activeInHierarchy, false);
-    }
+        [Test]
+        public void ReactToLoadingHUDVisibleTrue()
+        {
+            visible.Set(true, true); //Force event notification
+            hudView.Received().SetVisible(true);
+        }
 
-    [Test]
-    public void ReactToMessageChanged()
-    {
-        message.Set("new_message", true); //Force event notification
-        Assert.AreEqual(hudView.text.text, "new_message");
-    }
+        [Test]
+        public void ReactToLoadingHUDVisibleFalse()
+        {
+            visible.Set(false, true); //Force event notification
+            hudView.Received().SetVisible(false);
+        }
 
-    [Test]
-    public void ReactToShowTipsChanged()
-    {
-        showTips.Set(false, true); //Force event notification
-        Assert.AreEqual(hudView.tipsContainer.activeInHierarchy, false);
-    }
+        [Test]
+        public void ReactToMessageChanged()
+        {
+            message.Set("new_message", true); //Force event notification
+            hudView.Received().SetMessage("new_message");
+        }
 
-    [TearDown]
-    public void TearDown() { DataStore.Clear(); }
+        [Test]
+        public void ReactToPercentageChanged()
+        {
+            percentage.Set(0.7f, true); //Force event notification
+            hudView.Received().SetPercentage(0.7f / 100);
+        }
+
+        [Test]
+        public void ReactToShowTipsChanged()
+        {
+            showTips.Set(false, true); //Force event notification
+            hudView.Received().SetTips(false);
+        }
+
+        [TearDown]
+        public void TearDown() { DataStore.Clear(); }
+    }
 }

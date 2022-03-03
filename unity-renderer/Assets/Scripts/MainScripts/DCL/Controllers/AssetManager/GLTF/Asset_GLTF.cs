@@ -13,11 +13,9 @@ namespace DCL
 
         public override GameObject container { get; set; }
 
-        public HashSet<Mesh> meshes = new HashSet<Mesh>();
+        public List<Mesh> meshes = new List<Mesh>();
         public Dictionary<Mesh, int> meshToTriangleCount = new Dictionary<Mesh, int>();
-        public HashSet<Renderer> renderers = new HashSet<Renderer>();
-        public HashSet<Material> materials = new HashSet<Material>();
-        public HashSet<Texture> textures = new HashSet<Texture>();
+        public List<Renderer> renderers = new List<Renderer>();
         public int totalTriangleCount = 0;
 
         Coroutine showCoroutine;
@@ -32,19 +30,11 @@ namespace DCL
         {
             Asset_GLTF result = this.MemberwiseClone() as Asset_GLTF;
             result.visible = true;
-            result.meshes = new HashSet<Mesh>(meshes);
+            result.meshes = new List<Mesh>(meshes);
             return result;
         }
 
-        public override void Cleanup()
-        {
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isApplicationQuitting.Get())
-                return;
-#endif
-            
-            Object.Destroy(container);
-        }
+        public override void Cleanup() { Object.Destroy(container); }
 
         public void Hide()
         {

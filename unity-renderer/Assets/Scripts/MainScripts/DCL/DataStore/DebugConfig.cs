@@ -27,9 +27,6 @@ namespace DCL
         
         [System.NonSerialized]
         public BaseDictionary<string, bool> showSceneBoundingBoxes = new BaseDictionary<string, bool>();
-        
-        [System.NonSerialized]
-        public  BaseVariable<bool> isPreviewMenuActive = new BaseVariable<bool>();
 
         /// <summary>
         /// True when WSS message pipeline is enabled

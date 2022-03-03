@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using AvatarSystem;
-using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.FatalErrorReporter;
 using DCL.Interface;
+using DCL.FatalErrorReporter;
 using DCL.NotificationModel;
-using GPUSkinning;
 using UnityEngine;
 using Type = DCL.NotificationModel.Type;
 
@@ -16,14 +10,9 @@ public class PlayerAvatarController : MonoBehaviour
 {
     private const string LOADING_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
 
-    private AvatarSystem.Avatar avatar;
-    private CancellationTokenSource avatarLoadingCts = null;
-    public GameObject avatarContainer;
-    private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
-
+    public AvatarRenderer avatarRenderer;
     public Collider avatarCollider;
     public AvatarVisibility avatarVisibility;
-    [SerializeField] private GameObject loadingParticlesPrefab;
     public float cameraDistanceToDeactivate = 1.0f;
 
     private UserProfile userProfile => UserProfile.GetOwnUserProfile();
@@ -31,9 +20,10 @@ public class PlayerAvatarController : MonoBehaviour
 
     private bool enableCameraCheck = false;
     private Camera mainCamera;
+    private bool avatarWereablesErrors = false;
+    private bool baseWereablesErrors = false;
     private PlayerAvatarAnalytics playerAvatarAnalytics;
-    private IFatalErrorReporter fatalErrorReporter; // TODO?
-    private string VISIBILITY_CONSTRAIN;
+    private IFatalErrorReporter fatalErrorReporter;
 
     private void Start()
     {
@@ -41,14 +31,11 @@ public class PlayerAvatarController : MonoBehaviour
         IAnalytics analytics = DCL.Environment.i.platform.serviceProviders.analytics;
         playerAvatarAnalytics = new PlayerAvatarAnalytics(analytics, CommonScriptableObjects.playerCoords);
 
-        avatar = new AvatarSystem.Avatar(
-            new AvatarCurator(new WearableItemResolver()),
-            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-            GetComponentInChildren<AvatarAnimatorLegacy>(),
-            new Visibility(),
-            new NoLODs(),
-            new SimpleGPUSkinning(),
-            new GPUSkinningThrottler());
+        //NOTE(Brian): We must wait for loading to finish before deactivating the renderer, or the GLTF Loader won't finish.
+        avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
+        avatarRenderer.OnFailEvent -= OnAvatarRendererFail;
+        avatarRenderer.OnSuccessEvent += OnAvatarRendererReady;
+        avatarRenderer.OnFailEvent += OnAvatarRendererFail;
 
         if ( UserProfileController.i != null )
         {
@@ -56,6 +43,7 @@ public class PlayerAvatarController : MonoBehaviour
             UserProfileController.i.OnBaseWereablesFail += OnBaseWereablesFail;
         }
 
+        DataStore.i.player.playerCollider.Set(avatarCollider);
         CommonScriptableObjects.rendererState.AddLock(this);
 
 #if UNITY_WEBGL
@@ -67,11 +55,47 @@ public class PlayerAvatarController : MonoBehaviour
         mainCamera = Camera.main;
     }
 
+    private void OnAvatarRendererReady()
+    {
+        enableCameraCheck = true;
+        avatarCollider.gameObject.SetActive(true);
+        CommonScriptableObjects.rendererState.RemoveLock(this);
+        avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
+        avatarRenderer.OnFailEvent -= OnAvatarRendererFail;
+        DataStore.i.common.isPlayerRendererLoaded.Set(true);
+
+        IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
+        anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
+
+        var player = new Player()
+        {
+            id = userProfile.userId,
+            name = userProfile.name,
+            renderer = avatarRenderer,
+            anchorPoints = anchorPoints
+        };
+        DataStore.i.player.ownPlayer.Set(player);
+
+        if (avatarWereablesErrors || baseWereablesErrors)
+            ShowWearablesWarning();
+    }
+
+    private void OnAvatarRendererFail(Exception exception)
+    {
+        avatarWereablesErrors = true;
+
+        if (exception is AvatarLoadFatalException)
+            fatalErrorReporter.Report(exception);
+        else
+            OnAvatarRendererReady();
+    }
+
     private void OnBaseWereablesFail()
     {
         UserProfileController.i.OnBaseWereablesFail -= OnBaseWereablesFail;
+        baseWereablesErrors = true;
 
-        if (enableCameraCheck)
+        if (enableCameraCheck && !avatarWereablesErrors)
             ShowWearablesWarning();
     }
 
@@ -103,14 +127,7 @@ public class PlayerAvatarController : MonoBehaviour
         avatarVisibility.SetVisibility("PLAYER_AVATAR_CONTROLLER", shouldBeVisible);
     }
 
-    public void SetAvatarVisibility(bool isVisible)
-    {
-        VISIBILITY_CONSTRAIN = "own_player_invisible";
-        if (isVisible)
-            avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
-        else
-            avatar.AddVisibilityConstrain(VISIBILITY_CONSTRAIN);
-    }
+    public void SetAvatarVisibility(bool isVisible) { avatarRenderer.SetGOVisibility(isVisible); }
 
     private void OnEnable()
     {
@@ -120,88 +137,15 @@ public class PlayerAvatarController : MonoBehaviour
 
     private void OnAvatarExpression(string id, long timestamp)
     {
-        avatar.SetExpression(id, timestamp);
+        avatarRenderer.SetExpression(id, timestamp);
         playerAvatarAnalytics.ReportExpression(id);
     }
 
-    private void OnUserProfileOnUpdate(UserProfile profile)
-    {
-        avatarLoadingCts?.Cancel();
-        avatarLoadingCts?.Dispose();
-        avatarLoadingCts = new CancellationTokenSource();
-        LoadingAvatarRoutine(profile, avatarLoadingCts.Token);
-    }
-
-    private async UniTaskVoid LoadingAvatarRoutine(UserProfile profile, CancellationToken ct)
-    {
-        if (string.IsNullOrEmpty(profile.avatar.bodyShape) || profile.avatar.wearables == null)
-        {
-            avatar.Dispose();
-            return;
-        }
-
-        ct.ThrowIfCancellationRequested();
-        if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
-        {
-            try
-            {
-                currentAvatar.CopyFrom(profile.avatar);
-
-                List<string> wearableItems = profile.avatar.wearables.ToList();
-                wearableItems.Add(profile.avatar.bodyShape);
-                await avatar.Load(wearableItems, new AvatarSettings
-                {
-                    bodyshapeId = profile.avatar.bodyShape,
-                    eyesColor = profile.avatar.eyeColor,
-                    skinColor = profile.avatar.skinColor,
-                    hairColor = profile.avatar.hairColor,
-                }, ct);
-
-                if (avatar.lodLevel <= 1)
-                    AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-                WebInterface.ReportAvatarFatalError();
-                return;
-            }
-        }
-
-        IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-        anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), avatar.extents.y);
-
-        var player = new Player()
-        {
-            id = userProfile.userId,
-            name = userProfile.name,
-            avatar = avatar,
-            anchorPoints = anchorPoints,
-            collider = avatarCollider
-        };
-        DataStore.i.player.ownPlayer.Set(player);
-
-        enableCameraCheck = true;
-        avatarCollider.gameObject.SetActive(true);
-        CommonScriptableObjects.rendererState.RemoveLock(this);
-        DataStore.i.common.isPlayerRendererLoaded.Set(true);
-    }
+    private void OnUserProfileOnUpdate(UserProfile profile) { avatarRenderer.ApplyModel(profile.avatar, null, null); }
 
     private void OnDisable()
     {
         userProfile.OnUpdate -= OnUserProfileOnUpdate;
         userProfile.OnAvatarExpressionSet -= OnAvatarExpression;
-    }
-
-    private void OnDestroy()
-    {
-        avatarLoadingCts?.Cancel();
-        avatarLoadingCts?.Dispose();
-        avatarLoadingCts = null;
-        avatar?.Dispose();
     }
 }

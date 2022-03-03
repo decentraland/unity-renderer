@@ -192,11 +192,20 @@ public static class CommonScriptableObjects
     private static BooleanVariable featureKeyTriggersBlockedValue;
     public static BooleanVariable featureKeyTriggersBlocked => GetOrLoad(ref featureKeyTriggersBlockedValue, "ScriptableObjects/FeatureKeyTriggersBlocked");
 
+    private static BooleanVariable motdActiveValue;
+    public static BooleanVariable motdActive => GetOrLoad(ref motdActiveValue, "ScriptableObjects/MOTDActive");
+
     private static BooleanVariable emailPromptActiveValue;
     public static BooleanVariable emailPromptActive => GetOrLoad(ref emailPromptActiveValue, "ScriptableObjects/EmailPromptActive");
 
     private static BooleanVariable voiceChatDisabledValue;
     public static BooleanVariable voiceChatDisabled => GetOrLoad(ref voiceChatDisabledValue, "ScriptableObjects/VoiceChatDisabled");
+
+    private static BooleanVariable proceduralSkyboxDisabledValue;
+    public static BooleanVariable proceduralSkyboxDisabled => GetOrLoad(ref proceduralSkyboxDisabledValue, "ScriptableObjects/ProceduralSkyboxDisabled");
+
+    private static BooleanVariable proceduralSkyboxEnabledValue;
+    public static BooleanVariable proceduralSkyboxEnabled => GetOrLoad(ref proceduralSkyboxEnabledValue, "ScriptableObjects/ProceduralSkyboxEnabled");
 
     public static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {

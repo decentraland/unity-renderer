@@ -9,11 +9,6 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
     {
         private const bool VERBOSE = false;
 
-        private const string EDITOR_USER_AGENT =
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36";
-
-        private const string EDITOR_REFERRER = "https://play.decentraland.org"; 
-
         internal readonly RequestScheduler requestScheduler = new RequestScheduler();
         private readonly Dictionary<string, RequestBase<AssetResponse>> cacheAssetResponses = new Dictionary<string, RequestBase<AssetResponse>>();
         private readonly Dictionary<string, RequestBase<AssetsResponse>> cacheSeveralAssetsResponse = new Dictionary<string, RequestBase<AssetsResponse>>();
@@ -94,20 +89,9 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             if (VERBOSE)
                 Debug.Log($"RequestController: Send Request: {url}");
 
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-
-#if (UNITY_EDITOR) || (UNITY_STANDALONE)
-            headers.Add("User-Agent", EDITOR_USER_AGENT);
-            headers.Add("referrer", EDITOR_REFERRER);
-#endif
-            
             // NOTE: In this case, as this code is implementing a very specific retries system (including delays), we use our
             //              custom WebRequest system without retries (requestAttemps = 1) and let the current code to apply the retries.
-            WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation) Environment.i.platform.webRequest.Get(
-                url,
-                requestAttemps: 1,
-                disposeOnCompleted: true,
-                headers: headers);
+            WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation) Environment.i.platform.webRequest.Get(url, requestAttemps: 1, disposeOnCompleted: true);
 
             asyncOp.completed += operation =>
             {

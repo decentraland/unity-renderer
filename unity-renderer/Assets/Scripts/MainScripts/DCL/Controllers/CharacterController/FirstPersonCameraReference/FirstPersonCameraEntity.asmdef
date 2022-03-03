@@ -2,10 +2,9 @@
     "name": "FirstPersonCameraEntity",
     "rootNamespace": "",
     "references": [
-      "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-      "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-      "GUID:1a483cdd86db6e641ad77c7046dd035f",
-      "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:1a483cdd86db6e641ad77c7046dd035f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

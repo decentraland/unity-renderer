@@ -8,6 +8,7 @@ namespace DCL
         private static readonly int IMPOSTOR_TEXTURE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
 
         // Manually tweaked values
+        public static readonly float IMPOSTOR_MOVEMENT_INTERPOLATION = 1.79f;
         private const float IMPOSTOR_TINT_MIN_DISTANCE = 30f;
         private const float IMPOSTOR_TINT_MAX_DISTANCE = 81.33f;
         private const float IMPOSTOR_TINT_NEAREST_BLACKNESS = 0f;

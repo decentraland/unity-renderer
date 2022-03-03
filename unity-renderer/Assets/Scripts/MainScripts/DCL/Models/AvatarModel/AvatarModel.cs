@@ -21,9 +21,6 @@ public class AvatarModel : BaseModel
 
     public bool HaveSameWearablesAndColors(AvatarModel other)
     {
-        if (other == null)
-            return false;
-
         bool wearablesAreEqual = wearables.All(other.wearables.Contains) && wearables.Count == other.wearables.Count;
 
         return bodyShape == other.bodyShape &&
@@ -39,6 +36,7 @@ public class AvatarModel : BaseModel
                expressionTriggerTimestamp == other.expressionTriggerTimestamp &&
                stickerTriggerTimestamp == other.stickerTriggerTimestamp;
     }
+
 
     public bool Equals(AvatarModel other)
     {

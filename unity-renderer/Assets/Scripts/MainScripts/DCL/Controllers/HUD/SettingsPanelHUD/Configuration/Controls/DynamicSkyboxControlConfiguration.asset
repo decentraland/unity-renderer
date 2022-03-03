@@ -17,5 +17,6 @@ MonoBehaviour:
     type: 3}
   controlController: {fileID: 11400000, guid: 16ccff84edaad644d8bd1c7a7e75c350, type: 2}
   flagsThatDisableMe: []
-  flagsThatDeactivateMe: []
+  flagsThatDeactivateMe:
+  - {fileID: 11400000, guid: 6c6ff18655a62554196a6a3295860e1f, type: 2}
   isBeta: 0

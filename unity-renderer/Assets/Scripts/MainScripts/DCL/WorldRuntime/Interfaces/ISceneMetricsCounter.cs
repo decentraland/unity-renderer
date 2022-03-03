@@ -1,14 +1,12 @@
 ﻿using System;
-using DCL.Models;
-using UnityEngine;
 
 namespace DCL
 {
     public interface ISceneMetricsCounter : IDisposable
     {
         event System.Action<ISceneMetricsCounter> OnMetricsUpdated;
-        SceneMetricsModel maxCount { get; }
-        SceneMetricsModel currentCount { get; }
+        SceneMetricsModel GetLimits();
+        SceneMetricsModel GetModel();
 
         void Enable();
 
@@ -17,7 +15,26 @@ namespace DCL
         void SendEvent();
 
         bool IsInsideTheLimits();
+        void RemoveExcludedEntity(string entityId);
+        void AddExcludedEntity(string entityId);
+    }
 
-        void Configure(string sceneId, Vector2Int scenePosition, int sceneParcelCount);
+    [System.Serializable]
+    public class SceneMetricsModel
+    {
+        public int meshes;
+        public int bodies;
+        public int materials;
+        public int textures;
+        public int triangles;
+        public int entities;
+        public float sceneHeight;
+
+        public SceneMetricsModel Clone() { return (SceneMetricsModel) MemberwiseClone(); }
+
+        public override string ToString()
+        {
+            return $"Textures: {textures} - Triangles: {triangles} - Materials: {materials} - Meshes: {meshes} - Bodies: {bodies} - Entities: {entities} - Scene Height: {sceneHeight}";
+        }
     }
 }

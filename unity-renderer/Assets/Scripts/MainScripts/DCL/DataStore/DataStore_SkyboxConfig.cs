@@ -9,6 +9,7 @@ namespace DCL
     public class DataStore_SkyboxConfig
     {
         public BaseVariable<bool> objectUpdated = new BaseVariable<bool>(false);
+        public BaseVariable<bool> useProceduralSkybox = new BaseVariable<bool>(false);
         public BaseVariable<string> configToLoad = new BaseVariable<string>("Generic Skybox");
         public BaseVariable<float> lifecycleDuration = new BaseVariable<float>(60);
         public BaseVariable<float> jumpToTime = new BaseVariable<float>(-1);

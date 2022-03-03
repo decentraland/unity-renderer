@@ -31,7 +31,7 @@ public class MinimapHUDView : MonoBehaviour
     public InputAction_Trigger toggleNavMapAction;
     [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
 
-    public void Initialize(MinimapHUDController controller)
+    private void Initialize(MinimapHUDController controller)
     {
         gameObject.name = VIEW_OBJECT_NAME;
         optionsPanel.SetActive(false);

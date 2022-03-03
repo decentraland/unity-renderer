@@ -11,11 +11,29 @@ using Type = DCL.TransactionHUDModel.Type;
 
 public class TransactionHUD : MonoBehaviour, ITransactionHUD
 {
-    [SerializeField] private Button acceptButton;
+    [SerializeField] private GameObject paymentPanel;
     
-    [SerializeField] private Button rejectButton;
+    [SerializeField] private GameObject signPanel;
+
+    [SerializeField] private List<Button> acceptButtons;
+    
+    [SerializeField] private List<Button> rejectButtons;
+    
+    [SerializeField] private TMP_Text amountLabel;
+    
+    [SerializeField] private TMP_Text fromAddressLabel;
+
+    [SerializeField] private TMP_Text toAddressLabel;
     
     [SerializeField] private TMP_Text messageLabel;
+    
+    [SerializeField] private TMP_Text paymentPanelTitle;
+    
+    [SerializeField] private TMP_Text signPanelTitle;
+    
+    [SerializeField] private TMP_Text paymentNetworkLabel;
+    
+    [SerializeField] private TMP_Text signNetworkLabel;
 
     public Model model { get; private set; } = new Model();
 
@@ -25,9 +43,11 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
 
     private void OnEnable()
     {
-        acceptButton.onClick.AddListener(AcceptTransaction);
+        foreach (var acceptButton in acceptButtons)
+            acceptButton.onClick.AddListener(AcceptTransaction);
         
-        rejectButton.onClick.AddListener(RejectTransaction);
+        foreach (var rejectButton in rejectButtons)
+            rejectButton.onClick.AddListener(RejectTransaction);
     }
     
     public IParcelScene FindScene(string sceneId)
@@ -46,8 +66,11 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
 
     private void OnDisable()
     {
-        acceptButton.onClick.RemoveAllListeners();
-        rejectButton.onClick.RemoveAllListeners();
+        foreach (var acceptButton in acceptButtons)
+            acceptButton.onClick.RemoveAllListeners();
+        
+        foreach (var rejectButton in rejectButtons)
+            rejectButton.onClick.RemoveAllListeners();
     }
 
     private static string ShortAddress(string address)
@@ -60,15 +83,33 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
         
         return address;
     }
+    
+    private void ShowTransferMessage(Model model)
+    {
+        var scene = FindScene(model.sceneId);
+        
+        if (scene != null)
+            paymentPanelTitle.text = $"'{scene.GetSceneName()}', {scene.sceneData.basePosition.ToString()} wants to initiate a transfer";
+        paymentPanel.SetActive(true);
+        signPanel.SetActive(false);
+
+        UserProfile ownUserProfile = UserProfile.GetOwnUserProfile();
+        fromAddressLabel.text = ShortAddress(ownUserProfile.ethAddress);
+        toAddressLabel.text = ShortAddress(model.toAddress);
+        amountLabel.text = $"{model.amount} {model.currency}";
+        paymentNetworkLabel.text = KernelConfig.i.Get().network.ToUpper();
+    }
 
     private void ShowSignMessage(Model model)
     {
         var scene = FindScene(model.sceneId);
-
+        
         if (scene != null)
-        {
-            messageLabel.text = $"This scene {scene.sceneData.basePosition.ToString()} wants you to sign a message. Press ALLOW and then check your mobile wallet to confirm the transaction.";
-        }
+            signPanelTitle.text = $"'{scene.GetSceneName()}', {scene.sceneData.basePosition.ToString()} wants to sign this message";
+        paymentPanel.SetActive(false);
+        signPanel.SetActive(true);
+        signNetworkLabel.text = KernelConfig.i.Get().network.ToUpper();
+        messageLabel.text = model.message;
     }
 
     public void Show(Model model)
@@ -77,8 +118,11 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
             Utils.UnlockCursor();
 
         this.model = model;
-        
-        ShowSignMessage(model);
+
+        if (model.requestType == Type.REQUIRE_PAYMENT)
+            ShowTransferMessage(model);
+        else
+            ShowSignMessage(model);
     }
 
     public void AcceptTransaction()

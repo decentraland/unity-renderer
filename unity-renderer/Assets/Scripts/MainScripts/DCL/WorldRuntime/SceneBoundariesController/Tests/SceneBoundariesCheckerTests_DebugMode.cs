@@ -19,12 +19,11 @@ namespace SceneBoundariesCheckerTests
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
 
-            Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedBox());
+            Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
 
             UnityEngine.Assertions.Assert.IsTrue(Environment.i.world.sceneBoundsChecker.enabled);
-            UnityEngine.Assertions.Assert.IsTrue(
-                Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox);
+            UnityEngine.Assertions.Assert.IsTrue(Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedFlicker);
         }
 
         [UnityTest]

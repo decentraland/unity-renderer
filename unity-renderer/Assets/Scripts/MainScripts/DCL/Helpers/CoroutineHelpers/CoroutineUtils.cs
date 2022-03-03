@@ -23,7 +23,7 @@ namespace DCL
             Func<double, bool> timeBudgetCounter
         )
         {
-            return CoroutineStarter.Start(DCLCoroutineRunner.Run(enumerator, onException, timeBudgetCounter));
+            return monoBehaviour.StartCoroutine(DCLCoroutineRunner.Run(enumerator, onException, timeBudgetCounter));
         }
 
 
@@ -42,7 +42,7 @@ namespace DCL
             Action<Exception> onException
         )
         {
-            return CoroutineStarter.Start(DCLCoroutineRunner.Run(enumerator, onException, null));
+            return monoBehaviour.StartCoroutine(DCLCoroutineRunner.Run(enumerator, onException, null));
         }
 
 

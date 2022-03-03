@@ -109,8 +109,8 @@ public class AvatarMeshCombinerHelperShould
         renderersToCombine[0].sharedMesh = null;
         renderersToCombine[1].sharedMesh = null;
         renderersToCombine[2].sharedMesh = null;
-        renderersToCombine[3].sharedMesh = null;
-        renderersToCombine[4] = null;
+        renderersToCombine[3].enabled = false;
+        renderersToCombine[4].enabled = false;
         renderersToCombine[5] = null;
         renderersToCombine[6] = null;
 
@@ -138,7 +138,7 @@ public class AvatarMeshCombinerHelperShould
         SkinnedMeshRenderer origSkr1 = renderersToCombine[3];
 
         renderersToCombine[1].sharedMesh = null;
-        renderersToCombine[2].sharedMesh = null;
+        renderersToCombine[2].enabled = false;
         renderersToCombine[3] = null;
 
         // Act

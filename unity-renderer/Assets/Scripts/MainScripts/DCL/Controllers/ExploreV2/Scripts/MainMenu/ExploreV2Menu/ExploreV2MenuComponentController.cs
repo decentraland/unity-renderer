@@ -35,6 +35,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal float chatInputHUDCloseTime = 0f;
     internal List<RealmRowComponentModel> currentAvailableRealms = new List<RealmRowComponentModel>();
 
+    internal RendererState rendererState => CommonScriptableObjects.rendererState;
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
     internal BaseVariable<int> currentSectionIndex => DataStore.i.exploreV2.currentSectionIndex;
     internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
@@ -59,6 +60,18 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void Initialize()
     {
+        // It waits for the world is up before starting to initialize the Start Menu
+        rendererState.OnChange += Initialize_Internal;
+        Initialize_Internal(rendererState.Get(), false);
+    }
+
+    internal void Initialize_Internal(bool currentRendererState, bool previousRendererState)
+    {
+        if (!currentRendererState)
+            return;
+
+        rendererState.OnChange -= Initialize_Internal;
+
         exploreV2Analytics = CreateAnalyticsController();
         view = CreateView();
         SetVisibility(false);
@@ -162,6 +175,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void Dispose()
     {
+        rendererState.OnChange -= Initialize_Internal;
         DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
         DataStore.i.realm.realmsInfo.OnSet -= UpdateAvailableRealmsInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
@@ -528,7 +542,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentProfileCard.SetIsClaimedName(profile.hasClaimedName);
         view.currentProfileCard.SetProfileName(profile.userName);
         view.currentProfileCard.SetProfileAddress(profile.ethAddress);
-        view.currentProfileCard.SetProfilePicture(profile.face256SnapshotURL);
+        view.currentProfileCard.SetProfilePicture(profile.face128SnapshotURL);
     }
 
     internal void OnCloseButtonPressed(bool fromShortcut)
@@ -592,5 +606,5 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal virtual IExploreV2Analytics CreateAnalyticsController() => new ExploreV2Analytics.ExploreV2Analytics();
 
-    protected internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
+    internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
 }

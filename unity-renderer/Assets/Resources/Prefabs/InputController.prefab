@@ -76,14 +76,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 32762977b0149684282db4ff59068cbf, type: 2}
   - {fileID: 11400000, guid: 38725fc935762a246976158d704f3b64, type: 2}
   - {fileID: 11400000, guid: 01f0b80c7a1c044868504467140ae590, type: 2}
-  - {fileID: 11400000, guid: a11a0b29d3b1143e2a9948ef2bf8d2eb, type: 2}
-  - {fileID: 11400000, guid: c01fe13e1029e4cf3beba2417ddc7684, type: 2}
   measurableActions:
   - {fileID: 11400000, guid: 44c3c5f07adca334696adae7b81c1869, type: 2}
   - {fileID: 11400000, guid: d1bc201cd2f5a1d4b8f721ccc29d2c0f, type: 2}
   - {fileID: 11400000, guid: c5302665e8f998e4ea2673bba5e22914, type: 2}
   - {fileID: 11400000, guid: 03d744388580e334391bfa394a66e6d7, type: 2}
-  - {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
   builderTriggerTimeActions:
   - {fileID: 11400000, guid: 4f763868020343f469cebb00aaf01960, type: 2}
   - {fileID: 11400000, guid: 02c21a2f1fb6f714f84c2fd94640f53a, type: 2}

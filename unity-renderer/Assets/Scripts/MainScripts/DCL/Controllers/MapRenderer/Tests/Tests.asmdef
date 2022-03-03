@@ -1,6 +1,5 @@
 {
   "name": "MapRendererTests",
-  "rootNamespace": "",
   "references": [
     "GUID:0e967802b778d404eac1ca5ea340e290",
     "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
@@ -10,8 +9,7 @@
     "GUID:27619889b8ba8c24980f49ee34dbb44a",
     "GUID:0acc523941302664db1f4e527237feb3",
     "GUID:e9cee4050cfa5534d9b26e2782df20be",
-    "GUID:ee6523961ef177343ad763fcd55c7c46",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
+    "GUID:ee6523961ef177343ad763fcd55c7c46"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

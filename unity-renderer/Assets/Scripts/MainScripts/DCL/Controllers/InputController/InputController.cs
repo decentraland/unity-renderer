@@ -83,8 +83,6 @@ public enum DCLAction_Hold
     //Remember to explicitly assign the value to each entry so we minimize issues with serialization + conflicts
     Sprint = 1,
     Jump = 2,
-    ZoomIn = 3,
-    ZoomOut = 4,
     FreeCameraMode = 101,
     VoiceChatRecording = 102,
     DefaultConfirmAction = 300,
@@ -111,7 +109,6 @@ public enum DCLAction_Measurable
     CharacterYAxis = 2,
     CameraXAxis = 3,
     CameraYAxis = 4,
-    MouseWheel = 5
 }
 
 /// <summary>
@@ -195,7 +192,7 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.CameraChange:
                     if (CommonScriptableObjects.cameraModeInputLocked.Get()) 
                         break;
-
+                    
                     //Disable until the fine-tuning is ready
                     if (ENABLE_THIRD_PERSON_CAMERA)
                         InputProcessor.FromKey(action, KeyCode.V,
@@ -399,14 +396,6 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, InputSettings.JumpButtonKeyCode,
                         InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
-                case DCLAction_Hold.ZoomIn:
-                    InputProcessor.FromKey(action, KeyCode.KeypadPlus, InputProcessor.Modifier.None);
-                    InputProcessor.FromKey(action, KeyCode.Plus, InputProcessor.Modifier.None);
-                    break;
-                case DCLAction_Hold.ZoomOut:
-                    InputProcessor.FromKey(action, KeyCode.KeypadMinus, InputProcessor.Modifier.None);
-                    InputProcessor.FromKey(action, KeyCode.Minus, InputProcessor.Modifier.None);
-                    break;
                 case DCLAction_Hold.FreeCameraMode:
                     //Disable until the fine-tuning is ready
                     if (ENABLE_THIRD_PERSON_CAMERA)
@@ -485,9 +474,6 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Measurable.CameraYAxis:
                     InputProcessor.FromAxis(action, "Mouse Y", InputProcessor.Modifier.NeedsPointerLocked);
-                    break;
-                case DCLAction_Measurable.MouseWheel:
-                    InputProcessor.FromAxis(action, "Mouse ScrollWheel", modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

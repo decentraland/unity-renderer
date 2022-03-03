@@ -1,35 +1,34 @@
 {
-  "name": "SettingsPanelHUDTests_PlayMode",
-  "rootNamespace": "",
-  "references": [
-    "UnityEngine.TestRunner",
-    "UnityEditor.TestRunner",
-    "TestHelpers",
-    "SettingsPanelHUD",
-    "Utils",
-    "HUDCommon",
-    "ScriptableObjects",
-    "Settings",
-    "Cinemachine",
-    "Unity.RenderPipelines.Core.Runtime",
-    "Unity.RenderPipelines.Universal.Runtime",
-    "SettingsControllers",
-    "UIHelpers",
-    "HUDInterfaces",
-    "BaseVariable"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "nunit.framework.dll",
-    "NSubstitute.dll"
-  ],
-  "autoReferenced": false,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "SettingsPanelHUDTests_PlayMode",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "TestHelpers",
+        "SettingsPanelHUD",
+        "Utils",
+        "HUDCommon",
+        "ScriptableObjects",
+        "Settings",
+        "Cinemachine",
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "SettingsControllers",
+        "UIHelpers",
+        "HUDInterfaces"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

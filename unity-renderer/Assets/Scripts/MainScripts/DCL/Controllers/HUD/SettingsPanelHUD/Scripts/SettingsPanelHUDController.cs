@@ -202,11 +202,7 @@ namespace DCL.SettingsPanelHUD
 
         public void ResetAllSettings() { Settings.i.ResetAllSettings(); }
 
-        public void SetTutorialButtonEnabled(bool isEnabled)
-        {
-            if (view != null)
-                view.SetTutorialButtonEnabled(isEnabled);
-        }
+        public void SetTutorialButtonEnabled(bool isEnabled) { view.SetTutorialButtonEnabled(isEnabled); }
 
         public void AddHelpAndSupportWindow(HelpAndSupportHUDController controller)
         {

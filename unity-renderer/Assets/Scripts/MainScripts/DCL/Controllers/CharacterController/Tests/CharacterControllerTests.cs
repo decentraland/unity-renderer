@@ -7,7 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
-using DCL.Interface;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -360,32 +359,6 @@ namespace Tests
             yield return null;
 
             Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be false when the shape colliders are disabled");
-        }
-
-        [UnityTest]
-        public IEnumerator ReportCameraRotationCorrectly()
-        {
-            yield return InitCharacterPosition(50, 2, 0);
-            CommonScriptableObjects.characterForward.Set(Vector3.back);
-            CommonScriptableObjects.cameraForward.Set(Vector3.right);
-            Quaternion cameraRotation = Quaternion.LookRotation(CommonScriptableObjects.cameraForward.Get());
-            DCLCharacterController.i.SetPosition(new Vector3(51, 2, 0));
-
-            bool rotationMatch = false;
-            void OnMessageFromEngine(string type, string payload)
-            {
-                if (type == "ReportPosition")
-                {
-                    var reportPayload = JsonUtility.FromJson<WebInterface.ReportPositionPayload>(payload);
-                    rotationMatch = cameraRotation.eulerAngles == reportPayload.cameraRotation.eulerAngles;
-                }
-            }
-
-            WebInterface.OnMessageFromEngine += OnMessageFromEngine;
-            yield return null;
-            WebInterface.OnMessageFromEngine -= OnMessageFromEngine;
-            
-            Assert.IsTrue(rotationMatch);
         }
     }
 }

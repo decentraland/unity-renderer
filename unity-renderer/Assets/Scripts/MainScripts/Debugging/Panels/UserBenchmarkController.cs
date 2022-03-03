@@ -146,8 +146,8 @@ namespace DCL
 
                 if (activeScene != null && activeScene.metricsCounter != null)
                 {
-                    var metrics = activeScene.metricsCounter.currentCount;
-                    var limits = activeScene.metricsCounter.maxCount;
+                    var metrics = activeScene.metricsCounter.GetModel();
+                    var limits = activeScene.metricsCounter.GetLimits();
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.CURRENT_SCENE, $"{activeScene.sceneData.id}");
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.POLYGONS_VS_LIMIT, $"{metrics.triangles} of {limits.triangles}");
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.TEXTURES_VS_LIMIT, $"{metrics.textures} of {limits.textures}");
@@ -166,13 +166,13 @@ namespace DCL
         {
             IWorldState worldState = Environment.i.world.state;
             string debugSceneId = KernelConfig.i.Get().debugConfig.sceneDebugPanelTargetSceneId;
-
+            
             if (!string.IsNullOrEmpty(debugSceneId))
             {
                 if (worldState.loadedScenes.TryGetValue(debugSceneId, out IParcelScene scene))
                     return scene;
             }
-
+            
             var currentPos = Utils.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition);
             return worldState.loadedScenes.Values.FirstOrDefault(
                 x => x.sceneData.parcels != null

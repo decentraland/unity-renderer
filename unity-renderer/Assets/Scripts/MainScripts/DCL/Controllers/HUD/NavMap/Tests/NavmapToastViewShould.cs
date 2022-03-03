@@ -27,7 +27,6 @@ namespace Tests
             yield return null;
 
             controller = new MinimapHUDController();
-            controller.Initialize();
             navmapView = Object.FindObjectOfType<NavmapView>();
             navmapToastView = navmapView.toastView;
 

@@ -2,7 +2,6 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -58,8 +57,6 @@ namespace DCL.Components
         DCLTexture emissiveDCLTexture = null;
         DCLTexture bumpDCLTexture = null;
 
-        private List<Coroutine> textureFetchCoroutines = new List<Coroutine>();
-
         public PBRMaterial()
         {
             model = new Model();
@@ -107,29 +104,22 @@ namespace DCL.Components
             material.SetFloat(ShaderUtils.EnvironmentReflections, model.microSurface);
             material.SetFloat(ShaderUtils.SpecularHighlights, model.specularIntensity * model.directIntensity);
 
-
             // FETCH AND LOAD EMISSIVE TEXTURE
-            var fetchEmission = FetchTexture(ShaderUtils.EmissionMap, model.emissiveTexture, emissiveDCLTexture);
+            SetMaterialTexture(ShaderUtils.EmissionMap, model.emissiveTexture, emissiveDCLTexture);
 
             SetupTransparencyMode();
 
             // FETCH AND LOAD TEXTURES
-            var fetchBaseMap = FetchTexture(ShaderUtils.BaseMap, model.albedoTexture, albedoDCLTexture);
-            var fetchAlpha = FetchTexture(ShaderUtils.AlphaTexture, model.alphaTexture, alphaDCLTexture);
-            var fetchBump = FetchTexture(ShaderUtils.BumpMap, model.bumpTexture, bumpDCLTexture);
+            SetMaterialTexture(ShaderUtils.BaseMap, model.albedoTexture, albedoDCLTexture);
+            SetMaterialTexture(ShaderUtils.AlphaTexture, model.alphaTexture, alphaDCLTexture);
+            SetMaterialTexture(ShaderUtils.BumpMap, model.bumpTexture, bumpDCLTexture);
 
-            textureFetchCoroutines.Add(CoroutineStarter.Start(fetchEmission));
-            textureFetchCoroutines.Add(CoroutineStarter.Start(fetchBaseMap));
-            textureFetchCoroutines.Add(CoroutineStarter.Start(fetchAlpha));
-            textureFetchCoroutines.Add(CoroutineStarter.Start(fetchBump));
+            foreach (IDCLEntity decentralandEntity in attachedEntities)
+            {
+                InitMaterial(decentralandEntity.meshRootGameObject);
+            }
 
-            yield return fetchBaseMap;
-            yield return fetchAlpha;
-            yield return fetchBump;
-            yield return fetchEmission;
-
-            foreach (IDCLEntity entity in attachedEntities)
-                InitMaterial(entity);
+            return null;
         }
 
         private void SetupTransparencyMode()
@@ -220,82 +210,81 @@ namespace DCL.Components
                 var meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
 
                 if (meshRenderer != null)
-                    InitMaterial(entity);
+                {
+                    InitMaterial(entity.meshRootGameObject);
+                }
             }
         }
 
-        void InitMaterial(IDCLEntity entity)
+        void InitMaterial(GameObject meshGameObject)
         {
-            var meshGameObject = entity.meshRootGameObject;
-
             if (meshGameObject == null)
+            {
                 return;
+            }
 
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
-
             if (meshRenderer == null)
                 return;
-
             Model model = (Model) this.model;
 
             meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
-
-            if (meshRenderer.sharedMaterial == material)
-                return;
-
-            MaterialTransitionController
-                matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
-
-            if (matTransition != null && matTransition.canSwitchMaterial)
+            if (meshRenderer.sharedMaterial != material)
             {
-                matTransition.finalMaterials = new Material[] { material };
-                matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
+                MaterialTransitionController
+                    matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
+
+                if (matTransition != null && matTransition.canSwitchMaterial)
+                {
+                    matTransition.finalMaterials = new Material[] { material };
+                    matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
+                }
+
+                meshRenderer.sharedMaterial = material;
+                SRPBatchingHelper.OptimizeMaterial(material);
             }
-
-            Material oldMaterial = meshRenderer.sharedMaterial;
-            meshRenderer.sharedMaterial = material;
-            SRPBatchingHelper.OptimizeMaterial(material);
-
-            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, entity.entityId, oldMaterial);
-            DataStore.i.sceneWorldObjects.AddMaterial(scene.sceneData.id, entity.entityId, material);
         }
 
         private void OnShapeUpdated(IDCLEntity entity)
         {
             if (entity != null)
-                InitMaterial(entity);
+            {
+                InitMaterial(entity.meshRootGameObject);
+            }
         }
 
-        private void OnMaterialDetached(IDCLEntity entity)
+        void OnMaterialDetached(IDCLEntity entity)
         {
             if (entity.meshRootGameObject == null)
+            {
                 return;
+            }
 
             entity.OnShapeUpdated -= OnShapeUpdated;
 
             var meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
 
             if (meshRenderer && meshRenderer.sharedMaterial == material)
+            {
                 meshRenderer.sharedMaterial = null;
-
-            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, entity.entityId, material);
+            }
         }
 
-        IEnumerator FetchTexture(int materialPropertyId, string textureComponentId, DCLTexture cachedDCLTexture)
+        void SetMaterialTexture(int materialPropertyId, string textureComponentId, DCLTexture cachedDCLTexture)
         {
             if (!string.IsNullOrEmpty(textureComponentId))
             {
                 if (!AreSameTextureComponent(cachedDCLTexture, textureComponentId))
                 {
-                    yield return DCLTexture.FetchTextureComponent(scene, textureComponentId,
+                    CoroutineStarter.Start(DCLTexture.FetchTextureComponent(scene, textureComponentId,
                         (fetchedDCLTexture) =>
                         {
-                            if (material == null)
-                                return;
-
-                            material.SetTexture(materialPropertyId, fetchedDCLTexture.texture);
-                            SwitchTextureComponent(cachedDCLTexture, fetchedDCLTexture);
-                        });
+                            if (material != null)
+                            {
+                                material.SetTexture(materialPropertyId, fetchedDCLTexture.texture);
+                                SwitchTextureComponent(cachedDCLTexture, fetchedDCLTexture);
+                            }
+                        }));
                 }
             }
             else
@@ -329,14 +318,6 @@ namespace DCL.Components
             if (material != null)
             {
                 Utils.SafeDestroy(material);
-            }
-
-            for (int i = 0; i < textureFetchCoroutines.Count; i++)
-            {
-                var coroutine = textureFetchCoroutines[i];
-
-                if ( coroutine != null )
-                    CoroutineStarter.Stop(coroutine);
             }
 
             base.Dispose();

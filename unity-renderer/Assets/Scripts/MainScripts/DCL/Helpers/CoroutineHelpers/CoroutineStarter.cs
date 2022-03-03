@@ -5,7 +5,7 @@ public class CoroutineStarter : MonoBehaviour
 {
     private static CoroutineStarter instanceValue;
 
-    public static CoroutineStarter instance
+    private static CoroutineStarter instance
     {
         get
         {

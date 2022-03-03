@@ -14,7 +14,7 @@ namespace DCL.Components
     public class DCLVideoTexture : DCLTexture
     {
         public static bool VERBOSE = false;
-        public static Logger logger = new Logger("DCLVideoTexture") { verboseEnabled = VERBOSE };
+        public static ILogger logger = new Logger(Debug.unityLogger) { filterLogType = VERBOSE ? LogType.Log : LogType.Error };
 
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
         private const float VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS = 1f;
@@ -94,7 +94,7 @@ namespace DCL.Components
 
                 if (dclVideoClip == null)
                 {
-                    logger.Error( "Wrong video clip type when playing VideoTexture!!");
+                    logger.LogError("DCLVideoTexture", "Wrong video clip type when playing VideoTexture!!");
                     yield break;
                 }
 
@@ -152,7 +152,6 @@ namespace DCL.Components
                 texturePlayer.SetLoop(model.loop);
             }
         }
-
         private void Initialize(DCLVideoClip dclVideoClip)
         {
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
@@ -318,28 +317,28 @@ namespace DCL.Components
 
         private void OnSceneIDChanged(string current, string previous) { isPlayerInScene = IsPlayerInSameSceneAsComponent(current); }
 
-        public override void AttachTo(PBRMaterial component)
+        public override void AttachTo(PBRMaterial material)
         {
-            base.AttachTo(component);
-            AttachToMaterial(component);
+            base.AttachTo(material);
+            AttachToMaterial(material);
         }
 
-        public override void DetachFrom(PBRMaterial component)
+        public override void DetachFrom(PBRMaterial material)
         {
-            base.DetachFrom(component);
-            DetachFromMaterial(component);
+            base.DetachFrom(material);
+            DetachFromMaterial(material);
         }
 
-        public override void AttachTo(BasicMaterial component)
+        public override void AttachTo(BasicMaterial material)
         {
-            base.AttachTo(component);
-            AttachToMaterial(component);
+            base.AttachTo(material);
+            AttachToMaterial(material);
         }
 
-        public override void DetachFrom(BasicMaterial component)
+        public override void DetachFrom(BasicMaterial material)
         {
-            base.DetachFrom(component);
-            DetachFromMaterial(component);
+            base.DetachFrom(material);
+            DetachFromMaterial(material);
         }
 
         private void AttachToMaterial(BaseDisposable baseDisposable)
@@ -378,20 +377,20 @@ namespace DCL.Components
         }
 
         // TODO: we will need an event for visibility change on UI for supporting video
-        public override void AttachTo(UIImage component)
+        public override void AttachTo(UIImage image)
         {
-            if (!attachedMaterials.ContainsKey(component.id))
+            if (!attachedMaterials.ContainsKey(image.id))
             {
-                attachedMaterials.Add(component.id, new UIShapeComponent(component));
+                attachedMaterials.Add(image.id, new UIShapeComponent(image));
                 isPlayStateDirty = true;
             }
         }
 
-        public override void DetachFrom(UIImage component)
+        public override void DetachFrom(UIImage image)
         {
-            if (attachedMaterials.ContainsKey(component.id))
+            if (attachedMaterials.ContainsKey(image.id))
             {
-                attachedMaterials.Remove(component.id);
+                attachedMaterials.Remove(image.id);
                 isPlayStateDirty = true;
             }
         }

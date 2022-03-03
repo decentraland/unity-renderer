@@ -9,19 +9,19 @@ namespace DCL
     /// <summary>
     /// The Rendereable object represents any loaded object that should be visible in the world.
     /// 
-    /// With this in place, the SceneBoundsChecker, CullingController and SceneMetricsCounter
-    /// implementations can  be changed to be reactive, and lots of FindObjects and GetComponentsInChildren
-    /// calls can be saved.
+    /// In the future, we may want to add a Renderer[] list here.
+    ///
+    /// With this in place, the SceneBoundsChecker and CullingController implementations can
+    /// be changed to be reactive, and lots of FindObjects and GetComponentsInChildren calls can be
+    /// saved.
     /// </summary>
     public class Rendereable : ICloneable
     {
         public string ownerId;
         public GameObject container;
+        public List<Mesh> meshes = new List<Mesh>();
         public Dictionary<Mesh, int> meshToTriangleCount = new Dictionary<Mesh, int>();
-        public HashSet<Mesh> meshes = new HashSet<Mesh>();
-        public HashSet<Renderer> renderers = new HashSet<Renderer>();
-        public HashSet<Material> materials = new HashSet<Material>();
-        public HashSet<Texture> textures = new HashSet<Texture>();
+        public List<Renderer> renderers = new List<Renderer>();
         public int totalTriangleCount = 0;
 
         public bool Equals(Rendereable other)
@@ -33,10 +33,8 @@ namespace DCL
         {
             var result = (Rendereable)this.MemberwiseClone();
             result.meshToTriangleCount = new Dictionary<Mesh, int>(meshToTriangleCount);
-            result.renderers = new HashSet<Renderer>(renderers);
-            result.materials = new HashSet<Material>(materials);
-            result.textures = new HashSet<Texture>(textures);
-            result.meshes = new HashSet<Mesh>(meshes);
+            result.renderers = new List<Renderer>(renderers);
+            result.meshes = new List<Mesh>(meshes);
             return result;
         }
 
@@ -44,19 +42,11 @@ namespace DCL
         {
             Rendereable rendereable = new Rendereable();
             rendereable.container = go;
-            rendereable.renderers = MeshesInfoUtils.ExtractUniqueRenderers(go);
-            rendereable.materials = MeshesInfoUtils.ExtractUniqueMaterials(rendereable.renderers);
-            rendereable.textures = MeshesInfoUtils.ExtractUniqueTextures(rendereable.materials);
-            rendereable.meshes = MeshesInfoUtils.ExtractUniqueMeshes(rendereable.renderers);
-            rendereable.meshToTriangleCount = MeshesInfoUtils.ExtractMeshToTriangleMap(rendereable.meshes.ToList());
+            rendereable.renderers = go.GetComponentsInChildren<Renderer>().ToList();
+            rendereable.meshes = MeshesInfoUtils.ExtractMeshes(go);
+            rendereable.meshToTriangleCount = MeshesInfoUtils.ExtractMeshToTriangleMap(rendereable.meshes);
             rendereable.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(rendereable.renderers, rendereable.meshToTriangleCount);
-
             return rendereable;
-        }
-
-        public override string ToString()
-        {
-            return $"Rendereable - owner: {ownerId} ... textures: {textures.Count} ... triangles: {totalTriangleCount} ... materials: {materials.Count} ... meshes: {meshes.Count} ... renderers: {renderers.Count}";
         }
     }
 }

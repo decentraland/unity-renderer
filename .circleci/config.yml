@@ -327,7 +327,7 @@ jobs:
           working_directory: *node_workspace
           name: npm run test
           command: npm run test
-      - run: sudo apt-get update && sudo apt-get -y -qq install awscli
+      - run: sudo apt-get -y -qq install awscli
       - run:
           working_directory: *node_workspace
           name: Deploy artifacts

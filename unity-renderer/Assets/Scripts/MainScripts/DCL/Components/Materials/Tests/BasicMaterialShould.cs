@@ -21,13 +21,6 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         Environment.i.world.sceneBoundsChecker.Stop();
     }
 
-    [UnityTearDown]
-    protected override IEnumerator TearDown()
-    {
-        Object.Destroy(scene.gameObject);
-        yield return base.TearDown();
-    }
-
     [UnityTest]
     public IEnumerator NotDestroySharedTextureWhenDisposed()
     {
@@ -234,7 +227,6 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         }));
 
         yield return materialComponent.routine;
-        yield return dclTexture.routine;
 
         // Check updated properties
         {
@@ -245,9 +237,6 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
             Assert.AreEqual(TextureWrapMode.Mirror, mainTex.wrapMode);
             Assert.AreEqual(FilterMode.Bilinear, mainTex.filterMode);
         }
-
-        dclTexture.Dispose();
-        materialComponent.Dispose();
     }
 
     [UnityTest]

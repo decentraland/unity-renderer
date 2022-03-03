@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63147028144fcb54b83050d79e56f508, type: 3}
+  m_Name: Default Avatar
+  m_EditorClassIdentifier: 
+  avatarEditor:
+    tintColor: {r: 0.6431373, g: 0.57254905, b: 0.5411765, a: 1}
+    lightColor: {r: 0.8396226, g: 0.8396226, b: 0.8396226, a: 1}
+    lightDirection: {x: -0.45, y: 0, z: -0.4}
+  inWorld:
+    tintColor: {r: 0.5188679, g: 0.44939685, b: 0.4185208, a: 1}
+    lightColor: {r: 0.8207547, g: 0.8207547, b: 0.8207547, a: 1}
+    lightDirection: {x: -0.1, y: 0.8, z: -0.4}

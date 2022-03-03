@@ -11,11 +11,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Cysharp.Threading.Tasks;
 using NSubstitute;
 using NSubstitute.Extensions;
-using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -1285,36 +1284,6 @@ namespace DCL.Helpers
         public static T CreateComponentWithGameObject<T>(string gameObjectName) where T : Component
         {
             return new GameObject(gameObjectName).AddComponent<T>();
-        }
-
-        // NUnit version of Unity is not up to day and doesnt have ThrowsAsync assertions, this mimics it:
-        // https://forum.unity.com/threads/can-i-replace-upgrade-unitys-nunit.488580/#post-6543523
-        public static async UniTask ThrowsAsync<T>(UniTask asyncMethod) where T : Exception { await ThrowsAsync<T>(asyncMethod, ""); }
-
-        public static async UniTask ThrowsAsync<T>(UniTask asyncMethod, string message) where T : Exception
-        {
-            try
-            {
-                await asyncMethod; //Should throw..
-            }
-            catch (T)
-            {
-                //Ok! Swallow the exception.
-                return;
-            }
-            catch (Exception e)
-            {
-                if (message != "")
-                {
-                    Assert.That(e, Is.TypeOf<T>(), message + " " + e.ToString()); //of course this fail because it goes through the first catch..
-                }
-                else
-                {
-                    Assert.That(e, Is.TypeOf<T>(), e.ToString());
-                }
-                throw; //probably unreachable
-            }
-            Assert.Fail("Expected an exception of type " + typeof(T).FullName + " but no exception was thrown."  );
         }
     }
 }

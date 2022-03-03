@@ -15,7 +15,7 @@ namespace DCL
     /// </summary>
     public abstract class Asset : System.ICloneable
     {
-        public object id { get; set; }
+        public object id { get; internal set; }
 
         public virtual object Clone() { return this.MemberwiseClone(); }
 

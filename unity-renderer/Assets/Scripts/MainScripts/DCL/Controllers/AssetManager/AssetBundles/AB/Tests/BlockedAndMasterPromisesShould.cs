@@ -2,8 +2,6 @@ using AssetPromiseKeeper_Tests;
 using DCL;
 using DCL.Helpers;
 using System.Collections;
-using System.Text.RegularExpressions;
-using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
@@ -21,10 +19,10 @@ namespace AssetPromiseKeeper_AssetBundle_Tests
         }
 
         [UnityTest]
-        public IEnumerator AB_FailCorrectlyWhenGivenWrongURL()
+        public IEnumerator FailCorrectlyWhenGivenWrongURL()
         {
             string url = "non_existing_url.glb";
-            
+
             AssetPromise_AB prom = CreatePromise(url);
             Asset_AB asset = null;
             bool failEventCalled1 = false;
@@ -46,6 +44,8 @@ namespace AssetPromiseKeeper_AssetBundle_Tests
             keeper.Keep(prom);
             keeper.Keep(prom2);
             keeper.Keep(prom3);
+
+            Assert.AreEqual(3, keeper.waitingPromisesCount);
 
             yield return prom;
             yield return prom2;

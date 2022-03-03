@@ -253,7 +253,6 @@ namespace SceneBoundariesCheckerTests
             TestUtils.SetEntityTransform(scene, entity, transformModel);
 
             yield return null;
-            yield return null;
 
             AssertMeshIsValid(entity.meshesInfo);
         }
@@ -317,17 +316,13 @@ namespace SceneBoundariesCheckerTests
         {
             Assert.IsTrue(meshesInfo.meshRootGameObject != null, "MeshRootGameObject is null. The object is valid when it shouldn't.");
 
-            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox)
+            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedFlicker)
             {
-                bool hasWireframe = false;
-
-                foreach (Transform t in meshesInfo.innerGameObject.transform)
+                for (int i = 0; i < meshesInfo.renderers.Length; i++)
                 {
-                    if (t.name.Contains("Wireframe"))
-                        hasWireframe = true;
+                    string matName = meshesInfo.renderers[i].sharedMaterial.name;
+                    Assert.IsTrue(matName.Contains("Invalid"), $"Material should be Invalid. Material is: {matName}");
                 }
-
-                Assert.That(hasWireframe, Is.True); 
             }
             else
             {
@@ -348,17 +343,13 @@ namespace SceneBoundariesCheckerTests
             if (meshesInfo.meshRootGameObject == null)
                 return; // It's valid if there's no mesh
 
-            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox)
+            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedFlicker)
             {
-                bool hasWireframe = false;
-
-                foreach (Transform t in meshesInfo.innerGameObject.transform)
+                for (int i = 0; i < meshesInfo.renderers.Length; i++)
                 {
-                    if (t.name.Contains("Wireframe"))
-                        hasWireframe = true;
+                    string matName = meshesInfo.renderers[i].sharedMaterial.name;
+                    Assert.IsFalse(matName.Contains("Invalid"), $"Material shouldn't be invalid. Material is: {matName}");
                 }
-
-                Assert.That(hasWireframe, Is.False); 
             }
             else
             {

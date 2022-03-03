@@ -15,7 +15,6 @@ namespace Tests
         [UnitySetUp]
         protected virtual IEnumerator SetUp()
         {
-            CommonScriptableObjects.rendererState.Set(true);
             DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
             DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
             AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
@@ -31,13 +30,6 @@ namespace Tests
         protected virtual IEnumerator TearDown()
         {
             PoolManager.i?.Dispose();
-            AssetPromiseKeeper_GLTF.i?.Cleanup();
-            AssetPromiseKeeper_AB_GameObject.i?.Cleanup();
-            AssetPromiseKeeper_AB.i?.Cleanup();
-            AssetPromiseKeeper_Texture.i?.Cleanup();
-            AssetPromiseKeeper_AudioClip.i?.Cleanup();
-            AssetPromiseKeeper_Gif.i?.Cleanup();
-
             DataStore.Clear();
 
             yield return null;

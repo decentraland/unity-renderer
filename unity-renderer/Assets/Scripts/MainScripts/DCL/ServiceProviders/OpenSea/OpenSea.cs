@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Linq;
 using DCL.Helpers.NFT.Markets.OpenSea_Internal;
-using UnityEngine;
 
 namespace DCL.Helpers.NFT.Markets
 {
@@ -30,7 +29,7 @@ namespace DCL.Helpers.NFT.Markets
 
         IEnumerator INFTMarket.FetchNFTInfo(string assetContractAddress, string tokenId, Action<NFTInfo> onSuccess, Action<string> onError)
         {
-            RequestBase<AssetResponse> request = requestController.FetchNFT(assetContractAddress, tokenId);
+            var request = requestController.FetchNFT(assetContractAddress, tokenId);
 
             yield return new UnityEngine.WaitUntil(() => !request.pending);
 
@@ -46,7 +45,7 @@ namespace DCL.Helpers.NFT.Markets
 
         IEnumerator INFTMarket.FetchNFTInfoSingleAsset(string assetContractAddress, string tokenId, Action<NFTInfoSingleAsset> onSuccess, Action<string> onError)
         {
-            RequestBase<SingleAssetResponse> request = requestController.FetchSingleNFT(assetContractAddress, tokenId);
+            var request = requestController.FetchSingleNFT(assetContractAddress, tokenId);
 
             yield return new UnityEngine.WaitUntil(() => !request.pending);
 

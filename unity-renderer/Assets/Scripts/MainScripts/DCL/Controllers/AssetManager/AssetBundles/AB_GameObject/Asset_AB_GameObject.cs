@@ -9,11 +9,9 @@ namespace DCL
         internal AssetPromise_AB ownerPromise;
 
         public override GameObject container { get; set; }
+        public List<Mesh> meshes = new List<Mesh>();
         public Dictionary<Mesh, int> meshToTriangleCount = new Dictionary<Mesh, int>();
-        public HashSet<Renderer> renderers = new HashSet<Renderer>();
-        public HashSet<Mesh> meshes = new HashSet<Mesh>();
-        public HashSet<Material> materials = new HashSet<Material>();
-        public HashSet<Texture> textures = new HashSet<Texture>();
+        public List<Renderer> renderers = new List<Renderer>();
         public int totalTriangleCount = 0;
 
         public Asset_AB_GameObject()
@@ -26,11 +24,9 @@ namespace DCL
         public override object Clone()
         {
             Asset_AB_GameObject result = this.MemberwiseClone() as Asset_AB_GameObject;
-            result.meshes = new HashSet<Mesh>(meshes);
+            result.meshes = new List<Mesh>(meshes);
             result.meshToTriangleCount = new Dictionary<Mesh, int>(meshToTriangleCount);
-            result.renderers = new HashSet<Renderer>(renderers);
-            result.materials = new HashSet<Material>(materials);
-            result.textures = new HashSet<Texture>(textures);
+            result.renderers = new List<Renderer>(renderers);
             return result;
         }
 

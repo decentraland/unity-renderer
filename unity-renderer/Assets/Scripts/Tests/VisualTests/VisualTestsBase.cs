@@ -44,7 +44,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
 
         VisualTestUtils.snapshotIndex = 0;
 
-        VisualTestUtils.SetTestingRenderSettings();
+        RenderProfileManifest.i.Initialize(RenderProfileManifest.i.testProfile);
 
         // Position character inside parcel (0,0)
         camera = TestUtils.CreateComponentWithGameObject<Camera>("CameraContainer");

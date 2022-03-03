@@ -23,16 +23,13 @@ namespace DCL.Interface
         public static bool VERBOSE = false;
 
         [System.Serializable]
-        public class ReportPositionPayload
+        private class ReportPositionPayload
         {
             /** Camera position, world space */
             public Vector3 position;
 
-            /** Character rotation */
-            public Quaternion rotation;
-            
             /** Camera rotation */
-            public Quaternion cameraRotation;
+            public Quaternion rotation;
 
             /** Camera height, relative to the feet of the avatar or ground */
             public float playerHeight;
@@ -666,15 +663,6 @@ namespace DCL.Interface
             public RayInfo ray = new RayInfo();
         }
 
-        [System.Serializable]
-        public class TimeReportPayload
-        {
-            public float timeNormalizationFactor;
-            public float cycleTime;
-            public bool isPaused;
-            public float time;
-        }
-
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -814,7 +802,6 @@ namespace DCL.Interface
         public static AvatarOnClickPayload avatarOnClickPayload = new AvatarOnClickPayload();
         private static UUIDEvent<EmptyPayload> onPointerHoverEnterEvent = new UUIDEvent<EmptyPayload>();
         private static UUIDEvent<EmptyPayload> onPointerHoverExitEvent = new UUIDEvent<EmptyPayload>();
-        private static TimeReportPayload timeReportPayload = new TimeReportPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -835,12 +822,11 @@ namespace DCL.Interface
             SendMessage("AllScenesEvent", allScenesEvent);
         }
 
-        public static void ReportPosition(Vector3 position, Quaternion rotation, float playerHeight, Quaternion cameraRotation)
+        public static void ReportPosition(Vector3 position, Quaternion rotation, float playerHeight)
         {
             positionPayload.position = position;
             positionPayload.rotation = rotation;
             positionPayload.playerHeight = playerHeight;
-            positionPayload.cameraRotation = cameraRotation;
 
             SendMessage("ReportPosition", positionPayload);
         }
@@ -1145,6 +1131,8 @@ namespace DCL.Interface
         [System.Serializable]
         public class SaveAvatarPayload
         {
+            public string face;
+            public string face128;
             public string face256;
             public string body;
             public bool isSignUpFlow;
@@ -1203,11 +1191,13 @@ namespace DCL.Interface
             SendMessage("RequestOwnProfileUpdate");
         }
 
-        public static void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
+        public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
         {
             var payload = new SaveAvatarPayload()
             {
                 avatar = avatar,
+                face = System.Convert.ToBase64String(faceSnapshot.EncodeToPNG()),
+                face128 = System.Convert.ToBase64String(face128Snapshot.EncodeToPNG()),
                 face256 = System.Convert.ToBase64String(face256Snapshot.EncodeToPNG()),
                 body = System.Convert.ToBase64String(bodySnapshot.EncodeToPNG()),
                 isSignUpFlow = isSignUpFlow
@@ -1285,6 +1275,11 @@ namespace DCL.Interface
                 id = expressionID,
                 timestamp = timestamp
             });
+        }
+
+        public static void ReportMotdClicked()
+        {
+            SendMessage("MotdConfirmClicked");
         }
 
         public static void OpenURL(string url)
@@ -1577,15 +1572,6 @@ namespace DCL.Interface
         {
             onPointerHoverExitEvent.uuid = uuid;
             SendSceneEvent(sceneId, "uuidEvent", onPointerHoverExitEvent);
-        }
-
-        public static void ReportTime(float time, bool isPaused, float timeNormalizationFactor, float cycleTime)
-        {
-            timeReportPayload.time = time;
-            timeReportPayload.isPaused = isPaused;
-            timeReportPayload.timeNormalizationFactor = timeNormalizationFactor;
-            timeReportPayload.cycleTime = cycleTime;
-            SendMessage("ReportDecentralandTime", timeReportPayload);
-        }
+        }   
     }
 }

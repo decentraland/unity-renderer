@@ -19,6 +19,8 @@ namespace DCL
         protected bool isLoadingOrLoaded = false;
         private WebRequestAsyncOperation loadOp;
 
+        private void Start() { targetImage.color = Color.clear; }
+
         public virtual WebRequestAsyncOperation LoadChunkImage()
         {
             isLoadingOrLoaded = true;
@@ -27,20 +29,14 @@ namespace DCL
 
             Texture2D result = null;
 
-            return Utils.FetchTexture(url, true, (x) =>
+            return Utils.FetchTexture(url, false, (x) =>
             {
                 result = x;
 
                 if (result == null)
                     return;
 
-                var newTexture = new Texture2D(result.width, result.height, result.format, true);
-                newTexture.SetPixels32(result.GetPixels32(0), 0);
-                newTexture.Apply(true);
-                Destroy(result);
-
-                targetImage.texture = newTexture;
-                targetImage.texture.wrapMode = TextureWrapMode.Clamp;
+                targetImage.texture = result;
                 targetImage.SetNativeSize();
                 targetImage.color = Color.white;
             });

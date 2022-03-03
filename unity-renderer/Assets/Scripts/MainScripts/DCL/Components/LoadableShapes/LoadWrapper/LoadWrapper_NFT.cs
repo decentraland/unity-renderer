@@ -27,7 +27,7 @@ namespace DCL.Components
             Utils.SafeDestroy(entity.meshRootGameObject);
             entity.meshesInfo.CleanReferences();
 
-            DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.id, rendereable);
+            DataStore.i.sceneWorldObjects.RemoveRendereable(entity, rendereable);
         }
 
         public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper, Exception> OnFail)
@@ -72,8 +72,7 @@ namespace DCL.Components
             alreadyLoaded = true;
 
             rendereable = Rendereable.CreateFromGameObject(entity.meshRootGameObject);
-            rendereable.ownerId = entity.entityId;
-            DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.id, rendereable);
+            DataStore.i.sceneWorldObjects.AddRendereable(entity, rendereable);
 
             entity.OnShapeUpdated?.Invoke(entity);
             entity.OnShapeLoaded?.Invoke(entity);

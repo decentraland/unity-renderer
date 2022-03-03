@@ -228,15 +228,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private bool EntityHasBeenAddedSinceLastUpdate() { return (entityHandler.GetCurrentSceneEntityCount() > entityCount); }
 
-    private void OnDestroy()
-    {
-#if UNITY_STANDALONE || UNITY_EDITOR
-        if (DataStore.i.common.isApplicationQuitting.Get())
-            return;
-#endif
-        
-        Dispose();
-    }
+    private void OnDestroy() { Dispose(); }
 
     public void Dispose()
     {

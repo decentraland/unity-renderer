@@ -96,6 +96,24 @@ namespace DCL
             cameraForward = CommonScriptableObjects.cameraForward.Get();
 
             UpdateAllLODs(maxAvatars.Get(), maxImpostors.Get());
+            UpdateLODsBillboard();
+        }
+
+        internal void UpdateLODsBillboard()
+        {
+            foreach (var kvp in lodControllers)
+            {
+                Player player = kvp.Value.player;
+
+                if (!IsInFrontOfCamera(player.worldPosition))
+                    continue;
+
+                Vector3 previousForward = player.forwardDirection;
+                Vector3 lookAtDir = (cameraPosition - player.worldPosition).normalized;
+
+                lookAtDir.y = previousForward.y;
+                player.renderer.SetImpostorForward(lookAtDir);
+            }
         }
 
         internal void UpdateAllLODs(int maxAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
@@ -125,11 +143,11 @@ namespace DCL
 
                 if (avatarsCount < maxAvatars)
                 {
-                    lodController.SetAnimationThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(distance));
+                    lodController.SetThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(distance));
                     if (distance < simpleAvatarDistance)
-                        lodController.SetLOD0();
+                        lodController.SetFullAvatar();
                     else
-                        lodController.SetLOD1();
+                        lodController.SetSimpleAvatar();
                     avatarsCount++;
 
                     if (mainCamera == null)
@@ -143,7 +161,7 @@ namespace DCL
                 lodController.SetNameVisible(false);
                 if (impostorCount < maxImpostors)
                 {
-                    lodController.SetLOD2();
+                    lodController.SetImpostor();
                     lodController.UpdateImpostorTint(distance);
                     impostorCount++;
                     continue;

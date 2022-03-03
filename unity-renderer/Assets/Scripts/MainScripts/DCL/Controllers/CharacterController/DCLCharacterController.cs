@@ -35,6 +35,8 @@ public class DCLCharacterController : MonoBehaviour
 
     new Collider collider;
 
+    float deltaTime = 0.032f;
+    float deltaTimeCap = 0.032f; // 32 milliseconds = 30FPS, 16 millisecodns = 60FPS
     float lastUngroundedTime = 0f;
     float lastJumpButtonPressedTime = 0f;
     float lastMovementReportTime;
@@ -250,6 +252,8 @@ public class DCLCharacterController : MonoBehaviour
 
     internal void LateUpdate()
     {
+        deltaTime = Mathf.Min(deltaTimeCap, Time.deltaTime);
+
         if (transform.position.y < minimumYPosition)
         {
             SetPosition(characterPosition.worldPosition);
@@ -264,7 +268,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             velocity.x = 0f;
             velocity.z = 0f;
-            velocity.y += gravity * Time.deltaTime;
+            velocity.y += gravity * deltaTime;
 
             bool previouslyGrounded = isGrounded;
 
@@ -274,7 +278,7 @@ public class DCLCharacterController : MonoBehaviour
             if (isGrounded)
             {
                 isJumping = false;
-                velocity.y = gravity * Time.deltaTime; // to avoid accumulating gravity in velocity.y while grounded
+                velocity.y = gravity * deltaTime; // to avoid accumulating gravity in velocity.y while grounded
             }
             else if (previouslyGrounded && !isJumping)
             {
@@ -333,7 +337,7 @@ public class DCLCharacterController : MonoBehaviour
             //NOTE(Brian): Transform has to be in sync before the Move call, otherwise this call
             //             will reset the character controller to its previous position.
             Environment.i.platform.physicsSyncController?.Sync();
-            characterController.Move(velocity * Time.deltaTime);
+            characterController.Move(velocity * deltaTime);
         }
 
         SetPosition(PositionUtils.UnityToWorldPosition(transform.position));
@@ -347,7 +351,8 @@ public class DCLCharacterController : MonoBehaviour
         {
             SaveLateUpdateGroundTransforms();
         }
-        OnUpdateFinish?.Invoke(Time.deltaTime);
+
+        OnUpdateFinish?.Invoke(deltaTime);
     }
 
     private void SaveLateUpdateGroundTransforms()
@@ -522,7 +527,6 @@ public class DCLCharacterController : MonoBehaviour
         var reportPosition = characterPosition.worldPosition + (Vector3.up * height);
         var compositeRotation = Quaternion.LookRotation(cameraForward.Get());
         var playerHeight = height + (characterController.height / 2);
-        var cameraRotation = Quaternion.LookRotation(cameraForward.Get());
 
         //NOTE(Brian): We have to wait for a Teleport before sending the ReportPosition, because if not ReportPosition events will be sent
         //             When the spawn point is being selected / scenes being prepared to be sent and the Kernel gets crazy.
@@ -531,7 +535,7 @@ public class DCLCharacterController : MonoBehaviour
         //                  - Scenes not being sent for loading, making ActivateRenderer never being sent, only in WSS mode.
         //                  - Random teleports to 0,0 or other positions that shouldn't happen.
         if (initialPositionAlreadySet)
-            DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight, cameraRotation);
+            DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight);
 
         lastMovementReportTime = DCLTime.realtimeSinceStartup;
     }

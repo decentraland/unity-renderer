@@ -6,7 +6,6 @@ using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace DCL
 {
@@ -36,8 +35,6 @@ namespace DCL
         public FilterMode unitySamplingMode;
         public Texture2D texture;
         protected bool isDisposed;
-
-        public Dictionary<ISharedComponent, HashSet<string>> attachedComponents = new Dictionary<ISharedComponent, HashSet<string>>();
 
         public override int GetClassId() { return (int) CLASS_ID.TEXTURE; }
 
@@ -107,7 +104,9 @@ namespace DCL
 
                     // The used texture variable can't be null for the ImageConversion.LoadImage to work
                     if (texture == null)
+                    {
                         texture = new Texture2D(1, 1);
+                    }
 
                     if (!ImageConversion.LoadImage(texture, Convert.FromBase64String(base64Data)))
                     {
@@ -124,7 +123,7 @@ namespace DCL
                 }
                 else
                 {
-                    string contentsUrl;
+                    string contentsUrl = string.Empty;
                     bool isExternalURL = model.src.Contains("http://") || model.src.Contains("https://");
 
                     if (isExternalURL)
@@ -137,7 +136,6 @@ namespace DCL
                         if (texturePromise != null)
                             AssetPromiseKeeper_Texture.i.Forget(texturePromise);
 
-                        texture = null;
                         texturePromise = new AssetPromise_Texture(contentsUrl, unityWrap, unitySamplingMode, storeDefaultTextureInAdvance: true);
                         texturePromise.OnSuccessEvent += (x) => texture = x.texture;
                         texturePromise.OnFailEvent += (x, error) => { texture = null; };
@@ -149,57 +147,31 @@ namespace DCL
             }
         }
 
-        public virtual void AttachTo(PBRMaterial component) => AddReference(component);
+        protected int refCount;
 
-        public virtual void AttachTo(BasicMaterial component) => AddReference(component);
+        public virtual void AttachTo(PBRMaterial material) { AddRefCount(); }
 
-        public virtual void AttachTo(UIImage component) => AddReference(component);
+        public virtual void AttachTo(BasicMaterial material) { AddRefCount(); }
 
-        public virtual void DetachFrom(PBRMaterial component) => RemoveReference(component);
+        public virtual void AttachTo(UIImage image) { AddRefCount(); }
 
-        public virtual void DetachFrom(BasicMaterial component) => RemoveReference(component);
+        public virtual void DetachFrom(PBRMaterial material) { RemoveRefCount(); }
 
-        public virtual void DetachFrom(UIImage component) => RemoveReference(component);
+        public virtual void DetachFrom(BasicMaterial material) { RemoveRefCount(); }
 
-        void AddReference(ISharedComponent component)
+        public virtual void DetachFrom(UIImage image) { RemoveRefCount(); }
+
+        public void AddRefCount() { refCount++; }
+
+        public void RemoveRefCount()
         {
-            if (attachedComponents.ContainsKey(component))
-                return;
-
-            attachedComponents.Add(component, new HashSet<string>());
-
-            foreach ( var entity in component.GetAttachedEntities() )
-            {
-                attachedComponents[component].Add(entity.entityId);
-                DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, entity.entityId, texture);
-            }
-        }
-
-        void RemoveReference(ISharedComponent component)
-        {
-            if (!attachedComponents.ContainsKey(component))
-                return;
-
-            foreach ( var entityId in attachedComponents[component] )
-            {
-                DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, entityId, texture);
-            }
-
-            attachedComponents.Remove(component);
+            if (refCount == 0)
+                Dispose();
         }
 
         public override void Dispose()
         {
-            if ( isDisposed )
-                return;
-
             isDisposed = true;
-
-            while ( attachedComponents.Count > 0 )
-            {
-                RemoveReference(attachedComponents.First().Key);
-            }
-
             if (texturePromise != null)
             {
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);

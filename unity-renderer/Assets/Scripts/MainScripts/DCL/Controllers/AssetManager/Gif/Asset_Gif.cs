@@ -11,7 +11,7 @@ namespace DCL
         public int height => texture?.height ?? 0;
         public GifFrameData[] frames { get; internal set; }
 
-        internal IGifProcessor processor;
+        internal GifProcessor processor;
 
         public void Dispose() { Cleanup(); }
 
@@ -34,5 +34,4 @@ namespace DCL
             frames = null;
         }
     }
-
 }

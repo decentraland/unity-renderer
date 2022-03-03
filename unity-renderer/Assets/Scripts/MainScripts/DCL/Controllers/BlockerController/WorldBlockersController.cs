@@ -53,11 +53,6 @@ namespace DCL.Controllers
 
         public void SetupWorldBlockers()
         {
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isApplicationQuitting.Get())
-                return;
-#endif
-            
             if (!enabled || sceneHandler == null)
                 return;
 
@@ -66,11 +61,6 @@ namespace DCL.Controllers
 
         public void SetEnabled(bool targetValue)
         {
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isApplicationQuitting.Get())
-                return;
-#endif
-            
             enabled = targetValue;
 
             if (!enabled)
@@ -85,11 +75,6 @@ namespace DCL.Controllers
 
         public void Dispose()
         {
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isApplicationQuitting.Get())
-                return;
-#endif
-            
             CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
             blockerInstanceHandler.DestroyAllBlockers();
 

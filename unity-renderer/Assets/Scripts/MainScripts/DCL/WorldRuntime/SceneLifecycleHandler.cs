@@ -134,11 +134,6 @@ namespace DCL.Controllers
 
         private void SetSceneReady()
         {
-#if UNITY_STANDALONE || UNITY_EDITOR
-            if (DataStore.i.common.isApplicationQuitting.Get())
-                return;
-#endif
-            
             if (state == State.READY)
                 return;
 
