@@ -164,7 +164,8 @@ namespace DCL.Components
                     renderers = x.renderers,
                     materials = x.materials,
                     textures = x.textures,
-                    meshToTriangleCount = x.meshToTriangleCount
+                    meshToTriangleCount = x.meshToTriangleCount,
+                    animationClips = x.animationClips
                 };
 
                 OnSuccessWrapper(r, OnSuccess);
@@ -204,7 +205,8 @@ namespace DCL.Components
                     renderers = x.renderers,
                     materials = x.materials,
                     textures = x.textures,
-                    meshToTriangleCount = x.meshToTriangleCount
+                    meshToTriangleCount = x.meshToTriangleCount,
+                    animationClips = x.animationClips
                 };
 
                 OnSuccessWrapper(r, OnSuccess);

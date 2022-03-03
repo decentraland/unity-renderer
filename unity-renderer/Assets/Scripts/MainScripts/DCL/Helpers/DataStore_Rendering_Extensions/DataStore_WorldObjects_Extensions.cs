@@ -65,7 +65,8 @@ namespace DCL
             RemoveRendereable(self, sceneId, r);
         }
 
-        public static void AddMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId, Material material )
+        public static void AddMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId,
+            Material material)
         {
             var r = new Rendereable();
             r.materials.Add(material);
@@ -73,12 +74,23 @@ namespace DCL
             AddRendereable(self, sceneId, r);
         }
 
-        public static void RemoveMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId, Material material )
+        public static void RemoveMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId,
+            Material material)
         {
             var r = new Rendereable();
             r.materials.Add(material);
             r.ownerId = ownerId;
             RemoveRendereable(self, sceneId, r);
+        }
+
+        public static void AddAudioClip(this DataStore_WorldObjects self, string sceneId, string ownerId,
+            AudioClip clip)
+        {
+        }
+
+        public static void RemoveAudioClip(this DataStore_WorldObjects self, string sceneId, string ownerId,
+            AudioClip clip)
+        {
         }
 
 
@@ -110,6 +122,7 @@ namespace DCL
             sceneData.materials.AddRefCount(rendereable.materials);
             sceneData.meshes.AddRefCount(rendereable.meshes);
             sceneData.textures.AddRefCount(rendereable.textures);
+            sceneData.animationClips.AddRefCount(rendereable.animationClips);
             sceneData.renderers.Add(rendereable.renderers);
             sceneData.owners.Add(rendereable.ownerId);
             sceneData.triangles.Set( sceneData.triangles.Get() + rendereable.totalTriangleCount);
@@ -143,6 +156,7 @@ namespace DCL
             sceneData.materials.RemoveRefCount(rendereable.materials);
             sceneData.meshes.RemoveRefCount(rendereable.meshes);
             sceneData.textures.RemoveRefCount(rendereable.textures);
+            sceneData.animationClips.RemoveRefCount(rendereable.animationClips);
             sceneData.renderers.Remove(rendereable.renderers);
             sceneData.owners.Remove(rendereable.ownerId);
             sceneData.triangles.Set( sceneData.triangles.Get() - rendereable.totalTriangleCount);
