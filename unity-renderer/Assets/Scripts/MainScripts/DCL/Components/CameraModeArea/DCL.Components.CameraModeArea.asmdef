@@ -1,0 +1,31 @@
+{
+    "name": "DCL.Components.CameraModeArea",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:9857fe4bae4e30441bc3a577c5de790a",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:70aa308435753374584c7061e4b89ef2",
+        "GUID:e6f5b34eba99b4ed9836f899578ee258",
+        "GUID:029e05fd02d6c49d5ac9dd7e3725a35b",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:c34e38f41494f834abff029ddf82af43"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

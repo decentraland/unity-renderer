@@ -48,11 +48,13 @@ namespace DCL
                 KernelConfig.i.OnChange += OnKernelConfigChanged;
                 updateRoutine = CoroutineStarter.Start(UpdateRoutine());
             }
+
             if (!active && isActive)
             {
                 KernelConfig.i.OnChange -= OnKernelConfigChanged;
                 StopChecking();
             }
+
             isActive = active;
         }
 
@@ -90,8 +92,8 @@ namespace DCL
             {
                 worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene);
                 ISceneMetricsCounter metricsController = scene?.metricsCounter;
-                SceneMetricsModel currentMetrics = metricsController?.GetModel();
-                SceneMetricsModel limit = metricsController?.GetLimits();
+                SceneMetricsModel currentMetrics = metricsController?.currentCount;
+                SceneMetricsModel limit = metricsController?.maxCount;
 
                 string warningMessage = null;
                 isLimitReached = IsLimitReached(currentMetrics, limit, ref warningMessage);
@@ -168,6 +170,7 @@ namespace DCL
                 notificationsController.ShowNotification(limitReachedNotification);
                 return;
             }
+
             notificationsController.DismissAllNotifications(limitReachedNotification.groupID);
         }
     }

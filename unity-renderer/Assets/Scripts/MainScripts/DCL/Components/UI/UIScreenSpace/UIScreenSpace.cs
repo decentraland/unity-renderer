@@ -120,7 +120,7 @@ namespace DCL.Components
             graphicRaycaster = canvasGameObject.AddComponent<GraphicRaycaster>();
 
             canvas.sortingOrder = -1;
-            
+
             if (scene.isPersistent && scene.sceneData.id != EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID)
             {
                 canvas.sortingOrder -= 1;

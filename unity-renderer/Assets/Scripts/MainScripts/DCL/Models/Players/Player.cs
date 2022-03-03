@@ -1,4 +1,4 @@
-using DCL;
+using AvatarSystem;
 using UnityEngine;
 
 public class Player
@@ -8,8 +8,9 @@ public class Player
     public Vector3 worldPosition;
     public Vector3 forwardDirection;
     public bool isTalking;
-    public IAvatarRenderer renderer;
+    public IAvatar avatar;
     public IAvatarOnPointerDownCollider onPointerDownCollider;
     public IPlayerName playerName;
     public IAvatarAnchorPoints anchorPoints;
+    public Collider collider;
 }

@@ -36,6 +36,11 @@ namespace DCL.Controllers
 
         IEnumerator FadeOutCoroutine(GameObject go, System.Action OnFinish)
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isApplicationQuitting.Get())
+                yield break;
+#endif
+            
             Renderer rend = go.GetComponent<Renderer>();
 
             Color color = rend.material.GetColor(ShaderUtils.BaseColor);

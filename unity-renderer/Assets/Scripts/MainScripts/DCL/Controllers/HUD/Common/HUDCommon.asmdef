@@ -2,10 +2,10 @@
     "name": "HUDCommon",
     "rootNamespace": "",
     "references": [
-        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
-        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-        "GUID:99cea83ca76dcd846abed7e61a8c90bd",
-        "GUID:e74765a8cb92146848e566f7913d4c58"
+      "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
+      "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+      "GUID:99cea83ca76dcd846abed7e61a8c90bd",
+      "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

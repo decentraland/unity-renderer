@@ -53,7 +53,7 @@ namespace DCL.Components
             this.entity.OnCleanupEvent += OnEntityCleanup;
 
             successWrapperEvent = x => OnSuccessWrapper(OnSuccess);
-            failWrapperEvent = error => OnFailWrapper(OnFail, error); 
+            failWrapperEvent = error => OnFailWrapper(OnFail, error);
 
             loadHelper.OnSuccessEvent += successWrapperEvent;
             loadHelper.OnFailEvent += failWrapperEvent;
@@ -75,7 +75,8 @@ namespace DCL.Components
             loadHelper.OnSuccessEvent -= successWrapperEvent;
             loadHelper.OnFailEvent -= failWrapperEvent;
 
-            DataStore.i.sceneWorldObjects.AddRendereable(entity, loadHelper.loadedAsset);
+            loadHelper.loadedAsset.ownerId = entity.entityId;
+            DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.id, loadHelper.loadedAsset);
             OnSuccess?.Invoke(this);
         }
 
@@ -85,7 +86,7 @@ namespace DCL.Components
         {
             if ( loadHelper.loadedAsset != null )
             {
-                DataStore.i.sceneWorldObjects.RemoveRendereable(entity, loadHelper.loadedAsset);
+                DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.id, loadHelper.loadedAsset);
             }
 
             loadHelper.Unload();
