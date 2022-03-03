@@ -110,8 +110,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -50, y: 0}
-  m_SizeDelta: {x: -110, y: 0}
+  m_AnchoredPosition: {x: -45, y: 0}
+  m_SizeDelta: {x: -105.00004, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &3777228367516946360
 CanvasRenderer:
@@ -242,10 +242,10 @@ RectTransform:
   m_Father: {fileID: 8644696348179406289}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 29.5, y: 0}
-  m_SizeDelta: {x: 21, y: 50}
+  m_SizeDelta: {x: 21, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7077584108576156361
 CanvasRenderer:
@@ -758,7 +758,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -8, y: 0}
-  m_SizeDelta: {x: 38, y: 38}
+  m_SizeDelta: {x: 33, y: 33}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &2416820861060320605
 CanvasRenderer:
@@ -809,7 +809,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 184, y: 56}
+  m_SizeDelta: {x: 184, y: 51}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2674840175180373299
 CanvasRenderer:
@@ -1034,10 +1034,10 @@ RectTransform:
   m_Father: {fileID: 5989498347712335370}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 184, y: 50}
+  m_SizeDelta: {x: 0, y: -6}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &3585608795054397610
 MonoBehaviour:
@@ -1322,7 +1322,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 29.5, y: 0}
-  m_SizeDelta: {x: 40, y: 40}
+  m_SizeDelta: {x: 35, y: 35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5023439781024783992
 CanvasRenderer:

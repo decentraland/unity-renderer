@@ -65,6 +65,7 @@ namespace Emotes
     public class EmoteSlotCardComponentView : BaseComponentView, IEmoteSlotCardComponentView, IComponentModelConfig
     {
         internal const int SLOT_VIEWER_ROTATION_ANGLE = 36;
+        internal const string EMPTY_SLOT_TEXT = "None";
 
         [Header("Prefab References")]
         [SerializeField] internal ImageComponentView emoteImage;
@@ -174,7 +175,7 @@ namespace Emotes
             if (emoteNameText == null)
                 return;
 
-            emoteNameText.text = name;
+            emoteNameText.text = string.IsNullOrEmpty(name) ? EMPTY_SLOT_TEXT : name;
         }
 
         public void SetEmotePicture(Sprite sprite)

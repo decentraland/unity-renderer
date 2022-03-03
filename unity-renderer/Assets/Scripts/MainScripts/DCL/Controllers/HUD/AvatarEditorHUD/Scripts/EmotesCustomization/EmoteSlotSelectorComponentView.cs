@@ -24,14 +24,6 @@ namespace Emotes
         void SelectSlot(int slotNumber);
 
         /// <summary>
-        /// Assign an emote into the selected slot.
-        /// </summary>
-        /// <param name="emoteId">Emote Id to assign.</param>
-        /// <param name="emoteName">Emote name to assign.</param>
-        /// <param name="pictureSprite">Emote picture to set.</param>
-        void AssignEmoteIntoSelectedSlot(string emoteId, string emoteName, Sprite pictureSprite);
-
-        /// <summary>
         /// Assign an emote into a specific slot.
         /// </summary>
         /// <param name="slotNumber">Slot number to assign the emote.</param>
@@ -102,17 +94,6 @@ namespace Emotes
                 {
                     slot.SetEmoteAsSelected(false);
                 }
-            }
-        }
-
-        public void AssignEmoteIntoSelectedSlot(string emoteId, string emoteName, Sprite pictureSprite)
-        {
-            EmoteSlotCardComponentView slotToUpdate = GetAllSlots().FirstOrDefault(x => x.model.isSelected);
-            if (slotToUpdate != null)
-            {
-                slotToUpdate.SetEmoteName(emoteName);
-                slotToUpdate.SetEmotePicture(pictureSprite);
-                slotToUpdate.SetEmoteId(emoteId);
             }
         }
 

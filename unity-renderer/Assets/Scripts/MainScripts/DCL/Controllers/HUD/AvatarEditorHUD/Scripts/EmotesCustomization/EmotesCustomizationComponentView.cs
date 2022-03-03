@@ -9,14 +9,19 @@ namespace Emotes
     public interface IEmotesCustomizationComponentView
     {
         /// <summary>
-        /// It will be triggered when an emote card is selected.
+        /// It will be triggered when an emote card is clicked.
         /// </summary>
-        event Action<string> onEmoteSelected;
+        event Action<string> onEmoteClicked;
 
         /// <summary>
         /// It will be triggered when an emote is equipped.
         /// </summary>
         event Action<string, int> onEmoteEquipped;
+
+        /// <summary>
+        /// It will be triggered when an emote is unequipped.
+        /// </summary>
+        event Action<string, int> onEmoteUnequipped;
 
         /// <summary>
         /// It represents the container transform of the component.
@@ -78,9 +83,11 @@ namespace Emotes
         [Header("Prefab References")]
         [SerializeField] internal EmoteSlotSelectorComponentView emoteSlotSelector;
         [SerializeField] internal GridContainerComponentView emotesGrid;
+        [SerializeField] internal NFTItemInfo emoteInfoPanel;
 
-        public event Action<string> onEmoteSelected;
+        public event Action<string> onEmoteClicked;
         public event Action<string, int> onEmoteEquipped;
+        public event Action<string, int> onEmoteUnequipped;
 
         internal Pool emoteCardsPool;
 
@@ -96,6 +103,7 @@ namespace Emotes
             emoteSlotSelector.onSlotSelected += OnSlotSelected;
 
             ConfigureEmotesPool();
+            ConfigureEmoteInfoPanel();
         }
 
         public override void OnEnable()
@@ -126,6 +134,8 @@ namespace Emotes
             base.Dispose();
 
             emoteSlotSelector.onSlotSelected -= OnSlotSelected;
+            emoteInfoPanel.closeButton.onClick.RemoveAllListeners();
+            emoteInfoPanel.sellButton.onClick.RemoveAllListeners();
         }
 
         public void SetEmotes(List<EmoteCardComponentModel> emotes)
@@ -177,10 +187,13 @@ namespace Emotes
                 {
                     existingEmoteCard.AssignSlot(slotNumber);
                     emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, emoteId, emoteName, existingEmoteCard.model.pictureSprite, existingEmoteCard.model.rarity);
+                    emoteSlotSelector.SelectSlot(slotNumber);
                 }
 
                 existingEmoteCard.SetEmoteAsAssignedInSelectedSlot(existingEmoteCard.model.assignedSlot == selectedSlot);
             }
+
+            emoteInfoPanel.SetActive(false);
 
             onEmoteEquipped?.Invoke(emoteId, slotNumber);
         }
@@ -198,6 +211,30 @@ namespace Emotes
             }
 
             emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, string.Empty, string.Empty, null, string.Empty);
+            emoteInfoPanel.SetActive(false);
+
+            onEmoteUnequipped?.Invoke(emoteId, slotNumber);
+        }
+
+        internal void ClickOnEmote(string emoteId)
+        {
+            onEmoteClicked?.Invoke(emoteId);
+            emoteInfoPanel.SetActive(false);
+        }
+
+        internal void OpenEmoteInfoPanel(EmoteCardComponentModel emoteModel, Color backgroundColor, Transform anchorTransform)
+        {
+            emoteInfoPanel.SetModel(NFTItemInfo.Model.FromEmoteItem(emoteModel));
+            emoteInfoPanel.SetBackgroundColor(backgroundColor);
+            emoteInfoPanel.SetRarityName(emoteModel.rarity);
+            emoteInfoPanel.SetActive(true);
+            emoteInfoPanel.transform.SetParent(anchorTransform);
+            emoteInfoPanel.transform.localPosition = Vector3.zero;
+        }
+
+        internal void OnEmoteSelected(string emoteId)
+        {
+            selectedCard = GetEmoteCardById(emoteId);
         }
 
         internal void ConfigureEmotesPool()
@@ -215,16 +252,32 @@ namespace Emotes
             }
         }
 
+        internal void ConfigureEmoteInfoPanel()
+        {
+            emoteInfoPanel.closeButton.onClick.AddListener(() => emoteInfoPanel.SetActive(false));
+            emoteInfoPanel.sellButton.onClick.AddListener(() =>
+            {
+
+            });
+        }
+
         internal EmoteCardComponentView InstantiateAndConfigureEmoteCard(EmoteCardComponentModel emotesInfo)
         {
             EmoteCardComponentView emoteGO = emoteCardsPool.Get().gameObject.GetComponent<EmoteCardComponentView>();
             emoteGO.Configure(emotesInfo);
             emoteGO.onMainClick.RemoveAllListeners();
-            emoteGO.onMainClick.AddListener(() => OnEmoteSelected(emoteGO.model.id));
+            emoteGO.onMainClick.AddListener(() => ClickOnEmote(emoteGO.model.id));
             emoteGO.onEquipClick.RemoveAllListeners();
             emoteGO.onEquipClick.AddListener(() => EquipEmote(emoteGO.model.id, emoteGO.model.name, selectedSlot));
             emoteGO.onUnequipClick.RemoveAllListeners();
             emoteGO.onUnequipClick.AddListener(() => UnequipEmote(emoteGO.model.id, selectedSlot));
+            emoteGO.onInfoClick.RemoveAllListeners();
+            emoteGO.onInfoClick.AddListener(() => OpenEmoteInfoPanel(
+                emoteGO.model,
+                emoteGO.rarityMark.gameObject.activeSelf ? emoteGO.rarityMark.color : Color.grey, 
+                emoteGO.emoteInfoAnchor));
+            emoteGO.onEmoteSelected -= OnEmoteSelected;
+            emoteGO.onEmoteSelected += OnEmoteSelected;
 
             return emoteGO;
         }
@@ -236,22 +289,6 @@ namespace Emotes
             {
                 existingEmoteCard.SetEmoteAsAssignedInSelectedSlot(existingEmoteCard.model.assignedSlot == slotNumber);
             }
-        }
-
-        internal void OnEmoteSelected(string emoteId)
-        {
-            selectedCard = GetEmoteCardById(emoteId);
-
-            if (selectedCard.model.isSelected)
-                return;
-
-            List<EmoteCardComponentView> currentEmoteCards = GetAllEmoteCards();
-            foreach (var existingEmoteCard in currentEmoteCards)
-            {
-                existingEmoteCard.SetEmoteAsSelected(existingEmoteCard.model.id == emoteId);
-            }
-
-            onEmoteSelected?.Invoke(emoteId);
         }
 
         internal List<EmoteCardComponentView> GetAllEmoteCards()

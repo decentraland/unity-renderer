@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -29,6 +30,11 @@ namespace Emotes
         Button.ButtonClickedEvent onUnequipClick { get; }
 
         /// <summary>
+        /// It will be triggered when an emote card is selected.
+        /// </summary>
+        event Action<string> onEmoteSelected;
+
+        /// <summary>
         /// Set the emote id in the card.
         /// </summary>
         /// <param name="id">New emote id.</param>
@@ -39,6 +45,12 @@ namespace Emotes
         /// </summary>
         /// <param name="name">New emote name.</param>
         void SetEmoteName(string name);
+
+        /// <summary>
+        /// Set the emote description in the card.
+        /// </summary>
+        /// <param name="description">New emote description.</param>
+        void SetEmoteDescription(string description);
 
         /// <summary>
         /// Set the emote picture directly from a sprite.
@@ -75,6 +87,12 @@ namespace Emotes
         /// </summary>
         /// <param name="rarity">New rarity.</param>
         void SetRarity(string rarity);
+
+        /// <summary>
+        /// Set the emote as L2 or not.
+        /// </summary>
+        /// <param name="isInL2">True for set it as L2.</param>
+        void SetIsInL2(bool isInL2);
     }
 
     public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView, IComponentModelConfig
@@ -94,6 +112,8 @@ namespace Emotes
         [SerializeField] internal GameObject cardSelectionFrame;
         [SerializeField] internal Animator selectionAnimator;
         [SerializeField] internal Image rarityMark;
+        [SerializeField] internal Transform emoteInfoAnchor;
+
 
         [Header("Configuration")]
         [SerializeField] internal Sprite defaultEmotePicture;
@@ -105,6 +125,8 @@ namespace Emotes
         public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
         public Button.ButtonClickedEvent onEquipClick => equipButton?.onClick;
         public Button.ButtonClickedEvent onUnequipClick => unequipButton?.onClick;
+        
+        public event Action<string> onEmoteSelected;
 
         public override void Awake()
         {
@@ -130,6 +152,7 @@ namespace Emotes
 
             SetEmoteId(model.id);
             SetEmoteName(model.name);
+            SetEmoteDescription(model.description);
 
             if (model.pictureSprite != null)
                 SetEmotePicture(model.pictureSprite);
@@ -142,6 +165,7 @@ namespace Emotes
             AssignSlot(model.assignedSlot);
             SetEmoteAsSelected(model.isSelected);
             SetRarity(model.rarity);
+            SetIsInL2(model.isInL2);
         }
 
         public override void OnEnable()
@@ -158,11 +182,7 @@ namespace Emotes
             if (emoteNameContainer != null)
                 emoteNameContainer.SetActive(true);
 
-            if (!model.isSelected)
-            {
-                if (cardSelectionFrame != null)
-                    cardSelectionFrame.SetActive(true);
-            }
+            SetEmoteAsSelected(true);
         }
 
         public override void OnLoseFocus()
@@ -172,11 +192,7 @@ namespace Emotes
             if (emoteNameContainer != null)
                 emoteNameContainer.SetActive(false);
 
-            if (!model.isSelected)
-            {
-                if (cardSelectionFrame != null)
-                    cardSelectionFrame.SetActive(false);
-            }
+            SetEmoteAsSelected(false);
         }
 
         public override void Dispose()
@@ -209,6 +225,11 @@ namespace Emotes
                 return;
 
             emoteNameText.text = name;
+        }
+
+        public void SetEmoteDescription(string description)
+        {
+            model.description = description;
         }
 
         public void SetEmotePicture(Sprite sprite)
@@ -266,13 +287,17 @@ namespace Emotes
         {
             model.isSelected = isSelected;
 
-            if (cardSelectionFrame != null && !isFocused)
-                cardSelectionFrame.SetActive(isSelected);
+            cardSelectionFrame.SetActive(isSelected);
 
             if (selectionAnimator != null)
                 selectionAnimator.SetBool(ON_SELECTED_CARD_COMPONENT_BOOL, isSelected);
 
             RefreshVisualCardStatus();
+
+            if (isSelected)
+                onEmoteSelected?.Invoke(model.id);
+            else
+                onEmoteSelected?.Invoke(null);
         }
 
         public void SetRarity(string rarity)
@@ -285,6 +310,11 @@ namespace Emotes
             EmoteRarity emoteRarity = rarityColors.FirstOrDefault(x => x.rarity == rarity);
             rarityMark.gameObject.SetActive(emoteRarity != null);
             rarityMark.color = emoteRarity != null ? emoteRarity.markColor : Color.white;
+        }
+
+        public void SetIsInL2(bool isInL2)
+        {
+            model.isInL2 = isInL2;
         }
 
         internal void RefreshVisualCardStatus()

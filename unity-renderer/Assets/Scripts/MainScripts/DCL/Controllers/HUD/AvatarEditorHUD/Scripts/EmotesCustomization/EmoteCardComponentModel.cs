@@ -8,12 +8,14 @@ namespace Emotes
     {
         public string id;
         public string name;
+        public string description;
         public Sprite pictureSprite;
         public string pictureUri;
         public bool isAssignedInSelectedSlot = false;
         public bool isSelected = false;
         public int assignedSlot = -1;
         public string rarity;
+        public bool isInL2;
     }
 
     [Serializable]

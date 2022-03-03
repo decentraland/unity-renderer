@@ -6,6 +6,7 @@ using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Emotes;
 
 public class NFTItemInfo : MonoBehaviour
 {
@@ -52,6 +53,20 @@ public class NFTItemInfo : MonoBehaviour
                 isInL2 = wearable.IsInL2()
             };
         }
+
+        public static Model FromEmoteItem(EmoteCardComponentModel emote)
+        {
+            return new Model
+            {
+                name = emote.name,
+                thumbnail = emote.pictureUri,
+                iconIds = new List<string>(),
+                description = emote.description,
+                issuedId = 1,
+                issuedTotal = int.MaxValue,
+                isInL2 = emote.isInL2
+            };
+        }
     }
 
     [SerializeField] internal TextMeshProUGUI name;
@@ -61,6 +76,10 @@ public class NFTItemInfo : MonoBehaviour
     [SerializeField] internal TextMeshProUGUI minted;
     [SerializeField] internal GameObject ethNetwork;
     [SerializeField] internal GameObject l2Network;
+    [SerializeField] internal Image backgroundImage;
+    [SerializeField] internal TextMeshProUGUI rarityName;
+    [SerializeField] internal Button sellButton;
+    [SerializeField] internal Button closeButton;
 
     private Model currentModel;
     private AssetPromise_Texture thumbnailPromise;
@@ -105,6 +124,22 @@ public class NFTItemInfo : MonoBehaviour
 
     public void SetActive(bool active) { gameObject.SetActive(active); }
 
+    public void SetBackgroundColor(Color color)
+    {
+        if (backgroundImage == null)
+            return;
+
+        backgroundImage.color = color;
+    }
+
+    public void SetRarityName(string name)
+    {
+        if (rarityName == null)
+            return;
+
+        rarityName.text = name;
+    }
+
     private void UpdateItemThumbnail(Asset_Texture texture)
     {
         if (thumbnail.sprite != null)
@@ -113,6 +148,7 @@ public class NFTItemInfo : MonoBehaviour
         }
 
         thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
+        thumbnail.preserveAspect = true;
     }
 
     private void GetThumbnail()
