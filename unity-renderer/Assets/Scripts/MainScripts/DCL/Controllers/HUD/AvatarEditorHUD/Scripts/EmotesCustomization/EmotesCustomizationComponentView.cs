@@ -69,6 +69,19 @@ namespace Emotes
         /// <param name="emoteId">Emote Id to unasign.</param>
         /// <param name="slotNumber">Slot number to unassign the emote.</param>
         void UnequipEmote(string emoteId, int slotNumber);
+
+        /// <summary>
+        /// Open the info panel for a specific emote.
+        /// </summary>
+        /// <param name="emoteModel">Model of the emote.</param>
+        /// <param name="backgroundColor">Color to apply to the panel background.</param>
+        /// <param name="anchorTransform">Anchor where to place the panel.</param>
+        void OpenEmoteInfoPanel(EmoteCardComponentModel emoteModel, Color backgroundColor, Transform anchorTransform);
+
+        /// <summary>
+        /// Close the info panel.
+        /// </summary>
+        void CloseEmoteInfoPanel();
     }
 
     public class EmotesCustomizationComponentView : BaseComponentView, IEmotesCustomizationComponentView
@@ -216,13 +229,7 @@ namespace Emotes
             onEmoteUnequipped?.Invoke(emoteId, slotNumber);
         }
 
-        internal void ClickOnEmote(string emoteId)
-        {
-            onEmoteClicked?.Invoke(emoteId);
-            emoteInfoPanel.SetActive(false);
-        }
-
-        internal void OpenEmoteInfoPanel(EmoteCardComponentModel emoteModel, Color backgroundColor, Transform anchorTransform)
+        public void OpenEmoteInfoPanel(EmoteCardComponentModel emoteModel, Color backgroundColor, Transform anchorTransform)
         {
             emoteInfoPanel.SetModel(NFTItemInfo.Model.FromEmoteItem(emoteModel));
             emoteInfoPanel.SetBackgroundColor(backgroundColor);
@@ -230,6 +237,17 @@ namespace Emotes
             emoteInfoPanel.SetActive(true);
             emoteInfoPanel.transform.SetParent(anchorTransform);
             emoteInfoPanel.transform.localPosition = Vector3.zero;
+        }
+
+        public void CloseEmoteInfoPanel()
+        {
+            emoteInfoPanel.SetActive(false);
+        }
+
+        internal void ClickOnEmote(string emoteId)
+        {
+            onEmoteClicked?.Invoke(emoteId);
+            emoteInfoPanel.SetActive(false);
         }
 
         internal void OnEmoteSelected(string emoteId)

@@ -21,6 +21,7 @@ namespace Emotes
 
         internal IEmotesCustomizationComponentView view;
         internal InputAction_Hold equipInputAction;
+        internal InputAction_Hold showInfoInputAction;
         internal InputAction_Trigger shortcut0InputAction;
         internal InputAction_Trigger shortcut1InputAction;
         internal InputAction_Trigger shortcut2InputAction;
@@ -38,7 +39,7 @@ namespace Emotes
             view.onEmoteClicked += OnEmoteAnimationRaised;
             view.onEmoteEquipped += OnEmoteEquipped;
             view.onEmoteUnequipped += OnEmoteUnequipped;
-            
+            isStarMenuOpen.OnChange += IsStarMenuOpenChanged;
             ConfigureShortcuts();
             LoadMockedEmotes();
 
@@ -50,7 +51,9 @@ namespace Emotes
             view.onEmoteClicked -= OnEmoteAnimationRaised;
             view.onEmoteEquipped -= OnEmoteEquipped;
             view.onEmoteUnequipped -= OnEmoteUnequipped;
+            isStarMenuOpen.OnChange -= IsStarMenuOpenChanged;
             equipInputAction.OnFinished -= OnEquipInputActionTriggered;
+            showInfoInputAction.OnFinished -= OnShowInfoInputActionTriggered;
             shortcut0InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut1InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut2InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
@@ -78,10 +81,18 @@ namespace Emotes
             Debug.Log("SANTI ---> EMOTE UNEQUIPPED: " + emoteId + " | SLOT: " + slotNUmber);
         }
 
+        internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen)
+        {
+            view.CloseEmoteInfoPanel();
+        }
+
         internal void ConfigureShortcuts()
         {
             equipInputAction = Resources.Load<InputAction_Hold>("DefaultConfirmAction");
             equipInputAction.OnFinished += OnEquipInputActionTriggered;
+
+            showInfoInputAction = Resources.Load<InputAction_Hold>("ZoomIn");
+            showInfoInputAction.OnFinished += OnShowInfoInputActionTriggered;
 
             shortcut0InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut0");
             shortcut0InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
@@ -132,6 +143,17 @@ namespace Emotes
                     view.selectedCard.model.id,
                     view.selectedSlot);
             }
+        }
+
+        internal void OnShowInfoInputActionTriggered(DCLAction_Hold action)
+        {
+            if (!shortcutsCanBeUsed || view.selectedCard == null)
+                return;
+
+            view.OpenEmoteInfoPanel(
+                view.selectedCard.model,
+                view.selectedCard.rarityMark.gameObject.activeSelf ? view.selectedCard.rarityMark.color : Color.grey,
+                view.selectedCard.emoteInfoAnchor);
         }
 
         internal void OnNumericShortcutInputActionTriggered(DCLAction_Trigger action)
