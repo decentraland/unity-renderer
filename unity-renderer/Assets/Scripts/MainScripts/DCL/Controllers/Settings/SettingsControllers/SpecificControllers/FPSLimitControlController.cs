@@ -9,6 +9,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/FPS Limit", fileName = "FPSLimitControlController")]
     public class FPSLimitControlController : ToggleSettingsControlController
     {
+        const int MAX_FPS = 240;
+        
         public override object GetStoredValue() { return currentQualitySetting.fpsCap; }
 
         public override void UpdateSetting(object newValue)
@@ -22,7 +24,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 #else
         public static void ToggleFPSCap(bool useFPSCap)
         {
-            Application.targetFrameRate = useFPSCap ? 30 : -1;
+            Application.targetFrameRate = useFPSCap ? 30 : MAX_FPS;
         }
 #endif
     }
