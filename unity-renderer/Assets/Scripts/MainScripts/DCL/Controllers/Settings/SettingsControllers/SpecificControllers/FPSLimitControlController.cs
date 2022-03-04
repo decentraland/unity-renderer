@@ -20,7 +20,10 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")] public static extern void ToggleFPSCap(bool useFPSCap);
 #else
-        public static void ToggleFPSCap(bool useFPSCap) { }
+        public static void ToggleFPSCap(bool useFPSCap)
+        {
+            Application.targetFrameRate = useFPSCap ? 30 : -1;
+        }
 #endif
     }
 }
