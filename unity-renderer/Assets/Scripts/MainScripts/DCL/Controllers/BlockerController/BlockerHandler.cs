@@ -40,7 +40,7 @@ namespace DCL.Controllers
             // similar to how we set toon shader material in the Editor to disable the skybox
         }
 
-        public void ShowBlocker(Vector2Int pos, bool instant = false)
+        public void ShowBlocker(Vector2Int pos, bool instant = false, bool colliderEnabled = true)
         {            
             float centerOffset = ParcelSettings.PARCEL_SIZE / 2;
             PoolableObject blockerPoolable = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
@@ -60,6 +60,7 @@ namespace DCL.Controllers
 
             blockerCollider.size = Vector3.one + (Vector3.up * auxScaleVec.y);
             blockerCollider.center = Vector3.up * ((auxScaleVec.y / 2) - 0.5f);
+            blockerCollider.enabled = colliderEnabled;
 
 #if UNITY_EDITOR
             blockerGo.name = "BLOCKER " + pos;
@@ -114,6 +115,14 @@ namespace DCL.Controllers
 
         public Dictionary<Vector2Int, IPoolableObject> GetBlockers() { return new Dictionary<Vector2Int, IPoolableObject>(blockers); }
 
+        public void ToggleBlockersCollision(bool newState)
+        {
+            foreach (var keyValuePair in blockers)
+            {
+                keyValuePair.Value.gameObject.GetComponent<Collider>().enabled = newState;
+            }
+        }
+        
         public void DestroyAllBlockers()
         {
             var keys = blockers.Keys.ToArray();
