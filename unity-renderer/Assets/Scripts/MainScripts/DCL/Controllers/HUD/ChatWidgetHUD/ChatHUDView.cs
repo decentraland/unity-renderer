@@ -285,5 +285,7 @@ public class ChatHUDView : MonoBehaviour
         dateSeparators.Clear();
     }
     
-    public void SetGotoPanelStatus(bool isActive) { gotoPanel.container.SetActive(isActive); }
+    public void SetGotoPanelStatus(bool isActive) { 
+        gotoPanel.contentAnimator.Hide(true);
+    }
 }

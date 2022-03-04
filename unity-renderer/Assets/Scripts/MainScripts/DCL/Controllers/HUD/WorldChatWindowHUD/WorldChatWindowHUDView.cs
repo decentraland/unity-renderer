@@ -56,6 +56,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         DataStore.i.HUDs.chatInputVisible.Set(true);
         isInPreview = false;
         chatHudView.SetFadeoutMode(false);
+        chatHudView.SetGotoPanelStatus(false);
         OnDeactivatePreview?.Invoke();
     }
 
@@ -74,7 +75,10 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         {
             var results = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData, results);
-            chatHudView.SetGotoPanelStatus(results.Any(r => r.gameObject.Equals(chatHudView.gotoPanel.container.gameObject)));
+            if (results.Any(r => r.gameObject.Equals(chatHudView.gotoPanel.container.gameObject))) 
+            {
+                //chatHudView.SetGotoPanelStatus(results.Any(r => r.gameObject.Equals(chatHudView.gotoPanel.container.gameObject)));
+            }
         }
         DeactivatePreview(); 
     }

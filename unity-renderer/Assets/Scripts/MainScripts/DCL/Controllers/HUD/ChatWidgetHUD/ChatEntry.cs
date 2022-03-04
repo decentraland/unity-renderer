@@ -54,7 +54,6 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     [SerializeField] internal float timeToHoverPanel = 1f;
 
     [NonSerialized] public string messageLocalDateTime;
-    MinimapMetadata mapMetadata;
 
     bool fadeEnabled = false;
     double fadeoutStartTime;
@@ -75,7 +74,6 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     public void Awake()
     {
         textCoords = new List<string>();
-        mapMetadata = MinimapMetadata.GetMetadata();
     }
 
     public void Populate(Model chatEntryModel, GotoPanel gotoPanel)
@@ -142,11 +140,10 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         if (CoordinateUtils.HasValidTextCoordinates(body.text)) {
             CoordinateUtils.GetTextCoordinates(body.text).ForEach(c=> {
                 int x = Int32.Parse(c.Split(',')[0]), y = Int32.Parse(c.Split(',')[1]);
-                if (mapMetadata.GetSceneInfo(x,y) == null)
-                {
+                if (MinimapMetadata.GetMetadata().GetSceneInfo(x,y) == null)
                     WebInterface.RequestScenesInfoAroundParcel(new Vector2(x,y), 2);
-                }
-                body.text = body.text.Replace(c,$"<link={c}><color=\"green\">{c}</color></link>");
+
+                body.text = body.text.Replace(c,$"<link={c}><color=\"green\"><u>{c}</u></color></link>");
             });
         }
 

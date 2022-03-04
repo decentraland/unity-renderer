@@ -13,9 +13,12 @@ public class GotoPanel : MonoBehaviour
     [SerializeField] internal TextMeshProUGUI sceneOwnerText;
     [SerializeField] internal Sprite scenePreviewFailImage;
     [SerializeField] internal RawImageFillParent scenePreviewImage;
+    [SerializeField] internal GameObject loadingSpinner;
+    [SerializeField] internal Button closeButton;
+    [SerializeField] internal Button cancelButton;
+    [SerializeField] internal ShowHideAnimator contentAnimator;
 
     private ParcelCoordinates targetCoordinates;
-    MinimapMetadata mapMetadata;
 
     AssetPromise_Texture texturePromise = null;
 
@@ -23,23 +26,35 @@ public class GotoPanel : MonoBehaviour
     {
         teleportButton.onClick.RemoveAllListeners();
         teleportButton.onClick.AddListener(TeleportTo);
-        mapMetadata = MinimapMetadata.GetMetadata();
+        closeButton.onClick.AddListener(OnClosePressed);
+        cancelButton.onClick.AddListener(OnClosePressed);
+        container.SetActive(false);
+        contentAnimator.OnWillFinishHide += (animator) => Hide();
     }
 
     private void TeleportTo()
     {
         WebInterface.GoTo(targetCoordinates.x, targetCoordinates.y);
-        container.SetActive(false);
+        contentAnimator.Hide(true);
     }
 
     public void SetPanelInfo(ParcelCoordinates parcelCoordinates)
     {
-        MinimapMetadata.MinimapSceneInfo sceneInfo = mapMetadata.GetSceneInfo(parcelCoordinates.x, parcelCoordinates.y);
+        container.SetActive(true);
+        contentAnimator.Show(false);
+        loadingSpinner.SetActive(true);
+        scenePreviewImage.texture = null;
+        MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(parcelCoordinates.x, parcelCoordinates.y);
         if (sceneInfo != null)
         {
-            SetParcelImage(sceneInfo);
             sceneTitleText.text = sceneInfo.name;
             sceneOwnerText.text = sceneInfo.owner;
+            SetParcelImage(sceneInfo);
+        } else 
+        {
+            sceneTitleText.text = "Untitled Scene";
+            sceneOwnerText.text = "Unknown"; 
+            DisplayThumbnail(scenePreviewFailImage.texture);
         }
         targetCoordinates = parcelCoordinates;
         panelText.text = $"{parcelCoordinates.x},{parcelCoordinates.y}";
@@ -58,7 +73,16 @@ public class GotoPanel : MonoBehaviour
 
     private void DisplayThumbnail(Texture2D texture)
     {
+        loadingSpinner.SetActive(false);
         scenePreviewImage.texture = texture;
     }
+
+    private void OnClosePressed()
+    {
+        contentAnimator.Hide(true);
+        AudioScriptableObjects.dialogClose.Play(true);
+    }
+
+    private void Hide() => container.SetActive(false);
 
 }
