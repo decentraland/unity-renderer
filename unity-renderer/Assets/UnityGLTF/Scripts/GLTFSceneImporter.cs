@@ -675,7 +675,7 @@ namespace UnityGLTF
 
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
-            texture = CheckAndReduceTextureSize(texture);
+            texture = CheckAndReduceTextureSize(texture, settings.linear);
             _assetCache.ImageCache[imageCacheIndex] = texture;
 
             if ( Application.isPlaying )
@@ -721,7 +721,7 @@ namespace UnityGLTF
         }
 
         // Note that if the texture is reduced in size, the source one is destroyed
-        protected Texture2D CheckAndReduceTextureSize(Texture2D source)
+        protected Texture2D CheckAndReduceTextureSize(Texture2D source, bool linear = false)
         {
             if (source.width <= maxTextureSize && source.height <= maxTextureSize)
                 return source;
@@ -739,7 +739,7 @@ namespace UnityGLTF
                 factor = (float)maxTextureSize / height;
             }
 
-            Texture2D dstTex = TextureHelpers.Resize(source, (int) (width * factor), (int) (height * factor));
+            Texture2D dstTex = TextureHelpers.Resize(source, (int) (width * factor), (int) (height * factor), linear);
 
             if (Application.isPlaying)
                 Object.Destroy(source);

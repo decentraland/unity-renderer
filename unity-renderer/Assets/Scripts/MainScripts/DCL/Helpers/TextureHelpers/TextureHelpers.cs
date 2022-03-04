@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 public static class TextureHelpers
 {
@@ -31,7 +32,7 @@ public static class TextureHelpers
         Object.Destroy(oldTexture);
     }
 
-    public static Texture2D Resize(Texture2D source, int newWidth, int newHeight)
+    public static Texture2D Resize(Texture2D source, int newWidth, int newHeight, bool linear = false)
     {
         source.filterMode = FilterMode.Point;
 
@@ -40,10 +41,38 @@ public static class TextureHelpers
 
         RenderTexture.active = rt;
         Graphics.Blit(source, rt);
+        
+        // Texture2D nTex = new Texture2D(newWidth, newHeight, source.format, source.mipmapCount, linear);
+        // Texture2D nTex = new Texture2D(newWidth, newHeight, TextureFormat.RGBA32, rt.mipmapCount, linear);
+        // Texture2D nTex = new Texture2D(newWidth, newHeight);
+        // Texture2D nTex = new Texture2D(newWidth, newHeight, TextureFormat.ARGB32, -1, linear);
+        // Texture2D nTex = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, -1, linear);
+        Texture2D nTex = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, -1, false);
+        
+        // nTex.filterMode = FilterMode.Point;
+        
+        // This works for Graphics.CopyTexture() copying from the source (not RT) without resizing...
+        // Texture2D nTex = new Texture2D(source.width, source.height, source.format, -1, linear);
+        
+        Debug.Log($"TextureHelpers - Resize - copyTeSupport: {SystemInfo.copyTextureSupport.ToString()}");
+        bool supportsGPUTextureCopy = SystemInfo.copyTextureSupport != CopyTextureSupport.None;
+        if (supportsGPUTextureCopy)
+        {
+            Debug.Log($"TextureHelpers - Resize - Uses COPYTEXTURE. RT format: {rt.format.ToString()}, rt mipCount: {rt.mipmapCount}");
+            // Graphics.CopyTexture(rt, nTex);
+            // Graphics.CopyTexture(rt, 0, nTex, 0);
+            // Graphics.CopyTexture(rt, 0, 0, nTex, 0, 0);
+            Graphics.CopyTexture(rt, 0, 0, nTex, 0, 0);
+            // Graphics.CopyTexture(rt, 0, 0, 0, 0, newWidth, newHeight, nTex, 0, 0, 0, 0);
 
-        Texture2D nTex = new Texture2D(newWidth, newHeight);
-        nTex.ReadPixels(new Rect(0, 0, newWidth, newWidth), 0, 0);
-        nTex.Apply();
+            nTex.alphaIsTransparency = true;
+        }
+        else
+        {
+            Debug.Log("TextureHelpers - Resize - Uses READPIXELS");
+            nTex.ReadPixels(new Rect(0, 0, newWidth, newHeight), 0, 0);
+            nTex.Apply();
+        }
 
         RenderTexture.ReleaseTemporary(rt);
         RenderTexture.active = null;
