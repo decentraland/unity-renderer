@@ -410,9 +410,9 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
   layers:
   - slotID: 4
-    renderType: 1
+    renderType: 0
     layerType: 4
-    enabled: 0
+    enabled: 1
     nameInEditor: Mountains
     expandedInEditor: 0
     timeSpan_start: 0
@@ -486,9 +486,9 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 0
-    renderType: 1
+    renderType: 0
     layerType: 1
-    enabled: 0
+    enabled: 1
     nameInEditor: Stars
     expandedInEditor: 0
     timeSpan_start: 18
@@ -568,7 +568,7 @@ MonoBehaviour:
   - slotID: 1
     renderType: 1
     layerType: 2
-    enabled: 0
+    enabled: 1
     nameInEditor: Big Sun
     expandedInEditor: 0
     timeSpan_start: 5
@@ -656,7 +656,7 @@ MonoBehaviour:
   - slotID: 1
     renderType: 1
     layerType: 2
-    enabled: 0
+    enabled: 1
     nameInEditor: Second Sun
     expandedInEditor: 0
     timeSpan_start: 5
@@ -736,9 +736,9 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 1
-    renderType: 1
+    renderType: 0
     layerType: 2
-    enabled: 0
+    enabled: 1
     nameInEditor: Moon
     expandedInEditor: 0
     timeSpan_start: 21
@@ -826,9 +826,9 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 2
-    renderType: 1
+    renderType: 0
     layerType: 4
-    enabled: 0
+    enabled: 1
     nameInEditor: Far Clouds
     expandedInEditor: 0
     timeSpan_start: 0
@@ -1002,46 +1002,46 @@ MonoBehaviour:
       renderType: 0
       layerType: 4
       enabled: 1
-      nameInEditor: Tex Layer 1
-      expandedInEditor: 1
+      nameInEditor: Near Clouds
+      expandedInEditor: 0
       timeSpan_start: 0
       timeSpan_End: 24
       fadingInTime: 0
       fadingOutTime: 0
-      tintPercentage: 0
+      tintPercentage: 47.5
       renderDistance: []
       texture: {fileID: 0}
       textureNormal: {fileID: 0}
       cubemap: {fileID: 8900000, guid: 2a1f2c34a6bb71040aad59820a39f105, type: 3}
       color:
         serializedVersion: 2
-        key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 1}
-        key2: {r: 0, g: 0, b: 0, a: 0}
-        key3: {r: 0, g: 0, b: 0, a: 0}
-        key4: {r: 0, g: 0, b: 0, a: 0}
+        key0: {r: 0.59171927, g: 0.49942148, b: 0.8207547, a: 0.5019608}
+        key1: {r: 0.8962264, g: 0.6248873, b: 0.56225526, a: 0.7137255}
+        key2: {r: 1, g: 0.9583444, b: 0.9481132, a: 0.7607843}
+        key3: {r: 0.9811321, g: 0.8130697, b: 0.72659314, a: 1}
+        key4: {r: 0.5921569, g: 0.49803922, b: 0.81960785, a: 0.5019608}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
         ctime0: 0
-        ctime1: 65535
-        ctime2: 0
-        ctime3: 0
-        ctime4: 0
+        ctime1: 14842
+        ctime2: 32575
+        ctime3: 51079
+        ctime4: 65535
         ctime5: 0
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 65535
-        atime2: 0
-        atime3: 0
-        atime4: 0
+        atime1: 13878
+        atime2: 32189
+        atime3: 53970
+        atime4: 65535
         atime5: 0
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_NumColorKeys: 2
-        m_NumAlphaKeys: 2
+        m_NumColorKeys: 5
+        m_NumAlphaKeys: 5
       tiling: {x: 1, y: 1}
       flipbookRowsAndColumns: {x: 1, y: 1}
       flipbookAnimSpeed: 1
