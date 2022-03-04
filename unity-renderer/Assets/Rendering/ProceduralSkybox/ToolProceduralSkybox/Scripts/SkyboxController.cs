@@ -45,6 +45,12 @@ namespace DCL.Skybox
         private int syncCounter = 0;
         private int syncAfterCount = 10;
 
+        private List<GameObject> domeObjects = new List<GameObject>();
+        private List<Material> domeMats = new List<Material>();
+        private GameObject skyboxElements;
+        private GameObject domeElements;
+        private GameObject domePrefab;
+
         // Report to kernel
         private ITimeReporter timeReporter { get; set; } = new TimeReporter();
 
@@ -174,13 +180,8 @@ namespace DCL.Skybox
             RenderSettings.customReflection = null;
         }
 
-        private List<GameObject> domeObjects = new List<GameObject>();
-        private List<Material> domeMats = new List<Material>();
-        private GameObject skyboxElements;
-        private GameObject domeElements;
-        private GameObject domePrefab;
-
         #region 3D Dome
+
         void Init3DSetup()
         {
             if (skyboxElements == null)
@@ -252,6 +253,7 @@ namespace DCL.Skybox
                 domeObjects[i].SetActive(false);
             }
         }
+
         #endregion
 
         private void ReflectionResolution_OnChange(int current, int previous) { runtimeReflectionObj.UpdateResolution(current); }
@@ -660,24 +662,12 @@ namespace DCL.Skybox
             return result;
         }
 
-        public List<GameObject> GetDomeObjects()
-        {
-            return domeObjects;
-        }
+        public List<GameObject> GetDomeObjects() { return domeObjects; }
 
-        public List<Material> GetDomeMats()
-        {
-            return domeMats;
-        }
+        public List<Material> GetDomeMats() { return domeMats; }
 
-        public GameObject GetSkyboxElements()
-        {
-            return skyboxElements;
-        }
+        public GameObject GetSkyboxElements() { return skyboxElements; }
 
-        public GameObject GetDomeElement()
-        {
-            return domeElements;
-        }
+        public GameObject GetDomeElement() { return domeElements; }
     }
 }

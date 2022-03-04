@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -100,6 +101,60 @@ namespace DCL.Skybox
 
             particleRotation = new List<TransitioningVector3>();
         }
+
+        public void DeepCopy(TextureLayer layer)
+        {
+
+            layer.slotID = this.slotID;
+            layer.renderType = this.renderType;
+            layer.layerType = this.layerType;
+            layer.enabled = this.enabled;
+            layer.nameInEditor = this.nameInEditor;
+            layer.expandedInEditor = this.expandedInEditor;
+            layer.timeSpan_start = this.timeSpan_start;
+            layer.timeSpan_End = this.timeSpan_End;
+
+            layer.tintPercentage = this.tintPercentage;
+            layer.renderDistance = new List<TransitioningFloat>(this.renderDistance);
+            //for (int i = 0; i < this.renderDistance.Count; i++)
+            //{
+            //    layer.renderDistance.Add(this.renderDistance[i].GetCopy());
+            //}
+
+            layer.texture = this.texture;
+            layer.textureNormal = this.textureNormal;
+            layer.cubemap = this.cubemap;
+            layer.color = this.color.GetCopy();
+            layer.tiling = new Vector2(this.tiling.x, this.tiling.y);
+
+            layer.flipbookRowsAndColumns = new Vector2(this.flipbookRowsAndColumns.x, this.flipbookRowsAndColumns.y);
+            layer.flipbookAnimSpeed = this.flipbookAnimSpeed;
+
+            layer.offset = new List<TransitioningVector2>(this.offset);
+            layer.satelliteWidthHeight = new List<TransitioningVector2>(this.satelliteWidthHeight);
+        }
+    }
+
+    static class ExtensionMethods
+    {
+        public static Gradient GetCopy(this Gradient gradient)
+        {
+            Gradient obj = new Gradient();
+
+            obj.colorKeys = new GradientColorKey[gradient.colorKeys.Length];
+            for (int i = 0; i < gradient.colorKeys.Length; i++)
+            {
+                obj.colorKeys[i] = new GradientColorKey(gradient.colorKeys[i].color, gradient.colorKeys[i].time);
+            }
+
+            obj.alphaKeys = new GradientAlphaKey[gradient.alphaKeys.Length];
+            for (int i = 0; i < gradient.colorKeys.Length; i++)
+            {
+                obj.alphaKeys[i] = new GradientAlphaKey(gradient.alphaKeys[i].alpha, gradient.alphaKeys[i].time);
+            }
+
+            return obj;
+        }
     }
 
     public enum LayerType
@@ -154,6 +209,8 @@ namespace DCL.Skybox
             this.percentage = percentage;
             this.value = value;
         }
+
+        internal TransitioningFloat GetCopy() { return new TransitioningFloat(this.percentage, this.value); }
     }
 
     [System.Serializable]
