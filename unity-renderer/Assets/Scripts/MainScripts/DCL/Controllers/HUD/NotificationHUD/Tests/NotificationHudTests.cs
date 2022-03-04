@@ -116,7 +116,7 @@ namespace Tests
             Assert.AreEqual(notifications.Length, 1);
             Assert.AreEqual(controller.model.notifications.Count, 1);
 
-            yield return new DCL.WaitUntil(() => notifications.Length == 0, 0.5f);
+            yield return new DCL.WaitUntil(() => notifications.Length == 0, 0.75f);
 
             notifications = Object.FindObjectsOfType<Notification>();
             Assert.AreEqual(notifications.Length, 0);
