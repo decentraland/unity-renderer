@@ -32,6 +32,8 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] protected internal Image backgroundImage;
     [SerializeField] protected internal Sprite hoveredBackgroundSprite;
     [SerializeField] protected internal AudioEvent audioEventHover;
+    [SerializeField] protected internal GameObject onlineStatusContainer;
+    [SerializeField] protected internal Button passportButton;
     protected internal Sprite unhoveredBackgroundSprite;
 
     public event System.Action<FriendEntryBase> OnMenuToggle;
@@ -86,6 +88,9 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
             this.model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
             model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
         }
+
+        if (onlineStatusContainer != null)
+            onlineStatusContainer.SetActive(model.status == PresenceStatus.ONLINE && !model.blocked);
 
         this.model = model;
     }

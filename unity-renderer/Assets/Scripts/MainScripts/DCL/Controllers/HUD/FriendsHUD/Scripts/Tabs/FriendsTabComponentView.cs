@@ -4,7 +4,6 @@ using System.Linq;
 using DCL;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class FriendsTabComponentView : BaseComponentView
 {
@@ -22,6 +21,7 @@ public class FriendsTabComponentView : BaseComponentView
     [SerializeField] private TMP_Text onlineFriendsCountText;
     [SerializeField] private TMP_Text offlineFriendsCountText;
     [SerializeField] private SearchBarComponentView searchBar;
+    [SerializeField] private UserContextMenu contextMenuPanel;
     [SerializeField] private Model model;
 
     private readonly Dictionary<string, FriendEntryBase.Model> creationQueue = new Dictionary<string, FriendEntryBase.Model>();
@@ -42,13 +42,22 @@ public class FriendsTabComponentView : BaseComponentView
     {
         base.OnEnable();
         searchBar.OnSearchText += Filter;
-        
+        contextMenuPanel.OnBlock += HandleFriendBlockRequest;
+        contextMenuPanel.OnUnfriend += HandleUnfriendRequest;
     }
 
     public override void OnDisable()
     {
         base.OnDisable();
         searchBar.OnSearchText -= Filter;
+        contextMenuPanel.OnBlock -= HandleFriendBlockRequest;
+        contextMenuPanel.OnUnfriend -= HandleUnfriendRequest;
+    }
+
+    public void Expand()
+    {
+        onlineFriendsList.Expand();
+        offlineFriendsList.Expand();
     }
 
     public void Show()
@@ -63,6 +72,7 @@ public class FriendsTabComponentView : BaseComponentView
         gameObject.SetActive(false);
         enabledHeader.SetActive(false);
         disabledHeader.SetActive(true);
+        contextMenuPanel.Hide();
     }
 
     public override void Update()
@@ -85,6 +95,7 @@ public class FriendsTabComponentView : BaseComponentView
         onlineFriendsList.Clear();
         offlineFriendsList.Clear();
         UpdateEmptyOrFilledState();
+        UpdateCounterLabel();
     }
 
     public void Remove(string userId)
@@ -186,16 +197,14 @@ public class FriendsTabComponentView : BaseComponentView
         var entry = newFriendEntry.gameObject.GetComponent<FriendEntry>();
         entries.Add(userId, entry);
 
-        // entry.OnMenuToggle += (x) =>
-        // {
-        //     contextMenuPanel.transform.position = entry.menuPositionReference.position;
-        //     contextMenuPanel.Show(userId);
-        // };
-        //
-        // entry.OnWhisperClick += (x) => OnWhisper?.Invoke(x);
+        entry.OnMenuToggle += x =>
+        {
+            contextMenuPanel.transform.position = entry.menuPositionReference.position;
+            contextMenuPanel.Show(userId);
+        };
+        
+        entry.OnWhisperClick += x => OnWhisper?.Invoke(x);
         // entry.OnJumpInClick += (x) => this.owner.OnCloseButtonPressed();
-        //
-        // return true;
     }
 
     // private void ChatController_OnAddMessage(ChatMessage message)
@@ -256,6 +265,23 @@ public class FriendsTabComponentView : BaseComponentView
     {
         onlineFriendsCountText.SetText("ONLINE ({0})", onlineFriendsList.Count());
         offlineFriendsCountText.SetText("OFFLINE ({0})", offlineFriendsList.Count());
+    }
+    
+    private void HandleFriendBlockRequest(string userId, bool blockUser)
+    {
+        var friendEntryToBlock = Get(userId);
+        if (friendEntryToBlock == null) return;
+        // instantly refresh ui
+        friendEntryToBlock.model.blocked = blockUser;
+        Set(userId, friendEntryToBlock.model);
+    }
+    
+    private void HandleUnfriendRequest(string userId)
+    {
+        var entry = Get(userId);
+        if (entry == null) return;
+        Remove(userId);
+        OnDeleteConfirmation?.Invoke(userId);
     }
 
     [Serializable]

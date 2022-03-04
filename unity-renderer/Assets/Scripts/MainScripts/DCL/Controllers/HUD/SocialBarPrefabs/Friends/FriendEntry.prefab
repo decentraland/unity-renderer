@@ -141,17 +141,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a62ca82e21d64101955248fdc2abcb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerBlockedImage: {fileID: 0}
+  playerBlockedImage: {fileID: 7592512081161049891}
   menuPositionReference: {fileID: 2396126356780351439}
   playerNameText: {fileID: 5460751659792233842}
   playerImage: {fileID: 286352495558923510}
   menuButton: {fileID: 1575258791199021983}
   backgroundImage: {fileID: 712334457687682705}
-  hoveredBackgroundSprite: {fileID: 21300000, guid: f48850fa5be164fc68819a7c8586432c,
+  hoveredBackgroundSprite: {fileID: 21300000, guid: f02af068e11cb4902a1a4faad10b890a,
     type: 3}
   audioEventHover: {fileID: 11400000, guid: 14fe705a57deb3043b6a95325455a231, type: 2}
-  jumpInButton: {fileID: 0}
-  whisperButton: {fileID: 0}
+  onlineStatusContainer: {fileID: 420337967122091435}
+  jumpInButton: {fileID: 5169509239082897848}
+  whisperButton: {fileID: 5791209562270436312}
   unreadNotificationBadge: {fileID: 0}
 --- !u!1 &476136669478275824
 GameObject:
@@ -811,7 +812,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3878216755995512703}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -823,12 +824,12 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 2
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0.9607843}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.78039217}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0.9607843}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -941,7 +942,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7064280046403328459
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1392,7 +1393,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6123713146166694637}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -1404,12 +1405,12 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 2
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0.9607843}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.78039217}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0.9607843}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -1699,6 +1700,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22b2c68bfb9b14e92ae66ede22e45642, type: 3}
+--- !u!114 &5169509239082897848 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 772113846466065836, guid: 22b2c68bfb9b14e92ae66ede22e45642,
+    type: 3}
+  m_PrefabInstance: {fileID: 5551478396781323284}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f066f155dead9bf48a736a7cdce0c3b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &337787086226473174 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5312804592723535042, guid: 22b2c68bfb9b14e92ae66ede22e45642,

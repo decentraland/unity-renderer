@@ -20,7 +20,7 @@ public class FriendEntry : FriendEntryBase
 
     private void Start()
     {
-        unreadNotificationBadge.Initialize(ChatController.i, userId);
+        unreadNotificationBadge?.Initialize(ChatController.i, userId);
         jumpInButton.Initialize(FriendsController.i, userId);
         jumpInButton.OnClick += () => OnJumpInClick?.Invoke(this);
     }

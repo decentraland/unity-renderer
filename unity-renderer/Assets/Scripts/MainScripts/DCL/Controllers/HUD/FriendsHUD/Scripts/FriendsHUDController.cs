@@ -17,7 +17,8 @@ public class FriendsHUDController : IHUD
 
     public void Initialize(IFriendsController friendsController, UserProfile ownUserProfile)
     {
-        view = FriendsHUDView.Create(this);
+        // view = FriendsHUDView.Create(this);
+        view = FriendsHUDComponentView.Create();
         this.friendsController = friendsController;
 
         if (this.friendsController != null)

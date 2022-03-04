@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using TMPro;
 using UnityEngine;
 
 public class FriendRequestsTabComponentView : BaseComponentView
@@ -19,6 +20,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [SerializeField] private CollapsableSortedFriendEntryList receivedRequestsList;
     [SerializeField] private CollapsableSortedFriendEntryList sentRequestsList;
     [SerializeField] private SearchBarComponentView searchBar;
+    [SerializeField] private TMP_Text receivedRequestsCountText;
+    [SerializeField] private TMP_Text sentRequestsCountText;
+    [SerializeField] private UserContextMenu contextMenuPanel;
 
     [Header("Notifications")]
     [SerializeField] private Notification requestSentNotification;
@@ -45,6 +49,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         base.OnEnable();
         searchBar.OnSubmit += SendFriendRequest;
         searchBar.OnSearchText += OnSearchInputValueChanged;
+        contextMenuPanel.OnBlock += HandleFriendBlockRequest;
     }
 
     public override void OnDisable()
@@ -52,7 +57,14 @@ public class FriendRequestsTabComponentView : BaseComponentView
         base.OnDisable();
         searchBar.OnSubmit -= SendFriendRequest;
         searchBar.OnSearchText -= OnSearchInputValueChanged;
+        contextMenuPanel.OnBlock -= HandleFriendBlockRequest;
         NotificationsController.i?.DismissAllNotifications(NOTIFICATIONS_ID);
+    }
+    
+    public void Expand()
+    {
+        receivedRequestsList.Expand();
+        sentRequestsList.Expand();
     }
     
     public void Show()
@@ -67,6 +79,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         gameObject.SetActive(false);
         enabledHeader.SetActive(false);
         disabledHeader.SetActive(true);
+        contextMenuPanel.Hide();
     }
 
     public override void RefreshControl()
@@ -102,6 +115,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         sentRequestsList.Remove(userId);
 
         UpdateEmptyOrFilledState();
+        UpdateCounterLabel();
     }
 
     public void Clear()
@@ -110,6 +124,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         receivedRequestsList.Clear();
         sentRequestsList.Clear();
         UpdateEmptyOrFilledState();
+        UpdateCounterLabel();
     }
     
     public FriendRequestEntry Get(string userId) => entries.ContainsKey(userId) ? entries[userId] : null;
@@ -130,13 +145,14 @@ public class FriendRequestsTabComponentView : BaseComponentView
             sentRequestsList.Add(userId, entry);
         
         UpdateEmptyOrFilledState();
+        UpdateCounterLabel();
     }
 
     public void ShowUserNotFoundNotification()
     {
         friendSearchFailedNotification.model.timer = NOTIFICATIONS_DURATION;
         friendSearchFailedNotification.model.groupID = NOTIFICATIONS_ID;
-        NotificationsController.i.ShowNotification(friendSearchFailedNotification);
+        NotificationsController.i?.ShowNotification(friendSearchFailedNotification);
     }
 
     private void CreateEntry(string userId)
@@ -151,6 +167,11 @@ public class FriendRequestsTabComponentView : BaseComponentView
         entry.OnAccepted += OnFriendRequestReceivedAccepted;
         entry.OnRejected += OnEntryRejectButtonPressed;
         entry.OnCancelled += OnEntryCancelButtonPressed;
+        entry.OnMenuToggle += x =>
+        {
+            contextMenuPanel.transform.position = entry.menuPositionReference.position;
+            contextMenuPanel.Show(userId);
+        };
     }
 
     private Pool GetEntryPool()
@@ -189,7 +210,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     {
         alreadyFriendsNotification.model.timer = NOTIFICATIONS_DURATION;
         alreadyFriendsNotification.model.groupID = NOTIFICATIONS_ID;
-        NotificationsController.i.ShowNotification(alreadyFriendsNotification);
+        NotificationsController.i?.ShowNotification(alreadyFriendsNotification);
     }
 
     private void ShowRequestSuccessfullySentNotification(string friendUserName)
@@ -197,7 +218,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         requestSentNotification.model.timer = NOTIFICATIONS_DURATION;
         requestSentNotification.model.groupID = NOTIFICATIONS_ID;
         requestSentNotification.model.message = $"Your request to {friendUserName} successfully sent!";
-        NotificationsController.i.ShowNotification(requestSentNotification);
+        NotificationsController.i?.ShowNotification(requestSentNotification);
     }
 
     private void UpdateEmptyOrFilledState()
@@ -211,6 +232,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         var friendUserProfile = UserProfileController.GetProfileByName(friendUserName);
 
         return friendUserProfile != null
+               && FriendsController.i != null
                && FriendsController.i.friends.ContainsKey(friendUserProfile.userId)
                && FriendsController.i.friends[friendUserProfile.userId].friendshipStatus == FriendshipStatus.FRIEND;
     }
@@ -218,13 +240,13 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private void OnSearchInputValueChanged(string friendUserName)
     {
         if (!string.IsNullOrEmpty(friendUserName))
-            NotificationsController.i.DismissAllNotifications(FriendsHUDView.NOTIFICATIONS_ID);
+            NotificationsController.i?.DismissAllNotifications(FriendsHUDView.NOTIFICATIONS_ID);
     }
 
     private void OnFriendRequestReceivedAccepted(FriendRequestEntry requestEntry)
     {
         // Add placeholder friend to avoid affecting UX by roundtrip with kernel
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+        FriendsController.i?.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
         {
             userId = requestEntry.userId,
             action = FriendshipAction.APPROVED
@@ -240,7 +262,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         acceptedFriendNotification.model.timer = NOTIFICATIONS_DURATION;
         acceptedFriendNotification.model.groupID = NOTIFICATIONS_ID;
         acceptedFriendNotification.model.message = $"You and {requestEntry.model.userName} are now friends!";
-        NotificationsController.i.ShowNotification(acceptedFriendNotification);
+        NotificationsController.i?.ShowNotification(acceptedFriendNotification);
     }
 
     private void OnEntryRejectButtonPressed(FriendRequestEntry requestEntry)
@@ -263,6 +285,21 @@ public class FriendRequestsTabComponentView : BaseComponentView
         // });
         
         OnCancelConfirmation?.Invoke(requestEntry);
+    }
+    
+    private void UpdateCounterLabel()
+    {
+        receivedRequestsCountText.SetText("RECEIVED ({0})", receivedRequestsList.Count());
+        sentRequestsCountText.SetText("SENT ({0})", sentRequestsList.Count());
+    }
+    
+    private void HandleFriendBlockRequest(string userId, bool blockUser)
+    {
+        var friendEntryToBlock = Get(userId);
+        if (friendEntryToBlock == null) return;
+        // instantly refresh ui
+        friendEntryToBlock.model.blocked = blockUser;
+        Set(userId, friendEntryToBlock.model, friendEntryToBlock.isReceived);
     }
 
     [Serializable]

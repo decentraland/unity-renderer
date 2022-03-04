@@ -13,20 +13,50 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     [SerializeField] private FriendRequestsTabComponentView friendRequestsTab;
     [SerializeField] private Model model;
 
-    public event Action<FriendRequestEntry> OnFriendRequestApproved;
-    public event Action<FriendRequestEntry> OnCancelConfirmation;
-    public event Action<FriendRequestEntry> OnRejectConfirmation;
-    public event Action<string> OnFriendRequestSent;
-    public event Action<FriendEntry> OnWhisper;
-    public event Action<string> OnDeleteConfirmation;
+    public event Action<FriendRequestEntry> OnFriendRequestApproved
+    {
+        add => friendRequestsTab.OnFriendRequestApproved += value;
+        remove => friendRequestsTab.OnFriendRequestApproved -= value;
+    }
+    public event Action<FriendRequestEntry> OnCancelConfirmation
+    {
+        add => friendRequestsTab.OnCancelConfirmation += value;
+        remove => friendRequestsTab.OnCancelConfirmation -= value;
+    }
+    public event Action<FriendRequestEntry> OnRejectConfirmation
+    {
+        add => friendRequestsTab.OnRejectConfirmation += value;
+        remove => friendRequestsTab.OnRejectConfirmation -= value;
+    }
+    public event Action<string> OnFriendRequestSent
+    {
+        add => friendRequestsTab.OnFriendRequestSent += value;
+        remove => friendRequestsTab.OnFriendRequestSent -= value;
+    }
+    public event Action<FriendEntry> OnWhisper
+    {
+        add => friendsTab.OnWhisper += value;
+        remove => friendsTab.OnWhisper -= value;
+    }
+    public event Action<string> OnDeleteConfirmation
+    {
+        add => friendsTab.OnDeleteConfirmation += value;
+        remove => friendsTab.OnDeleteConfirmation -= value;
+    }
     public event Action OnClose;
 
     public RectTransform Transform => transform as RectTransform;
+    
+    public static FriendsHUDComponentView Create()
+    {
+        var view = Instantiate(Resources.Load<GameObject>("SocialBarV2/FriendsHUD")).GetComponent<FriendsHUDComponentView>();
+        return view;
+    }
 
     public override void Awake()
     {
         base.Awake();
-
+        
         friendsTabFocusButton.onClick.AddListener(() => FocusTab(0));
         friendRequestsTabFocusButton.onClick.AddListener(() => FocusTab(1));
         closeButton.onClick.AddListener(() =>
@@ -34,6 +64,9 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
             OnClose?.Invoke();
             Hide();
         });
+        
+        friendsTab.Expand();
+        friendRequestsTab.Expand();
     }
 
     public void HideSpinner()
