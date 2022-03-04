@@ -1,10 +1,8 @@
-using System;
 using DCL;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.SettingsPanelHUD;
-using LoadingHUD;
 using SignupHUD;
 using UnityEngine;
 
@@ -32,7 +30,6 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.SETTINGS_PANEL:
                 hudElement = new SettingsPanelHUDController();
                 break;
-            case HUDElementID.EXPRESSIONS:
             case HUDElementID.EMOTES:
                 hudElement = new EmotesHUDController();
                 break;

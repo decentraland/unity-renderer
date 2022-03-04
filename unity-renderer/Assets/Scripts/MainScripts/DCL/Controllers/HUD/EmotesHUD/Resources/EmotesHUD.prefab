@@ -3638,21 +3638,26 @@ MonoBehaviour:
   - expressionId: wave
     button: {fileID: 8899024452345124865}
   - expressionId: fistpump
-    button: {fileID: 6920979846287350269}
+    button: {fileID: 4279172086424336790}
   - expressionId: dance
-    button: {fileID: 7079493532869316107}
+    button: {fileID: 7152031166796822293}
   - expressionId: raiseHand
-    button: {fileID: 8496611908133421776}
+    button: {fileID: 2848959638141309605}
   - expressionId: clap
-    button: {fileID: 7767993376052004405}
+    button: {fileID: 2604964004818463566}
   - expressionId: money
-    button: {fileID: 25081012869704405}
+    button: {fileID: 4614562607161772703}
   - expressionId: kiss
-    button: {fileID: 6836242333474179246}
+    button: {fileID: 5091375931333350564}
+  - expressionId: kiss
+    button: {fileID: 9081740950560111089}
+  - expressionId: kiss
+    button: {fileID: 3668953973556704891}
+  - expressionId: kiss
+    button: {fileID: 7361229475138989084}
   closeButtons:
   - {fileID: 5791184483059670900}
   - {fileID: 5162113001874340231}
-  avatarPic: {fileID: 0}
 --- !u!222 &5211374839953244563
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8191,6 +8196,7 @@ GameObject:
   - component: {fileID: 3368308072246989936}
   - component: {fileID: 150641883612503191}
   - component: {fileID: 5791184483059670900}
+  - component: {fileID: 64601656743544481}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -8288,10 +8294,40 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 64601656743544481}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &64601656743544481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7040428932665199747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &7073658966880106756
 GameObject:
   m_ObjectHideFlags: 0

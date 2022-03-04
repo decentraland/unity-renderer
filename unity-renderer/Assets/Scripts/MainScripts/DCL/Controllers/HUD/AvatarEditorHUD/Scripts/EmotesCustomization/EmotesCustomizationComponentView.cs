@@ -82,6 +82,20 @@ namespace Emotes
         /// Close the info panel.
         /// </summary>
         void CloseEmoteInfoPanel();
+
+        /// <summary>
+        /// Get an emote card by id.
+        /// </summary>
+        /// <param name="emoteId">Emote id to search.</param>
+        /// <returns>An emote card.</returns>
+        EmoteCardComponentView GetEmoteCardById(string emoteId);
+
+        /// <summary>
+        /// Get an emote slot card by slot number.
+        /// </summary>
+        /// <param name="slotNumber">Slot number to get.</param>
+        /// <returns>An emote slot card.</returns>
+        EmoteSlotCardComponentView GetEmoteSlotCardBySlotNumber(int slotNumber);
     }
 
     public class EmotesCustomizationComponentView : BaseComponentView, IEmotesCustomizationComponentView
@@ -199,7 +213,13 @@ namespace Emotes
                 if (existingEmoteCard.model.id == emoteId)
                 {
                     existingEmoteCard.AssignSlot(slotNumber);
-                    emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, emoteId, emoteName, existingEmoteCard.model.pictureSprite, existingEmoteCard.model.rarity);
+                    emoteSlotSelector.AssignEmoteIntoSlot(
+                        slotNumber, 
+                        emoteId, 
+                        emoteName, 
+                        existingEmoteCard.model.pictureSprite, 
+                        existingEmoteCard.model.pictureUri,
+                        existingEmoteCard.model.rarity);
                     emoteSlotSelector.SelectSlot(slotNumber);
                 }
 
@@ -223,7 +243,13 @@ namespace Emotes
                 emoteCardsToUpdate.SetEmoteAsAssignedInSelectedSlot(false);
             }
 
-            emoteSlotSelector.AssignEmoteIntoSlot(slotNumber, string.Empty, string.Empty, null, string.Empty);
+            emoteSlotSelector.AssignEmoteIntoSlot(
+                slotNumber, 
+                string.Empty, 
+                string.Empty, 
+                null,
+                null,
+                string.Empty);
             emoteInfoPanel.SetActive(false);
 
             onEmoteUnequipped?.Invoke(emoteId, slotNumber);
@@ -242,6 +268,20 @@ namespace Emotes
         public void CloseEmoteInfoPanel()
         {
             emoteInfoPanel.SetActive(false);
+        }
+
+        public EmoteCardComponentView GetEmoteCardById(string emoteId)
+        {
+            return GetAllEmoteCards().FirstOrDefault(x => x.model.id == emoteId);
+        }
+
+        public EmoteSlotCardComponentView GetEmoteSlotCardBySlotNumber(int slotNumber)
+        {
+            EmoteSlotCardComponentView result = emoteSlotSelector
+                .GetAllSlots()
+                .FirstOrDefault(x => x.model.slotNumber == slotNumber);
+
+            return result;
         }
 
         internal void ClickOnEmote(string emoteId)
@@ -315,11 +355,6 @@ namespace Emotes
                 .GetItems()
                 .Select(x => x as EmoteCardComponentView)
                 .ToList();
-        }
-
-        internal EmoteCardComponentView GetEmoteCardById(string emoteId)
-        {
-            return GetAllEmoteCards().FirstOrDefault(x => x.model.id == emoteId);
         }
 
         internal static IEmotesCustomizationComponentView Create()

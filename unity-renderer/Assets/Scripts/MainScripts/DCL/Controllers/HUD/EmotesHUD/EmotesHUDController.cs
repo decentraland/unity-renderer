@@ -1,4 +1,3 @@
-﻿using System;
 using DCL;
 using UnityEngine;
 
@@ -34,22 +33,11 @@ public class EmotesHUDController : IHUD
         view.SetVisiblity(visible);
 
         if ( visible )
-        {
             DCL.Helpers.Utils.UnlockCursor();
-            ownUserProfile.snapshotObserver.AddListener(view.UpdateAvatarSprite);
-        }
-        else
-        {
-            // Avoid locking cursor. It produces undesired mouse locking the first time you gain focus in the window
-            // during loading screen or first avatar creation
-            //DCL.Helpers.Utils.LockCursor();
-            ownUserProfile.snapshotObserver.RemoveListener(view.UpdateAvatarSprite);
-        }
     }
 
     public void Dispose()
     {
-        ownUserProfile.snapshotObserver.RemoveListener(view.UpdateAvatarSprite);
         closeWindow.OnTriggered -= OnCloseWindowPressed;
         ownUserProfile.OnAvatarExpressionSet -= OnAvatarEmoteSet;
         emotesVisible.OnChange -= OnEmoteVisibleChanged;

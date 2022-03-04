@@ -1,7 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 public class EmotesHUDView : MonoBehaviour
 {
@@ -19,7 +17,6 @@ public class EmotesHUDView : MonoBehaviour
 
     [SerializeField] internal ButtonToEmote[] buttonToEmotesMap;
     [SerializeField] internal Button_OnPointerDown[] closeButtons;
-    [SerializeField] internal RawImage avatarPic;
 
     public static EmotesHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesHUDView>(); }
 
@@ -37,14 +34,6 @@ public class EmotesHUDView : MonoBehaviour
         {
             buttonToExpression.button.onPointerDown += () => clickedDelegate?.Invoke(buttonToExpression.expressionId);
         }
-    }
-
-    public void UpdateAvatarSprite(Texture2D avatarTexture)
-    {
-        if (avatarTexture == null)
-            return;
-
-        avatarPic.texture = avatarTexture;
     }
 
     public void SetVisiblity(bool visible)
