@@ -10,10 +10,10 @@ using System;
 public class ScrollRectSensitivityHandler : MonoBehaviour
 {
 
-    private const float windowsSensitivityMultiplier = 15f;
-    private const float macSensitivityMultiplier = 4f;
-    private const float linuxSensitivityMultiplier = 3f;
-    private const float defaultSensitivityMultiplier = 3.5f;
+    private const float WINDOWS_SENSITIVITY_MULTIPLIER = 15f;
+    private const float MAC_SENSITIVITY_MULTIPLIER = 4f;
+    private const float LINUX_SENSITIVITY_MULTIPLIER = 3f;
+    private const float DEFAULT_SENSITIVITY_MULTIPLIER = 3.5f;
 
     private ScrollRect myScrollRect;
     private float defaultSens;
@@ -31,20 +31,20 @@ public class ScrollRectSensitivityHandler : MonoBehaviour
     }
 
     private float GetScrollMultiplier() {
-        switch (GetCurrentOs())
+        switch (GetCurrentOperatingSystem())
         {
             case OperatingSystemFamily.Windows:
-                return windowsSensitivityMultiplier;
+                return WINDOWS_SENSITIVITY_MULTIPLIER;
             case OperatingSystemFamily.Linux:
-                return linuxSensitivityMultiplier;
+                return LINUX_SENSITIVITY_MULTIPLIER;
             case OperatingSystemFamily.MacOSX:
-                return macSensitivityMultiplier;
+                return MAC_SENSITIVITY_MULTIPLIER;
             default:
-                return defaultSensitivityMultiplier;
+                return DEFAULT_SENSITIVITY_MULTIPLIER;
         }
     }
 
-    private OperatingSystemFamily GetCurrentOs() {
+    private OperatingSystemFamily GetCurrentOperatingSystem() {
 #if UNITY_WEBGL
         return ObtainOsFromWebGLAgent();
 #else
