@@ -6,11 +6,14 @@ namespace Emotes
     public class EmotesCustomizationFeature : IPlugin
     {
         public IEmotesCustomizationComponentController emotesCustomizationComponentController;
+        public EmotesHUDController emotesHUDController;
 
         public EmotesCustomizationFeature()
         {
             emotesCustomizationComponentController = CreateController();
             emotesCustomizationComponentController.Initialize();
+
+            emotesHUDController = new EmotesHUDController();
         }
 
         internal virtual IEmotesCustomizationComponentController CreateController() => new EmotesCustomizationComponentController();
