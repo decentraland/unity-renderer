@@ -20,7 +20,11 @@ namespace DCL
 
             texture.wrapMode = textureWrapMode;
             texture.filterMode = textureFilterMode;
+            
+#if !UNITY_STANDALONE
             texture.Compress(false);
+#endif
+            
             texture.Apply(textureFilterMode != FilterMode.Point, makeNoLongerReadable);
         }
 
