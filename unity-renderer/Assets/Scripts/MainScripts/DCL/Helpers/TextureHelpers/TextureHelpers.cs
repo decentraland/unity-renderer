@@ -35,7 +35,7 @@ public static class TextureHelpers
     public static Texture2D Resize(Texture2D source, int newWidth, int newHeight, bool linear = false)
     {
         // RenderTexture default format is ARGB32
-        Texture2D nTex = new Texture2D(newWidth, newHeight, TextureFormat.ARGB32, 1, false);
+        Texture2D nTex = new Texture2D(newWidth, newHeight, TextureFormat.ARGB32, 1, linear);
         nTex.filterMode = source.filterMode;
         nTex.wrapMode = source.wrapMode;
 
