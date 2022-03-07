@@ -675,8 +675,6 @@ namespace UnityGLTF
 
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
-            texture = CheckAndReduceTextureSize(texture, settings.linear);
-            _assetCache.ImageCache[imageCacheIndex] = texture;
 
             // We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
 #if !UNITY_STANDALONE || UNITY_EDITOR
@@ -690,6 +688,9 @@ namespace UnityGLTF
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
+            
+            // Resizing must be the last step to avoid breaking the texture when copying with Graphics.CopyTexture()
+            _assetCache.ImageCache[imageCacheIndex] = CheckAndReduceTextureSize(texture, settings.linear);
 
             await UniTask.Yield();
         }
