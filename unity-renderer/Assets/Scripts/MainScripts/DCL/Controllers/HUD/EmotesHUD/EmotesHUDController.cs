@@ -7,28 +7,29 @@ public class EmotesHUDController : IHUD
 {
     internal EmotesHUDView view;
     private BaseVariable<bool> emotesVisible => DataStore.i.HUDs.emotesVisible;
+    private BaseVariable<bool> isAvatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
+    private BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotes.isEmotesCustomizationSelected;
+    private BaseVariable<bool> isStartMenuOpen => DataStore.i.exploreV2.isOpen;
     private BaseCollection<StoredEmote> equippedEmotes => DataStore.i.emotes.equippedEmotes;
     private BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
     private bool shortcutsCanBeUsed => !isStarMenuOpen.Get();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private InputAction_Trigger closeWindow;
-
-    internal InputAction_Trigger shortcut0InputAction;
-    internal InputAction_Trigger shortcut1InputAction;
-    internal InputAction_Trigger shortcut2InputAction;
-    internal InputAction_Trigger shortcut3InputAction;
-    internal InputAction_Trigger shortcut4InputAction;
-    internal InputAction_Trigger shortcut5InputAction;
-    internal InputAction_Trigger shortcut6InputAction;
-    internal InputAction_Trigger shortcut7InputAction;
-    internal InputAction_Trigger shortcut8InputAction;
-    internal InputAction_Trigger shortcut9InputAction;
+    private InputAction_Hold openEmotesCustomizationInputAction;
+    private InputAction_Trigger shortcut0InputAction;
+    private InputAction_Trigger shortcut1InputAction;
+    private InputAction_Trigger shortcut2InputAction;
+    private InputAction_Trigger shortcut3InputAction;
+    private InputAction_Trigger shortcut4InputAction;
+    private InputAction_Trigger shortcut5InputAction;
+    private InputAction_Trigger shortcut6InputAction;
+    private InputAction_Trigger shortcut7InputAction;
+    private InputAction_Trigger shortcut8InputAction;
+    private InputAction_Trigger shortcut9InputAction;
 
     public EmotesHUDController()
     {
-        closeWindow = Resources.Load<InputAction_Trigger>("CloseWindow");
-        closeWindow.OnTriggered += OnCloseWindowPressed;
         view = EmotesHUDView.Create();
         view.OnClose += OnViewClosed;
         view.onEmoteClicked += EmoteCalled;
@@ -36,6 +37,8 @@ public class EmotesHUDController : IHUD
         ownUserProfile.OnAvatarExpressionSet += OnAvatarEmoteSet;
         emotesVisible.OnChange += OnEmoteVisibleChanged;
         OnEmoteVisibleChanged(emotesVisible.Get(), false);
+
+        isStartMenuOpen.OnChange += IsStartMenuOpenChanged;
 
         equippedEmotes.OnSet += OnEquippedEmotesSet;
         OnEquippedEmotesSet(equippedEmotes.Get());
@@ -50,6 +53,14 @@ public class EmotesHUDController : IHUD
     }
 
     private void OnEmoteVisibleChanged(bool current, bool previous) { SetVisibility_Internal(current); }
+
+    private void IsStartMenuOpenChanged(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        emotesVisible.Set(false);
+    }
 
     private void OnEquippedEmotesSet(IEnumerable<StoredEmote> equippedEmotes) { view.SetEmotes(equippedEmotes.ToList()); }
 
@@ -89,12 +100,14 @@ public class EmotesHUDController : IHUD
 
     public void EmoteCalled(string id) { UserProfile.GetOwnUserProfile().SetAvatarExpression(id); }
 
-    private void OnViewClosed() { emotesVisible.Set(false); }
-    private void OnAvatarEmoteSet(string id, long timestamp) { emotesVisible.Set(false); }
-    private void OnCloseWindowPressed(DCLAction_Trigger action) { emotesVisible.Set(false); }
-
-    internal void ConfigureShortcuts()
+    private void ConfigureShortcuts()
     {
+        closeWindow = Resources.Load<InputAction_Trigger>("CloseWindow");
+        closeWindow.OnTriggered += OnCloseWindowPressed;
+
+        openEmotesCustomizationInputAction = Resources.Load<InputAction_Hold>("DefaultConfirmAction");
+        openEmotesCustomizationInputAction.OnFinished += OnOpenEmotesCustomizationInputActionTriggered;
+
         shortcut0InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut0");
         shortcut0InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
@@ -126,7 +139,7 @@ public class EmotesHUDController : IHUD
         shortcut9InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
     }
 
-    internal void OnNumericShortcutInputActionTriggered(DCLAction_Trigger action)
+    private void OnNumericShortcutInputActionTriggered(DCLAction_Trigger action)
     {
         if (!shortcutsCanBeUsed)
             return;
@@ -166,11 +179,24 @@ public class EmotesHUDController : IHUD
         }
     }
 
-    internal void PlayExpression(string id)
+    private void OnViewClosed() { emotesVisible.Set(false); }
+    private void OnAvatarEmoteSet(string id, long timestamp) { emotesVisible.Set(false); }
+    private void OnCloseWindowPressed(DCLAction_Trigger action) { emotesVisible.Set(false); }
+    private void OnOpenEmotesCustomizationInputActionTriggered(DCLAction_Hold action) 
+    {
+        if (!emotesVisible.Get())
+            return;
+
+        emotesVisible.Set(false);
+        isAvatarEditorVisible.Set(true);
+        isEmotesCustomizationSelected.Set(true);
+    }
+
+    private void PlayExpression(string id)
     {
         if (string.IsNullOrEmpty(id))
             return;
 
-        ownUserProfile.SetAvatarExpression(id);
+        EmoteCalled(id);
     }
 }

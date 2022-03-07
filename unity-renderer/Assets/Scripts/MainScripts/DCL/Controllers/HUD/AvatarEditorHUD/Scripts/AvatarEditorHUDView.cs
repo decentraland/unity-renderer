@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -18,6 +19,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     internal const string EMOTES_SECTION_TITLE = "<b>Emotes</b> Customization";
 
     public bool isOpen { get; private set; }
+    internal BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotes.isEmotesCustomizationSelected;
 
     internal bool arePanelsInitialized = false;
 
@@ -490,6 +492,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
             if (isSelected)
                 sectionTitle.text = AVATAR_SECTION_TITLE;
+
+            isEmotesCustomizationSelected.Set(false, notifyEvent: false);
         });
         sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
         {
@@ -499,6 +503,7 @@ public class AvatarEditorHUDView : MonoBehaviour
                 sectionTitle.text = EMOTES_SECTION_TITLE;
 
             characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
+            isEmotesCustomizationSelected.Set(true, notifyEvent: false);
         });
     }
 

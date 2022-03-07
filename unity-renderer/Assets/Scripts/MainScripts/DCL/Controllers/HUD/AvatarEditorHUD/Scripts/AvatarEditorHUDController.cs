@@ -36,6 +36,7 @@ public class AvatarEditorHUDController : IHUD
     BaseVariable<Transform> configureBackpackInFullscreenMenu => DataStore.i.exploreV2.configureBackpackInFullscreenMenu;
     BaseVariable<bool> exploreV2IsOpen => DataStore.i.exploreV2.isOpen;
     BaseVariable<Transform> isEmotesSectonInitialized => DataStore.i.emotes.isInitialized;
+    BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotes.isEmotesCustomizationSelected;
     private bool isSkinsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_skins");
 
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
@@ -91,6 +92,7 @@ public class AvatarEditorHUDController : IHUD
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, false);
         isEmotesSectonInitialized.OnChange += InitializeEmotesSection;
         InitializeEmotesSection(isEmotesSectonInitialized.Get(), null);
+        isEmotesCustomizationSelected.OnChange += IsEmotesCustomizationSelectedChanged;
 
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
     }
@@ -644,6 +646,7 @@ public class AvatarEditorHUDController : IHUD
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
         exploreV2IsOpen.OnChange -= ExploreV2IsOpenChanged;
         isEmotesSectonInitialized.OnChange -= InitializeEmotesSection;
+        isEmotesCustomizationSelected.OnChange -= IsEmotesCustomizationSelectedChanged;
 
         CleanUp();
     }
@@ -750,5 +753,13 @@ public class AvatarEditorHUDController : IHUD
         emotesSectionTransform.SetParent(view.emotesSection.transform, false);
 
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
+    }
+
+    private void IsEmotesCustomizationSelectedChanged(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        view.sectionSelector.GetSection(AvatarEditorHUDView.EMOTES_SECTION_INDEX).SelectToggle();
     }
 }
