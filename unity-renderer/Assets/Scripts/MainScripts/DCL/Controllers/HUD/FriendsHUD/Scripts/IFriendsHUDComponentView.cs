@@ -29,6 +29,4 @@ public interface IFriendsHUDComponentView
     void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction, FriendEntryBase.Model friendEntryModel);
     void Search(string userId);
     bool IsActive();
-    void ShowCurrentFriendPassport();
-    void ReportCurrentFriend();
 }

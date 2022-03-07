@@ -100,6 +100,7 @@ public class FriendsHUDController : IHUD
         if (entry != null)
             model = entry.model;
 
+        model.userId = userId;
         model.status = newStatus.presence;
         model.coords = newStatus.position;
 
@@ -137,6 +138,7 @@ public class FriendsHUDController : IHUD
         if (entry != null)
             friendEntryModel = entry.model;
 
+        friendEntryModel.userId = userId;
         friendEntryModel.userName = userProfile.userName;
         friendEntryModel.avatarSnapshotObserver = userProfile.snapshotObserver;
 

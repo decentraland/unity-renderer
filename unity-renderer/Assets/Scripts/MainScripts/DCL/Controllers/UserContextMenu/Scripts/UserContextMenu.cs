@@ -138,8 +138,6 @@ public class UserContextMenu : MonoBehaviour
             FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
         }
     }
-
-    public void ClickPassportButton() => passportButton.onClick.Invoke();
     
     public void ClickReportButton() => reportButton.onClick.Invoke();
 

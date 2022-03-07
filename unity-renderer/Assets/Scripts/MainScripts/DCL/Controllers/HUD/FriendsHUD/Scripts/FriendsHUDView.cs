@@ -138,10 +138,6 @@ public class FriendsHUDView : MonoBehaviour, IFriendsHUDComponentView
     
     public bool IsActive() => gameObject.activeInHierarchy;
 
-    public void ShowCurrentFriendPassport() => friendsList.contextMenuPanel.ClickPassportButton();
-
-    public void ReportCurrentFriend() => friendsList.contextMenuPanel.ClickReportButton();
-
     public bool IsFriendListCreationReady() => friendsList.creationQueue.Count == 0;
 
     public void ShowSpinner()

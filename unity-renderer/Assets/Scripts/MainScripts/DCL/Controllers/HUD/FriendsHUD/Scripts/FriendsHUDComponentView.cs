@@ -49,7 +49,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     
     public static FriendsHUDComponentView Create()
     {
-        var view = Instantiate(Resources.Load<GameObject>("SocialBarV2/FriendsHUD")).GetComponent<FriendsHUDComponentView>();
+        var view = Instantiate(Resources.Load<GameObject>("SocialBarV1/FriendsHUD")).GetComponent<FriendsHUDComponentView>();
         return view;
     }
 
@@ -96,7 +96,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public void UpdateEntry(string userId, FriendEntryBase.Model model)
     {
-        friendsTab.Set(userId, model);
+        friendsTab.Enqueue(userId, model);
     }
 
     public void DisplayFriendUserNotFound() => friendRequestsTab.ShowUserNotFoundNotification();
@@ -159,16 +159,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     }
 
     public bool IsActive() => gameObject.activeInHierarchy;
-
-    public void ShowCurrentFriendPassport()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void ReportCurrentFriend()
-    {
-        throw new NotImplementedException();
-    }
 
     public override void RefreshControl()
     {

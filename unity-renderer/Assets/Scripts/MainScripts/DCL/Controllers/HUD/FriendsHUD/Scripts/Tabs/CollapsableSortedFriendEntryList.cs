@@ -75,7 +75,7 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
 
     public void Filter(string search)
     {
-        var regex = new Regex(search);
+        var regex = new Regex(search, RegexOptions.IgnoreCase);
 
         foreach (var entry in entries)
         {

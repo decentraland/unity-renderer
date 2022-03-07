@@ -57,38 +57,6 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
-    public IEnumerator ReactCorrectlyToReportClick()
-    {
-        var id = "test-id-1";
-        yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id);
-        var entry = TestHelpers_Friends.GetEntry(view, id);
-        Assert.IsNotNull(entry);
-
-        bool reportPlayerSent = false;
-
-        Action<string, string> callback =
-            (name, payload) =>
-            {
-                if (name == "ReportPlayer")
-                {
-                    reportPlayerSent = true;
-                }
-            };
-
-        WebInterface.OnMessageFromEngine += callback;
-
-        entry.menuButton.onClick.Invoke();
-
-        Assert.IsTrue(view.IsFriendListFocused());
-
-        view.ReportCurrentFriend();
-
-        Assert.IsTrue(reportPlayerSent);
-
-        WebInterface.OnMessageFromEngine -= callback;
-    }
-
-    [UnityTest]
     public IEnumerator ReactCorrectlyToPassportClick()
     {
         var id = "test-id-1";
@@ -98,11 +66,8 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
 
         var currentPlayerId = Resources.Load<StringVariable>(UserContextMenu.CURRENT_PLAYER_ID);
 
-        entry.menuButton.onClick.Invoke();
         Assert.AreNotEqual(id, currentPlayerId.Get());
-
-        view.ShowCurrentFriendPassport();
-
+        entry.passportButton.onClick.Invoke();
         Assert.AreEqual(id, currentPlayerId.Get());
     }
 

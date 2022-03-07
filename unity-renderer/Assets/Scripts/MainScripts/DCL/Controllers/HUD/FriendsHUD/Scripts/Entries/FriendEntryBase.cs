@@ -1,5 +1,4 @@
 using System;
-using DCL;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
@@ -10,6 +9,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
 {
     public class Model
     {
+        public string userId;
         public PresenceStatus status;
         public string userName;
         public Vector2 coords;
@@ -21,7 +21,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
     }
 
     public Model model { get; private set; } = new Model();
-    [System.NonSerialized] public string userId;
+    [NonSerialized] public string userId;
 
     public Image playerBlockedImage;
     public Transform menuPositionReference;
@@ -33,21 +33,34 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] protected internal Sprite hoveredBackgroundSprite;
     [SerializeField] protected internal AudioEvent audioEventHover;
     [SerializeField] protected internal GameObject onlineStatusContainer;
+    [SerializeField] protected internal GameObject offlineStatusContainer;
     [SerializeField] protected internal Button passportButton;
+    [SerializeField] private Selectable.Transition transition = Selectable.Transition.SpriteSwap;
+    [SerializeField] private ColorBlock transitionColors;
+    
     protected internal Sprite unhoveredBackgroundSprite;
+    private StringVariable currentPlayerInfoCardId;
+    private Color originalBackgroundColor;
 
-    public event System.Action<FriendEntryBase> OnMenuToggle;
+    public event Action<FriendEntryBase> OnMenuToggle;
 
     public virtual void Awake()
     {
+        originalBackgroundColor = backgroundImage.color;
         unhoveredBackgroundSprite = backgroundImage.sprite;
         menuButton.onClick.RemoveAllListeners();
         menuButton.onClick.AddListener(() => OnMenuToggle?.Invoke(this));
+        passportButton?.onClick.RemoveAllListeners();
+        passportButton?.onClick.AddListener(ShowUserProfile);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        backgroundImage.sprite = hoveredBackgroundSprite;
+        if (transition == Selectable.Transition.SpriteSwap)
+            backgroundImage.sprite = hoveredBackgroundSprite;
+        else if (transition == Selectable.Transition.ColorTint)
+            backgroundImage.color = originalBackgroundColor * transitionColors.highlightedColor;
+
         menuButton.gameObject.SetActive(true);
 
         if (audioEventHover != null)
@@ -56,13 +69,20 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        backgroundImage.sprite = unhoveredBackgroundSprite;
+        if (transition == Selectable.Transition.SpriteSwap)
+            backgroundImage.sprite = unhoveredBackgroundSprite;
+        else if (transition == Selectable.Transition.ColorTint)
+            backgroundImage.color = originalBackgroundColor * transitionColors.normalColor;
+        
         menuButton.gameObject.SetActive(false);
     }
 
     private void OnEnable()
     {
         model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
+        
+        if (transition == Selectable.Transition.ColorTint)
+            backgroundImage.color = originalBackgroundColor * transitionColors.normalColor;
     }
 
     protected virtual void OnDisable()
@@ -91,9 +111,18 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         if (onlineStatusContainer != null)
             onlineStatusContainer.SetActive(model.status == PresenceStatus.ONLINE && !model.blocked);
+        if (offlineStatusContainer != null)
+            offlineStatusContainer.SetActive(model.status != PresenceStatus.ONLINE && !model.blocked);
 
         this.model = model;
     }
 
     private void OnAvatarImageChange(Texture2D texture) { playerImage.texture = texture; }
+
+    private void ShowUserProfile()
+    {
+        if (currentPlayerInfoCardId == null)
+            currentPlayerInfoCardId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+        currentPlayerInfoCardId.Set(model.userId);
+    }
 }
