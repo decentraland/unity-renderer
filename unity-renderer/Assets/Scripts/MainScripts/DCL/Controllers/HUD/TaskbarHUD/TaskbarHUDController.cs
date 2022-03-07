@@ -38,6 +38,9 @@ public class TaskbarHUDController : IHUD
 
     public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
 
+    BaseVariable<Transform> isEmotesSectionInitialized => DataStore.i.emotes.isInitialized;
+    BaseVariable<bool> isEmotesVisible => DataStore.i.HUDs.emotesVisible;
+
     protected internal virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(this, chatController, friendsController); }
 
     public void Initialize(
@@ -73,6 +76,8 @@ public class TaskbarHUDController : IHUD
         view.OnChatToggleOn += View_OnChatToggleOn;
         view.OnFriendsToggleOff += View_OnFriendsToggleOff;
         view.OnFriendsToggleOn += View_OnFriendsToggleOn;
+        view.OnEmotesToggleOff += View_OnEmotesToggleOff;
+        view.OnEmotesToggleOn += View_OnEmotesToggleOn;
 
         toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
         toggleFriendsTrigger.OnTriggered -= ToggleFriendsTrigger_OnTriggered;
@@ -85,6 +90,10 @@ public class TaskbarHUDController : IHUD
         toggleWorldChatTrigger = Resources.Load<InputAction_Trigger>("ToggleWorldChat");
         toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
         toggleWorldChatTrigger.OnTriggered += ToggleWorldChatTrigger_OnTriggered;
+
+        isEmotesSectionInitialized.OnChange += InitializeEmotesSelector;
+        InitializeEmotesSelector(isEmotesSectionInitialized.Get(), null);
+        isEmotesVisible.OnChange += IsEmotesVisibleChanged;
 
         if (chatController != null)
         {
@@ -119,6 +128,14 @@ public class TaskbarHUDController : IHUD
     }
 
     private void View_OnFriendsToggleOff() { friendsHud?.SetVisibility(false); }
+
+    private void View_OnEmotesToggleOn()
+    {
+        isEmotesVisible.Set(true);
+        OnAnyTaskbarButtonClicked?.Invoke();
+    }
+
+    private void View_OnEmotesToggleOff() { isEmotesVisible.Set(false); }
 
     private void ToggleFriendsTrigger_OnTriggered(DCLAction_Trigger action)
     {
@@ -282,6 +299,23 @@ public class TaskbarHUDController : IHUD
         friendsHud.view.friendsList.OnDeleteConfirmation += (userIdToRemove) => { view.chatHeadsGroup.RemoveChatHead(userIdToRemove); };
     }
 
+    private void InitializeEmotesSelector(Transform current, Transform previous) 
+    {
+        if (current == null)
+            return;
+
+        view.OnAddEmotesWindow(); 
+    }
+
+    private void IsEmotesVisibleChanged(bool current, bool previous)
+    {
+        if (current)
+            return;
+
+        view.emotesButton.SetToggleState(false, false);
+        MarkWorldChatAsReadIfOtherWindowIsOpen();
+    }
+
     public void OnAddVoiceChat() { view.OnAddVoiceChat(); }
 
     public void DisableFriendsWindow()
@@ -309,6 +343,8 @@ public class TaskbarHUDController : IHUD
             view.OnChatToggleOn -= View_OnChatToggleOn;
             view.OnFriendsToggleOff -= View_OnFriendsToggleOff;
             view.OnFriendsToggleOn -= View_OnFriendsToggleOn;
+            view.OnEmotesToggleOff -= View_OnEmotesToggleOff;
+            view.OnEmotesToggleOn -= View_OnEmotesToggleOn;
 
             UnityEngine.Object.Destroy(view.gameObject);
         }
@@ -338,6 +374,8 @@ public class TaskbarHUDController : IHUD
         }
 
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
+        isEmotesSectionInitialized.OnChange -= InitializeEmotesSelector;
+        isEmotesVisible.OnChange -= IsEmotesVisibleChanged;
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
