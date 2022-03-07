@@ -181,10 +181,6 @@ public class HUDController : IHUDController
                 if (settingsPanelHud != null)
                     settingsPanelHud.Initialize();
                 break;
-            case HUDElementID.EXPRESSIONS:
-            case HUDElementID.EMOTES:
-                CreateHudElement(configuration, hudElementId);
-                break;
             case HUDElementID.PLAYER_INFO_CARD:
                 CreateHudElement(configuration, hudElementId);
                 break;
