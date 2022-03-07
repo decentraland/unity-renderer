@@ -81,7 +81,7 @@ namespace DCL.FPSDisplay
             currentRealm.OnChange -= UpdateRealm;
             kernelConfigPromise.Dispose();
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
-
+            DataStore.i.debugConfig.versions.OnChange -= SetVersion;
             StopAllCoroutines();
         }
 

@@ -17,7 +17,8 @@ namespace DCL
 
         [SerializeField] private InfoPanel infoPanel;
         
-        private void Awake() { 
+        private void Awake() 
+        { 
             infoPanel.SetVisible(false);
         }
 
