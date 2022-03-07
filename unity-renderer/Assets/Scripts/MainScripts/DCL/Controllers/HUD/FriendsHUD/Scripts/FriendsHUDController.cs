@@ -1,6 +1,7 @@
 using DCL.Helpers;
 using DCL.Interface;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 
 public class FriendsHUDController : IHUD
@@ -17,8 +18,11 @@ public class FriendsHUDController : IHUD
 
     public void Initialize(IFriendsController friendsController, UserProfile ownUserProfile)
     {
-        // view = FriendsHUDView.Create(this);
-        view = FriendsHUDComponentView.Create();
+        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("social_bar_v1"))
+            view = FriendsHUDComponentView.Create();
+        else
+            view = FriendsHUDView.Create(this);
+            
         this.friendsController = friendsController;
 
         if (this.friendsController != null)
