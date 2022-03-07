@@ -8,6 +8,7 @@ namespace DCL
     public class StoredEmote
     {
         public string id;
+        public string name;
         public string pictureUri;
     }
 

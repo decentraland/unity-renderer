@@ -107,7 +107,10 @@ namespace Emotes
                 {
                     slot.SetEmoteName(emoteName);
                     if (pictureSprite != null)
+                    {
                         slot.SetEmotePicture(pictureSprite);
+                        slot.model.pictureUri = pictureUri;
+                    }
                     else
                         slot.SetEmotePicture(pictureUri);
                     slot.SetEmoteId(emoteId);

@@ -39,6 +39,11 @@ namespace Emotes
         int selectedSlot { get; }
 
         /// <summary>
+        /// Get the current slots.
+        /// </summary>
+        List<EmoteSlotCardComponentView> currentSlots { get; }
+
+        /// <summary>
         /// Get the current selected card.
         /// </summary>
         EmoteCardComponentView selectedCard { get; }
@@ -61,7 +66,8 @@ namespace Emotes
         /// <param name="emoteId">Emote Id to assign.</param>
         /// <param name="emoteName">Emote name to assign.</param>
         /// <param name="slotNumber">Slot number to assign the emote.</param>
-        void EquipEmote(string emoteId, string emoteName, int slotNumber);
+        /// <param name="notifyEvent">Indicates if the new equipped emote event should be notified or not.</param>
+        void EquipEmote(string emoteId, string emoteName, int slotNumber, bool notifyEvent = true);
 
         /// <summary>
         /// Unassign an emote from a specific slot.
@@ -89,13 +95,6 @@ namespace Emotes
         /// <param name="emoteId">Emote id to search.</param>
         /// <returns>An emote card.</returns>
         EmoteCardComponentView GetEmoteCardById(string emoteId);
-
-        /// <summary>
-        /// Get an emote slot card by slot number.
-        /// </summary>
-        /// <param name="slotNumber">Slot number to get.</param>
-        /// <returns>An emote slot card.</returns>
-        EmoteSlotCardComponentView GetEmoteSlotCardBySlotNumber(int slotNumber);
     }
 
     public class EmotesCustomizationComponentView : BaseComponentView, IEmotesCustomizationComponentView
@@ -121,6 +120,7 @@ namespace Emotes
         public bool isActive => gameObject.activeInHierarchy;
         public Transform viewTransform => transform;
         public int selectedSlot => emoteSlotSelector.selectedSlot;
+        public List<EmoteSlotCardComponentView> currentSlots => emoteSlotSelector.GetAllSlots();
         public EmoteCardComponentView selectedCard { get; private set; }
 
         public override void Awake()
@@ -195,7 +195,7 @@ namespace Emotes
             }
         }
 
-        public void EquipEmote(string emoteId, string emoteName, int slotNumber)
+        public void EquipEmote(string emoteId, string emoteName, int slotNumber, bool notifyEvent = true)
         {
             if (string.IsNullOrEmpty(emoteId))
                 return;
@@ -228,7 +228,8 @@ namespace Emotes
 
             emoteInfoPanel.SetActive(false);
 
-            onEmoteEquipped?.Invoke(emoteId, slotNumber);
+            if (notifyEvent)
+                onEmoteEquipped?.Invoke(emoteId, slotNumber);
         }
 
         public void UnequipEmote(string emoteId, int slotNumber)
@@ -273,15 +274,6 @@ namespace Emotes
         public EmoteCardComponentView GetEmoteCardById(string emoteId)
         {
             return GetAllEmoteCards().FirstOrDefault(x => x.model.id == emoteId);
-        }
-
-        public EmoteSlotCardComponentView GetEmoteSlotCardBySlotNumber(int slotNumber)
-        {
-            EmoteSlotCardComponentView result = emoteSlotSelector
-                .GetAllSlots()
-                .FirstOrDefault(x => x.model.slotNumber == slotNumber);
-
-            return result;
         }
 
         internal void ClickOnEmote(string emoteId)

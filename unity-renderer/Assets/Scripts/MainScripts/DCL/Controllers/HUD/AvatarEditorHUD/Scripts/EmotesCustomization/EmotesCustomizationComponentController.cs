@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -48,7 +49,7 @@ namespace Emotes
             isStarMenuOpen.OnChange += IsStarMenuOpenChanged;
             ConfigureShortcuts();
             LoadMockedEmoteCards();
-            LoadEquippedEmoteSlots();
+            LoadEquippedEmoteSlots(); // TODO: Make this call AFTER all the emotes have been loaded!
 
             isInitialized.Set(view.viewTransform);
         }
@@ -75,7 +76,7 @@ namespace Emotes
 
         internal void LoadEquippedEmoteSlots()
         {
-            List<StoredEmote> storedEquippedEmotes = JsonConvert.DeserializeObject<List<StoredEmote>>(PlayerPrefs.GetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY));
+            List<StoredEmote> storedEquippedEmotes = JsonConvert.DeserializeObject<List<StoredEmote>>(PlayerPrefsUtils.GetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY));
             if (storedEquippedEmotes != null)
                 equippedEmotes.Set(storedEquippedEmotes);
 
@@ -87,38 +88,44 @@ namespace Emotes
                 if (equippedEmotes[i] == null)
                     continue;
 
-                EmoteCardComponentView emoteModel = view.GetEmoteCardById(equippedEmotes[i].id);
-                if (emoteModel != null)
-                    view.EquipEmote(emoteModel.model.id, emoteModel.model.name, i);
+                view.EquipEmote(equippedEmotes[i].id, equippedEmotes[i].name, i, false);
             }
+        }
+
+        internal void StoreEquippedEmotes()
+        {
+            List<StoredEmote> newEquippedEmotesList = new List<StoredEmote> { null, null, null, null, null, null, null, null, null, null };
+            foreach (EmoteSlotCardComponentView slot in view.currentSlots)
+            {
+                if (!string.IsNullOrEmpty(slot.model.emoteId))
+                {
+                    newEquippedEmotesList[slot.model.slotNumber] = new StoredEmote()
+                    {
+                        id = slot.model.emoteId,
+                        name = slot.model.emoteName,
+                        pictureUri = slot.model.pictureUri
+                    };
+                }
+            }
+
+            equippedEmotes.Set(newEquippedEmotesList);
+            PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(newEquippedEmotesList));
+            PlayerPrefsUtils.Save();
+        }
+
+        internal void OnEmoteEquipped(string emoteId, int slotNumber)
+        {
+            StoreEquippedEmotes();
+        }
+
+        internal void OnEmoteUnequipped(string emoteId, int slotNumber)
+        {
+            StoreEquippedEmotes();
         }
 
         internal void OnEmoteAnimationRaised(string emoteId)
         {
             Debug.Log("SANTI ---> EMOTE ANIMATION RAISED: " + emoteId);
-        }
-
-        internal void OnEmoteEquipped(string emoteId, int slotNumber)
-        {
-            EmoteSlotCardComponentView equippedSlot = view.GetEmoteSlotCardBySlotNumber(slotNumber);
-            if (slotNumber < equippedEmotes.Count())
-            {
-                equippedEmotes[slotNumber] = new StoredEmote
-                {
-                    id = equippedSlot.model.emoteId,
-                    pictureUri = equippedSlot.model.pictureUri
-                };
-            }
-
-            PlayerPrefs.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(equippedEmotes.Get().ToList()));
-        }
-
-        internal void OnEmoteUnequipped(string emoteId, int slotNumber)
-        {
-            if (slotNumber < equippedEmotes.Count())
-                equippedEmotes[slotNumber] = null;
-
-            PlayerPrefs.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(equippedEmotes.Get().ToList()));
         }
 
         internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen)
@@ -260,7 +267,6 @@ namespace Emotes
                 "disco",
                 "dab",
                 "headexplode",
-                "dance",
                 "snowfall",
                 "hohoho",
                 "crafting"
@@ -285,7 +291,6 @@ namespace Emotes
                 "https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png",
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png",
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Karate_silhouette.svg/919px-Karate_silhouette.svg.png",
-                "https://freesvg.org/img/1538176837.png",
                 "https://freesvg.org/img/woman-silhouette-3.png",
                 "https://images.squarespace-cdn.com/content/v1/55947ac3e4b0fa882882cd65/1487633176391-U7VZNFVFYFI8KKCKCYP1/NS_0020.png",
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png"

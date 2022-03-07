@@ -1,21 +1,24 @@
+using DCL;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EmotesHUDView : MonoBehaviour
 {
     private const string PATH = "EmotesHUD";
 
-    public delegate void ExpressionClicked(string expressionId);
+    public event Action<string> onEmoteClicked;
     public event Action OnClose;
 
     [Serializable]
     public class ButtonToEmote
     {
-        public string expressionId;
-        public Button_OnPointerDown button; // When the button is used to lock/unlock the mouse we have to use onPointerDown
+        public Button_OnPointerDown button;
+        public ImageComponentView image;
     }
 
-    [SerializeField] internal ButtonToEmote[] buttonToEmotesMap;
+    [SerializeField] internal Sprite nonAssignedEmoteSprite;
+    [SerializeField] internal ButtonToEmote[] emoteButtons;
     [SerializeField] internal Button_OnPointerDown[] closeButtons;
 
     public static EmotesHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesHUDView>(); }
@@ -28,14 +31,6 @@ public class EmotesHUDView : MonoBehaviour
         }
     }
 
-    internal void Initialize(ExpressionClicked clickedDelegate)
-    {
-        foreach (var buttonToExpression in buttonToEmotesMap)
-        {
-            buttonToExpression.button.onPointerDown += () => clickedDelegate?.Invoke(buttonToExpression.expressionId);
-        }
-    }
-
     public void SetVisiblity(bool visible)
     {
         gameObject.SetActive(visible);
@@ -43,6 +38,29 @@ public class EmotesHUDView : MonoBehaviour
             AudioScriptableObjects.dialogOpen.Play(true);
         else
             AudioScriptableObjects.dialogClose.Play(true);
+    }
+
+    public void SetEmotes(List<StoredEmote> emotes)
+    {
+        for (int i = 0; i < emotes.Count; i++)
+        {
+            StoredEmote equippedEmote = emotes[i];
+
+            if (i < emoteButtons.Length)
+            {
+                emoteButtons[i].button.onClick.RemoveAllListeners();
+
+                if (equippedEmote != null)
+                {
+                    emoteButtons[i].button.onClick.AddListener(() => onEmoteClicked?.Invoke(equippedEmote.id));
+                    emoteButtons[i].image.SetImage(equippedEmote.pictureUri);
+                }
+                else
+                {
+                    emoteButtons[i].image.SetImage(nonAssignedEmoteSprite);
+                }
+            }
+        }
     }
 
     private void Close() { OnClose?.Invoke(); }
