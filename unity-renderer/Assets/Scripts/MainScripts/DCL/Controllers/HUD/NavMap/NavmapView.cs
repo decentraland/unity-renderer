@@ -99,6 +99,8 @@ namespace DCL
 
         private void OnZoomPlusMinus(DCLAction_Hold action)
         {
+            if (!navmapVisible.Get()) return;
+
             if (action.Equals(DCLAction_Hold.ZoomIn))
             {
                 CalculateZoomLevelAndDirection(1);
@@ -107,9 +109,7 @@ namespace DCL
             {
                 CalculateZoomLevelAndDirection(-1);
             }
-            
-            if (navmapVisible.Get())
-                EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(null);
         }
 
         private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
