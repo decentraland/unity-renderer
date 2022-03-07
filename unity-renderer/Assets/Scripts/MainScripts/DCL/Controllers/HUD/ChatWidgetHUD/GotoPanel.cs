@@ -62,6 +62,7 @@ public class GotoPanel : MonoBehaviour
 
     private void SetParcelImage(MinimapMetadata.MinimapSceneInfo sceneInfo)
     {
+        DisplayThumbnail(scenePreviewFailImage.texture);
         if (!string.IsNullOrEmpty(sceneInfo.previewImageUrl))
         {
             texturePromise = new AssetPromise_Texture(sceneInfo.previewImageUrl, storeTexAsNonReadable: false);
