@@ -107,7 +107,9 @@ namespace DCL
             {
                 CalculateZoomLevelAndDirection(-1);
             }
-            EventSystem.current.SetSelectedGameObject(null);
+            
+            if (navmapVisible.Get())
+                EventSystem.current.SetSelectedGameObject(null);
         }
 
         private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
