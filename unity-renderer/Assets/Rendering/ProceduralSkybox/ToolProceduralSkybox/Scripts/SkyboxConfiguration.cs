@@ -189,13 +189,13 @@ namespace DCL.Skybox
 
         public void ApplyDomeConfigurations(List<Material> materials3D, float dayTime, float normalizedDayTime, int slotCount, Light directionalLightGO = null, float cycleTime = 24)
         {
-            if (materials3D.Count != additional3Dconfig.Count)
-            {
-                Debug.Log("Material and dome count is not same");
-                return;
-            }
+            //if (materials3D.Count != additional3Dconfig.Count)
+            //{
+            //    Debug.Log("Material and dome count is not same");
+            //    return;
+            //}
 
-            for (int i = 0; i < materials3D.Count; i++)
+            for (int i = 0; i < additional3Dconfig.Count; i++)
             {
                 if (!additional3Dconfig[i].enabled)
                 {

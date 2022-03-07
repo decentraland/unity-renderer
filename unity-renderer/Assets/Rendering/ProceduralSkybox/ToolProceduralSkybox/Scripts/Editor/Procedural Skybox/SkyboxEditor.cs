@@ -44,6 +44,8 @@ namespace DCL.Skybox
         private GameObject skyboxElements;
         private GameObject domeElements;
         private GameObject domePrefab;
+        TextureLayer copiedLayer;
+        public bool contextMenuOnDomeLayer;
 
         private List<string> renderingOrderList;
 
@@ -173,8 +175,6 @@ namespace DCL.Skybox
 
             if (EditorGUI.EndChangeCheck())
             {
-                Debug.Log("Object Recorded");
-                //Undo.RegisterCompleteObjectUndo(selectedConfiguration, "config changed");
                 Undo.RecordObject(selectedConfiguration, "config changed");
             }
 
@@ -895,6 +895,7 @@ namespace DCL.Skybox
                 {
                     GUI.enabled = false;
                 }
+                //copy
                 if (GUILayout.Button(('\u25B2').ToString(), GUILayout.Width(50), GUILayout.ExpandWidth(false)))
                 {
                     TextureLayer temp = null;
@@ -913,7 +914,7 @@ namespace DCL.Skybox
                 {
                     GUI.enabled = false;
                 }
-
+                //paste
                 if (GUILayout.Button(('\u25BC').ToString(), GUILayout.Width(50), GUILayout.ExpandWidth(false)))
                 {
                     TextureLayer temp = null;
@@ -928,10 +929,10 @@ namespace DCL.Skybox
 
                 GUI.enabled = true;
 
-                if (GUILayout.Button("-", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(":", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
-                    layers.RemoveAt(i);
-                    break;
+                    contextMenuOnDomeLayer = !renderSlots;
+                    ShowTextureLayerContextMenu(layers, i);
                 }
 
                 Color circleColor = Color.green;
@@ -982,6 +983,59 @@ namespace DCL.Skybox
             {
                 layers.Add(new TextureLayer("Tex Layer " + (layers.Count + 1)));
             }
+        }
+
+        private void ShowTextureLayerContextMenu(List<TextureLayer> layers, int index)
+        {
+            // Create menu
+            GenericMenu menu = new GenericMenu();
+
+            // Copy option
+            menu.AddItem(new GUIContent("Copy"), false, OnCopyClicked, layers[index]);
+
+            //paste option
+            if (copiedLayer == null)
+            {
+                menu.AddDisabledItem(new GUIContent("Paste"));
+            }
+            else
+            {
+                menu.AddItem(new GUIContent("Paste"), false, OnPasteClicked, layers[index]);
+            }
+
+            menu.AddSeparator("");
+
+            // Delete
+            ArrayList deleteObj = new ArrayList();
+            deleteObj.Add(layers);
+            deleteObj.Add(index);
+            menu.AddItem(new GUIContent("Delete"), false, OnDeleteClicked, deleteObj);
+
+            menu.ShowAsContext();
+        }
+
+        private void OnCopyClicked(object obj) { copiedLayer = obj as TextureLayer; }
+
+        private void OnPasteClicked(object obj)
+        {
+            if (copiedLayer == null)
+            {
+                return;
+            }
+            TextureLayer layer = obj as TextureLayer;
+            copiedLayer.DeepCopy(layer);
+            if (contextMenuOnDomeLayer)
+            {
+                layer.slotID = 0;
+            }
+        }
+
+        private void OnDeleteClicked(object obj)
+        {
+            ArrayList deleteObj = obj as ArrayList;
+            List<TextureLayer> layeyrsList = deleteObj[0] as List<TextureLayer>;
+            int index = (int)deleteObj[1];
+            layeyrsList.RemoveAt(index);
         }
 
         void RenderTextureLayer(TextureLayer layer)
