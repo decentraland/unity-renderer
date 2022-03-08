@@ -30,6 +30,7 @@ namespace EmotesCustomization
         private InputAction_Trigger shortcut7InputAction;
         private InputAction_Trigger shortcut8InputAction;
         private InputAction_Trigger shortcut9InputAction;
+        private bool emoteJustTriggeredFromShortcut = false;
 
         public EmotesHUDController()
         {
@@ -70,6 +71,13 @@ namespace EmotesCustomization
 
         public void SetVisibility_Internal(bool visible)
         {
+            if (emoteJustTriggeredFromShortcut)
+            {
+                emoteJustTriggeredFromShortcut = false;
+                emotesVisible.Set(false);
+                return;
+            }
+
             view.SetVisiblity(visible);
 
             if (visible)
@@ -115,34 +123,34 @@ namespace EmotesCustomization
             openEmotesCustomizationInputAction = Resources.Load<InputAction_Hold>("DefaultConfirmAction");
             openEmotesCustomizationInputAction.OnFinished += OnOpenEmotesCustomizationInputActionTriggered;
 
-            shortcut0InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut0");
+            shortcut0InputAction = Resources.Load<InputAction_Trigger>("ToggleEmoteShortcut0");
             shortcut0InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
-            shortcut1InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut1");
+            shortcut1InputAction = Resources.Load<InputAction_Trigger>("ToggleEmoteShortcut1");
             shortcut1InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
-            shortcut2InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut2");
+            shortcut2InputAction = Resources.Load<InputAction_Trigger>("ToggleEmoteShortcut2");
             shortcut2InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
-            shortcut3InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut3");
+            shortcut3InputAction = Resources.Load<InputAction_Trigger>("ToggleEmoteShortcut3");
             shortcut3InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
-            shortcut4InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut4");
+            shortcut4InputAction = Resources.Load<InputAction_Trigger>("ToggleEmoteShortcut4");
             shortcut4InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
-            shortcut5InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut5");
+            shortcut5InputAction = Resources.Load<InputAction_Trigger>("ToggleEmoteShortcut5");
             shortcut5InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
-            shortcut6InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut6");
+            shortcut6InputAction = Resources.Load<InputAction_Trigger>("ToggleEmoteShortcut6");
             shortcut6InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
-            shortcut7InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut7");
+            shortcut7InputAction = Resources.Load<InputAction_Trigger>("ToggleEmoteShortcut7");
             shortcut7InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
-            shortcut8InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut8");
+            shortcut8InputAction = Resources.Load<InputAction_Trigger>("ToggleEmoteShortcut8");
             shortcut8InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
-            shortcut9InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut9");
+            shortcut9InputAction = Resources.Load<InputAction_Trigger>("ToggleEmoteShortcut9");
             shortcut9InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
         }
 
@@ -153,37 +161,39 @@ namespace EmotesCustomization
 
             switch (action)
             {
-                case DCLAction_Trigger.ToggleShortcut0:
+                case DCLAction_Trigger.ToggleEmoteShortcut0:
                     PlayExpression(equippedEmotes[0]?.id);
                     break;
-                case DCLAction_Trigger.ToggleShortcut1:
+                case DCLAction_Trigger.ToggleEmoteShortcut1:
                     PlayExpression(equippedEmotes[1]?.id);
                     break;
-                case DCLAction_Trigger.ToggleShortcut2:
+                case DCLAction_Trigger.ToggleEmoteShortcut2:
                     PlayExpression(equippedEmotes[2]?.id);
                     break;
-                case DCLAction_Trigger.ToggleShortcut3:
+                case DCLAction_Trigger.ToggleEmoteShortcut3:
                     PlayExpression(equippedEmotes[3]?.id);
                     break;
-                case DCLAction_Trigger.ToggleShortcut4:
+                case DCLAction_Trigger.ToggleEmoteShortcut4:
                     PlayExpression(equippedEmotes[4]?.id);
                     break;
-                case DCLAction_Trigger.ToggleShortcut5:
+                case DCLAction_Trigger.ToggleEmoteShortcut5:
                     PlayExpression(equippedEmotes[5]?.id);
                     break;
-                case DCLAction_Trigger.ToggleShortcut6:
+                case DCLAction_Trigger.ToggleEmoteShortcut6:
                     PlayExpression(equippedEmotes[6]?.id);
                     break;
-                case DCLAction_Trigger.ToggleShortcut7:
+                case DCLAction_Trigger.ToggleEmoteShortcut7:
                     PlayExpression(equippedEmotes[7]?.id);
                     break;
-                case DCLAction_Trigger.ToggleShortcut8:
+                case DCLAction_Trigger.ToggleEmoteShortcut8:
                     PlayExpression(equippedEmotes[8]?.id);
                     break;
-                case DCLAction_Trigger.ToggleShortcut9:
+                case DCLAction_Trigger.ToggleEmoteShortcut9:
                     PlayExpression(equippedEmotes[9]?.id);
                     break;
             }
+
+            emoteJustTriggeredFromShortcut = true;
         }
 
         private void OnViewClosed() { emotesVisible.Set(false); }

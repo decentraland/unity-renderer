@@ -34,6 +34,9 @@ namespace EmotesCustomization
 
         public void SetVisiblity(bool visible)
         {
+            if (visible == gameObject.activeSelf)
+                return;
+
             gameObject.SetActive(visible);
             if (visible)
                 AudioScriptableObjects.dialogOpen.Play(true);

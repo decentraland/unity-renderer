@@ -309,6 +309,9 @@ public class TaskbarHUDController : IHUD
 
     private void IsEmotesVisibleChanged(bool current, bool previous)
     {
+        if (current && !isEmotesVisible.Get())
+            return;
+
         view.emotesButton.SetToggleState(current, false);
 
         if (!current)
