@@ -54,7 +54,8 @@ namespace Test.AvatarSystem
                     WearableItem eyes,
                     WearableItem eyebrows,
                     WearableItem mouth,
-                    List<WearableItem> wearables)
+                    List<WearableItem> wearables,
+                    List<WearableItem> emotes)
                 = await curator.Curate(
                     new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE },
                     new [] { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id" });
@@ -83,7 +84,8 @@ namespace Test.AvatarSystem
                 WearableItem eyes,
                 WearableItem eyebrows,
                 WearableItem mouth,
-                List<WearableItem> wearables) = await curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE }, new [] { WearableLiterals.BodyShapes.FEMALE, "WontFindThis" });
+                List<WearableItem> wearables,
+                List<WearableItem> emotes) = await curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE }, new [] { WearableLiterals.BodyShapes.FEMALE, "WontFindThis" });
 
             Assert.NotNull(bodyshape);
             Assert.AreEqual(catalog[WearableLiterals.BodyShapes.FEMALE], bodyshape);
