@@ -40,4 +40,9 @@ public class CoordinateUtils
     {
         return GetTextCoordinates(text).Count > 0;
     }
+
+    public static ParcelCoordinates ParseCoordinatesString(string coordinates)
+    {
+        return new ParcelCoordinates(Int32.Parse(coordinates.Split(',')[0]), Int32.Parse(coordinates.Split(',')[1]));
+    }
 }

@@ -18,7 +18,6 @@ public class MinimapMetadataController : MonoBehaviour
 
         foreach (var sceneInfo in scenesInfo)
         {
-            //Debug.Log($"Added info for scene {sceneInfo.name}");
             minimapMetadata.AddSceneInfo(sceneInfo);
         }
     }

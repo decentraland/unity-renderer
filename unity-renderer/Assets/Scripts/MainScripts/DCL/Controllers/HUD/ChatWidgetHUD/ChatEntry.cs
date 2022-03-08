@@ -69,12 +69,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     public event UnityAction<ChatEntry> OnTriggerHover;
     public event UnityAction OnCancelHover;
 
-    private List<string> textCoords;
-
-    public void Awake()
-    {
-        textCoords = new List<string>();
-    }
+    private List<string> textCoords = new List<string>();
 
     public void Populate(Model chatEntryModel, GotoPanel gotoPanel)
     {
@@ -139,9 +134,9 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
         if (CoordinateUtils.HasValidTextCoordinates(body.text)) {
             CoordinateUtils.GetTextCoordinates(body.text).ForEach(c=> {
-                int x = Int32.Parse(c.Split(',')[0]), y = Int32.Parse(c.Split(',')[1]);
-                if (MinimapMetadata.GetMetadata().GetSceneInfo(x,y) == null)
-                    WebInterface.RequestScenesInfoAroundParcel(new Vector2(x,y), 2);
+                ParcelCoordinates coords = CoordinateUtils.ParseCoordinatesString(c);
+                if (MinimapMetadata.GetMetadata().GetSceneInfo(coords.x, coords.y) == null)
+                    WebInterface.RequestScenesInfoAroundParcel(new Vector2(coords.x, coords.y), 2);
 
                 body.text = body.text.Replace(c,$"<link={c}><color=\"green\"><u>{c}</u></color></link>");
             });
@@ -202,7 +197,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             {
                 gotoPanel.container.SetActive(true);
                 TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
-                ParcelCoordinates parcelCoordinate = new ParcelCoordinates(Int32.Parse(linkInfo.GetLinkID().ToString().Split(',')[0]), Int32.Parse(linkInfo.GetLinkID().Split(',')[1]));
+                ParcelCoordinates parcelCoordinate = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
                 gotoPanel.SetPanelInfo(parcelCoordinate);
             }
 

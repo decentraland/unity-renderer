@@ -70,18 +70,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         OnActivatePreview?.Invoke();
     }
 
-    public void OnPointerClick(PointerEventData eventData) {
-        if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            var results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(eventData, results);
-            if (results.Any(r => r.gameObject.Equals(chatHudView.gotoPanel.container.gameObject))) 
-            {
-                //chatHudView.SetGotoPanelStatus(results.Any(r => r.gameObject.Equals(chatHudView.gotoPanel.container.gameObject)));
-            }
-        }
-        DeactivatePreview(); 
-    }
+    public void OnPointerClick(PointerEventData eventData) { DeactivatePreview(); }
 
     public void OnTextInputValueChanged(string text)
     {
