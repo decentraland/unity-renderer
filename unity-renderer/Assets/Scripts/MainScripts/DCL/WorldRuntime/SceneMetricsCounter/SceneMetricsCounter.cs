@@ -90,14 +90,14 @@ namespace DCL
 
             var sceneData = data.sceneData[sceneId];
 
-            sceneData.materials.OnAdded += OnMaterialAdded;
-            sceneData.materials.OnRemoved += OnMaterialRemoved;
+            sceneData.materials.OnAdded += OnDataChanged;
+            sceneData.materials.OnRemoved += OnDataChanged;
 
             sceneData.textures.OnAdded += OnTextureAdded;
             sceneData.textures.OnRemoved += OnTextureRemoved;
 
-            sceneData.meshes.OnAdded += OnMeshAdded;
-            sceneData.meshes.OnRemoved += OnMeshRemoved;
+            sceneData.meshes.OnAdded += OnDataChanged;
+            sceneData.meshes.OnRemoved += OnDataChanged;
 
             sceneData.animationClipSize.OnChange += OnAnimationClipSizeChange;
             sceneData.meshDataSize.OnChange += OnMeshDataSizeChange;
@@ -129,8 +129,14 @@ namespace DCL
             sceneData.textures.OnAdded -= OnTextureAdded;
             sceneData.textures.OnRemoved -= OnTextureRemoved;
 
-            sceneData.meshes.OnAdded -= OnMeshAdded;
-            sceneData.meshes.OnRemoved -= OnMeshRemoved;
+            sceneData.meshes.OnAdded -= OnDataChanged;
+            sceneData.meshes.OnRemoved -= OnDataChanged;
+
+            sceneData.animationClipSize.OnChange -= OnAnimationClipSizeChange;
+            sceneData.meshDataSize.OnChange -= OnMeshDataSizeChange;
+
+            sceneData.audioClips.OnAdded -= OnAudioClipAdded;
+            sceneData.audioClips.OnRemoved -= OnAudioClipRemoved;
 
             sceneData.renderers.OnAdded -= OnDataChanged;
             sceneData.renderers.OnRemoved -= OnDataChanged;
@@ -208,13 +214,13 @@ namespace DCL
         void OnAudioClipAdded(AudioClip audioClip)
         {
             MarkDirty();
-            currentCountValue.audioClipMemory += ComputeAudioClipScore(audioClip);
+            currentCountValue.audioClipMemory += MetricsScoreUtils.ComputeAudioClipScore(audioClip);
         }
 
         void OnAudioClipRemoved(AudioClip audioClip)
         {
             MarkDirty();
-            currentCountValue.audioClipMemory -= ComputeAudioClipScore(audioClip);
+            currentCountValue.audioClipMemory -= MetricsScoreUtils.ComputeAudioClipScore(audioClip);
         }
 
 
@@ -230,36 +236,13 @@ namespace DCL
             currentCountValue.animationClipMemory = animationClipSize;
         }
 
-        void OnMaterialAdded(Material material)
-        {
-            MarkDirty();
-        }
-
-        void OnMaterialRemoved(Material material)
-        {
-            MarkDirty();
-        }
-
-        void OnMeshAdded(Mesh mesh)
-        {
-            MarkDirty();
-            currentCountValue.meshMemory += ComputeMeshScore(mesh);
-        }
-
-
-        void OnMeshRemoved(Mesh mesh)
-        {
-            MarkDirty();
-            currentCountValue.meshMemory -= ComputeMeshScore(mesh);
-        }
-
         void OnTextureAdded(Texture texture)
         {
             MarkDirty();
 
             if (texture is Texture2D tex2D)
             {
-                currentCountValue.textureMemory += ComputeTextureScore(tex2D);
+                currentCountValue.textureMemory += MetricsScoreUtils.ComputeTextureScore(tex2D);
             }
         }
 
@@ -269,41 +252,10 @@ namespace DCL
 
             if (texture is Texture2D tex2D)
             {
-                currentCountValue.textureMemory -= ComputeTextureScore(tex2D);
+                currentCountValue.textureMemory -= MetricsScoreUtils.ComputeTextureScore(tex2D);
             }
         }
-
-        static float ComputeAudioClipScore(AudioClip audioClip)
-        {
-            const float BYTES_PER_SAMPLE = 2; // We assume sample resolution of 65535
-            return audioClip.samples * audioClip.channels * BYTES_PER_SAMPLE;
-        }
-
-        static float ComputeAnimationClipScore(AnimationClip animationClip)
-        {
-            float size = Profiler.GetRuntimeMemorySizeLong(animationClip);
-            Debug.unityLogger.logEnabled = true;
-            Debug.Log("Animation Size: " + size);
-            Debug.unityLogger.logEnabled = false;
-            return size;
-        }
-
-        static float ComputeMeshScore(Mesh mesh)
-        {
-            float size = Profiler.GetRuntimeMemorySizeLong(mesh);
-            Debug.unityLogger.logEnabled = true;
-            Debug.Log($"Mesh Size: {size} ... is readable: {mesh.isReadable} ... vert count: {mesh.vertexCount}");
-            Debug.unityLogger.logEnabled = false;
-            return size;
-        }
-
-        static float ComputeTextureScore(Texture2D texture)
-        {
-            const float MIPMAP_FACTOR = 1.3f;
-            const float BYTES_PER_PIXEL = 4;
-            return texture.width * texture.height * BYTES_PER_PIXEL * MIPMAP_FACTOR;
-        }
-
+        
         void OnDataChanged<T>(T obj)
             where T : class
         {
