@@ -47,10 +47,6 @@ public static class TextureHelpers
         Graphics.Blit(source, rt);
         
         bool supportsGPUTextureCopy = SystemInfo.copyTextureSupport != CopyTextureSupport.None;
-        
-        Debug.unityLogger.logEnabled = true;
-        Debug.Log("SUPPORTS GPU TEXTURE COPY? " + supportsGPUTextureCopy);
-        
         if (supportsGPUTextureCopy)
         {
             Graphics.CopyTexture(rt, nTex);
@@ -70,7 +66,10 @@ public static class TextureHelpers
     public static Texture2D CopyTexture(Texture2D sourceTexture)
     {
         Texture2D texture = new Texture2D(sourceTexture.width, sourceTexture.height, sourceTexture.format, false);
-        Graphics.CopyTexture(sourceTexture, texture); // TODO: does this work in WebGL?
+        
+        // TODO: WebGL doesn't support this, should we add the ReadPixels/GetPixels approach as in Resize() ?
+        Graphics.CopyTexture(sourceTexture, texture);
+        
         return texture;
     }
 }
