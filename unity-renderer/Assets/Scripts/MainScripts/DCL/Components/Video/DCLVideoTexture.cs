@@ -58,8 +58,12 @@ namespace DCL.Components
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
+        const string DISABLE_VIDEO_URL_PARAM = "DISABLE_VIDEO";
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
+            if (WebInterface.CheckURLParam(DISABLE_VIDEO_URL_PARAM))
+                yield break;
+            
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
             //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
