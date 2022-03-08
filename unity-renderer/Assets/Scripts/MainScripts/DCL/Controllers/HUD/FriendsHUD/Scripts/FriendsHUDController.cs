@@ -9,12 +9,13 @@ public class FriendsHUDController : IHUD
     internal const string PLAYER_PREFS_SEEN_FRIEND_COUNT = "SeenFriendsCount";
     public IFriendsHUDComponentView view { get; private set; }
 
-    IFriendsController friendsController;
+    private readonly Dictionary<string, FriendEntryBase.Model> friends = new Dictionary<string, FriendEntryBase.Model>();
+    private IFriendsController friendsController;
+    private UserProfile ownUserProfile;
+    
     public event System.Action<string> OnPressWhisper;
     public event System.Action OnFriendsOpened;
     public event System.Action OnFriendsClosed;
-
-    UserProfile ownUserProfile;
 
     public void Initialize(IFriendsController friendsController, UserProfile ownUserProfile)
     {
@@ -89,17 +90,21 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private void Entry_OnRequestSent(string userId) { WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = userId, action = FriendshipAction.REQUESTED_TO }); }
-
+    private void Entry_OnRequestSent(string userId)
+    {
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+        {
+            userId = userId,
+            action = FriendshipAction.REQUESTED_TO
+        });
+    }
+    
     private void OnUpdateUserStatus(string userId, FriendsController.UserStatus newStatus)
     {
-        var model = new FriendEntryBase.Model();
-
-        FriendEntryBase entry = view.GetEntry(userId);
-
-        if (entry != null)
-            model = entry.model;
-
+        if (!friends.ContainsKey(userId))
+            friends[userId] = new FriendEntryBase.Model();
+        
+        var model = friends[userId];
         model.userId = userId;
         model.status = newStatus.presence;
         model.coords = newStatus.position;
@@ -132,19 +137,16 @@ public class FriendsHUDController : IHUD
             return;
         }
 
-        FriendEntryBase.Model friendEntryModel = new FriendEntryBase.Model();
-        FriendEntryBase entry = view.GetEntry(userId);
-
-        if (entry != null)
-            friendEntryModel = entry.model;
-
+        if (!friends.ContainsKey(userId))
+            friends[userId] = new FriendEntryBase.Model();
+        
+        var friendEntryModel = friends[userId];
         friendEntryModel.userId = userId;
         friendEntryModel.userName = userProfile.userName;
         friendEntryModel.avatarSnapshotObserver = userProfile.snapshotObserver;
 
         if (ownUserProfile != null && ownUserProfile.blocked != null)
             friendEntryModel.blocked = ownUserProfile.blocked.Contains(userId);
-
         view.UpdateFriendshipStatus(userId, friendshipAction, friendEntryModel);
         UpdateNotificationsCounter();
     }

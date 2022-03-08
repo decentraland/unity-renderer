@@ -118,21 +118,19 @@ public class FriendsTabComponentView : BaseComponentView
 
     public FriendEntry Get(string userId) => entries.ContainsKey(userId) ? entries[userId] : null;
 
-    public void Set(string userId, FriendEntryBase.Model model)
+    public void Populate(string userId, FriendEntryBase.Model model)
     {
-        if (creationQueue.ContainsKey(userId))
+        if (!entries.ContainsKey(userId))
         {
-            creationQueue[userId] = model;
+            if (creationQueue.ContainsKey(userId))
+                creationQueue[userId] = model;
             return;
         }
         
-        if (!entries.ContainsKey(userId))
-            CreateEntry(userId);
-
         var entry = entries[userId];
         entry.Populate(model);
         entry.userId = userId;
-
+        
         if (model.status == PresenceStatus.ONLINE)
         {
             offlineFriendsList.Remove(userId);
@@ -150,6 +148,20 @@ public class FriendsTabComponentView : BaseComponentView
         
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
+    }
+
+    public void Set(string userId, FriendEntryBase.Model model)
+    {
+        if (creationQueue.ContainsKey(userId))
+        {
+            creationQueue[userId] = model;
+            return;
+        }
+        
+        if (!entries.ContainsKey(userId))
+            CreateEntry(userId);
+
+        Populate(userId, model);
     }
 
     public override void RefreshControl()

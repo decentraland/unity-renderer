@@ -96,7 +96,8 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public void UpdateEntry(string userId, FriendEntryBase.Model model)
     {
-        friendsTab.Enqueue(userId, model);
+        friendsTab.Populate(userId, model);
+        friendRequestsTab.Populate(userId, model);
     }
 
     public void DisplayFriendUserNotFound() => friendRequestsTab.ShowUserNotFoundNotification();

@@ -129,11 +129,20 @@ public class FriendRequestsTabComponentView : BaseComponentView
     
     public FriendRequestEntry Get(string userId) => entries.ContainsKey(userId) ? entries[userId] : null;
 
-    public void Set(string userId, FriendEntryBase.Model model, bool isReceived = false)
+    public void Populate(string userId, FriendEntryBase.Model model)
+    {
+        if (!entries.ContainsKey(userId)) return;
+        
+        var entry = entries[userId];
+        entry.Populate(model);
+        entry.userId = userId;
+    }
+
+    public void Set(string userId, FriendEntryBase.Model model, bool isReceived)
     {
         if (!entries.ContainsKey(userId))
             CreateEntry(userId);
-
+        
         var entry = entries[userId];
         entry.Populate(model);
         entry.userId = userId;
