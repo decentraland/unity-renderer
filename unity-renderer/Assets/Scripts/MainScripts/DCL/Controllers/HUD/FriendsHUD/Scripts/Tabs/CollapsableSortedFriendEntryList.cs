@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DCL.Helpers;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CollapsableSortedFriendEntryList : MonoBehaviour
 {
@@ -11,17 +12,13 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
 
     [SerializeField] private Transform container;
     [SerializeField] private FriendsListToggleButton toggleButton;
-
-    private string amountOriginalText;
+    [SerializeField] private GameObject emptyStateContainer;
 
     public void Expand() => toggleButton.Toggle(true);
 
     public void Collapse() => toggleButton.Toggle(false);
 
-    public int Count()
-    {
-        return entries.Count;
-    }
+    public int Count() => entries.Count;
 
     public void Add(string userId, FriendEntryBase entry)
     {
@@ -31,6 +28,8 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
         entryTransform.SetParent(container, false);
         entryTransform.localScale = Vector3.one;
         SortEntries();
+        UpdateEmptyState();
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) container);
     }
 
     public FriendEntryBase Remove(string userId)
@@ -38,6 +37,8 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
         if (!entries.ContainsKey(userId)) return null;
         var entry = entries[userId];
         entries.Remove(userId);
+        UpdateEmptyState();
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) container);
         return entry;
     }
 
@@ -71,6 +72,8 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
 
         entries.Clear();
         sortedTimestamps.Clear();
+        UpdateEmptyState();
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) container);
     }
 
     public void Filter(string search)
@@ -99,5 +102,10 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
         {
             entries[item.userId].transform.SetAsLastSibling();
         }
+    }
+    
+    private void UpdateEmptyState()
+    {
+        emptyStateContainer.SetActive(entries.Count == 0);
     }
 }

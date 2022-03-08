@@ -27,9 +27,7 @@ public class FriendsTabComponentView : BaseComponentView
     private readonly Dictionary<string, FriendEntryBase.Model> creationQueue = new Dictionary<string, FriendEntryBase.Model>();
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendEntry> entries = new Dictionary<string, FriendEntry>();
-
     private Pool entryPool;
-    private string lastProcessedFriend;
 
     public Dictionary<string, FriendEntry> Entries => entries;
 
