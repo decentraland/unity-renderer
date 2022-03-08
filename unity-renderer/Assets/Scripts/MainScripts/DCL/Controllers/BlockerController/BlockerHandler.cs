@@ -115,7 +115,7 @@ namespace DCL.Controllers
 
         public Dictionary<Vector2Int, IPoolableObject> GetBlockers() { return new Dictionary<Vector2Int, IPoolableObject>(blockers); }
 
-        public void ToggleBlockersCollision(bool newState)
+        public void SetCollision(bool newState)
         {
             foreach (var keyValuePair in blockers)
             {

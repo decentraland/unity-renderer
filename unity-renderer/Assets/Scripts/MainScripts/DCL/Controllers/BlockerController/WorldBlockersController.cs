@@ -41,7 +41,7 @@ namespace DCL.Controllers
 
         void OnRendererStateChange(bool newValue, bool oldValue)
         {
-            blockerInstanceHandler.ToggleBlockersCollision(newValue);
+            blockerInstanceHandler.SetCollision(newValue);
             
             if (newValue && DataStore.i.debugConfig.isDebugMode.Get())
                 SetEnabled(false);
