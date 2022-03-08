@@ -28,9 +28,6 @@
             "m_Id": "6d2639baae664e43ba5a56007a6ba1e1"
         },
         {
-            "m_Id": "7f986cfd25644f7fbbc0bd0e653b128a"
-        },
-        {
             "m_Id": "09bc1d5344f9439cb3d7a6445446447c"
         },
         {
@@ -6881,29 +6878,6 @@
     "m_Position": {
         "x": 3112.0,
         "y": -1098.0
-    }
-}
-
-{
-    "m_SGVersion": 1,
-    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
-    "m_ObjectId": "7f986cfd25644f7fbbc0bd0e653b128a",
-    "m_Guid": {
-        "m_GuidSerialized": "563903f9-71b3-4e88-9095-c0a8d1bd6e9a"
-    },
-    "m_Name": "CurrentTime",
-    "m_DefaultReferenceName": "Vector1_7f986cfd25644f7fbbc0bd0e653b128a",
-    "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
-    "m_Precision": 0,
-    "overrideHLSLDeclaration": false,
-    "hlslDeclarationOverride": 0,
-    "m_Hidden": false,
-    "m_Value": 2.5,
-    "m_FloatType": 0,
-    "m_RangeValues": {
-        "x": 0.0,
-        "y": 1.0
     }
 }
 
