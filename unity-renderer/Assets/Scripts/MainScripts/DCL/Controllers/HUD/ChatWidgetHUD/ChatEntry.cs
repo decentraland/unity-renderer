@@ -133,10 +133,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
         if (CoordinateUtils.HasValidTextCoordinates(body.text)) {
             CoordinateUtils.GetTextCoordinates(body.text).ForEach(c=> {
-                ParcelCoordinates coords = CoordinateUtils.ParseCoordinatesString(c);
-                if (MinimapMetadata.GetMetadata().GetSceneInfo(coords.x, coords.y) == null)
-                    WebInterface.RequestScenesInfoAroundParcel(new Vector2(coords.x, coords.y), 2);
-
+                PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(c));
                 body.text = body.text.Replace(c,$"<link={c}><color=\"green\"><u>{c}</u></color></link>");
             });
         }
@@ -185,6 +182,12 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
             HUDAudioHandler.i.RefreshChatLastCheckedTimestamp();
         }
+    }
+
+    private void PreloadSceneMetadata(ParcelCoordinates parcelCoordinates)
+    {
+        if (MinimapMetadata.GetMetadata().GetSceneInfo(parcelCoordinates.x, parcelCoordinates.y) == null)
+            WebInterface.RequestScenesInfoAroundParcel(new Vector2(parcelCoordinates.x, parcelCoordinates.y), 2);
     }
 
     public void OnPointerClick(PointerEventData pointerEventData)
