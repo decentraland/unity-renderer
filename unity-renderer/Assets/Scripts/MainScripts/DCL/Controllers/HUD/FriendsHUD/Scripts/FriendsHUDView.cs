@@ -92,8 +92,9 @@ public class FriendsHUDView : MonoBehaviour, IFriendsHUDComponentView
 
     public void Destroy()
     {
-        if (gameObject)
-            Destroy(gameObject);
+        if (!this) return;
+        if (!gameObject) return;
+        Destroy(gameObject);
     }
 
     public void Show()
