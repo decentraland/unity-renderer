@@ -99,6 +99,8 @@ namespace DCL
 
         private void OnZoomPlusMinus(DCLAction_Hold action)
         {
+            if (!navmapVisible.Get()) return;
+
             if (action.Equals(DCLAction_Hold.ZoomIn))
             {
                 CalculateZoomLevelAndDirection(1);
