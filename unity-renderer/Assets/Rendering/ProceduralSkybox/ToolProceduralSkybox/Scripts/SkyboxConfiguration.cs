@@ -189,11 +189,7 @@ namespace DCL.Skybox
 
         public void ApplyDomeConfigurations(List<Material> materials3D, float dayTime, float normalizedDayTime, int slotCount, Light directionalLightGO = null, float cycleTime = 24)
         {
-            //if (materials3D.Count != additional3Dconfig.Count)
-            //{
-            //    Debug.Log("Material and dome count is not same");
-            //    return;
-            //}
+            float percentage = normalizedDayTime * 100;
 
             for (int i = 0; i < additional3Dconfig.Count; i++)
             {
@@ -202,22 +198,21 @@ namespace DCL.Skybox
                     continue;
                 }
 
-                // Apply config
-                // General Values
-                //materials3D[i].SetColor(SkyboxShaderUtils.LightTint, directionalLightLayer.tintColor.Evaluate(normalizedDayTime));
-                //materials3D[i].SetVector(SkyboxShaderUtils.LightDirection, directionalLightGO.transform.rotation.eulerAngles);
-                //// Apply Base Values
-                //materials3D[i].SetColor(SkyboxShaderUtils.SkyColor, skyColor.Evaluate(normalizedDayTime));
-                //materials3D[i].SetColor(SkyboxShaderUtils.GroundColor, groundColor.Evaluate(normalizedDayTime));
+                //Apply config
+                //General Values
+                materials3D[i].SetColor(SkyboxShaderUtils.LightTint, directionalLightLayer.tintColor.Evaluate(normalizedDayTime));
+                materials3D[i].SetVector(SkyboxShaderUtils.LightDirection, directionalLightGO.transform.rotation.eulerAngles);
 
-                //// Apply Horizon Values
-                //materials3D[i].SetColor(SkyboxShaderUtils.HorizonColor, horizonColor.Evaluate(normalizedDayTime));
-                //materials3D[i].SetFloat(SkyboxShaderUtils.HorizonHeight, GetTransitionValue(horizonHeight, percentage, 0f));
-                //materials3D[i].SetFloat(SkyboxShaderUtils.HorizonWidth, GetTransitionValue(horizonWidth, percentage, 0f));
-                //materials3D[i].SetTexture(SkyboxShaderUtils.HorizonMask, horizonMask);
-                //materials3D[i].SetVector(SkyboxShaderUtils.HorizonMaskValues, horizonMaskValues);
-                //materials3D[i].SetColor(SkyboxShaderUtils.HorizonPlaneColor, horizonPlaneColor.Evaluate(normalizedDayTime));
-                //materials3D[i].SetFloat(SkyboxShaderUtils.HorizonPlaneHeight, GetTransitionValue(horizonPlaneHeight, percentage, -1f));
+                // Apply Base Values
+                materials3D[i].SetColor(SkyboxShaderUtils.SkyColor, additional3Dconfig[i].backgroundLayer.skyColor.Evaluate(normalizedDayTime));
+                materials3D[i].SetColor(SkyboxShaderUtils.GroundColor, additional3Dconfig[i].backgroundLayer.groundColor.Evaluate(normalizedDayTime));
+
+                // Apply Horizon Values
+                materials3D[i].SetColor(SkyboxShaderUtils.HorizonColor, additional3Dconfig[i].backgroundLayer.horizonColor.Evaluate(normalizedDayTime));
+                materials3D[i].SetFloat(SkyboxShaderUtils.HorizonHeight, GetTransitionValue(additional3Dconfig[i].backgroundLayer.horizonHeight, percentage, 0f));
+                materials3D[i].SetFloat(SkyboxShaderUtils.HorizonWidth, GetTransitionValue(additional3Dconfig[i].backgroundLayer.horizonWidth, percentage, 0f));
+                materials3D[i].SetTexture(SkyboxShaderUtils.HorizonMask, additional3Dconfig[i].backgroundLayer.horizonMask);
+                materials3D[i].SetVector(SkyboxShaderUtils.HorizonMaskValues, additional3Dconfig[i].backgroundLayer.horizonMaskValues);
 
                 ApplyAllSlots(materials3D[i], additional3Dconfig[i].layers, dayTime, normalizedDayTime, slotCount, cycleTime);
             }

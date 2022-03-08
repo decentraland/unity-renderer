@@ -461,12 +461,16 @@ namespace DCL.Skybox
                 if (configs3D[i].expandedInEditor)
                 {
                     EditorGUILayout.Separator();
+                    EditorGUI.indentLevel++;
+                    RenderDomeBackgroundLayer(configs3D[i]);
+                    EditorGUILayout.Separator();
 
                     EditorGUILayout.BeginVertical("box");
                     GUILayout.Space(10);
                     RenderTextureLayers(configs3D[i].layers, false);
                     GUILayout.Space(10);
                     EditorGUILayout.EndVertical();
+                    EditorGUI.indentLevel--;
                 }
 
 
@@ -481,6 +485,27 @@ namespace DCL.Skybox
             {
                 configs3D.Add(new Config3DDome("Dome " + (configs3D.Count + 1)));
             }
+        }
+
+        void RenderDomeBackgroundLayer(Config3DDome domeObj)
+        {
+            RenderColorGradientField(domeObj.backgroundLayer.skyColor, "Sky Color", 0, 24);
+            RenderColorGradientField(domeObj.backgroundLayer.horizonColor, "Horizon Color", 0, 24);
+            RenderColorGradientField(domeObj.backgroundLayer.groundColor, "Ground Color", 0, 24);
+
+            EditorGUILayout.Separator();
+            RenderTransitioningFloat(domeObj.backgroundLayer.horizonHeight, "Horizon Height", "%", "value", true, -1, 1);
+
+            EditorGUILayout.Space(10);
+            RenderTransitioningFloat(domeObj.backgroundLayer.horizonWidth, "Horizon Width", "%", "value", true, -1, 1);
+
+            EditorGUILayout.Separator();
+
+            // Horizon Mask
+            RenderTexture("Texture", ref domeObj.backgroundLayer.horizonMask);
+
+            // Horizon mask values
+            RenderVector3Field("Horizon Mask Values", ref domeObj.backgroundLayer.horizonMaskValues);
         }
 
         #endregion
@@ -957,7 +982,7 @@ namespace DCL.Skybox
                 Color normalContentColor = GUI.color;
                 GUI.color = circleColor;
 
-                EditorGUILayout.LabelField(('\u29BF').ToString(), renderingMarkerStyle, GUILayout.Width(20), GUILayout.Height(20));
+                EditorGUILayout.LabelField(('\u29BF').ToString(), renderingMarkerStyle, GUILayout.Width(60), GUILayout.Height(20));
 
                 GUI.color = normalContentColor;
 
