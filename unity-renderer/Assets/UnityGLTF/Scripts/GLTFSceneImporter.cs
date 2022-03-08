@@ -171,6 +171,10 @@ namespace UnityGLTF
         //             This is because the GLTF cache cleanup setup expects ref owners to be the entire GLTF object.
         HashSet<Material> usedMaterials = new HashSet<Material>();
 
+        const int KEYFRAME_SIZE = 32;
+        public int meshesEstimatedSize { get; private set; }
+        public int animationsEstimatedSize { get; private set; }
+
         /// <summary>
         /// Creates a GLTFSceneBuilder object which will be able to construct a scene based off a url
         /// </summary>
@@ -1124,6 +1128,7 @@ namespace UnityGLTF
                     // copy all key frames data to animation curve and add it to the clip
                     AnimationCurve curve = new AnimationCurve(keyframeCollection);
                     clip.SetCurve(relativePath, curveType, propertyNames[index], curve);
+                    animationsEstimatedSize += KEYFRAME_SIZE * keyframeCollection.Length;
                 }
             }
             else
@@ -1133,6 +1138,7 @@ namespace UnityGLTF
                     // copy all key frames data to animation curve and add it to the clip
                     AnimationCurve curve = new AnimationCurve(keyframes[ci]);
                     clip.SetCurve(relativePath, curveType, propertyNames[ci], curve);
+                    animationsEstimatedSize += KEYFRAME_SIZE * keyframes[ci].Length;
                 }
             }
         }
@@ -2018,6 +2024,7 @@ namespace UnityGLTF
                 await  UniTask.Yield();
             }
         }
+
         private async UniTask AsyncConstructUnityMesh(MeshConstructionData meshConstructionData, int meshId, int primitiveIndex, UnityMeshData unityMeshData)
         {
             var stopwatch = new Stopwatch();
@@ -2034,6 +2041,8 @@ namespace UnityGLTF
 
             _assetCache.MeshCache[meshId][primitiveIndex].LoadedMesh = mesh;
 
+            meshesEstimatedSize += GLTFSceneImporterUtils.ComputeEstimatedMeshSize(unityMeshData);
+            
             mesh.vertices = unityMeshData.Vertices;
             await ThrottleWatch(stopwatch, 1);
             mesh.normals = unityMeshData.Normals;

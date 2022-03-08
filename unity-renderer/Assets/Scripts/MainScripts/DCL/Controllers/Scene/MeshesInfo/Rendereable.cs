@@ -22,8 +22,9 @@ namespace DCL
         public HashSet<Renderer> renderers = new HashSet<Renderer>();
         public HashSet<Material> materials = new HashSet<Material>();
         public HashSet<Texture> textures = new HashSet<Texture>();
-        public HashSet<AnimationClip> animationClips = new HashSet<AnimationClip>();
         public int totalTriangleCount = 0;
+        public int animationClipSize = 0;
+        public int meshDataSize = 0;
 
         public bool Equals(Rendereable other)
         {
@@ -38,7 +39,6 @@ namespace DCL
             result.materials = new HashSet<Material>(materials);
             result.textures = new HashSet<Texture>(textures);
             result.meshes = new HashSet<Mesh>(meshes);
-            result.animationClips = new HashSet<AnimationClip>(animationClips);
             return result;
         }
 
@@ -47,8 +47,6 @@ namespace DCL
             Rendereable rendereable = new Rendereable();
             rendereable.container = go;
             rendereable.renderers = MeshesInfoUtils.ExtractUniqueRenderers(go);
-            var animations = MeshesInfoUtils.ExtractUniqueAnimations(go);
-            rendereable.animationClips = MeshesInfoUtils.ExtractUniqueAnimationClips(animations);
             rendereable.materials = MeshesInfoUtils.ExtractUniqueMaterials(rendereable.renderers);
             rendereable.textures = MeshesInfoUtils.ExtractUniqueTextures(rendereable.materials);
             rendereable.meshes = MeshesInfoUtils.ExtractUniqueMeshes(rendereable.renderers);

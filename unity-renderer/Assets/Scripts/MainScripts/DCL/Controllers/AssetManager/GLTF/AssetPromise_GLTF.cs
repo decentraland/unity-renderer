@@ -107,8 +107,8 @@ namespace DCL
                             MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
                         asset.materials = MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers);
                         asset.textures = MeshesInfoUtils.ExtractUniqueTextures(asset.materials);
-                        var animations = MeshesInfoUtils.ExtractUniqueAnimations(asset.container);
-                        asset.animationClips = MeshesInfoUtils.ExtractUniqueAnimationClips(animations);
+                        asset.animationClipSize = gltfComponent.GetAnimationClipMemorySize();
+                        asset.meshDataSize = gltfComponent.GetMeshesMemorySize(); 
                     }
 
                     OnSuccess.Invoke();

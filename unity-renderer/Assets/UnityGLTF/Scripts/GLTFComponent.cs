@@ -371,6 +371,17 @@ namespace UnityGLTF
         public void Load(string url) { throw new NotImplementedException(); }
 
         public void SetPrioritized() { prioritizeDownload = true; }
+
+        public int GetAnimationClipMemorySize()
+        {
+            return sceneImporter.animationsEstimatedSize;
+        }
+
+        public int GetMeshesMemorySize()
+        {
+            return sceneImporter.meshesEstimatedSize;
+        }
+
         private void OnDestroy()
         {
 #if UNITY_STANDALONE || UNITY_EDITOR

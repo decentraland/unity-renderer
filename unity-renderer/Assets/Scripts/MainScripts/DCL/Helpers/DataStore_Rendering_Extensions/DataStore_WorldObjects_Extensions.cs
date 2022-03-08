@@ -122,10 +122,11 @@ namespace DCL
             sceneData.materials.AddRefCount(rendereable.materials);
             sceneData.meshes.AddRefCount(rendereable.meshes);
             sceneData.textures.AddRefCount(rendereable.textures);
-            sceneData.animationClips.AddRefCount(rendereable.animationClips);
             sceneData.renderers.Add(rendereable.renderers);
             sceneData.owners.Add(rendereable.ownerId);
             sceneData.triangles.Set( sceneData.triangles.Get() + rendereable.totalTriangleCount);
+            sceneData.animationClipSize.Set(sceneData.animationClipSize.Get() + rendereable.animationClipSize);
+            sceneData.meshDataSize.Set(sceneData.meshDataSize.Get() + rendereable.meshDataSize);
         }
 
         public static void RemoveRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
@@ -156,10 +157,11 @@ namespace DCL
             sceneData.materials.RemoveRefCount(rendereable.materials);
             sceneData.meshes.RemoveRefCount(rendereable.meshes);
             sceneData.textures.RemoveRefCount(rendereable.textures);
-            sceneData.animationClips.RemoveRefCount(rendereable.animationClips);
             sceneData.renderers.Remove(rendereable.renderers);
             sceneData.owners.Remove(rendereable.ownerId);
             sceneData.triangles.Set( sceneData.triangles.Get() - rendereable.totalTriangleCount);
+            sceneData.animationClipSize.Set(sceneData.animationClipSize.Get() - rendereable.animationClipSize);
+            sceneData.meshDataSize.Set(sceneData.meshDataSize.Get() - rendereable.meshDataSize);
         }
     }
 }

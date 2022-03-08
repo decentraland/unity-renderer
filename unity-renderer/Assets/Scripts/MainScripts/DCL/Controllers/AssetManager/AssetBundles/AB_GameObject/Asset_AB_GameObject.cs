@@ -14,8 +14,9 @@ namespace DCL
         public HashSet<Mesh> meshes = new HashSet<Mesh>();
         public HashSet<Material> materials = new HashSet<Material>();
         public HashSet<Texture> textures = new HashSet<Texture>();
-        public HashSet<AnimationClip> animationClips = new HashSet<AnimationClip>();
         public int totalTriangleCount = 0;
+        public int animationClipSize = 0;
+        public int meshDataSize = 0;
 
         public Asset_AB_GameObject()
         {
@@ -32,7 +33,6 @@ namespace DCL
             result.renderers = new HashSet<Renderer>(renderers);
             result.materials = new HashSet<Material>(materials);
             result.textures = new HashSet<Texture>(textures);
-            result.animationClips = new HashSet<AnimationClip>(animationClips);
             return result;
         }
 

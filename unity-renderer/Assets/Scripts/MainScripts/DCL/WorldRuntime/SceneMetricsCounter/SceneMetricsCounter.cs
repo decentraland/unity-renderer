@@ -99,8 +99,8 @@ namespace DCL
             sceneData.meshes.OnAdded += OnMeshAdded;
             sceneData.meshes.OnRemoved += OnMeshRemoved;
 
-            sceneData.animationClips.OnAdded += OnAnimationClipAdded;
-            sceneData.animationClips.OnRemoved += OnAnimationClipRemoved;
+            sceneData.animationClipSize.OnChange += OnAnimationClipSizeChange;
+            sceneData.meshDataSize.OnChange += OnMeshDataSizeChange;
 
             sceneData.audioClips.OnAdded += OnAudioClipAdded;
             sceneData.audioClips.OnRemoved += OnAudioClipRemoved;
@@ -218,16 +218,16 @@ namespace DCL
         }
 
 
-        void OnAnimationClipAdded(AnimationClip animationClip)
+        private void OnMeshDataSizeChange(int current, int previous)
         {
             MarkDirty();
-            currentCountValue.animationClipMemory += ComputeAnimationClipScore(animationClip);
+            currentCountValue.meshMemory = current;
         }
 
-        void OnAnimationClipRemoved(AnimationClip animationClip)
+        void OnAnimationClipSizeChange(int animationClipSize, int previous)
         {
             MarkDirty();
-            currentCountValue.animationClipMemory -= ComputeAnimationClipScore(animationClip);
+            currentCountValue.animationClipMemory = animationClipSize;
         }
 
         void OnMaterialAdded(Material material)
