@@ -19,7 +19,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     internal const string EMOTES_SECTION_TITLE = "<b>Emotes</b> Customization";
 
     public bool isOpen { get; private set; }
-    internal BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotes.isEmotesCustomizationSelected;
+    internal BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
 
     internal bool arePanelsInitialized = false;
 

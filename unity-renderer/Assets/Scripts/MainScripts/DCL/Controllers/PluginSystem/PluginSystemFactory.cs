@@ -1,6 +1,6 @@
 using DCL.Tutorial;
 using DCL.Skybox;
-using Emotes;
+using EmotesCustomization;
 
 namespace DCL
 {

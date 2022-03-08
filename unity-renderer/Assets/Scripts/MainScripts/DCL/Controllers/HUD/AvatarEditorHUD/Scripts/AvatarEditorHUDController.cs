@@ -35,8 +35,8 @@ public class AvatarEditorHUDController : IHUD
     BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     BaseVariable<Transform> configureBackpackInFullscreenMenu => DataStore.i.exploreV2.configureBackpackInFullscreenMenu;
     BaseVariable<bool> exploreV2IsOpen => DataStore.i.exploreV2.isOpen;
-    BaseVariable<Transform> isEmotesSectonInitialized => DataStore.i.emotes.isInitialized;
-    BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotes.isEmotesCustomizationSelected;
+    BaseVariable<Transform> isEmotesSectonInitialized => DataStore.i.emotesCustomization.isInitialized;
+    BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
     private bool isSkinsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_skins");
 
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();

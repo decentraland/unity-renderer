@@ -1,6 +1,6 @@
 using System;
 
-namespace Emotes
+namespace EmotesCustomization
 {
     [Serializable]
     public class EmoteSlotSelectorComponentModel : BaseComponentModel

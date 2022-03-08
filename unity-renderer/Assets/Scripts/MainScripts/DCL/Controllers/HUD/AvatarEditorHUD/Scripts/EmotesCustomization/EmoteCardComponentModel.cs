@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Emotes
+namespace EmotesCustomization
 {
     [Serializable]
     public class EmoteCardComponentModel : BaseComponentModel

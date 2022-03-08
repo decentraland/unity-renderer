@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Emotes
+namespace EmotesCustomization
 {
     public interface IEmotesCustomizationComponentController : IDisposable
     {
@@ -21,8 +21,8 @@ namespace Emotes
         internal const int NUMBER_OF_SLOTS = 9;
         private const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedEmotes";
 
-        internal BaseVariable<Transform> isInitialized => DataStore.i.emotes.isInitialized;
-        internal BaseCollection<StoredEmote> equippedEmotes => DataStore.i.emotes.equippedEmotes;
+        internal BaseVariable<Transform> isInitialized => DataStore.i.emotesCustomization.isInitialized;
+        internal BaseCollection<StoredEmote> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
         internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
         internal bool shortcutsCanBeUsed => isStarMenuOpen.Get() && view.isActive;
 

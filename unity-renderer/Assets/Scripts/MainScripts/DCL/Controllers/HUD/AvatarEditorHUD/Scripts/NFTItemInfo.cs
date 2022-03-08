@@ -6,7 +6,7 @@ using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Emotes;
+using EmotesCustomization;
 
 public class NFTItemInfo : MonoBehaviour
 {

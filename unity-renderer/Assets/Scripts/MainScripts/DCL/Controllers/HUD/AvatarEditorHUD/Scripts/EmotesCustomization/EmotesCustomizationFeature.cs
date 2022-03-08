@@ -1,4 +1,4 @@
-namespace Emotes
+namespace EmotesCustomization
 {
     /// <summary>
     /// Plugin feature that initialize the Emotes Customization feature.

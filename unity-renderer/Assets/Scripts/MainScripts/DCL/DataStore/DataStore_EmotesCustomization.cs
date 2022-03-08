@@ -12,7 +12,7 @@ namespace DCL
         public string pictureUri;
     }
 
-    public class DataStore_Emotes
+    public class DataStore_EmotesCustomization
     {
         public readonly BaseVariable<Transform> isInitialized = new BaseVariable<Transform>(null);
         public readonly BaseCollection<StoredEmote> equippedEmotes = new BaseCollection<StoredEmote>(new List<StoredEmote> { null, null, null, null, null, null, null, null, null, null });

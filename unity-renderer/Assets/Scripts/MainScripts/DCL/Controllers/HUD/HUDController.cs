@@ -11,6 +11,7 @@ using SignupHUD;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Environment = System.Environment;
+using EmotesCustomization;
 
 public class HUDController : IHUDController
 {

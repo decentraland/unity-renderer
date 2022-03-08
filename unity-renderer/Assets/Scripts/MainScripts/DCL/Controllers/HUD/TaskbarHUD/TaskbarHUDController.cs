@@ -38,7 +38,7 @@ public class TaskbarHUDController : IHUD
 
     public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
 
-    BaseVariable<Transform> isEmotesSectionInitialized => DataStore.i.emotes.isInitialized;
+    BaseVariable<Transform> isEmotesSectionInitialized => DataStore.i.emotesCustomization.isInitialized;
     BaseVariable<bool> isEmotesVisible => DataStore.i.HUDs.emotesVisible;
 
     protected internal virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(this, chatController, friendsController); }
