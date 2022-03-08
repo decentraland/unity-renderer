@@ -313,7 +313,7 @@ namespace EmotesCustomization
                 mockedEmotes.Add(new EmoteCardComponentModel
                 {
                     id = mockedEmoteNames[i],
-                    name = mockedEmoteNames[i],
+                    name = mockedEmoteNames[i].ToUpper(),
                     description = $"Description of the {mockedEmoteNames[i]} emote...",
                     pictureUri = mockedImages[i],
                     isAssignedInSelectedSlot = false,

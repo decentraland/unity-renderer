@@ -1,6 +1,7 @@
 using DCL;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace EmotesCustomization
@@ -13,17 +14,11 @@ namespace EmotesCustomization
         public event Action OnClose;
         public event Action OnCustomizeClicked;
 
-        [Serializable]
-        public class ButtonToEmote
-        {
-            public Button_OnPointerDown button;
-            public ImageComponentView image;
-        }
-
         [SerializeField] internal Sprite nonAssignedEmoteSprite;
-        [SerializeField] internal ButtonToEmote[] emoteButtons;
+        [SerializeField] internal EmoteWheelSlot[] emoteButtons;
         [SerializeField] internal Button_OnPointerDown[] closeButtons;
         [SerializeField] internal ButtonComponentView openCustomizeButton;
+        [SerializeField] internal TMP_Text selectedEmoteName;
 
         public static EmotesHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesHUDView>(); }
 
@@ -55,19 +50,25 @@ namespace EmotesCustomization
                 if (i < emoteButtons.Length)
                 {
                     emoteButtons[i].button.onClick.RemoveAllListeners();
+                    emoteButtons[i].onSlotHover -= OnSlotHover;
+                    emoteButtons[i].onSlotHover += OnSlotHover;
 
                     if (equippedEmote != null)
                     {
                         emoteButtons[i].button.onClick.AddListener(() => onEmoteClicked?.Invoke(equippedEmote.id));
                         emoteButtons[i].image.SetImage(equippedEmote.pictureUri);
+                        emoteButtons[i].SetName(equippedEmote.name);
                     }
                     else
                     {
                         emoteButtons[i].image.SetImage(nonAssignedEmoteSprite);
+                        emoteButtons[i].SetName(string.Empty);
                     }
                 }
             }
         }
+
+        private void OnSlotHover(string emoteName) { selectedEmoteName.text = emoteName; }
 
         private void Close() { OnClose?.Invoke(); }
         public void OnDestroy() { CleanUp(); }
