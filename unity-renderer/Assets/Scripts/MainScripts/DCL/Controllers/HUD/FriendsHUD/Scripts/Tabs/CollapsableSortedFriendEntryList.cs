@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class CollapsableSortedFriendEntryList : MonoBehaviour
 {
     private readonly Dictionary<string, FriendEntryBase> entries = new Dictionary<string, FriendEntryBase>();
-    private List<(string userId, ulong timestamp)> sortedTimestamps = new List<(string userId, ulong timestamp)>();
+    private List<UserTimestamp> sortedTimestamps = new List<UserTimestamp>();
 
     [SerializeField] private Transform container;
     [SerializeField] private FriendsListToggleButton toggleButton;
@@ -42,24 +42,28 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
         return entry;
     }
 
-    public void SetTimestamp((string userId, ulong timestamp) timestamp)
+    public void SetTimestamp(string userId, ulong timestamp)
     {
-        if (timestamp == default) return;
-        var existingTimestamp = sortedTimestamps.FirstOrDefault(t => t.userId == timestamp.userId);
-        if (existingTimestamp == default)
-            sortedTimestamps.Add(timestamp);
-        else if (timestamp.timestamp > existingTimestamp.timestamp)
-            existingTimestamp.timestamp = timestamp.timestamp;
+        var userTimestamp = sortedTimestamps.FirstOrDefault(ut => ut.UserId == userId);
+        if (userTimestamp == default)
+        {
+            userTimestamp = new UserTimestamp(userId, timestamp);
+            sortedTimestamps.Add(userTimestamp);
+        }
+
+        if (timestamp > userTimestamp.Timestamp)
+            userTimestamp.Timestamp = timestamp;
+        
         SortTimestamps();
         SortEntries();
     }
 
-    public (string userId, ulong timestamp) RemoveTimestamp(string userId)
+    public ulong RemoveTimestamp(string userId)
     {
-        var timestampToRemove = sortedTimestamps.FirstOrDefault(t => t.userId == userId);
-        if (timestampToRemove == default) return default;
+        var timestampToRemove = sortedTimestamps.FirstOrDefault(ut => ut.UserId == userId);
+        if (timestampToRemove == default) return 0;
         sortedTimestamps.Remove(timestampToRemove);
-        return timestampToRemove;
+        return timestampToRemove.Timestamp;
     }
 
     public void Clear()
@@ -87,25 +91,35 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
                           || regex.IsMatch(entry.Value.model.realm);
             entry.Value.gameObject.SetActive(isMatch);
         }
-        
+
         Utils.ForceRebuildLayoutImmediate((RectTransform) container);
     }
 
     private void SortTimestamps()
     {
-        sortedTimestamps = sortedTimestamps.OrderByDescending(pair => pair.timestamp).ToList();
+        sortedTimestamps = sortedTimestamps.OrderByDescending(ut => ut.Timestamp).ToList();
     }
 
     private void SortEntries()
     {
-        foreach (var item in sortedTimestamps.Where(item => entries.ContainsKey(item.userId)))
-        {
-            entries[item.userId].transform.SetAsLastSibling();
-        }
+        foreach (var item in sortedTimestamps.Where(item => entries.ContainsKey(item.UserId)))
+            entries[item.UserId].transform.SetAsLastSibling();
     }
-    
+
     private void UpdateEmptyState()
     {
         emptyStateContainer.SetActive(entries.Count == 0);
+    }
+    
+    private class UserTimestamp
+    {
+        public string UserId { get; set; }
+        public ulong Timestamp { get; set; }
+        
+        public UserTimestamp(string userId, ulong timestamp)
+        {
+            UserId = userId;
+            Timestamp = timestamp;
+        }
     }
 }
