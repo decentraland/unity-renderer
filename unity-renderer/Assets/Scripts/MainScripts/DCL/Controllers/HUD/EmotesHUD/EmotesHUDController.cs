@@ -12,6 +12,7 @@ public class EmotesHUDController : IHUD
     private BaseVariable<bool> isStartMenuOpen => DataStore.i.exploreV2.isOpen;
     private BaseCollection<StoredEmote> equippedEmotes => DataStore.i.emotes.equippedEmotes;
     private BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
+    private BaseVariable<bool> canStartMenuBeOpened => DataStore.i.exploreV2.isSomeModalOpen;
     private bool shortcutsCanBeUsed => !isStarMenuOpen.Get();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -33,6 +34,7 @@ public class EmotesHUDController : IHUD
         view = EmotesHUDView.Create();
         view.OnClose += OnViewClosed;
         view.onEmoteClicked += EmoteCalled;
+        view.OnCustomizeClicked += OpenEmotesCustomizationSection;
 
         ownUserProfile.OnAvatarExpressionSet += OnAvatarEmoteSet;
         emotesVisible.OnChange += OnEmoteVisibleChanged;
@@ -70,12 +72,15 @@ public class EmotesHUDController : IHUD
 
         if ( visible )
             DCL.Helpers.Utils.UnlockCursor();
+
+        canStartMenuBeOpened.Set(visible);
     }
 
     public void Dispose()
     {
         view.OnClose -= OnViewClosed;
         view.onEmoteClicked -= EmoteCalled;
+        view.OnCustomizeClicked -= OpenEmotesCustomizationSection;
         closeWindow.OnTriggered -= OnCloseWindowPressed;
         ownUserProfile.OnAvatarExpressionSet -= OnAvatarEmoteSet;
         emotesVisible.OnChange -= OnEmoteVisibleChanged;
@@ -182,11 +187,17 @@ public class EmotesHUDController : IHUD
     private void OnViewClosed() { emotesVisible.Set(false); }
     private void OnAvatarEmoteSet(string id, long timestamp) { emotesVisible.Set(false); }
     private void OnCloseWindowPressed(DCLAction_Trigger action) { emotesVisible.Set(false); }
+
     private void OnOpenEmotesCustomizationInputActionTriggered(DCLAction_Hold action) 
     {
         if (!emotesVisible.Get())
             return;
 
+        OpenEmotesCustomizationSection();
+    }
+
+    private void OpenEmotesCustomizationSection()
+    {
         emotesVisible.Set(false);
         isAvatarEditorVisible.Set(true);
         isEmotesCustomizationSelected.Set(true);

@@ -9,6 +9,7 @@ public class EmotesHUDView : MonoBehaviour
 
     public event Action<string> onEmoteClicked;
     public event Action OnClose;
+    public event Action OnCustomizeClicked;
 
     [Serializable]
     public class ButtonToEmote
@@ -20,6 +21,7 @@ public class EmotesHUDView : MonoBehaviour
     [SerializeField] internal Sprite nonAssignedEmoteSprite;
     [SerializeField] internal ButtonToEmote[] emoteButtons;
     [SerializeField] internal Button_OnPointerDown[] closeButtons;
+    [SerializeField] internal ButtonComponentView openCustomizeButton;
 
     public static EmotesHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesHUDView>(); }
 
@@ -29,6 +31,8 @@ public class EmotesHUDView : MonoBehaviour
         {
             closeButtons[i].onPointerDown += Close;
         }
+
+        openCustomizeButton.onClick.AddListener(() => OnCustomizeClicked?.Invoke());
     }
 
     public void SetVisiblity(bool visible)
@@ -72,5 +76,7 @@ public class EmotesHUDView : MonoBehaviour
         {
             closeButtons[i].onPointerDown -= Close;
         }
+
+        openCustomizeButton.onClick.RemoveAllListeners();
     }
 }
