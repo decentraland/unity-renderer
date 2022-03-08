@@ -309,11 +309,10 @@ public class TaskbarHUDController : IHUD
 
     private void IsEmotesVisibleChanged(bool current, bool previous)
     {
-        if (current)
-            return;
+        view.emotesButton.SetToggleState(current, false);
 
-        view.emotesButton.SetToggleState(false, false);
-        MarkWorldChatAsReadIfOtherWindowIsOpen();
+        if (!current)
+            MarkWorldChatAsReadIfOtherWindowIsOpen();
     }
 
     public void OnAddVoiceChat() { view.OnAddVoiceChat(); }
