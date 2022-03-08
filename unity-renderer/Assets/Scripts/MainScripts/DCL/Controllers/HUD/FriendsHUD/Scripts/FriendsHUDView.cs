@@ -90,8 +90,12 @@ public class FriendsHUDView : MonoBehaviour, IFriendsHUDComponentView
 
     public int GetReceivedFriendRequestCount() => friendRequestsList.receivedRequestsList.Count();
 
-    public void Destroy() => Destroy(gameObject);
-    
+    public void Destroy()
+    {
+        if (gameObject)
+            Destroy(gameObject);
+    }
+
     public void Show()
     {
         gameObject.SetActive(true);
