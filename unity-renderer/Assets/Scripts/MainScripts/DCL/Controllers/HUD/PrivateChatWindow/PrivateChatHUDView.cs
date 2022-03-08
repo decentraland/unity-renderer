@@ -29,7 +29,8 @@ public class PrivateChatHUDView : ChatHUDView
         ChatEntry chatEntry = chatEntryGO.GetComponent<ChatEntry>();
 
         chatEntry.SetFadeout(false);
-        chatEntry.Populate(chatEntryModel, gotoPanel);
+        chatEntry.Populate(chatEntryModel);
+        chatEntry.gotoPanel = gotoPanel;
 
         chatEntry.OnTriggerHover += OnMessageTriggerHover;
         chatEntry.OnCancelHover += OnMessageCancelHover;

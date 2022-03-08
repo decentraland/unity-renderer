@@ -148,7 +148,8 @@ public class ChatHUDView : MonoBehaviour
         else
             chatEntry.SetFadeout(false);
 
-        chatEntry.Populate(chatEntryModel, gotoPanel);
+        chatEntry.Populate(chatEntryModel);
+        chatEntry.gotoPanel = gotoPanel;
 
         if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
             chatEntry.OnPress += OnPressPrivateMessage;

@@ -37,7 +37,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     [SerializeField] internal TextMeshProUGUI username;
     [SerializeField] internal TextMeshProUGUI body;
-    internal GotoPanel gotoPanel;
+    public GotoPanel gotoPanel;
 
     [SerializeField] internal Color worldMessageColor = Color.white;
 
@@ -71,10 +71,9 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     private List<string> textCoords = new List<string>();
 
-    public void Populate(Model chatEntryModel, GotoPanel gotoPanel)
+    public void Populate(Model chatEntryModel)
     {
         this.model = chatEntryModel;
-        this.gotoPanel = gotoPanel;
 
         string userString = GetDefaultSenderString(chatEntryModel.senderName);
 

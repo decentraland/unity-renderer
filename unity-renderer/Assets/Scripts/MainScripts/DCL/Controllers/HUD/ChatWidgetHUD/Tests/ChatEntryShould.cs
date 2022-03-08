@@ -35,7 +35,7 @@ public class ChatEntryShould : IntegrationTestSuite_Legacy
             bodyText = "test message",
         };
 
-        entry.Populate(message, null);
+        entry.Populate(message);
 
         Assert.AreEqual(entry.worldMessageColor, entry.body.color);
         Assert.AreEqual("<b>user-test:</b>", entry.username.text);
@@ -44,15 +44,15 @@ public class ChatEntryShould : IntegrationTestSuite_Legacy
         message.messageType = ChatMessage.Type.PRIVATE;
         message.subType = ChatEntry.Model.SubType.PRIVATE_TO;
 
-        entry.Populate(message, null);
+        entry.Populate(message);
         Assert.AreEqual(entry.privateToMessageColor, entry.username.color);
 
         message.subType = ChatEntry.Model.SubType.PRIVATE_FROM;
-        entry.Populate(message, null);
+        entry.Populate(message);
         Assert.AreEqual(entry.privateFromMessageColor, entry.username.color);
 
         message.messageType = ChatMessage.Type.SYSTEM;
-        entry.Populate(message, null);
+        entry.Populate(message);
         Assert.AreEqual(entry.systemColor, entry.body.color);
     }
 }
