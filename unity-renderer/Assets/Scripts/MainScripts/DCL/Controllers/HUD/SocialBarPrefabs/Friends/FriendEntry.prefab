@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 5456606117727073459}
   - component: {fileID: 3221293148122281813}
   - component: {fileID: 5210039636499982884}
+  - component: {fileID: 7758688996308583502}
   m_Layer: 5
   m_Name: FriendEntry
   m_TagString: Untagged
@@ -166,6 +167,22 @@ MonoBehaviour:
   jumpInButton: {fileID: 5169509239082897848}
   whisperButton: {fileID: 5791209562270436312}
   unreadNotificationBadge: {fileID: 0}
+--- !u!114 &7758688996308583502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 434402956254495305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82e017250d074fa2a218204a7281cb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetObjects:
+  - {fileID: 3878216755995512703}
+  - {fileID: 6123713146166694637}
+  - {fileID: 504354867123715343}
 --- !u!1 &476136669478275824
 GameObject:
   m_ObjectHideFlags: 0
@@ -736,7 +753,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5557930252562946457}
   - component: {fileID: 3224002457026079413}
-  - component: {fileID: 2902915859653300001}
   - component: {fileID: 7505627329061135178}
   - component: {fileID: 5791209562270436312}
   m_Layer: 5
@@ -773,20 +789,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3878216755995512703}
   m_CullTransparentMesh: 0
---- !u!114 &2902915859653300001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3878216755995512703}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f82e017250d074fa2a218204a7281cb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetObjects:
-  - {fileID: 0}
 --- !u!114 &7505627329061135178
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1317,7 +1319,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3482907805235602005}
   - component: {fileID: 2167633197146665853}
-  - component: {fileID: 7007406344130960073}
   - component: {fileID: 5459750111381729618}
   - component: {fileID: 332470929490941444}
   m_Layer: 5
@@ -1354,20 +1355,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6123713146166694637}
   m_CullTransparentMesh: 0
---- !u!114 &7007406344130960073
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6123713146166694637}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f82e017250d074fa2a218204a7281cb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetObjects:
-  - {fileID: 0}
 --- !u!114 &5459750111381729618
 MonoBehaviour:
   m_ObjectHideFlags: 0

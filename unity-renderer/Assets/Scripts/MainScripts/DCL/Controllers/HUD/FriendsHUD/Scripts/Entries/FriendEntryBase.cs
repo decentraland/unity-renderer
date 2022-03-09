@@ -61,8 +61,6 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         else if (transition == Selectable.Transition.ColorTint)
             backgroundImage.color = originalBackgroundColor * transitionColors.highlightedColor;
 
-        menuButton.gameObject.SetActive(true);
-
         if (audioEventHover != null)
             audioEventHover.Play(true);
     }
@@ -73,8 +71,6 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
             backgroundImage.sprite = unhoveredBackgroundSprite;
         else if (transition == Selectable.Transition.ColorTint)
             backgroundImage.color = originalBackgroundColor * transitionColors.normalColor;
-        
-        menuButton.gameObject.SetActive(false);
     }
 
     private void OnEnable()
