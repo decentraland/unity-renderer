@@ -16,8 +16,8 @@ namespace DCL
             public readonly BaseHashSet<AudioClip> audioClips = new BaseHashSet<AudioClip>();
 
             public readonly BaseVariable<int> triangles = new BaseVariable<int>();
-            public readonly BaseVariable<int> animationClipSize = new BaseVariable<int>();
-            public readonly BaseVariable<int> meshDataSize = new BaseVariable<int>();
+            public readonly BaseVariable<long> animationClipSize = new BaseVariable<long>();
+            public readonly BaseVariable<long> meshDataSize = new BaseVariable<long>();
         }
 
         public readonly BaseDictionary<string, SceneData> sceneData = new BaseDictionary<string, SceneData>();

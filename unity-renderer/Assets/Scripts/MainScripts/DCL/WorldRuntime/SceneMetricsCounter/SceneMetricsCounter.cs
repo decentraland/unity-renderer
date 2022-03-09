@@ -224,13 +224,13 @@ namespace DCL
         }
 
 
-        private void OnMeshDataSizeChange(int current, int previous)
+        private void OnMeshDataSizeChange(long current, long previous)
         {
             MarkDirty();
             currentCountValue.meshMemory = current;
         }
 
-        void OnAnimationClipSizeChange(int animationClipSize, int previous)
+        void OnAnimationClipSizeChange(long animationClipSize, long previous)
         {
             MarkDirty();
             currentCountValue.animationClipMemory = animationClipSize;

@@ -172,8 +172,8 @@ namespace UnityGLTF
         HashSet<Material> usedMaterials = new HashSet<Material>();
 
         const int KEYFRAME_SIZE = 32;
-        public int meshesEstimatedSize { get; private set; }
-        public int animationsEstimatedSize { get; private set; }
+        public long meshesEstimatedSize { get; private set; }
+        public long animationsEstimatedSize { get; private set; }
 
         /// <summary>
         /// Creates a GLTFSceneBuilder object which will be able to construct a scene based off a url
@@ -1129,6 +1129,8 @@ namespace UnityGLTF
                     AnimationCurve curve = new AnimationCurve(keyframeCollection);
                     clip.SetCurve(relativePath, curveType, propertyNames[index], curve);
                     animationsEstimatedSize += KEYFRAME_SIZE * keyframeCollection.Length;
+                    animationsEstimatedSize += relativePath.Length;
+                    animationsEstimatedSize += propertyNames[index].Length;
                 }
             }
             else
@@ -1139,6 +1141,8 @@ namespace UnityGLTF
                     AnimationCurve curve = new AnimationCurve(keyframes[ci]);
                     clip.SetCurve(relativePath, curveType, propertyNames[ci], curve);
                     animationsEstimatedSize += KEYFRAME_SIZE * keyframes[ci].Length;
+                    animationsEstimatedSize += relativePath.Length;
+                    animationsEstimatedSize += propertyNames[ci].Length;
                 }
             }
         }
@@ -1262,6 +1266,9 @@ namespace UnityGLTF
             };
 
             _assetCache.AnimationCache[animationId].LoadedAnimationClip = clip;
+
+            // Animation instance memory overhead
+            animationsEstimatedSize += 20;
 
             // needed because Animator component is unavailable at runtime
             clip.legacy = true;

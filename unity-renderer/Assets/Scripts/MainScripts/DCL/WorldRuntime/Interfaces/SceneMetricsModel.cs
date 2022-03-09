@@ -11,10 +11,10 @@
         public int entities;
         public float sceneHeight;
 
-        public float textureMemory;
-        public float meshMemory;
-        public float audioClipMemory;
-        public float animationClipMemory;
+        public long textureMemory;
+        public long meshMemory;
+        public long audioClipMemory;
+        public long animationClipMemory;
 
         public SceneMetricsModel Clone() { return (SceneMetricsModel) MemberwiseClone(); }
 

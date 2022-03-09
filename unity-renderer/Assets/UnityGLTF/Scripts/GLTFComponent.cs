@@ -289,6 +289,8 @@ namespace UnityGLTF
                         else
                         {
                             loadedAssetRootGameObject = sceneImporter.CreatedObject;
+                            animationsEstimatedSize = sceneImporter.animationsEstimatedSize;
+                            meshesEstimatedSize = sceneImporter.meshesEstimatedSize;
 
                             sceneImporter?.Dispose();
                             sceneImporter = null;
@@ -372,14 +374,16 @@ namespace UnityGLTF
 
         public void SetPrioritized() { prioritizeDownload = true; }
 
-        public int GetAnimationClipMemorySize()
+        private long animationsEstimatedSize;
+        private long meshesEstimatedSize;
+        public long GetAnimationClipMemorySize()
         {
-            return sceneImporter.animationsEstimatedSize;
+            return animationsEstimatedSize;
         }
 
-        public int GetMeshesMemorySize()
+        public long GetMeshesMemorySize()
         {
-            return sceneImporter.meshesEstimatedSize;
+            return meshesEstimatedSize;
         }
 
         private void OnDestroy()

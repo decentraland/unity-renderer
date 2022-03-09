@@ -11,7 +11,7 @@ namespace UnityGLTF.Scripts
         void LoadAsset(string assetDirectoryPath, string fileName, string id, bool loadEvenIfAlreadyLoaded, GLTFComponent.Settings settings, AssetIdConverter fileToHash);
         void RegisterCallbacks(Action<Mesh> meshCreated, Action<Renderer> rendererCreated);
         void SetPrioritized();
-        int GetAnimationClipMemorySize();
-        int GetMeshesMemorySize();
+        long GetAnimationClipMemorySize();
+        long GetMeshesMemorySize();
     }
 }

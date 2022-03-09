@@ -15,8 +15,8 @@ namespace DCL
         public HashSet<Material> materials = new HashSet<Material>();
         public HashSet<Texture> textures = new HashSet<Texture>();
         public int totalTriangleCount = 0;
-        public int animationClipSize = 0;
-        public int meshDataSize = 0;
+        public long animationClipSize = 0;
+        public long meshDataSize = 0;
 
         public Asset_AB_GameObject()
         {
