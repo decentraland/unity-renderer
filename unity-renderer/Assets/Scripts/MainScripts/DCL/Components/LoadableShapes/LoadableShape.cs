@@ -175,8 +175,27 @@ namespace DCL.Components
 
             if (provider == null)
                 provider = scene.contentProvider;
+            
+            // Debug.Log("Checking... " + model.src);
+            bool forceFail = false;
+            string[] filteredAssets = new []
+            {
+                "models/sculpt_plein.glb", // if we filter only this one, the renderer takes a long time to activate...
+                "models/ogcr/ogcr_pink.glb", // if we filter only this one, the renderer takes a long time to activate...
+                "models/dancers/Unity2Skfb.gltf", // if we filter only this one, the renderer takes a long time to activate...
+                "models/The_shiny_dog.glb", // if we filter only this one, the renderer takes a long time to activate...
+            };
+            foreach (string filteredAsset in filteredAssets)
+            {
+                if (model.src.Contains(filteredAsset))
+                {
+                    Debug.Log(model.src + " FILTERED!!!");
+                    forceFail = true;
+                    break;
+                }
+            }
 
-            if (provider.HasContentsUrl(model.src))
+            if (!forceFail && provider.HasContentsUrl(model.src))
             {
                 isLoaded = false;
                 entity.EnsureMeshGameObject(componentName + " mesh");

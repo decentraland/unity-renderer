@@ -814,6 +814,8 @@ namespace DCL.Controllers
         [ContextMenu("Get Waiting Components Debug Info")]
         public void GetWaitingComponentsDebugInfo()
         {
+            Debug.Log("ParcelScene - GetWaitingComponentsDebugInfo - State: " + sceneLifecycleHandler.state);
+            
             switch (sceneLifecycleHandler.state)
             {
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:

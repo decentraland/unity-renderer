@@ -28,7 +28,6 @@ namespace DCL.Components
             alreadyLoaded = false;
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
 
-
             if (customContentProvider == null)
                 loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles);
             else
@@ -57,6 +56,25 @@ namespace DCL.Components
 
             loadHelper.OnSuccessEvent += successWrapperEvent;
             loadHelper.OnFailEvent += failWrapperEvent;
+            
+            // Debug.Log("CHECKING " + targetUrl);
+            /*string[] filteredAssets = new []
+            {
+                "models/ogcr/ogcr_pink.glb",
+                "models/The_shiny_dog.glb",
+                "models/sculpt_plein.glb",
+                "models/dancers/Unity2Skfb.gltf"
+            };
+            foreach (string filteredAsset in filteredAssets)
+            {
+                if (targetUrl.Contains(filteredAsset))
+                {
+                    Debug.Log(targetUrl + " FILTERED!!!");
+                    OnFailWrapper(OnFail, new Exception("FILTERED ASSET"));
+                    break;
+                }
+            }*/
+            
             loadHelper.Load(targetUrl);
         }
 
