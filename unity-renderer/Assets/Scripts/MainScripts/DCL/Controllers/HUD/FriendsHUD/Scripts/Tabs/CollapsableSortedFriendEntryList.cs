@@ -14,6 +14,11 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
     [SerializeField] private FriendsListToggleButton toggleButton;
     [SerializeField] private GameObject emptyStateContainer;
 
+    private void OnEnable()
+    {
+        UpdateEmptyState();
+    }
+
     public void Expand() => toggleButton.Toggle(true);
 
     public void Collapse() => toggleButton.Toggle(false);
