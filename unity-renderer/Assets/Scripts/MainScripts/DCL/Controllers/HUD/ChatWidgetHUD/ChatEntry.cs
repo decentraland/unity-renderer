@@ -55,6 +55,9 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     [NonSerialized] public string messageLocalDateTime;
 
+    private const string COORDINATES_COLOR_PRIVATE = "#4886E3";
+    private const string COORDINATES_COLOR_PUBLIC = "#62C6FF";
+
     bool fadeEnabled = false;
     double fadeoutStartTime;
     float hoverPanelTimer = 0;
@@ -134,7 +137,13 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         if (CoordinateUtils.HasValidTextCoordinates(body.text)) {
             CoordinateUtils.GetTextCoordinates(body.text).ForEach(c=> {
                 PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(c));
-                body.text = body.text.Replace(c,$"<link={c}><color=\"green\"><u>{c}</u></color></link>");
+                string coordinatesColor;
+                if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE) 
+                    coordinatesColor = COORDINATES_COLOR_PRIVATE;
+                else 
+                    coordinatesColor = COORDINATES_COLOR_PUBLIC;
+
+                body.text = body.text.Replace(c,$"<link={c}><color={coordinatesColor}><u>{c}</u></color></link>");
             });
         }
 
