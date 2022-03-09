@@ -166,7 +166,7 @@ namespace DCL
             onPointerDown.OnPointerExitReport -= PlayerPointerExit;
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
 
-            UpdatePlayerStatus(model, isGlobalSceneAvatar);
+            UpdatePlayerStatus(model);
             
             onPointerDown.Initialize(
                 new OnPointerDown.Model()
@@ -206,7 +206,7 @@ namespace DCL
         private void PlayerPointerExit() { playerName?.SetForceShow(false); }
         private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
 
-        private void UpdatePlayerStatus(AvatarModel model, bool isGlobalSceneAvatar)
+        private void UpdatePlayerStatus(AvatarModel model)
         {
             // Remove the player status if the userId changes
             if (player != null && (player.id != model.id || player.name != model.name))
