@@ -71,8 +71,9 @@ namespace EmotesCustomization
         /// <param name="emoteId">Emote Id to assign.</param>
         /// <param name="emoteName">Emote name to assign.</param>
         /// <param name="slotNumber">Slot number to assign the emote.</param>
+        /// <param name="selectSlotAfterEquip">Indicates if we want to keep selected the asigned slot or not.</param>
         /// <param name="notifyEvent">Indicates if the new equipped emote event should be notified or not.</param>
-        void EquipEmote(string emoteId, string emoteName, int slotNumber, bool notifyEvent = true);
+        void EquipEmote(string emoteId, string emoteName, int slotNumber, bool selectSlotAfterEquip = true, bool notifyEvent = true);
 
         /// <summary>
         /// Unassign an emote from a specific slot.
@@ -179,7 +180,7 @@ namespace EmotesCustomization
                 emotesGrid.RemoveItem(emoteToRemove);
         }
 
-        public void EquipEmote(string emoteId, string emoteName, int slotNumber, bool notifyEvent = true)
+        public void EquipEmote(string emoteId, string emoteName, int slotNumber, bool selectSlotAfterEquip = true, bool notifyEvent = true)
         {
             if (string.IsNullOrEmpty(emoteId))
                 return;
@@ -204,7 +205,9 @@ namespace EmotesCustomization
                         existingEmoteCard.model.pictureSprite, 
                         existingEmoteCard.model.pictureUri,
                         existingEmoteCard.model.rarity);
-                    emoteSlotSelector.SelectSlot(slotNumber);
+
+                    if (selectSlotAfterEquip)
+                        emoteSlotSelector.SelectSlot(slotNumber);
                 }
 
                 existingEmoteCard.SetEmoteAsAssignedInSelectedSlot(existingEmoteCard.model.assignedSlot == selectedSlot);
@@ -291,7 +294,7 @@ namespace EmotesCustomization
             emoteInfoPanel.closeButton.onClick.AddListener(() => emoteInfoPanel.SetActive(false));
             emoteInfoPanel.sellButton.onClick.AddListener(() =>
             {
-                Debug.Log("SANTI ---> GO TO SELL LINK...");
+                // TODO (Santi): GO TO SELL LINK...
             });
         }
 

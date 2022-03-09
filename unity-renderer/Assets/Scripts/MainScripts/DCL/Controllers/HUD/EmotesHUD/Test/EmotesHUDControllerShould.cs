@@ -14,7 +14,7 @@ namespace ExpressionsHUD_Test
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new EmotesHUDController();
+            controller = new EmotesHUDController(null, null);
         }
 
         [UnityTearDown]
@@ -49,7 +49,7 @@ namespace ExpressionsHUD_Test
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new EmotesHUDController();
+            controller = new EmotesHUDController(null, null);
             view = controller.view;
         }
 

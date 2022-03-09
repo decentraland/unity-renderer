@@ -12,8 +12,7 @@ namespace EmotesCustomization
         {
             emotesCustomizationComponentController = CreateController();
             emotesCustomizationComponentController.Initialize(UserProfile.GetOwnUserProfile(), CatalogController.wearableCatalog);
-
-            emotesHUDController = new EmotesHUDController();
+            emotesHUDController = new EmotesHUDController(UserProfile.GetOwnUserProfile(), CatalogController.wearableCatalog);
         }
 
         internal virtual IEmotesCustomizationComponentController CreateController() => new EmotesCustomizationComponentController();

@@ -1,6 +1,7 @@
 using DCL;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -8,6 +9,13 @@ namespace EmotesCustomization
 {
     public class EmotesHUDView : MonoBehaviour
     {
+        [Serializable]
+        internal class RarityColor
+        {
+            public string rarity;
+            public Color markColor;
+        }
+
         private const string PATH = "EmotesHUD";
 
         public event Action<string> onEmoteClicked;
@@ -19,6 +27,7 @@ namespace EmotesCustomization
         [SerializeField] internal Button_OnPointerDown[] closeButtons;
         [SerializeField] internal ButtonComponentView openCustomizeButton;
         [SerializeField] internal TMP_Text selectedEmoteName;
+        [SerializeField] internal List<RarityColor> rarityColors;
 
         public static EmotesHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesHUDView>(); }
 
@@ -44,11 +53,11 @@ namespace EmotesCustomization
                 AudioScriptableObjects.dialogClose.Play(true);
         }
 
-        public void SetEmotes(List<StoredEmote> emotes)
+        public void SetEmotes(List<WearableItem> emotes)
         {
             for (int i = 0; i < emotes.Count; i++)
             {
-                StoredEmote equippedEmote = emotes[i];
+                WearableItem equippedEmote = emotes[i];
 
                 if (i < emoteButtons.Length)
                 {
@@ -59,13 +68,19 @@ namespace EmotesCustomization
                     if (equippedEmote != null)
                     {
                         emoteButtons[i].button.onClick.AddListener(() => onEmoteClicked?.Invoke(equippedEmote.id));
-                        emoteButtons[i].image.SetImage(equippedEmote.pictureUri);
-                        emoteButtons[i].SetName(equippedEmote.name);
+                        emoteButtons[i].image.SetImage(equippedEmote.ComposeThumbnailUrl());
+                        emoteButtons[i].SetName(equippedEmote.GetName());
+                        
+                        RarityColor rarityColor = rarityColors.FirstOrDefault(x => x.rarity == equippedEmote.rarity);
+                        emoteButtons[i].SetRarity(
+                            rarityColor != null, 
+                            rarityColor != null ? rarityColor.markColor : Color.white);
                     }
                     else
                     {
                         emoteButtons[i].image.SetImage(nonAssignedEmoteSprite);
                         emoteButtons[i].SetName(string.Empty);
+                        emoteButtons[i].SetRarity(false, Color.white);
                     }
                 }
             }

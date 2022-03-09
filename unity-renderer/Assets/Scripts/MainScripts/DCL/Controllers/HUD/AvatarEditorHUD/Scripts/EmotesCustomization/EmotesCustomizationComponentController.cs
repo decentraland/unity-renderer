@@ -20,11 +20,11 @@ namespace EmotesCustomization
 
     public class EmotesCustomizationComponentController : IEmotesCustomizationComponentController
     {
-        internal const int NUMBER_OF_SLOTS = 9;
+        internal const int NUMBER_OF_SLOTS = 10;
         internal const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedEmotes";
 
         internal BaseVariable<Transform> isInitialized => DataStore.i.emotesCustomization.isInitialized;
-        internal BaseCollection<StoredEmote> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
+        internal BaseCollection<string> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
         internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
         internal bool isEmotesCustomizationSectionOpen => isStarMenuOpen.Get() && view.isActive;
 
@@ -47,6 +47,7 @@ namespace EmotesCustomization
 
         public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
         {
+            LoadEquippedEmotes();
             ConfigureView();
             ConfigureCatalog(catalog);
             ConfigureUserProfile(userProfile);
@@ -76,6 +77,13 @@ namespace EmotesCustomization
             shortcut7InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut8InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut9InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
+        }
+
+        internal void LoadEquippedEmotes()
+        {
+            List<string> storedEquippedEmotes = JsonConvert.DeserializeObject<List<string>>(PlayerPrefsUtils.GetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY));
+            if (storedEquippedEmotes != null)
+                equippedEmotes.Set(storedEquippedEmotes);
         }
 
         internal void ConfigureView()
@@ -116,14 +124,13 @@ namespace EmotesCustomization
                     AddEmote(iterator.Current.Key, iterator.Current.Value);
                 }
             }
-
-            LoadEquippedEmoteSlots();
         }
 
         internal void CleanEmotes()
         {
             currentLoadedEmotes.Clear();
             view.CleanEmotes();
+            UpdateEmoteSlots();
         }
 
         internal void AddEmote(string id, WearableItem wearable)
@@ -140,12 +147,14 @@ namespace EmotesCustomization
             currentLoadedEmotes.Add(id);
             EmoteCardComponentModel emoteToAdd = ParseWearableItemIntoEmoteCardModel(wearable);
             view.AddEmote(emoteToAdd);
+            UpdateEmoteSlots();
         }
 
         internal void RemoveEmote(string id, WearableItem wearable)
         {
             currentLoadedEmotes.Remove(id);
             view.RemoveEmote(id);
+            UpdateEmoteSlots();
         }
 
         internal EmoteCardComponentModel ParseWearableItemIntoEmoteCardModel(WearableItem wearable)
@@ -172,12 +181,8 @@ namespace EmotesCustomization
 
         internal void OnUserProfileInventorySet(Dictionary<string, int> inventory) { ProcessCatalog(); }
 
-        internal void LoadEquippedEmoteSlots()
+        internal void UpdateEmoteSlots()
         {
-            List<StoredEmote> storedEquippedEmotes = JsonConvert.DeserializeObject<List<StoredEmote>>(PlayerPrefsUtils.GetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY));
-            if (storedEquippedEmotes != null)
-                equippedEmotes.Set(storedEquippedEmotes);
-
             for (int i = 0; i < equippedEmotes.Count(); i++)
             {
                 if (i > NUMBER_OF_SLOTS)
@@ -186,24 +191,19 @@ namespace EmotesCustomization
                 if (equippedEmotes[i] == null)
                     continue;
 
-                view.EquipEmote(equippedEmotes[i].id, equippedEmotes[i].name, i, false);
+                catalog.TryGetValue(equippedEmotes[i], out WearableItem emoteItem);
+                if (emoteItem != null)
+                    view.EquipEmote(emoteItem.id, emoteItem.GetName(), i, false, false);
             }
         }
 
         internal void StoreEquippedEmotes()
         {
-            List<StoredEmote> newEquippedEmotesList = new List<StoredEmote> { null, null, null, null, null, null, null, null, null, null };
+            List<string> newEquippedEmotesList = new List<string> { null, null, null, null, null, null, null, null, null, null };
             foreach (EmoteSlotCardComponentView slot in view.currentSlots)
             {
                 if (!string.IsNullOrEmpty(slot.model.emoteId))
-                {
-                    newEquippedEmotesList[slot.model.slotNumber] = new StoredEmote()
-                    {
-                        id = slot.model.emoteId,
-                        name = slot.model.emoteName,
-                        pictureUri = slot.model.pictureUri
-                    };
-                }
+                    newEquippedEmotesList[slot.model.slotNumber] = slot.model.emoteId;
             }
 
             equippedEmotes.Set(newEquippedEmotesList);

@@ -12,10 +12,9 @@ namespace EmotesCustomization
         private BaseVariable<bool> isAvatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
         private BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
         private BaseVariable<bool> isStartMenuOpen => DataStore.i.exploreV2.isOpen;
-        private BaseCollection<StoredEmote> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
-        private BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
+        private BaseCollection<string> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
         private BaseVariable<bool> canStartMenuBeOpened => DataStore.i.exploreV2.isSomeModalOpen;
-        private bool shortcutsCanBeUsed => !isStarMenuOpen.Get();
+        private bool shortcutsCanBeUsed => !isStartMenuOpen.Get();
 
         private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
         private InputAction_Trigger closeWindow;
@@ -31,8 +30,11 @@ namespace EmotesCustomization
         private InputAction_Trigger shortcut8InputAction;
         private InputAction_Trigger shortcut9InputAction;
         private bool emoteJustTriggeredFromShortcut = false;
+        private UserProfile userProfile;
+        private BaseDictionary<string, WearableItem> catalog;
+        private bool ownedWearablesAlreadyRequested = false;
 
-        public EmotesHUDController()
+        public EmotesHUDController(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
         {
             view = EmotesHUDView.Create();
             view.OnClose += OnViewClosed;
@@ -45,6 +47,8 @@ namespace EmotesCustomization
 
             isStartMenuOpen.OnChange += IsStartMenuOpenChanged;
 
+            this.userProfile = userProfile;
+            this.catalog = catalog;
             equippedEmotes.OnSet += OnEquippedEmotesSet;
             OnEquippedEmotesSet(equippedEmotes.Get());
 
@@ -67,7 +71,26 @@ namespace EmotesCustomization
             emotesVisible.Set(false);
         }
 
-        private void OnEquippedEmotesSet(IEnumerable<StoredEmote> equippedEmotes) { view.SetEmotes(equippedEmotes.ToList()); }
+        private void OnEquippedEmotesSet(IEnumerable<string> equippedEmotes) { UpdateEmoteSlots(); }
+
+        private void UpdateEmoteSlots()
+        {
+            List<WearableItem> emotesToSet = new List<WearableItem>();
+            foreach (string emoteId in equippedEmotes.Get())
+            {
+                if (emoteId != null)
+                {
+                    catalog.TryGetValue(emoteId, out WearableItem emoteItem);
+                    emotesToSet.Add(emoteItem);
+                }
+                else
+                {
+                    emotesToSet.Add(null);
+                }
+            }
+
+            view.SetEmotes(emotesToSet);
+        }
 
         public void SetVisibility_Internal(bool visible)
         {
@@ -81,7 +104,20 @@ namespace EmotesCustomization
             view.SetVisiblity(visible);
 
             if (visible)
+            {
                 DCL.Helpers.Utils.UnlockCursor();
+
+                if (!string.IsNullOrEmpty(userProfile.userId) && !ownedWearablesAlreadyRequested)
+                {
+                    CatalogController.RequestOwnedWearables(userProfile.userId)
+                        .Then((ownedWearables) =>
+                        {
+                            ownedWearablesAlreadyRequested = true;
+                            userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                            UpdateEmoteSlots();
+                        });
+                }
+            }
 
             canStartMenuBeOpened.Set(visible);
         }
@@ -162,34 +198,34 @@ namespace EmotesCustomization
             switch (action)
             {
                 case DCLAction_Trigger.ToggleEmoteShortcut0:
-                    PlayExpression(equippedEmotes[0]?.id);
+                    PlayExpression(equippedEmotes[0]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut1:
-                    PlayExpression(equippedEmotes[1]?.id);
+                    PlayExpression(equippedEmotes[1]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut2:
-                    PlayExpression(equippedEmotes[2]?.id);
+                    PlayExpression(equippedEmotes[2]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut3:
-                    PlayExpression(equippedEmotes[3]?.id);
+                    PlayExpression(equippedEmotes[3]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut4:
-                    PlayExpression(equippedEmotes[4]?.id);
+                    PlayExpression(equippedEmotes[4]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut5:
-                    PlayExpression(equippedEmotes[5]?.id);
+                    PlayExpression(equippedEmotes[5]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut6:
-                    PlayExpression(equippedEmotes[6]?.id);
+                    PlayExpression(equippedEmotes[6]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut7:
-                    PlayExpression(equippedEmotes[7]?.id);
+                    PlayExpression(equippedEmotes[7]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut8:
-                    PlayExpression(equippedEmotes[8]?.id);
+                    PlayExpression(equippedEmotes[8]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut9:
-                    PlayExpression(equippedEmotes[9]?.id);
+                    PlayExpression(equippedEmotes[9]);
                     break;
             }
 
@@ -220,7 +256,9 @@ namespace EmotesCustomization
             if (string.IsNullOrEmpty(id))
                 return;
 
-            EmoteCalled(id);
+            // TODO (Santi): Uncomment this line and remove the next when we can obtain real emotes from the catalog!
+            //EmoteCalled(id);
+            EmoteCalled("clap");
         }
     }
 }
