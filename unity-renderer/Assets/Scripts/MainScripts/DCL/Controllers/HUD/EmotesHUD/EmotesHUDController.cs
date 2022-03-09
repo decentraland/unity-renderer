@@ -107,7 +107,9 @@ namespace EmotesCustomization
             {
                 DCL.Helpers.Utils.UnlockCursor();
 
-                if (!string.IsNullOrEmpty(userProfile.userId) && !ownedWearablesAlreadyRequested)
+                if (userProfile != null &&
+                    !string.IsNullOrEmpty(userProfile.userId) && 
+                    !ownedWearablesAlreadyRequested)
                 {
                     CatalogController.RequestOwnedWearables(userProfile.userId)
                         .Then((ownedWearables) =>
@@ -156,7 +158,7 @@ namespace EmotesCustomization
 
             // TODO (Santi): Uncomment this line and remove the next when we can obtain real emotes from the catalog!
             //UserProfile.GetOwnUserProfile().SetAvatarExpression(id);
-            UserProfile.GetOwnUserProfile().SetAvatarExpression("clap");
+            UserProfile.GetOwnUserProfile().SetAvatarExpression("wave");
         }
 
         private void ConfigureShortcuts()
