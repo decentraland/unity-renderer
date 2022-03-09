@@ -47,7 +47,7 @@ public class NFTShapeHQImageHandlerShould
         {
             asset = asset,
             controller = nftController,
-            nftConfig = nftShapeConfig
+            nftShapeConfig = nftShapeConfig
         };
         imageHandler = NFTShapeHQImageHandler.Create(config);
     }

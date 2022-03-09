@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace DCL.Skybox
     [System.Serializable]
     public class TextureLayer
     {
-        public int slotID;                              // Slot ID
+        public int slotID = 0;                              // Slot ID
         public LayerRenderType renderType;
         public LayerType layerType;
         public bool enabled;
@@ -100,6 +101,126 @@ namespace DCL.Skybox
 
             particleRotation = new List<TransitioningVector3>();
         }
+
+        public void DeepCopy(TextureLayer layer)
+        {
+            layer.slotID = this.slotID;
+            layer.renderType = this.renderType;
+            layer.layerType = this.layerType;
+            layer.enabled = this.enabled;
+            layer.nameInEditor = this.nameInEditor;
+            layer.expandedInEditor = this.expandedInEditor;
+            layer.timeSpan_start = this.timeSpan_start;
+            layer.timeSpan_End = this.timeSpan_End;
+            layer.fadingInTime = this.fadingInTime;
+            layer.fadingOutTime = this.fadingOutTime;
+
+            layer.tintPercentage = this.tintPercentage;
+            layer.renderDistance = new List<TransitioningFloat>();
+            for (int i = 0; i < this.renderDistance.Count; i++)
+            {
+                layer.renderDistance.Add(this.renderDistance[i].GetCopy());
+            }
+
+            layer.texture = this.texture;
+            layer.textureNormal = this.textureNormal;
+            layer.cubemap = this.cubemap;
+            layer.color = this.color.GetCopy();
+            layer.tiling = new Vector2(this.tiling.x, this.tiling.y);
+
+            layer.flipbookRowsAndColumns = new Vector2(this.flipbookRowsAndColumns.x, this.flipbookRowsAndColumns.y);
+            layer.flipbookAnimSpeed = this.flipbookAnimSpeed;
+
+            layer.offset = new List<TransitioningVector2>();
+            for (int i = 0; i < this.offset.Count; i++)
+            {
+                layer.offset.Add(this.offset[i].GetCopy());
+            }
+            layer.satelliteWidthHeight = new List<TransitioningVector2>(this.satelliteWidthHeight);
+            for (int i = 0; i < this.satelliteWidthHeight.Count; i++)
+            {
+                layer.satelliteWidthHeight.Add(this.satelliteWidthHeight[i].GetCopy());
+            }
+
+            layer.rotations_float = new List<TransitioningFloat>();
+            for (int i = 0; i < this.rotations_float.Count; i++)
+            {
+                layer.rotations_float.Add(this.rotations_float[i].GetCopy());
+            }
+            layer.rotations_Vector3 = new List<TransitioningVector3>();
+            for (int i = 0; i < this.rotations_Vector3.Count; i++)
+            {
+                layer.rotations_Vector3.Add(this.rotations_Vector3[i].GetCopy());
+            }
+
+            layer.speed_Vector3 = new Vector3(this.speed_Vector3.x, this.speed_Vector3.y, this.speed_Vector3.z);
+            layer.speed_Vector2 = new Vector2(this.speed_Vector2.x, this.speed_Vector2.y);
+
+            layer.particleExpanded = this.particleExpanded;
+            layer.particleTiling = new Vector2(this.particleTiling.x, this.particleTiling.y);
+            layer.particlesOffset = new Vector2(this.particlesOffset.x, this.particlesOffset.y);
+            layer.particleRotation = new List<TransitioningVector3>();
+            for (int i = 0; i < this.particleRotation.Count; i++)
+            {
+                layer.particleRotation.Add(this.particleRotation[i].GetCopy());
+            }
+            layer.particlesAmount = this.particlesAmount;
+            layer.particleMinSize = this.particleMinSize;
+            layer.particleMaxSize = this.particleMaxSize;
+            layer.particlesHorizontalSpread = this.particlesHorizontalSpread;
+            layer.particlesVerticalSpread = this.particlesVerticalSpread;
+            layer.particleMinFade = this.particleMinFade;
+            layer.particleMaxFade = this.particleMaxFade;
+
+            layer.distortionExpanded = this.distortionExpanded;
+            layer.distortIntensity = new List<TransitioningFloat>();
+            for (int i = 0; i < this.distortIntensity.Count; i++)
+            {
+                layer.distortIntensity.Add(this.distortIntensity[i].GetCopy());
+            }
+            layer.distortSize = new List<TransitioningFloat>();
+            for (int i = 0; i < this.distortSize.Count; i++)
+            {
+                layer.distortSize.Add(this.distortSize[i].GetCopy());
+            }
+            layer.distortSpeed = new List<TransitioningVector2>();
+            for (int i = 0; i < this.distortSpeed.Count; i++)
+            {
+                layer.distortSpeed.Add(this.distortSpeed[i].GetCopy());
+            }
+            layer.distortSharpness = new List<TransitioningVector2>();
+            for (int i = 0; i < this.distortSharpness.Count; i++)
+            {
+                layer.distortSharpness.Add(this.distortSharpness[i].GetCopy());
+            }
+
+            layer.movementTypeCubemap = this.movementTypeCubemap;
+            layer.movementTypePlanar_Radial = this.movementTypePlanar_Radial;
+            layer.movementTypeSatellite = this.movementTypeSatellite;
+        }
+
+    }
+
+    static class ExtensionMethods
+    {
+        public static Gradient GetCopy(this Gradient gradient)
+        {
+            Gradient obj = new Gradient();
+
+            GradientColorKey[] colorKeys = new GradientColorKey[gradient.colorKeys.Length];
+            for (int i = 0; i < gradient.colorKeys.Length; i++)
+            {
+                colorKeys[i] = new GradientColorKey(gradient.colorKeys[i].color, gradient.colorKeys[i].time);
+            }
+
+            GradientAlphaKey[] alphaKeys = new GradientAlphaKey[gradient.alphaKeys.Length];
+            for (int i = 0; i < gradient.alphaKeys.Length; i++)
+            {
+                alphaKeys[i] = new GradientAlphaKey(gradient.alphaKeys[i].alpha, gradient.alphaKeys[i].time);
+            }
+            obj.SetKeys(colorKeys, alphaKeys);
+            return obj;
+        }
     }
 
     public enum LayerType
@@ -154,6 +275,8 @@ namespace DCL.Skybox
             this.percentage = percentage;
             this.value = value;
         }
+
+        internal TransitioningFloat GetCopy() { return new TransitioningFloat(this.percentage, this.value); }
     }
 
     [System.Serializable]
@@ -167,6 +290,8 @@ namespace DCL.Skybox
             this.percentage = percentage;
             this.value = value;
         }
+
+        internal TransitioningVector3 GetCopy() { return new TransitioningVector3(this.percentage, this.value); }
     }
 
     [System.Serializable]
@@ -180,6 +305,8 @@ namespace DCL.Skybox
             this.percentage = percentage;
             this.value = value;
         }
+
+        internal TransitioningVector2 GetCopy() { return new TransitioningVector2(this.percentage, this.value); }
     }
 
     [System.Serializable]
@@ -193,6 +320,8 @@ namespace DCL.Skybox
             this.percentage = percentage;
             this.value = value;
         }
+
+        internal TransitioningVector4 GetCopy() { return new TransitioningVector4(this.percentage, this.value); }
     }
 
     [System.Serializable]
@@ -206,6 +335,8 @@ namespace DCL.Skybox
             this.percentage = percentage;
             this.value = value;
         }
+
+        internal TransitioningQuaternion GetCopy() { return new TransitioningQuaternion(this.percentage, this.value); }
     }
 
     [System.Serializable]

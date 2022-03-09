@@ -232,6 +232,7 @@ namespace DCL
             player.worldPosition = entity.gameObject.transform.position;
             player.avatar = avatar;
             player.onPointerDownCollider = onPointerDown;
+            player.collider = avatarCollider;
 
             if (isNew)
             {

@@ -1,6 +1,9 @@
-﻿using AssetPromiseKeeper_Tests;
+﻿using System;
+using AssetPromiseKeeper_Tests;
 using DCL;
 using System.Collections;
+using System.Text.RegularExpressions;
+using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
@@ -12,21 +15,25 @@ namespace AssetPromiseKeeper_Gif_Tests
         AssetLibrary_RefCounted<Asset_Gif>>
     {
         [UnityTest]
-        public IEnumerator FailCorrectlyWhenGivenWrongURL()
+        public IEnumerator Gif_FailCorrectlyWhenGivenWrongURL()
         {
-            var prom = new AssetPromise_Gif("123325");
+            string url1 = "123325";
+            string url2 = "43254378";
+            string url3 = "09898765";
+            
+            var prom = new AssetPromise_Gif(url1);
             Asset_Gif asset = null;
             bool failEventCalled1 = false;
             prom.OnSuccessEvent += (x) => { asset = x; };
             prom.OnFailEvent += (x, error) => { failEventCalled1 = true; };
 
-            var prom2 = new AssetPromise_Gif("43254378");
+            var prom2 = new AssetPromise_Gif(url2);
             Asset_Gif asset2 = null;
             bool failEventCalled2 = false;
             prom2.OnSuccessEvent += (x) => { asset2 = x; };
             prom2.OnFailEvent += (x, error) => { failEventCalled2 = true; };
 
-            var prom3 = new AssetPromise_Gif("09898765");
+            var prom3 = new AssetPromise_Gif(url3);
             Asset_Gif asset3 = null;
             bool failEventCalled3 = false;
             prom3.OnSuccessEvent += (x) => { asset3 = x; };
@@ -35,6 +42,10 @@ namespace AssetPromiseKeeper_Gif_Tests
             keeper.Keep(prom);
             keeper.Keep(prom2);
             keeper.Keep(prom3);
+            
+            LogAssert.Expect(LogType.Exception, new Regex("^.*?GifWebRequestException"));
+            LogAssert.Expect(LogType.Exception, new Regex("^.*?GifWebRequestException"));
+            LogAssert.Expect(LogType.Exception, new Regex("^.*?GifWebRequestException"));
 
             Assert.AreEqual(3, keeper.waitingPromisesCount);
 
@@ -57,5 +68,6 @@ namespace AssetPromiseKeeper_Gif_Tests
             Assert.IsFalse(keeper.library.Contains(asset));
             Assert.AreNotEqual(1, keeper.library.masterAssets.Count);
         }
+
     }
 }
