@@ -49,16 +49,21 @@ namespace EmotesCustomization
         EmoteCardComponentView selectedCard { get; }
 
         /// <summary>
-        /// Set the emotes grid component with a list of emote cards.
+        /// Clean all the emotes loaded in the grid component.
         /// </summary>
-        /// <param name="realms">List of emote cards (model) to be loaded.</param>
-        void SetEmotes(List<EmoteCardComponentModel> emotes);
+        void CleanEmotes();
 
         /// <summary>
-        /// Add a list of emotes in the emotes grid component.
+        /// Add an emote in the emotes grid component.
         /// </summary>
-        /// <param name="emotes">List of emote cards (model) to be added.</param>
-        void AddEmotes(List<EmoteCardComponentModel> emotes);
+        /// <param name="emote">Emote card (model) to be added.</param>
+        void AddEmote(EmoteCardComponentModel emote);
+
+        /// <summary>
+        /// Remove an emote from the frid component.
+        /// </summary>
+        /// <param name="emoteId">Emote id to remove.</param>
+        void RemoveEmote(string emoteId);
 
         /// <summary>
         /// Assign an emote into a specific slot.
@@ -155,34 +160,23 @@ namespace EmotesCustomization
             emoteInfoPanel.sellButton.onClick.RemoveAllListeners();
         }
 
-        public void SetEmotes(List<EmoteCardComponentModel> emotes)
+        public void CleanEmotes()
         {
             emotesGrid.ExtractItems();
             emoteCardsPool.ReleaseAll();
-
-            List<BaseComponentView> instantiatedEmotes = new List<BaseComponentView>();
-            foreach (EmoteCardComponentModel emotesInfo in emotes)
-            {
-                EmoteCardComponentView emoteGO = InstantiateAndConfigureEmoteCard(emotesInfo);
-                instantiatedEmotes.Add(emoteGO);
-            }
-
-            emotesGrid.SetItems(instantiatedEmotes);
         }
 
-        public void AddEmotes(List<EmoteCardComponentModel> emotes)
+        public void AddEmote(EmoteCardComponentModel emote)
         {
-            List<BaseComponentView> instantiatedEmotes = new List<BaseComponentView>();
-            foreach (EmoteCardComponentModel emotesInfo in emotes)
-            {
-                EmoteCardComponentView emoteGO = InstantiateAndConfigureEmoteCard(emotesInfo);
-                instantiatedEmotes.Add(emoteGO);
-            }
+            EmoteCardComponentView emoteGO = InstantiateAndConfigureEmoteCard(emote);
+            emotesGrid.AddItem(emoteGO);
+        }
 
-            foreach (var emote in instantiatedEmotes)
-            {
-                emotesGrid.AddItem(emote);
-            }
+        public void RemoveEmote(string emoteId)
+        {
+            EmoteCardComponentView emoteToRemove = GetEmoteCardById(emoteId);
+            if (emoteToRemove != null)
+                emotesGrid.RemoveItem(emoteToRemove);
         }
 
         public void EquipEmote(string emoteId, string emoteName, int slotNumber, bool notifyEvent = true)
@@ -297,7 +291,7 @@ namespace EmotesCustomization
             emoteInfoPanel.closeButton.onClick.AddListener(() => emoteInfoPanel.SetActive(false));
             emoteInfoPanel.sellButton.onClick.AddListener(() =>
             {
-
+                Debug.Log("SANTI ---> GO TO SELL LINK...");
             });
         }
 

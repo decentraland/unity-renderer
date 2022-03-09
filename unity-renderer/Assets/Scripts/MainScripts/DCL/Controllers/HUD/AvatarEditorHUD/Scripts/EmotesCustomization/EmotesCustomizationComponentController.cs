@@ -13,18 +13,20 @@ namespace EmotesCustomization
         /// <summary>
         /// Initializes the emotes customization controller.
         /// </summary>
-        void Initialize();
+        /// <param name="userProfile">User profile.</param>
+        /// <param name="catalog">Wearables catalog.</param>
+        void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog);
     }
 
     public class EmotesCustomizationComponentController : IEmotesCustomizationComponentController
     {
         internal const int NUMBER_OF_SLOTS = 9;
-        private const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedEmotes";
+        internal const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedEmotes";
 
         internal BaseVariable<Transform> isInitialized => DataStore.i.emotesCustomization.isInitialized;
         internal BaseCollection<StoredEmote> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
         internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
-        internal bool shortcutsCanBeUsed => isStarMenuOpen.Get() && view.isActive;
+        internal bool isEmotesCustomizationSectionOpen => isStarMenuOpen.Get() && view.isActive;
 
         internal IEmotesCustomizationComponentView view;
         internal InputAction_Hold equipInputAction;
@@ -39,17 +41,16 @@ namespace EmotesCustomization
         internal InputAction_Trigger shortcut7InputAction;
         internal InputAction_Trigger shortcut8InputAction;
         internal InputAction_Trigger shortcut9InputAction;
+        internal UserProfile userProfile;
+        internal BaseDictionary<string, WearableItem> catalog;
+        internal List<string> currentLoadedEmotes = new List<string>();
 
-        public void Initialize()
+        public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
         {
-            view = CreateView();
-            view.onEmoteClicked += OnEmoteAnimationRaised;
-            view.onEmoteEquipped += OnEmoteEquipped;
-            view.onEmoteUnequipped += OnEmoteUnequipped;
-            isStarMenuOpen.OnChange += IsStarMenuOpenChanged;
+            ConfigureView();
+            ConfigureCatalog(catalog);
+            ConfigureUserProfile(userProfile);
             ConfigureShortcuts();
-            LoadMockedEmoteCards();
-            LoadEquippedEmoteSlots(); // TODO: Make this call AFTER all the emotes have been loaded!
 
             isInitialized.Set(view.viewTransform);
         }
@@ -60,6 +61,9 @@ namespace EmotesCustomization
             view.onEmoteEquipped -= OnEmoteEquipped;
             view.onEmoteUnequipped -= OnEmoteUnequipped;
             isStarMenuOpen.OnChange -= IsStarMenuOpenChanged;
+            catalog.OnAdded -= AddEmote;
+            catalog.OnRemoved -= RemoveEmote;
+            userProfile.OnInventorySet -= OnUserProfileInventorySet;
             equipInputAction.OnFinished -= OnEquipInputActionTriggered;
             showInfoInputAction.OnFinished -= OnShowInfoInputActionTriggered;
             shortcut0InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
@@ -73,6 +77,100 @@ namespace EmotesCustomization
             shortcut8InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut9InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
         }
+
+        internal void ConfigureView()
+        {
+            view = CreateView();
+            view.onEmoteClicked += OnEmoteAnimationRaised;
+            view.onEmoteEquipped += OnEmoteEquipped;
+            view.onEmoteUnequipped += OnEmoteUnequipped;
+            isStarMenuOpen.OnChange += IsStarMenuOpenChanged;
+        }
+
+        internal void OnEmoteAnimationRaised(string emoteId)
+        {
+            Debug.Log("SANTI ---> EMOTE ANIMATION RAISED: " + emoteId);
+        }
+
+        internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen)
+        {
+            view.CloseEmoteInfoPanel();
+        }
+
+        internal void ConfigureCatalog(BaseDictionary<string, WearableItem> catalog)
+        {
+            this.catalog = catalog;
+            ProcessCatalog();
+            this.catalog.OnAdded += AddEmote;
+            this.catalog.OnRemoved += RemoveEmote;
+        }
+
+        internal void ProcessCatalog()
+        {
+            CleanEmotes();
+
+            using (var iterator = catalog.Get().GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    AddEmote(iterator.Current.Key, iterator.Current.Value);
+                }
+            }
+
+            LoadEquippedEmoteSlots();
+        }
+
+        internal void CleanEmotes()
+        {
+            currentLoadedEmotes.Clear();
+            view.CleanEmotes();
+        }
+
+        internal void AddEmote(string id, WearableItem wearable)
+        {
+            if (currentLoadedEmotes.Contains(id))
+                return;
+
+            if (string.IsNullOrEmpty(wearable.rarity))
+                return;
+
+            if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)
+                return;
+
+            currentLoadedEmotes.Add(id);
+            EmoteCardComponentModel emoteToAdd = ParseWearableItemIntoEmoteCardModel(wearable);
+            view.AddEmote(emoteToAdd);
+        }
+
+        internal void RemoveEmote(string id, WearableItem wearable)
+        {
+            currentLoadedEmotes.Remove(id);
+            view.RemoveEmote(id);
+        }
+
+        internal EmoteCardComponentModel ParseWearableItemIntoEmoteCardModel(WearableItem wearable)
+        {
+            return new EmoteCardComponentModel
+            {
+                id = wearable.id,
+                name = wearable.GetName(),
+                description = wearable.description,
+                pictureUri = wearable.ComposeThumbnailUrl(),
+                isAssignedInSelectedSlot = false,
+                isSelected = false,
+                assignedSlot = -1,
+                rarity = wearable.rarity,
+                isInL2 = wearable.IsInL2()
+            };
+        }
+
+        internal void ConfigureUserProfile(UserProfile userProfile)
+        {
+            this.userProfile = userProfile;
+            this.userProfile.OnInventorySet += OnUserProfileInventorySet;
+        }
+
+        internal void OnUserProfileInventorySet(Dictionary<string, int> inventory) { ProcessCatalog(); }
 
         internal void LoadEquippedEmoteSlots()
         {
@@ -123,16 +221,6 @@ namespace EmotesCustomization
             StoreEquippedEmotes();
         }
 
-        internal void OnEmoteAnimationRaised(string emoteId)
-        {
-            Debug.Log("SANTI ---> EMOTE ANIMATION RAISED: " + emoteId);
-        }
-
-        internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen)
-        {
-            view.CloseEmoteInfoPanel();
-        }
-
         internal void ConfigureShortcuts()
         {
             equipInputAction = Resources.Load<InputAction_Hold>("DefaultConfirmAction");
@@ -174,7 +262,7 @@ namespace EmotesCustomization
 
         internal void OnEquipInputActionTriggered(DCLAction_Hold action)
         {
-            if (!shortcutsCanBeUsed || view.selectedCard == null)
+            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null)
                 return;
 
             if (!view.selectedCard.model.isAssignedInSelectedSlot)
@@ -194,7 +282,7 @@ namespace EmotesCustomization
 
         internal void OnShowInfoInputActionTriggered(DCLAction_Hold action)
         {
-            if (!shortcutsCanBeUsed || view.selectedCard == null)
+            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null)
                 return;
 
             view.OpenEmoteInfoPanel(
@@ -205,7 +293,7 @@ namespace EmotesCustomization
 
         internal void OnNumericShortcutInputActionTriggered(DCLAction_Trigger action)
         {
-            if (!shortcutsCanBeUsed || view.selectedCard == null)
+            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null)
                 return;
 
             switch (action)
@@ -244,87 +332,5 @@ namespace EmotesCustomization
         }
 
         internal virtual IEmotesCustomizationComponentView CreateView() => EmotesCustomizationComponentView.Create();
-
-        // ------------- DEBUG ------------------------
-        private void LoadMockedEmoteCards()
-        {
-            List<string> mockedEmoteNames = new List<string>
-            {
-                "wave",
-                "fistpump",
-                "dance",
-                "raiseHand",
-                "clap",
-                "money",
-                "kiss",
-                "robot",
-                "tik",
-                "hammer",
-                "tektonik",
-                "dontsee",
-                "handsair",
-                "shrug",
-                "disco",
-                "dab",
-                "headexplode",
-                "snowfall",
-                "hohoho",
-                "crafting"
-            };
-
-            List<string> mockedImages = new List<string>
-            {
-                "https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Karate_silhouette.svg/919px-Karate_silhouette.svg.png",
-                "https://freesvg.org/img/1538176837.png",
-                "https://freesvg.org/img/woman-silhouette-3.png",
-                "https://images.squarespace-cdn.com/content/v1/55947ac3e4b0fa882882cd65/1487633176391-U7VZNFVFYFI8KKCKCYP1/NS_0020.png",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png",
-                "https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Karate_silhouette.svg/919px-Karate_silhouette.svg.png",
-                "https://freesvg.org/img/1538176837.png",
-                "https://freesvg.org/img/woman-silhouette-3.png",
-                "https://images.squarespace-cdn.com/content/v1/55947ac3e4b0fa882882cd65/1487633176391-U7VZNFVFYFI8KKCKCYP1/NS_0020.png",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png",
-                "https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Karate_silhouette.svg/919px-Karate_silhouette.svg.png",
-                "https://freesvg.org/img/woman-silhouette-3.png",
-                "https://images.squarespace-cdn.com/content/v1/55947ac3e4b0fa882882cd65/1487633176391-U7VZNFVFYFI8KKCKCYP1/NS_0020.png",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png"
-            };
-
-            List<string> mockedRarities = new List<string>
-            {
-                "rare",
-                "epic",
-                "legendary",
-                "mythic",
-                "unique",
-                "common",
-                ""
-            };
-
-            List<EmoteCardComponentModel> mockedEmotes = new List<EmoteCardComponentModel>();
-            for (int i = 0; i < mockedImages.Count; i++)
-            {
-                mockedEmotes.Add(new EmoteCardComponentModel
-                {
-                    id = mockedEmoteNames[i],
-                    name = mockedEmoteNames[i].ToUpper(),
-                    description = $"Description of the {mockedEmoteNames[i]} emote...",
-                    pictureUri = mockedImages[i],
-                    isAssignedInSelectedSlot = false,
-                    isSelected = false,
-                    assignedSlot = -1,
-                    rarity = mockedRarities[UnityEngine.Random.Range(0, mockedRarities.Count)],
-                    isInL2 = true
-                });
-            }
-
-            view.SetEmotes(mockedEmotes);
-        }
     }
 }

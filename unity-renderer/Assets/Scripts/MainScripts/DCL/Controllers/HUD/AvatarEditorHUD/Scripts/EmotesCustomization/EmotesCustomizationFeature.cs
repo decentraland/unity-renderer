@@ -11,7 +11,7 @@ namespace EmotesCustomization
         public EmotesCustomizationFeature()
         {
             emotesCustomizationComponentController = CreateController();
-            emotesCustomizationComponentController.Initialize();
+            emotesCustomizationComponentController.Initialize(UserProfile.GetOwnUserProfile(), CatalogController.wearableCatalog);
 
             emotesHUDController = new EmotesHUDController();
         }
