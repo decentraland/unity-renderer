@@ -116,11 +116,7 @@ namespace DCL
             if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
             {
                 initializedPosition = true;
-
-                float characterHeight = DCLCharacterController.i != null ? DCLCharacterController.i.characterController.height : 0.8f;
-
-                avatarMovementController.MoveTo(
-                    entity.gameObject.transform.localPosition - Vector3.up * characterHeight / 2,
+                avatarMovementController.OnTransformChanged(entity.gameObject.transform.localPosition, 
                     entity.gameObject.transform.localRotation, true);
             }
 
