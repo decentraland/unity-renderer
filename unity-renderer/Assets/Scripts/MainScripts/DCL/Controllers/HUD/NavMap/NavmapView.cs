@@ -198,7 +198,6 @@ namespace DCL
             mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
             zoomIn.OnStarted -= OnZoomPlusMinus;
             zoomOut.OnStarted -= OnZoomPlusMinus;
-            DataStore.i.exploreV2.isOpen.OnChange -= UpdateOnExploreChange;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
         }
 
