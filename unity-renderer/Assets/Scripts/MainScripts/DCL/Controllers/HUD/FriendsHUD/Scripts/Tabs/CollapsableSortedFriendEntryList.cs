@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DCL.Helpers;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CollapsableSortedFriendEntryList : MonoBehaviour
 {

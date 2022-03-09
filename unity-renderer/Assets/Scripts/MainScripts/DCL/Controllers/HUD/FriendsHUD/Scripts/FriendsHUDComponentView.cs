@@ -122,7 +122,8 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         gameObject.SetActive(false);
     }
 
-    public void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction,
+    public void UpdateFriendshipStatus(string userId,
+        FriendshipAction friendshipAction,
         FriendEntryBase.Model friendEntryModel)
     {
         switch (friendshipAction)
