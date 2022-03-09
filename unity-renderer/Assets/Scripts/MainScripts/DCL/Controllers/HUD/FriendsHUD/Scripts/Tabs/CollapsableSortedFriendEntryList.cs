@@ -34,7 +34,7 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
         entryTransform.localScale = Vector3.one;
         SortEntries();
         UpdateEmptyState();
-        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) container);
+        ((RectTransform) container).ForceUpdateLayout();
     }
 
     public FriendEntryBase Remove(string userId)
@@ -43,7 +43,7 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
         var entry = entries[userId];
         entries.Remove(userId);
         UpdateEmptyState();
-        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) container);
+        ((RectTransform) container).ForceUpdateLayout();
         return entry;
     }
 
@@ -82,7 +82,7 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
         entries.Clear();
         sortedTimestamps.Clear();
         UpdateEmptyState();
-        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) container);
+        ((RectTransform) container).ForceUpdateLayout();
     }
 
     public void Filter(string search)
@@ -97,7 +97,7 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
             entry.Value.gameObject.SetActive(isMatch);
         }
 
-        Utils.ForceRebuildLayoutImmediate((RectTransform) container);
+        ((RectTransform) container).ForceUpdateLayout();
     }
 
     private void SortTimestamps()

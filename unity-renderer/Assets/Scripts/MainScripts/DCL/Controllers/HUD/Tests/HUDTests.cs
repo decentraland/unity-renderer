@@ -1,9 +1,8 @@
-using System;
-using NUnit.Framework;
 using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
+using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -12,20 +11,23 @@ namespace Tests
     {
         private IHUDController hudController = null;
         private FriendsController friendsController;
+        private ChatController chatController;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
 
             friendsController = TestUtils.CreateComponentWithGameObject<FriendsController>("FriendsController");
-            hudController = DCL.Environment.i.hud.controller;
+            chatController = TestUtils.CreateComponentWithGameObject<ChatController>("ChatController");
+            hudController = Environment.i.hud.controller;
             hudController.Cleanup();
             yield return null;
         }
 
         protected override IEnumerator TearDown()
         {
-            UnityEngine.Object.Destroy(friendsController.gameObject);
+            Object.Destroy(chatController.gameObject);
+            Object.Destroy(friendsController.gameObject);
             hudController.Cleanup();
             yield return base.TearDown();
         }

@@ -74,7 +74,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddFriendWindowProperly()
     {
         friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(null, null, chatController);
+        friendsHudController.Initialize(null, UserProfile.GetOwnUserProfile(), chatController);
         controller.AddFriendsWindow(friendsHudController);
 
         Assert.IsTrue(friendsHudController.view.Transform.parent == view.leftWindowContainer,
