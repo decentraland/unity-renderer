@@ -74,7 +74,7 @@ namespace DCL
         {
             var offsetPosition = new Vector3(0, DCLCharacterController.i.characterController.height * 0.5f, 0);
             MoveTo(
-                position - offsetPosition, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet
+                position - offsetPosition, // To fix the "always flying" avatars issue, We report the chara's centered position but the body hast its pivot at its feet
                 rotation,
                 inmediate);
         } 
