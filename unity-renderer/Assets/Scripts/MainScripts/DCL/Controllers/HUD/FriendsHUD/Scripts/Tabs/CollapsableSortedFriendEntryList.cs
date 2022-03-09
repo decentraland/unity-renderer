@@ -42,7 +42,7 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
         return entry;
     }
 
-    public void SetTimestamp(string userId, ulong timestamp)
+    public void SortEntriesByTimestamp(string userId, ulong timestamp)
     {
         var userTimestamp = sortedTimestamps.FirstOrDefault(ut => ut.UserId == userId);
         if (userTimestamp == default)

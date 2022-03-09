@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
+using NSubstitute;
 using UnityEngine;
 
 public class TaskbarHUDShould : IntegrationTestSuite_Legacy
@@ -73,7 +74,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddFriendWindowProperly()
     {
         friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(null, null);
+        friendsHudController.Initialize(null, null, chatController);
         controller.AddFriendsWindow(friendsHudController);
 
         Assert.IsTrue(friendsHudController.view.Transform.parent == view.leftWindowContainer,
@@ -105,7 +106,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
         friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(friendsController, UserProfile.GetOwnUserProfile());
+        friendsHudController.Initialize(friendsController, UserProfile.GetOwnUserProfile(), chatController);
         controller.AddFriendsWindow(friendsHudController);
 
         rt = friendsHudController.view.Transform as RectTransform;

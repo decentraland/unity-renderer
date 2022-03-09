@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using DCL.Helpers;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -25,7 +26,8 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
         controller = new FriendsHUDController();
         friendsController = new FriendsController_Mock();
-        controller.Initialize(friendsController, UserProfile.GetOwnUserProfile());
+        var chatController = Substitute.For<IChatController>();
+        controller.Initialize(friendsController, UserProfile.GetOwnUserProfile(), chatController);
         view = controller.view;
 
         Assert.IsTrue(view != null, "Friends hud view is null?");

@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL.Interface;
 
 public class FriendsTabView : FriendsTabViewBase
 {
@@ -8,8 +8,8 @@ public class FriendsTabView : FriendsTabViewBase
 
     public EntryList onlineFriendsList = new EntryList();
     public EntryList offlineFriendsList = new EntryList();
-    public event System.Action<FriendEntry> OnWhisper;
-    public event System.Action<string> OnDeleteConfirmation;
+    public event Action<FriendEntry> OnWhisper;
+    public event Action<string> OnDeleteConfirmation;
 
     private string lastProcessedFriend;
     internal readonly Dictionary<string, FriendEntryBase.Model> creationQueue = new Dictionary<string, FriendEntryBase.Model>();
@@ -20,20 +20,6 @@ public class FriendsTabView : FriendsTabViewBase
 
         onlineFriendsList.toggleTextPrefix = "ONLINE";
         offlineFriendsList.toggleTextPrefix = "OFFLINE";
-
-        if (ChatController.i != null)
-        {
-            ChatController.i.OnAddMessage -= ChatController_OnAddMessage;
-            ChatController.i.OnAddMessage += ChatController_OnAddMessage;
-        }
-    }
-
-    public override void OnDestroy()
-    {
-        base.OnDestroy();
-
-        if (ChatController.i != null)
-            ChatController.i.OnAddMessage -= ChatController_OnAddMessage;
     }
 
     protected override bool CreateEntry(string userId)
@@ -44,7 +30,7 @@ public class FriendsTabView : FriendsTabViewBase
         var entry = GetEntry(userId) as FriendEntry;
 
         entry.OnWhisperClick += (x) => OnWhisper?.Invoke(x);
-        entry.OnJumpInClick += (x) => this.owner.OnCloseButtonPressed();
+        entry.OnJumpInClick += (x) => owner.OnCloseButtonPressed();
 
         return true;
     }
@@ -110,34 +96,24 @@ public class FriendsTabView : FriendsTabViewBase
         }
     }
 
-    private void ChatController_OnAddMessage(ChatMessage message)
+    public void SortEntriesByTimestamp(FriendEntryBase.Model user, ulong timestamp)
     {
-        if (message.messageType != ChatMessage.Type.PRIVATE)
-            return;
-
-        FriendEntryBase friend = GetEntry(message.sender != UserProfile.GetOwnUserProfile().userId
-            ? message.sender
-            : message.recipient);
-
-        if (friend == null)
-            return;
-
         bool reorderFriendEntries = false;
 
-        if (friend.userId != lastProcessedFriend)
+        if (user.userId != lastProcessedFriend)
         {
-            lastProcessedFriend = friend.userId;
+            lastProcessedFriend = user.userId;
             reorderFriendEntries = true;
         }
 
         LastFriendTimestampModel timestampToUpdate = new LastFriendTimestampModel
         {
-            userId = friend.userId,
-            lastMessageTimestamp = message.timestamp
+            userId = user.userId,
+            lastMessageTimestamp = timestamp
         };
 
         // Each time a private message is received (or sent by the player), we sort the online and offline lists by timestamp
-        if (friend.model.status == PresenceStatus.ONLINE)
+        if (user.status == PresenceStatus.ONLINE)
         {
             onlineFriendsList.AddOrUpdateLastTimestamp(timestampToUpdate, reorderFriendEntries);
         }
@@ -146,7 +122,7 @@ public class FriendsTabView : FriendsTabViewBase
             offlineFriendsList.AddOrUpdateLastTimestamp(timestampToUpdate, reorderFriendEntries);
         }
 
-        lastProcessedFriend = friend.userId;
+        lastProcessedFriend = user.userId;
     }
 
     public void CreateOrUpdateEntryDeferred(string userId, FriendEntryBase.Model model)

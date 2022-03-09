@@ -142,6 +142,11 @@ public class FriendsHUDView : MonoBehaviour, IFriendsHUDComponentView
     public void Search(string userId) => friendRequestsList.friendSearchInputField.onSubmit.Invoke(userId);
     
     public bool IsActive() => gameObject.activeInHierarchy;
+    
+    public void SortEntriesByTimestamp(FriendEntryBase.Model user, ulong timestamp)
+    {
+        friendsList.SortEntriesByTimestamp(user, timestamp);
+    }
 
     public bool IsFriendListCreationReady() => friendsList.creationQueue.Count == 0;
 

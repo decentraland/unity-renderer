@@ -185,7 +185,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         notificationsController.Initialize(new NotificationHUDController());
 
         FriendsHUDController friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile());
+        friendsHudController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile(), chatController);
 
         Assert.IsTrue(view != null, "Friends hud view is null?");
         Assert.IsTrue(controller != null, "Friends hud controller is null?");

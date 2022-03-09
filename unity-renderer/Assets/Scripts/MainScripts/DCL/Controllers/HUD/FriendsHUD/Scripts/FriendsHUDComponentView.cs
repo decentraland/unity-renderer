@@ -160,6 +160,11 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     }
 
     public bool IsActive() => gameObject.activeInHierarchy;
+    
+    public void SortEntriesByTimestamp(FriendEntryBase.Model user, ulong timestamp)
+    {
+        friendsTab.SortEntriesByTimestamp(user, timestamp);
+    }
 
     public override void RefreshControl()
     {

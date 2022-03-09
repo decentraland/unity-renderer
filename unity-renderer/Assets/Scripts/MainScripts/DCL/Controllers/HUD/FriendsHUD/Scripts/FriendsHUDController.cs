@@ -1,7 +1,8 @@
-using DCL.Helpers;
-using DCL.Interface;
+using System;
 using System.Collections.Generic;
 using DCL;
+using DCL.Helpers;
+using DCL.Interface;
 using UnityEngine;
 
 public class FriendsHUDController : IHUD
@@ -13,11 +14,11 @@ public class FriendsHUDController : IHUD
     private IFriendsController friendsController;
     private UserProfile ownUserProfile;
     
-    public event System.Action<string> OnPressWhisper;
-    public event System.Action OnFriendsOpened;
-    public event System.Action OnFriendsClosed;
+    public event Action<string> OnPressWhisper;
+    public event Action OnFriendsOpened;
+    public event Action OnFriendsClosed;
 
-    public void Initialize(IFriendsController friendsController, UserProfile ownUserProfile)
+    public void Initialize(IFriendsController friendsController, UserProfile ownUserProfile, IChatController chatController)
     {
         if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("social_bar_v1"))
             view = FriendsHUDComponentView.Create();
@@ -60,6 +61,8 @@ public class FriendsHUDController : IHUD
                 friendsController.OnInitialized += FriendsController_OnInitialized;
             }
         }
+        
+        chatController.OnAddMessage += HandleChatMessageAdded;
     }
 
     private void HandleViewClosed() => SetVisibility(false);
@@ -265,5 +268,18 @@ public class FriendsHUDController : IHUD
 
             AudioScriptableObjects.dialogClose.Play(true);
         }
+    }
+    
+    private void HandleChatMessageAdded(ChatMessage message)
+    {
+        if (message.messageType != ChatMessage.Type.PRIVATE) return;
+
+        var friendId = message.sender != ownUserProfile.userId
+            ? message.sender
+            : message.recipient;
+        if (!friends.ContainsKey(friendId)) return;
+        
+        var friend = friends[friendId];
+        view.SortEntriesByTimestamp(friend, message.timestamp);
     }
 }

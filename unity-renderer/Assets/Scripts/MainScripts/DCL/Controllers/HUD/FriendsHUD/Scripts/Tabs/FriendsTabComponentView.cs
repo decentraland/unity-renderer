@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
-using DCL.Interface;
 using TMPro;
 using UnityEngine;
 
@@ -37,14 +36,6 @@ public class FriendsTabComponentView : BaseComponentView
     public event Action<FriendEntry> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
 
-    public override void Start()
-    {
-        base.Start();
-        
-        if (ChatController.i != null)
-            ChatController.i.OnAddMessage += HandleChatMessageAdded;
-    }
-
     public override void OnEnable()
     {
         base.OnEnable();
@@ -61,14 +52,6 @@ public class FriendsTabComponentView : BaseComponentView
         searchBar.OnSearchText -= Filter;
         contextMenuPanel.OnBlock -= HandleFriendBlockRequest;
         contextMenuPanel.OnUnfriend -= HandleUnfriendRequest;
-    }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-        
-        if (ChatController.i != null)
-            ChatController.i.OnAddMessage -= HandleChatMessageAdded;
     }
 
     public void Expand()
@@ -155,14 +138,14 @@ public class FriendsTabComponentView : BaseComponentView
             offlineFriendsList.Remove(userId);
             onlineFriendsList.Add(userId, entry);
             var timestamp = offlineFriendsList.RemoveTimestamp(userId);
-            onlineFriendsList.SetTimestamp(userId, timestamp);
+            onlineFriendsList.SortEntriesByTimestamp(userId, timestamp);
         }
         else
         {
             onlineFriendsList.Remove(userId);
             offlineFriendsList.Add(userId, entry);
             var timestamp = onlineFriendsList.RemoveTimestamp(userId);
-            offlineFriendsList.SetTimestamp(userId, timestamp);
+            offlineFriendsList.SortEntriesByTimestamp(userId, timestamp);
         }
         
         UpdateEmptyOrFilledState();
@@ -211,6 +194,14 @@ public class FriendsTabComponentView : BaseComponentView
     {
         creationQueue[userId] = model;
     }
+    
+    public void SortEntriesByTimestamp(FriendEntryBase.Model user, ulong timestamp)
+    {
+        if (user.status == PresenceStatus.ONLINE)
+            onlineFriendsList.SortEntriesByTimestamp(user.userId, timestamp);
+        else
+            offlineFriendsList.SortEntriesByTimestamp(user.userId, timestamp);
+    }
 
     private void UpdateEmptyOrFilledState()
     {
@@ -233,25 +224,6 @@ public class FriendsTabComponentView : BaseComponentView
         };
         
         entry.OnWhisperClick += x => OnWhisper?.Invoke(x);
-    }
-
-    private void HandleChatMessageAdded(ChatMessage message)
-    {
-        if (message.messageType != ChatMessage.Type.PRIVATE)
-            return;
-    
-        FriendEntryBase friend = Get(message.sender != UserProfile.GetOwnUserProfile().userId
-            ? message.sender
-            : message.recipient);
-    
-        if (friend == null) return;
-    
-        // Each time a private message is received (or sent by the player),
-        // we sort the online and offline lists by timestamp
-        if (friend.model.status == PresenceStatus.ONLINE)
-            onlineFriendsList.SetTimestamp(friend.userId, message.timestamp);
-        else
-            offlineFriendsList.SetTimestamp(friend.userId, message.timestamp);
     }
 
     private Pool GetEntryPool()
