@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5456606117727073459}
   - component: {fileID: 3221293148122281813}
   - component: {fileID: 5210039636499982884}
+  - component: {fileID: 823786362018021476}
   m_Layer: 5
   m_Name: FriendEntry
   m_TagString: Untagged
@@ -90,6 +91,20 @@ MonoBehaviour:
   jumpInButton: {fileID: 5034795002882272148}
   whisperButton: {fileID: 2032125974022889722}
   unreadNotificationBadge: {fileID: 6141585309611989806}
+--- !u!114 &823786362018021476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 434402956254495305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82e017250d074fa2a218204a7281cb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetObjects:
+  - {fileID: 504354867123715343}
 --- !u!1 &504354867123715343
 GameObject:
   m_ObjectHideFlags: 0
