@@ -169,7 +169,9 @@ namespace DCL
             onPointerDown.OnPointerExitReport -= PlayerPointerExit;
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
 
-            UpdatePlayerStatus(model);
+            bool isAvatarGlobalScene = IsGlobalSceneAvatar();
+
+            UpdatePlayerStatus(model, isAvatarGlobalScene);
             
             onPointerDown.Initialize(
                 new OnPointerDown.Model()
@@ -188,7 +190,6 @@ namespace DCL
 
             EnablePassport();
 
-            bool isAvatarGlobalScene = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
             onPointerDown.SetColliderEnabled(isAvatarGlobalScene);
             onPointerDown.SetOnClickReportEnabled(isAvatarGlobalScene);
         }
@@ -210,20 +211,19 @@ namespace DCL
         private void PlayerPointerExit() { playerName?.SetForceShow(false); }
         private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
 
-        private void UpdatePlayerStatus(AvatarModel model)
+        private void UpdatePlayerStatus(AvatarModel model, bool isGlobalSceneAvatar)
         {
             // Remove the player status if the userId changes
             if (player != null && (player.id != model.id || player.name != model.name))
                 otherPlayers.Remove(player.id);
 
-            if (string.IsNullOrEmpty(model?.id))
+            if (isGlobalSceneAvatar && string.IsNullOrEmpty(model?.id))
                 return;
 
-            bool isNew = false;
-            if (player == null)
+            bool isNew = player == null;
+            if (isNew)
             {
                 player = new Player();
-                isNew = true;
             }
 
             player.id = model.id;
@@ -240,7 +240,10 @@ namespace DCL
                 player.playerName.SetName(player.name);
                 player.playerName.Show();
                 player.anchorPoints = anchorPoints;
-                otherPlayers.Add(player.id, player);
+                if (isGlobalSceneAvatar)
+                {
+                    otherPlayers.Add(player.id, player);
+                }
                 avatarReporterController.ReportAvatarRemoved();
             }
 
@@ -336,5 +339,7 @@ namespace DCL
 
         [ContextMenu("Print current profile")]
         private void PrintCurrentProfile() { Debug.Log(JsonUtility.ToJson(model)); }
+        
+        private bool IsGlobalSceneAvatar ()=> scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
     }
 }
