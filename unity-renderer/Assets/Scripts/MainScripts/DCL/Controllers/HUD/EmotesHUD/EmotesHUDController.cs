@@ -149,7 +149,15 @@ namespace EmotesCustomization
             }
         }
 
-        public void EmoteCalled(string id) { UserProfile.GetOwnUserProfile().SetAvatarExpression(id); }
+        public void EmoteCalled(string id) 
+        {
+            if (string.IsNullOrEmpty(id))
+                return;
+
+            // TODO (Santi): Uncomment this line and remove the next when we can obtain real emotes from the catalog!
+            //UserProfile.GetOwnUserProfile().SetAvatarExpression(id);
+            UserProfile.GetOwnUserProfile().SetAvatarExpression("clap");
+        }
 
         private void ConfigureShortcuts()
         {
@@ -198,34 +206,34 @@ namespace EmotesCustomization
             switch (action)
             {
                 case DCLAction_Trigger.ToggleEmoteShortcut0:
-                    PlayExpression(equippedEmotes[0]);
+                    EmoteCalled(equippedEmotes[0]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut1:
-                    PlayExpression(equippedEmotes[1]);
+                    EmoteCalled(equippedEmotes[1]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut2:
-                    PlayExpression(equippedEmotes[2]);
+                    EmoteCalled(equippedEmotes[2]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut3:
-                    PlayExpression(equippedEmotes[3]);
+                    EmoteCalled(equippedEmotes[3]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut4:
-                    PlayExpression(equippedEmotes[4]);
+                    EmoteCalled(equippedEmotes[4]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut5:
-                    PlayExpression(equippedEmotes[5]);
+                    EmoteCalled(equippedEmotes[5]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut6:
-                    PlayExpression(equippedEmotes[6]);
+                    EmoteCalled(equippedEmotes[6]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut7:
-                    PlayExpression(equippedEmotes[7]);
+                    EmoteCalled(equippedEmotes[7]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut8:
-                    PlayExpression(equippedEmotes[8]);
+                    EmoteCalled(equippedEmotes[8]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut9:
-                    PlayExpression(equippedEmotes[9]);
+                    EmoteCalled(equippedEmotes[9]);
                     break;
             }
 
@@ -249,16 +257,6 @@ namespace EmotesCustomization
             emotesVisible.Set(false);
             isAvatarEditorVisible.Set(true);
             isEmotesCustomizationSelected.Set(true);
-        }
-
-        private void PlayExpression(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-                return;
-
-            // TODO (Santi): Uncomment this line and remove the next when we can obtain real emotes from the catalog!
-            //EmoteCalled(id);
-            EmoteCalled("clap");
         }
     }
 }
