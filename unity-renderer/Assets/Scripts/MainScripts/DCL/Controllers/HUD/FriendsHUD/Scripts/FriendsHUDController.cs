@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
@@ -93,13 +94,35 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private void Entry_OnRequestSent(string userId)
+    private void Entry_OnRequestSent(string userNameOrId)
     {
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+        if (AreAlreadyFriends(userNameOrId))
         {
-            userId = userId,
-            action = FriendshipAction.REQUESTED_TO
-        });
+            view.ShowRequestSendError(FriendRequestError.AlreadyFriends);
+        }
+        else
+        {
+            WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+            {
+                userId = userNameOrId,
+                action = FriendshipAction.REQUESTED_TO
+            });
+
+            view.ShowRequestSendSuccess();
+        }
+    }
+    
+    private bool AreAlreadyFriends(string userNameOrId)
+    {
+        var userId = userNameOrId;
+        var profile = UserProfileController.userProfilesCatalog.GetValues()
+            .FirstOrDefault(p => p.userName == userNameOrId);
+
+        if (profile != default)
+            userId = profile.userId;
+        
+        return friendsController != null
+               && friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND);
     }
     
     private void OnUpdateUserStatus(string userId, FriendsController.UserStatus newStatus)

@@ -27,6 +27,11 @@ public class FriendsController_Mock : IFriendsController
         return friends.ContainsKey(userId) ? friends[userId] : default;
     }
 
+    public bool ContainsStatus(string friendId, FriendshipStatus status)
+    {
+        return friends.ContainsKey(friendId) && friends[friendId].friendshipStatus == status;
+    }
+
     public void RequestFriendship(string friendUserId)
     {
         if (!friends.ContainsKey(friendUserId))

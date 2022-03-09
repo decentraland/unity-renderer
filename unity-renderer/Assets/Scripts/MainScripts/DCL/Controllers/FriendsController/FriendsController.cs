@@ -57,6 +57,12 @@ public class FriendsController : MonoBehaviour, IFriendsController
         return friends[userId];
     }
 
+    public bool ContainsStatus(string friendId, FriendshipStatus status)
+    {
+        if (!friends.ContainsKey(friendId)) return false;
+        return friends[friendId].friendshipStatus == status;
+    }
+
     public event Action<string, UserStatus> OnUpdateUserStatus;
     public event Action<string, FriendshipAction> OnUpdateFriendship;
     public event Action<string> OnFriendNotFound;

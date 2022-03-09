@@ -13,6 +13,7 @@ public interface IFriendsController
     Dictionary<string, FriendsController.UserStatus> GetFriends();
     FriendsController.UserStatus GetUserStatus(string userId);
 
+    bool ContainsStatus(string friendId, FriendshipStatus status);
     void RequestFriendship(string friendUserId);
     void CancelRequest(string friendUserId);
     void AcceptFriendship(string friendUserId);

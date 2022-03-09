@@ -16,6 +16,8 @@ public class FriendRequestsTabView : FriendsTabViewBase
     [SerializeField] internal Notification friendSearchFailedNotification;
     [SerializeField] internal Notification acceptedFriendNotification;
     [SerializeField] internal Notification alreadyFriendsNotification;
+    
+    private string lastRequestSentUserName;
 
     public event System.Action<FriendRequestEntry> OnCancelConfirmation;
     public event System.Action<FriendRequestEntry> OnRejectConfirmation;
@@ -105,6 +107,17 @@ public class FriendRequestsTabView : FriendsTabViewBase
 
         return true;
     }
+    
+    public void ShowAlreadyFriendsNotification()
+    {
+        NotificationsController.i.ShowNotification(alreadyFriendsNotification);
+    }
+    
+    public void ShowRequestSuccessfullySentNotification()
+    {
+        requestSentNotification.model.message = $"Your request to {lastRequestSentUserName} successfully sent!";
+        NotificationsController.i.ShowNotification(requestSentNotification);
+    }
 
     void SendFriendRequest(string friendUserName)
     {
@@ -115,27 +128,8 @@ public class FriendRequestsTabView : FriendsTabViewBase
         friendSearchInputField.text = string.Empty;
 
         addFriendButton.gameObject.SetActive(false);
-
-        if (!AlreadyFriends(friendUserName))
-        {
-            requestSentNotification.model.message = $"Your request to {friendUserName} successfully sent!";
-            NotificationsController.i.ShowNotification(requestSentNotification);
-
-            OnFriendRequestSent?.Invoke(friendUserName);
-        }
-        else
-        {
-            NotificationsController.i.ShowNotification(alreadyFriendsNotification);
-        }
-    }
-
-    bool AlreadyFriends(string friendUserName)
-    {
-        var friendUserProfile = UserProfileController.GetProfileByName(friendUserName);
-
-        return friendUserProfile != null
-               && FriendsController.i.friends.ContainsKey(friendUserProfile.userId)
-               && FriendsController.i.friends[friendUserProfile.userId].friendshipStatus == FriendshipStatus.FRIEND;
+        lastRequestSentUserName = friendUserName;
+        OnFriendRequestSent?.Invoke(friendUserName);
     }
 
     public void DisplayFriendUserNotFound()

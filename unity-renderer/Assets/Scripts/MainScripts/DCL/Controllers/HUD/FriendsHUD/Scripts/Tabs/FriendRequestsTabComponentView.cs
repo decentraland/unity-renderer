@@ -34,6 +34,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendRequestEntry> entries = new Dictionary<string, FriendRequestEntry>();
     private Pool entryPool;
+    private string lastRequestSentUserName;
 
     public Dictionary<string, FriendRequestEntry> Entries => entries;
 
@@ -203,30 +204,22 @@ public class FriendRequestsTabComponentView : BaseComponentView
         if (string.IsNullOrEmpty(friendUserName)) return;
 
         searchBar.ClearSearch();
-
-        if (!AlreadyFriends(friendUserName))
-        {
-            ShowRequestSuccessfullySentNotification(friendUserName);
-            OnFriendRequestSent?.Invoke(friendUserName);
-        }
-        else
-        {
-            ShowAlreadyFriendsNotification();
-        }
+        lastRequestSentUserName = friendUserName;
+        OnFriendRequestSent?.Invoke(friendUserName);
     }
 
-    private void ShowAlreadyFriendsNotification()
+    public void ShowAlreadyFriendsNotification()
     {
         alreadyFriendsNotification.model.timer = NOTIFICATIONS_DURATION;
         alreadyFriendsNotification.model.groupID = NOTIFICATIONS_ID;
         NotificationsController.i?.ShowNotification(alreadyFriendsNotification);
     }
 
-    private void ShowRequestSuccessfullySentNotification(string friendUserName)
+    public void ShowRequestSuccessfullySentNotification()
     {
         requestSentNotification.model.timer = NOTIFICATIONS_DURATION;
         requestSentNotification.model.groupID = NOTIFICATIONS_ID;
-        requestSentNotification.model.message = $"Your request to {friendUserName} successfully sent!";
+        requestSentNotification.model.message = $"Your request to {lastRequestSentUserName} successfully sent!";
         NotificationsController.i?.ShowNotification(requestSentNotification);
     }
 
@@ -234,16 +227,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
     {
         emptyStateContainer.SetActive(entries.Count == 0);
         filledStateContainer.SetActive(entries.Count > 0);
-    }
-
-    private static bool AlreadyFriends(string friendUserName)
-    {
-        var friendUserProfile = UserProfileController.GetProfileByName(friendUserName);
-
-        return friendUserProfile != null
-               && FriendsController.i != null
-               && FriendsController.i.friends.ContainsKey(friendUserProfile.userId)
-               && FriendsController.i.friends[friendUserProfile.userId].friendshipStatus == FriendshipStatus.FRIEND;
     }
 
     private void OnSearchInputValueChanged(string friendUserName)
@@ -276,23 +259,13 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     private void OnEntryRejectButtonPressed(FriendRequestEntry requestEntry)
     {
-        // confirmationDialog.SetText($"Are you sure you want to reject {requestEntry.model.userName} friend request?");
-        // confirmationDialog.Show(() =>
-        // {
-        //     Remove(requestEntry.userId);
-        // });
-        
+        Remove(requestEntry.userId);
         OnRejectConfirmation?.Invoke(requestEntry);
     }
 
     private void OnEntryCancelButtonPressed(FriendRequestEntry requestEntry)
     {
-        // confirmationDialog.SetText($"Are you sure you want to cancel {requestEntry.model.userName} friend request?");
-        // confirmationDialog.Show(() =>
-        // {
-        //     Remove(requestEntry.userId);
-        // });
-        
+        Remove(requestEntry.userId);
         OnCancelConfirmation?.Invoke(requestEntry);
     }
     

@@ -30,4 +30,6 @@ public interface IFriendsHUDComponentView
     void Search(string userId);
     bool IsActive();
     void SortEntriesByTimestamp(FriendEntryBase.Model user, ulong timestamp);
+    void ShowRequestSendError(FriendRequestError error);
+    void ShowRequestSendSuccess();
 }

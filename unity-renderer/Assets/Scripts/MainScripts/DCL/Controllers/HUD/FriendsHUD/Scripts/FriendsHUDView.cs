@@ -148,6 +148,21 @@ public class FriendsHUDView : MonoBehaviour, IFriendsHUDComponentView
         friendsList.SortEntriesByTimestamp(user, timestamp);
     }
 
+    public void ShowRequestSendError(FriendRequestError error)
+    {
+        switch (error)
+        {
+            case FriendRequestError.AlreadyFriends:
+                friendRequestsList.ShowAlreadyFriendsNotification();
+                break;
+        }
+    }
+
+    public void ShowRequestSendSuccess()
+    {
+        friendRequestsList.ShowRequestSuccessfullySentNotification();
+    }
+
     public bool IsFriendListCreationReady() => friendsList.creationQueue.Count == 0;
 
     public void ShowSpinner()

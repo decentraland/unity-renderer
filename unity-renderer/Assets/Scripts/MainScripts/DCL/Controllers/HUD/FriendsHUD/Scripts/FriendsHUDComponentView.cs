@@ -166,6 +166,21 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         friendsTab.SortEntriesByTimestamp(user, timestamp);
     }
 
+    public void ShowRequestSendError(FriendRequestError error)
+    {
+        switch (error)
+        {
+            case FriendRequestError.AlreadyFriends:
+                friendRequestsTab.ShowAlreadyFriendsNotification();
+                break;
+        }
+    }
+
+    public void ShowRequestSendSuccess()
+    {
+        friendRequestsTab.ShowRequestSuccessfullySentNotification();
+    }
+
     public override void RefreshControl()
     {
         if (model.isLoadingSpinnerActive)
