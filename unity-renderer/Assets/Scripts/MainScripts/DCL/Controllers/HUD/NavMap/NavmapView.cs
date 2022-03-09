@@ -203,7 +203,6 @@ namespace DCL
 
         internal void SetVisible(bool visible)
         {
-            Debug.Log($"Set visible to {visible} is waiting fs {waitingForFullscreenHUDOpen} isfull screen so {CommonScriptableObjects.isFullscreenHUDOpen.Get()} ");
             if (waitingForFullscreenHUDOpen)
                 return;
 
@@ -216,6 +215,7 @@ namespace DCL
                 else
                 {
                     waitingForFullscreenHUDOpen = true;
+                    CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
                     CommonScriptableObjects.isFullscreenHUDOpen.OnChange += IsFullscreenHUDOpen_OnChange;
                 }
             }
@@ -227,17 +227,17 @@ namespace DCL
 
         private void IsFullscreenHUDOpen_OnChange(bool current, bool previous)
         {
+
             if (!current)
                 return;
 
-            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
             SetVisibility_Internal(true);
             waitingForFullscreenHUDOpen = false;
         }
 
         internal void SetVisibility_Internal(bool visible)
         {
-            if (MapRenderer.i == null)
+            if (MapRenderer.i == null) 
                 return;
 
             scrollRect.StopMovement();
@@ -251,8 +251,13 @@ namespace DCL
                     Utils.UnlockCursor();
 
                 MapRenderer.i.scaleFactor = scale;
-                minimapViewport = MapRenderer.i.atlas.viewport;
-                mapRendererMinimapParent = MapRenderer.i.transform.parent;
+                
+                if(minimapViewport == null)
+                    minimapViewport = MapRenderer.i.atlas.viewport;
+
+                if (mapRendererMinimapParent == null)
+                    mapRendererMinimapParent = MapRenderer.i.transform.parent;
+
                 atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;
 
                 MapRenderer.i.atlas.viewport = scrollRect.viewport;
@@ -272,9 +277,9 @@ namespace DCL
             }
             else
             {
-                if (minimapViewport == null)
+                if (minimapViewport == null) 
                     return;
-
+                
                 ResetCameraZoom();
                 CloseToast();
 
