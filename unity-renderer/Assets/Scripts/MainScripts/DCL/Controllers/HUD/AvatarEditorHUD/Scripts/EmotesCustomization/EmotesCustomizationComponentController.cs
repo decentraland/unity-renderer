@@ -21,7 +21,7 @@ namespace EmotesCustomization
     public class EmotesCustomizationComponentController : IEmotesCustomizationComponentController
     {
         internal const int NUMBER_OF_SLOTS = 10;
-        internal const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedEmotes";
+        internal const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedNFTEmotes";
 
         internal BaseVariable<Transform> isInitialized => DataStore.i.emotesCustomization.isInitialized;
         internal BaseCollection<string> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
