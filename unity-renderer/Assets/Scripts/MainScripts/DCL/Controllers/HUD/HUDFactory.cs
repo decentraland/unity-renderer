@@ -62,9 +62,6 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();
                 break;
-            case HUDElementID.MESSAGE_OF_THE_DAY:
-                hudElement = new WelcomeHUDController();
-                break;
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 hudElement = new ExternalUrlPromptHUDController();
                 break;

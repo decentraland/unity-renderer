@@ -207,6 +207,11 @@ namespace UnityGLTF
 
         public void Dispose()
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isApplicationQuitting.Get())
+                return;
+#endif
+            
             //NOTE(Brian): If the coroutine is interrupted and the local streaming list contains something,
             //             we must clean the static list or other GLTFSceneImporter instances might get stuck.
             int streamingImagesLocalListCount = streamingImagesLocalList.Count;
@@ -504,7 +509,7 @@ namespace UnityGLTF
         {
 
             await _loader.LoadStream(_gltfFileName, token);
-
+            
             token.ThrowIfCancellationRequested();
 
             if (_loader.LoadedStream == null)
@@ -604,7 +609,6 @@ namespace UnityGLTF
                     {
                         await _loader.LoadStream(buffer.Uri, token);
                         bufferDataStream = _loader.LoadedStream;
-                        Debug.Log($"<color=red>Adding buffer {buffer.Uri} {id}</color>");
                         PersistentAssetCache.AddBuffer(buffer.Uri, id, bufferDataStream);
                     }
                 }
@@ -674,11 +678,14 @@ namespace UnityGLTF
             texture = CheckAndReduceTextureSize(texture);
             _assetCache.ImageCache[imageCacheIndex] = texture;
 
+            // We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
+#if !UNITY_STANDALONE || UNITY_EDITOR
             if ( Application.isPlaying )
             {
                 //NOTE(Brian): This breaks importing in editor mode
                 texture.Compress(false);
             }
+#endif
 
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
@@ -928,7 +935,7 @@ namespace UnityGLTF
         }
 
         async UniTask ProcessCurves(Transform root, GameObject[] nodes, AnimationClip clip, GLTFAnimation animation, AnimationCacheData animationCache, CancellationToken cancellationToken)
-        {
+        {            
             foreach (AnimationChannel channel in animation.Channels)
             {
                 AnimationSamplerCacheData samplerCache = animationCache.Samplers[channel.Sampler.Id];
@@ -941,7 +948,7 @@ namespace UnityGLTF
                     // Model 08
                     continue;
                 }
-
+                
                 var node = nodes[channel.Target.Node.Id];
                 string relativePath = RelativePathFrom(node.transform, root);
 
@@ -1290,7 +1297,7 @@ namespace UnityGLTF
             {
                 NodeId_Like nodeId = nodesWithMeshes[i];
                 Node node = nodeId.Value;
-
+                
                 await ConstructMesh(mesh: node.Mesh.Value,
                     parent: _assetCache.NodeCache[nodeId.Id].transform,
                     meshId: node.Mesh.Id,
@@ -1323,7 +1330,7 @@ namespace UnityGLTF
                     AnimationClip clip = ConstructClip(i, out gltfAnimation, out animationCache);
 
                     await ProcessCurves(CreatedObject.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache, token);
-
+                    
                     clip.wrapMode = WrapMode.Loop;
 
                     animation.AddClip(clip, clip.name);
@@ -2367,7 +2374,6 @@ namespace UnityGLTF
 
                 if (addImagesToPersistentCaching)
                 {
-                    Debug.Log($"<color=magenta>Adding image to persistent cache {imageId}</color>");
                     source = PersistentAssetCache.AddImage(imageId, _assetCache.ImageCache[sourceId], linear);
                 }
                 else

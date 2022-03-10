@@ -688,6 +688,7 @@ namespace DCL
 
             scene.Cleanup(!CommonScriptableObjects.rendererState.Get());
 
+
             if (VERBOSE)
             {
                 Debug.Log($"{Time.frameCount} : Destroying scene {scene.sceneData.basePosition}");
