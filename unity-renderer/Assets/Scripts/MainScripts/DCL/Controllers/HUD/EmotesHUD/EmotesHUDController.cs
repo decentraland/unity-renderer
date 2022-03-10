@@ -81,7 +81,18 @@ namespace EmotesCustomization
                 if (emoteId != null)
                 {
                     catalog.TryGetValue(emoteId, out WearableItem emoteItem);
-                    emotesToSet.Add(emoteItem);
+
+                    if (emoteItem != null)
+                    {
+                        if (!emoteItem.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(emoteItem.id) == 0)
+                            emotesToSet.Add(null);
+                        else
+                            emotesToSet.Add(emoteItem);
+                    }
+                    else
+                    {
+                        emotesToSet.Add(null);
+                    }
                 }
                 else
                 {

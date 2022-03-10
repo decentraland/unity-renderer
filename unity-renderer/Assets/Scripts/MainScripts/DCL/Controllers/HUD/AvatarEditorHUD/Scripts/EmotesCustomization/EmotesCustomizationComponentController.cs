@@ -205,7 +205,7 @@ namespace EmotesCustomization
                     continue;
 
                 catalog.TryGetValue(equippedEmotes[i], out WearableItem emoteItem);
-                if (emoteItem != null)
+                if (emoteItem != null && currentLoadedEmotes.Contains(emoteItem.id))
                     view.EquipEmote(emoteItem.id, emoteItem.GetName(), i, false, false);
             }
         }
