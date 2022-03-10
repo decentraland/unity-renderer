@@ -41,11 +41,11 @@ namespace AvatarSystem
 
             try
             {
-                (WearableItem[] wearableItems, WearableItem[] emotes) =  await wearableItemResolver.ResolveAndSplit(wearablesId, ct);
+                (List<WearableItem> wearableItems, List<WearableItem> emotes) =  await wearableItemResolver.ResolveAndSplit(wearablesId, ct);
                 HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategories(settings.bodyshapeId, wearableItems);
 
                 Dictionary<string, WearableItem> wearablesByCategory = new Dictionary<string, WearableItem>();
-                for (int i = 0; i < wearableItems.Length; i++)
+                for (int i = 0; i < wearableItems.Count; i++)
                 {
                     WearableItem wearableItem = wearableItems[i];
 
