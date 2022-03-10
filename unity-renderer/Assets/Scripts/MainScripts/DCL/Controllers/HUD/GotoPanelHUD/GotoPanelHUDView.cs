@@ -3,8 +3,9 @@ using TMPro;
 using UnityEngine.UI;
 using DCL.Interface;
 using DCL;
+using System;
 
-public class GotoPanel : MonoBehaviour
+public class GotoPanelHUDView : MonoBehaviour
 {
     [SerializeField] private Button teleportButton;
     [SerializeField] private TextMeshProUGUI panelText;
@@ -34,26 +35,30 @@ public class GotoPanel : MonoBehaviour
 
     private void TeleportTo()
     {
-        WebInterface.GoTo(targetCoordinates.x, targetCoordinates.y);
-        contentAnimator.Hide(true);
+        WebInterface.GoTo(targetCoordinates.x, targetCoordinates.y); 
+        OnClosePressed();
+    }
+
+    public void SetVisible(bool isVisible) {
+        container.SetActive(isVisible);
+        contentAnimator.Show(!isVisible);
+        loadingSpinner.SetActive(isVisible);
+        scenePreviewImage.texture = null;
     }
 
     public void SetPanelInfo(ParcelCoordinates parcelCoordinates)
     {
-        container.SetActive(true);
-        contentAnimator.Show(false);
-        loadingSpinner.SetActive(true);
-        scenePreviewImage.texture = null;
         MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(parcelCoordinates.x, parcelCoordinates.y);
         if (sceneInfo != null)
         {
             sceneTitleText.text = sceneInfo.name;
             sceneOwnerText.text = sceneInfo.owner;
             SetParcelImage(sceneInfo);
-        } else 
+        }
+        else
         {
             sceneTitleText.text = "Untitled Scene";
-            sceneOwnerText.text = "Unknown"; 
+            sceneOwnerText.text = "Unknown";
             DisplayThumbnail(scenePreviewFailImage.texture);
         }
         targetCoordinates = parcelCoordinates;
@@ -80,6 +85,7 @@ public class GotoPanel : MonoBehaviour
 
     private void OnClosePressed()
     {
+        DataStore.i.HUDs.gotoPanelVisible.Set(false);
         contentAnimator.Hide(true);
         AudioScriptableObjects.dialogClose.Play(true);
     }

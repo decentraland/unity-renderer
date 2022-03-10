@@ -16,11 +16,6 @@ public class PrivateChatHUDView : ChatHUDView
     string ENTRY_PATH_RECEIVED = "ChatEntryReceived";
     string ENTRY_PATH_SEPARATOR = "ChatEntrySeparator";
 
-    private void Awake()
-    {
-        gotoPanel = GetComponentInChildren<GotoPanel>();
-    }
-
     public override void AddEntry(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
         AddSeparatorEntryIfNeeded(chatEntryModel);
@@ -30,7 +25,6 @@ public class PrivateChatHUDView : ChatHUDView
 
         chatEntry.SetFadeout(false);
         chatEntry.Populate(chatEntryModel);
-        chatEntry.gotoPanel = gotoPanel;
 
         chatEntry.OnTriggerHover += OnMessageTriggerHover;
         chatEntry.OnCancelHover += OnMessageCancelHover;

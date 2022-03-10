@@ -277,10 +277,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6729113402681920176}
-  - component: {fileID: 4121377568323202168}
   - component: {fileID: 9069619511925639999}
+  - component: {fileID: 4998390320278478306}
   m_Layer: 5
-  m_Name: GOTOPanel
+  m_Name: GotoPanelHUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -306,30 +306,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &4121377568323202168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1007197944036553816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f1c3d72d752a4fbfb24de256823822b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  teleportButton: {fileID: 629589017016210796}
-  panelText: {fileID: 6214823249227272228}
-  container: {fileID: 3968628512423454411}
-  sceneTitleText: {fileID: 5502018145308661966}
-  sceneOwnerText: {fileID: 24277343970629239}
-  scenePreviewFailImage: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
-    type: 3}
-  scenePreviewImage: {fileID: 1338690743518557593}
-  loadingSpinner: {fileID: 6649734309962038473}
-  closeButton: {fileID: 2610983691829428508}
-  cancelButton: {fileID: 6945224150554406997}
-  contentAnimator: {fileID: 5529671233935012536}
 --- !u!223 &9069619511925639999
 Canvas:
   m_ObjectHideFlags: 0
@@ -351,6 +327,30 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 3
   m_TargetDisplay: 0
+--- !u!114 &4998390320278478306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007197944036553816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32cd896205964352831cb2799d3dcc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teleportButton: {fileID: 629589017016210796}
+  panelText: {fileID: 6214823249227272228}
+  container: {fileID: 3968628512423454411}
+  sceneTitleText: {fileID: 5502018145308661966}
+  sceneOwnerText: {fileID: 24277343970629239}
+  scenePreviewFailImage: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
+    type: 3}
+  scenePreviewImage: {fileID: 1338690743518557593}
+  loadingSpinner: {fileID: 6649734309962038473}
+  closeButton: {fileID: 2610983691829428508}
+  cancelButton: {fileID: 6945224150554406997}
+  contentAnimator: {fileID: 5529671233935012536}
 --- !u!1 &1141344730692222373
 GameObject:
   m_ObjectHideFlags: 0

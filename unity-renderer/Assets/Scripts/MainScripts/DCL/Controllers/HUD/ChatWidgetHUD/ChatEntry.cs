@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using DCL;
 
 public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
@@ -37,7 +38,6 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     [SerializeField] internal TextMeshProUGUI username;
     [SerializeField] internal TextMeshProUGUI body;
-    public GotoPanel gotoPanel;
 
     [SerializeField] internal Color worldMessageColor = Color.white;
 
@@ -204,12 +204,12 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
             int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, null);
-            if (linkIndex != -1 && gotoPanel != null)
+            if (linkIndex != -1)
             {
-                gotoPanel.container.SetActive(true);
+                DataStore.i.HUDs.gotoPanelVisible.Set(true);
                 TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
                 ParcelCoordinates parcelCoordinate = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
-                gotoPanel.SetPanelInfo(parcelCoordinate);
+                DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
             }
 
             if (model.messageType != ChatMessage.Type.PRIVATE)

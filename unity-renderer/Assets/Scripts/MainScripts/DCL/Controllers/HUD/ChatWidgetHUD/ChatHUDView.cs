@@ -9,6 +9,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
 using UnityEngine.EventSystems;
+using DCL;
 
 public class ChatHUDView : MonoBehaviour
 {
@@ -31,8 +32,6 @@ public class ChatHUDView : MonoBehaviour
 
     [NonSerialized] public List<ChatEntry> entries = new List<ChatEntry>();
     [NonSerialized] public List<DateSeparatorEntry> dateSeparators = new List<DateSeparatorEntry>();
-
-    [SerializeField] public GotoPanel gotoPanel;
 
     ChatMessage currentMessage = new ChatMessage();
     Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
@@ -149,7 +148,6 @@ public class ChatHUDView : MonoBehaviour
             chatEntry.SetFadeout(false);
 
         chatEntry.Populate(chatEntryModel);
-        chatEntry.gotoPanel = gotoPanel;
 
         if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
             chatEntry.OnPress += OnPressPrivateMessage;
@@ -286,7 +284,7 @@ public class ChatHUDView : MonoBehaviour
         dateSeparators.Clear();
     }
     
-    public void SetGotoPanelStatus(bool isActive) { 
-        gotoPanel.contentAnimator.Hide(true);
+    public void SetGotoPanelStatus(bool isActive) {
+        DataStore.i.HUDs.gotoPanelVisible.Set(isActive);
     }
 }
