@@ -200,6 +200,7 @@ namespace DCL
             mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
             zoomIn.OnStarted -= OnZoomPlusMinus;
             zoomOut.OnStarted -= OnZoomPlusMinus;
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
         }
 
         internal void SetVisible(bool visible)
@@ -216,6 +217,7 @@ namespace DCL
                 else
                 {
                     waitingForFullscreenHUDOpen = true;
+                    CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
                     CommonScriptableObjects.isFullscreenHUDOpen.OnChange += IsFullscreenHUDOpen_OnChange;
                 }
             }
@@ -227,10 +229,10 @@ namespace DCL
 
         private void IsFullscreenHUDOpen_OnChange(bool current, bool previous)
         {
+
             if (!current)
                 return;
 
-            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
             SetVisibility_Internal(true);
             waitingForFullscreenHUDOpen = false;
         }
@@ -251,8 +253,13 @@ namespace DCL
                     Utils.UnlockCursor();
 
                 MapRenderer.i.scaleFactor = scale;
-                minimapViewport = MapRenderer.i.atlas.viewport;
-                mapRendererMinimapParent = MapRenderer.i.transform.parent;
+                
+                if(minimapViewport == null)
+                    minimapViewport = MapRenderer.i.atlas.viewport;
+
+                if (mapRendererMinimapParent == null)
+                    mapRendererMinimapParent = MapRenderer.i.transform.parent;
+
                 atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;
 
                 MapRenderer.i.atlas.viewport = scrollRect.viewport;
@@ -274,7 +281,6 @@ namespace DCL
             {
                 if (minimapViewport == null)
                     return;
-
                 ResetCameraZoom();
                 CloseToast();
 
