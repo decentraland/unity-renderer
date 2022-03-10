@@ -23,7 +23,8 @@ public class GotoPanelHUDController : IHUD
         SetVisibility(current);
     }
 
-    private void SetCoordinates(ParcelCoordinates current, ParcelCoordinates previous) {
+    private void SetCoordinates(ParcelCoordinates current, ParcelCoordinates previous) 
+    {
         if (current == previous)
             return;
 
@@ -33,9 +34,7 @@ public class GotoPanelHUDController : IHUD
     public void Dispose()
     {
         if (view)
-        {
             UnityEngine.Object.Destroy(view.gameObject);
-        }
     }
 
     public void SetVisibility(bool visible)

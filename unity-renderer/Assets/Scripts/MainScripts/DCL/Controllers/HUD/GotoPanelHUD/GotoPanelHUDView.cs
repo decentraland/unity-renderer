@@ -39,7 +39,8 @@ public class GotoPanelHUDView : MonoBehaviour
         OnClosePressed();
     }
 
-    public void SetVisible(bool isVisible) {
+    public void SetVisible(bool isVisible) 
+    {
         container.SetActive(isVisible);
         contentAnimator.Show(!isVisible);
         loadingSpinner.SetActive(isVisible);

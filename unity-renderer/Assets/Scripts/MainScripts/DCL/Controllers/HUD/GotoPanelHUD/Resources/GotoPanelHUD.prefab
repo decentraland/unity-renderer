@@ -279,6 +279,7 @@ GameObject:
   - component: {fileID: 6729113402681920176}
   - component: {fileID: 9069619511925639999}
   - component: {fileID: 4998390320278478306}
+  - component: {fileID: 4199146264910916434}
   m_Layer: 5
   m_Name: GotoPanelHUD
   m_TagString: Untagged
@@ -351,6 +352,29 @@ MonoBehaviour:
   closeButton: {fileID: 2610983691829428508}
   cancelButton: {fileID: 6945224150554406997}
   contentAnimator: {fileID: 5529671233935012536}
+--- !u!114 &4199146264910916434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007197944036553816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UiScaleMode: 1
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 1440, y: 900}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 0
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!1 &1141344730692222373
 GameObject:
   m_ObjectHideFlags: 0
@@ -1133,7 +1157,7 @@ RectTransform:
   m_GameObject: {fileID: 3968628512423454411}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_Children:
   - {fileID: 1825548875378779943}
   - {fileID: 1529447985893445103}
@@ -1142,8 +1166,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1920, y: 1080}
-  m_SizeDelta: {x: 1599.9999, y: 899.99994}
+  m_AnchoredPosition: {x: 720.00006, y: 405}
+  m_SizeDelta: {x: 1800, y: 1012.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3778040791180115629
 Canvas:
@@ -2906,15 +2930,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4cdf4cefa747946779aabe419a904eab, type: 3}
---- !u!1 &6649734309962038473 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7728748656648610444, guid: 4cdf4cefa747946779aabe419a904eab,
-    type: 3}
-  m_PrefabInstance: {fileID: 3966156058150493765}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &2871505075204391640 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1212382325503483037, guid: 4cdf4cefa747946779aabe419a904eab,
+    type: 3}
+  m_PrefabInstance: {fileID: 3966156058150493765}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6649734309962038473 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7728748656648610444, guid: 4cdf4cefa747946779aabe419a904eab,
     type: 3}
   m_PrefabInstance: {fileID: 3966156058150493765}
   m_PrefabAsset: {fileID: 0}
