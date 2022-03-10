@@ -38,7 +38,7 @@ namespace EmotesCustomization
         {
             view = EmotesHUDView.Create();
             view.OnClose += OnViewClosed;
-            view.onEmoteClicked += EmoteCalled;
+            view.onEmoteClicked += PlayEmote;
             view.OnCustomizeClicked += OpenEmotesCustomizationSection;
 
             ownUserProfile.OnAvatarExpressionSet += OnAvatarEmoteSet;
@@ -127,7 +127,7 @@ namespace EmotesCustomization
         public void Dispose()
         {
             view.OnClose -= OnViewClosed;
-            view.onEmoteClicked -= EmoteCalled;
+            view.onEmoteClicked -= PlayEmote;
             view.OnCustomizeClicked -= OpenEmotesCustomizationSection;
             closeWindow.OnTriggered -= OnCloseWindowPressed;
             ownUserProfile.OnAvatarExpressionSet -= OnAvatarEmoteSet;
@@ -151,7 +151,7 @@ namespace EmotesCustomization
             }
         }
 
-        public void EmoteCalled(string id) 
+        public void PlayEmote(string id) 
         {
             if (string.IsNullOrEmpty(id))
                 return;
@@ -208,34 +208,34 @@ namespace EmotesCustomization
             switch (action)
             {
                 case DCLAction_Trigger.ToggleEmoteShortcut0:
-                    EmoteCalled(equippedEmotes[0]);
+                    PlayEmote(equippedEmotes[0]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut1:
-                    EmoteCalled(equippedEmotes[1]);
+                    PlayEmote(equippedEmotes[1]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut2:
-                    EmoteCalled(equippedEmotes[2]);
+                    PlayEmote(equippedEmotes[2]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut3:
-                    EmoteCalled(equippedEmotes[3]);
+                    PlayEmote(equippedEmotes[3]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut4:
-                    EmoteCalled(equippedEmotes[4]);
+                    PlayEmote(equippedEmotes[4]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut5:
-                    EmoteCalled(equippedEmotes[5]);
+                    PlayEmote(equippedEmotes[5]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut6:
-                    EmoteCalled(equippedEmotes[6]);
+                    PlayEmote(equippedEmotes[6]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut7:
-                    EmoteCalled(equippedEmotes[7]);
+                    PlayEmote(equippedEmotes[7]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut8:
-                    EmoteCalled(equippedEmotes[8]);
+                    PlayEmote(equippedEmotes[8]);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut9:
-                    EmoteCalled(equippedEmotes[9]);
+                    PlayEmote(equippedEmotes[9]);
                     break;
             }
 
