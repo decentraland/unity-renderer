@@ -237,7 +237,7 @@ namespace DCL
 
         internal void SetVisibility_Internal(bool visible)
         {
-            if (MapRenderer.i == null) 
+            if (MapRenderer.i == null)
                 return;
 
             scrollRect.StopMovement();
