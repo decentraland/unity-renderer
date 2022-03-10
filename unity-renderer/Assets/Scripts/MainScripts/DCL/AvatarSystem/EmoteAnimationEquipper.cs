@@ -6,10 +6,11 @@ namespace AvatarSystem
 {
     public class EmoteAnimationEquipper : IEmoteAnimationEquipper
     {
-        private readonly IAnimator animator;
-        private readonly DataStore_Emotes dataStoreEmotes;
+        internal readonly IAnimator animator;
+        internal readonly DataStore_Emotes dataStoreEmotes;
 
-        private readonly List<string> emotes = new List<string>();
+        internal string bodyshapeId = "";
+        internal readonly List<string> emotes = new List<string>();
 
         public EmoteAnimationEquipper(IAnimator animator, DataStore_Emotes dataStoreEmotes)
         {
@@ -21,14 +22,26 @@ namespace AvatarSystem
 
         private void OnAnimationAdded((string bodyshapeId, string emoteId) values, AnimationClip animationClip)
         {
-            if (emotes.Contains(values.emoteId))
-                animator.EquipEmote(values.emoteId, animationClip);
+            if (bodyshapeId != values.bodyshapeId)
+                return;
+
+            if (!emotes.Contains(values.emoteId))
+                return;
+
+            animator.EquipEmote(values.emoteId, animationClip);
         }
 
-        private void OnAnimationRemoved((string bodyshapeId, string emoteId) values, AnimationClip animationClip) { animator.UnequipEmote(values.emoteId); }
+        private void OnAnimationRemoved((string bodyshapeId, string emoteId) values, AnimationClip animationClip)
+        {
+            if (bodyshapeId != values.bodyshapeId)
+                return;
+
+            animator.UnequipEmote(values.emoteId);
+        }
 
         public void SetEquippedEmotes( string bodyshapeId, IEnumerable<WearableItem> emotes)
         {
+            this.bodyshapeId = bodyshapeId;
             foreach (string emoteId in this.emotes)
             {
                 dataStoreEmotes.emotesOnUse.DecreaseRefCount(emoteId);
@@ -42,13 +55,15 @@ namespace AvatarSystem
 
                 //If the clip is not ready by the time we equip it
                 //we will receive it once its added to the collection in the DataStore
-                if (dataStoreEmotes.animations.TryGetValue((bodyshapeId, emote.id), out AnimationClip clip))
+                if (dataStoreEmotes.animations.TryGetValue((this.bodyshapeId, emote.id), out AnimationClip clip))
                     animator.EquipEmote(emote.id, clip);
             }
         }
 
         public void Dispose()
         {
+            dataStoreEmotes.animations.OnAdded -= OnAnimationAdded;
+            dataStoreEmotes.animations.OnRemoved -= OnAnimationRemoved;
             foreach (string emoteId in this.emotes)
             {
                 dataStoreEmotes.emotesOnUse.DecreaseRefCount(emoteId);
