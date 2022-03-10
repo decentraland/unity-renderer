@@ -55,14 +55,16 @@ namespace DCL
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             Visibility visibility = new Visibility();
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
+            AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
             avatar = new Avatar(
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-                GetComponentInChildren<AvatarAnimatorLegacy>(),
+                animator,
                 visibility,
                 avatarLOD,
                 new SimpleGPUSkinning(),
-                new GPUSkinningThrottler());
+                new GPUSkinningThrottler(),
+                new EmoteAnimationEquipper(animator, DataStore.i.emotes));
 
             if (avatarReporterController == null)
             {
@@ -154,7 +156,7 @@ namespace DCL
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, onloadParticlePrefab);
             }
 
-            avatar.SetExpression(model.expressionTriggerId, model.expressionTriggerTimestamp);
+            avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
 
             entity.OnTransformChange -= avatarMovementController.OnTransformChanged;
             entity.OnTransformChange += avatarMovementController.OnTransformChanged;

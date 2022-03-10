@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using DCL.Emotes;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "AvatarAnimationsVariable", menuName = "AvatarAnimationsVariable")]
@@ -14,6 +17,33 @@ public class AvatarAnimationsVariable : BaseVariableAsset<AvatarAnimation[]>
         }
 
         return true;
+    }
+
+    //Util context menu to convert from current implementation to new one
+    //If you see this in a review, dont let it go through!!!
+    [ContextMenu("To Embedded Emote")]
+    private void PortToEmbeddedEmote()
+    {
+        EmbeddedEmotesSO embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+        Dictionary<string, EmbeddedEmote> current = embeddedEmotesSo.emotes?.ToDictionary(x => x.id, x => x) ?? new Dictionary<string, EmbeddedEmote>();
+        foreach (AvatarAnimation avatarAnimation in value)
+        {
+            if (!current.TryGetValue(avatarAnimation.id, out EmbeddedEmote emote))
+            {
+                emote = new EmbeddedEmote()
+                {
+                    id = avatarAnimation.id,
+                    description = avatarAnimation.id,
+                };
+                current.Add(avatarAnimation.id, emote);
+            }
+            if (name.ToLower().Contains("female"))
+                emote.femaleAnimation = avatarAnimation.clip;
+            else
+                emote.maleAnimation = avatarAnimation.clip;
+        }
+
+        embeddedEmotesSo.emotes = current.Values.ToArray();
     }
 }
 

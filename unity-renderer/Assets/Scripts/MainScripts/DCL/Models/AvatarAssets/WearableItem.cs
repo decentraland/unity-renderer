@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Emotes;
 
 [Serializable]
 public class WearableItem
@@ -34,6 +35,7 @@ public class WearableItem
     }
 
     public Data data;
+    public EmoteDataV0 emoteDataV0 = null;
     public string id;
 
     public string baseUrl;
