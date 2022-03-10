@@ -5,6 +5,7 @@ using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Emotes;
 using DCL.FatalErrorReporter;
 using DCL.Interface;
 using DCL.NotificationModel;
@@ -151,6 +152,11 @@ public class PlayerAvatarController : MonoBehaviour
 
                 List<string> wearableItems = profile.avatar.wearables.ToList();
                 wearableItems.Add(profile.avatar.bodyShape);
+
+                //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
+                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+                wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+
                 await avatar.Load(wearableItems, new AvatarSettings
                 {
                     bodyshapeId = profile.avatar.bodyShape,

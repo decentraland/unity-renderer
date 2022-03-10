@@ -65,10 +65,7 @@ namespace AvatarSystem
                 List<WearableItem> wearables = null;
                 List<WearableItem> emotes = null;
 
-                //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-                var wearablesIdsWithEmbeddedEmotes = wearablesIds.Concat(embeddedEmotesSo.emotes.Select(x => x.id));
-                (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIdsWithEmbeddedEmotes, linkedCt);
+                (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
 
                 await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
 

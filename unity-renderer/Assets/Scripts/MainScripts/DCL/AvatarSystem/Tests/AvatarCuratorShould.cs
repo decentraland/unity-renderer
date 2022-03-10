@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
@@ -27,6 +28,13 @@ namespace Test.AvatarSystem
             resolver = Substitute.For<IWearableItemResolver>();
 
             //Resolver returns items from our own dictionary
+            resolver.Configure()
+                    .ResolveAndSplit(Arg.Any<IEnumerable<string>>())
+                    .Returns( x =>
+                    {
+                        List<WearableItem> wearables = GetWearablesFromIDs(x.ArgAt<IEnumerable<string>>(0)).ToList();
+                        return new UniTask<(List<WearableItem> wearableItems, List<WearableItem> emotes)>( (wearables, new List<WearableItem>() ));
+                    });
             resolver.Configure()
                     .Resolve(Arg.Any<IEnumerable<string>>())
                     .Returns( x =>

@@ -12,15 +12,26 @@ namespace AvatarSystem
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
         private readonly Dictionary<string, WearableItem> wearablesRetrieved = new Dictionary<string, WearableItem>();
 
-        public async UniTask<(WearableItem[] wearables, WearableItem[] emotes)> ResolveAndSplit(IEnumerable<string> wearableIds, CancellationToken ct = default)
+        public async UniTask<(List<WearableItem> wearables, List<WearableItem> emotes)> ResolveAndSplit(IEnumerable<string> wearableIds, CancellationToken ct = default)
         {
             try
             {
-                var allItems = await Resolve(wearableIds, ct);
-                var grouped = allItems.ToLookup(x => x.emoteDataV0 != null);
+                WearableItem[] allItems = await Resolve(wearableIds, ct);
+
+                List<WearableItem> wearables = new List<WearableItem>();
+                List<WearableItem> emotes = new List<WearableItem>();
+
+                for (int i = 0; i < allItems.Length; i++)
+                {
+                    if (allItems[i].IsEmote())
+                        emotes.Add(allItems[i]);
+                    else
+                        wearables.Add(allItems[i]);
+                }
+
                 return (
-                    grouped[false].ToArray(), //normal wearable
-                    grouped[true].ToArray() //emote
+                    wearables,
+                    emotes
                 );
             }
             catch (OperationCanceledException)
@@ -29,6 +40,7 @@ namespace AvatarSystem
                 throw;
             }
         }
+
         public async UniTask<WearableItem[]> Resolve(IEnumerable<string> wearableId, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();

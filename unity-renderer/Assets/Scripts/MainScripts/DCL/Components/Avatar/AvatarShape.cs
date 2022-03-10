@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using AvatarSystem;
 using DCL.Configuration;
+using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
 using GPUSkinning;
@@ -128,6 +129,11 @@ namespace DCL
 
             var wearableItems = model.wearables.ToList();
             wearableItems.Add(model.bodyShape);
+
+            //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
+            var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+            wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
                 //TODO Add Collider to the AvatarSystem
