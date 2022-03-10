@@ -75,7 +75,6 @@ public class FriendsTabComponentView : BaseComponentView
     {
         onlineFriendsList.list.Expand();
         offlineFriendsList.list.Expand();
-        searchResultsFriendList.list.Expand();
     }
 
     public void Show()
