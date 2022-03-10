@@ -16,7 +16,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -24,8 +25,10 @@ MonoBehaviour:
     id: wave
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Wave
+    thumbnail: https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png
     rarity: 
     description: wave
     issuedId: 0
@@ -34,7 +37,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -42,8 +46,10 @@ MonoBehaviour:
     id: fistpump
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Fist Pump
+    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png
     rarity: 
     description: fistpump
     issuedId: 0
@@ -52,7 +58,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -60,8 +67,10 @@ MonoBehaviour:
     id: robot
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Robot
+    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Karate_silhouette.svg/919px-Karate_silhouette.svg.png
     rarity: 
     description: robot
     issuedId: 0
@@ -70,7 +79,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -78,8 +88,10 @@ MonoBehaviour:
     id: raiseHand
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Raise Hand
+    thumbnail: https://freesvg.org/img/1538176837.png
     rarity: 
     description: raiseHand
     issuedId: 0
@@ -88,7 +100,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -96,8 +109,10 @@ MonoBehaviour:
     id: clap
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Clap
+    thumbnail: https://freesvg.org/img/woman-silhouette-3.png
     rarity: 
     description: clap
     issuedId: 0
@@ -106,7 +121,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -114,8 +130,10 @@ MonoBehaviour:
     id: money
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Money
+    thumbnail: https://images.squarespace-cdn.com/content/v1/55947ac3e4b0fa882882cd65/1487633176391-U7VZNFVFYFI8KKCKCYP1/NS_0020.png
     rarity: 
     description: money
     issuedId: 0
@@ -124,7 +142,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -132,8 +151,10 @@ MonoBehaviour:
     id: kiss
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Kiss
+    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png
     rarity: 
     description: kiss
     issuedId: 0
@@ -142,7 +163,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -150,8 +172,10 @@ MonoBehaviour:
     id: hammer
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Hammer
+    thumbnail: https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png
     rarity: 
     description: hammer
     issuedId: 0
@@ -160,7 +184,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -168,8 +193,10 @@ MonoBehaviour:
     id: tik
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Tik
+    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png
     rarity: 
     description: tik
     issuedId: 0
@@ -178,7 +205,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -186,8 +214,10 @@ MonoBehaviour:
     id: tektonik
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Tektonik
+    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Karate_silhouette.svg/919px-Karate_silhouette.svg.png
     rarity: 
     description: tektonik
     issuedId: 0
@@ -196,7 +226,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -204,8 +235,10 @@ MonoBehaviour:
     id: dontsee
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Don't See
+    thumbnail: https://freesvg.org/img/1538176837.png
     rarity: 
     description: dontsee
     issuedId: 0
@@ -214,7 +247,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -222,8 +256,10 @@ MonoBehaviour:
     id: handsair
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Hands Air
+    thumbnail: https://freesvg.org/img/woman-silhouette-3.png
     rarity: 
     description: handsair
     issuedId: 0
@@ -232,7 +268,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -240,8 +277,10 @@ MonoBehaviour:
     id: shrug
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Shrug
+    thumbnail: https://images.squarespace-cdn.com/content/v1/55947ac3e4b0fa882882cd65/1487633176391-U7VZNFVFYFI8KKCKCYP1/NS_0020.png
     rarity: 
     description: shrug
     issuedId: 0
@@ -250,7 +289,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -258,8 +298,10 @@ MonoBehaviour:
     id: disco
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Disco
+    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png
     rarity: 
     description: disco
     issuedId: 0
@@ -268,7 +310,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -276,8 +319,10 @@ MonoBehaviour:
     id: dab
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Dab
+    thumbnail: https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png
     rarity: 
     description: dab
     issuedId: 0
@@ -286,7 +331,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -294,8 +340,10 @@ MonoBehaviour:
     id: headexplode
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Head Explode
+    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png
     rarity: 
     description: headexplode
     issuedId: 0
@@ -304,7 +352,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -312,8 +361,10 @@ MonoBehaviour:
     id: dance
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Dance
+    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Karate_silhouette.svg/919px-Karate_silhouette.svg.png
     rarity: 
     description: dance
     issuedId: 0
@@ -322,7 +373,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -330,8 +382,10 @@ MonoBehaviour:
     id: snowfall
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Snowfall
+    thumbnail: https://freesvg.org/img/woman-silhouette-3.png
     rarity: 
     description: snowfall
     issuedId: 0
@@ -340,7 +394,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -348,8 +403,10 @@ MonoBehaviour:
     id: hohoho
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: https://images.squarespace-cdn.com/content/v1/55947ac3e4b0fa882882cd65/1487633176391-U7VZNFVFYFI8KKCKCYP1/NS_0020.png
     rarity: 
     description: hohoho
     issuedId: 0
@@ -358,7 +415,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -366,8 +424,10 @@ MonoBehaviour:
     id: crafting
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Crafting
+    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png
     rarity: 
     description: crafting
     issuedId: 0
@@ -376,7 +436,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -384,8 +445,10 @@ MonoBehaviour:
     id: snowballhit
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Snow Ball Hit
+    thumbnail: https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png
     rarity: 
     description: snowballhit
     issuedId: 0
@@ -394,7 +457,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -402,8 +466,10 @@ MonoBehaviour:
     id: snowballthrow
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
-    thumbnail: 
+    i18n:
+    - code: en
+      text: Snow Ball Throw
+    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png
     rarity: 
     description: snowballthrow
     issuedId: 0

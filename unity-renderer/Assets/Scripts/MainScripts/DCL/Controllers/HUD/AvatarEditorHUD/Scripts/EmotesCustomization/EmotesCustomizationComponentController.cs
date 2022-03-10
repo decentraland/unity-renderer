@@ -25,6 +25,7 @@ namespace EmotesCustomization
 
         internal BaseVariable<Transform> isInitialized => DataStore.i.emotesCustomization.isInitialized;
         internal BaseCollection<string> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
+        internal BaseCollection<string> currentLoadedEmotes => DataStore.i.emotesCustomization.currentLoadedEmotes;
         internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
         internal bool isEmotesCustomizationSectionOpen => isStarMenuOpen.Get() && view.isActive;
 
@@ -43,7 +44,6 @@ namespace EmotesCustomization
         internal InputAction_Trigger shortcut9InputAction;
         internal UserProfile userProfile;
         internal BaseDictionary<string, WearableItem> catalog;
-        internal List<string> currentLoadedEmotes = new List<string>();
 
         public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
         {
@@ -65,6 +65,7 @@ namespace EmotesCustomization
             catalog.OnAdded -= AddEmote;
             catalog.OnRemoved -= RemoveEmote;
             userProfile.OnInventorySet -= OnUserProfileInventorySet;
+            userProfile.OnUpdate -= OnUserProfileUpdated;
             equipInputAction.OnFinished -= OnEquipInputActionTriggered;
             showInfoInputAction.OnFinished -= OnShowInfoInputActionTriggered;
             shortcut0InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
@@ -108,7 +109,6 @@ namespace EmotesCustomization
         internal void ConfigureCatalog(BaseDictionary<string, WearableItem> catalog)
         {
             this.catalog = catalog;
-            ProcessCatalog();
             this.catalog.OnAdded += AddEmote;
             this.catalog.OnRemoved += RemoveEmote;
         }
@@ -128,7 +128,7 @@ namespace EmotesCustomization
 
         internal void CleanEmotes()
         {
-            currentLoadedEmotes.Clear();
+            currentLoadedEmotes.Set(new List<string>());
             view.CleanEmotes();
             UpdateEmoteSlots();
         }
@@ -138,7 +138,7 @@ namespace EmotesCustomization
             if (currentLoadedEmotes.Contains(id))
                 return;
 
-            if (string.IsNullOrEmpty(wearable.rarity))
+            if (!wearable.IsEmote())
                 return;
 
             if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)
@@ -177,6 +177,17 @@ namespace EmotesCustomization
         {
             this.userProfile = userProfile;
             this.userProfile.OnInventorySet += OnUserProfileInventorySet;
+            this.userProfile.OnUpdate += OnUserProfileUpdated;
+            OnUserProfileUpdated(this.userProfile);
+        }
+
+        internal void OnUserProfileUpdated(UserProfile userProfile)
+        {
+            if (string.IsNullOrEmpty(userProfile.userId))
+                return;
+
+            this.userProfile.OnUpdate -= OnUserProfileUpdated;
+            ProcessCatalog();
         }
 
         internal void OnUserProfileInventorySet(Dictionary<string, int> inventory) { ProcessCatalog(); }
