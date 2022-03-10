@@ -28,6 +28,7 @@ namespace EmotesCustomization
         internal BaseCollection<string> currentLoadedEmotes => DataStore.i.emotesCustomization.currentLoadedEmotes;
         internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
         internal bool isEmotesCustomizationSectionOpen => isStarMenuOpen.Get() && view.isActive;
+        internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
 
         internal IEmotesCustomizationComponentView view;
         internal InputAction_Hold equipInputAction;
@@ -62,6 +63,7 @@ namespace EmotesCustomization
             view.onEmoteEquipped -= OnEmoteEquipped;
             view.onEmoteUnequipped -= OnEmoteUnequipped;
             isStarMenuOpen.OnChange -= IsStarMenuOpenChanged;
+            avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
             catalog.OnAdded -= AddEmote;
             catalog.OnRemoved -= RemoveEmote;
             userProfile.OnInventorySet -= OnUserProfileInventorySet;
@@ -94,6 +96,7 @@ namespace EmotesCustomization
             view.onEmoteEquipped += OnEmoteEquipped;
             view.onEmoteUnequipped += OnEmoteUnequipped;
             isStarMenuOpen.OnChange += IsStarMenuOpenChanged;
+            avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
         }
 
         internal void OnEmoteAnimationRaised(string emoteId)
@@ -105,6 +108,8 @@ namespace EmotesCustomization
         {
             view.CloseEmoteInfoPanel();
         }
+
+        internal void OnAvatarEditorVisibleChanged(bool current, bool previous) { view.SetActive(current); }
 
         internal void ConfigureCatalog(BaseDictionary<string, WearableItem> catalog)
         {
@@ -135,10 +140,7 @@ namespace EmotesCustomization
 
         internal void AddEmote(string id, WearableItem wearable)
         {
-            if (currentLoadedEmotes.Contains(id))
-                return;
-
-            if (!wearable.IsEmote())
+            if (!wearable.IsEmote() || currentLoadedEmotes.Contains(id))
                 return;
 
             if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)

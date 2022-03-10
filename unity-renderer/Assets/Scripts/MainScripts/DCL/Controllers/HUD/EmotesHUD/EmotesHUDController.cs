@@ -156,9 +156,7 @@ namespace EmotesCustomization
             if (string.IsNullOrEmpty(id))
                 return;
 
-            // TODO (Santi): Uncomment this line and remove the next when we can obtain real emotes from the catalog!
-            //UserProfile.GetOwnUserProfile().SetAvatarExpression(id);
-            UserProfile.GetOwnUserProfile().SetAvatarExpression("wave");
+            UserProfile.GetOwnUserProfile().SetAvatarExpression(id);
         }
 
         private void ConfigureShortcuts()

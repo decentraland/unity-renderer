@@ -101,6 +101,12 @@ namespace EmotesCustomization
         /// <param name="emoteId">Emote id to search.</param>
         /// <returns>An emote card.</returns>
         EmoteCardComponentView GetEmoteCardById(string emoteId);
+
+        /// <summary>
+        /// Set the view as active or not.
+        /// </summary>
+        /// <param name="isActive">True for activating it.</param>
+        void SetActive(bool isActive);
     }
 
     public class EmotesCustomizationComponentView : BaseComponentView, IEmotesCustomizationComponentView
@@ -262,6 +268,8 @@ namespace EmotesCustomization
         {
             return GetAllEmoteCards().FirstOrDefault(x => x.model.id == emoteId);
         }
+
+        public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
         internal void ClickOnEmote(string emoteId)
         {
