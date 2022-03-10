@@ -194,7 +194,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         else
             Hide();
 
-        Search(model.searchContent);
         FocusTab(model.focusedTabIndex);
     }
 
@@ -227,6 +226,5 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         public int focusedTabIndex;
         public bool isLoadingSpinnerActive;
         public bool visible;
-        public string searchContent;
     }
 }

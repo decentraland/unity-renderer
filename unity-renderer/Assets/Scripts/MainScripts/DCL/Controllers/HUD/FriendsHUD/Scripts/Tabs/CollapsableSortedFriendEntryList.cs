@@ -24,6 +24,10 @@ public class CollapsableSortedFriendEntryList : MonoBehaviour
 
     public int Count() => entries.Count;
 
+    public void Show() => gameObject.SetActive(true);
+
+    public void Hide() => gameObject.SetActive(false);
+
     public void Add(string userId, FriendEntryBase entry)
     {
         if (entries.ContainsKey(userId)) return;
