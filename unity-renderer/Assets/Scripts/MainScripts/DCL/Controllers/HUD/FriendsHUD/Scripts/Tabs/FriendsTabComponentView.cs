@@ -290,9 +290,9 @@ public class FriendsTabComponentView : BaseComponentView
     
     private void UpdateCounterLabel()
     {
-        onlineFriendsList.countText.SetText("ONLINE ({0})", onlineFriendsList.list.Count());
-        offlineFriendsList.countText.SetText("OFFLINE ({0})", offlineFriendsList.list.Count());
-        searchResultsFriendList.countText.SetText("RESULTS ({0})", searchResultsFriendList.list.Count());
+        onlineFriendsList.countText.SetText("Online ({0})", onlineFriendsList.list.Count());
+        offlineFriendsList.countText.SetText("Offline ({0})", offlineFriendsList.list.Count());
+        searchResultsFriendList.countText.SetText("Results ({0})", searchResultsFriendList.list.Count());
     }
     
     private void HandleFriendBlockRequest(string userId, bool blockUser)

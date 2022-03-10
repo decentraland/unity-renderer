@@ -75,6 +75,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void OnEnable()
     {
+        // TODO: replace image loading for ImageComponentView implementation
         model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
         
         if (transition == Selectable.Transition.ColorTint)
