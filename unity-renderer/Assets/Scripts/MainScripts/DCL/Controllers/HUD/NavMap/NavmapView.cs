@@ -279,7 +279,6 @@ namespace DCL
             {
                 if (minimapViewport == null) 
                     return;
-                
                 ResetCameraZoom();
                 CloseToast();
 
