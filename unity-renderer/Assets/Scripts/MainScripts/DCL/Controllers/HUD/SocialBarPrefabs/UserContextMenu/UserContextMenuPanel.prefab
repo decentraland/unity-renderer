@@ -1391,8 +1391,8 @@ MonoBehaviour:
   passportButton: {fileID: 2231115598086967799}
   blockButton: {fileID: 5650817640051282846}
   reportButton: {fileID: 1559932843573383888}
-  addFriendButton: {fileID: 0}
-  cancelFriendButton: {fileID: 0}
+  addFriendButton: {fileID: 8692222620002418299}
+  cancelFriendButton: {fileID: 3508142726251763046}
   deleteFriendButton: {fileID: 7694302186068571231}
   messageButton: {fileID: 112276539412484646}
 --- !u!222 &1477505211059433124
