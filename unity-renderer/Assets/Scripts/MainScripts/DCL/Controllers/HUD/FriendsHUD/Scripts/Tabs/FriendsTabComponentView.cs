@@ -26,6 +26,7 @@ public class FriendsTabComponentView : BaseComponentView
     private readonly Dictionary<string, FriendEntryBase.Model> creationQueue = new Dictionary<string, FriendEntryBase.Model>();
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendEntry> entries = new Dictionary<string, FriendEntry>();
+    private readonly Dictionary<string, ulong> timestamps = new Dictionary<string, ulong>();
     private Pool entryPool;
     private string lastSearch;
 
@@ -43,6 +44,22 @@ public class FriendsTabComponentView : BaseComponentView
         searchBar.OnSearchText += Filter;
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
         contextMenuPanel.OnUnfriend += HandleUnfriendRequest;
+
+        int SortByTimestamp(FriendEntryBase.Model u1, FriendEntryBase.Model u2)
+        {
+            var t1 = timestamps.ContainsKey(u1.userId) ? timestamps[u1.userId] : 0;
+            var t2 = timestamps.ContainsKey(u2.userId) ? timestamps[u2.userId] : 0;
+            return t2.CompareTo(t1);
+        }
+
+        int SortByAlphabeticalOrder(FriendEntryBase.Model u1, FriendEntryBase.Model u2)
+        {
+            return string.Compare(u2.userName, u1.userName, StringComparison.Ordinal);
+        }
+
+        onlineFriendsList.list.SortingMethod = SortByTimestamp;
+        offlineFriendsList.list.SortingMethod = SortByTimestamp;
+        searchResultsFriendList.list.SortingMethod = SortByAlphabeticalOrder;
     }
 
     public override void OnDisable()
@@ -114,9 +131,7 @@ public class FriendsTabComponentView : BaseComponentView
         offlineFriendsList.list.Remove(userId);
         onlineFriendsList.list.Remove(userId);
         searchResultsFriendList.list.Remove(userId);
-        offlineFriendsList.list.RemoveTimestamp(userId);
-        onlineFriendsList.list.RemoveTimestamp(userId);
-        searchResultsFriendList.list.RemoveTimestamp(userId);
+        timestamps.Remove(userId);
         
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
@@ -141,15 +156,11 @@ public class FriendsTabComponentView : BaseComponentView
         {
             offlineFriendsList.list.Remove(userId);
             onlineFriendsList.list.Add(userId, entry);
-            var timestamp = offlineFriendsList.list.RemoveTimestamp(userId);
-            onlineFriendsList.list.SortEntriesByTimestamp(userId, timestamp);
         }
         else
         {
             onlineFriendsList.list.Remove(userId);
             offlineFriendsList.list.Add(userId, entry);
-            var timestamp = onlineFriendsList.list.RemoveTimestamp(userId);
-            offlineFriendsList.list.SortEntriesByTimestamp(userId, timestamp);
         }
         
         UpdateEmptyOrFilledState();
@@ -216,11 +227,13 @@ public class FriendsTabComponentView : BaseComponentView
                 onlineFriendsList.list.Remove(pair.Key);
             }
             
+            searchResultsFriendList.list.Sort();
             searchResultsFriendList.Show();
         }
         
         searchResultsFriendList.list.Filter(search);
         lastSearch = search;
+        UpdateCounterLabel();
     }
     
     public void Enqueue(string userId, FriendEntryBase.Model model)
@@ -230,10 +243,12 @@ public class FriendsTabComponentView : BaseComponentView
     
     public void SortEntriesByTimestamp(FriendEntryBase.Model user, ulong timestamp)
     {
+        timestamps[user.userId] = timestamp;
+        
         if (user.status == PresenceStatus.ONLINE)
-            onlineFriendsList.list.SortEntriesByTimestamp(user.userId, timestamp);
+            onlineFriendsList.list.Sort();
         else
-            offlineFriendsList.list.SortEntriesByTimestamp(user.userId, timestamp);
+            offlineFriendsList.list.Sort();
     }
 
     private void UpdateEmptyOrFilledState()
