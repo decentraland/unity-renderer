@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class BaseRefCountedCollection<T> : IEnumerable<KeyValuePair<T, int>>
 {
@@ -39,7 +40,7 @@ public class BaseRefCountedCollection<T> : IEnumerable<KeyValuePair<T, int>>
         }
     }
 
-    private void SetRefCount(T key, int count)
+    public void SetRefCount(T key, int count)
     {
         if (dictionary.ContainsKey(key))
             dictionary[key] = count;
@@ -65,14 +66,18 @@ public class BaseRefCountedCollection<T> : IEnumerable<KeyValuePair<T, int>>
             return;
 
         int newCount = Math.Max(0, dictionary[key] - 1);
-        dictionary[key] = newCount;
+        if (newCount == 0)
+            dictionary.Remove(key);
+        else
+            dictionary[key] = newCount;
 
         OnRefCountUpdated?.Invoke(key, newCount);
     }
 
     public void Clear()
     {
-        foreach (T key in dictionary.Keys)
+        T[] keys = dictionary.Keys.ToArray();
+        foreach (T key in keys)
         {
             SetRefCount(key, 0);
         }

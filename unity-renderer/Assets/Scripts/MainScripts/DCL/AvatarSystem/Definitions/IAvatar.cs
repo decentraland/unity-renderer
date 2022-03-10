@@ -29,8 +29,4 @@ namespace AvatarSystem
         Transform[] GetBones();
     }
 
-    public interface IEmoteAnimationEquipper : IDisposable
-    {
-        void SetEquippedEmotes( string bodyshapeId, IEnumerable<WearableItem> emotes);
-    }
 }
