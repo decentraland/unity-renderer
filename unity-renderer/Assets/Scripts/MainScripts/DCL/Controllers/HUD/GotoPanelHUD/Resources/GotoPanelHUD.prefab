@@ -68,7 +68,7 @@ MonoBehaviour:
   m_text: 'Teleport:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0da28b1264c7140eda8582804e5d094b, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 493ac643951b145078b6d4959c07c105, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 263d3c969cdca4dfaaa71514f806a4c2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2305,7 +2305,7 @@ GameObject:
   - component: {fileID: 4395637873855674287}
   - component: {fileID: 1338690743518557593}
   m_Layer: 5
-  m_Name: Image_Magic
+  m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2497,7 +2497,7 @@ MonoBehaviour:
   m_text: X,Y
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0da28b1264c7140eda8582804e5d094b, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 493ac643951b145078b6d4959c07c105, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 263d3c969cdca4dfaaa71514f806a4c2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
