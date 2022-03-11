@@ -48,6 +48,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     public override void OnEnable()
     {
         base.OnEnable();
+        searchBar.Configure(new SearchBarComponentModel {placeHolderText = "Search a friend you want to add"});
         searchBar.OnSubmit += SendFriendRequest;
         searchBar.OnSearchText += OnSearchInputValueChanged;
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;

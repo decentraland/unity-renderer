@@ -3873,6 +3873,8 @@ MonoBehaviour:
   closeButton: {fileID: 4252606234690962432}
   friendsTabFocusButton: {fileID: 6399830310190429734}
   friendRequestsTabFocusButton: {fileID: 5507285103506912911}
+  friendsTabSearchBar: {fileID: 3868216263017426092}
+  friendsRequestTabSearchBar: {fileID: 0}
   friendsTab: {fileID: 1506520024761695117}
   friendRequestsTab: {fileID: 1721571533106310448}
   model:
