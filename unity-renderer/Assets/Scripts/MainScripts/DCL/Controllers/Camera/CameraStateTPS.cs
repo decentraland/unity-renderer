@@ -1,4 +1,3 @@
-using System;
 using Cinemachine;
 using UnityEngine;
 
@@ -177,10 +176,13 @@ namespace DCL.Camera
 
             if (payload.cameraTarget.HasValue)
             {
-                var newPos = new Vector3(payload.x, payload.y, payload.z);
                 var cameraTarget = payload.cameraTarget.GetValueOrDefault();
-                var dirToLook = (cameraTarget - newPos);
-                eulerDir = Quaternion.LookRotation(dirToLook).eulerAngles;
+
+                var horizontalAxisLookAt = payload.y - cameraTarget.y;
+                var verticalAxisLookAt = new Vector3(cameraTarget.x - payload.x, 0, cameraTarget.z - payload.z);
+
+                eulerDir.y = Vector3.SignedAngle(Vector3.forward, verticalAxisLookAt, Vector3.up);
+                eulerDir.x = Mathf.Atan2(horizontalAxisLookAt, verticalAxisLookAt.magnitude) * Mathf.Rad2Deg;
             }
 
             defaultVirtualCameraAsFreeLook.m_XAxis.Value = eulerDir.y;

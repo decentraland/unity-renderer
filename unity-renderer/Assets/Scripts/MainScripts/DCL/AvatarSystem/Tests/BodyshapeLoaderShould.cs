@@ -76,20 +76,20 @@ namespace Test.AvatarSystem
             Rendereable rendereable = PrepareRendereable(bodyParts);
             bodyshapeLoader.bodyshapeRetriever.rendereable.Returns(rendereable);
             bodyshapeLoader.bodyshapeRetriever.Configure()
-                           .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-                           .Returns(x => new UniTask<Rendereable>(rendereable));
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(x => new UniTask<Rendereable>(rendereable));
 
             bodyshapeLoader.eyesRetriever.Configure()
-                           .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
-                           .Returns(x => new UniTask<(Texture main, Texture mask)>((Texture2D.whiteTexture, null)));
+                .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
+                .Returns(x => new UniTask<(Texture main, Texture mask)>((Texture2D.whiteTexture, null)));
 
             bodyshapeLoader.eyebrowsRetriever.Configure()
-                           .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
-                           .Returns(x => new UniTask<(Texture main, Texture mask)>((Texture2D.whiteTexture, null)));
+                .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
+                .Returns(x => new UniTask<(Texture main, Texture mask)>((Texture2D.whiteTexture, null)));
 
             bodyshapeLoader.mouthRetriever.Configure()
-                           .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
-                           .Returns(x => new UniTask<(Texture main, Texture mask)>((Texture2D.whiteTexture, null)));
+                .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
+                .Returns(x => new UniTask<(Texture main, Texture mask)>((Texture2D.whiteTexture, null)));
 
             //Act
             Color hairColor = Color.red;
@@ -133,8 +133,8 @@ namespace Test.AvatarSystem
         {
             //Arrange
             bodyshapeLoader.bodyshapeRetriever.Configure()
-                           .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-                           .Returns(x => throw new Exception("ThrowingOnPurpose"));
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(x => throw new Exception("ThrowingOnPurpose"));
 
             //Assert
             await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
@@ -150,8 +150,8 @@ namespace Test.AvatarSystem
             //Arrange
             bodyshapeLoader.bodyshapeRetriever.rendereable.Returns(x => null);
             bodyshapeLoader.bodyshapeRetriever.Configure()
-                           .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>())
-                           .Returns(x => new UniTask<Rendereable>(null));
+                .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(x => new UniTask<Rendereable>(null));
 
             //Assert
             await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
@@ -166,8 +166,8 @@ namespace Test.AvatarSystem
         {
             //Arrange
             bodyshapeLoader.eyesRetriever.Configure()
-                           .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
-                           .Returns(x => throw new Exception("ThrowingOnPurpose"));
+                .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
+                .Returns(x => throw new Exception("ThrowingOnPurpose"));
 
             //Assert
             await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
@@ -182,8 +182,8 @@ namespace Test.AvatarSystem
         {
             //Arrange
             bodyshapeLoader.eyebrowsRetriever.Configure()
-                           .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
-                           .Returns(x => throw new Exception("ThrowingOnPurpose"));
+                .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
+                .Returns(x => throw new Exception("ThrowingOnPurpose"));
 
             //Assert
             await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
@@ -198,8 +198,8 @@ namespace Test.AvatarSystem
         {
             //Arrange
             bodyshapeLoader.mouthRetriever.Configure()
-                           .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
-                           .Returns(x => throw new Exception("ThrowingOnPurpose"));
+                .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
+                .Returns(x => throw new Exception("ThrowingOnPurpose"));
 
             //Assert
             await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
@@ -214,8 +214,8 @@ namespace Test.AvatarSystem
         {
             //Arrange
             bodyshapeLoader.eyesRetriever.Configure()
-                           .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
-                           .Returns(x => new UniTask<(Texture main, Texture mask)>((null, null)));
+                .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
+                .Returns(x => new UniTask<(Texture main, Texture mask)>((null, null)));
 
             //Assert
             await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
@@ -230,8 +230,8 @@ namespace Test.AvatarSystem
         {
             //Arrange
             bodyshapeLoader.eyebrowsRetriever.Configure()
-                           .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
-                           .Returns(x => new UniTask<(Texture main, Texture mask)>((null, null)));
+                .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
+                .Returns(x => new UniTask<(Texture main, Texture mask)>((null, null)));
 
             //Assert
             await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
@@ -246,8 +246,8 @@ namespace Test.AvatarSystem
         {
             //Arrange
             bodyshapeLoader.mouthRetriever.Configure()
-                           .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
-                           .Returns(x => new UniTask<(Texture main, Texture mask)>((null, null)));
+                .Retrieve(Arg.Any<WearableItem>(), Arg.Any<string>())
+                .Returns(x => new UniTask<(Texture main, Texture mask)>((null, null)));
 
             //Assert
             await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
@@ -261,7 +261,7 @@ namespace Test.AvatarSystem
         {
             return new Rendereable()
             {
-                renderers = new List<Renderer>() { bodyparts.head, bodyparts.ubody, bodyparts.lbody, bodyparts.feet, bodyparts.eyes, bodyparts.eyebrows, bodyparts.mouth },
+                renderers = new HashSet<Renderer>() { bodyparts.head, bodyparts.ubody, bodyparts.lbody, bodyparts.feet, bodyparts.eyes, bodyparts.eyebrows, bodyparts.mouth },
                 container = container
             };
         }

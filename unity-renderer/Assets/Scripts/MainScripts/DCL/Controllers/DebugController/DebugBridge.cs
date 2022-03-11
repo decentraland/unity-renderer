@@ -42,12 +42,31 @@ namespace DCL
         [ContextMenu("Dump Scenes Load Info")]
         public void DumpScenesLoadInfo()
         {
+            bool originalLoggingValue = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
             foreach (var kvp in DCL.Environment.i.world.state.loadedScenes)
             {
                 IParcelScene scene = kvp.Value;
                 debugLogger.Log("Dumping state for scene: " + kvp.Value.sceneData.id);
                 scene.GetWaitingComponentsDebugInfo();
             }
+            
+            Debug.unityLogger.logEnabled = originalLoggingValue;
+        }
+
+        [ContextMenu("Dump Scene Metrics Offenders")]
+        public void DumpSceneMetricsOffenders()
+        {
+            bool originalLoggingValue = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+            
+            var worstMetricOffenses = DataStore.i.Get<DataStore_SceneMetrics>().worstMetricOffenses;
+            foreach ( var offense in worstMetricOffenses )
+            {
+                debugLogger.Log($"Scene: {offense.Key} ... Metrics: {offense.Value}");
+            }
+            
+            Debug.unityLogger.logEnabled = originalLoggingValue;
         }
 
         public void SetDisableAssetBundles()
@@ -58,6 +77,9 @@ namespace DCL
         [ContextMenu("Dump Renderers Lockers Info")]
         public void DumpRendererLockersInfo()
         {
+            bool originalLoggingValue = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+            
             RenderingController renderingController = FindObjectOfType<RenderingController>();
             if (renderingController == null)
             {
@@ -75,10 +97,15 @@ namespace DCL
             {
                 debugLogger.Log($"Renderer is locked by id: {lockId} of type {lockId.GetType()}");
             }
+            
+            Debug.unityLogger.logEnabled = originalLoggingValue;
         }
 
         public void CrashPayloadRequest()
         {
+            bool originalLoggingValue = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+            
             var crashPayload = CrashPayloadUtils.ComputePayload
             (
                 DCL.Environment.i.world.state.loadedScenes,
@@ -87,6 +114,8 @@ namespace DCL
             );
 
             CrashPayloadResponse(crashPayload);
+            
+            Debug.unityLogger.logEnabled = originalLoggingValue;
         }
 
         public void CrashPayloadResponse(CrashPayload payload)
@@ -98,6 +127,9 @@ namespace DCL
         [ContextMenu("Dump Crash Payload")]
         public void DumpCrashPayload()
         {
+            bool originalLoggingValue = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+            
             debugLogger.Log($"MEMORY -- total {Profiler.GetTotalAllocatedMemoryLong()} ... used by mono {Profiler.GetMonoUsedSizeLong()}");
 
             var payload = CrashPayloadUtils.ComputePayload
@@ -115,6 +147,8 @@ namespace DCL
 
             string fullDump = JsonConvert.SerializeObject(payload);
             debugLogger.Log($"Full crash payload size: {fullDump.Length}");
+            
+            Debug.unityLogger.logEnabled = originalLoggingValue;
         }
 
         public void RunPerformanceMeterTool(float durationInSeconds) { debugController.RunPerformanceMeterTool(durationInSeconds); }
@@ -126,7 +160,7 @@ namespace DCL
         public void StopBotsMovement() { debugController.StopBotsMovement(); }
         public void RemoveBot(string targetEntityId) { debugController.RemoveBot(targetEntityId); }
         public void ClearBots() { debugController.ClearBots(); }
-        
+
         public void ToggleSceneBoundingBoxes(string payload)
         {
             ToggleSceneBoundingBoxesPayload data = JsonUtility.FromJson<ToggleSceneBoundingBoxesPayload>(payload);

@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.SettingsCommon;
 using UnityEngine;
 
 namespace DCL.Camera
@@ -116,6 +118,8 @@ namespace DCL.Camera
         private float cameraLookAdvance;
         internal UnityEngine.Camera screenshotCamera;
 
+        public bool invertMouseY = false;
+
         private void Awake()
         {
             BIWInputWrapper.OnMouseDrag += MouseDrag;
@@ -197,6 +201,15 @@ namespace DCL.Camera
 
             if (zoomOutFromKeyboardInputAction != null)
                 zoomOutFromKeyboardInputAction.OnTriggered += zoomOutFromKeyboardDelegate;
+
+            invertMouseY = Settings.i.generalSettings.Data.invertYAxis;
+
+            Settings.i.generalSettings.OnChanged += UpdateLocalGeneralSettings;
+        }
+
+        private void UpdateLocalGeneralSettings(GeneralSettings obj)
+        {
+            invertMouseY = obj.invertYAxis;
         }
 
         public void StartDetectingMovement()
@@ -294,6 +307,8 @@ namespace DCL.Camera
 
             if (takeScreenshotCoroutine != null)
                 CoroutineStarter.Stop(takeScreenshotCoroutine);
+
+            Settings.i.generalSettings.OnChanged -= UpdateLocalGeneralSettings;
         }
 
         private void Update()
@@ -444,7 +459,13 @@ namespace DCL.Camera
                 return;
 
             yaw += lookSpeedH * axisX;
-            pitch -= lookSpeedV * axisY;
+            if (invertMouseY)
+            {
+                pitch -= lookSpeedV * -axisY;
+            }
+            else {
+                pitch -= lookSpeedV * axisY;
+            }
             cameraLookAdvance = smoothCameraLookSpeed * Time.deltaTime;
         }
 

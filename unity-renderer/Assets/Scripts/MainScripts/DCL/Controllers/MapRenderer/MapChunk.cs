@@ -27,14 +27,19 @@ namespace DCL
 
             Texture2D result = null;
 
-            return Utils.FetchTexture(url, false, (x) =>
+            return Utils.FetchTexture(url, true, (x) =>
             {
                 result = x;
 
                 if (result == null)
                     return;
 
-                targetImage.texture = result;
+                var newTexture = new Texture2D(result.width, result.height, result.format, true);
+                newTexture.SetPixels32(result.GetPixels32(0), 0);
+                newTexture.Apply(true);
+                Destroy(result);
+
+                targetImage.texture = newTexture;
                 targetImage.texture.wrapMode = TextureWrapMode.Clamp;
                 targetImage.SetNativeSize();
                 targetImage.color = Color.white;
