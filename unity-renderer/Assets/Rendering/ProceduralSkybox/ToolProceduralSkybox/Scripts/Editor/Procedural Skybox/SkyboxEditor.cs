@@ -451,10 +451,33 @@ namespace DCL.Skybox
 
                 GUI.enabled = true;
 
-                if (GUILayout.Button("-", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
+                // Dome context menu
+                if (GUILayout.Button(":", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
-                    configs3D.RemoveAt(i);
-                    break;
+                    ArrayList list = new ArrayList();
+                    list.Add(configs3D);
+                    list.Add(i);
+
+                    // Anonymous method for delete operation
+                    GenericMenu.MenuFunction2 deleteBtnClicked = (object obj) =>
+                    {
+                        ArrayList list = obj as ArrayList;
+                        List<Config3DDome> domeList = list[0] as List<Config3DDome>;
+                        int index = (int)list[1];
+                        domeList.RemoveAt(index);
+                        Repaint();
+                    };
+
+                    // Anonymous method for Add operation
+                    GenericMenu.MenuFunction2 addBtnClicked = (object obj) =>
+                    {
+                        ArrayList list = obj as ArrayList;
+                        List<Config3DDome> domeList = list[0] as List<Config3DDome>;
+                        int index = (int)list[1];
+                        domeList.Insert(index + 1, new Config3DDome("Dome " + (domeList.Count + 1)));
+                        Repaint();
+                    };
+                    ShowDomeContextMenu(deleteBtnClicked, addBtnClicked, list);
                 }
                 EditorGUILayout.EndHorizontal();
 
@@ -485,6 +508,21 @@ namespace DCL.Skybox
             {
                 configs3D.Add(new Config3DDome("Dome " + (configs3D.Count + 1)));
             }
+        }
+
+        void ShowDomeContextMenu(GenericMenu.MenuFunction2 OnDeleteBtnClicked, GenericMenu.MenuFunction2 OnAddBtnClicked, object list)
+        {
+            // Create menu
+            GenericMenu menu = new GenericMenu();
+
+            // Add option
+            menu.AddItem(new GUIContent("Add"), false, OnAddBtnClicked, list);
+
+            menu.AddSeparator("");
+            // Delete option
+            menu.AddItem(new GUIContent("Delete"), false, OnDeleteBtnClicked, list);
+
+            menu.ShowAsContext();
         }
 
         void RenderDomeBackgroundLayer(Config3DDome domeObj)
