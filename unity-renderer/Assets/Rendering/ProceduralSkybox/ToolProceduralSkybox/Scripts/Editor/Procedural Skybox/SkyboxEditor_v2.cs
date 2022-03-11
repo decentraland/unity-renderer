@@ -51,12 +51,7 @@ namespace DCL.Skybox
 
         private void Update()
         {
-            if (selectedConfiguration == null)
-            {
-                return;
-            }
-
-            if (isPaused)
+            if (selectedConfiguration == null || isPaused)
             {
                 return;
             }
