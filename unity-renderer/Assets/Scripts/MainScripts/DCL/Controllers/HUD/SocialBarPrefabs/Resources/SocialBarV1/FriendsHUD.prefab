@@ -3150,7 +3150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Content: {fileID: 0}
+  m_Content: {fileID: 6282617482485509537}
   m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
@@ -3158,9 +3158,9 @@ MonoBehaviour:
   m_Inertia: 1
   m_DecelerationRate: 0.135
   m_ScrollSensitivity: 1
-  m_Viewport: {fileID: 0}
+  m_Viewport: {fileID: 1214396869386443534}
   m_HorizontalScrollbar: {fileID: 0}
-  m_VerticalScrollbar: {fileID: 0}
+  m_VerticalScrollbar: {fileID: 1634065490839807068}
   m_HorizontalScrollbarVisibility: 0
   m_VerticalScrollbarVisibility: 1
   m_HorizontalScrollbarSpacing: 0
@@ -3321,7 +3321,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2848366822303428748}
   m_HandleRect: {fileID: 7437318031689893040}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3873,8 +3873,6 @@ MonoBehaviour:
   closeButton: {fileID: 4252606234690962432}
   friendsTabFocusButton: {fileID: 6399830310190429734}
   friendRequestsTabFocusButton: {fileID: 5507285103506912911}
-  friendsTabSearchBar: {fileID: 3868216263017426092}
-  friendsRequestTabSearchBar: {fileID: 0}
   friendsTab: {fileID: 1506520024761695117}
   friendRequestsTab: {fileID: 1721571533106310448}
   model:
@@ -4756,7 +4754,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Content: {fileID: 0}
+  m_Content: {fileID: 6385060616518280574}
   m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
@@ -4764,9 +4762,9 @@ MonoBehaviour:
   m_Inertia: 1
   m_DecelerationRate: 0.135
   m_ScrollSensitivity: 1
-  m_Viewport: {fileID: 0}
+  m_Viewport: {fileID: 2828657937425296497}
   m_HorizontalScrollbar: {fileID: 0}
-  m_VerticalScrollbar: {fileID: 0}
+  m_VerticalScrollbar: {fileID: 2911345154281567359}
   m_HorizontalScrollbarVisibility: 0
   m_VerticalScrollbarVisibility: 1
   m_HorizontalScrollbarSpacing: 0
