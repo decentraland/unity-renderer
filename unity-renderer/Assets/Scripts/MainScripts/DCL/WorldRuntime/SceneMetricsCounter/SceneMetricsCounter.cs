@@ -271,17 +271,20 @@ namespace DCL
         {
             if (string.IsNullOrEmpty(sceneId))
                 return;
-            
-            var sceneData = data?.sceneData[sceneId];
 
-            if ( sceneData != null )
+            if (data != null && data.sceneData.ContainsKey(sceneId))
             {
-                currentCountValue.materials = sceneData.materials.Count();
-                currentCountValue.textures = sceneData.textures.Count();
-                currentCountValue.meshes = sceneData.meshes.Count();
-                currentCountValue.entities = sceneData.owners.Count();
-                currentCountValue.bodies = sceneData.renderers.Count();
-                currentCountValue.triangles = sceneData.triangles.Get() / 3;
+                var sceneData = data.sceneData[sceneId];
+
+                if (sceneData != null)
+                {
+                    currentCountValue.materials = sceneData.materials.Count();
+                    currentCountValue.textures = sceneData.textures.Count();
+                    currentCountValue.meshes = sceneData.meshes.Count();
+                    currentCountValue.entities = sceneData.owners.Count();
+                    currentCountValue.bodies = sceneData.renderers.Count();
+                    currentCountValue.triangles = sceneData.triangles.Get() / 3;
+                }
             }
 
             logger.Verbose($"Current metrics: {currentCountValue}");
