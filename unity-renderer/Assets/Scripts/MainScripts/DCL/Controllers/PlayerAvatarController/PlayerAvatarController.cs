@@ -118,10 +118,10 @@ public class PlayerAvatarController : MonoBehaviour
     private void OnEnable()
     {
         userProfile.OnUpdate += OnUserProfileOnUpdate;
-        userProfile.OnAvatarExpressionSet += OnAvatarExpression;
+        userProfile.OnAvatarEmoteSet += OnAvatarEmote;
     }
 
-    private void OnAvatarExpression(string id, long timestamp)
+    private void OnAvatarEmote(string id, long timestamp)
     {
         avatar.PlayEmote(id, timestamp);
         playerAvatarAnalytics.ReportExpression(id);
@@ -202,7 +202,7 @@ public class PlayerAvatarController : MonoBehaviour
     private void OnDisable()
     {
         userProfile.OnUpdate -= OnUserProfileOnUpdate;
-        userProfile.OnAvatarExpressionSet -= OnAvatarExpression;
+        userProfile.OnAvatarEmoteSet -= OnAvatarEmote;
     }
 
     private void OnDestroy()

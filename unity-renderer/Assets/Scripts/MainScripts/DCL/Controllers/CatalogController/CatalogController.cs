@@ -375,7 +375,6 @@ public class CatalogController : MonoBehaviour
 
             foreach (var wearableToDestroy in wearablesToDestroy)
             {
-                Debug.Log($"Removing: {wearableToDestroy}");
                 wearableCatalog.Remove(wearableToDestroy);
                 wearablesInUseCounters.Remove(wearableToDestroy);
             }

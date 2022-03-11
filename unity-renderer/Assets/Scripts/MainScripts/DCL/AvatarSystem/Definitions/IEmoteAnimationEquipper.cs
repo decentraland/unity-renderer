@@ -5,6 +5,6 @@ namespace AvatarSystem
 {
     public interface IEmoteAnimationEquipper : IDisposable
     {
-        void SetEquippedEmotes( string bodyshapeId, IEnumerable<WearableItem> emotes);
+        void SetEquippedEmotes( string bodyShapeId, IEnumerable<WearableItem> emotes);
     }
 }
