@@ -5,8 +5,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using DCL;
-using System.Collections.Generic;
-using System.Linq;
 
 public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
 {

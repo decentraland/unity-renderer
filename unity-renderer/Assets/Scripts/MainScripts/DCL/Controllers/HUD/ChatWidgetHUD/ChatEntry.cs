@@ -141,16 +141,18 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         }
 
         if (CoordinateUtils.HasValidTextCoordinates(body.text)) {
-            CoordinateUtils.GetTextCoordinates(body.text).ForEach(c=> {
-                PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(c));
+            List<string> textCoordinates = CoordinateUtils.GetTextCoordinates(body.text);
+            for (int i = 0; i < textCoordinates.Count; i++)
+            {
+                PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(textCoordinates[i]));
                 string coordinatesColor;
-                if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE) 
+                if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
                     coordinatesColor = COORDINATES_COLOR_PRIVATE;
-                else 
+                else
                     coordinatesColor = COORDINATES_COLOR_PUBLIC;
 
-                body.text = body.text.Replace(c,$"<link={c}><color={coordinatesColor}><u>{c}</u></color></link>");
-            });
+                body.text = body.text.Replace(textCoordinates[i], $"<link={textCoordinates[i]}><color={coordinatesColor}><u>{textCoordinates[i]}</u></color></link>");
+            }
         }
 
         messageLocalDateTime = UnixTimeStampToLocalDateTime(chatEntryModel.timestamp).ToString();
@@ -289,14 +291,15 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             return;
 
         int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, Input.mousePosition, null);
-        if (linkIndex != -1)
-        {
+
+        if (linkIndex == -1)
+            return;
+
             isOverCoordinates = true;
             TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
             currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
             hoverGotoPanelTimer = timeToHoverGotoPanel;
             OnCancelHover?.Invoke();
-        }
     }
 
     void Fade()
