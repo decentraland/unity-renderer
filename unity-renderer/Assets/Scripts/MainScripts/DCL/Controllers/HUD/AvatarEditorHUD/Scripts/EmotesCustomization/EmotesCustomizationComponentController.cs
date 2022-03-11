@@ -87,6 +87,25 @@ namespace EmotesCustomization
             List<string> storedEquippedEmotes = JsonConvert.DeserializeObject<List<string>>(PlayerPrefsUtils.GetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY));
             if (storedEquippedEmotes != null)
                 equippedEmotes.Set(storedEquippedEmotes);
+            else
+                SetDefaultEquippedEmotes();
+        }
+
+        internal void SetDefaultEquippedEmotes()
+        {
+            equippedEmotes.Set(new List<string> 
+            { 
+                "wave", 
+                "fistpump", 
+                "robot", 
+                "raiseHand", 
+                "clap", 
+                "money", 
+                "kiss", 
+                "hammer", 
+                "tik", 
+                "tektonik" 
+            });
         }
 
         internal void ConfigureView()
