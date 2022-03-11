@@ -150,6 +150,10 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     private void FetchNFTInfoSuccess(NFTInfo nftInfo)
     {
+        // the FetchNFTInfoSuccess action can get called at the NFTInfoLoadHelper after destroying this controller
+        if (this == null)
+            return;
+        
         loadNftAssetCoroutine = StartCoroutine(LoadNFTAssetCoroutine(nftInfo));
     }
 
