@@ -13,6 +13,7 @@ public class MemoryScoreFormulasShould
     public void OvershootTextureMemoryWhenScoreIsComputed()
     {
         var texture = new Texture2D(100, 100);
+        texture.Apply(false, true);
         long score = MetricsScoreUtils.ComputeTextureScore(texture);
         Assert.That(score, Is.GreaterThan(Profiler.GetRuntimeMemorySizeLong(texture)));
         Object.Destroy(texture);
