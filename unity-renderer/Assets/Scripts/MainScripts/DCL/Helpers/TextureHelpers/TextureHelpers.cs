@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 public static class TextureHelpers
 {
@@ -31,19 +32,30 @@ public static class TextureHelpers
         Object.Destroy(oldTexture);
     }
 
-    public static Texture2D Resize(Texture2D source, int newWidth, int newHeight)
+    public static Texture2D Resize(Texture2D source, int newWidth, int newHeight, bool linear = false)
     {
-        source.filterMode = FilterMode.Point;
+        // RenderTexture default format is ARGB32
+        Texture2D nTex = new Texture2D(newWidth, newHeight, TextureFormat.ARGB32, 1, linear);
+        nTex.filterMode = source.filterMode;
+        nTex.wrapMode = source.wrapMode;
 
         RenderTexture rt = RenderTexture.GetTemporary(newWidth, newHeight);
         rt.filterMode = FilterMode.Point;
+        source.filterMode = FilterMode.Point;
 
         RenderTexture.active = rt;
         Graphics.Blit(source, rt);
-
-        Texture2D nTex = new Texture2D(newWidth, newHeight);
-        nTex.ReadPixels(new Rect(0, 0, newWidth, newWidth), 0, 0);
-        nTex.Apply();
+        
+        bool supportsGPUTextureCopy = SystemInfo.copyTextureSupport != CopyTextureSupport.None;
+        if (supportsGPUTextureCopy)
+        {
+            Graphics.CopyTexture(rt, nTex);
+        }
+        else
+        {
+            nTex.ReadPixels(new Rect(0, 0, newWidth, newHeight), 0, 0);
+            nTex.Apply();
+        }
 
         RenderTexture.ReleaseTemporary(rt);
         RenderTexture.active = null;
@@ -54,7 +66,30 @@ public static class TextureHelpers
     public static Texture2D CopyTexture(Texture2D sourceTexture)
     {
         Texture2D texture = new Texture2D(sourceTexture.width, sourceTexture.height, sourceTexture.format, false);
-        Graphics.CopyTexture(sourceTexture, texture); // TODO: does this work in WebGL?
+        
+        bool supportsGPUTextureCopy = SystemInfo.copyTextureSupport != CopyTextureSupport.None;
+        if (supportsGPUTextureCopy)
+        {
+            Graphics.CopyTexture(sourceTexture, texture);
+        }
+        else
+        {
+            RenderTexture rt = RenderTexture.GetTemporary(sourceTexture.width, sourceTexture.height);
+            rt.filterMode = FilterMode.Point;
+            FilterMode sourceFilterMode = sourceTexture.filterMode; 
+            sourceTexture.filterMode = FilterMode.Point;
+
+            RenderTexture.active = rt;
+            Graphics.Blit(sourceTexture, rt);
+            
+            texture.ReadPixels(new Rect(0, 0, sourceTexture.width, sourceTexture.height), 0, 0);
+            texture.Apply();
+            
+            RenderTexture.ReleaseTemporary(rt);
+            RenderTexture.active = null;
+            sourceTexture.filterMode = sourceFilterMode;
+        }
+        
         return texture;
     }
 }
