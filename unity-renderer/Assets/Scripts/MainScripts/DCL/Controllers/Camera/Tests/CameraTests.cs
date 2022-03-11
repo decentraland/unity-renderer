@@ -32,14 +32,15 @@ namespace CameraController_Test
         }
 
         [Test]
-        [TestCase(1, 0, 0)]
-        [TestCase(0, 0, 1)]
-        [TestCase(1, 0, 1)]
-        [TestCase(-1, 0, 0)]
-        [TestCase(0, 0, -1)]
-        [TestCase(-1, 0, -1)]
-        public void ReactToSetRotation(float lookAtX, float lookAtY, float lookAtZ)
+        [TestCase(1, -1, 0, ExpectedResult = new float[] { 45, 90 })]
+        [TestCase(0, 1, 1, ExpectedResult = new float[] { -45, 0 })]
+        [TestCase(1, 0, 1, ExpectedResult = new float[] { 0, 45 })]
+        [TestCase(-1, 0, 0, ExpectedResult = new float[] { 0, -90 })]
+        [TestCase(0, 0, -1, ExpectedResult = new float[] { 0, 180 })]
+        [TestCase(-1, 0, -1, ExpectedResult = new float[] { 0, -135 })]
+        public float[] ReactToSetRotation(float lookAtX, float lookAtY, float lookAtZ)
         {
+            CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
             var payload = new DCL.Camera.CameraController.SetRotationPayload()
             {
                 x = 0,
@@ -48,15 +49,12 @@ namespace CameraController_Test
                 cameraTarget = new Vector3(lookAtX, lookAtY, lookAtZ)
             };
 
-            var rotationEuler = Quaternion.LookRotation(payload.cameraTarget.Value).eulerAngles;
-
             cameraController.SetRotation(JsonConvert.SerializeObject(payload, Formatting.None, new JsonSerializerSettings()
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             }));
 
-            Assert.AreEqual(cameraController.GetRotation().y, rotationEuler.y);
-            Assert.AreEqual(cameraController.GetRotation().x, rotationEuler.x);
+            return new[] { cameraController.GetRotation().x, cameraController.GetRotation().y };
         }
 
         [UnityTest]
