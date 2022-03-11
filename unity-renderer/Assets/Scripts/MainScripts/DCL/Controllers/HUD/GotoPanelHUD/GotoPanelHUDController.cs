@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GotoPanel
 {
-    public class GotoPanelHUDController : IHUD
+    public class GotoPanelHUDController
     {
         internal IGotoPanelHUDView view { get; private set; }
 
