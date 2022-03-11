@@ -252,7 +252,7 @@ public class ChatHUDView : MonoBehaviour
 
     protected virtual void OnMessageCoordinatesTriggerHover(ChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
     {
-        messageHoverGotoText.text = $"Jump to {parcelCoordinates.ToString()}";
+        messageHoverGotoText.text = $"{parcelCoordinates.ToString()} INFO";
         messageHoverGotoPanel.transform.position = new Vector3(Input.mousePosition.x, chatEntry.hoverPanelPositionReference.transform.position.y, chatEntry.hoverPanelPositionReference.transform.position.z);
         messageHoverGotoPanel.SetActive(true);
     }

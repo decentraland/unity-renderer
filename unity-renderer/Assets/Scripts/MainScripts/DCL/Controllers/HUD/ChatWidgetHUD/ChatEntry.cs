@@ -233,10 +233,18 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         }
     }
 
-    public void OnPointerEnter(PointerEventData pointerEventData) { hoverPanelTimer = timeToHoverPanel; }
+    public void OnPointerEnter(PointerEventData pointerEventData) {
+        if (pointerEventData == null)
+            return;
+
+        hoverPanelTimer = timeToHoverPanel;
+    }
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
+        if (pointerEventData == null)
+            return;
+
         hoverPanelTimer = 0f;
         int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, null);
         if (linkIndex == -1)
