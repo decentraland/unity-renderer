@@ -12,6 +12,7 @@ public static class AvatarAssetsTestHelpers
 
     public static void PrepareWearableItemDummy(WearableItemDummy wid)
     {
+        wid.emoteDataV0 = null;
         wid.baseUrl = TestAssetsUtils.GetPath() + "/Avatar/Assets/";
 
         foreach (var rep in wid.data.representations)
