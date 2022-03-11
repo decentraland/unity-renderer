@@ -320,9 +320,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetObjects:
   - {fileID: 142779142021419725}
-  - {fileID: 4250664813082659121}
-  - {fileID: 4212356851738203338}
-  - {fileID: 6223728503660259618}
 --- !u!1 &476136669478275824
 GameObject:
   m_ObjectHideFlags: 0
