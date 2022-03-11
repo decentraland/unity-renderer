@@ -19,7 +19,8 @@ public class BlurController : MonoBehaviour
 
     private void Awake()
     {
-        feature = rendererData.rendererFeatures.Where((f) => f.name == featureName).FirstOrDefault();
+        if(rendererData)
+            feature = rendererData.rendererFeatures.Where((f) => f.name == featureName).FirstOrDefault();
     }
 
     void Update()
