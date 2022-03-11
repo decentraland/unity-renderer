@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL
@@ -77,24 +78,44 @@ namespace DCL
             }
         }
 
+        string[] filteredAssets = new []
+        {
+            "QmQsVM6RQU38LxDavAQ2U9Lq97zULgqrmyqXJFm3Np2tXF",
+            "QmWQrTDzjJhqDyYaCPDrxAiRvdFMu8jLASHEYdTi4ZD87N",
+            "QmesuZQjPpShcYrkXpV9Ya4UXHT88iUUYbHTmHBgs5goK4",
+            "QmPBrgC7pxAux22X29YsectSPu5o4Li37rGc9qbZJpKdjx"
+        };
+        
         public AssetPromiseType Keep(AssetPromiseType promise)
         {
+            bool isDebug = filteredAssets.Contains(promise?.GetId());
+            if(isDebug)
+                Debug.Log($"{GetType()}.Keep() - {promise?.GetId()} - 1");
+            
             if (promise == null || promise.state != AssetPromiseState.IDLE_AND_EMPTY || waitingPromises.Contains(promise))
                 return promise;
 
             object id = promise.GetId();
+            
+            if(isDebug)
+                Debug.Log($"{GetType()}.Keep() - {promise.GetId()} - 2");
 
             if (id == null)
             {
                 Debug.LogError("ERROR: ID == null. Promise is not set up correctly.");
                 return promise;
             }
+            
+            if(isDebug)
+                Debug.Log($"{GetType()}.Keep() - {promise.GetId()} - 3");
 
             promise.isDirty = true;
 
             //NOTE(Brian): We already have a master promise for this id, add to blocked list.
             if (masterPromiseById.ContainsKey(id))
             {
+                if(isDebug)
+                    Debug.Log($"{GetType()}.Keep() - {promise.GetId()} - 4");
                 // TODO(Brian): Remove once this class has a proper lifecycle and is on service locator.
                 EnsureProcessBlockerPromiseQueueCoroutine();
                 waitingPromises.Add(promise);
@@ -108,6 +129,9 @@ namespace DCL
                 promise.SetWaitingState();
                 return promise;
             }
+            
+            if(isDebug)
+                Debug.Log($"{GetType()}.Keep() - {promise.GetId()} - 5");
 
             // NOTE(Brian): Not in library, add to corresponding lists...
             if (!library.Contains(id))
@@ -115,10 +139,17 @@ namespace DCL
                 waitingPromises.Add(promise);
                 masterPromiseById.Add(id, promise);
             }
+            
+            if(isDebug)
+                Debug.Log($"{GetType()}.Keep() - {promise.GetId()} - 6");
 
             promise.library = library;
             promise.OnPreFinishEvent += OnRequestCompleted;
+            promise.isDebug = isDebug;
             promise.Load();
+            
+            if(isDebug)
+                Debug.Log($"{GetType()}.Keep() - {promise.GetId()} - 7");
 
             return promise;
         }

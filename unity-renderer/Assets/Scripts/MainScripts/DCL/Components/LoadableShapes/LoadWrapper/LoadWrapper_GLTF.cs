@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -57,26 +58,15 @@ namespace DCL.Components
             loadHelper.OnSuccessEvent += successWrapperEvent;
             loadHelper.OnFailEvent += failWrapperEvent;
             
-            // Debug.Log("CHECKING " + targetUrl);
-            /*string[] filteredAssets = new []
-            {
-                "models/ogcr/ogcr_pink.glb",
-                "models/The_shiny_dog.glb",
-                "models/sculpt_plein.glb",
-                "models/dancers/Unity2Skfb.gltf"
-            };
-            foreach (string filteredAsset in filteredAssets)
-            {
-                if (targetUrl.Contains(filteredAsset))
-                {
-                    Debug.Log(targetUrl + " FILTERED!!!");
-                    OnFailWrapper(OnFail, new Exception("FILTERED ASSET"));
-                    break;
-                }
-            }*/
-            
-            loadHelper.Load(targetUrl);
+            loadHelper.Load(targetUrl, isDebug:filteredAssets.Contains(targetUrl));
         }
+        string[] filteredAssets = new []
+        {
+            "models/ogcr/ogcr_pink.glb",
+            "models/The_shiny_dog.glb",
+            "models/sculpt_plein.glb",
+            "models/dancers/Unity2Skfb.gltf"
+        };
 
         private void OnFailWrapper(Action<LoadWrapper, Exception> OnFail, Exception exception)
         {

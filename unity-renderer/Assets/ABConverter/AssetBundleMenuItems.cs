@@ -98,8 +98,8 @@ namespace DCL
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org -110,-110")]
         public static void DumpArea() { ABConverter.SceneClient.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1)); }
 
-        [MenuItem("Decentraland/Asset Bundle Builder/Dump scene QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM")]
-        public static void DumpSceneId() { ABConverter.SceneClient.DumpScene("QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM"); }
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump scene QmRw6kHCQsdyYRjNy8sqjxa7wapq1YyjhsgLX31D1QDPz2")]
+        public static void DumpSceneId() { ABConverter.SceneClient.DumpScene("QmRw6kHCQsdyYRjNy8sqjxa7wapq1YyjhsgLX31D1QDPz2"); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Single Asset")]
         public static void DumpSingleAsset()

@@ -78,36 +78,54 @@ namespace DCL
             ClearEvents();
         }
 
+        public bool isDebug = false;
         internal virtual void Load()
         {
+            if(isDebug)
+                Debug.Log($"{GetType()}.Load() - {GetId()} - 1 - state {state.ToString()}");
             if (state == AssetPromiseState.LOADING || state == AssetPromiseState.FINISHED)
                 return;
 
             state = AssetPromiseState.LOADING;
+            
+            if(isDebug)
+                Debug.Log($"{GetType()}.Load() - {GetId()} - 2");
 
             // NOTE(Brian): Get existent library element
             object libraryAssetCheckId = GetLibraryAssetCheckId();
             if (library.Contains(libraryAssetCheckId))
             {
+                if(isDebug)
+                    Debug.Log($"{GetType()}.Load() - {GetId()} - 3");
                 asset = GetAsset(libraryAssetCheckId);
 
                 if (asset != null)
                 {
+                    if(isDebug)
+                        Debug.Log($"{GetType()}.Load() - {GetId()} - 4A");
                     OnBeforeLoadOrReuse();
                     OnReuse(OnReuseFinished);
                 }
                 else
                 {
+                    if(isDebug)
+                        Debug.Log($"{GetType()}.Load() - {GetId()} - 4B");
                     CallAndClearEvents(false, new Exception("Asset is null"));
                 }
 
                 return;
             }
+            
+            if(isDebug)
+                Debug.Log($"{GetType()}.Load() - {GetId()} - 5 - Not in library, creating new");
 
             // NOTE(Brian): Get new library element
             asset = new AssetType();
             OnBeforeLoadOrReuse();
             asset.id = GetId();
+            
+            if(isDebug)
+                Debug.Log($"{GetType()}.Load() - {GetId()} - 6");
 
             OnLoad(OnLoadSuccess, OnLoadFailure);
         }
@@ -120,6 +138,9 @@ namespace DCL
 
         protected void OnReuseFinished()
         {
+            if(isDebug)
+                Debug.Log($"{GetType()}.OnReuseFinished() - {GetId()}");
+            
             OnAfterLoadOrReuse();
             state = AssetPromiseState.FINISHED;
             CallAndClearEvents(true, null);
@@ -127,8 +148,13 @@ namespace DCL
 
         protected void OnLoadSuccess()
         {
+            if(isDebug)
+                Debug.Log($"{GetType()}.OnLoadSuccess() - {GetId()} - 1");
+            
             if (AddToLibrary())
             {
+                if(isDebug)
+                    Debug.Log($"{GetType()}.OnLoadSuccess() - {GetId()} - 2");
                 OnAfterLoadOrReuse();
                 state = AssetPromiseState.FINISHED;
                 CallAndClearEvents(true, null);
@@ -141,10 +167,16 @@ namespace DCL
 
         protected void OnLoadFailure(Exception exception)
         {
+            if(isDebug)
+                Debug.Log($"{GetType()}.OnLoadFailure() - {GetId()} - 1");
+            
 #if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
+            
+            if(isDebug)
+                Debug.Log($"{GetType()}.OnLoadFailure() - {GetId()} - 2");
             
             CallAndClearEvents(false, exception);
             Cleanup();
@@ -154,14 +186,23 @@ namespace DCL
 
         internal virtual void Unload()
         {
+            if(isDebug)
+                Debug.Log($"{GetType()}.Unload() - {GetId()} - 1");
+            
             if (state == AssetPromiseState.IDLE_AND_EMPTY)
                 return;
+            
+            if(isDebug)
+                Debug.Log($"{GetType()}.Unload() - {GetId()} - 2");
 
             Cleanup();
         }
 
         public void Cleanup()
         {
+            if(isDebug)
+                Debug.Log($"{GetType()}.Cleanup() - {GetId()} - 1");
+            
             if (state == AssetPromiseState.LOADING)
             {
                 OnCancelLoading();
@@ -179,6 +220,9 @@ namespace DCL
 
                 asset = null;
             }
+            
+            if(isDebug)
+                Debug.Log($"{GetType()}.Cleanup() - {GetId()} - 2");
         }
 
         internal virtual void OnForget()

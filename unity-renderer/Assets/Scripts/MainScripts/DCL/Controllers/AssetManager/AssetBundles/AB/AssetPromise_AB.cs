@@ -40,17 +40,26 @@ namespace DCL
 
         protected override bool AddToLibrary()
         {
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.AddToLibrary() - {GetId()} - 1");
+            
             if (!library.Add(asset))
             {
                 Debug.Log("add to library fail?");
                 return false;
             }
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.AddToLibrary() - {GetId()} - 2");
 
             if (asset == null)
             {
                 Debug.LogWarning($"Asset is null when trying to add it to the library: hash == {this.GetId()}");
                 return false;
             }
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.AddToLibrary() - {GetId()} - 3");
 
             asset = library.Get(asset.id);
             return true;
@@ -58,6 +67,9 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.OnCancelLoading() - {GetId()}");
+            
             if (loadCoroutine != null)
             {
                 CoroutineStarter.Stop(loadCoroutine);
@@ -95,35 +107,56 @@ namespace DCL
         protected IEnumerator LoadAssetBundleWithDeps(string baseUrl, string hash, Action OnSuccess, Action<Exception> OnFail)
         {
             string finalUrl = baseUrl + hash;
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 1 - final URL: {finalUrl}");
 
             if (failedRequestUrls.Contains(finalUrl))
             {
                 OnFail?.Invoke(new Exception($"The url {finalUrl} has failed"));
                 yield break;
             }
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 2");
 
             yield return WaitForConcurrentRequestsSlot();
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 3");
 
             RegisterConcurrentRequest();
 #if (UNITY_EDITOR || UNITY_STANDALONE)
             asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, hash: Hash128.Compute(hash),
-                disposeOnCompleted: false);
+                disposeOnCompleted: false, timeout:60);
 #else
             //NOTE(Brian): Disable in build because using the asset bundle caching uses IDB.
             asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, disposeOnCompleted: false);
 #endif
 
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 4 - Will download AB without loading deps yet...");
+            
             // 1. Download asset bundle, but don't load its objects yet
             yield return asyncOp;
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 5 - Downloaded.");
 
             if (asyncOp.isDisposed)
             {
                 OnFail?.Invoke(new Exception("Operation is disposed"));
                 yield break;
             }
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 6");
 
             if (!asyncOp.isSucceded)
             {
+                if(isDebug)
+                    Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 7 - Request failed? {asyncOp.webRequest.error}");
+                
                 if (VERBOSE)
                     Debug.Log($"Request failed? {asyncOp.webRequest.error} ... {finalUrl}");
                 failedRequestUrls.Add(finalUrl);
@@ -131,16 +164,25 @@ namespace DCL
                 asyncOp.Dispose();
                 yield break;
             }
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 8");
 
             AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(asyncOp.webRequest);
             asyncOp.Dispose();
 
             if (assetBundle == null || asset == null)
             {
+                if(isDebug)
+                    Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 9 - AB or Asset is null!");
+                
                 OnFail?.Invoke(new Exception("Asset bundle or asset is null"));
                 failedRequestUrls.Add(finalUrl);
                 yield break;
             }
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 10");
 
             asset.ownerAssetBundle = assetBundle;
             asset.assetBundleAssetName = assetBundle.name;
@@ -150,15 +192,24 @@ namespace DCL
 
             if (metadata != null)
             {
+                if(isDebug)
+                    Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 11A - will load depmap from JSON");
+                
                 AssetBundleDepMapLoadHelper.LoadDepMapFromJSON(metadata.text, hash);
             }
             else
             {
+                if(isDebug)
+                    Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 11B - will load external depmap");
+                
                 if (!AssetBundleDepMapLoadHelper.dependenciesMap.ContainsKey(hash))
                     CoroutineStarter.Start(AssetBundleDepMapLoadHelper.LoadExternalDepMap(baseUrl, hash));
 
                 yield return AssetBundleDepMapLoadHelper.WaitUntilExternalDepMapIsResolved(hash);
             }
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 12 - Will resolve dependencies...");
 
             // 3. Resolve dependencies
             if (AssetBundleDepMapLoadHelper.dependenciesMap.ContainsKey(hash))
@@ -174,6 +225,9 @@ namespace DCL
                     }
                 }
             }
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 13 - Will wait for dependency promises...");
 
             UnregisterConcurrentRequest();
 
@@ -183,6 +237,9 @@ namespace DCL
             }
 
             assetBundlesLoader.MarkAssetBundleForLoad(asset, assetBundle, containerTransform, OnSuccess, OnFail);
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.LoadAssetBundleWithDeps() - {GetId()} - 14 - Marked asset bundle for load.");
         }
 
         public override string ToString()
@@ -212,6 +269,9 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.OnLoad() - {GetId()}");
+            
             loadCoroutine = CoroutineStarter.Start(DCLCoroutineRunner.Run(
                 LoadAssetBundleWithDeps(contentUrl, hash, OnSuccess, OnFail),
                 exception => OnFail?.Invoke(exception)));
@@ -219,14 +279,23 @@ namespace DCL
 
         IEnumerator WaitForConcurrentRequestsSlot()
         {
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.WaitForConcurrentRequestsSlot() - {GetId()} - 1");
+            
             while (concurrentRequests >= MAX_CONCURRENT_REQUESTS)
             {
                 yield return null;
             }
+            
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.WaitForConcurrentRequestsSlot() - {GetId()} - 2");
         }
 
         void RegisterConcurrentRequest()
         {
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.RegisterConcurrentRequest() - {GetId()} - already registered? {requestRegistered}");
+            
             if (requestRegistered)
                 return;
 
@@ -237,6 +306,9 @@ namespace DCL
 
         void UnregisterConcurrentRequest()
         {
+            if(isDebug)
+                Debug.Log($"AssetPromise_AB.RegisterConcurrentRequest() - {GetId()} - already UNregistered? {!requestRegistered}");
+            
             if (!requestRegistered)
                 return;
 

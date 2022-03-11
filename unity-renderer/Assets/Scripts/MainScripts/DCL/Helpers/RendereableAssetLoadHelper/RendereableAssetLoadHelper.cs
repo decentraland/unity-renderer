@@ -83,14 +83,20 @@ namespace DCL.Components
         public event Action<Rendereable> OnSuccessEvent;
         public event Action<Exception> OnFailEvent;
 
-        public void Load(string targetUrl, LoadingType forcedLoadingType = LoadingType.DEFAULT)
+        DCL.Logger logger = new Logger("RendereableAssetLoadHelper") { verboseEnabled = false };
+        string assetFilePath = null;
+        public void Load(string targetUrl, LoadingType forcedLoadingType = LoadingType.DEFAULT, bool isDebug = false)
         {
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
 #if UNITY_EDITOR
             loadStartTime = Time.realtimeSinceStartup;
 #endif
-
+            
             LoadingType finalLoadingType = forcedLoadingType == LoadingType.DEFAULT ? defaultLoadingType : forcedLoadingType;
+
+            logger.verboseEnabled = isDebug;
+            assetFilePath = targetUrl;
+            logger.Verbose($"Load() - {assetFilePath} - loading type: {finalLoadingType.ToString()}");
             switch (finalLoadingType)
             {
                 case LoadingType.ASSET_BUNDLE_ONLY:
@@ -114,22 +120,30 @@ namespace DCL.Components
 
         void UnloadAB()
         {
+            logger.Verbose($"UnloadAB() - {assetFilePath} - 1");
+            
             if ( abPromise != null )
             {
+                logger.Verbose($"UnloadAB() - {assetFilePath} - 2");
                 AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise);
             }
         }
 
         void UnloadGLTF()
         {
+            logger.Verbose($"UnloadGLTF() - {assetFilePath} - 1");
+            
             if ( gltfPromise != null )
             {
+                logger.Verbose($"UnloadGLTF() - {assetFilePath} - 2");
                 AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
             }
         }
 
         void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail)
         {
+            logger.Verbose($"LoadAssetBundle() - {assetFilePath} - 1");
+            
             if (abPromise != null)
             {
                 UnloadAB();
@@ -138,18 +152,24 @@ namespace DCL.Components
             }
 
             string bundlesBaseUrl = useCustomContentServerUrl ? customContentServerUrl : bundlesContentUrl;
+            
+            logger.Verbose($"LoadAssetBundle() - {assetFilePath} - 2 - baseUrl {bundlesBaseUrl}");
 
             if (string.IsNullOrEmpty(bundlesBaseUrl))
             {
                 OnFailWrapper(OnFail, new Exception("bundlesBaseUrl is null"));
                 return;
             }
+            
+            logger.Verbose($"LoadAssetBundle() - {assetFilePath} - 3");
 
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
                 OnFailWrapper(OnFail, new Exception($"Content url does not contains {targetUrl}"));
                 return;
             }
+            
+            logger.Verbose($"LoadAssetBundle() - {assetFilePath} - 4");
 
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
             abPromise.settings = this.settings;
@@ -172,11 +192,15 @@ namespace DCL.Components
 
             abPromise.OnFailEvent += (x, exception) => OnFailWrapper(OnFail, exception);
 
+            logger.Verbose($"LoadAssetBundle() - {assetFilePath} - 5");
+
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
         }
 
         void LoadGltf(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail)
         {
+            logger.Verbose($"LoadGltf() - {assetFilePath} - 1");
+            
             if (gltfPromise != null)
             {
                 UnloadGLTF();
@@ -184,12 +208,16 @@ namespace DCL.Components
                 if (VERBOSE)
                     Debug.Log("Forgetting not null promise... " + targetUrl);
             }
+            
+            logger.Verbose($"LoadGltf() - {assetFilePath} - 2");
 
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
                 OnFailWrapper(OnFail, new Exception($"Content provider does not contains url {targetUrl}"));
                 return;
             }
+            
+            logger.Verbose($"LoadGltf() - {assetFilePath} - 3");
 
             gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl, hash);
             gltfPromise.settings = settings;
@@ -210,6 +238,8 @@ namespace DCL.Components
                 OnSuccessWrapper(r, OnSuccess);
             };
             gltfPromise.OnFailEvent += (asset, exception) => OnFailWrapper(OnFail, exception);
+            
+            logger.Verbose($"LoadGltf() - {assetFilePath} - 4");
 
             AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
         }
@@ -219,6 +249,8 @@ namespace DCL.Components
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;
 #endif
+            
+            logger.Verbose($"OnFailWrapper() - {assetFilePath}");
 
             OnFail?.Invoke(exception);
             ClearEvents();
@@ -236,6 +268,8 @@ namespace DCL.Components
                 else
                     Debug.Log($"AB Load(): target URL -> {abPromise.hash}. Success!");
             }
+            
+            logger.Verbose($"OnSuccessWrapper() - {assetFilePath}");
 
             this.loadedAsset = loadedAsset;
             OnSuccess?.Invoke(loadedAsset);
