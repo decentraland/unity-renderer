@@ -67,8 +67,28 @@ public static class TextureHelpers
     {
         Texture2D texture = new Texture2D(sourceTexture.width, sourceTexture.height, sourceTexture.format, false);
         
-        // TODO: WebGL doesn't support this, should we add the ReadPixels/GetPixels approach as in Resize() ?
-        Graphics.CopyTexture(sourceTexture, texture);
+        bool supportsGPUTextureCopy = SystemInfo.copyTextureSupport != CopyTextureSupport.None;
+        if (supportsGPUTextureCopy)
+        {
+            Graphics.CopyTexture(sourceTexture, texture);
+        }
+        else
+        {
+            RenderTexture rt = RenderTexture.GetTemporary(sourceTexture.width, sourceTexture.height);
+            rt.filterMode = FilterMode.Point;
+            FilterMode sourceFilterMode = sourceTexture.filterMode; 
+            sourceTexture.filterMode = FilterMode.Point;
+
+            RenderTexture.active = rt;
+            Graphics.Blit(sourceTexture, rt);
+            
+            texture.ReadPixels(new Rect(0, 0, sourceTexture.width, sourceTexture.height), 0, 0);
+            texture.Apply();
+            
+            RenderTexture.ReleaseTemporary(rt);
+            RenderTexture.active = null;
+            sourceTexture.filterMode = sourceFilterMode;
+        }
         
         return texture;
     }
