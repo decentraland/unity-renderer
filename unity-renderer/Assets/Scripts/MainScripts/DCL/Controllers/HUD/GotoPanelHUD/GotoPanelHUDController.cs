@@ -1,45 +1,53 @@
 using DCL;
+using DCL.Interface;
 using UnityEngine;
 
-public class GotoPanelHUDController : IHUD
+namespace GotoPanel
 {
-
-    internal GotoPanelHUDView view { get; private set; }
-
-    public GotoPanelHUDController()
+    public class GotoPanelHUDController : IHUD
     {
-        view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("GotoPanelHUD")).GetComponent<GotoPanelHUDView>();
-        view.name = "_GotoPanelHUD";
-        view.container.SetActive(false);
-        DataStore.i.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
-        DataStore.i.HUDs.gotoPanelCoordinates.OnChange += SetCoordinates;
+        public IGotoPanelHUDView view { get; private set; }
+
+        public virtual IGotoPanelHUDView CreateView() => GotoPanelHUDView.CreateView();
+
+        public void Initialize()
+        {
+            view = CreateView();
+            view.OnTeleportPressed += Teleport;
+            DataStore.i.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
+            DataStore.i.HUDs.gotoPanelCoordinates.OnChange += SetCoordinates;
+        }
+
+        private void ChangeVisibility(bool current, bool previous)
+        {
+            if (current == previous)
+                return;
+
+            SetVisibility(current);
+        }
+
+        private void SetCoordinates(ParcelCoordinates current, ParcelCoordinates previous)
+        {
+            if (current == previous)
+                return;
+
+            view.SetPanelInfo(current);
+        }
+
+        public void Dispose()
+        {
+            view?.Dispose();
+        }
+
+        public void SetVisibility(bool visible)
+        {
+            view.SetVisible(visible);
+        }
+
+        public void Teleport(ParcelCoordinates parcelCoordinates)
+        {
+            WebInterface.GoTo(parcelCoordinates.x, parcelCoordinates.y);
+        }
+
     }
-
-    private void ChangeVisibility(bool current, bool previous)
-    {
-        if (current == previous)
-            return;
-
-        SetVisibility(current);
-    }
-
-    private void SetCoordinates(ParcelCoordinates current, ParcelCoordinates previous) 
-    {
-        if (current == previous)
-            return;
-
-        view.SetPanelInfo(current);
-    }
-
-    public void Dispose()
-    {
-        if (view)
-            UnityEngine.Object.Destroy(view.gameObject);
-    }
-
-    public void SetVisibility(bool visible)
-    {
-        view.SetVisible(visible);
-    }
-
 }

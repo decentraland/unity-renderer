@@ -301,7 +301,8 @@ public class ChatHUDView : MonoBehaviour
         dateSeparators.Clear();
     }
     
-    public void SetGotoPanelStatus(bool isActive) {
+    public void SetGotoPanelStatus(bool isActive) 
+    {
         DataStore.i.HUDs.gotoPanelVisible.Set(isActive);
     }
 }

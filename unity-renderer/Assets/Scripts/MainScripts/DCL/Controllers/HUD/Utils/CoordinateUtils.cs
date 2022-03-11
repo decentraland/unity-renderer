@@ -23,7 +23,8 @@ public class CoordinateUtils
         foreach (var item in text.Split(' '))
         {
             var match = filter.Match(item.ToString());
-            int x, y;
+            int x;
+            int y;
             if (match.Success)
             {
                 Int32.TryParse(item.ToString().Split(',')[0], out x);

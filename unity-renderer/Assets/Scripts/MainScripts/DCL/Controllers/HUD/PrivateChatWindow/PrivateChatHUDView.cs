@@ -1,14 +1,6 @@
 using DCL.Helpers;
-using DCL.Interface;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
-using System.Text.RegularExpressions;
-using UnityEngine.EventSystems;
 
 public class PrivateChatHUDView : ChatHUDView
 {
