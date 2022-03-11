@@ -17,11 +17,14 @@ namespace DCL
 
         public static long ComputeTextureScore(Texture2D texture)
         {
+            // https://forum.unity.com/threads/does-unity-always-use-double-memory-for-texture-in-runtime.198270/
+            const double ARBITRARY_UNITY_MEMORY_MULTIPLIER = 2;
+
             // The mipmap memory increase should be actually 1.33 according to many sources
-            // But for Unity it seems to be up to 2.33. This was tested even with GPU only textures.
-            const double MIPMAP_FACTOR = 2.4f; 
+            const double MIPMAP_FACTOR = 1.4f; 
             const double BYTES_PER_PIXEL = 4;
-            return (long) (texture.width * texture.height * BYTES_PER_PIXEL * MIPMAP_FACTOR);
+            return (long) (texture.width * texture.height * BYTES_PER_PIXEL * MIPMAP_FACTOR *
+                           ARBITRARY_UNITY_MEMORY_MULTIPLIER);
         }
     }
 }

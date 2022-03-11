@@ -149,11 +149,11 @@ public class SceneMetricsCounterShould
         dataStore.AddRendereable("1", rendereable2);
         dataStore.AddRendereable("2", rendereable3);
 
-        Assert.That(sceneMetricsCounter.currentCount.textureMemory, Is.EqualTo(206437));
+        Assert.That(sceneMetricsCounter.currentCount.textureMemory, Is.EqualTo(240843));
 
         dataStore.RemoveRendereable("1", rendereable2);
 
-        Assert.That(sceneMetricsCounter.currentCount.textureMemory, Is.EqualTo(196607));
+        Assert.That(sceneMetricsCounter.currentCount.textureMemory, Is.EqualTo(229375));
 
         dataStore.RemoveRendereable("1", rendereable1);
 
