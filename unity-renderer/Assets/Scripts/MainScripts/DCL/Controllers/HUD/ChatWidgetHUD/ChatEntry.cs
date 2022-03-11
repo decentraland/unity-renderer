@@ -13,6 +13,9 @@ using DCL;
 
 public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    private const string COORDINATES_COLOR_PRIVATE = "#4886E3";
+    private const string COORDINATES_COLOR_PUBLIC = "#62C6FF";
+
     public struct Model
     {
         public enum SubType
@@ -55,9 +58,6 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     [SerializeField] internal float timeToHoverGotoPanel = 1f;
 
     [NonSerialized] public string messageLocalDateTime;
-
-    private const string COORDINATES_COLOR_PRIVATE = "#4886E3";
-    private const string COORDINATES_COLOR_PUBLIC = "#62C6FF";
 
     bool fadeEnabled = false;
     double fadeoutStartTime;
@@ -235,7 +235,8 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         }
     }
 
-    public void OnPointerEnter(PointerEventData pointerEventData) {
+    public void OnPointerEnter(PointerEventData pointerEventData) 
+    {
         if (pointerEventData == null)
             return;
 
@@ -295,11 +296,11 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         if (linkIndex == -1)
             return;
 
-            isOverCoordinates = true;
-            TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
-            currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
-            hoverGotoPanelTimer = timeToHoverGotoPanel;
-            OnCancelHover?.Invoke();
+        isOverCoordinates = true;
+        TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
+        currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
+        hoverGotoPanelTimer = timeToHoverGotoPanel;
+        OnCancelHover?.Invoke();
     }
 
     void Fade()

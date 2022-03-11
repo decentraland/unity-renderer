@@ -10,6 +10,8 @@ namespace Test.GotoPanel
     {
         private GotoPanelHUDController hudController;
         private IGotoPanelHUDView hudView;
+        private BaseVariable<bool> visible => DataStore.i.HUDs.gotoPanelVisible;
+        private BaseVariable<ParcelCoordinates> coords => DataStore.i.HUDs.gotoPanelCoordinates;
 
         [SetUp]
         public void SetUp()
@@ -25,5 +27,30 @@ namespace Test.GotoPanel
         {
             Assert.AreEqual(hudView, hudController.view);
         }
+
+        [Test]
+        public void GetVisibleValueChangeToTrue()
+        {
+            visible.Set(true, true);
+            hudView.Received().SetVisible(true);
+        }
+
+        [Test]
+        public void GetVisibleValueChangeToFalse()
+        {
+            visible.Set(false, true);
+            hudView.Received().SetVisible(false);
+        }
+
+        [Test]
+        public void GetCoordinatesValueChange() 
+        {
+            ParcelCoordinates gotoCoords = new ParcelCoordinates(10,30);
+            coords.Set(gotoCoords);
+            hudView.Received().SetPanelInfo(gotoCoords);
+        }
+
+        [TearDown]
+        public void TearDown() { DataStore.Clear(); }
     }
 }

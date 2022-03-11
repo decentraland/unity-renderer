@@ -6,9 +6,9 @@ namespace GotoPanel
 {
     public class GotoPanelHUDController : IHUD
     {
-        public IGotoPanelHUDView view { get; private set; }
+        internal IGotoPanelHUDView view { get; private set; }
 
-        public virtual IGotoPanelHUDView CreateView() => GotoPanelHUDView.CreateView();
+        internal virtual IGotoPanelHUDView CreateView() => GotoPanelHUDView.CreateView();
 
         public void Initialize()
         {
@@ -20,9 +20,6 @@ namespace GotoPanel
 
         private void ChangeVisibility(bool current, bool previous)
         {
-            if (current == previous)
-                return;
-
             SetVisibility(current);
         }
 

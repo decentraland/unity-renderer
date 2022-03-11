@@ -7,14 +7,6 @@ using System;
 
 namespace GotoPanel
 {
-    public interface IGotoPanelHUDView
-    {
-        event Action<ParcelCoordinates> OnTeleportPressed;
-        void SetVisible(bool isVisible);
-        void SetPanelInfo(ParcelCoordinates parcelCoordinates);
-        void Dispose();
-    }
-
     public class GotoPanelHUDView : MonoBehaviour, IGotoPanelHUDView
     {
         [SerializeField] private Button teleportButton;
@@ -31,7 +23,7 @@ namespace GotoPanel
 
         private bool isDestroyed = false;
 
-        private ParcelCoordinates targetCoordinates;
+        internal ParcelCoordinates targetCoordinates;
 
         AssetPromise_Texture texturePromise = null;
 
@@ -84,7 +76,7 @@ namespace GotoPanel
                 DisplayThumbnail(scenePreviewFailImage.texture);
             }
             targetCoordinates = parcelCoordinates;
-            panelText.text = $"{parcelCoordinates.x},{parcelCoordinates.y}";
+            panelText.text = parcelCoordinates.ToString();
         }
 
         private void SetParcelImage(MinimapMetadata.MinimapSceneInfo sceneInfo)
@@ -120,8 +112,19 @@ namespace GotoPanel
         {
             if (isDestroyed)
                 return;
-            isDestroyed = true;
+            isDestroyed = true; 
+            ClearPromise();
             Destroy(gameObject);
+        }
+
+        private void ClearPromise()
+        {
+            if (texturePromise != null)
+            {
+                texturePromise.ClearEvents();
+                AssetPromiseKeeper_Texture.i.Forget(texturePromise);
+                texturePromise = null;
+            }
         }
 
     }
