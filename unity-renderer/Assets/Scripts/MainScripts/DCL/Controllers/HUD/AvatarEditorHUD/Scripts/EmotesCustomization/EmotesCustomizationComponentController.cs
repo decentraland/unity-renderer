@@ -26,6 +26,8 @@ namespace EmotesCustomization
         internal BaseVariable<Transform> isInitialized => DataStore.i.emotesCustomization.isInitialized;
         internal BaseCollection<string> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
         internal BaseCollection<string> currentLoadedEmotes => DataStore.i.emotesCustomization.currentLoadedEmotes;
+        internal BaseVariable<string> emoteForPreviewing => DataStore.i.emotesCustomization.emoteForPreviewing;
+        internal BaseVariable<bool> avatarHasBeenSaved => DataStore.i.emotesCustomization.avatarHasBeenSaved;
         internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
         internal bool isEmotesCustomizationSectionOpen => isStarMenuOpen.Get() && view.isActive;
         internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
@@ -64,6 +66,7 @@ namespace EmotesCustomization
             view.onEmoteUnequipped -= OnEmoteUnequipped;
             isStarMenuOpen.OnChange -= IsStarMenuOpenChanged;
             avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
+            avatarHasBeenSaved.OnChange -= OnAvatarHasBeenSavedChanged;
             catalog.OnAdded -= AddEmote;
             catalog.OnRemoved -= RemoveEmote;
             userProfile.OnInventorySet -= OnUserProfileInventorySet;
@@ -85,15 +88,23 @@ namespace EmotesCustomization
         internal void LoadEquippedEmotes()
         {
             List<string> storedEquippedEmotes = JsonConvert.DeserializeObject<List<string>>(PlayerPrefsUtils.GetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY));
-            if (storedEquippedEmotes != null)
-                equippedEmotes.Set(storedEquippedEmotes);
-            else
-                SetDefaultEquippedEmotes();
+            if (storedEquippedEmotes == null)
+                storedEquippedEmotes = GetDefaultEmotes();
+
+            foreach (string emoteId in storedEquippedEmotes)
+            {
+                if (string.IsNullOrEmpty(emoteId))
+                    continue;
+
+                CatalogController.RequestWearable(emoteId);
+            }
+
+            equippedEmotes.Set(storedEquippedEmotes);
         }
 
-        internal void SetDefaultEquippedEmotes()
+        internal List<string> GetDefaultEmotes()
         {
-            equippedEmotes.Set(new List<string> 
+            return new List<string> 
             { 
                 "wave", 
                 "fistpump", 
@@ -105,7 +116,7 @@ namespace EmotesCustomization
                 "hammer", 
                 "tik", 
                 "tektonik" 
-            });
+            };
         }
 
         internal void ConfigureView()
@@ -116,11 +127,7 @@ namespace EmotesCustomization
             view.onEmoteUnequipped += OnEmoteUnequipped;
             isStarMenuOpen.OnChange += IsStarMenuOpenChanged;
             avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
-        }
-
-        internal void OnEmoteAnimationRaised(string emoteId)
-        {
-            Debug.Log("SANTI ---> EMOTE ANIMATION RAISED: " + emoteId);
+            avatarHasBeenSaved.OnChange += OnAvatarHasBeenSavedChanged;
         }
 
         internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen)
@@ -129,6 +136,20 @@ namespace EmotesCustomization
         }
 
         internal void OnAvatarEditorVisibleChanged(bool current, bool previous) { view.SetActive(current); }
+
+        internal void OnAvatarHasBeenSavedChanged(bool wasAvatarSaved, bool previous)
+        {
+            if (wasAvatarSaved)
+            {
+                PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(equippedEmotes.Get()));
+                PlayerPrefsUtils.Save();
+            }
+            else
+            {
+                LoadEquippedEmotes();
+                UpdateEmoteSlots();
+            }
+        }
 
         internal void ConfigureCatalog(BaseDictionary<string, WearableItem> catalog)
         {
@@ -221,7 +242,13 @@ namespace EmotesCustomization
                     break;
 
                 if (equippedEmotes[i] == null)
+                {
+                    EmoteSlotCardComponentView existingEmoteIntoSlot = view.currentSlots.FirstOrDefault(x => x.model.slotNumber == i);
+                    if (existingEmoteIntoSlot != null)
+                        view.UnequipEmote(existingEmoteIntoSlot.model.emoteId, i);
+
                     continue;
+                }
 
                 catalog.TryGetValue(equippedEmotes[i], out WearableItem emoteItem);
                 if (emoteItem != null && currentLoadedEmotes.Contains(emoteItem.id))
@@ -239,11 +266,11 @@ namespace EmotesCustomization
             }
 
             equippedEmotes.Set(newEquippedEmotesList);
-            PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(newEquippedEmotesList));
-            PlayerPrefsUtils.Save();
         }
 
-        internal void OnEmoteEquipped(string emoteId, int slotNumber)
+        internal void OnEmoteAnimationRaised(string emoteId) { emoteForPreviewing.Set(emoteId, true); }
+
+        internal void OnEmoteEquipped(string emoteId, int slotNumber) 
         {
             StoreEquippedEmotes();
         }

@@ -9,5 +9,7 @@ namespace DCL
         public readonly BaseCollection<string> equippedEmotes = new BaseCollection<string>(new List<string> { null, null, null, null, null, null, null, null, null, null });
         public readonly BaseVariable<bool> isEmotesCustomizationSelected = new BaseVariable<bool>(false);
         public readonly BaseCollection<string> currentLoadedEmotes = new BaseCollection<string>();
+        public readonly BaseVariable<string> emoteForPreviewing = new BaseVariable<string>(null);
+        public readonly BaseVariable<bool> avatarHasBeenSaved = new BaseVariable<bool>(false);
     }
 }

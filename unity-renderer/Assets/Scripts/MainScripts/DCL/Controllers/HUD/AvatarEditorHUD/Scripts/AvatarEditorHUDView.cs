@@ -511,4 +511,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         sectionSelector.GetSection(sectionIndex).SetActive(isActive);
     }
+
+    public AvatarModel GetAvatarPreviewModel() { return characterPreviewController.GetCurrentModel(); }
+    public void PreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
 }

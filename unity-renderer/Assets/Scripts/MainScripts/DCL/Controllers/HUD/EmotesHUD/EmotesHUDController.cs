@@ -10,11 +10,11 @@ namespace EmotesCustomization
         internal EmotesHUDView view;
         private BaseVariable<bool> emotesVisible => DataStore.i.HUDs.emotesVisible;
         private BaseVariable<bool> isAvatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
-        private BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
         private BaseVariable<bool> isStartMenuOpen => DataStore.i.exploreV2.isOpen;
-        private BaseCollection<string> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
         private BaseVariable<bool> canStartMenuBeOpened => DataStore.i.exploreV2.isSomeModalOpen;
         private bool shortcutsCanBeUsed => !isStartMenuOpen.Get();
+        private BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
+        private BaseCollection<string> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
 
         private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
         private InputAction_Trigger closeWindow;
