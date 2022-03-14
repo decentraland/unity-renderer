@@ -13,7 +13,7 @@ namespace DCL.Skybox
 
             // name In Editor
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Layer Name: ", GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.layerName, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             layer.nameInEditor = EditorGUILayout.TextField(layer.nameInEditor, GUILayout.Width(200), GUILayout.ExpandWidth(false));
             EditorGUILayout.EndHorizontal();
 
@@ -21,7 +21,7 @@ namespace DCL.Skybox
 
             // Layer Type
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Layer Type:", GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.layerType, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             layer.layerType = (LayerType)EditorGUILayout.EnumPopup(layer.layerType, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
 
@@ -29,15 +29,15 @@ namespace DCL.Skybox
             EditorGUILayout.Separator();
 
             // Time Span
-            RenderSimpleValues.RenderSepratedFloatFields("Time Span", "Starts", ref layer.timeSpan_start, "Ends", ref layer.timeSpan_End);
+            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.timeSpan, SkyboxEditorLiterals.start, ref layer.timeSpan_start, SkyboxEditorLiterals.end, ref layer.timeSpan_End);
             SkyboxEditorUtils.ClampToDayTime(ref layer.timeSpan_start);
             SkyboxEditorUtils.ClampToDayTime(ref layer.timeSpan_End);
 
             // Fading
-            RenderSimpleValues.RenderSepratedFloatFields("Fading", "In", ref layer.fadingInTime, "Out", ref layer.fadingOutTime);
+            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.fade, SkyboxEditorLiterals.inStr, ref layer.fadingInTime, SkyboxEditorLiterals.outStr, ref layer.fadingOutTime);
 
             // Tint
-            RenderSimpleValues.RenderFloatFieldAsSlider("Tint", ref layer.tintPercentage, 0, 100);
+            RenderSimpleValues.RenderFloatFieldAsSlider(SkyboxEditorLiterals.tint, ref layer.tintPercentage, 0, 100);
 
             if (layer.layerType == LayerType.Cubemap)
             {

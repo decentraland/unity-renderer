@@ -73,21 +73,21 @@ namespace DCL.Skybox
             EditorGUILayout.Separator();
         }
 
-        public static void RenderColorGradientField(Gradient color, string label = "color", float startTime = -1, float endTime = -1, bool hdr = false)
+        public static void RenderColorGradientField(Gradient color, string label = SkyboxEditorLiterals.color, float startTime = -1, float endTime = -1, bool hdr = false)
         {
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
 
             if (startTime != -1)
             {
-                EditorGUILayout.LabelField(startTime + "Hr", GUILayout.Width(65), GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField(startTime + SkyboxEditorLiterals.short_Hour, GUILayout.Width(65), GUILayout.ExpandWidth(false));
             }
 
             color = EditorGUILayout.GradientField(new GUIContent(""), color, hdr, GUILayout.Width(250), GUILayout.ExpandWidth(false));
 
             if (endTime != 1)
             {
-                EditorGUILayout.LabelField(endTime + "Hr", GUILayout.Width(65), GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField(endTime + SkyboxEditorLiterals.short_Hour, GUILayout.Width(65), GUILayout.ExpandWidth(false));
             }
             GUILayout.EndHorizontal();
             EditorGUILayout.Separator();

@@ -16,7 +16,7 @@ namespace DCL.Skybox
 
             if (list.Count == 0)
             {
-                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_add, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     Vector3 tLastPos = Vector3.zero;
                     if (list.Count != 0)
@@ -31,7 +31,7 @@ namespace DCL.Skybox
             {
                 EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
-                if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_goto, GUILayout.ExpandWidth(false)))
                 {
                     timeOfTheDay = SkyboxEditorUtils.GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, list[i].percentage / 100);
                 }
@@ -49,13 +49,13 @@ namespace DCL.Skybox
                 list[i].value = EditorGUILayout.Vector3Field("", list[i].value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
 
                 GUILayout.Space(10);
-                if (GUILayout.Button("-", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_remove, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     list.RemoveAt(i);
                 }
 
                 GUILayout.Space(10);
-                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_add, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     Vector3 tLastPos = Vector3.zero;
                     if (list.Count != 0)
@@ -80,7 +80,7 @@ namespace DCL.Skybox
 
             if (list.Count == 0)
             {
-                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_add, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     Vector2 tLastPos = Vector2.zero;
                     if (list.Count != 0)
@@ -95,7 +95,7 @@ namespace DCL.Skybox
             {
                 EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
-                if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_goto, GUILayout.ExpandWidth(false)))
                 {
                     timeOfTheDay = SkyboxEditorUtils.GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, list[i].percentage / 100);
                 }
@@ -110,13 +110,13 @@ namespace DCL.Skybox
                 list[i].value = EditorGUILayout.Vector2Field("", list[i].value, GUILayout.Width(120), GUILayout.ExpandWidth(false));
 
                 GUILayout.Space(10);
-                if (GUILayout.Button("-", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_remove, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     list.RemoveAt(i);
                 }
 
                 GUILayout.Space(10);
-                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_add, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     Vector2 tLastPos = Vector2.zero;
                     if (list.Count != 0)
@@ -142,7 +142,7 @@ namespace DCL.Skybox
             if (list.Count == 0)
             {
                 GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_add, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     float tLast = 0;
                     if (list.Count != 0)
@@ -159,7 +159,7 @@ namespace DCL.Skybox
                 GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
                 GUILayout.Space(10);
-                if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_goto, GUILayout.ExpandWidth(false)))
                 {
                     timeOfTheDay = SkyboxEditorUtils.GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, list[i].percentage / 100);
                 }
@@ -180,13 +180,13 @@ namespace DCL.Skybox
 
 
                 GUILayout.Space(10);
-                if (GUILayout.Button("-", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_remove, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     list.RemoveAt(i);
                 }
 
                 GUILayout.Space(10);
-                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_add, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     float tLast = 0;
                     if (list.Count != 0)
@@ -214,7 +214,7 @@ namespace DCL.Skybox
             if (list.Count == 0)
             {
                 EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_add, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     list.Add(new TransitioningQuaternion(SkyboxEditorUtils.GetNormalizedLayerCurrentTime(timeOfTheDay, layerStartTime, layerEndTime) * 100, GetCurrentRotation()));
                 }
@@ -224,7 +224,7 @@ namespace DCL.Skybox
             for (int i = 0; i < list.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_goto, GUILayout.ExpandWidth(false)))
                 {
                     timeOfTheDay = SkyboxEditorUtils.GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, list[i].percentage / 100);
                 }
@@ -240,13 +240,13 @@ namespace DCL.Skybox
                 // Convert Quaternion to Vector3
                 list[i].value = Quaternion.Euler(EditorGUILayout.Vector3Field("", list[i].value.eulerAngles, GUILayout.ExpandWidth(false)));
 
-                if (GUILayout.Button("-", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_remove, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     list.RemoveAt(i);
                     break;
                 }
 
-                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_add, GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     list.Insert(i + 1, new TransitioningQuaternion(SkyboxEditorUtils.GetNormalizedLayerCurrentTime(timeOfTheDay, layerStartTime, layerEndTime) * 100, GetCurrentRotation()));
                 }
@@ -259,15 +259,15 @@ namespace DCL.Skybox
 
         public static void RenderPercentagePart(float layerStartTime, float layerEndTime, ref float percentage)
         {
-            GUILayout.Label(layerStartTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+            GUILayout.Label(layerStartTime + SkyboxEditorLiterals.short_Hour, GUILayout.Width(35), GUILayout.ExpandWidth(false));
 
             GUILayout.BeginVertical(SkyboxEditorStyles.Instance.percentagePartStyle, GUILayout.ExpandWidth(false), GUILayout.Width(150));
             float time = SkyboxEditorUtils.GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, percentage / 100);
-            GUILayout.Label(time.ToString("f2") + " Hr", GUILayout.ExpandWidth(false));
+            GUILayout.Label(time.ToString("f2") + SkyboxEditorLiterals.short_Hour, GUILayout.ExpandWidth(false));
             percentage = EditorGUILayout.Slider(percentage, 0, 100, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             GUILayout.EndVertical();
 
-            GUILayout.Label(layerEndTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+            GUILayout.Label(layerEndTime + SkyboxEditorLiterals.short_Hour, GUILayout.Width(35), GUILayout.ExpandWidth(false));
         }
     }
 }

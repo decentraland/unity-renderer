@@ -10,29 +10,29 @@ namespace DCL.Skybox
         public static void RenderLayer(ref float timeOfTheDay, EditorToolMeasurements toolSize, TextureLayer layer, bool isRadial = false)
         {
             // Texture
-            RenderSimpleValues.RenderTexture("Texture", ref layer.texture);
+            RenderSimpleValues.RenderTexture(SkyboxEditorLiterals.texture, ref layer.texture);
 
             // Row and Coloumns
-            RenderSimpleValues.RenderVector2Field("Rows and Columns", ref layer.flipbookRowsAndColumns);
+            RenderSimpleValues.RenderVector2Field(SkyboxEditorLiterals.rowsColumns, ref layer.flipbookRowsAndColumns);
 
             // Anim Speed
-            RenderSimpleValues.RenderFloatField("Anim Speed", ref layer.flipbookAnimSpeed);
+            RenderSimpleValues.RenderFloatField(SkyboxEditorLiterals.animSpeed, ref layer.flipbookAnimSpeed);
 
             // Normal Texture
-            RenderSimpleValues.RenderTexture("Normal Map", ref layer.textureNormal);
+            RenderSimpleValues.RenderTexture(SkyboxEditorLiterals.normalMap, ref layer.textureNormal);
 
             // Normal Intensity
-            RenderSimpleValues.RenderFloatFieldAsSlider("Normal Intensity", ref layer.normalIntensity, 0, 1);
+            RenderSimpleValues.RenderFloatFieldAsSlider(SkyboxEditorLiterals.normalIntensity, ref layer.normalIntensity, 0, 1);
 
             // Gradient
-            RenderSimpleValues.RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
+            RenderSimpleValues.RenderColorGradientField(layer.color, SkyboxEditorLiterals.color, layer.timeSpan_start, layer.timeSpan_End, true);
 
             // Tiling
-            RenderSimpleValues.RenderVector2Field("Tiling", ref layer.tiling);
+            RenderSimpleValues.RenderVector2Field(SkyboxEditorLiterals.tiling, ref layer.tiling);
 
             // Movement Type
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Movemnt Type", GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.movementType, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             layer.movementTypePlanar_Radial = (MovementType)EditorGUILayout.EnumPopup(layer.movementTypePlanar_Radial, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
 
@@ -42,12 +42,12 @@ namespace DCL.Skybox
             if (layer.movementTypePlanar_Radial == MovementType.Speed)
             {
                 // Speed
-                RenderSimpleValues.RenderVector2Field("Speed", ref layer.speed_Vector2);
+                RenderSimpleValues.RenderVector2Field(SkyboxEditorLiterals.speed, ref layer.speed_Vector2);
             }
             else
             {
                 // Offset
-                RenderTransitioningVariables.RenderTransitioningVector2(ref timeOfTheDay, layer.offset, "Position", "%", "", layer.timeSpan_start, layer.timeSpan_End);
+                RenderTransitioningVariables.RenderTransitioningVector2(ref timeOfTheDay, layer.offset, SkyboxEditorLiterals.position, SkyboxEditorLiterals.percentage, "", layer.timeSpan_start, layer.timeSpan_End);
             }
 
             EditorGUI.indentLevel--;
@@ -55,14 +55,14 @@ namespace DCL.Skybox
             EditorGUILayout.Space(15);
 
             // Render Distance
-            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, layer.renderDistance, "Render Distance", "", "", true, 0, 20, layer.timeSpan_start, layer.timeSpan_End);
+            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, layer.renderDistance, SkyboxEditorLiterals.renderDistance, "", "", true, 0, 20, layer.timeSpan_start, layer.timeSpan_End);
 
             EditorGUILayout.Space(15);
 
             // Rotation
             if (!isRadial)
             {
-                RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, layer.rotations_float, "Rotation", "", "", true, 0, 360, layer.timeSpan_start, layer.timeSpan_End);
+                RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, layer.rotations_float, SkyboxEditorLiterals.rotation, "", "", true, 0, 360, layer.timeSpan_start, layer.timeSpan_End);
                 EditorGUILayout.Separator();
             }
 
@@ -73,7 +73,7 @@ namespace DCL.Skybox
 
         public static void RenderDistortionVariables(ref float timeOfTheDay, EditorToolMeasurements toolSize, TextureLayer layer)
         {
-            layer.distortionExpanded = EditorGUILayout.Foldout(layer.distortionExpanded, "Distortion Values", true, EditorStyles.foldoutHeader);
+            layer.distortionExpanded = EditorGUILayout.Foldout(layer.distortionExpanded, SkyboxEditorLiterals.distortionValues, true, EditorStyles.foldoutHeader);
 
             if (!layer.distortionExpanded)
             {
@@ -85,22 +85,22 @@ namespace DCL.Skybox
             EditorGUI.indentLevel++;
 
             // Distortion Intensity
-            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, layer.distortIntensity, "Intensity", "%", "Value", false, 0, 1, layer.timeSpan_start, layer.timeSpan_End);
+            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, layer.distortIntensity, SkyboxEditorLiterals.intensity, SkyboxEditorLiterals.percentage, SkyboxEditorLiterals.value, false, 0, 1, layer.timeSpan_start, layer.timeSpan_End);
 
             EditorGUILayout.Space(10);
 
             // Distortion Size
-            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, layer.distortSize, "Size", "%", "Value", false, 0, 1, layer.timeSpan_start, layer.timeSpan_End);
+            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, layer.distortSize, SkyboxEditorLiterals.size, SkyboxEditorLiterals.percentage, SkyboxEditorLiterals.value, false, 0, 1, layer.timeSpan_start, layer.timeSpan_End);
 
             EditorGUILayout.Space(10);
 
             // Distortion Speed
-            RenderTransitioningVariables.RenderTransitioningVector2(ref timeOfTheDay, layer.distortSpeed, "Speed", "%", "Value", layer.timeSpan_start, layer.timeSpan_End);
+            RenderTransitioningVariables.RenderTransitioningVector2(ref timeOfTheDay, layer.distortSpeed, SkyboxEditorLiterals.speed, SkyboxEditorLiterals.percentage, SkyboxEditorLiterals.value, layer.timeSpan_start, layer.timeSpan_End);
 
             EditorGUILayout.Space(10);
 
             // Distortion Sharpness
-            RenderTransitioningVariables.RenderTransitioningVector2(ref timeOfTheDay, layer.distortSharpness, "Sharpness", "%", "Value", layer.timeSpan_start, layer.timeSpan_End);
+            RenderTransitioningVariables.RenderTransitioningVector2(ref timeOfTheDay, layer.distortSharpness, SkyboxEditorLiterals.sharpness, SkyboxEditorLiterals.percentage, SkyboxEditorLiterals.value, layer.timeSpan_start, layer.timeSpan_End);
 
             EditorGUILayout.Space(10);
 

@@ -9,43 +9,43 @@ namespace DCL.Skybox
         public static void RenderLayer(ref float timeOfTheDay, EditorToolMeasurements toolSize, TextureLayer layer)
         {
             // Texture
-            RenderSimpleValues.RenderTexture("Texture", ref layer.texture);
+            RenderSimpleValues.RenderTexture(SkyboxEditorLiterals.texture, ref layer.texture);
 
             // Row and Coloumns
-            RenderSimpleValues.RenderVector2Field("Rows and Columns", ref layer.flipbookRowsAndColumns);
+            RenderSimpleValues.RenderVector2Field(SkyboxEditorLiterals.rowsColumns, ref layer.flipbookRowsAndColumns);
 
             // Anim Speed
-            RenderSimpleValues.RenderFloatField("Anim Speed", ref layer.flipbookAnimSpeed);
+            RenderSimpleValues.RenderFloatField(SkyboxEditorLiterals.animSpeed, ref layer.flipbookAnimSpeed);
 
             // Normal Map
-            RenderSimpleValues.RenderTexture("Normal Map", ref layer.textureNormal);
+            RenderSimpleValues.RenderTexture(SkyboxEditorLiterals.normalMap, ref layer.textureNormal);
 
             // Normal Intensity
-            RenderSimpleValues.RenderFloatFieldAsSlider("Normal Intensity", ref layer.normalIntensity, 0, 1);
+            RenderSimpleValues.RenderFloatFieldAsSlider(SkyboxEditorLiterals.normalIntensity, ref layer.normalIntensity, 0, 1);
 
             // Gradient
-            RenderSimpleValues.RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
+            RenderSimpleValues.RenderColorGradientField(layer.color, SkyboxEditorLiterals.color, layer.timeSpan_start, layer.timeSpan_End, true);
 
             // Tiling
-            RenderSimpleValues.RenderVector2Field("Tiling", ref layer.particleTiling);
+            RenderSimpleValues.RenderVector2Field(SkyboxEditorLiterals.tiling, ref layer.particleTiling);
 
             // Offset
-            RenderSimpleValues.RenderVector2Field("Offset", ref layer.particlesOffset);
+            RenderSimpleValues.RenderVector2Field(SkyboxEditorLiterals.offset, ref layer.particlesOffset);
 
             // Amount
-            RenderSimpleValues.RenderFloatField("Amount", ref layer.particlesAmount);
+            RenderSimpleValues.RenderFloatField(SkyboxEditorLiterals.amount, ref layer.particlesAmount);
 
             // Size
-            RenderSimpleValues.RenderSepratedFloatFields("Size", "Min", ref layer.particleMinSize, "Max", ref layer.particleMaxSize);
+            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.size, SkyboxEditorLiterals.min, ref layer.particleMinSize, SkyboxEditorLiterals.max, ref layer.particleMaxSize);
 
             // Spread
-            RenderSimpleValues.RenderSepratedFloatFields("Spread", "Horizontal", ref layer.particlesHorizontalSpread, "Vertical", ref layer.particlesVerticalSpread);
+            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.spread, SkyboxEditorLiterals.horizontal, ref layer.particlesHorizontalSpread, SkyboxEditorLiterals.vertical, ref layer.particlesVerticalSpread);
 
             // Fade
-            RenderSimpleValues.RenderSepratedFloatFields("Fade", "Min", ref layer.particleMinFade, "Max", ref layer.particleMaxFade);
+            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.fade, SkyboxEditorLiterals.min, ref layer.particleMinFade, SkyboxEditorLiterals.max, ref layer.particleMaxFade);
 
             // Particle Rotation
-            RenderTransitioningVariables.RenderTransitioningVector3(ref timeOfTheDay, layer.particleRotation, "Rotation", "%", "value", layer.timeSpan_start, layer.timeSpan_End);
+            RenderTransitioningVariables.RenderTransitioningVector3(ref timeOfTheDay, layer.particleRotation, SkyboxEditorLiterals.rotation, SkyboxEditorLiterals.percentage, SkyboxEditorLiterals.value, layer.timeSpan_start, layer.timeSpan_End);
         }
     }
 }
