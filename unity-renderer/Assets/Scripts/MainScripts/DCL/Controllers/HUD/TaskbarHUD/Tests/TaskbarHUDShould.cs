@@ -117,7 +117,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 
         var buttonList = view.GetButtonList();
 
-        Assert.AreEqual(4, buttonList.Count, "Chat head is missing when receiving a private message?");
+        Assert.AreEqual(5, buttonList.Count, "Chat head is missing when receiving a private message?");
 
         Assert.IsFalse(view.chatButton.toggledOn);
         Assert.IsTrue(buttonList[3] is ChatHeadButton);
