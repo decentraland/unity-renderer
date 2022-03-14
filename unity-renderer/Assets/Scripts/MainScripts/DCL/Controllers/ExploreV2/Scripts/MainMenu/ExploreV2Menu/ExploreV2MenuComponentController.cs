@@ -56,9 +56,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> emotesVisible => DataStore.i.HUDs.emotesVisible;
     internal BaseVariable<bool> chatInputVisible => DataStore.i.HUDs.chatInputVisible;
     internal BooleanVariable playerInfoCardVisible => CommonScriptableObjects.playerInfoCardVisibleState;
+    internal MouseCatcher mouseCatcher;
 
     public void Initialize()
     {
+        mouseCatcher = SceneReferences.i?.mouseCatcher;
         exploreV2Analytics = CreateAnalyticsController();
         view = CreateView();
         SetVisibility(false);
@@ -225,7 +227,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (visible)
         {
-            Utils.UnlockCursor();
+            mouseCatcher?.UnlockCursor();
 
             if (DataStore.i.common.isTutorialRunning.Get())
                 view.GoToSection(ExploreV2MenuComponentView.DEFAULT_SECTION);
