@@ -50,7 +50,7 @@ namespace Test.AvatarSystem
                 new WearableItem { id = "emote2" },
             });
 
-            Assert.AreEqual("female", equipper.bodyshapeId);
+            Assert.AreEqual("female", equipper.bodyShapeId);
             Assert.AreEqual("emote0" , equipper.emotes[0]);
             Assert.AreEqual("emote1" , equipper.emotes[1]);
             Assert.AreEqual("emote2" , equipper.emotes[2]);
@@ -115,7 +115,7 @@ namespace Test.AvatarSystem
         [Test]
         public void EquipEmoteWhenAnimationReadyForCurrentBodyshape()
         {
-            equipper.bodyshapeId = "female";
+            equipper.bodyShapeId = "female";
             equipper.emotes.AddRange(new [] { "old0", "old1", "old2" });
 
             dataStore.animations.Add(("female", "old0"), tikAnim);
@@ -126,7 +126,7 @@ namespace Test.AvatarSystem
         [Test]
         public void NotEquipEmoteWhenAnimationReadyForOtherBodyshape()
         {
-            equipper.bodyshapeId = "female";
+            equipper.bodyShapeId = "female";
             equipper.emotes.AddRange(new [] { "old0", "old1", "old2" });
 
             dataStore.animations.Add(("male", "old0"), tikAnim);
