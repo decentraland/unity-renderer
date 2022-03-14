@@ -40,13 +40,11 @@ namespace EmotesCustomization
             closeWindow.OnTriggered += OnCloseWindowPressed;
             
             view = EmotesHUDView.Create();
-            view.Initialize(EmoteCalled);
             view.OnClose += OnViewClosed;
             view.onEmoteClicked += PlayEmote;
             view.OnCustomizeClicked += OpenEmotesCustomizationSection;
 
             ownUserProfile.OnAvatarEmoteSet += OnAvatarEmoteSet;
-            ownUserProfile.OnAvatarExpressionSet += OnAvatarEmoteSet;
             emotesVisible.OnChange += OnEmoteVisibleChanged;
             OnEmoteVisibleChanged(emotesVisible.Get(), false);
 
@@ -154,9 +152,7 @@ namespace EmotesCustomization
             view.onEmoteClicked -= PlayEmote;
             view.OnCustomizeClicked -= OpenEmotesCustomizationSection;
             closeWindow.OnTriggered -= OnCloseWindowPressed;
-            ownUserProfile.snapshotObserver.RemoveListener(view.UpdateAvatarSprite);
             ownUserProfile.OnAvatarEmoteSet -= OnAvatarEmoteSet;
-            ownUserProfile.OnAvatarExpressionSet -= OnAvatarEmoteSet;
             emotesVisible.OnChange -= OnEmoteVisibleChanged;
             equippedEmotes.OnSet -= OnEquippedEmotesSet;
             shortcut0InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
