@@ -28,13 +28,14 @@ namespace GotoPanel
         AssetPromise_Texture texturePromise = null;
 
         public event Action<ParcelCoordinates> OnTeleportPressed;
+        public event Action OnClosePressed;
 
         private void Start()
         {
             teleportButton.onClick.RemoveAllListeners();
             teleportButton.onClick.AddListener(TeleportTo);
-            closeButton.onClick.AddListener(OnClosePressed);
-            cancelButton.onClick.AddListener(OnClosePressed);
+            closeButton.onClick.AddListener(ClosePanel);
+            cancelButton.onClick.AddListener(ClosePanel);
             container.SetActive(false);
             contentAnimator.OnWillFinishHide += (animator) => Hide();
         }
@@ -49,7 +50,7 @@ namespace GotoPanel
         private void TeleportTo()
         {
             OnTeleportPressed?.Invoke(targetCoordinates);
-            OnClosePressed();
+            ClosePanel();
         }
 
         public void SetVisible(bool isVisible)
@@ -97,11 +98,10 @@ namespace GotoPanel
             scenePreviewImage.texture = texture;
         }
 
-        private void OnClosePressed()
+        private void ClosePanel()
         {
-            DataStore.i.HUDs.gotoPanelVisible.Set(false);
+            OnClosePressed?.Invoke();
             contentAnimator.Hide(true);
-            AudioScriptableObjects.dialogClose.Play(true);
         }
 
         private void Hide() => container.SetActive(false);

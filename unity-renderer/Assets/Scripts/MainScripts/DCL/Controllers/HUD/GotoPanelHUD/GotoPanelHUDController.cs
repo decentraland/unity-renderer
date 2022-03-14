@@ -14,6 +14,7 @@ namespace GotoPanel
         {
             view = CreateView();
             view.OnTeleportPressed += Teleport;
+            view.OnClosePressed += ClosePanel;
             DataStore.i.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
             DataStore.i.HUDs.gotoPanelCoordinates.OnChange += SetCoordinates;
         }
@@ -44,6 +45,12 @@ namespace GotoPanel
         public void Teleport(ParcelCoordinates parcelCoordinates)
         {
             WebInterface.GoTo(parcelCoordinates.x, parcelCoordinates.y);
+        }
+
+        public void ClosePanel()
+        {
+            DataStore.i.HUDs.gotoPanelVisible.Set(false);
+            AudioScriptableObjects.dialogClose.Play(true);
         }
 
     }
