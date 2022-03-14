@@ -14,7 +14,7 @@ namespace EmotesCustomization
         private BaseVariable<bool> canStartMenuBeOpened => DataStore.i.exploreV2.isSomeModalOpen;
         private bool shortcutsCanBeUsed => !isStartMenuOpen.Get();
         private BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
-        private BaseCollection<string> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
+        private BaseCollection<EquippedEmoteData> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
 
         private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
         private InputAction_Trigger closeWindow;
@@ -71,23 +71,31 @@ namespace EmotesCustomization
             emotesVisible.Set(false);
         }
 
-        private void OnEquippedEmotesSet(IEnumerable<string> equippedEmotes) { UpdateEmoteSlots(); }
+        private void OnEquippedEmotesSet(IEnumerable<EquippedEmoteData> equippedEmotes) { UpdateEmoteSlots(); }
 
         private void UpdateEmoteSlots()
         {
-            List<WearableItem> emotesToSet = new List<WearableItem>();
-            foreach (string emoteId in equippedEmotes.Get())
+            List<EmotesHUDView.EmoteSlotData> emotesToSet = new List<EmotesHUDView.EmoteSlotData>();
+            foreach (EquippedEmoteData equippedEmoteData in equippedEmotes.Get())
             {
-                if (emoteId != null)
+                if (equippedEmoteData != null)
                 {
-                    catalog.TryGetValue(emoteId, out WearableItem emoteItem);
+                    catalog.TryGetValue(equippedEmoteData.id, out WearableItem emoteItem);
 
                     if (emoteItem != null)
                     {
                         if (!emoteItem.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(emoteItem.id) == 0)
+                        {
                             emotesToSet.Add(null);
+                        }
                         else
-                            emotesToSet.Add(emoteItem);
+                        {
+                            emotesToSet.Add(new EmotesHUDView.EmoteSlotData
+                            {
+                                emoteItem = emoteItem,
+                                thumbnailSprite = equippedEmoteData.cachedThumbnail
+                            });
+                        }
                     }
                     else
                     {
@@ -217,34 +225,34 @@ namespace EmotesCustomization
             switch (action)
             {
                 case DCLAction_Trigger.ToggleEmoteShortcut0:
-                    PlayEmote(equippedEmotes[0]);
+                    PlayEmote(equippedEmotes[0]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut1:
-                    PlayEmote(equippedEmotes[1]);
+                    PlayEmote(equippedEmotes[1]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut2:
-                    PlayEmote(equippedEmotes[2]);
+                    PlayEmote(equippedEmotes[2]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut3:
-                    PlayEmote(equippedEmotes[3]);
+                    PlayEmote(equippedEmotes[3]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut4:
-                    PlayEmote(equippedEmotes[4]);
+                    PlayEmote(equippedEmotes[4]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut5:
-                    PlayEmote(equippedEmotes[5]);
+                    PlayEmote(equippedEmotes[5]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut6:
-                    PlayEmote(equippedEmotes[6]);
+                    PlayEmote(equippedEmotes[6]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut7:
-                    PlayEmote(equippedEmotes[7]);
+                    PlayEmote(equippedEmotes[7]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut8:
-                    PlayEmote(equippedEmotes[8]);
+                    PlayEmote(equippedEmotes[8]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut9:
-                    PlayEmote(equippedEmotes[9]);
+                    PlayEmote(equippedEmotes[9]?.id);
                     break;
             }
 

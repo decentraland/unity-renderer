@@ -40,7 +40,7 @@ public class AvatarEditorHUDController : IHUD
     BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
     BaseCollection<string> currentLoadedEmotes => DataStore.i.emotesCustomization.currentLoadedEmotes;
     BaseVariable<string> emoteForPreviewing => DataStore.i.emotesCustomization.emoteForPreviewing;
-    BaseCollection<string> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
+    BaseCollection<EquippedEmoteData> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
     BaseVariable<bool> avatarHasBeenSaved => DataStore.i.emotesCustomization.avatarHasBeenSaved;
     private bool isSkinsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_skins");
 
@@ -526,6 +526,7 @@ public class AvatarEditorHUDController : IHUD
             {
                 if (iterator.Current.Value.IsEmote())
                     continue;
+
                 AddWearable(iterator.Current.Key, iterator.Current.Value);
             }
         }
@@ -855,16 +856,16 @@ public class AvatarEditorHUDController : IHUD
 
     private void OnPreviewEmote(string currentEmoteId, string previousEmoteId) { view.PreviewEmote(currentEmoteId); }
 
-    private void OnEquippedEmotesSet(IEnumerable<string> emotes)
+    private void OnEquippedEmotesSet(IEnumerable<EquippedEmoteData> emotes)
     {
         UnequippedAllEmotes();
 
-        foreach (string emoteId in emotes)
+        foreach (EquippedEmoteData equippedEmoteData in emotes)
         {
-            if (string.IsNullOrEmpty(emoteId))
+            if (equippedEmoteData == null)
                 continue;
 
-            catalog.TryGetValue(emoteId, out WearableItem emote);
+            catalog.TryGetValue(equippedEmoteData.id, out WearableItem emote);
             EquipEmote(emote);
         }
     }

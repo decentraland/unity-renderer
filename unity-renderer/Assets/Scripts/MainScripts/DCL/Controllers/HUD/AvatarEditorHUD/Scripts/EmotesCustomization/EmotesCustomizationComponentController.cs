@@ -2,6 +2,7 @@ using DCL;
 using DCL.Helpers;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace EmotesCustomization
         internal const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedNFTEmotes";
 
         internal BaseVariable<Transform> isInitialized => DataStore.i.emotesCustomization.isInitialized;
-        internal BaseCollection<string> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
+        internal BaseCollection<EquippedEmoteData> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
         internal BaseCollection<string> currentLoadedEmotes => DataStore.i.emotesCustomization.currentLoadedEmotes;
         internal BaseVariable<string> emoteForPreviewing => DataStore.i.emotesCustomization.emoteForPreviewing;
         internal BaseVariable<bool> avatarHasBeenSaved => DataStore.i.emotesCustomization.avatarHasBeenSaved;
@@ -87,7 +88,17 @@ namespace EmotesCustomization
 
         internal void LoadEquippedEmotes()
         {
-            List<string> storedEquippedEmotes = JsonConvert.DeserializeObject<List<string>>(PlayerPrefsUtils.GetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY));
+            List<string> storedEquippedEmotes;
+
+            try
+            {
+                storedEquippedEmotes = JsonConvert.DeserializeObject<List<string>>(PlayerPrefsUtils.GetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY));
+            }
+            catch
+            {
+                storedEquippedEmotes = null;
+            }
+
             if (storedEquippedEmotes == null)
                 storedEquippedEmotes = GetDefaultEmotes();
 
@@ -99,7 +110,13 @@ namespace EmotesCustomization
                 CatalogController.RequestWearable(emoteId);
             }
 
-            equippedEmotes.Set(storedEquippedEmotes);
+            List<EquippedEmoteData> storedEquippedEmotesData = new List<EquippedEmoteData>();
+            foreach (string emoteId in storedEquippedEmotes)
+            {
+                storedEquippedEmotesData.Add(
+                    string.IsNullOrEmpty(emoteId) ? null : new EquippedEmoteData { id = emoteId, cachedThumbnail = null });
+            }
+            equippedEmotes.Set(storedEquippedEmotesData);
         }
 
         internal List<string> GetDefaultEmotes()
@@ -141,7 +158,13 @@ namespace EmotesCustomization
         {
             if (wasAvatarSaved)
             {
-                PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(equippedEmotes.Get()));
+                List<string> emotesIdsToStore = new List<string>();
+                foreach (EquippedEmoteData equippedEmoteData in equippedEmotes.Get())
+                {
+                    emotesIdsToStore.Add(equippedEmoteData != null ? equippedEmoteData.id : null);
+                }
+
+                PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(emotesIdsToStore));
                 PlayerPrefsUtils.Save();
             }
             else
@@ -160,7 +183,8 @@ namespace EmotesCustomization
 
         internal void ProcessCatalog()
         {
-            CleanEmotes();
+            currentLoadedEmotes.Set(new List<string>());
+            view.CleanEmotes();
 
             using (var iterator = catalog.Get().GetEnumerator())
             {
@@ -169,13 +193,6 @@ namespace EmotesCustomization
                     AddEmote(iterator.Current.Key, iterator.Current.Value);
                 }
             }
-        }
-
-        internal void CleanEmotes()
-        {
-            currentLoadedEmotes.Set(new List<string>());
-            view.CleanEmotes();
-            UpdateEmoteSlots();
         }
 
         internal void AddEmote(string id, WearableItem wearable)
@@ -250,7 +267,7 @@ namespace EmotesCustomization
                     continue;
                 }
 
-                catalog.TryGetValue(equippedEmotes[i], out WearableItem emoteItem);
+                catalog.TryGetValue(equippedEmotes[i].id, out WearableItem emoteItem);
                 if (emoteItem != null && currentLoadedEmotes.Contains(emoteItem.id))
                     view.EquipEmote(emoteItem.id, emoteItem.GetName(), i, false, false);
             }
@@ -258,11 +275,15 @@ namespace EmotesCustomization
 
         internal void StoreEquippedEmotes()
         {
-            List<string> newEquippedEmotesList = new List<string> { null, null, null, null, null, null, null, null, null, null };
+            List<EquippedEmoteData> newEquippedEmotesList = new List<EquippedEmoteData> { null, null, null, null, null, null, null, null, null, null };
             foreach (EmoteSlotCardComponentView slot in view.currentSlots)
             {
                 if (!string.IsNullOrEmpty(slot.model.emoteId))
-                    newEquippedEmotesList[slot.model.slotNumber] = slot.model.emoteId;
+                    newEquippedEmotesList[slot.model.slotNumber] = new EquippedEmoteData
+                    {
+                        id = slot.model.emoteId,
+                        cachedThumbnail = slot.model.pictureSprite
+                    };
             }
 
             equippedEmotes.Set(newEquippedEmotesList);
