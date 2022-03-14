@@ -85,6 +85,9 @@ namespace GotoPanel
             DisplayThumbnail(scenePreviewFailImage.texture);
             if (!string.IsNullOrEmpty(sceneInfo.previewImageUrl))
             {
+                if (texturePromise != null)
+                    AssetPromiseKeeper_Texture.i.Forget(texturePromise);
+                
                 texturePromise = new AssetPromise_Texture(sceneInfo.previewImageUrl, storeTexAsNonReadable: false);
                 texturePromise.OnSuccessEvent += (textureAsset) => { DisplayThumbnail(textureAsset.texture); };
                 texturePromise.OnFailEvent += (textureAsset, error) => { DisplayThumbnail(scenePreviewFailImage.texture); };

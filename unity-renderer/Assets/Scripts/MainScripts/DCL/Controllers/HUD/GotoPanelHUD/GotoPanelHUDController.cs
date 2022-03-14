@@ -34,6 +34,10 @@ namespace GotoPanel
 
         public void Dispose()
         {
+            view.OnTeleportPressed -= Teleport;
+            view.OnClosePressed -= ClosePanel;
+            DataStore.i.HUDs.gotoPanelVisible.OnChange -= ChangeVisibility;
+            DataStore.i.HUDs.gotoPanelCoordinates.OnChange -= SetCoordinates;
             view?.Dispose();
         }
 
