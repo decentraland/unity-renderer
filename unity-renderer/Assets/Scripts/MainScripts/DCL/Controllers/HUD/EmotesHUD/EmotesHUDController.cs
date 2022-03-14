@@ -15,6 +15,7 @@ namespace EmotesCustomization
         private bool shortcutsCanBeUsed => !isStartMenuOpen.Get();
         private BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
         private BaseCollection<EquippedEmoteData> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
+        private BaseDictionary<(string bodyshapeId, string emoteId), AnimationClip> emoteAnimations => DataStore.i.emotes.animations;
 
         private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
         private InputAction_Trigger closeWindow;
@@ -33,6 +34,7 @@ namespace EmotesCustomization
         private UserProfile userProfile;
         private BaseDictionary<string, WearableItem> catalog;
         private bool ownedWearablesAlreadyRequested = false;
+        private BaseDictionary<string, EmoteWheelSlot> slotsInLoadingState = new BaseDictionary<string, EmoteWheelSlot>();
 
         public EmotesHUDController(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
         {
@@ -54,6 +56,7 @@ namespace EmotesCustomization
             this.catalog = catalog;
             equippedEmotes.OnSet += OnEquippedEmotesSet;
             OnEquippedEmotesSet(equippedEmotes.Get());
+            emoteAnimations.OnAdded += OnAnimationAdded;
 
             ConfigureShortcuts();
         }
@@ -111,7 +114,34 @@ namespace EmotesCustomization
                 }
             }
 
-            view.SetEmotes(emotesToSet);
+            List<EmoteWheelSlot> updatedWheelSlots = view.SetEmotes(emotesToSet);
+            foreach (EmoteWheelSlot slot in updatedWheelSlots)
+            {
+                if (string.IsNullOrEmpty(slot.emoteId))
+                    continue;
+
+                slot.SetAsLoading(true);
+
+                if (!slotsInLoadingState.ContainsKey(slot.emoteId))
+                    slotsInLoadingState.Add(slot.emoteId, slot);
+
+                RefreshSlotLoadingState(slot.emoteId);
+            }
+        }
+
+        private void OnAnimationAdded((string bodyshapeId, string emoteId) values, AnimationClip animationClip) { RefreshSlotLoadingState(values.emoteId); }
+
+        private void RefreshSlotLoadingState(string emoteId)
+        {
+            if (emoteAnimations.ContainsKey((userProfile.avatar.bodyShape, emoteId)))
+            {
+                slotsInLoadingState.TryGetValue(emoteId, out EmoteWheelSlot slot);
+                if (slot != null)
+                {
+                    slot.SetAsLoading(false);
+                    slotsInLoadingState.Remove(emoteId);
+                }
+            }
         }
 
         public void SetVisibility_Internal(bool visible)
@@ -155,6 +185,7 @@ namespace EmotesCustomization
             ownUserProfile.OnAvatarEmoteSet -= OnAvatarEmoteSet;
             emotesVisible.OnChange -= OnEmoteVisibleChanged;
             equippedEmotes.OnSet -= OnEquippedEmotesSet;
+            emoteAnimations.OnAdded -= OnAnimationAdded;
             shortcut0InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut1InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut2InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;

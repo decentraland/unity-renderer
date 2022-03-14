@@ -16,6 +16,7 @@ namespace EmotesCustomization
         public int assignedSlot = -1;
         public string rarity;
         public bool isInL2;
+        public bool isLoading = false;
     }
 
     [Serializable]

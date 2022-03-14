@@ -93,6 +93,12 @@ namespace EmotesCustomization
         /// </summary>
         /// <param name="isInL2">True for set it as L2.</param>
         void SetIsInL2(bool isInL2);
+
+        /// <summary>
+        /// Set the emote card as loading state or not.
+        /// </summary>
+        /// <param name="isLoading">True for setting it as loading state.</param>
+        void SetAsLoading(bool isLoading);
     }
 
     public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView, IComponentModelConfig
@@ -113,6 +119,7 @@ namespace EmotesCustomization
         [SerializeField] internal Animator selectionAnimator;
         [SerializeField] internal Image rarityMark;
         [SerializeField] internal Transform emoteInfoAnchor;
+        [SerializeField] internal GameObject loadingSpinnerGO;
 
 
         [Header("Configuration")]
@@ -166,6 +173,7 @@ namespace EmotesCustomization
             SetEmoteAsSelected(model.isSelected);
             SetRarity(model.rarity);
             SetIsInL2(model.isInL2);
+            SetAsLoading(model.isLoading);
         }
 
         public override void OnEnable()
@@ -315,6 +323,17 @@ namespace EmotesCustomization
         public void SetIsInL2(bool isInL2)
         {
             model.isInL2 = isInL2;
+        }
+
+        public void SetAsLoading(bool isLoading)
+        {
+            model.isLoading = isLoading;
+
+            if (loadingSpinnerGO != null)
+                loadingSpinnerGO.SetActive(isLoading);
+
+            if (mainButton != null)
+                mainButton.gameObject.SetActive(!isLoading);
         }
 
         internal void RefreshVisualCardStatus()

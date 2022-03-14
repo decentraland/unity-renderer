@@ -57,7 +57,7 @@ namespace EmotesCustomization
         /// Add an emote in the emotes grid component.
         /// </summary>
         /// <param name="emote">Emote card (model) to be added.</param>
-        void AddEmote(EmoteCardComponentModel emote);
+        EmoteCardComponentView AddEmote(EmoteCardComponentModel emote);
 
         /// <summary>
         /// Remove an emote from the frid component.
@@ -173,10 +173,12 @@ namespace EmotesCustomization
             emoteCardsPool.ReleaseAll();
         }
 
-        public void AddEmote(EmoteCardComponentModel emote)
+        public EmoteCardComponentView AddEmote(EmoteCardComponentModel emote)
         {
             EmoteCardComponentView emoteGO = InstantiateAndConfigureEmoteCard(emote);
             emotesGrid.AddItem(emoteGO);
+
+            return emoteGO;
         }
 
         public void RemoveEmote(string emoteId)

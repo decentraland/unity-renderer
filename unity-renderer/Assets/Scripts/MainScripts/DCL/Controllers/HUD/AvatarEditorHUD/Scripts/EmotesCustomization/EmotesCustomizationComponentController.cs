@@ -29,6 +29,7 @@ namespace EmotesCustomization
         internal BaseCollection<string> currentLoadedEmotes => DataStore.i.emotesCustomization.currentLoadedEmotes;
         internal BaseVariable<string> emoteForPreviewing => DataStore.i.emotesCustomization.emoteForPreviewing;
         internal BaseVariable<bool> avatarHasBeenSaved => DataStore.i.emotesCustomization.avatarHasBeenSaved;
+        internal BaseDictionary<(string bodyshapeId, string emoteId), AnimationClip> emoteAnimations => DataStore.i.emotes.animations;
         internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
         internal bool isEmotesCustomizationSectionOpen => isStarMenuOpen.Get() && view.isActive;
         internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
@@ -48,6 +49,7 @@ namespace EmotesCustomization
         internal InputAction_Trigger shortcut9InputAction;
         internal UserProfile userProfile;
         internal BaseDictionary<string, WearableItem> catalog;
+        internal BaseDictionary<string, EmoteCardComponentView> emotesInLoadingState = new BaseDictionary<string, EmoteCardComponentView>();
 
         public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
         {
@@ -70,6 +72,7 @@ namespace EmotesCustomization
             avatarHasBeenSaved.OnChange -= OnAvatarHasBeenSavedChanged;
             catalog.OnAdded -= AddEmote;
             catalog.OnRemoved -= RemoveEmote;
+            emoteAnimations.OnAdded -= OnAnimationAdded;
             userProfile.OnInventorySet -= OnUserProfileInventorySet;
             userProfile.OnUpdate -= OnUserProfileUpdated;
             equipInputAction.OnFinished -= OnEquipInputActionTriggered;
@@ -179,6 +182,7 @@ namespace EmotesCustomization
             this.catalog = catalog;
             this.catalog.OnAdded += AddEmote;
             this.catalog.OnRemoved += RemoveEmote;
+            emoteAnimations.OnAdded += OnAnimationAdded;
         }
 
         internal void ProcessCatalog()
@@ -205,7 +209,14 @@ namespace EmotesCustomization
 
             currentLoadedEmotes.Add(id);
             EmoteCardComponentModel emoteToAdd = ParseWearableItemIntoEmoteCardModel(wearable);
-            view.AddEmote(emoteToAdd);
+            EmoteCardComponentView newEmote = view.AddEmote(emoteToAdd);
+            newEmote.SetAsLoading(true);
+
+            if (!emotesInLoadingState.ContainsKey(id))
+                emotesInLoadingState.Add(id, newEmote);
+
+            RefreshEmoteLoadingState(id);
+
             UpdateEmoteSlots();
         }
 
@@ -214,6 +225,21 @@ namespace EmotesCustomization
             currentLoadedEmotes.Remove(id);
             view.RemoveEmote(id);
             UpdateEmoteSlots();
+        }
+
+        internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, AnimationClip animationClip) { RefreshEmoteLoadingState(values.emoteId); }
+
+        internal void RefreshEmoteLoadingState(string emoteId)
+        {
+            if (emoteAnimations.ContainsKey((userProfile.avatar.bodyShape, emoteId)))
+            {
+                emotesInLoadingState.TryGetValue(emoteId, out EmoteCardComponentView emote);
+                if (emote != null)
+                {
+                    emote.SetAsLoading(false);
+                    emotesInLoadingState.Remove(emoteId);
+                }
+            }
         }
 
         internal EmoteCardComponentModel ParseWearableItemIntoEmoteCardModel(WearableItem wearable)
@@ -342,7 +368,7 @@ namespace EmotesCustomization
 
         internal void OnEquipInputActionTriggered(DCLAction_Hold action)
         {
-            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null)
+            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null || view.selectedCard.model.isLoading)
                 return;
 
             if (!view.selectedCard.model.isAssignedInSelectedSlot)
@@ -362,7 +388,7 @@ namespace EmotesCustomization
 
         internal void OnShowInfoInputActionTriggered(DCLAction_Hold action)
         {
-            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null)
+            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null || view.selectedCard.model.isLoading)
                 return;
 
             view.OpenEmoteInfoPanel(
@@ -373,7 +399,7 @@ namespace EmotesCustomization
 
         internal void OnNumericShortcutInputActionTriggered(DCLAction_Trigger action)
         {
-            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null)
+            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null || view.selectedCard.model.isLoading)
                 return;
 
             switch (action)

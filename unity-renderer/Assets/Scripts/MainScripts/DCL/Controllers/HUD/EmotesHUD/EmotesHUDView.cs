@@ -45,6 +45,8 @@ namespace EmotesCustomization
             }
 
             openCustomizeButton.onClick.AddListener(() => OnCustomizeClicked?.Invoke());
+
+            selectedEmoteName.text = string.Empty;
         }
 
         public void SetVisiblity(bool visible)
@@ -59,7 +61,7 @@ namespace EmotesCustomization
                 AudioScriptableObjects.dialogClose.Play(true);
         }
 
-        public void SetEmotes(List<EmoteSlotData> emotes)
+        public List<EmoteWheelSlot> SetEmotes(List<EmoteSlotData> emotes)
         {
             for (int i = 0; i < emotes.Count; i++)
             {
@@ -79,7 +81,8 @@ namespace EmotesCustomization
                             emoteButtons[i].image.SetImage(equippedEmote.thumbnailSprite);
                         else
                             emoteButtons[i].image.SetImage(equippedEmote.emoteItem.ComposeThumbnailUrl());
-                        
+
+                        emoteButtons[i].SetId(equippedEmote.emoteItem.id);
                         emoteButtons[i].SetName(equippedEmote.emoteItem.GetName());
                         
                         RarityColor rarityColor = rarityColors.FirstOrDefault(x => x.rarity == equippedEmote.emoteItem.rarity);
@@ -90,11 +93,14 @@ namespace EmotesCustomization
                     else
                     {
                         emoteButtons[i].image.SetImage(nonAssignedEmoteSprite);
+                        emoteButtons[i].SetId(string.Empty);
                         emoteButtons[i].SetName(string.Empty);
                         emoteButtons[i].SetRarity(false, Color.white);
                     }
                 }
             }
+
+            return emoteButtons.ToList();
         }
 
         private void OnSlotHover(string emoteName) { selectedEmoteName.text = emoteName; }
