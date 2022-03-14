@@ -6,11 +6,11 @@ using DCL.Configuration;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
-using JetBrains.Annotations;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -67,6 +67,7 @@ namespace DCL
             TaskUtils.Run(async () => await WatchForNewChunksToDecode(tokenSourceToken), cancellationToken: tokenSourceToken).Forget();
 #endif
         }
+        
         private void PrewarmSceneMessagesPool()
         {
             if (prewarmSceneMessagesPool)
@@ -397,7 +398,6 @@ namespace DCL
             return queuedMessage;
         }
 
-        [UsedImplicitly]
         private IEnumerator DeferredDecodingAndEnqueue()
         {
             float start = Time.realtimeSinceStartup;
@@ -450,14 +450,14 @@ namespace DCL
                 {
                     if (chunksToDecode.Count > 0)
                     {
-                        await TaskUtils.Run( () => ThreadedDecodeAndEnqueue(cancellationToken), cancellationToken: cancellationToken);
+                        ThreadedDecodeAndEnqueue(cancellationToken);
                     }
                 }
                 catch (Exception e)
                 {
                     Debug.LogException(e);
-                }   
-                
+                }
+
                 await UniTask.Yield();
             }
         }
@@ -771,7 +771,6 @@ namespace DCL
             messagingControllersManager.RemoveController(scene.sceneData.id);
 
             scene.Cleanup(!CommonScriptableObjects.rendererState.Get());
-
 
             if (VERBOSE)
             {
