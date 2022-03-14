@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using AvatarSystem;
 using DCL.Configuration;
+using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
 using GPUSkinning;
@@ -37,7 +38,6 @@ namespace DCL
 
         public bool everythingIsLoaded;
 
-        private Vector3? lastAvatarPosition = null;
         bool initializedPosition = false;
 
         private Player player = null;
@@ -48,6 +48,7 @@ namespace DCL
         private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
         private CancellationTokenSource loadingCts;
         private ILazyTextureObserver currentLazyObserver;
+        private bool isGlobalSceneAvatar = true;
 
         private void Awake()
         {
@@ -55,14 +56,16 @@ namespace DCL
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             Visibility visibility = new Visibility();
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
+            AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
             avatar = new Avatar(
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-                GetComponentInChildren<AvatarAnimatorLegacy>(),
+                animator,
                 visibility,
                 avatarLOD,
                 new SimpleGPUSkinning(),
-                new GPUSkinningThrottler());
+                new GPUSkinningThrottler(),
+                new EmoteAnimationEquipper(animator, DataStore.i.emotes));
 
             if (avatarReporterController == null)
             {
@@ -93,6 +96,8 @@ namespace DCL
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
+            isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
+
             DisablePassport();
 
             var model = (AvatarModel) newModel;
@@ -116,16 +121,22 @@ namespace DCL
             if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
             {
                 initializedPosition = true;
-
-                float characterHeight = DCLCharacterController.i != null ? DCLCharacterController.i.characterController.height : 0.8f;
-
-                avatarMovementController.MoveTo(
-                    entity.gameObject.transform.localPosition - Vector3.up * characterHeight / 2,
+                OnEntityTransformChanged(entity.gameObject.transform.localPosition,
                     entity.gameObject.transform.localRotation, true);
             }
+            
+            // NOTE: we subscribe here to transform changes since we might "lose" the message
+            // if we subscribe after a any yield
+            entity.OnTransformChange -= OnEntityTransformChanged;
+            entity.OnTransformChange += OnEntityTransformChanged;
 
             var wearableItems = model.wearables.ToList();
             wearableItems.Add(model.bodyShape);
+
+            //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
+            var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+            wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
                 //TODO Add Collider to the AvatarSystem
@@ -154,13 +165,7 @@ namespace DCL
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, onloadParticlePrefab);
             }
 
-            avatar.SetExpression(model.expressionTriggerId, model.expressionTriggerTimestamp);
-
-            entity.OnTransformChange -= avatarMovementController.OnTransformChanged;
-            entity.OnTransformChange += avatarMovementController.OnTransformChanged;
-
-            entity.OnTransformChange -= OnEntityTransformChanged;
-            entity.OnTransformChange += OnEntityTransformChanged;
+            avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerDownReport += PlayerClicked;
@@ -188,9 +193,8 @@ namespace DCL
 
             EnablePassport();
 
-            bool isAvatarGlobalScene = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
-            onPointerDown.SetColliderEnabled(isAvatarGlobalScene);
-            onPointerDown.SetOnClickReportEnabled(isAvatarGlobalScene);
+            onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
+            onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
         }
 
         public void SetImpostor(string userId)
@@ -216,14 +220,13 @@ namespace DCL
             if (player != null && (player.id != model.id || player.name != model.name))
                 otherPlayers.Remove(player.id);
 
-            if (string.IsNullOrEmpty(model?.id))
+            if (isGlobalSceneAvatar && string.IsNullOrEmpty(model?.id))
                 return;
 
-            bool isNew = false;
-            if (player == null)
+            bool isNew = player == null;
+            if (isNew)
             {
                 player = new Player();
-                isNew = true;
             }
 
             player.id = model.id;
@@ -240,7 +243,10 @@ namespace DCL
                 player.playerName.SetName(player.name);
                 player.playerName.Show();
                 player.anchorPoints = anchorPoints;
-                otherPlayers.Add(player.id, player);
+                if (isGlobalSceneAvatar)
+                {
+                    otherPlayers.Add(player.id, player);
+                }
                 avatarReporterController.ReportAvatarRemoved();
             }
 
@@ -283,7 +289,21 @@ namespace DCL
         private void OnEntityTransformChanged(object newModel)
         {
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
-            lastAvatarPosition = newTransformModel.position;
+            OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation, !initializedPosition);
+        }
+        
+        private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
+        {
+            if (isGlobalSceneAvatar)
+            {
+                avatarMovementController.OnTransformChanged(position, rotation, inmediate);
+            }
+            else
+            {
+                var scenePosition = Utils.GridToWorldPosition(entity.scene.sceneData.basePosition.x, entity.scene.sceneData.basePosition.y);
+                avatarMovementController.OnTransformChanged(scenePosition + position, rotation, inmediate);
+            }
+            initializedPosition = true;
         }
 
         public override void OnPoolGet()
@@ -293,7 +313,6 @@ namespace DCL
             everythingIsLoaded = false;
             initializedPosition = false;
             model = new AvatarModel();
-            lastAvatarPosition = null;
             player = null;
         }
 

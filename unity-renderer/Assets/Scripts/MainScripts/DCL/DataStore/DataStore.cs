@@ -55,5 +55,6 @@ namespace DCL
         public ServerTime.WorldTimer worldTimer => i.Get<ServerTime.WorldTimer>();
         public DataStore_Performance performance => i.Get<DataStore_Performance>();
         public DataStore_ExperiencesViewer experiencesViewer => i.Get<DataStore_ExperiencesViewer>();
+        public DataStore_Emotes emotes => i.Get<DataStore_Emotes>();
     }
 }

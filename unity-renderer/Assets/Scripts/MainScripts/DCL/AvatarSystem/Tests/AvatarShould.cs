@@ -28,6 +28,7 @@ namespace Test.AvatarSystem
         private ILOD lod;
         private IGPUSkinning gpuSkinning;
         private IGPUSkinningThrottler gpuSkinningThrottler;
+        private IEmoteAnimationEquipper emoteAnimationEquipper;
 
         [SetUp]
         public void SetUp()
@@ -41,6 +42,7 @@ namespace Test.AvatarSystem
             lod = Substitute.For<ILOD>();
             gpuSkinning = Substitute.For<IGPUSkinning>();
             gpuSkinningThrottler = Substitute.For<IGPUSkinningThrottler>();
+            emoteAnimationEquipper = Substitute.For<IEmoteAnimationEquipper>();
             avatar = new Avatar(
                 curator,
                 loader,
@@ -48,7 +50,8 @@ namespace Test.AvatarSystem
                 visibility,
                 lod,
                 gpuSkinning,
-                gpuSkinningThrottler
+                gpuSkinningThrottler,
+                emoteAnimationEquipper
             );
         }
 
@@ -89,10 +92,11 @@ namespace Test.AvatarSystem
             WearableItem eyebrows = new WearableItem();
             WearableItem mouth = new WearableItem();
             List<WearableItem> wearables = new List<WearableItem>();
+            List<WearableItem> emotes = new List<WearableItem>();
 
             curator.Configure()
                    .Curate(Arg.Any<AvatarSettings>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
-                   .Returns(x => new UniTask<(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables)>((bodyshape, eyes, eyebrows, mouth, wearables)));
+                   .Returns(x => new UniTask<(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, List<WearableItem> emotes)>((bodyshape, eyes, eyebrows, mouth, wearables, emotes)));
             loader.Configure()
                   .Load(Arg.Any<WearableItem>(),
                       Arg.Any<WearableItem>(),

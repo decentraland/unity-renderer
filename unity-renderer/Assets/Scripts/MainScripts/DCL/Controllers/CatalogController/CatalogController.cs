@@ -4,6 +4,8 @@ using DCL.Helpers;
 using DCL.Interface;
 using System.Collections.Generic;
 using DCL.Configuration;
+using DCL.Emotes;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class CatalogController : MonoBehaviour
@@ -59,6 +61,16 @@ public class CatalogController : MonoBehaviour
         pendingRequestsToSend.Clear();
     }
 
+    //This temporary until the emotes are in the content server 
+    public void EmbedWearables(IEnumerable<WearableItem> wearables)
+    {
+        foreach (WearableItem wearableItem in wearables)
+        {
+            wearableCatalog[wearableItem.id] = wearableItem;
+            wearablesInUseCounters[wearableItem.id] = 10000; //A high value to ensure they are not removed
+        }
+    }
+
     public void AddWearablesToCatalog(string payload)
     {
         if (VERBOSE)
@@ -68,7 +80,10 @@ public class CatalogController : MonoBehaviour
 
         try
         {
-            request = JsonUtility.FromJson<WearablesRequestResponse>(payload);
+            // The new wearables paradigm is based on composing with optional field
+            // i.e. the emotes will have an emotev0Data property with some values.
+            // JsonUtility.FromJson doesn't allow null properties so we have to use Newtonsoft instead
+            request = JsonConvert.DeserializeObject<WearablesRequestResponse>(payload);
         }
         catch (Exception e)
         {
