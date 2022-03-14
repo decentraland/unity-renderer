@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using AvatarSystem;
 using DCL.Configuration;
+using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
 using GPUSkinning;
@@ -55,14 +56,16 @@ namespace DCL
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             Visibility visibility = new Visibility();
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
+            AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
             avatar = new Avatar(
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-                GetComponentInChildren<AvatarAnimatorLegacy>(),
+                animator,
                 visibility,
                 avatarLOD,
                 new SimpleGPUSkinning(),
-                new GPUSkinningThrottler());
+                new GPUSkinningThrottler(),
+                new EmoteAnimationEquipper(animator, DataStore.i.emotes));
 
             if (avatarReporterController == null)
             {
@@ -129,6 +132,11 @@ namespace DCL
 
             var wearableItems = model.wearables.ToList();
             wearableItems.Add(model.bodyShape);
+
+            //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
+            var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+            wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
                 //TODO Add Collider to the AvatarSystem
@@ -157,7 +165,7 @@ namespace DCL
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, onloadParticlePrefab);
             }
 
-            avatar.SetExpression(model.expressionTriggerId, model.expressionTriggerTimestamp);
+            avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerDownReport += PlayerClicked;

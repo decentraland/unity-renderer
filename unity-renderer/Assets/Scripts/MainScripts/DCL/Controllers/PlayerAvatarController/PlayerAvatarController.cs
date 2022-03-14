@@ -5,6 +5,7 @@ using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Emotes;
 using DCL.FatalErrorReporter;
 using DCL.Interface;
 using DCL.NotificationModel;
@@ -41,14 +42,16 @@ public class PlayerAvatarController : MonoBehaviour
         IAnalytics analytics = DCL.Environment.i.platform.serviceProviders.analytics;
         playerAvatarAnalytics = new PlayerAvatarAnalytics(analytics, CommonScriptableObjects.playerCoords);
 
+        AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
         avatar = new AvatarSystem.Avatar(
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-            GetComponentInChildren<AvatarAnimatorLegacy>(),
+            animator,
             new Visibility(),
             new NoLODs(),
             new SimpleGPUSkinning(),
-            new GPUSkinningThrottler());
+            new GPUSkinningThrottler(),
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes));
 
         if ( UserProfileController.i != null )
         {
@@ -120,7 +123,7 @@ public class PlayerAvatarController : MonoBehaviour
 
     private void OnAvatarExpression(string id, long timestamp)
     {
-        avatar.SetExpression(id, timestamp);
+        avatar.PlayEmote(id, timestamp);
         playerAvatarAnalytics.ReportExpression(id);
     }
 
@@ -149,6 +152,11 @@ public class PlayerAvatarController : MonoBehaviour
 
                 List<string> wearableItems = profile.avatar.wearables.ToList();
                 wearableItems.Add(profile.avatar.bodyShape);
+
+                //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
+                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+                wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+
                 await avatar.Load(wearableItems, new AvatarSettings
                 {
                     bodyshapeId = profile.avatar.bodyShape,

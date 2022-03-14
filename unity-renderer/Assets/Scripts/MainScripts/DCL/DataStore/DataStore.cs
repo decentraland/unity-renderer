@@ -54,5 +54,6 @@ namespace DCL
         public DataStore_SkyboxConfig skyboxConfig => i.Get<DataStore_SkyboxConfig>();
         public ServerTime.WorldTimer worldTimer => i.Get<ServerTime.WorldTimer>();
         public DataStore_Performance performance => i.Get<DataStore_Performance>();
+        public DataStore_Emotes emotes => i.Get<DataStore_Emotes>();
     }
 }

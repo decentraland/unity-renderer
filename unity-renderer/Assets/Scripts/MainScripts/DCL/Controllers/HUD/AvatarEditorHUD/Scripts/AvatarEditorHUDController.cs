@@ -466,6 +466,8 @@ public class AvatarEditorHUDController : IHUD
         {
             while (iterator.MoveNext())
             {
+                if (iterator.Current.Value.IsEmote())
+                    continue;
                 AddWearable(iterator.Current.Key, iterator.Current.Value);
             }
         }
