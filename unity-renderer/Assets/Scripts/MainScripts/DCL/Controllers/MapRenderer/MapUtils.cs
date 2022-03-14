@@ -25,8 +25,7 @@ namespace DCL.Helpers
             x -= WORLD_PARCELS_OFFSET_MIN.x;
             y -= WORLD_PARCELS_OFFSET_MIN.y;
 
-            Vector3 result = new Vector3((x * PARCEL_SIZE)+(PARCEL_SIZE/2), (y * PARCEL_SIZE) + (PARCEL_SIZE / 2), 0);
-            return result;
+            return new Vector3((x * PARCEL_SIZE)+(PARCEL_SIZE/2), (y * PARCEL_SIZE) + (PARCEL_SIZE / 2), 0);
         }
 
         public static string GetMarketPlaceThumbnailUrl(Vector2Int[] parcels, int width, int height, int sizeFactor)
