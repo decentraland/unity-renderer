@@ -8,6 +8,7 @@ using UnityEngine.UI;
         [SerializeField] internal Image loadingBar;
         [SerializeField] internal GameObject tipsContainer;
         [SerializeField] internal GameObject noTipsContainer;
+        [SerializeField] internal ShowHideAnimator showHideAnimator;
 
         private bool isDestroyed = false;
 
@@ -25,7 +26,15 @@ using UnityEngine.UI;
             SetTips(false);
         }
 
-        public void SetVisible(bool isVisible) { gameObject.SetActive(isVisible); }
+        public void SetVisible(bool isVisible) {
+        if (isVisible)
+            showHideAnimator.Show();
+        else
+            showHideAnimator.Hide();
+
+            //gameObject.SetActive(isVisible); 
+        }
+
         public void SetMessage(string message) { text.text = message; }
         public void SetPercentage(float percentage) { loadingBar.transform.localScale = new Vector3(percentage, 1, 1); }
         public void SetTips(bool showTips)
