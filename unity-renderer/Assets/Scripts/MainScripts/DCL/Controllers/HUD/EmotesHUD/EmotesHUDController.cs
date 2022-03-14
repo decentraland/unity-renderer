@@ -99,7 +99,7 @@ namespace EmotesCustomization
                             emotesToSet.Add(new EmotesHUDView.EmoteSlotData
                             {
                                 emoteItem = emoteItem,
-                                thumbnailSprite = equippedEmoteData.cachedThumbnail
+                                thumbnailSprite = emoteItem.thumbnailSprite != null ? emoteItem.thumbnailSprite : equippedEmoteData.cachedThumbnail
                             });
                         }
                     }

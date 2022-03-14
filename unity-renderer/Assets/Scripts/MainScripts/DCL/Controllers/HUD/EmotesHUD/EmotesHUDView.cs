@@ -78,9 +78,9 @@ namespace EmotesCustomization
                         emoteButtons[i].button.onClick.AddListener(() => onEmoteClicked?.Invoke(equippedEmote.emoteItem.id));
                         
                         if (equippedEmote.thumbnailSprite != null)
-                            emoteButtons[i].image.SetImage(equippedEmote.thumbnailSprite);
+                            emoteButtons[i].SetImage(equippedEmote.thumbnailSprite);
                         else
-                            emoteButtons[i].image.SetImage(equippedEmote.emoteItem.ComposeThumbnailUrl());
+                            emoteButtons[i].SetImage(equippedEmote.emoteItem.ComposeThumbnailUrl());
 
                         emoteButtons[i].SetId(equippedEmote.emoteItem.id);
                         emoteButtons[i].SetName(equippedEmote.emoteItem.GetName());
@@ -92,7 +92,7 @@ namespace EmotesCustomization
                     }
                     else
                     {
-                        emoteButtons[i].image.SetImage(nonAssignedEmoteSprite);
+                        emoteButtons[i].SetImage(nonAssignedEmoteSprite);
                         emoteButtons[i].SetId(string.Empty);
                         emoteButtons[i].SetName(string.Empty);
                         emoteButtons[i].SetRarity(false, Color.white);

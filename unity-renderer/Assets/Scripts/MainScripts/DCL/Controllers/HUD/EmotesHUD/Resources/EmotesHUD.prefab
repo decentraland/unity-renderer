@@ -224,6 +224,7 @@ MonoBehaviour:
   image: {fileID: 4891149110490696808}
   rarityImage: {fileID: 1665957417824525067}
   loadingSpinnerGO: {fileID: 343197215308668044}
+  defaultImage: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
 --- !u!1 &216177124107872851
 GameObject:
   m_ObjectHideFlags: 0
@@ -1300,6 +1301,7 @@ MonoBehaviour:
   image: {fileID: 6396634784762184827}
   rarityImage: {fileID: 7764893751222450970}
   loadingSpinnerGO: {fileID: 6138023646280005744}
+  defaultImage: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
 --- !u!1 &1023658681983212103
 GameObject:
   m_ObjectHideFlags: 0
@@ -2001,6 +2003,7 @@ MonoBehaviour:
   image: {fileID: 1938680897414457150}
   rarityImage: {fileID: 2620245722364438130}
   loadingSpinnerGO: {fileID: 354308501496739438}
+  defaultImage: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
 --- !u!1 &1783880361738782520
 GameObject:
   m_ObjectHideFlags: 0
@@ -3847,6 +3850,7 @@ MonoBehaviour:
   image: {fileID: 4466670514955846497}
   rarityImage: {fileID: 5864547353078547213}
   loadingSpinnerGO: {fileID: 7119656290913332469}
+  defaultImage: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
 --- !u!1 &4598985091846103538
 GameObject:
   m_ObjectHideFlags: 0
@@ -3996,6 +4000,7 @@ MonoBehaviour:
   image: {fileID: 5148896567999234905}
   rarityImage: {fileID: 4904350325149473829}
   loadingSpinnerGO: {fileID: 7002506262338870218}
+  defaultImage: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
 --- !u!1 &4979140711266332923
 GameObject:
   m_ObjectHideFlags: 0
@@ -4729,6 +4734,7 @@ MonoBehaviour:
   image: {fileID: 2992239749345299253}
   rarityImage: {fileID: 3000781084615107531}
   loadingSpinnerGO: {fileID: 1249023597646344908}
+  defaultImage: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
 --- !u!1 &6110660436181486734
 GameObject:
   m_ObjectHideFlags: 0
@@ -5421,6 +5427,7 @@ MonoBehaviour:
   image: {fileID: 38145197405153620}
   rarityImage: {fileID: 3095614382648098538}
   loadingSpinnerGO: {fileID: 7811495948654197443}
+  defaultImage: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
 --- !u!1 &6941404510284847514
 GameObject:
   m_ObjectHideFlags: 0
@@ -5921,6 +5928,7 @@ MonoBehaviour:
   image: {fileID: 4604708124152894512}
   rarityImage: {fileID: 196810036846193695}
   loadingSpinnerGO: {fileID: 8937888653343457049}
+  defaultImage: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
 --- !u!1 &7137352445907520641
 GameObject:
   m_ObjectHideFlags: 0
@@ -6893,6 +6901,7 @@ MonoBehaviour:
   image: {fileID: 3682475339651353392}
   rarityImage: {fileID: 190295320863499774}
   loadingSpinnerGO: {fileID: 2781679320836102136}
+  defaultImage: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
 --- !u!1 &7886428713447660142
 GameObject:
   m_ObjectHideFlags: 0
@@ -7088,6 +7097,7 @@ MonoBehaviour:
   image: {fileID: 669269661434888896}
   rarityImage: {fileID: 8005234198978506683}
   loadingSpinnerGO: {fileID: 8336614142455811450}
+  defaultImage: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
 --- !u!1 &8020166497445312245
 GameObject:
   m_ObjectHideFlags: 0

@@ -250,11 +250,13 @@ namespace EmotesCustomization
                 name = wearable.GetName(),
                 description = wearable.description,
                 pictureUri = wearable.ComposeThumbnailUrl(),
+                pictureSprite = wearable.thumbnailSprite,
                 isAssignedInSelectedSlot = false,
                 isSelected = false,
                 assignedSlot = -1,
                 rarity = wearable.rarity,
-                isInL2 = wearable.IsInL2()
+                isInL2 = wearable.IsInL2(),
+                isLoading = false
             };
         }
 

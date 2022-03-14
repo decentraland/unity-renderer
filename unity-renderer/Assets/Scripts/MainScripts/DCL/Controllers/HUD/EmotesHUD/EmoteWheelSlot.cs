@@ -11,6 +11,7 @@ namespace EmotesCustomization
         [SerializeField] internal ImageComponentView image;
         [SerializeField] internal Image rarityImage;
         [SerializeField] internal GameObject loadingSpinnerGO;
+        [SerializeField] internal Sprite defaultImage;
 
         public event Action<string> onSlotHover;
 
@@ -27,6 +28,22 @@ namespace EmotesCustomization
         {
             rarityImage.transform.parent.gameObject.SetActive(isActive);
             rarityImage.color = color;
+        }
+
+        public void SetImage(Sprite sprite) 
+        {
+            if (sprite != null)
+                image.SetImage(sprite);
+            else
+                image.SetImage(sprite);
+        }
+
+        public void SetImage(string uri) 
+        {
+            if (!string.IsNullOrEmpty(uri))
+                image.SetImage(uri);
+            else
+                image.SetImage(defaultImage);
         }
 
         public void SetAsLoading(bool isLoading)

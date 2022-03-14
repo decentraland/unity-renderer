@@ -28,7 +28,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Wave
-    thumbnail: https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: wave
     issuedId: 0
@@ -49,7 +50,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Fist Pump
-    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: fistpump
     issuedId: 0
@@ -70,7 +72,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Robot
-    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Karate_silhouette.svg/919px-Karate_silhouette.svg.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: robot
     issuedId: 0
@@ -91,7 +94,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Raise Hand
-    thumbnail: https://freesvg.org/img/1538176837.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: ff8a6278dd9d9334da10fa959cdb26dc, type: 3}
     rarity: 
     description: raiseHand
     issuedId: 0
@@ -112,7 +116,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Clap
-    thumbnail: https://freesvg.org/img/woman-silhouette-3.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: ff531623182fec8479d734ac8df22d8f, type: 3}
     rarity: 
     description: clap
     issuedId: 0
@@ -133,7 +138,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Money
-    thumbnail: https://images.squarespace-cdn.com/content/v1/55947ac3e4b0fa882882cd65/1487633176391-U7VZNFVFYFI8KKCKCYP1/NS_0020.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: e2b6332b93b06ab488a93d40b83c69fe, type: 3}
     rarity: 
     description: money
     issuedId: 0
@@ -154,7 +160,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Kiss
-    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 8845b5e9671db49409bf747319c8f5c7, type: 3}
     rarity: 
     description: kiss
     issuedId: 0
@@ -175,7 +182,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Hammer
-    thumbnail: https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: hammer
     issuedId: 0
@@ -196,7 +204,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Tik
-    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: tik
     issuedId: 0
@@ -217,7 +226,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Tektonik
-    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Karate_silhouette.svg/919px-Karate_silhouette.svg.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 84771a68677a08b43a7247d73aa5a6d8, type: 3}
     rarity: 
     description: tektonik
     issuedId: 0
@@ -238,7 +248,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Don't See
-    thumbnail: https://freesvg.org/img/1538176837.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 4ee2739d276aba843bd732c5a4a40dad, type: 3}
     rarity: 
     description: dontsee
     issuedId: 0
@@ -259,7 +270,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Hands Air
-    thumbnail: https://freesvg.org/img/woman-silhouette-3.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 5d9d324d9b1257f4cbeed858807c2c06, type: 3}
     rarity: 
     description: handsair
     issuedId: 0
@@ -280,7 +292,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Shrug
-    thumbnail: https://images.squarespace-cdn.com/content/v1/55947ac3e4b0fa882882cd65/1487633176391-U7VZNFVFYFI8KKCKCYP1/NS_0020.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: f992e8febb67b5d47a24e9f16d5cc190, type: 3}
     rarity: 
     description: shrug
     issuedId: 0
@@ -301,7 +314,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Disco
-    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 5dc96a095ce3483459044bf3e74ccb59, type: 3}
     rarity: 
     description: disco
     issuedId: 0
@@ -322,7 +336,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Dab
-    thumbnail: https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: dab
     issuedId: 0
@@ -343,7 +358,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Head Explode
-    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: headexplode
     issuedId: 0
@@ -364,7 +380,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Dance
-    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Karate_silhouette.svg/919px-Karate_silhouette.svg.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: fb2a51422f4f0f84ca589e9716428e06, type: 3}
     rarity: 
     description: dance
     issuedId: 0
@@ -385,7 +402,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Snowfall
-    thumbnail: https://freesvg.org/img/woman-silhouette-3.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 9622f862db0a54f49a26e220aac90cbe, type: 3}
     rarity: 
     description: snowfall
     issuedId: 0
@@ -406,7 +424,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Ho Ho Ho!
-    thumbnail: https://images.squarespace-cdn.com/content/v1/55947ac3e4b0fa882882cd65/1487633176391-U7VZNFVFYFI8KKCKCYP1/NS_0020.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 08fb89e42a3f7d44e9b2a391aa41aff6, type: 3}
     rarity: 
     description: hohoho
     issuedId: 0
@@ -427,7 +446,8 @@ MonoBehaviour:
     i18n:
     - code: en
       text: Crafting
-    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Woman_Silhouette.svg/1200px-Woman_Silhouette.svg.png
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: crafting
     issuedId: 0
@@ -447,8 +467,9 @@ MonoBehaviour:
     baseUrlBundles: 
     i18n:
     - code: en
-      text: Snow Ball Hit
-    thumbnail: https://cdn.pixabay.com/photo/2020/05/30/20/51/man-5240413_1280.png
+      text: Snowball Hit
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: snowballhit
     issuedId: 0
@@ -468,8 +489,9 @@ MonoBehaviour:
     baseUrlBundles: 
     i18n:
     - code: en
-      text: Snow Ball Throw
-    thumbnail: https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Girl_silhouette_hand_up.svg/570px-Girl_silhouette_hand_up.svg.png
+      text: Snowball Throw
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: snowballthrow
     issuedId: 0
