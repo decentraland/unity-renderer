@@ -96,8 +96,11 @@ namespace DCL
             sceneData.textures.OnAdded += OnTextureAdded;
             sceneData.textures.OnRemoved += OnTextureRemoved;
 
-            sceneData.meshes.OnAdded += OnDataChanged;
-            sceneData.meshes.OnRemoved += OnDataChanged;
+            sceneData.meshes.OnAdded += OnMeshAdded;
+            sceneData.meshes.OnRemoved += OnMeshRemoved;
+
+            sceneData.animationClips.OnAdded += OnAnimationClipAdded;
+            sceneData.animationClips.OnRemoved += OnAnimationClipRemoved;
 
             sceneData.animationClipSize.OnChange += OnAnimationClipSizeChange;
             sceneData.meshDataSize.OnChange += OnMeshDataSizeChange;
@@ -137,6 +140,9 @@ namespace DCL
 
             sceneData.audioClips.OnAdded -= OnAudioClipAdded;
             sceneData.audioClips.OnRemoved -= OnAudioClipRemoved;
+
+            sceneData.animationClips.OnAdded -= OnDataChanged;
+            sceneData.animationClips.OnRemoved -= OnDataChanged;
 
             sceneData.renderers.OnAdded -= OnDataChanged;
             sceneData.renderers.OnRemoved -= OnDataChanged;
@@ -211,29 +217,67 @@ namespace DCL
             Interface.WebInterface.ReportOnMetricsUpdate(sceneId, currentCountValue.ToMetricsModel(), maxCount.ToMetricsModel());
         }
 
+        void OnMeshAdded(Mesh mesh)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.meshMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(mesh);
+#endif
+            MarkDirty();
+        }
+
+        void OnMeshRemoved(Mesh mesh)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.meshMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(mesh);
+#endif
+            MarkDirty();
+        }
+
+        void OnAnimationClipAdded(AnimationClip animationClip)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.animationClipMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(animationClip);
+#endif
+            MarkDirty();
+        }
+
+        void OnAnimationClipRemoved(AnimationClip animationClip)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.animationClipMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(animationClip);
+#endif
+            MarkDirty();
+        }
+
         void OnAudioClipAdded(AudioClip audioClip)
         {
             MarkDirty();
-            currentCountValue.audioClipMemory += MetricsScoreUtils.ComputeAudioClipScore(audioClip);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.audioClipMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(audioClip);
+#endif
+            currentCountValue.audioClipMemoryScore += MetricsScoreUtils.ComputeAudioClipScore(audioClip);
         }
 
         void OnAudioClipRemoved(AudioClip audioClip)
         {
             MarkDirty();
-            currentCountValue.audioClipMemory -= MetricsScoreUtils.ComputeAudioClipScore(audioClip);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.audioClipMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(audioClip);
+#endif
+            currentCountValue.audioClipMemoryScore -= MetricsScoreUtils.ComputeAudioClipScore(audioClip);
         }
 
 
         private void OnMeshDataSizeChange(long current, long previous)
         {
             MarkDirty();
-            currentCountValue.meshMemory = current;
+            currentCountValue.meshMemoryScore = current;
         }
 
         void OnAnimationClipSizeChange(long animationClipSize, long previous)
         {
             MarkDirty();
-            currentCountValue.animationClipMemory = animationClipSize;
+            currentCountValue.animationClipMemoryScore = animationClipSize;
         }
 
         void OnTextureAdded(Texture texture)
@@ -242,7 +286,10 @@ namespace DCL
 
             if (texture is Texture2D tex2D)
             {
-                currentCountValue.textureMemory += MetricsScoreUtils.ComputeTextureScore(tex2D);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                currentCountValue.textureMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(tex2D);
+#endif
+                currentCountValue.textureMemoryScore += MetricsScoreUtils.ComputeTextureScore(tex2D);
             }
         }
 
@@ -252,7 +299,10 @@ namespace DCL
 
             if (texture is Texture2D tex2D)
             {
-                currentCountValue.textureMemory -= MetricsScoreUtils.ComputeTextureScore(tex2D);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                currentCountValue.textureMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(tex2D);
+#endif
+                currentCountValue.textureMemoryScore -= MetricsScoreUtils.ComputeTextureScore(tex2D);
             }
         }
         

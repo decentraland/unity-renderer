@@ -19,7 +19,7 @@ namespace DCL.Components
         public static bool useCustomContentServerUrl = false;
         public static string customContentServerUrl;
 
-        public static LoadingType defaultLoadingType = LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK;
+        public static LoadingType defaultLoadingType = LoadingType.GLTF_ONLY;
 
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
 
@@ -166,6 +166,7 @@ namespace DCL.Components
                     textures = x.textures,
                     meshToTriangleCount = x.meshToTriangleCount,
                     animationClipSize = x.animationClipSize,
+                    animationClips = x.animationClips,
                     meshDataSize = x.meshDataSize
                 };
 
@@ -208,7 +209,8 @@ namespace DCL.Components
                     textures = x.textures,
                     meshToTriangleCount = x.meshToTriangleCount,
                     animationClipSize = x.animationClipSize,
-                    meshDataSize = x.meshDataSize
+                    meshDataSize = x.meshDataSize,
+                    animationClips = x.animationClips
                 };
 
                 OnSuccessWrapper(r, OnSuccess);

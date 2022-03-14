@@ -30,15 +30,15 @@ public class SceneMetricsCounterShould
         dataStore.AddRendereable("1", rendereable2);
         dataStore.AddRendereable("2", rendereable3);
 
-        Assert.That(sceneMetricsCounter.currentCount.animationClipMemory, Is.EqualTo(768));
+        Assert.That(sceneMetricsCounter.currentCount.animationClipMemoryScore, Is.EqualTo(768));
 
         dataStore.RemoveRendereable("1", rendereable2);
 
-        Assert.That(sceneMetricsCounter.currentCount.animationClipMemory, Is.EqualTo(256));
+        Assert.That(sceneMetricsCounter.currentCount.animationClipMemoryScore, Is.EqualTo(256));
 
         dataStore.RemoveRendereable("1", rendereable1);
 
-        Assert.That(sceneMetricsCounter.currentCount.animationClipMemory, Is.EqualTo(0));
+        Assert.That(sceneMetricsCounter.currentCount.animationClipMemoryScore, Is.EqualTo(0));
 
         sceneMetricsCounter.Dispose();
     }
@@ -61,15 +61,15 @@ public class SceneMetricsCounterShould
         dataStore.AddAudioClip("1", audioClip2);
         dataStore.AddAudioClip("2", audioClip3);
 
-        Assert.That(sceneMetricsCounter.currentCount.audioClipMemory, Is.EqualTo(166000));
+        Assert.That(sceneMetricsCounter.currentCount.audioClipMemoryScore, Is.EqualTo(166000));
 
         dataStore.RemoveAudioClip("1", audioClip1);
 
-        Assert.That(sceneMetricsCounter.currentCount.audioClipMemory, Is.EqualTo(83000));
+        Assert.That(sceneMetricsCounter.currentCount.audioClipMemoryScore, Is.EqualTo(83000));
 
         dataStore.RemoveAudioClip("1", audioClip2);
 
-        Assert.That(sceneMetricsCounter.currentCount.audioClipMemory, Is.EqualTo(0));
+        Assert.That(sceneMetricsCounter.currentCount.audioClipMemoryScore, Is.EqualTo(0));
 
         sceneMetricsCounter.Dispose();
 
@@ -104,15 +104,15 @@ public class SceneMetricsCounterShould
         dataStore.AddRendereable("1", rendereable2);
         dataStore.AddRendereable("2", rendereable3);
 
-        Assert.That(sceneMetricsCounter.currentCount.meshMemory, Is.EqualTo(2048));
+        Assert.That(sceneMetricsCounter.currentCount.meshMemoryScore, Is.EqualTo(2048));
 
         dataStore.RemoveRendereable("1", rendereable2);
 
-        Assert.That(sceneMetricsCounter.currentCount.meshMemory, Is.EqualTo(1024));
+        Assert.That(sceneMetricsCounter.currentCount.meshMemoryScore, Is.EqualTo(1024));
 
         dataStore.RemoveRendereable("1", rendereable1);
 
-        Assert.That(sceneMetricsCounter.currentCount.meshMemory, Is.EqualTo(0));
+        Assert.That(sceneMetricsCounter.currentCount.meshMemoryScore, Is.EqualTo(0));
 
         sceneMetricsCounter.Dispose();
     }
@@ -149,15 +149,15 @@ public class SceneMetricsCounterShould
         dataStore.AddRendereable("1", rendereable2);
         dataStore.AddRendereable("2", rendereable3);
 
-        Assert.That(sceneMetricsCounter.currentCount.textureMemory, Is.EqualTo(240843));
+        Assert.That(sceneMetricsCounter.currentCount.textureMemoryScore, Is.EqualTo(240843));
 
         dataStore.RemoveRendereable("1", rendereable2);
 
-        Assert.That(sceneMetricsCounter.currentCount.textureMemory, Is.EqualTo(229375));
+        Assert.That(sceneMetricsCounter.currentCount.textureMemoryScore, Is.EqualTo(229375));
 
         dataStore.RemoveRendereable("1", rendereable1);
 
-        Assert.That(sceneMetricsCounter.currentCount.textureMemory, Is.EqualTo(0));
+        Assert.That(sceneMetricsCounter.currentCount.textureMemoryScore, Is.EqualTo(0));
 
         sceneMetricsCounter.Dispose();
 

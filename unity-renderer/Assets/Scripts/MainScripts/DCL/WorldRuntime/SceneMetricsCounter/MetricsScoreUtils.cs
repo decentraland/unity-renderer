@@ -10,15 +10,14 @@ namespace DCL
             // Rounding up just in case.
 
             // For most cases the sample resolution should be of 65535 (PCM)
-            // But the size seems to be rounded up to 4 bytes. (Maybe due to Mono aligning the bytes?)
-            const double BYTES_PER_SAMPLE = 4;
+            const double BYTES_PER_SAMPLE = 2;
             return (long) (audioClip.samples * audioClip.channels * BYTES_PER_SAMPLE) + baseOverhead;
         }
 
         public static long ComputeTextureScore(Texture2D texture)
         {
             // https://forum.unity.com/threads/does-unity-always-use-double-memory-for-texture-in-runtime.198270/
-            const double ARBITRARY_UNITY_MEMORY_MULTIPLIER = 2;
+            const double ARBITRARY_UNITY_MEMORY_MULTIPLIER = 1;
 
             // The mipmap memory increase should be actually 1.33 according to many sources
             const double MIPMAP_FACTOR = 1.4f; 
