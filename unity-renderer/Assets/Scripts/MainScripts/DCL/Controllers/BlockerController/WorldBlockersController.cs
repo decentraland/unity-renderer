@@ -41,6 +41,8 @@ namespace DCL.Controllers
 
         void OnRendererStateChange(bool newValue, bool oldValue)
         {
+            blockerInstanceHandler.SetCollision(newValue);
+            
             if (newValue && DataStore.i.debugConfig.isDebugMode.Get())
                 SetEnabled(false);
         }
@@ -53,6 +55,11 @@ namespace DCL.Controllers
 
         public void SetupWorldBlockers()
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isApplicationQuitting.Get())
+                return;
+#endif
+            
             if (!enabled || sceneHandler == null)
                 return;
 
@@ -61,6 +68,11 @@ namespace DCL.Controllers
 
         public void SetEnabled(bool targetValue)
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isApplicationQuitting.Get())
+                return;
+#endif
+            
             enabled = targetValue;
 
             if (!enabled)
@@ -75,6 +87,11 @@ namespace DCL.Controllers
 
         public void Dispose()
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isApplicationQuitting.Get())
+                return;
+#endif
+            
             CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
             blockerInstanceHandler.DestroyAllBlockers();
 
@@ -174,7 +191,7 @@ namespace DCL.Controllers
             // Add missing blockers
             foreach (var coords in blockersToAdd)
             {
-                blockerInstanceHandler.ShowBlocker(coords);
+                blockerInstanceHandler.ShowBlocker(coords, false, CommonScriptableObjects.rendererState.Get());
             }
         }
     }

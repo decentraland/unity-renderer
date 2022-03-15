@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
@@ -28,6 +29,13 @@ namespace Test.AvatarSystem
 
             //Resolver returns items from our own dictionary
             resolver.Configure()
+                    .ResolveAndSplit(Arg.Any<IEnumerable<string>>())
+                    .Returns( x =>
+                    {
+                        List<WearableItem> wearables = GetWearablesFromIDs(x.ArgAt<IEnumerable<string>>(0)).ToList();
+                        return new UniTask<(List<WearableItem> wearableItems, List<WearableItem> emotes)>( (wearables, new List<WearableItem>() ));
+                    });
+            resolver.Configure()
                     .Resolve(Arg.Any<IEnumerable<string>>())
                     .Returns( x =>
                     {
@@ -54,7 +62,8 @@ namespace Test.AvatarSystem
                     WearableItem eyes,
                     WearableItem eyebrows,
                     WearableItem mouth,
-                    List<WearableItem> wearables)
+                    List<WearableItem> wearables,
+                    List<WearableItem> emotes)
                 = await curator.Curate(
                     new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE },
                     new [] { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id" });
@@ -83,7 +92,8 @@ namespace Test.AvatarSystem
                 WearableItem eyes,
                 WearableItem eyebrows,
                 WearableItem mouth,
-                List<WearableItem> wearables) = await curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE }, new [] { WearableLiterals.BodyShapes.FEMALE, "WontFindThis" });
+                List<WearableItem> wearables,
+                List<WearableItem> emotes) = await curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE }, new [] { WearableLiterals.BodyShapes.FEMALE, "WontFindThis" });
 
             Assert.NotNull(bodyshape);
             Assert.AreEqual(catalog[WearableLiterals.BodyShapes.FEMALE], bodyshape);

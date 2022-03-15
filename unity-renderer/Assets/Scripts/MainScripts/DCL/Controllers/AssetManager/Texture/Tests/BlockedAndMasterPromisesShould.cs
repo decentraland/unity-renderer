@@ -26,7 +26,7 @@ namespace AssetPromiseKeeper_Texture_Tests
         }
 
         [UnityTest]
-        public IEnumerator FailCorrectlyWhenGivenWrongURL()
+        public IEnumerator Texture_FailCorrectlyWhenGivenWrongURL()
         {
             var prom = CreatePromise("123325");
             Asset_Texture asset = null;

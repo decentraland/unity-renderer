@@ -466,6 +466,8 @@ public class AvatarEditorHUDController : IHUD
         {
             while (iterator.MoveNext())
             {
+                if (iterator.Current.Value.IsEmote())
+                    continue;
                 AddWearable(iterator.Current.Key, iterator.Current.Value);
             }
         }
@@ -571,8 +573,6 @@ public class AvatarEditorHUDController : IHUD
 
     public void SetVisibility_Internal(bool visible)
     {
-        var currentRenderProfile = RenderProfileManifest.i.currentProfile;
-
         if (!visible && view.isOpen)
         {
             if (DataStore.i.common.isSignUpFlow.Get())
@@ -580,7 +580,6 @@ public class AvatarEditorHUDController : IHUD
 
             Environment.i.messaging.manager.paused = false;
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld);
-            currentRenderProfile.avatarProfile.Apply();
             if (prevMouseLockState && DataStore.i.common.isSignUpFlow.Get())
             {
                 Utils.LockCursor();
@@ -605,7 +604,6 @@ public class AvatarEditorHUDController : IHUD
             LoadOwnedWereables(userProfile);
             Environment.i.messaging.manager.paused = DataStore.i.common.isSignUpFlow.Get();
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor);
-            currentRenderProfile.avatarProfile.Apply();
 
             prevMouseLockState = Utils.IsCursorLocked;
 
@@ -625,7 +623,6 @@ public class AvatarEditorHUDController : IHUD
             OnOpen?.Invoke();
         }
 
-        currentRenderProfile.avatarProfile.Apply();
         view.SetVisibility(visible);
     }
 
@@ -654,11 +651,11 @@ public class AvatarEditorHUDController : IHUD
 
     public void SetConfiguration(HUDConfiguration configuration) { SetVisibility(configuration.active); }
 
-    public void SaveAvatar(Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot)
+    public void SaveAvatar(Texture2D face256Snapshot, Texture2D bodySnapshot)
     {
         var avatarModel = model.ToAvatarModel();
 
-        WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, face128Snapshot, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
+        WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
         if (DataStore.i.common.isSignUpFlow.Get())
             DataStore.i.HUDs.signupVisible.Set(true);
