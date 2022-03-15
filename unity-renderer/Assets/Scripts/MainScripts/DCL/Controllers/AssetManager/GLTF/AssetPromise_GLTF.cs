@@ -80,12 +80,10 @@ namespace DCL
             {
                 gltfComponent = asset.container.AddComponent<GLTFComponent>();
 
-                IThrottlingCounter gltfThrottlingCounter = AssetPromiseKeeper_GLTF.i.throttlingCounter;
-                
-                gltfComponent.Initialize(webRequestController, gltfThrottlingCounter);
+                gltfComponent.Initialize(webRequestController);
                 gltfComponent.RegisterCallbacks(MeshCreated, RendererCreated);
 
-                GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
+                GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings
                 {
                     useVisualFeedback = settings.visibleFlags ==
                                         AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION,
