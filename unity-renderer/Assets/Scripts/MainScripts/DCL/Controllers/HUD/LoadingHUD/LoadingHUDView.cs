@@ -27,12 +27,10 @@ using UnityEngine.UI;
         }
 
         public void SetVisible(bool isVisible) {
-        if (isVisible)
-            showHideAnimator.Show();
-        else
-            showHideAnimator.Hide();
-
-            //gameObject.SetActive(isVisible); 
+            if (isVisible)
+                showHideAnimator.Show();
+            else
+                showHideAnimator.Hide();
         }
 
         public void SetMessage(string message) { text.text = message; }

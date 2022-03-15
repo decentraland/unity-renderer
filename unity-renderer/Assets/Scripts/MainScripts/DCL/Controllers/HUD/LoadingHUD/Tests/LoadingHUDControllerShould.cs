@@ -29,14 +29,14 @@ public class LoadingHUDControllerShould
     public void ReactToLoadingHUDVisibleTrue()
     {
         visible.Set(true, true); //Force event notification
-        Assert.AreEqual(hudView.gameObject.activeInHierarchy, true);
+        Assert.AreEqual(hudView.showHideAnimator.isVisible, true);
     }
 
     [Test]
     public void ReactToLoadingHUDVisibleFalse()
     {
         visible.Set(false, true); //Force event notification
-        Assert.AreEqual(hudView.gameObject.activeInHierarchy, false);
+        Assert.AreEqual(hudView.showHideAnimator.isVisible, false);
     }
 
     [Test]

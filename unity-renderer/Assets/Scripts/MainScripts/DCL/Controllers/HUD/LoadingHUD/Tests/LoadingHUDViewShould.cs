@@ -28,7 +28,7 @@ namespace Tests.LoadingHUD
         public void SetVisibilityProperly(bool visible)
         {
             hudView.SetVisible(visible);
-            Assert.AreEqual(visible, hudView.gameObject.activeSelf);
+            Assert.AreEqual(visible, hudView.showHideAnimator.isVisible);
         }
 
         [Test]

@@ -333,7 +333,7 @@ Animator:
   m_GameObject: {fileID: 5243769655597236792}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
+  m_Controller: {fileID: 22100000, guid: d426f009d063e43d494d53af1ea1eedc, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -356,7 +356,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hideOnEnable: 1
   animSpeedFactor: 1
-  disableAfterFadeOut: 0
+  disableAfterFadeOut: 1
   visibleParam: visible
 --- !u!225 &-566327302672007162
 CanvasGroup:
