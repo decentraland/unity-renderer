@@ -20,6 +20,14 @@ namespace DCL.Helpers
             return result;
         }
 
+        public static Vector3 GetTileCenterToLocalPosition(float x, float y)
+        {
+            x -= WORLD_PARCELS_OFFSET_MIN.x;
+            y -= WORLD_PARCELS_OFFSET_MIN.y;
+
+            return new Vector3((x * PARCEL_SIZE)+(PARCEL_SIZE/2), (y * PARCEL_SIZE) + (PARCEL_SIZE / 2), 0);
+        }
+
         public static string GetMarketPlaceThumbnailUrl(Vector2Int[] parcels, int width, int height, int sizeFactor)
         {
             string parcelsStr = "";
