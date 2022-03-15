@@ -67,11 +67,17 @@ namespace DCL
         public void OnTransformChanged(object model)
         {
             DCLTransform.Model transformModel = (DCLTransform.Model)model;
-
-            MoveTo(
-                transformModel.position - Vector3.up * DCLCharacterController.i.characterController.height / 2, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet
-                transformModel.rotation);
+            OnTransformChanged(transformModel.position, transformModel.rotation, false);
         }
+        
+        public void OnTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
+        {
+            var offsetPosition = new Vector3(0, DCLCharacterController.i.characterController.height * 0.5f, 0);
+            MoveTo(
+                position - offsetPosition, // To fix the "always flying" avatars issue, We report the chara's centered position but the body hast its pivot at its feet
+                rotation,
+                inmediate);
+        } 
 
         public void MoveTo(Vector3 position, Quaternion rotation, bool immediate = false)
         {

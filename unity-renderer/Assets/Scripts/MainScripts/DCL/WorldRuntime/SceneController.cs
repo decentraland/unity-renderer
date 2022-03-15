@@ -19,6 +19,7 @@ namespace DCL
         const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
 
         public bool enabled { get; set; } = true;
+        internal BaseVariable<Transform> isPortableExperiencesInitialized => DataStore.i.experiencesViewer.isInitialized;
 
         //TODO(Brian): Move to WorldRuntimePlugin later
         private LoadingFeedbackController loadingFeedbackController;
@@ -768,6 +769,9 @@ namespace DCL
                 return;
 #endif
             CreateGlobalSceneMessage globalScene = Utils.SafeFromJson<CreateGlobalSceneMessage>(json);
+
+            if (globalScene.isPortableExperience && !isPortableExperiencesInitialized.Get())
+                return;
 
             string newGlobalSceneId = globalScene.id;
 

@@ -1,20 +1,19 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using DCL;
 using DCL.Helpers.NFT;
-using Newtonsoft.Json;
-using NFTShape_Internal;
 using UnityEngine;
 
 public interface INFTInfoLoadHelper : IDisposable
 {
-    void FetchNFTInfo(string address, string id, Action<NFTInfo> OnSuccess, Action OnFail);
+    public event Action<NFTInfo> OnFetchInfoSuccess;
+    public event Action OnFetchInfoFail;
+    void FetchNFTInfo(string address, string id);
 }
 
 public class NFTInfoLoadHelper : INFTInfoLoadHelper
 {
+    public event Action<NFTInfo> OnFetchInfoSuccess;
+    public event Action OnFetchInfoFail;
     internal Coroutine fetchCoroutine;
 
     public void Dispose()
@@ -25,22 +24,22 @@ public class NFTInfoLoadHelper : INFTInfoLoadHelper
         fetchCoroutine = null;
     }
 
-    public void FetchNFTInfo(string address, string id, Action<NFTInfo> OnSuccess, Action OnFail)
+    public void FetchNFTInfo(string address, string id)
     {
         if (fetchCoroutine != null)
             CoroutineStarter.Stop(fetchCoroutine);
 
-        fetchCoroutine = CoroutineStarter.Start(FetchNFTInfoCoroutine(address, id, OnSuccess, OnFail));
+        fetchCoroutine = CoroutineStarter.Start(FetchNFTInfoCoroutine(address, id));
     }
 
-    private IEnumerator FetchNFTInfoCoroutine(string address, string id, Action<NFTInfo> OnSuccess, Action OnFail)
+    private IEnumerator FetchNFTInfoCoroutine(string address, string id)
     {
         yield return NFTUtils.FetchNFTInfo(address, id,
-            (info) => { OnSuccess?.Invoke(info); },
+            (info) => { OnFetchInfoSuccess?.Invoke(info); },
             (error) =>
             {
                 Debug.LogError($"Couldn't fetch NFT: '{address}/{id}' {error}");
-                OnFail?.Invoke();
+                OnFetchInfoFail?.Invoke();
             });
     }
 }

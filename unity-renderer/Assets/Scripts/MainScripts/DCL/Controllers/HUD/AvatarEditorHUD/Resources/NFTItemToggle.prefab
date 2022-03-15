@@ -2356,9 +2356,9 @@ MonoBehaviour:
   - iconId: dcl://base-avatars/BaseFemale
     gameObject: {fileID: 1591446565707431306}
   - iconId: lower_body
-    gameObject: {fileID: 491920866864334517}
-  - iconId: upper_body
     gameObject: {fileID: 2013292093172692995}
+  - iconId: upper_body
+    gameObject: {fileID: 491920866864334517}
   - iconId: feet
     gameObject: {fileID: 2250120676550977666}
   - iconId: eyes
@@ -2371,7 +2371,7 @@ MonoBehaviour:
     gameObject: {fileID: 490297279017908793}
   - iconId: hair
     gameObject: {fileID: 1829444174405705379}
-  - iconId: eyeware
+  - iconId: eyewear
     gameObject: {fileID: 2616685905274651711}
   - iconId: earrings
     gameObject: {fileID: 2752280144476578592}
@@ -2659,7 +2659,7 @@ GameObject:
   - component: {fileID: 4678987649260893540}
   - component: {fileID: 8699579165759681981}
   m_Layer: 5
-  m_Name: Eyeware
+  m_Name: Eyewear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4470,7 +4470,7 @@ GameObject:
   - component: {fileID: 4156963234609559733}
   - component: {fileID: 4230782407485280717}
   m_Layer: 5
-  m_Name: EyewareIcon
+  m_Name: EyewearIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8215,15 +8215,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d565b61885fb1ef41b1582a285e748e9, type: 3}
---- !u!224 &8258537580111618320 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1166888513132788191, guid: d565b61885fb1ef41b1582a285e748e9,
-    type: 3}
-  m_PrefabInstance: {fileID: 7110522764595239119}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4811782692243955270 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2336035712942851721, guid: d565b61885fb1ef41b1582a285e748e9,
+    type: 3}
+  m_PrefabInstance: {fileID: 7110522764595239119}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &8258537580111618320 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1166888513132788191, guid: d565b61885fb1ef41b1582a285e748e9,
     type: 3}
   m_PrefabInstance: {fileID: 7110522764595239119}
   m_PrefabAsset: {fileID: 0}
