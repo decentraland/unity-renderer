@@ -54,6 +54,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         DataStore.i.HUDs.chatInputVisible.Set(true);
         isInPreview = false;
         chatHudView.SetFadeoutMode(false);
+        chatHudView.SetGotoPanelStatus(false);
         OnDeactivatePreview?.Invoke();
     }
 

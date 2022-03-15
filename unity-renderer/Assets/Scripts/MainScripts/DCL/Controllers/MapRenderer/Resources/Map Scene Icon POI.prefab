@@ -13,6 +13,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: b16568f5e2de64c8dbc491d9ac2830e9,
         type: 3}
+    - target: {fileID: 1599786805352816207, guid: a3d29f660ee80ca4890e504f724cc8c1,
+        type: 3}
+      propertyPath: m_UseSpriteMesh
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1599786805352816207, guid: a3d29f660ee80ca4890e504f724cc8c1,
+        type: 3}
+      propertyPath: m_PreserveAspect
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2495922858077533457, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
       propertyPath: m_Padding.m_Top
@@ -25,13 +35,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4377431718195930232, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377431718195930232, guid: a3d29f660ee80ca4890e504f724cc8c1,
+        type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377431718195930232, guid: a3d29f660ee80ca4890e504f724cc8c1,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4377431718195930232, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4377431718195930232, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
@@ -55,28 +75,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4589313639104732314, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 4589313639104732314, guid: a3d29f660ee80ca4890e504f724cc8c1,
+        type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1
+      value: -2.47
       objectReference: {fileID: 0}
     - target: {fileID: 7225099303910110426, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7225099303910110426, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7225099303910110426, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7225099303910110426, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -40
       objectReference: {fileID: 0}
     - target: {fileID: 7675226109946346179, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
@@ -249,5 +274,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: Map Scene Icon POI
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2495922858077533457, guid: a3d29f660ee80ca4890e504f724cc8c1, type: 3}
+    - {fileID: 7918298036817045043, guid: a3d29f660ee80ca4890e504f724cc8c1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a3d29f660ee80ca4890e504f724cc8c1, type: 3}
