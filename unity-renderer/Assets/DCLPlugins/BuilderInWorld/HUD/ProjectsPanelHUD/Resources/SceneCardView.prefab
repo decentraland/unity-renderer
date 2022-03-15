@@ -503,8 +503,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultThumbnail: {fileID: 2800000, guid: 1744fc3cbef3941db85c15f4beb5cb37, type: 3}
   thumbnail: {fileID: 2918943808568610179}
+  thumbnailLoading: {fileID: 0}
   sceneName: {fileID: 6413016629635610869}
-  coordsContainer: {fileID: 5703599281683578272}
   coordsText: {fileID: 4978331232525948839}
   sizeContainer: {fileID: 7507396750509534661}
   sizeText: {fileID: 2371684709909410652}
@@ -514,7 +514,6 @@ MonoBehaviour:
   settingsButton: {fileID: 8365490263402435577}
   roleOwnerGO: {fileID: 1985560488742661488}
   roleOperatorGO: {fileID: 994945585252677053}
-  roleContributorGO: {fileID: 7507047423982734982}
   editorLockedGO: {fileID: 1634988500742277387}
   editorLockedTooltipGO: {fileID: 2448235448384028190}
   loadingAnimator: {fileID: 2750775684606345676}

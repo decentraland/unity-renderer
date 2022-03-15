@@ -1,13 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL.Builder
 {
-    public class GenericPopUpVIew : BaseComponentView, IGenericPopUp
+    public class GenericPopUpView : BaseComponentView, IGenericPopUp
     {
         public event Action OnOkPressed;
         public event Action OnCancelPressed;

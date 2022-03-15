@@ -57,7 +57,10 @@ namespace DCL.Builder
         public void Enable()
         {
             isDisabled = false;
-            SetDefaultColor();
+            if(isToggleOn)
+                SetSelectColor();
+            else
+                SetDefaultColor();
         }
 
         public void Disable()

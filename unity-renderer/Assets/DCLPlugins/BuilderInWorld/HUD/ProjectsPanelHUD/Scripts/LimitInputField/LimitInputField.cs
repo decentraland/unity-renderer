@@ -16,19 +16,20 @@ public class LimitInputField : MonoBehaviour
 
     [SerializeField] private int characterLimit;
     [SerializeField] private bool isMandatory = false;
+    [SerializeField] private bool stopInputFromLimit = false;
+    [SerializeField] private string placeHolderText = "";
     [SerializeField] private Color normalColor;
     [SerializeField] private Color errorColor;
-
-    [SerializeField] private Sprite inputFieldNormalBackgroundSprite;
-    [SerializeField] private Sprite inputFieldErrorBackgroundSprite;
-    [SerializeField] private Sprite inputFieldFocusBackgroundSprite;
+    [SerializeField] private Color focusColor;
 
     [SerializeField] private Image inputFieldbackgroundImg;
     [SerializeField] private TMP_InputField inputField;
+    [SerializeField] private TextMeshProUGUI inputFieldPlaceHolderText;
     [SerializeField] private TextMeshProUGUI limitText;
 
     internal bool hasPassedLimit = false;
     internal bool hasBeenEmpty = false;
+    internal bool hasFocus = false;
     private string currentValue = "";
 
     private void Start()
@@ -41,56 +42,111 @@ public class LimitInputField : MonoBehaviour
             hasBeenEmpty = true;
     }
 
-    public void SetText(string value)
+    public void SetCharacterLimit(int limit)
     {
+        characterLimit = limit;
+    }
+    
+    public void SetText(string value)
+    { 
+        if(string.IsNullOrEmpty(value) && inputFieldPlaceHolderText != null)
+            inputFieldPlaceHolderText.text = placeHolderText;
+        
         currentValue = value;
         inputField.SetTextWithoutNotify(value);
+        InputChanged(value, false);
     }
 
     public void SetError() { LimitReached(); }
 
     private void InputLostFocus(string value)
     {
-        if (value.Length > characterLimit)
-            inputFieldbackgroundImg.sprite = inputFieldErrorBackgroundSprite;
+        hasFocus = false;
+        if(string.IsNullOrEmpty(currentValue) && inputFieldPlaceHolderText != null)
+            inputFieldPlaceHolderText.text = placeHolderText;
+        
+        if (hasPassedLimit)
+        {
+            inputFieldbackgroundImg.enabled = true;
+            inputFieldbackgroundImg.color = errorColor;
+        }
         else
-            inputFieldbackgroundImg.sprite = inputFieldNormalBackgroundSprite;
+        {
+            inputFieldbackgroundImg.enabled = false;
+        }
     }
 
     private void InputFocused(string value)
     {
-        if (value.Length > characterLimit)
-            inputFieldbackgroundImg.sprite = inputFieldErrorBackgroundSprite;
+        if(inputFieldPlaceHolderText != null)
+            inputFieldPlaceHolderText.text = "";
+        hasFocus = true;
+      
+        inputFieldbackgroundImg.enabled = true;
+        
+        if (hasPassedLimit)
+            inputFieldbackgroundImg.color = errorColor;
         else
-            inputFieldbackgroundImg.sprite = inputFieldFocusBackgroundSprite;
+            inputFieldbackgroundImg.color = focusColor;
+        
         OnInputFocused?.Invoke();
     }
 
     internal void InputChanged(string newValue)
     {
+        InputChanged(newValue, true);
+    }
+    
+    internal void InputChanged(string newValue, bool invokeCallback)
+    {
+        if (hasPassedLimit && newValue.Length > currentValue.Length && stopInputFromLimit)
+        {
+            inputField.SetTextWithoutNotify(currentValue);
+            return;
+        }
         currentValue = newValue;
         limitText?.SetText(newValue.Length + "/" + characterLimit);
         if (newValue.Length > characterLimit)
+        {
             LimitReached();
+        }
         else if (currentValue.Length == 0)
+        {
             Empty();
+        }
         else
+        {
             InputAvailable();
+        }
 
-        OnInputChange?.Invoke(newValue);
+        if(invokeCallback)
+            OnInputChange?.Invoke(newValue);
     }
 
-    internal void InputAvailable()
+    public bool IsInputAvailable() => !hasPassedLimit;
+    
+    public void InputAvailable()
     {
         if (!hasPassedLimit && !hasBeenEmpty)
             return;
 
         if (limitText != null)
             limitText.color = normalColor;
-        inputFieldbackgroundImg.sprite = inputFieldFocusBackgroundSprite;
-        OnInputAvailable?.Invoke();
+
+        if (hasFocus)
+        {
+            inputFieldbackgroundImg.enabled = true;
+            inputFieldbackgroundImg.color = focusColor;
+        }
+        else
+        {
+            inputFieldbackgroundImg.enabled = false;
+        }
+        
         hasPassedLimit = false;
-        hasBeenEmpty = false;
+        hasBeenEmpty = false;    
+        
+        OnInputAvailable?.Invoke();
     }
 
     internal void Empty()
@@ -102,14 +158,15 @@ public class LimitInputField : MonoBehaviour
         OnEmptyValue?.Invoke();
     }
 
-    internal void LimitReached()
+    public void LimitReached()
     {
         if (hasPassedLimit)
             return;
 
         if (limitText != null)
             limitText.color = errorColor;
-        inputFieldbackgroundImg.sprite = inputFieldErrorBackgroundSprite;
+        inputFieldbackgroundImg.enabled = true;
+        inputFieldbackgroundImg.color = errorColor;
 
         OnLimitReached?.Invoke();
         hasPassedLimit = true;

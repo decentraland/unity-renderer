@@ -22,7 +22,8 @@ namespace DCL.Builder
     
     public class Toast : BaseComponentView, IToast
     {
-        [SerializeField] internal float msToBeActive = 2000;
+        [Tooltip("Represented in milliseconds")]
+        [SerializeField] internal int msToBeActive = 2000;
         [SerializeField] internal float sizePerCharacter = 8.8f;
         [SerializeField] internal Image toastImage;
         [SerializeField] internal TextMeshProUGUI toastText;

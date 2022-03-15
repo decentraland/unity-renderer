@@ -62,9 +62,9 @@ namespace DCL.Builder
             switch (sortType)
             {
                 case SectionSearchHandler.NAME_SORT_TYPE_ASC:
-                    return String.CompareOrdinal(name, other.name);
+                    return String.CompareOrdinal(name.ToLower(), other.name.ToLower());
                 case SectionSearchHandler.NAME_SORT_TYPE_DESC:
-                    return String.CompareOrdinal(other.name, name);
+                    return String.CompareOrdinal(other.name.ToLower(), name.ToLower());
                 case SectionSearchHandler.SIZE_SORT_TYPE_DESC:
                     return other.size - size;
                 case SectionSearchHandler.SIZE_SORT_TYPE_ASC:

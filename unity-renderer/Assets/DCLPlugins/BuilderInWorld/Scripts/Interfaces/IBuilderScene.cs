@@ -38,6 +38,11 @@ namespace DCL.Builder
         /// Type of scene 
         /// </summary>
         SceneType sceneType { get; }
+        
+        /// <summary>
+        /// If there is a land associated to the project, this will be the coords associated to them
+        /// </summary>
+        Vector2Int landCoordsAsociated { get; set; }
 
         /// <summary>
         /// This will update the manifest with the current state of the parcelScene

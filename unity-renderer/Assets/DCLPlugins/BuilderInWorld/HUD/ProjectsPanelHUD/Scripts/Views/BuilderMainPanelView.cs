@@ -14,6 +14,7 @@ namespace DCL.Builder
         event Action OnBackPressed;
         event Action OnCreateProjectPressed;
         void SetVisible(bool visible);
+        void SetSearchViewVisible(bool visible);
         bool IsVisible();
         void SetTogglOnWithoutNotify(SectionId sectionId);
         void SetMainLeftPanel();
@@ -76,6 +77,8 @@ namespace DCL.Builder
         private int scenesCount = 0;
         private int projectScenesCount = 0;
         private bool isDestroyed = false;
+
+        public void SetSearchViewVisible(bool visible) => searchBarView.gameObject.SetActive(visible);
 
         public bool IsVisible() { return gameObject.activeSelf; }
 

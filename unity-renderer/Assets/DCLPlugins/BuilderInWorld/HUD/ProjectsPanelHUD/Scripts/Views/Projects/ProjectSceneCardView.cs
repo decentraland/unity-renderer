@@ -31,8 +31,8 @@ namespace DCL.Builder
         /// This setup the scene data
         /// </summary>
         /// <param name="scene"></param>
-        /// <param name="outdated">If the scene is sync with the project</param>
-        void Setup(Scene scene, bool outdated);
+        /// <param name="isSync">If the scene is sync with the project</param>
+        void Setup(Scene scene, bool isSync);
 
         /// <summary>
         /// Active the card
@@ -79,7 +79,7 @@ namespace DCL.Builder
 
         private void Awake() { contextSettingButton.onClick.AddListener(ContextMenuSettingsPressed); }
 
-        public void Setup(Scene scene, bool outdated)
+        public void Setup(Scene scene, bool isSync)
         {
             sceneData = scene;
 
@@ -94,7 +94,7 @@ namespace DCL.Builder
             }
 
             SetThumbnail(sceneThumbnailUrl);
-            outdatedGameObject.SetActive(outdated);
+            outdatedGameObject.SetActive(!isSync);
         }
 
         private void OnDestroy() { Dispose(); }

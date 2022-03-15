@@ -9,12 +9,18 @@ namespace DCL.Builder
 {
     public class PublishMapView : MonoBehaviour
     {
+        private const float MAX_ZOOM = 4f;
+        private const float MIN_ZOOM = 1.0f;
+        private const float SIZE_PER_ZOOM = 0.5f;
+        
         public event Action<Vector2Int> OnParcelClicked;
         public event Action<Vector2Int> OnParcelHover;
 
         [Header("References")]
         [SerializeField] internal ScrollRect scrollRect;
         [SerializeField] RectTransform scrollRectContentTransform;
+        [SerializeField] internal Button lessZoomBtn;
+        [SerializeField] internal Button moreZoomBtn;
 
         private RectTransform minimapViewport;
         private RectTransform viewRectTransform;
@@ -25,9 +31,14 @@ namespace DCL.Builder
 
         private bool isVisible = false;
         private bool isDragging = false;
-
+        private float lastScale = 0;
+        private float currentZoomScale = 2f;
+        
         private void Start()
         {
+            lessZoomBtn.onClick.AddListener(LessZoom);
+            moreZoomBtn.onClick.AddListener(MoreZoom);
+            
             viewRectTransform = GetComponent<RectTransform>();
             scrollRect.onValueChanged.AddListener((x) =>
             {
@@ -38,7 +49,12 @@ namespace DCL.Builder
             MapRenderer.OnParcelClicked += ParcelSelect;
         }
 
-        private void OnDestroy() { MapRenderer.OnParcelClicked -= ParcelSelect; }
+        private void OnDestroy()
+        {
+            moreZoomBtn.onClick.RemoveAllListeners();
+            lessZoomBtn.onClick.RemoveAllListeners();
+            MapRenderer.OnParcelClicked -= ParcelSelect;
+        }
 
         // Note: this event is handled by an event trigger in the same gameobject as the scrollrect
         public void BeginDrag()
@@ -55,17 +71,38 @@ namespace DCL.Builder
                 MapRenderer.i.SetParcelHighlightActive(true);
         }
 
+        internal void MoreZoom()
+        {
+            currentZoomScale = Mathf.Clamp(currentZoomScale + SIZE_PER_ZOOM, MIN_ZOOM, MAX_ZOOM);
+            ApplyCurrentZoom();
+        }
+
+        internal void LessZoom()
+        {
+            currentZoomScale = Mathf.Clamp(currentZoomScale - SIZE_PER_ZOOM, MIN_ZOOM, MAX_ZOOM);
+            ApplyCurrentZoom();
+        }
+
+        internal void ApplyCurrentZoom()
+        {
+            MapRenderer.i.transform.localScale = Vector3.one * currentZoomScale;
+        }
+        
         internal void UpdateOwnedLands()
         {
             List<Vector2Int> landsToHighlight = new List<Vector2Int>();
+            List<Vector2Int> landsToHighlightWithContent = new List<Vector2Int>();
             foreach (var land in DataStore.i.builderInWorld.landsWithAccess.Get())
             {
                 foreach (Vector2Int landParcel in land.parcels)
                 {
-                    landsToHighlight.Add(landParcel);
+                    if(land.scenes.Count > 0 && !land.scenes[0].isEmpty)
+                        landsToHighlightWithContent.Add(landParcel);
+                    else
+                        landsToHighlight.Add(landParcel);
                 }
             }
-            MapRenderer.i.HighlightLands(landsToHighlight);
+            MapRenderer.i.HighlightLands(landsToHighlight, landsToHighlightWithContent);
         }
 
         public void SetProjectSize(Vector2Int[] parcels)
@@ -117,13 +154,17 @@ namespace DCL.Builder
             mapRendererMinimapParent = MapRenderer.i.transform.parent;
             atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;
 
+            lastScale = MapRenderer.i.transform.localScale.x;
+            currentZoomScale = 2f;
+            ApplyCurrentZoom();
             MapRenderer.i.SetHighlightStyle(MapParcelHighlight.HighlighStyle.BUILDER_DISABLE);
             MapRenderer.i.atlas.viewport = scrollRect.viewport;
             MapRenderer.i.transform.SetParent(scrollRectContentTransform);
             MapRenderer.i.atlas.UpdateCulling();
             MapRenderer.i.OnMovedParcelCursor += ParcelHovered;
-            MapRenderer.i.userIconPrefab.SetActive(false);
             MapRenderer.i.SetPointOfInterestActive(false);
+                    MapRenderer.i.SetPlayerIconActive(false);
+            MapRenderer.i.SetOtherPlayersIconActive(false);
             
             scrollRect.content = MapRenderer.i.atlas.chunksParent.transform as RectTransform;
             initialContentPosition = scrollRect.content.anchoredPosition;
@@ -144,7 +185,9 @@ namespace DCL.Builder
             MapRenderer.i.atlas.chunksParent.transform.localPosition = atlasOriginalPosition;
             MapRenderer.i.atlas.UpdateCulling();
             MapRenderer.i.SetPointOfInterestActive(true);
-            MapRenderer.i.userIconPrefab.SetActive(true);
+            MapRenderer.i.SetPlayerIconActive(true);
+            MapRenderer.i.SetOtherPlayersIconActive(true);
+            MapRenderer.i.transform.localScale = Vector3.one * lastScale;
 
             // Restore the player icon to its original parent
             MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(MapRenderer.i.atlas.chunksParent.transform.parent);

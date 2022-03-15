@@ -57,14 +57,25 @@ public class NewProjectFlowController : INewProjectFlowController
         this.view = view;
         view.OnTittleAndDescriptionSet += SetTitleAndDescription;
         view.OnSizeSet += SetRowsAndColumns;
+        view.OnViewHide += SetCreatingProjectStatusToFalse;
     }
 
-    public void Hide() { view.Hide(); }
+    public void Hide()
+    {
+        view.Hide();
+        DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
+    }
 
+    public void SetCreatingProjectStatusToFalse()
+    {
+        DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
+    }
+    
     public void Dispose()
     {
         view.OnTittleAndDescriptionSet -= SetTitleAndDescription;
         view.OnSizeSet -= SetRowsAndColumns;
+        view.OnViewHide -= SetCreatingProjectStatusToFalse;
         view.Dispose();
     }
 
@@ -82,7 +93,7 @@ public class NewProjectFlowController : INewProjectFlowController
         projectData = new ProjectData();
         projectData.id = Guid.NewGuid().ToString();
         projectData.eth_address = UserProfile.GetOwnUserProfile().ethAddress;
-
+        DataStore.i.builderInWorld.areShortcutsBlocked.Set(true);
         view.ShowNewProjectTitleAndDescrition();
     }
 
@@ -92,7 +103,7 @@ public class NewProjectFlowController : INewProjectFlowController
         projectData.description = description;
     }
 
-    public void SetRowsAndColumns(int rows, int columns)
+    public void SetRowsAndColumns(int columns, int rows)
     {
         projectData.rows = rows;
         projectData.cols = columns;
@@ -104,7 +115,7 @@ public class NewProjectFlowController : INewProjectFlowController
     {
         projectData.created_at = DateTime.UtcNow;
         projectData.updated_at = DateTime.UtcNow;
-
+        DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
         view.Reset();
         OnNewProjectCrated?.Invoke(projectData);
         view.Hide();

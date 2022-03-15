@@ -12,6 +12,7 @@ using DCL.Builder.Manifest;
 using DCL.Components;
 using DCL.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DCL.Builder
 {
@@ -53,7 +54,6 @@ namespace DCL.Builder
         internal IInitialStateManager initialStateManager;
         internal IBuilderInWorldLoadingController initialLoadingController;
         private float beginStartFlowTimeStamp = 0;
-
         internal bool catalogLoaded = false;
 
         public void Initialize(IContext context)
@@ -178,18 +178,46 @@ namespace DCL.Builder
                     switch (component.type)
                     {
                         case "Transform":
-                            DCLTransform.Model model = JsonConvert.DeserializeObject<DCLTransform.Model>(component.data.ToString());
+                            DCLTransform.Model model;
+                            
+                            try
+                            {
+                                // This is a very ugly way to handle the things because some times the data can come serialize and other times it wont 
+                                // It will be deleted when we create the new builder server that only have 1 way to handle everything
+                                model = JsonConvert.DeserializeObject<DCLTransform.Model>(component.data.ToString());
+                            }
+                            catch (Exception e)
+                            {
+                                // We may have create the component so de data is not serialized
+                                model = JsonConvert.DeserializeObject<DCLTransform.Model>(JsonConvert.SerializeObject(component.data));
+                            }
+                            
                             EntityComponentsUtils.AddTransformComponent(sceneToEdit.scene, entity, model);
                             break;
 
                         case "GLTFShape":
-                            LoadableShape.Model gltfModel = JsonConvert.DeserializeObject<LoadableShape.Model>(component.data.ToString());
+                            LoadableShape.Model gltfModel;
+                            
+                            try
+                            {
+                                // This is a very ugly way to handle the things because some times the data can come serialize and other times it wont
+                                // It will be deleted when we create the new builder server that only have 1 way to handle everything
+                                gltfModel = JsonConvert.DeserializeObject<LoadableShape.Model>(component.data.ToString());
+                            }
+                            catch (Exception e)
+                            {
+                                // We may have create the component so de data is not serialized
+                                gltfModel = (GLTFShape.Model)component.data;
+                            }
+                            
                             EntityComponentsUtils.AddGLTFComponent(sceneToEdit.scene, entity, gltfModel, component.id);
                             break;
 
                         case "NFTShape":
                             //Builder use a different way to load the NFT so we convert it to our system
-                            string url = JsonConvert.DeserializeObject<string>(component.data.ToString());
+                            JObject jObject = JObject.Parse(component.data.ToString());
+                         
+                            string url = jObject["url"].ToString();
                             string assedId = url.Replace(BIWSettings.NFT_ETHEREUM_PROTOCOL, "");
                             int index = assedId.IndexOf("/", StringComparison.Ordinal);
                             string partToremove = assedId.Substring(index);
@@ -213,6 +241,10 @@ namespace DCL.Builder
                         case "LockedOnEdit":
                             DCLLockedOnEdit.Model lockedModel = JsonConvert.DeserializeObject<DCLLockedOnEdit.Model>(component.data.ToString());
                             EntityComponentsUtils.AddLockedOnEditComponent(sceneToEdit.scene , entity, lockedModel, Guid.NewGuid().ToString());
+                            break;
+                        case "Script":
+                            SmartItemComponent.Model smartModel = JsonConvert.DeserializeObject<SmartItemComponent.Model>(component.data.ToString());
+                            sceneToEdit.scene.EntityComponentCreateOrUpdateWithModel(entity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, smartModel);
                             break;
                     }
                 }
@@ -252,42 +284,56 @@ namespace DCL.Builder
 
         public void StartFlowFromProject(Manifest.Manifest manifest)
         {
-            DataStore.i.HUDs.loadingHUD.visible.Set(true);
-
-            BuilderScene builderScene = new BuilderScene(manifest, IBuilderScene.SceneType.PROJECT);
+            bool hasBeenCreatedThisSession = !string.IsNullOrEmpty(DataStore.i.builderInWorld.lastProjectIdCreated.Get()) && DataStore.i.builderInWorld.lastProjectIdCreated.Get() == manifest.project.id;
+            DataStore.i.builderInWorld.lastProjectIdCreated.Set("");
+            
+            BuilderScene builderScene = new BuilderScene(manifest, IBuilderScene.SceneType.PROJECT,hasBeenCreatedThisSession);
             StartFlow(builderScene, SOURCE_BUILDER_PANEl);
+        }
+
+        public void StartFlowFromLandCoords(Vector2Int coords)
+        {
+            Scene deployedScene = GetDeployedSceneFromParcel(coords);
+            Vector2Int parcelSize = BIWUtils.GetSceneSize(deployedScene.parcels);
+
+            StartFromLand(deployedScene.@base, deployedScene, parcelSize, SOURCE_BUILDER_PANEl);
+        }
+
+        public void ShowBuilderLoading() 
+        {    
+            initialLoadingController.Show();
+            initialLoadingController.SetPercentage(0f);
+        }
+
+        public void HideBuilderLoading()
+        {
+            initialLoadingController.Hide();
         }
 
         public void StartExitMode()
         {
-            if (context.editorContext.saveController.GetSaveTimes() > 0)
+            context.cameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
             {
-                context.cameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
+                if (sceneSnapshot != null)
                 {
-                    if (sceneSnapshot != null)
-                    {
-                        sceneToEdit.sceneScreenshotTexture = sceneSnapshot;
+                    sceneToEdit.sceneScreenshotTexture = sceneSnapshot;
 
-                        if (sceneToEdit.manifest != null)
-                            context.builderAPIController.SetThumbnail(sceneToEdit.manifest.project.id, sceneSnapshot);
-                    }
-                });
-
-                if (context.editorContext.editorHUD == null )
-                    return;
-
-                if (sceneToEdit.sceneType != IBuilderScene.SceneType.LAND)
+                    if (sceneToEdit.manifest != null)
+                        context.builderAPIController.SetThumbnail(sceneToEdit.manifest.project.id, sceneSnapshot);
+                }
+            });
+            
+            if (context.editorContext.editorHUD == null )
+                return;
+            
+            if (context.editorContext.publishController.HasUnpublishChanges() && sceneToEdit.sceneType == IBuilderScene.SceneType.LAND)
+            {
+                if (sceneToEdit.sceneType == IBuilderScene.SceneType.LAND)
                     context.editorContext.editorHUD.ConfigureConfirmationModal(
                         BIWSettings.EXIT_MODAL_TITLE,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON);
-                else
-                    context.editorContext.editorHUD.ConfigureConfirmationModal(
-                        BIWSettings.EXIT_MODAL_TITLE,
-                        BIWSettings.EXIT_MODAL_SUBTITLE,
-                        BIWSettings.EXIT_MODAL_CANCEL_BUTTON,
-                        BIWSettings.EXIT_MODAL_CONFIRM_BUTTON);
             }
             else
             {
@@ -359,8 +405,7 @@ namespace DCL.Builder
             inputController.inputTypeMode = InputTypeMode.BUILD_MODE_LOADING;
 
             //We configure the loading part
-            initialLoadingController.Show();
-            initialLoadingController.SetPercentage(0f);
+            ShowBuilderLoading();
 
             DataStore.i.common.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
@@ -421,7 +466,8 @@ namespace DCL.Builder
 
             Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
 
-            sceneToEdit.SetScene(Environment.i.world.state.GetScene(sceneToEditId));
+            var scene = Environment.i.world.state.GetScene(sceneToEditId);
+            sceneToEdit.SetScene(scene);
             sceneMetricsAnalyticsHelper = new BiwSceneMetricsAnalyticsHelper(sceneToEdit.scene);
             sceneToEdit.scene.OnLoadingStateUpdated += UpdateSceneLoadingProgress;
             SendManifestToScene();
@@ -454,6 +500,21 @@ namespace DCL.Builder
             return false;
         }
 
+        internal Scene GetDeployedSceneFromParcel(Vector2Int coords)
+        {
+            List<Scene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
+            foreach (Scene scene in allDeployedScenesWithAccess)
+            {
+                List<Vector2Int> scenes = scene.parcels.ToList();
+                foreach (Vector2Int parcel in scenes)
+                {
+                    if (coords.x == parcel.x && coords.y == parcel.y)
+                        return scene;
+                }
+            }
+            return null;
+        }
+        
         internal Scene GetDeployedSceneFromParcel(IParcelScene sceneToCheck)
         {
             List<Scene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
@@ -501,6 +562,7 @@ namespace DCL.Builder
             DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
 
             context.editor.EnterEditMode(sceneToEdit);
+            DataStore.i.player.canPlayerMove.Set(false);
             BIWAnalytics.EnterEditor( Time.realtimeSinceStartup - beginStartFlowTimeStamp);
         }
 
@@ -516,6 +578,9 @@ namespace DCL.Builder
 
             builderInWorldBridge.StopIsolatedMode();
 
+            Utils.UnlockCursor();
+            
+            DataStore.i.player.canPlayerMove.Set(true);
             DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
         }
 
@@ -536,14 +601,20 @@ namespace DCL.Builder
             }
 
             Scene deployedScene = GetDeployedSceneFromParcel(targetScene);
-            string landCoords = targetScene.sceneData.basePosition.x + "," + targetScene.sceneData.basePosition.y;
             Vector2Int parcelSize = BIWUtils.GetSceneSize(targetScene);
 
+            StartFromLand(targetScene.sceneData.basePosition, deployedScene, parcelSize, source);
+        }
+
+        private void StartFromLand(Vector2Int landCoordsVector, Scene deployedScene, Vector2Int parcelSize, string source)
+        {
+            string landCoords = landCoordsVector.x + "," + landCoordsVector.y;
             Promise<InitialStateResponse> manifestPromise = initialStateManager.GetInitialManifest(context.builderAPIController, landCoords, deployedScene, parcelSize);
 
             manifestPromise.Then(response =>
             {
                 BuilderScene builderScene = new BuilderScene(response.manifest, IBuilderScene.SceneType.LAND, response.hasBeenCreated);
+                builderScene.landCoordsAsociated = landCoordsVector;
                 StartFlow(builderScene, source);
             });
 

@@ -18,11 +18,13 @@ public class BIWActionController : BIWController, IBIWActionController
 
     private IBIWEntityHandler entityHandler;
     private IBIWFloorHandler floorHandler;
+    private IBIWSaveController saveController;
 
     private readonly List<IBIWCompleteAction> actionsMade = new List<IBIWCompleteAction>();
 
     private int currentUndoStepIndex = 0;
     private int currentRedoStepIndex = 0;
+    internal float lastActionTimeStamp;
 
     public override void Initialize(IContext context)
     {
@@ -30,6 +32,7 @@ public class BIWActionController : BIWController, IBIWActionController
 
         entityHandler  = context.editorContext.entityHandler;
         floorHandler = context.editorContext.floorHandler;
+        saveController = context.editorContext.saveController;
 
         if ( context.editorContext.editorHUD == null)
             return;
@@ -54,6 +57,7 @@ public class BIWActionController : BIWController, IBIWActionController
         actionsMade.Clear();
 
         CheckButtonsInteractability();
+        lastActionTimeStamp = 0;
     }
 
     public void Clear()
@@ -62,6 +66,18 @@ public class BIWActionController : BIWController, IBIWActionController
         currentUndoStepIndex = 0;
         currentRedoStepIndex = 0;
     }
+
+    public bool HasApplyAnyActionThisSession()
+    {
+        if (actionsMade.Count != 0)
+        {
+            return actionsMade[0].IsDone();
+        }
+        
+        return false;
+    }
+    
+    public float GetLastActionTimestamp() => lastActionTimeStamp;
 
     [ExcludeFromCodeCoverage]
     public void GoToAction(BIWCompleteAction action)
@@ -172,6 +188,8 @@ public class BIWActionController : BIWController, IBIWActionController
             Debug.Log("Redo:  Current actions " + actionsMade.Count + "   Current undo index " + currentUndoStepIndex + "   Current redo index " + currentRedoStepIndex);
         action.OnApplyValue += ApplyAction;
         CheckButtonsInteractability();
+        
+        lastActionTimeStamp = Time.unscaledTime;
     }
 
     void ApplyAction(string entityIdToApply, object value, IBIWCompleteAction.ActionType actionType, bool isUndo)
@@ -232,6 +250,8 @@ public class BIWActionController : BIWController, IBIWActionController
             OnRedo?.Invoke();
 
             CheckButtonsInteractability();
+            saveController.TryToSave();
+            lastActionTimeStamp = Time.unscaledTime;
         }
     }
 
@@ -243,6 +263,8 @@ public class BIWActionController : BIWController, IBIWActionController
             OnUndo?.Invoke();
 
             CheckButtonsInteractability();
+            saveController.TryToSave();
+            lastActionTimeStamp = Time.unscaledTime;
         }
     }
 

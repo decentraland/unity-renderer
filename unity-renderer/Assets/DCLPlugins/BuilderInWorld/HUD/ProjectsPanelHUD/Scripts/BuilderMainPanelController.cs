@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 
 public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 {
-    private const string DELETE_PROJECT_CONFIRM_TEXT = "Are you sure that you want to delete {0} project?\nThis can't be undone";
+    private const string DELETE_PROJECT_CONFIRM_TEXT = "Are you sure that you want to delete {0} project?";
     private const string CREATING_PROJECT_ERROR = "Error creating a new project: ";
     private const string OBTAIN_PROJECT_ERROR = "Error obtaining the project: ";
 
@@ -93,11 +93,15 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         StopFetchInterval();
 
+        context.publisher.OnPublishFinish -= PublishFinish;
+        
         sectionsController.OnRequestOpenUrl -= OpenUrl;
         sectionsController.OnRequestGoToCoords -= GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords -= OnGoToEditScene;
         sectionsController.OnCreateProjectRequest -= newProjectFlowController.NewProject;
-
+        sectionsController.OnSectionContentEmpty -= SectionContentEmpty;
+        sectionsController.OnSectionContentNotEmpty -= SectionContentNotEmpty;
+        
         scenesViewController.OnJumpInPressed -= GoToCoords;
         scenesViewController.OnRequestOpenUrl -= OpenUrl;
         scenesViewController.OnEditorPressed -= OnGoToEditScene;
@@ -138,8 +142,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     public void Initialize(IContext context)
     {
-        this.context = context;
-        Initialize(new SectionsController(view.GetSectionContainer()),
+        Initialize(context,new SectionsController(view.GetSectionContainer()),
             new ScenesViewController(view.GetSceneCardViewPrefab(), view.GetTransform()),
             new LandsController(),
             new ProjectsController(view.GetProjectCardView(), view.GetProjectCardViewContextMenu(), view.GetTransform()),
@@ -148,13 +151,16 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             Environment.i.platform.serviceProviders.catalyst);
     }
 
-    internal void Initialize(ISectionsController sectionsController,
+    internal void Initialize(IContext context,ISectionsController sectionsController,
         IScenesViewController scenesViewController, ILandsController landsesController, IProjectsController projectsController, INewProjectFlowController newProjectFlowController, ITheGraph theGraph, ICatalyst catalyst)
     {
         if (isInitialized)
             return;
 
         isInitialized = true;
+        
+        this.context = context;
+        this.context.publisher.OnPublishFinish += PublishFinish;
 
         this.sectionsController = sectionsController;
         this.scenesViewController = scenesViewController;
@@ -185,6 +191,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         sectionsController.OnRequestGoToCoords += GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords += OnGoToEditScene;
         sectionsController.OnCreateProjectRequest += newProjectFlowController.NewProject;
+        sectionsController.OnSectionContentEmpty += SectionContentEmpty;
+        sectionsController.OnSectionContentNotEmpty += SectionContentNotEmpty;
 
         scenesViewController.OnJumpInPressed += GoToCoords;
         scenesViewController.OnRequestOpenUrl += OpenUrl;
@@ -200,6 +208,10 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
     }
+    
+    private void SectionContentNotEmpty() { view.SetSearchViewVisible(true); }
+
+    private void SectionContentEmpty() { view.SetSearchViewVisible(false); }
 
     private void DuplicateProject(ProjectData data)
     {
@@ -226,8 +238,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         manifest.project.id = Guid.NewGuid().ToString();
         manifest.project.scene_id = scene_id;
         manifest.scene.id = scene_id;
-        manifest.project.created_at = DateTime.Now;
-        manifest.project.updated_at = DateTime.Now;
+        manifest.project.created_at = DateTime.UtcNow;
+        manifest.project.updated_at = DateTime.UtcNow;
 
         screenshotPromise.Then(texture =>
         {
@@ -318,19 +330,22 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private void CreateNewProject(ProjectData project)
     {
+        context.sceneManager.ShowBuilderLoading();
         Promise<ProjectData> projectPromise = context.builderAPIController.CreateNewProject(project);
 
-        projectPromise.Then( OpenEditorFromProjectData);
+        projectPromise.Then( OpenEditorFromNewProject);
 
         projectPromise.Catch( errorString =>
         {
+            context.sceneManager.HideBuilderLoading();
             BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR + errorString);
         });
     }
 
-    private void OpenEditorFromProjectData(ProjectData projectData)
+    private void OpenEditorFromNewProject(ProjectData projectData)
     {
         var manifest = BIWUtils.CreateManifestFromProject(projectData);
+        DataStore.i.builderInWorld.lastProjectIdCreated.Set(manifest.project.id);
         OpenEditorFromManifest(manifest);
     }
 
@@ -360,12 +375,10 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             else
                 sendPlayerOpenPanelEvent = true;
 
+            sectionsController.OpenSection(SectionId.PROJECTS);
+            
             FetchPanelInfo();
             StartFetchInterval();
-            if (DataStore.i.builderInWorld.isDevBuild.Get())
-                sectionsController.OpenSection(SectionId.PROJECTS);
-            else
-                sectionsController.OpenSection(SectionId.SCENES);
         }
         else
         {
@@ -420,7 +433,15 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         projectsController.AddListener((IProjectsListener) view);
     }
 
-    private void FetchPanelInfo(float landCacheTime = CACHE_TIME_LAND, float scenesCacheTime = CACHE_TIME_SCENES)
+    private void PublishFinish(bool isOk)
+    {
+        if(isOk)
+            FetchPanelInfo(0,0);
+    }
+
+    private void FetchPanelInfo() => FetchPanelInfo(CACHE_TIME_LAND, CACHE_TIME_SCENES);
+    
+    private void FetchPanelInfo(float landCacheTime, float scenesCacheTime)
     {
         if (isFetchingLands || isFetchingProjects)
             return;
@@ -459,6 +480,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal void FetchProjectData()
     {
+        sectionsController.SetFetchingDataStart<SectionProjectController>();
         fetchProjectsPromise = BuilderPanelDataFetcher.FetchProjectData(context.builderAPIController);
         fetchProjectsPromise
             .Then(ProjectsFetched)
@@ -469,6 +491,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         DataStore.i.builderInWorld.projectData.Set(data);
         isFetchingProjects = false;
+        sectionsController.SetFetchingDataEnd<SectionProjectController>();
         projectsController.SetProjects(data);
         UpdateProjectsDeploymentStatus();
     }
@@ -503,6 +526,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
         sectionsController.SetFetchingDataEnd<SectionLandController>();
+        sectionsController.SetFetchingDataEnd<SectionScenesController>();
         isFetchingLands = false;
         UpdateProjectsDeploymentStatus();
 
@@ -520,6 +544,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         }
         catch (Exception e)
         {
+            Debug.Log("Error setting the lands and scenes "+ e);
             landsesController.SetLands(lands);
             scenesViewController.SetScenes(new ISceneData[] { });
         }
@@ -536,13 +561,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal void OnGoToEditScene(Vector2Int coords)
     {
-        bool isGoingToTeleport = BIWTeleportAndEdit.TeleportAndEdit(coords);
-        if (isGoingToTeleport)
-        {
-            SetVisibility(false);
-        }
-
-        OnJumpInOrEdit?.Invoke();
+        SetVisibility(false);
+        context.sceneManager.StartFlowFromLandCoords(coords);
     }
 
     private void StartFetchInterval()

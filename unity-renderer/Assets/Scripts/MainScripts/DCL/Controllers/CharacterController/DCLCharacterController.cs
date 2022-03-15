@@ -253,6 +253,9 @@ public class DCLCharacterController : MonoBehaviour
 
     internal void LateUpdate()
     {
+        if(!DataStore.i.player.canPlayerMove.Get())
+            return;
+
         if (transform.position.y < minimumYPosition)
         {
             SetPosition(characterPosition.worldPosition);

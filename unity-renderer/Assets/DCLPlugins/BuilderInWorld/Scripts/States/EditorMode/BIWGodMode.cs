@@ -18,7 +18,6 @@ public class BIWGodMode : BIWMode
 
     private Transform lookAtTransform;
     private MouseCatcher mouseCatcher;
-    private PlayerAvatarController avatarRenderer;
     private IBIWGizmosController gizmoManager;
     private IBIWOutlinerController outlinerController;
 
@@ -75,7 +74,6 @@ public class BIWGodMode : BIWMode
         if (context.sceneReferences.cameraController.GetComponent<CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
             freeCameraController = (FreeCameraMovement) cameraState;
         mouseCatcher = context.sceneReferences.mouseCatcher.GetComponent<MouseCatcher>();
-        avatarRenderer = context.sceneReferences.playerAvatarController.GetComponent<PlayerAvatarController>();
 
         BIWInputWrapper.OnMouseDown += OnInputMouseDown;
         BIWInputWrapper.OnMouseUp += OnInputMouseUp;
@@ -492,7 +490,6 @@ public class BIWGodMode : BIWMode
 
         gizmoManager.HideGizmo();
         editionGO.transform.SetParent(null);
-        avatarRenderer.SetAvatarVisibility(false);
 
         context.editorContext.editorHUD?.ActivateGodModeUI();
     }
@@ -509,7 +506,6 @@ public class BIWGodMode : BIWMode
     public override void OnDeleteEntity(BIWEntity entity)
     {
         base.OnDeleteEntity(entity);
-        saveController.TryToSave();
 
         if (selectedEntities.Count == 0)
             gizmoManager.HideGizmo();
@@ -531,7 +527,6 @@ public class BIWGodMode : BIWMode
 
         gizmoManager.HideGizmo();
         RenderSettings.fog = true;
-        avatarRenderer.SetAvatarVisibility(true);
     }
 
     public override void StartMultiSelection()

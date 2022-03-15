@@ -54,6 +54,8 @@ namespace DCL.Builder
         public async void GetInitialStateManifest(IBuilderAPIController builderAPIController, string landCoords, Scene scene, Vector2Int parcelSize)
         {
             Manifest.Manifest manifest = null;
+            response.hasBeenCreated = false;
+            
             //We check if there is a project associated with the land, if there is we load the manifest
             if (!string.IsNullOrEmpty(scene.projectId))
             {
@@ -67,21 +69,7 @@ namespace DCL.Builder
                     return;
                 }
             }
-
-            //We look if the scene has been published with a stateful definition
-            if (scene.HasContent(BIWSettings.BUILDER_SCENE_STATE_DEFINITION_FILE_NAME))
-            {
-                manifest = await GetManifestByStatefullDefinition(parcelSize, landCoords, scene);
-
-                //If we can't create a manifest from the stateful definition, we continue to looking
-                if (manifest != null)
-                {
-                    response.manifest = manifest;
-                    masterManifestPromise.Resolve(response);
-                    return;
-                }
-            }
-
+            
             //We try to look for coordinates manifest
             manifest = await GetManifestByCoordinates(builderAPIController, landCoords);
 
@@ -91,6 +79,21 @@ namespace DCL.Builder
                 response.manifest = manifest;
                 masterManifestPromise.Resolve(response);
                 return;
+            }
+            
+            //We look if the scene has been published with a stateful definition
+            if (scene.HasContent(BIWSettings.BUILDER_SCENE_STATE_DEFINITION_FILE_NAME))
+            {
+                manifest = await GetManifestByStatefullDefinition(parcelSize, landCoords, scene);
+        
+                //If we can't create a manifest from the stateful definition, we continue to looking
+                if (manifest != null)
+                {
+                    response.manifest = manifest;
+                    response.hasBeenCreated = true;
+                    masterManifestPromise.Resolve(response);
+                    return;
+                }
             }
 
             // If there is no builder project deployed in the land, we just create a new one

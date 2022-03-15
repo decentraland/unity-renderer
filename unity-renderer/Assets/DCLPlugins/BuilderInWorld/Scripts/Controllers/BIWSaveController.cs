@@ -9,13 +9,15 @@ public class BIWSaveController : BIWController, IBIWSaveController
 {
     private const float MS_BETWEEN_SAVES = 5000f;
 
-    public int numberOfSaves { get; set; } = 0;
+    public int saveAttemptsSinceLastSave { get; set; } = 0;
+    public int timesSaved { get; set; } = 0;
 
     private BuilderInWorldBridge bridge;
 
     private float nextTimeToSave;
     private bool canActivateSave = true;
-    public int GetSaveTimes() { return numberOfSaves; }
+    public int GetSaveAttempsSinceLastSave() { return saveAttemptsSinceLastSave; }
+    public int GetTimesSaved() { return timesSaved; }
 
     public override void Initialize(IContext context)
     {
@@ -46,7 +48,11 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
     public void ResetSaveTime() { nextTimeToSave = 0; }
 
-    public void ResetNumberOfSaves() { numberOfSaves = 0; }
+    public void ResetNumberOfSaves()
+    {
+        saveAttemptsSinceLastSave = 0;
+        timesSaved = 0;
+    }
 
     public override void EnterEditMode(IBuilderScene scene)
     {
@@ -57,9 +63,9 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
     public override void ExitEditMode()
     {
-        if (numberOfSaves > 0)
+        if (saveAttemptsSinceLastSave > 0 && context.editorContext.publishController.HasUnpublishChanges())
         {
-            ForceSave();
+            ForceSave();    
             ResetNumberOfSaves();
         }
 
@@ -77,6 +83,11 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
     public void TryToSave()
     {
+        if(!isEditModeActive)
+            return;
+        
+        saveAttemptsSinceLastSave++;
+        
         if (CanSave())
             ForceSave();
     }
@@ -94,7 +105,8 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
         nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
         context.editorContext.editorHUD?.SceneSaved();
-        numberOfSaves++;
+        saveAttemptsSinceLastSave = 0;
+        timesSaved++;
     }
 
     internal void ConfirmPublishScene(string sceneName, string sceneDescription, string sceneScreenshot) { ResetNumberOfSaves(); }

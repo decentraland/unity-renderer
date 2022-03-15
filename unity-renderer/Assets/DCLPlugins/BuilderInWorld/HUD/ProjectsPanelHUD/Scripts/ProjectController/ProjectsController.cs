@@ -147,7 +147,7 @@ internal class ProjectsController : IProjectsController
             {
                 foreach (var scene in landWithAccess.scenes)
                 {
-                    if (scene.projectId == project.Key)
+                    if (scene.projectId == project.Key && !scenesList.Contains(scene))
                         scenesList.Add(scene);
                 }
             }

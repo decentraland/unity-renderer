@@ -63,47 +63,6 @@ namespace Tests.BIWPublisherTest
         [Test]
         [TestCase(true)]
         [TestCase(false)]
-        public void SetSceneNameValidationActiveCorrectly(bool isActive)
-        {
-            // Arrange
-            landPublisherView.sceneNameValidationText.enabled = !isActive;
-
-            // Act
-            landPublisherView.SetSceneNameValidationActive(isActive);
-
-            // Assert
-            Assert.AreEqual(isActive, landPublisherView.sceneNameValidationText.enabled, "sceneNameValidationText enable property does not match!");
-        }
-
-        [Test]
-        public void SetSceneNameCorrectly()
-        {
-            // Arrange
-            string testName = "Test name";
-
-            // Act
-            landPublisherView.SetSceneName(testName);
-
-            // Assert
-            Assert.AreEqual(testName, landPublisherView.sceneNameInput.text, "sceneNameInput text does not match!");
-        }
-
-        [Test]
-        public void SetSceneDescriptionCorrectly()
-        {
-            // Arrange
-            string testDesc = "Test desc";
-
-            // Act
-            landPublisherView.SetSceneDescription(testDesc);
-
-            // Assert
-            Assert.AreEqual(testDesc, landPublisherView.sceneDescriptionInput.text, "sceneDescriptionInput text does not match!");
-        }
-
-        [Test]
-        [TestCase(true)]
-        [TestCase(false)]
         public void SetPublishButtonActiveCorrectly(bool isActive)
         {
             // Arrange
@@ -121,7 +80,7 @@ namespace Tests.BIWPublisherTest
         {
             // Arrange
             string testName = "Test name";
-            landPublisherView.sceneNameInput.text = testName;
+            landPublisherView.nameInputField.SetText(testName);
 
             // Act
             string currentName = landPublisherView.GetSceneName();
@@ -135,7 +94,7 @@ namespace Tests.BIWPublisherTest
         {
             // Arrange
             string testDesc = "Test description";
-            landPublisherView.sceneDescriptionInput.text = testDesc;
+            landPublisherView.descriptionInputField.SetText(testDesc);
 
             // Act
             string currentDesc = landPublisherView.GetSceneDescription();
@@ -156,34 +115,6 @@ namespace Tests.BIWPublisherTest
 
             // Assert
             Assert.AreEqual(testTexture, returnedTexture, "The returned texture does not match!");
-        }
-
-        [Test]
-        public void UpdateSceneNameCharCounterCorrectly()
-        {
-            // Arrange
-            landPublisherView.sceneNameInput.text = "123456";
-            landPublisherView.sceneNameCharCounterText.text = "";
-
-            // Act
-            landPublisherView.UpdateSceneNameCharCounter();
-
-            // Assert
-            Assert.AreEqual($"6/{landPublisherView.sceneNameCharLimit}", landPublisherView.sceneNameCharCounterText.text, "The scene name char counter have not been updated correctly!");
-        }
-
-        [Test]
-        public void UpdateSceneDescriptionCharCounterCorrectly()
-        {
-            // Arrange
-            landPublisherView.sceneDescriptionInput.text = "123456";
-            landPublisherView.sceneDescriptionCharCounterText.text = "";
-
-            // Act
-            landPublisherView.UpdateSceneDescriptionCharCounter();
-
-            // Assert
-            Assert.AreEqual($"6/{landPublisherView.sceneDescriptionCharLimit}", landPublisherView.sceneDescriptionCharCounterText.text, "The scene description char counter have not been updated correctly!");
         }
     }
 }

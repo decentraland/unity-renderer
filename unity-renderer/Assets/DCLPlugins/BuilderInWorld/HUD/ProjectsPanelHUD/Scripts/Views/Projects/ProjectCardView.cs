@@ -106,6 +106,8 @@ namespace DCL.Builder
         internal const float SCENE_CARD_SIZE = 84;
         internal const float SCENE_CARD_ITEM_PADDING = 18;
         internal const float SCENE_CARD_TOTAL_PADDING = 36;
+        
+        internal const float MS_TO_IGNORE_DUE_TO_SERVER = 10000;
 
         public event Action<ProjectData> OnEditorPressed;
         public event Action<IProjectCardView> OnSettingsPressed;
@@ -210,18 +212,21 @@ namespace DCL.Builder
             publishedGameObject.gameObject.SetActive(true);
             if (scenes.Count == 0)
             {
-                syncImage.enabled = false;
+                expandButton.interactable = false;
+                syncImage.gameObject.SetActive(false);
                 projectSyncTxt.text = NOT_PUBLISHED;
                 downButtonTransform.gameObject.SetActive(false);
             }
             else
             {
+                expandButton.interactable = true;
+                syncImage.gameObject.SetActive(true);
                 downButtonTransform.gameObject.SetActive(true);
                 bool isSync = true;
                 long projectTimestamp = BIWUtils.ConvertToMilisecondsTimestamp(projectData.updated_at);
                 foreach (Scene scene in scenes)
                 {
-                    if (scene.deployTimestamp < projectTimestamp)
+                    if (scene.deployTimestamp + MS_TO_IGNORE_DUE_TO_SERVER < projectTimestamp)
                     {
                         isSync = false;
                         break;
@@ -285,7 +290,7 @@ namespace DCL.Builder
             long projectTimestamp = BIWUtils.ConvertToMilisecondsTimestamp(projectData.updated_at);
             foreach (Scene scene in scenesDeployedFromProject)
             {
-                bool isSync = scene.deployTimestamp < projectTimestamp;
+                bool isSync = scene.deployTimestamp + MS_TO_IGNORE_DUE_TO_SERVER  >= projectTimestamp;
 
                 IProjectSceneCardView cardView = Instantiate(projectSceneCardViewPrefab, scenesContainer).GetComponent<ProjectSceneCardView>();
                 cardView.Setup(scene, isSync);

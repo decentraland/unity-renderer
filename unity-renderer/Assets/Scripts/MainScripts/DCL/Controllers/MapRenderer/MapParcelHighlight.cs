@@ -14,37 +14,54 @@ public class MapParcelHighlight : MonoBehaviour
     }
 
     [Header("Builder in world style")]
-    [SerializeField] internal Texture builderHighlightTexture;
-    [SerializeField] internal Texture builderHighlightDisableTexture;
+    [SerializeField] internal Sprite builderHighlightTexture;
+    [SerializeField] internal Sprite builderHighlightDisableTexture;
 
     [Header("Default style")]
-    [SerializeField] internal Texture defaultTexture;
+    [SerializeField] internal Sprite defaultTexture;
 
     [Header("Normal map style")]
-    [SerializeField] internal RawImage highlighImage;
+    [SerializeField] internal Image highlighImage;
 
     private Vector2 highlighSize;
+    private RectTransform rectTransform;
+
+    private void Awake()
+    {
+        rectTransform = GetComponent<RectTransform>();
+    }
 
     public void SetStyle(HighlighStyle style)
     {
         switch (style)
         {
             case HighlighStyle.DEFAULT:
-                highlighImage.texture = defaultTexture;
+                highlighImage.sprite = defaultTexture;
                 ChangeHighlighSize(Vector2Int.one);
                 break;
             case HighlighStyle.BUILDER_ENABLE:
-                highlighImage.texture = builderHighlightTexture;
+                highlighImage.sprite = builderHighlightTexture;
                 break;
             case HighlighStyle.BUILDER_DISABLE:
-                highlighImage.texture = builderHighlightDisableTexture;
+                highlighImage.sprite = builderHighlightDisableTexture;
                 break;
         }
+    }
+
+    public void SetScale(float scale)
+    {
+        // This can happen if the set scale is set before the awake method
+        if(rectTransform == null)
+            rectTransform = GetComponent<RectTransform>();
+        
+        rectTransform.localScale = new Vector3(scale, scale, 1f);
+        
+        highlighImage.rectTransform.sizeDelta = Vector2.zero;
     }
 
     public void ChangeHighlighSize(Vector2Int newSize)
     {
         highlighSize = new Vector2(18 * newSize.x, 18 * newSize.y);
-        highlighImage.rectTransform.sizeDelta = highlighSize;
+        rectTransform.sizeDelta = highlighSize;
     }
 }

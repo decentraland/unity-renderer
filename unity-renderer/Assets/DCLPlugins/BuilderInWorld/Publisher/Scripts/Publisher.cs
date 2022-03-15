@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using DCL.Builder.Manifest;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
@@ -11,9 +12,11 @@ namespace DCL.Builder
 {
     public class Publisher : IPublisher
     {
-        private const string NO_LAND_TO_PUBLISH_TEXT = "Your scene is bigger than any Land you own.\nBrowse the Marketplace and buy some new Land where you can deploy";
-        private const string BIGGER_LAND_TO_PUBLISH_TEXT = "To publish a scene first you need a Land where you can deploy it. Browse the marketplace to get some and show the world what you have created";
+        private const string BIGGER_LAND_TO_PUBLISH_TEXT = "Your scene is bigger than any Land you own.\nBrowse the Marketplace and buy some new Land where you can deploy.";
+        private const string NO_LAND_TO_PUBLISH_TEXT = "To publish a scene first you need a Land where you can deploy it. Browse the marketplace to get some and show the world what you have created.";
 
+        public event Action<bool> OnPublishFinish;
+        
         private IPublishProjectController projectPublisher;
         private ILandPublisherController landPublisher;
         private IPublishProgressController progressController;
@@ -26,7 +29,7 @@ namespace DCL.Builder
         private IBuilderScene builderSceneToDeploy;
         private PublishInfo publishInfo;
         private IBuilderScene.SceneType lastTypeWhoStartedPublish;
-
+        
         public void Initialize(IContext context)
         {
             this.context = context;
@@ -41,6 +44,10 @@ namespace DCL.Builder
 
             landPublisher.OnPublishPressed += PublishLandScene;
             projectPublisher.OnPublishPressed += ConfirmDeployment;
+            
+            landPublisher.OnPublishCancel += Canceled;
+            projectPublisher.OnPublishCancel += Canceled;
+            
             progressController.OnConfirm += StartDeployment;
             progressController.OnBackPressed += BackToPublishInfo;
 
@@ -54,6 +61,10 @@ namespace DCL.Builder
         {
             landPublisher.OnPublishPressed -= PublishLandScene;
             projectPublisher.OnPublishPressed -= ConfirmDeployment;
+            
+            landPublisher.OnPublishCancel -= Canceled;
+            projectPublisher.OnPublishCancel -= Canceled;
+            
             progressController.OnConfirm -= StartDeployment;
             progressController.OnBackPressed -= BackToPublishInfo;
 
@@ -93,13 +104,15 @@ namespace DCL.Builder
             if (!CanPublishInLands(scene))
             {
                 context.commonHUD.GetPopUp()
-                       .ShowPopUpWithoutTitle(NO_LAND_TO_PUBLISH_TEXT, "BUY LAND", "BACK", () =>
+                       .ShowPopUpWithoutTitle(BIGGER_LAND_TO_PUBLISH_TEXT, "BUY LAND", "BACK", () =>
                        {
                            WebInterface.OpenURL(BIWSettings.MARKETPLACE_URL);
                        }, null);
                 return;
             }
-
+            
+            DataStore.i.builderInWorld.areShortcutsBlocked.Set(true);
+            
             switch (scene.sceneType)
             {
                 case IBuilderScene.SceneType.PROJECT:
@@ -111,6 +124,11 @@ namespace DCL.Builder
             }
 
             lastTypeWhoStartedPublish = scene.sceneType;
+        }
+
+        internal void Canceled()
+        {
+            DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
         }
 
         internal bool HasLands() { return DataStore.i.builderInWorld.landsWithAccess.Get().Length > 0; }
@@ -125,7 +143,7 @@ namespace DCL.Builder
         {
             PublishInfo publishInfo = new PublishInfo();
             publishInfo.rotation = PublishInfo.ProjectRotation.NORTH;
-            publishInfo.coordsToPublish = scene.scene.sceneData.basePosition;
+            publishInfo.coordsToPublish = scene.landCoordsAsociated;
             ConfirmDeployment(scene, publishInfo);
         }
 
@@ -139,12 +157,24 @@ namespace DCL.Builder
 
         internal void StartDeployment() { DeployScene(builderSceneToDeploy, publishInfo); }
 
+        internal void ApplyRotation(IBuilderScene scene, PublishInfo.ProjectRotation rotation)
+        {
+            var transform = scene.scene.GetSceneTransform();
+            Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(scene.scene);
+            
+            transform.RotateAround(middlePoint,Vector3.up,90f*(int)rotation);
+            scene.UpdateManifestFromScene();
+        }
+
         internal async void DeployScene(IBuilderScene scene, PublishInfo info)
         {
             try
             {
                 // We assign the scene to deploy
                 builderSceneToDeploy = scene;
+
+                // We apply the rotation of the scene
+                ApplyRotation(scene, info.rotation);
 
                 // Prepare the thumbnail
                 byte[] thumbnail = scene.sceneScreenshotTexture.EncodeToPNG();
@@ -159,7 +189,7 @@ namespace DCL.Builder
                 CatalystSceneEntityMetadata sceneJson = CreateSceneJson(scene, info);
 
                 // Group all entities files
-                StatelessManifest statelessManifest = ManifestTranslator.ParcelSceneToStatelessManifest(scene.scene);
+                StatelessManifest statelessManifest = ManifestTranslator.WebBuilderSceneToStatelessManifest(scene.manifest.scene);
 
                 // This files are not encoded
                 Dictionary<string, object> entityFiles = new Dictionary<string, object>
@@ -191,7 +221,7 @@ namespace DCL.Builder
         private void StartPublishScene(IBuilderScene scene, Dictionary<string, object > filesToDecode, Dictionary<string, object > files, CatalystSceneEntityMetadata metadata, StatelessManifest statelessManifest )
         {
             startPublishingTimestamp = Time.realtimeSinceStartup;
-            BIWAnalytics.StartScenePublish(scene.scene.metricsCounter.GetModel());
+            BIWAnalytics.StartScenePublish(scene.scene.metricsCounter.currentCount);
             builderInWorldBridge.PublishScene(filesToDecode, files, metadata, statelessManifest);
         }
 
@@ -213,10 +243,14 @@ namespace DCL.Builder
                 progressController.DeployError(message);
             }
             string successString = isOk ? "Success" : message;
-            BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
+            BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.currentCount, successString, Time.realtimeSinceStartup - startPublishingTimestamp);
 
             if (isOk)
                 builderSceneToDeploy = null;
+            
+            DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
+            
+            OnPublishFinish?.Invoke(isOk);
         }
 
         internal CatalystSceneEntityMetadata CreateSceneJson(IBuilderScene builderScene, PublishInfo info)

@@ -4,8 +4,16 @@ using UnityEngine;
 
 public interface ILandPublisherController
 {
+    /// <summary>
+    /// When the publish button has been pressed
+    /// </summary>
     event Action<IBuilderScene> OnPublishPressed;
 
+    /// <summary>
+    /// When the publish action is canceled
+    /// </summary>
+    event Action OnPublishCancel;
+    
     /// <summary>
     /// Init the controller with the default view
     /// </summary>
@@ -33,7 +41,7 @@ public interface ILandPublisherController
 
 public class LandPublisherController : ILandPublisherController
 {
-    public event Action OnCancel;
+    public event Action OnPublishCancel;
     public event Action<IBuilderScene> OnPublishPressed;
 
     internal const string PREFAB_PATH = "Land/LandPublisherView";
@@ -41,7 +49,6 @@ public class LandPublisherController : ILandPublisherController
     internal const string DEFAULT_SCENE_DESC = "";
 
     internal ILandPublisherView landPublisherView;
-    internal bool isValidated = false;
     internal IBuilderScene sceneToPublish;
 
     public void Initialize()
@@ -56,17 +63,14 @@ public class LandPublisherController : ILandPublisherController
 
         landPublisherView.OnCancel += Cancel;
         landPublisherView.OnPublish += Publish;
-        landPublisherView.OnSceneNameChange += ValidatePublicationInfo;
 
         SetDefaultPublicationInfo();
-        ValidatePublicationInfo(landPublisherView.currentSceneName);
     }
 
     public void Dispose()
     {
         landPublisherView.OnCancel -= Cancel;
         landPublisherView.OnPublish -= Publish;
-        landPublisherView.OnSceneNameChange -= ValidatePublicationInfo;
     }
 
     public void SetActive(bool isActive) { landPublisherView.SetActive(isActive); }
@@ -74,7 +78,7 @@ public class LandPublisherController : ILandPublisherController
     public void Cancel()
     {
         SetActive(false);
-        OnCancel?.Invoke();
+        OnPublishCancel?.Invoke();
     }
 
     public void StartPublishFlow(IBuilderScene scene)
@@ -86,21 +90,11 @@ public class LandPublisherController : ILandPublisherController
 
     public void Publish()
     {
-        if (!isValidated)
-            return;
-
         sceneToPublish.manifest.project.title = landPublisherView.GetSceneName();
         sceneToPublish.manifest.project.description = landPublisherView.GetSceneDescription();
 
         SetActive(false);
         OnPublishPressed?.Invoke(sceneToPublish);
-    }
-
-    public void ValidatePublicationInfo(string sceneName)
-    {
-        isValidated = sceneName.Length > 0;
-        landPublisherView.SetSceneNameValidationActive(!isValidated);
-        landPublisherView.SetPublishButtonActive(isValidated);
     }
 
     public void SetDefaultPublicationInfo()
