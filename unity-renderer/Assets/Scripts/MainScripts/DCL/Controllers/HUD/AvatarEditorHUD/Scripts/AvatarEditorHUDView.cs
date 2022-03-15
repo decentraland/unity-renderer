@@ -1,5 +1,6 @@
 using DCL;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
@@ -17,6 +18,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     internal const string AVATAR_SECTION_TITLE = "<b>Avatar</b>";
     internal const int EMOTES_SECTION_INDEX = 1;
     internal const string EMOTES_SECTION_TITLE = "<b>Emotes</b>";
+    private const string RESET_PREVIEW_ANIMATION = "Idle";
 
     public bool isOpen { get; private set; }
     internal BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
@@ -384,6 +386,15 @@ public class AvatarEditorHUDView : MonoBehaviour
     private void OnDoneButton()
     {
         doneButton.interactable = false;
+        CoroutineStarter.Start(TakeSnapshotsAfterStopPreviewAnimation());
+
+    }
+
+    private IEnumerator TakeSnapshotsAfterStopPreviewAnimation()
+    {
+        // We need to stop the current preview animation in order to take a correct snapshot
+        ResetPreviewEmote();
+        yield return new WaitForSeconds(0.2f);
         characterPreviewController.TakeSnapshots(OnSnapshotsReady, OnSnapshotsFailed);
     }
 
@@ -491,7 +502,10 @@ public class AvatarEditorHUDView : MonoBehaviour
             avatarSection.SetActive(isSelected);
 
             if (isSelected)
+            {
                 sectionTitle.text = AVATAR_SECTION_TITLE;
+                ResetPreviewEmote();
+            }
 
             isEmotesCustomizationSelected.Set(false, notifyEvent: false);
         });
@@ -500,7 +514,10 @@ public class AvatarEditorHUDView : MonoBehaviour
             emotesSection.SetActive(isSelected);
 
             if (isSelected)
+            {
                 sectionTitle.text = EMOTES_SECTION_TITLE;
+                ResetPreviewEmote();
+            }
 
             characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
             isEmotesCustomizationSelected.Set(true, notifyEvent: false);
@@ -515,4 +532,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     public AvatarModel GetAvatarPreviewModel() { return characterPreviewController.GetCurrentModel(); }
     
     public void PlayPreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
+
+    public void ResetPreviewEmote() { PlayPreviewEmote(RESET_PREVIEW_ANIMATION); }
 }

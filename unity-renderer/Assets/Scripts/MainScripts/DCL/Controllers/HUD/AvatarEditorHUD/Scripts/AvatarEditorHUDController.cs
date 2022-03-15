@@ -59,7 +59,7 @@ public class AvatarEditorHUDController : IHUD
     private float lastTimeOwnedWearablesChecked = 0;
     private float prevRenderScale = 1.0f;
     private Transform emotesSectionTransform;
-    private bool canEquipAvatarPreviewEmotes = false;
+    private bool isAvatarPreviewReady = false;
     private List<string> emotesPendingToBeEquippedInAvatarPreview = new List<string>();
 
     public AvatarEditorHUDView view;
@@ -285,9 +285,9 @@ public class AvatarEditorHUDController : IHUD
 
         UpdateAvatarPreview();
 
-        if (!canEquipAvatarPreviewEmotes)
+        if (!isAvatarPreviewReady)
         {
-            canEquipAvatarPreviewEmotes = true;
+            isAvatarPreviewReady = true;
             EquipPendingEmotesInAvatarPreview();
         }
     }
@@ -638,6 +638,8 @@ public class AvatarEditorHUDController : IHUD
     {
         if (!visible && view.isOpen)
         {
+            view.ResetPreviewEmote();
+
             if (DataStore.i.common.isSignUpFlow.Get())
                 DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
 
@@ -656,8 +658,6 @@ public class AvatarEditorHUDController : IHUD
                 CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
 
             DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
-
-            view.PlayPreviewEmote("Idle");
 
             OnClose?.Invoke();
         }
@@ -839,7 +839,7 @@ public class AvatarEditorHUDController : IHUD
 
     private void EquipPendingEmotesInAvatarPreview()
     {
-        if (!canEquipAvatarPreviewEmotes)
+        if (!isAvatarPreviewReady)
             return;
         
         AvatarModel modelToUpdate = new AvatarModel();
