@@ -242,8 +242,6 @@ namespace DCL
 
         IEnumerator ProcessMessages()
         {
-            var throttleMessageProcessing = DataStore.i.performance.throttleMessageProcessing.Get();
-
             while (true)
             {
                 if (paused)
@@ -270,7 +268,7 @@ namespace DCL
                         bus = busesToProcess[i];
                     }
 
-                    if (ProcessBus(bus, throttleMessageProcessing))
+                    if (ProcessBus(bus))
                         break;
                 }
 
@@ -287,7 +285,7 @@ namespace DCL
             }
         }
 
-        bool ProcessBus(MessagingBus bus, bool throttleMessageProcessing)
+        bool ProcessBus(MessagingBus bus)
         {
             if (!bus.enabled || bus.pendingMessagesCount <= 0)
                 return false;
@@ -303,7 +301,7 @@ namespace DCL
 
             timeBudgetCounter -= Time.realtimeSinceStartup - startTime;
 
-            if (timeBudgetCounter <= 0 && throttleMessageProcessing)
+            if (timeBudgetCounter <= 0)
                 return true;
 
             return false;
