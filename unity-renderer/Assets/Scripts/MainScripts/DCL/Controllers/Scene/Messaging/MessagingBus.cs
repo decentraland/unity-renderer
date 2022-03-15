@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using DCL.Interface;
@@ -83,25 +84,9 @@ namespace DCL
                 // When removing an entity we have to ensure that the enqueued lossy messages after it are processed and not replaced
                 if (message is QueuedSceneMessage_Scene queuedSceneMessage && queuedSceneMessage.payload is Protocol.RemoveEntity removeEntityPayload)
                 {
-                    List<string> unreliableMessagesToRemove = new List<string>();
-
-                    foreach (string key in unreliableMessages.Keys)
-                    {
-                        if (key.Contains(removeEntityPayload.entityId)) //Key of unreliableMessages is a mixture of entityId
-                        {
-                            unreliableMessagesToRemove.Add(key);
-                        }
-                    }
-
-                    for (int index = 0; index < unreliableMessagesToRemove.Count; index++)
-                    {
-                        string key = unreliableMessagesToRemove[index];
-
-                        if (unreliableMessages.ContainsKey(key))
-                        {
-                            unreliableMessages.Remove(key);
-                        }
-                    }
+                    unreliableMessages = unreliableMessages
+                                         .Where(kvp => !kvp.Key.Contains(removeEntityPayload.entityId))
+                                         .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 }
 
                 if (queueMode == QueueMode.Reliable)
