@@ -349,7 +349,6 @@ namespace EmotesCustomization
 
             assignedSlotNumberText.gameObject.SetActive(
                 !model.isAssignedInSelectedSlot &&
-                !model.isSelected &&
                 model.assignedSlot >= 0);
         }
 
@@ -358,7 +357,7 @@ namespace EmotesCustomization
             if (assignedInCurrentSlotMarkImage == null)
                 return;
 
-            assignedInCurrentSlotMarkImage.gameObject.SetActive(model.isAssignedInSelectedSlot && !model.isSelected);
+            assignedInCurrentSlotMarkImage.gameObject.SetActive(model.isAssignedInSelectedSlot);
         }
 
         internal void RefreshCardButtonsVisibility()
