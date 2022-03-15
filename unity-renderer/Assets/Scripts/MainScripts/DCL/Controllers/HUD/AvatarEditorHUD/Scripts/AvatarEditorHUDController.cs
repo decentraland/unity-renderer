@@ -284,12 +284,7 @@ public class AvatarEditorHUDController : IHUD
         EnsureWearablesCategoriesNotEmpty();
 
         UpdateAvatarPreview();
-
-        if (!isAvatarPreviewReady)
-        {
-            isAvatarPreviewReady = true;
-            EquipPendingEmotesInAvatarPreview();
-        }
+        isAvatarPreviewReady = true;
     }
 
     private void EnsureWearablesCategoriesNotEmpty()
@@ -385,8 +380,19 @@ public class AvatarEditorHUDController : IHUD
 
     protected virtual void UpdateAvatarPreview()
     {
-        if (!bypassUpdateAvatarPreview)
-            view.UpdateAvatarPreview(model.ToAvatarModel());
+        if (bypassUpdateAvatarPreview)
+            return;
+
+        AvatarModel modelToUpdate = model.ToAvatarModel();
+
+        // We always keep the loaded emotes into the Avatar Preview
+        foreach (string emoteId in currentLoadedEmotes.Get())
+        {
+            if (!modelToUpdate.wearables.Contains(emoteId))
+                modelToUpdate.wearables.Add(emoteId);
+        }
+
+        view.UpdateAvatarPreview(modelToUpdate);
     }
 
     private void EquipHairColor(Color color)
@@ -830,29 +836,10 @@ public class AvatarEditorHUDController : IHUD
 
     private void OnNewEmoteAdded(string emoteId)
     {
-        if (emotesPendingToBeEquippedInAvatarPreview.Contains(emoteId))
-            return;
-
-        emotesPendingToBeEquippedInAvatarPreview.Add(emoteId);
-        EquipPendingEmotesInAvatarPreview();
-    }
-
-    private void EquipPendingEmotesInAvatarPreview()
-    {
         if (!isAvatarPreviewReady)
             return;
-        
-        AvatarModel modelToUpdate = new AvatarModel();
-        modelToUpdate.CopyFrom(view.GetAvatarPreviewModel());
 
-        foreach (string pendingEmoteId in emotesPendingToBeEquippedInAvatarPreview)
-        {
-            if (!modelToUpdate.wearables.Contains(pendingEmoteId))
-                modelToUpdate.wearables.Add(pendingEmoteId);
-        }
-        
-        emotesPendingToBeEquippedInAvatarPreview.Clear();
-        view.UpdateAvatarPreview(modelToUpdate);
+        UpdateAvatarPreview();
     }
 
     private void OnPreviewEmote(string currentEmoteId, string previousEmoteId) { view.PlayPreviewEmote(currentEmoteId); }

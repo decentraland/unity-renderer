@@ -528,8 +528,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         sectionSelector.GetSection(sectionIndex).SetActive(isActive);
     }
-
-    public AvatarModel GetAvatarPreviewModel() { return characterPreviewController.GetCurrentModel(); }
     
     public void PlayPreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
 
