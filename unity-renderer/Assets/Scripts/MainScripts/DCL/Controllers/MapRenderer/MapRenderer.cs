@@ -268,7 +268,7 @@ namespace DCL
             if (scenesOfInterest.Contains(sceneInfo))
                 return;
 
-            if (sceneInfo.name != null && sceneInfo.name.Equals(EMPTY_PARCEL_NAME))
+            if (IsEmptyParcel(sceneInfo))
                 return;
 
             scenesOfInterest.Add(sceneInfo);
@@ -303,6 +303,11 @@ namespace DCL
                 icon.title.text = sceneInfo.name.Length > MAX_SCENE_CHARACTER_TITLE ? sceneInfo.name.Substring(0, MAX_SCENE_CHARACTER_TITLE - 1) : sceneInfo.name;
 
             scenesOfInterestMarkers.Add(sceneInfo, go);
+        }
+
+        private bool IsEmptyParcel(MinimapMetadata.MinimapSceneInfo sceneInfo)
+        {
+            return (sceneInfo.name != null && sceneInfo.name.Equals(EMPTY_PARCEL_NAME));
         }
 
         private void OnOtherPlayersAdded(string userId, Player player)
