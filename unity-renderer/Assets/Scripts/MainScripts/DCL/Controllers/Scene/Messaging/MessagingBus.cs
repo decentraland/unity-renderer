@@ -295,8 +295,7 @@ namespace DCL
         {
             lock (unreliableMessages)
             {
-                if (unreliableMessages.ContainsKey(message.unreliableMessageKey))
-                    unreliableMessages.Remove(message.unreliableMessageKey);
+                unreliableMessages.Remove(message.unreliableMessageKey);
             }
         }
 
