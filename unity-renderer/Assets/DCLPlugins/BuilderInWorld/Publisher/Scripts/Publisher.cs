@@ -159,6 +159,11 @@ namespace DCL.Builder
 
         internal void ApplyRotation(IBuilderScene scene, PublishInfo.ProjectRotation rotation)
         {
+            // Note: if the aerialscreenshot is not available, this means that the scene has been deployed
+            // from the panel instead of the editor, so we don't have the scene to rotate, we publish it to north directly
+            if (scene.aerialScreenshotTexture == null)
+                return;
+            
             var transform = scene.scene.GetSceneTransform();
             Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(scene.scene);
             
