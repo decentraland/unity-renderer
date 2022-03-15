@@ -14,9 +14,9 @@ public class AvatarEditorHUDView : MonoBehaviour
     private const string VIEW_PATH = "AvatarEditorHUD";
     private const string VIEW_OBJECT_NAME = "_AvatarEditorHUD";
     internal const int AVATAR_SECTION_INDEX = 0;
-    internal const string AVATAR_SECTION_TITLE = "<b>Avatar</b> Customization";
+    internal const string AVATAR_SECTION_TITLE = "<b>Avatar</b>";
     internal const int EMOTES_SECTION_INDEX = 1;
-    internal const string EMOTES_SECTION_TITLE = "<b>Emotes</b> Customization";
+    internal const string EMOTES_SECTION_TITLE = "<b>Emotes</b>";
 
     public bool isOpen { get; private set; }
     internal BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
@@ -513,5 +513,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     }
 
     public AvatarModel GetAvatarPreviewModel() { return characterPreviewController.GetCurrentModel(); }
-    public void PreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
+    
+    public void PlayPreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
 }

@@ -20,16 +20,6 @@ namespace EmotesCustomization
         Button.ButtonClickedEvent onInfoClick { get; }
 
         /// <summary>
-        /// Event that will be triggered when the equip button is clicked.
-        /// </summary>
-        Button.ButtonClickedEvent onEquipClick { get; }
-
-        /// <summary>
-        /// Event that will be triggered when the unequip button is clicked.
-        /// </summary>
-        Button.ButtonClickedEvent onUnequipClick { get; }
-
-        /// <summary>
         /// It will be triggered when an emote card is selected.
         /// </summary>
         event Action<string> onEmoteSelected;
@@ -95,6 +85,12 @@ namespace EmotesCustomization
         void SetIsInL2(bool isInL2);
 
         /// <summary>
+        /// Set the emote as collectible or not.
+        /// </summary>
+        /// <param name="isInL2">True for set it as collectible.</param>
+        void SetIsCollectible(bool isCollectible);
+
+        /// <summary>
         /// Set the emote card as loading state or not.
         /// </summary>
         /// <param name="isLoading">True for setting it as loading state.</param>
@@ -113,14 +109,11 @@ namespace EmotesCustomization
         [SerializeField] internal ImageComponentView assignedInCurrentSlotMarkImage;
         [SerializeField] internal ButtonComponentView mainButton;
         [SerializeField] internal ButtonComponentView infoButton;
-        [SerializeField] internal ButtonComponentView equipButton;
-        [SerializeField] internal ButtonComponentView unequipButton;
         [SerializeField] internal GameObject cardSelectionFrame;
         [SerializeField] internal Animator selectionAnimator;
         [SerializeField] internal Image rarityMark;
         [SerializeField] internal Transform emoteInfoAnchor;
         [SerializeField] internal GameObject loadingSpinnerGO;
-
 
         [Header("Configuration")]
         [SerializeField] internal Sprite defaultEmotePicture;
@@ -130,8 +123,6 @@ namespace EmotesCustomization
 
         public Button.ButtonClickedEvent onMainClick => mainButton?.onClick;
         public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
-        public Button.ButtonClickedEvent onEquipClick => equipButton?.onClick;
-        public Button.ButtonClickedEvent onUnequipClick => unequipButton?.onClick;
         
         public event Action<string> onEmoteSelected;
 
@@ -173,6 +164,7 @@ namespace EmotesCustomization
             SetEmoteAsSelected(model.isSelected);
             SetRarity(model.rarity);
             SetIsInL2(model.isInL2);
+            SetIsCollectible(model.isCollectible);
             SetAsLoading(model.isLoading);
         }
 
@@ -325,6 +317,13 @@ namespace EmotesCustomization
             model.isInL2 = isInL2;
         }
 
+        public void SetIsCollectible(bool isCollectible)
+        {
+            model.isCollectible = isCollectible;
+
+            RefreshVisualCardStatus();
+        }
+
         public void SetAsLoading(bool isLoading)
         {
             model.isLoading = isLoading;
@@ -365,13 +364,7 @@ namespace EmotesCustomization
         internal void RefreshCardButtonsVisibility()
         {
             if (infoButton != null)
-                infoButton.gameObject.SetActive(model.isSelected);
-
-            if (equipButton != null)
-                equipButton.gameObject.SetActive(model.isSelected && !model.isAssignedInSelectedSlot);
-
-            if (unequipButton != null)
-                unequipButton.gameObject.SetActive(model.isSelected && model.isAssignedInSelectedSlot);
+                infoButton.gameObject.SetActive(model.isCollectible);
         }
 
         internal void OnEmoteImageLoaded(Sprite sprite)

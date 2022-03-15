@@ -21,6 +21,7 @@ public class NFTItemInfo : MonoBehaviour
     {
         public string name;
         public string thumbnail;
+        public Sprite thumbnailSprite;
         public List<string> iconIds;
         public string description;
         public int issuedId;
@@ -31,6 +32,7 @@ public class NFTItemInfo : MonoBehaviour
         {
             return name == other.name
                    && thumbnail == other.thumbnail
+                   && thumbnailSprite == other.thumbnailSprite
                    && iconIds.SequenceEqual(other.iconIds)
                    && description == other.description
                    && issuedId == other.issuedId
@@ -46,6 +48,7 @@ public class NFTItemInfo : MonoBehaviour
             {
                 name = wearable.GetName(),
                 thumbnail = wearable.baseUrl + wearable.thumbnail,
+                thumbnailSprite = wearable.thumbnailSprite,
                 iconIds = iconsIds,
                 description = wearable.description,
                 issuedId = wearable.issuedId,
@@ -60,6 +63,7 @@ public class NFTItemInfo : MonoBehaviour
             {
                 name = emote.name,
                 thumbnail = emote.pictureUri,
+                thumbnailSprite = emote.pictureSprite,
                 iconIds = new List<string>(),
                 description = emote.description,
                 issuedId = 1,
@@ -155,6 +159,12 @@ public class NFTItemInfo : MonoBehaviour
     {
         if (currentModel == null)
             return;
+
+        if (currentModel.thumbnailSprite != null)
+        {
+            thumbnail.sprite = currentModel.thumbnailSprite;
+            return;
+        }
 
         //NOTE(Brian): Get before forget to prevent referenceCount == 0 and asset unload
         var newThumbnailPromise = ThumbnailsManager.GetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);

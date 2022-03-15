@@ -64,9 +64,9 @@ namespace EmotesCustomization
 
         public void Dispose()
         {
-            view.onEmoteClicked -= OnEmoteAnimationRaised;
             view.onEmoteEquipped -= OnEmoteEquipped;
             view.onEmoteUnequipped -= OnEmoteUnequipped;
+            view.onSlotSelected -= OnSlotSelected;
             isStarMenuOpen.OnChange -= IsStarMenuOpenChanged;
             avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
             avatarHasBeenSaved.OnChange -= OnAvatarHasBeenSavedChanged;
@@ -142,9 +142,9 @@ namespace EmotesCustomization
         internal void ConfigureView()
         {
             view = CreateView();
-            view.onEmoteClicked += OnEmoteAnimationRaised;
             view.onEmoteEquipped += OnEmoteEquipped;
             view.onEmoteUnequipped += OnEmoteUnequipped;
+            view.onSlotSelected += OnSlotSelected;
             isStarMenuOpen.OnChange += IsStarMenuOpenChanged;
             avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
             avatarHasBeenSaved.OnChange += OnAvatarHasBeenSavedChanged;
@@ -256,7 +256,8 @@ namespace EmotesCustomization
                 assignedSlot = -1,
                 rarity = wearable.rarity,
                 isInL2 = wearable.IsInL2(),
-                isLoading = false
+                isLoading = false,
+                isCollectible = wearable.IsCollectible()
             };
         }
 
@@ -290,7 +291,7 @@ namespace EmotesCustomization
                 {
                     EmoteSlotCardComponentView existingEmoteIntoSlot = view.currentSlots.FirstOrDefault(x => x.model.slotNumber == i);
                     if (existingEmoteIntoSlot != null)
-                        view.UnequipEmote(existingEmoteIntoSlot.model.emoteId, i);
+                        view.UnequipEmote(existingEmoteIntoSlot.model.emoteId, i, false);
 
                     continue;
                 }
@@ -317,10 +318,9 @@ namespace EmotesCustomization
             equippedEmotes.Set(newEquippedEmotesList);
         }
 
-        internal void OnEmoteAnimationRaised(string emoteId) { emoteForPreviewing.Set(emoteId, true); }
-
         internal void OnEmoteEquipped(string emoteId, int slotNumber) 
         {
+            emoteForPreviewing.Set(emoteId, true);
             StoreEquippedEmotes();
         }
 
@@ -328,6 +328,8 @@ namespace EmotesCustomization
         {
             StoreEquippedEmotes();
         }
+
+        internal void OnSlotSelected(string emoteId, int slotNumber) { emoteForPreviewing.Set(emoteId, true); }
 
         internal void ConfigureShortcuts()
         {

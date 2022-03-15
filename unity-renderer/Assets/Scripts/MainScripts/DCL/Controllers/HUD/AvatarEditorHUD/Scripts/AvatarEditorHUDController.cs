@@ -58,7 +58,6 @@ public class AvatarEditorHUDController : IHUD
     private bool avatarIsDirty = false;
     private float lastTimeOwnedWearablesChecked = 0;
     private float prevRenderScale = 1.0f;
-    private Camera mainCamera;
     private Transform emotesSectionTransform;
     private bool canEquipAvatarPreviewEmotes = false;
     private List<string> emotesPendingToBeEquippedInAvatarPreview = new List<string>();
@@ -658,6 +657,8 @@ public class AvatarEditorHUDController : IHUD
 
             DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
 
+            view.PlayPreviewEmote("Idle");
+
             OnClose?.Invoke();
         }
         else if (visible && !view.isOpen)
@@ -854,7 +855,7 @@ public class AvatarEditorHUDController : IHUD
         view.UpdateAvatarPreview(modelToUpdate);
     }
 
-    private void OnPreviewEmote(string currentEmoteId, string previousEmoteId) { view.PreviewEmote(currentEmoteId); }
+    private void OnPreviewEmote(string currentEmoteId, string previousEmoteId) { view.PlayPreviewEmote(currentEmoteId); }
 
     private void OnEquippedEmotesSet(IEnumerable<EquippedEmoteData> emotes)
     {

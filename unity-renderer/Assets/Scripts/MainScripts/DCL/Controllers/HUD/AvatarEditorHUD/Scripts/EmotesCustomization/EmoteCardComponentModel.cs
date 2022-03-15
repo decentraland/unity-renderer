@@ -17,6 +17,7 @@ namespace EmotesCustomization
         public string rarity;
         public bool isInL2;
         public bool isLoading = false;
+        public bool isCollectible = false;
     }
 
     [Serializable]
