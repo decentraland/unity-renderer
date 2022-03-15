@@ -11,7 +11,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 {
     private NotificationsController notificationsController;
     private PrivateChatWindowHUDController controller;
-    private PrivateChatWindowHUDView view;
+    private IPrivateChatComponentView view;
 
     private UserProfileModel ownProfileModel;
     private UserProfileModel testProfileModel;
@@ -62,146 +62,154 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void ProcessCurrentMessagesOnControllerInitialize()
     {
-        IChatController chatController = Substitute.For<IChatController>();
-        chatController.GetEntries()
-            .ReturnsForAnyArgs(new List<ChatMessage>
-            {
-                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message1"),
-                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message2"),
-                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message3"),
-            });
-        InitializeChatWindowController(chatController);
-
-        Assert.AreEqual(3, controller.view.chatHudView.entries.Count);
-
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);
-        ;
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(0).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message1"), GetViewEntryModel(0).bodyText);
-
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);
-        ;
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(1).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message2"), GetViewEntryModel(1).bodyText);
-
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);
-        ;
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(2).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message3"), GetViewEntryModel(2).bodyText);
+        // IChatController chatController = Substitute.For<IChatController>();
+        // chatController.GetEntries()
+        //     .ReturnsForAnyArgs(new List<ChatMessage>
+        //     {
+        //         new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message1"),
+        //         new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message2"),
+        //         new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message3"),
+        //     });
+        // InitializeChatWindowController(chatController);
+        //
+        // Assert.AreEqual(3, controller.view.chatHudView.entries.Count);
+        //
+        // Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);
+        // ;
+        // Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(0).senderId);
+        // Assert.AreEqual("message1", GetViewEntryModel(0).bodyText);
+        //
+        // Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);
+        // ;
+        // Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(1).senderId);
+        // Assert.AreEqual("message2", GetViewEntryModel(1).bodyText);
+        //
+        // Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);
+        // ;
+        // Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(2).senderId);
+        // Assert.AreEqual("message3", GetViewEntryModel(2).bodyText);
+        Assert.Fail("TODO");
     }
 
     [Test]
     public void ReceivesOneMessageProperly()
     {
-        IChatController chatController = Substitute.For<IChatController>();
-        chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
-        InitializeChatWindowController(chatController);
-
-        ChatMessage chatMessage1 = new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message1");
-        ChatMessage chatMessage2 = new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message2");
-        ChatMessage chatMessage3 = new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message3");
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage1);
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage2);
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage3);
-
-        Assert.AreEqual(3, controller.view.chatHudView.entries.Count);
-
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(0).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message1"), GetViewEntryModel(0).bodyText);
-
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(1).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message2"), GetViewEntryModel(1).bodyText);
-
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(2).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message3"), GetViewEntryModel(2).bodyText);
+        // IChatController chatController = Substitute.For<IChatController>();
+        // chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
+        // InitializeChatWindowController(chatController);
+        //
+        // ChatMessage chatMessage1 = new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message1");
+        // ChatMessage chatMessage2 = new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message2");
+        // ChatMessage chatMessage3 = new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message3");
+        // chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage1);
+        // chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage2);
+        // chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage3);
+        //
+        // Assert.AreEqual(3, controller.view.chatHudView.entries.Count);
+        //
+        // Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);
+        // Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(0).senderId);
+        // Assert.AreEqual("message1", GetViewEntryModel(0).bodyText);
+        //
+        // Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);
+        // Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(1).senderId);
+        // Assert.AreEqual("message2", GetViewEntryModel(1).bodyText);
+        //
+        // Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);
+        // Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(2).senderId);
+        // Assert.AreEqual("message3", GetViewEntryModel(2).bodyText);
+        Assert.Fail("TODO");
     }
 
     [UnityTest]
     public IEnumerator SendChatMessageProperly()
     {
-        IChatController chatController = Substitute.For<IChatController>();
-        chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
-        InitializeChatWindowController(chatController);
-
-        bool messageWasSent = false;
-
-        System.Action<string, string> messageCallback =
-            (type, msg) =>
-            {
-                if (type == "SendChatMessage" && msg.Contains("test message"))
-                {
-                    messageWasSent = true;
-                }
-            };
-
-        WebInterface.OnMessageFromEngine += messageCallback;
-        controller.resetInputFieldOnSubmit = false;
-        controller.SendChatMessage(new ChatMessage() { body = "test message", recipient = "testUser" });
-        Assert.IsTrue(messageWasSent);
-        Assert.AreEqual("", controller.view.chatHudView.inputField.text);
-        WebInterface.OnMessageFromEngine -= messageCallback;
-        yield break;
+        // IChatController chatController = Substitute.For<IChatController>();
+        // chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
+        // InitializeChatWindowController(chatController);
+        //
+        // bool messageWasSent = false;
+        //
+        // System.Action<string, string> messageCallback =
+        //     (type, msg) =>
+        //     {
+        //         if (type == "SendChatMessage" && msg.Contains("test message"))
+        //         {
+        //             messageWasSent = true;
+        //         }
+        //     };
+        //
+        // WebInterface.OnMessageFromEngine += messageCallback;
+        // controller.resetInputFieldOnSubmit = false;
+        // controller.SendChatMessage(new ChatMessage() { body = "test message", recipient = "testUser" });
+        // Assert.IsTrue(messageWasSent);
+        // Assert.AreEqual("", controller.view.chatHudView.inputField.text);
+        // WebInterface.OnMessageFromEngine -= messageCallback;
+        // yield break;
+        yield return null;
+        Assert.Fail("TODO");
     }
 
     [Test]
     public void CloseOnCloseButtonPressed()
     {
-        IChatController chatController = Substitute.For<IChatController>();
-        chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
-        InitializeChatWindowController(chatController);
-
-        controller.SetVisibility(true);
-        Assert.AreEqual(true, controller.view.gameObject.activeSelf);
-        controller.view.minimizeButton.onClick.Invoke();
-        Assert.AreEqual(false, controller.view.gameObject.activeSelf);
+        // IChatController chatController = Substitute.For<IChatController>();
+        // chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
+        // InitializeChatWindowController(chatController);
+        //
+        // controller.SetVisibility(true);
+        // Assert.AreEqual(true, controller.view.gameObject.activeSelf);
+        // controller.view.minimizeButton.onClick.Invoke();
+        // Assert.AreEqual(false, controller.view.gameObject.activeSelf);
+        Assert.Fail("TODO");
     }
 
     [Test]
     public void CloseOnBackButtonPressed()
     {
-        IChatController chatController = Substitute.For<IChatController>();
-        chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
-        InitializeChatWindowController(chatController);
-
-        controller.SetVisibility(true);
-        Assert.AreEqual(true, controller.view.gameObject.activeSelf);
-        bool pressedBack = false;
-        controller.view.OnPressBack += () => { pressedBack = true; };
-        controller.view.backButton.onClick.Invoke();
-        Assert.IsTrue(pressedBack);
+        // IChatController chatController = Substitute.For<IChatController>();
+        // chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
+        // InitializeChatWindowController(chatController);
+        //
+        // controller.SetVisibility(true);
+        // Assert.AreEqual(true, controller.view.gameObject.activeSelf);
+        // bool pressedBack = false;
+        // controller.view.OnPressBack += () => { pressedBack = true; };
+        // controller.view.backButton.onClick.Invoke();
+        // Assert.IsTrue(pressedBack);
+        Assert.Fail("TODO");
     }
 
     [UnityTest]
     public IEnumerator OpenFriendsHUDOnBackButtonPressed()
     {
-        IChatController chatController = Substitute.For<IChatController>();
-        chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
-        InitializeChatWindowController(chatController);
-
-        // Initialize friends HUD
-        notificationsController.Initialize(new NotificationHUDController());
-
-        FriendsHUDController friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile(), chatController);
-
-        Assert.IsTrue(view != null, "Friends hud view is null?");
-        Assert.IsTrue(controller != null, "Friends hud controller is null?");
-
-        // initialize private chat
-        controller.SetVisibility(true);
-        Assert.AreEqual(true, controller.view.gameObject.activeSelf);
-
-        controller.view.backButton.onClick.Invoke();
+        // IChatController chatController = Substitute.For<IChatController>();
+        // chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
+        // InitializeChatWindowController(chatController);
+        //
+        // // Initialize friends HUD
+        // notificationsController.Initialize(new NotificationHUDController());
+        //
+        // FriendsHUDController friendsHudController = new FriendsHUDController();
+        // friendsHudController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile(), chatController);
+        //
+        // Assert.IsTrue(view != null, "Friends hud view is null?");
+        // Assert.IsTrue(controller != null, "Friends hud controller is null?");
+        //
+        // // initialize private chat
+        // controller.SetVisibility(true);
+        // Assert.AreEqual(true, controller.view.gameObject.activeSelf);
+        //
+        // controller.view.backButton.onClick.Invoke();
+        // yield return null;
+        //
+        // Assert.AreEqual(true, friendsHudController.view.IsActive());
+        //
+        // friendsHudController.Dispose();
+        // notificationsController.Dispose();
         yield return null;
-
-        Assert.AreEqual(true, friendsHudController.view.IsActive());
-
-        friendsHudController.Dispose();
-        notificationsController.Dispose();
+        Assert.Fail("TODO");
     }
 
-    private ChatEntry.Model GetViewEntryModel(int index) { return controller.view.chatHudView.entries[index].model; }
+    // private ChatEntry.Model GetViewEntryModel(int index) { return controller.view.chatHudView.entries[index].model; }
 }

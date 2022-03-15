@@ -1,12 +1,15 @@
+using System;
+using System.Collections.Generic;
+using DCL.Helpers;
+using DCL.Interface;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using DCL.Interface;
 
-public class PrivateChatWindowHUDView : MonoBehaviour
+public class PrivateChatWindowHUDView : MonoBehaviour, IPrivateChatComponentView
 {
-    const string VIEW_PATH = "PrivateChatWindow";
+    private const string VIEW_PATH = "PrivateChatWindow";
 
     public Button backButton;
     public Button minimizeButton;
@@ -17,16 +20,39 @@ public class PrivateChatWindowHUDView : MonoBehaviour
     public TMP_Text windowTitleText;
     public RawImage profilePictureImage;
 
-    public event System.Action OnPressBack;
-    public event System.Action OnMinimize;
-    public event System.Action OnClose;
-    public UnityAction<ChatMessage> OnSendMessage;
+    private readonly Dictionary<Action, UnityAction<string>> inputFieldListeners = new Dictionary<Action, UnityAction<string>>();
+    private UserProfile profile;
+
+    public event Action OnPressBack;
+    public event Action OnInputFieldSelected
+    {
+        add
+        {
+            void Action(string s) => value.Invoke();
+            inputFieldListeners[value] = Action;
+            chatHudView.inputField.onSelect.AddListener(Action);
+        }
+        remove
+        {
+            if (!inputFieldListeners.ContainsKey(value)) return;
+            chatHudView.inputField.onSelect.RemoveListener(inputFieldListeners[value]);
+            inputFieldListeners.Remove(value);
+        }
+    }
+
+    public IChatHUDComponentView ChatHUD => chatHudView;
+    public bool IsActive => gameObject.activeSelf;
+    public RectTransform Transform => (RectTransform) transform;
 
     public string userId { get; internal set; }
 
+    public event Action OnMinimize;
+    public event Action OnClose;
+    public event Action<ChatMessage> OnSendMessage;
+
     void Awake() { chatHudView.OnSendMessage += ChatHUDView_OnSendMessage; }
 
-    void OnEnable() { DCL.Helpers.Utils.ForceUpdateLayout(transform as RectTransform); }
+    void OnEnable() { Utils.ForceUpdateLayout(transform as RectTransform); }
 
     public static PrivateChatWindowHUDView Create(PrivateChatWindowHUDController controller)
     {
@@ -65,12 +91,45 @@ public class PrivateChatWindowHUDView : MonoBehaviour
         controller.SetVisibility(false);
         OnClose?.Invoke();
     }
+    
+    public void Setup(UserProfile profile)
+    {
+        this.profile = profile;
+        ConfigureTitle(this.profile.userName);
+        ConfigureUserId(this.profile.userId);
+        this.profile.snapshotObserver?.RemoveListener(ConfigureAvatarSnapshot);
+        this.profile.snapshotObserver?.AddListener(ConfigureAvatarSnapshot);
+    }
 
-    public void ConfigureTitle(string targetUserName) { windowTitleText.text = targetUserName; }
+    public void CleanAllEntries() => chatHudView.CleanAllEntries();
 
-    public void ConfigureAvatarSnapshot(Texture2D texture) { profilePictureImage.texture = texture; }
+    public void ResetInputField() => chatHudView.ResetInputField();
 
-    public void ConfigureUserId(string userId)
+    public void FocusInputField() => chatHudView.FocusInputField();
+
+    public void Show()
+    {
+        gameObject.SetActive(true);
+        chatHudView.scrollRect.verticalNormalizedPosition = 0;
+    }
+
+    public void Hide()
+    {
+        profile?.snapshotObserver?.RemoveListener(ConfigureAvatarSnapshot);
+        gameObject.SetActive(false);
+    }
+
+    public void Dispose()
+    {
+        profile?.snapshotObserver?.RemoveListener(ConfigureAvatarSnapshot);
+        Destroy(gameObject);
+    }
+
+    private void ConfigureTitle(string targetUserName) { windowTitleText.text = targetUserName; }
+
+    private void ConfigureAvatarSnapshot(Texture2D texture) { profilePictureImage.texture = texture; }
+
+    private void ConfigureUserId(string userId)
     {
         this.userId = userId;
         jumpInButton.Initialize(FriendsController.i, userId);

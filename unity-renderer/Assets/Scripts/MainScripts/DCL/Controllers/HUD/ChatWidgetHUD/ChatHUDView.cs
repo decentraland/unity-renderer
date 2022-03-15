@@ -5,13 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
 using UnityEngine.EventSystems;
 using DCL;
 
-public class ChatHUDView : MonoBehaviour
+public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 {
     static string VIEW_PATH = "Chat Widget";
     string ENTRY_PATH = "Chat Entry";
@@ -24,7 +23,6 @@ public class ChatHUDView : MonoBehaviour
     public RectTransform chatEntriesContainer;
 
     public ScrollRect scrollRect;
-    public ChatHUDController controller;
     public GameObject messageHoverPanel;
     public GameObject messageHoverGotoPanel;
     public TextMeshProUGUI messageHoverText;
@@ -35,14 +33,32 @@ public class ChatHUDView : MonoBehaviour
     [NonSerialized] public List<ChatEntry> entries = new List<ChatEntry>();
     [NonSerialized] public List<DateSeparatorEntry> dateSeparators = new List<DateSeparatorEntry>();
 
-    ChatMessage currentMessage = new ChatMessage();
-    Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
-    Match whisperRegexMatch;
-    private List<ChatEntry.Model> lastMessages = new List<ChatEntry.Model>();
-    private Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
+    private readonly ChatMessage currentMessage = new ChatMessage();
+    private readonly Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
+    private readonly List<ChatEntry.Model> lastMessages = new List<ChatEntry.Model>();
+    private readonly Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
+    
+    private Match whisperRegexMatch;
+    private bool enableFadeoutMode;
 
-    public event UnityAction<string> OnPressPrivateMessage;
-    public event UnityAction<ChatMessage> OnSendMessage;
+    public event Action<string> OnPressPrivateMessage;
+    public event Action OnShowMenu
+    {
+        add
+        {
+            if (contextMenu != null)
+                contextMenu.OnShowMenu += value;
+        }
+        remove
+        {
+            if (contextMenu != null)
+                contextMenu.OnShowMenu -= value;
+        }
+    }
+
+    public event Action<ChatMessage> OnSendMessage;
+    
+    public int EntryCount => entries.Count;
 
     public static ChatHUDView Create()
     {
@@ -50,10 +66,8 @@ public class ChatHUDView : MonoBehaviour
         return view;
     }
 
-    public void Initialize(ChatHUDController controller, UnityAction<ChatMessage> OnSendMessage)
+    private void Awake()
     {
-        this.controller = controller;
-        this.OnSendMessage += OnSendMessage;
         inputField.onSubmit.AddListener(OnInputFieldSubmit);
         inputField.onSelect.AddListener(OnInputFieldSelect);
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
@@ -102,8 +116,6 @@ public class ChatHUDView : MonoBehaviour
         inputField.ActivateInputField();
         inputField.Select();
     }
-
-    bool enableFadeoutMode = false;
 
     bool EntryIsVisible(ChatEntry entry)
     {
@@ -200,11 +212,27 @@ public class ChatHUDView : MonoBehaviour
             lastMessages.Clear();
         }
     }
+
+    public void Dispose() => Destroy(gameObject);
     
+    public void RemoveFirstEntry()
+    {
+        if (entries.Count <= 0) return;
+        Destroy(entries[0].gameObject);
+        entries.Remove(entries[0]);
+    }
+
+    public void Hide()
+    {
+        if (contextMenu == null) return;
+        contextMenu.Hide();
+        confirmationDialog.Hide();
+    }
+
     bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
     {
-        System.DateTime oldDateTime = CreateBaseDateTime().AddMilliseconds(oldMessageTimeStamp).ToLocalTime();
-        System.DateTime newDateTime = CreateBaseDateTime().AddMilliseconds(newMessageTimeStamp).ToLocalTime();
+        DateTime oldDateTime = CreateBaseDateTime().AddMilliseconds(oldMessageTimeStamp).ToLocalTime();
+        DateTime newDateTime = CreateBaseDateTime().AddMilliseconds(newMessageTimeStamp).ToLocalTime();
 
         return (newDateTime - oldDateTime).TotalMilliseconds < MIN_MILLISECONDS_BETWEEN_MESSAGES;
     }

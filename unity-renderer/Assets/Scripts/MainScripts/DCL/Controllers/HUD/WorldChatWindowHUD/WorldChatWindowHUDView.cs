@@ -1,12 +1,12 @@
+using System;
 using System.Collections;
+using DCL;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.Events;
-using DCL;
 
-public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
+public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler, IWorldChatComponentView
 {
     const string VIEW_PATH = "World Chat Window";
 
@@ -15,36 +15,45 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
     public ChatHUDView chatHudView;
 
     public CanvasGroup group;
-    public WorldChatWindowHUDController controller;
-    public bool isInPreview { get; private set; }
 
-    public event UnityAction OnDeactivatePreview;
-    public event UnityAction OnActivatePreview;
-    public event UnityAction OnClose;
-    public UnityAction<ChatMessage> OnSendMessage;
+    public event Action OnDeactivatePreview;
+    public event Action OnActivatePreview;
+    public event Action OnClose;
+    public event Action<string> OnMessageUpdated;
+    public event Action<ChatMessage> OnSendMessage;
 
-    ChatMessage lastWhisperMessageSent;
-    string lastInputText = string.Empty;
+    private ChatMessage lastWhisperMessageSent;
+    private string lastInputText = string.Empty;
+
+    public bool IsActive => gameObject.activeInHierarchy;
+    public bool IsPreview { get; private set; }
+    public bool IsInputFieldFocused => chatHudView.inputField.isFocused;
+    public IChatHUDComponentView ChatHUD => chatHudView;
+    public RectTransform Transform => (RectTransform) transform;
 
     public static WorldChatWindowHUDView Create()
     {
         var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<WorldChatWindowHUDView>();
-        view.Initialize();
         return view;
     }
 
-    void Awake()
+    private void Awake()
     {
         chatHudView.OnSendMessage += ChatHUDView_OnSendMessage;
         chatHudView.inputField.onValueChanged.AddListener(OnTextInputValueChanged);
+        closeButton.onClick.AddListener(() => OnClose?.Invoke());
     }
 
-    private void Initialize() { this.closeButton.onClick.AddListener(OnCloseButtonPressed); }
-
-    public void OnCloseButtonPressed()
+    public void SetInputFillWithWhisper(string user)
     {
-        controller.SetVisibility(false);
-        OnClose?.Invoke();
+        chatHudView.inputField.text = $"/w {user} ";
+        chatHudView.inputField.MoveTextEnd(false);
+    }
+
+    public void SetInputField(string text)
+    {
+        chatHudView.inputField.text = text;
+        chatHudView.inputField.MoveTextEnd(false);
     }
 
     public void DeactivatePreview()
@@ -52,7 +61,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         chatHudView.scrollRect.enabled = true;
         group.alpha = 1;
         DataStore.i.HUDs.chatInputVisible.Set(true);
-        isInPreview = false;
+        IsPreview = false;
         chatHudView.SetFadeoutMode(false);
         chatHudView.SetGotoPanelStatus(false);
         OnDeactivatePreview?.Invoke();
@@ -63,26 +72,40 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         chatHudView.scrollRect.enabled = false;
         group.alpha = 0;
         DataStore.i.HUDs.chatInputVisible.Set(false);
-        isInPreview = true;
+        IsPreview = true;
         chatHudView.SetFadeoutMode(true);
         OnActivatePreview?.Invoke();
     }
 
-    public void OnPointerClick(PointerEventData eventData) { DeactivatePreview(); }
+    public void Dispose()
+    {
+        if (gameObject)
+            Destroy(gameObject);
+    }
+
+    public void Hide() => gameObject.SetActive(false);
+
+    public void ResetInputField() => chatHudView.ResetInputField();
+
+    public void Deselect() => EventSystem.current.SetSelectedGameObject(null);
+
+    public void FocusInputField() => chatHudView.FocusInputField();
+
+    public void Show() => gameObject.SetActive(true);
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        DeactivatePreview();
+    }
 
     public void OnTextInputValueChanged(string text)
     {
-        if (isInPreview)
+        if (IsPreview)
             chatHudView.inputField.text = lastInputText;
         else
             lastInputText = chatHudView.inputField.text;
 
-
-        if (!string.IsNullOrEmpty(controller.lastPrivateMessageReceivedSender) && text == "/r ")
-        {
-            chatHudView.inputField.text = $"/w {controller.lastPrivateMessageReceivedSender} ";
-            chatHudView.inputField.MoveTextEnd(false);
-        }
+        OnMessageUpdated?.Invoke(text);
     }
 
     public void ChatHUDView_OnSendMessage(ChatMessage message)
@@ -100,7 +123,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         OnSendMessage?.Invoke(message);
     }
 
-    IEnumerator WaitAndUpdateInputText(string newText)
+    private IEnumerator WaitAndUpdateInputText(string newText)
     {
         yield return null;
 

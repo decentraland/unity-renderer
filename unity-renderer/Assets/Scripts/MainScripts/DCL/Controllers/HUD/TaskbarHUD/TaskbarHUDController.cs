@@ -193,10 +193,10 @@ public class TaskbarHUDController : IHUD
             return;
         }
 
-        if (controller.view.transform.parent == view.leftWindowContainer)
+        if (controller.view.Transform.parent == view.leftWindowContainer)
             return;
 
-        controller.view.transform.SetParent(view.leftWindowContainer, false);
+        controller.view.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
 
         worldChatWindowHud = controller;
@@ -224,10 +224,10 @@ public class TaskbarHUDController : IHUD
             return;
         }
 
-        if (controller.view.transform.parent == view.leftWindowContainer)
+        if (controller.view.Transform.parent == view.leftWindowContainer)
             return;
 
-        controller.view.transform.SetParent(view.leftWindowContainer, false);
+        controller.view.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
 
         privateChatWindowHud = controller;
@@ -405,7 +405,7 @@ public class TaskbarHUDController : IHUD
             return;
 
         view.chatButton.SetToggleState(false, false);
-        worldChatWindowHud.view.chatHudView.ResetInputField();
+        worldChatWindowHud.view.ResetInputField();
         worldChatWindowHud.view.ActivatePreview();
     }
 
@@ -418,7 +418,7 @@ public class TaskbarHUDController : IHUD
         bool anyInputFieldIsSelected = EventSystem.current != null &&
                                        EventSystem.current.currentSelectedGameObject != null &&
                                        EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
-                                       (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
+                                       (!worldChatWindowHud.view.IsInputFieldFocused || !worldChatWindowHud.view.IsPreview);
 
         if (anyInputFieldIsSelected)
             return;
@@ -437,7 +437,7 @@ public class TaskbarHUDController : IHUD
     private bool AnyWindowsDifferentThanChatIsOpen()
     {
         return (friendsHud != null && friendsHud.view.IsActive()) ||
-               (privateChatWindowHud != null && privateChatWindowHud.view.gameObject.activeSelf);
+               (privateChatWindowHud != null && privateChatWindowHud.view.IsActive);
     }
 
     private void MarkWorldChatAsReadIfOtherWindowIsOpen()

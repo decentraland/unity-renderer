@@ -7,18 +7,19 @@ using UnityEngine.EventSystems;
 
 public class WorldChatWindowHUDController : IHUD
 {
-    internal const string PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES = "LastReadWorldChatMessages";
+    private const string PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES = "LastReadWorldChatMessages";
+
+    public IWorldChatComponentView view;
 
     private ChatHUDController chatHudController;
-    public WorldChatWindowHUDView view;
-
     private IChatController chatController;
     private IMouseCatcher mouseCatcher;
+    private int invalidSubmitLastFrame;
 
     internal bool resetInputFieldOnSubmit = true;
-    private int invalidSubmitLastFrame = 0;
-    UserProfile ownProfile => UserProfile.GetOwnUserProfile();
-    public string lastPrivateMessageReceivedSender = string.Empty;
+    internal string lastPrivateMessageReceivedSender = string.Empty;
+    
+    private UserProfile ownProfile => UserProfile.GetOwnUserProfile();
 
     public event UnityAction<string> OnPressPrivateMessage;
     public event System.Action OnOpen;
@@ -26,15 +27,15 @@ public class WorldChatWindowHUDController : IHUD
     public void Initialize(IChatController chatController, IMouseCatcher mouseCatcher)
     {
         view = WorldChatWindowHUDView.Create();
-        view.controller = this;
+        view.OnClose += OnViewClosed;
+        view.OnMessageUpdated += OnMessageUpdated;
+        view.OnSendMessage += SendChatMessage;
 
         chatHudController = new ChatHUDController(DataStore.i, ProfanityFilterSharedInstances.regexFilter);
-        chatHudController.Initialize(view.chatHudView);
+        chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnPressPrivateMessage -= ChatHUDController_OnPressPrivateMessage;
         chatHudController.OnPressPrivateMessage += ChatHUDController_OnPressPrivateMessage;
         LoadLatestReadWorldChatMessagesStatus();
-
-        view.OnSendMessage += SendChatMessage;
 
         this.chatController = chatController;
         this.mouseCatcher = mouseCatcher;
@@ -51,10 +52,11 @@ public class WorldChatWindowHUDController : IHUD
         }
     }
 
-    void ChatHUDController_OnPressPrivateMessage(string friendUserId) { OnPressPrivateMessage?.Invoke(friendUserId); }
-
     public void Dispose()
     {
+        view.OnClose -= OnViewClosed;
+        view.OnMessageUpdated -= OnMessageUpdated;
+        
         if (chatController != null)
             chatController.OnAddMessage -= OnAddMessage;
 
@@ -66,32 +68,7 @@ public class WorldChatWindowHUDController : IHUD
 
         view.OnSendMessage -= SendChatMessage;
 
-        if (view != null)
-            Object.Destroy(view.gameObject);
-    }
-
-    bool IsOldPrivateMessage(ChatMessage message)
-    {
-        if (message.messageType != ChatMessage.Type.PRIVATE)
-            return false;
-
-        double timestampAsSeconds = message.timestamp / 1000.0f;
-
-        if (timestampAsSeconds < chatController.initTime)
-            return true;
-
-        return false;
-    }
-
-    void OnAddMessage(ChatMessage message)
-    {
-        if (IsOldPrivateMessage(message))
-            return;
-
-        view.chatHudView.controller.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message), view.isInPreview);
-
-        if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
-            lastPrivateMessageReceivedSender = UserProfileController.userProfilesCatalog.Get(message.sender).userName;
+        view?.Dispose();
     }
 
     //NOTE(Brian): Send chat responsibilities must be on the chatHud containing window like this one, this way we ensure
@@ -103,10 +80,10 @@ public class WorldChatWindowHUDController : IHUD
 
         if (!isValidMessage)
         {
-            view.chatHudView.ResetInputField();
-            EventSystem.current.SetSelectedGameObject(null);
+            view.ResetInputField();
+            view.Deselect();
 
-            if (!isPrivateMessage && !view.isInPreview)
+            if (!isPrivateMessage && !view.IsPreview)
             {
                 view.ActivatePreview();
                 SceneReferences.i.mouseCatcher.LockCursor();
@@ -118,8 +95,8 @@ public class WorldChatWindowHUDController : IHUD
 
         if (resetInputFieldOnSubmit)
         {
-            view.chatHudView.ResetInputField();
-            view.chatHudView.FocusInputField();
+            view.ResetInputField();
+            view.FocusInputField();
         }
 
         if (isPrivateMessage)
@@ -130,7 +107,13 @@ public class WorldChatWindowHUDController : IHUD
         WebInterface.SendChatMessage(message);
     }
 
-    public void SetVisibility(bool visible) { view.gameObject.SetActive(visible); }
+    public void SetVisibility(bool visible)
+    {
+        if (!visible)
+            view.Hide();
+        else
+            view.Show();
+    }
 
     public bool OnPressReturn()
     {
@@ -151,15 +134,12 @@ public class WorldChatWindowHUDController : IHUD
     public void ForceFocus(string setInputText = null)
     {
         SetVisibility(true);
-        view.chatHudView.FocusInputField();
+        view.FocusInputField();
         view.DeactivatePreview();
         SceneReferences.i?.mouseCatcher.UnlockCursor();
 
         if (!string.IsNullOrEmpty(setInputText))
-        {
-            view.chatHudView.inputField.text = setInputText;
-            view.chatHudView.inputField.caretPosition = setInputText.Length;
-        }
+            view.SetInputField(setInputText);
     }
 
     public void MarkWorldChatMessagesAsRead(long? timestamp = null)
@@ -170,6 +150,40 @@ public class WorldChatWindowHUDController : IHUD
 
         CommonScriptableObjects.lastReadWorldChatMessages.Set(timeMark);
         SaveLatestReadWorldChatMessagesStatus();
+    }
+    
+    private void ChatHUDController_OnPressPrivateMessage(string friendUserId) { OnPressPrivateMessage?.Invoke(friendUserId); }
+
+    private void OnViewClosed() => SetVisibility(false);
+    
+    private void OnMessageUpdated(string message)
+    {
+        if (!string.IsNullOrEmpty(lastPrivateMessageReceivedSender) && message == "/r ")
+            view.SetInputFillWithWhisper(lastPrivateMessageReceivedSender);
+    }
+
+    private bool IsOldPrivateMessage(ChatMessage message)
+    {
+        if (message.messageType != ChatMessage.Type.PRIVATE)
+            return false;
+
+        double timestampAsSeconds = message.timestamp / 1000.0f;
+
+        if (timestampAsSeconds < chatController.initTime)
+            return true;
+
+        return false;
+    }
+
+    private void OnAddMessage(ChatMessage message)
+    {
+        if (IsOldPrivateMessage(message))
+            return;
+
+        chatHudController.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message), view.IsPreview);
+
+        if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
+            lastPrivateMessageReceivedSender = UserProfileController.userProfilesCatalog.Get(message.sender).userName;
     }
 
     private void SaveLatestReadWorldChatMessagesStatus()

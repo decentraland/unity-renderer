@@ -116,7 +116,7 @@ public class HUDController : IHUDController
         bool anyInputFieldIsSelected = EventSystem.current != null &&
                                        EventSystem.current.currentSelectedGameObject != null &&
                                        EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
-                                       (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
+                                       (!worldChatWindowHud.view.IsInputFieldFocused || !worldChatWindowHud.view.IsPreview);
 
         if (anyInputFieldIsSelected ||
             settingsPanelHud.view.isOpen ||

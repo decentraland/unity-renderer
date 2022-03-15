@@ -8,17 +8,17 @@ using UnityEngine;
 
 public class PrivateChatWindowHUDController : IHUD
 {
-    internal const string PLAYER_PREFS_LAST_READ_CHAT_MESSAGES = "LastReadChatMessages";
+    private const string PLAYER_PREFS_LAST_READ_CHAT_MESSAGES = "LastReadChatMessages";
 
-    public PrivateChatWindowHUDView view;
+    public IPrivateChatComponentView view;
     public bool resetInputFieldOnSubmit = true;
 
-    ChatHUDController chatHudController;
-    IChatController chatController;
     public string conversationUserId { get; private set; } = string.Empty;
     public string conversationUserName { get; private set; } = string.Empty;
 
-    private ILazyTextureObserver conversationSnapshot;
+    private ChatHUDController chatHudController;
+    private IChatController chatController;
+    private UserProfile conversationProfile;
 
     public event System.Action OnPressBack;
 
@@ -27,12 +27,11 @@ public class PrivateChatWindowHUDController : IHUD
         view = PrivateChatWindowHUDView.Create(this);
         view.OnPressBack -= View_OnPressBack;
         view.OnPressBack += View_OnPressBack;
-
-        view.chatHudView.inputField.onSelect.RemoveListener(ChatHUDViewInputField_OnSelect);
-        view.chatHudView.inputField.onSelect.AddListener(ChatHUDViewInputField_OnSelect);
+        view.OnInputFieldSelected -= ChatHUDViewInputField_OnSelect;
+        view.OnInputFieldSelected += ChatHUDViewInputField_OnSelect;
 
         chatHudController = new ChatHUDController(DataStore.i);
-        chatHudController.Initialize(view.chatHudView);
+        chatHudController.Initialize(view.ChatHUD);
         LoadLatestReadChatMessagesStatus();
 
         view.OnSendMessage += SendChatMessage;
@@ -48,8 +47,6 @@ public class PrivateChatWindowHUDController : IHUD
         SetVisibility(false);
     }
 
-    void View_OnPressBack() { OnPressBack?.Invoke(); }
-
     public void Configure(string newConversationUserId)
     {
         if (string.IsNullOrEmpty(newConversationUserId) || newConversationUserId == conversationUserId)
@@ -57,18 +54,13 @@ public class PrivateChatWindowHUDController : IHUD
 
         UserProfile newConversationUserProfile = UserProfileController.userProfilesCatalog.Get(newConversationUserId);
 
-        if ( conversationSnapshot != null )
-            conversationSnapshot.RemoveListener(view.ConfigureAvatarSnapshot);
-
         conversationUserId = newConversationUserId;
         conversationUserName = newConversationUserProfile.userName;
-        conversationSnapshot = newConversationUserProfile.snapshotObserver;
+        conversationProfile = newConversationUserProfile;
 
-        view.ConfigureTitle(conversationUserName);
-        view.ConfigureUserId(newConversationUserProfile.userId);
-        conversationSnapshot.AddListener(view.ConfigureAvatarSnapshot);
+        view.Setup(newConversationUserProfile);
 
-        view.chatHudView.CleanAllEntries();
+        view.CleanAllEntries();
 
         var messageEntries = chatController.GetEntries().Where((x) => IsMessageFomCurrentConversation(x)).ToList();
         foreach (var v in messageEntries)
@@ -82,12 +74,13 @@ public class PrivateChatWindowHUDController : IHUD
         if (string.IsNullOrEmpty(conversationUserName))
             return;
 
-        bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body) && !string.IsNullOrEmpty(message.recipient);
+        bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body) &&
+                              !string.IsNullOrEmpty(message.recipient);
 
         if (!isValidMessage || resetInputFieldOnSubmit)
         {
-            view.chatHudView.ResetInputField();
-            view.chatHudView.FocusInputField();
+            view.ResetInputField();
+            view.FocusInputField();
         }
 
         if (!isValidMessage)
@@ -101,62 +94,65 @@ public class PrivateChatWindowHUDController : IHUD
 
     public void SetVisibility(bool visible)
     {
-        if (view.gameObject.activeSelf == visible)
-            return;
-
-        view.gameObject.SetActive(visible);
+        if (view.IsActive == visible) return;
 
         if (visible)
         {
+            if (conversationProfile != null)
+                view.Setup(conversationProfile);
+            view.Show();
             // The messages from 'conversationUserId' are marked as read once the private chat is opened
             MarkUserChatMessagesAsRead(conversationUserId);
-            view.chatHudView.scrollRect.verticalNormalizedPosition = 0;
-            conversationSnapshot?.AddListener(view.ConfigureAvatarSnapshot);
 
             AudioScriptableObjects.dialogOpen.Play(true);
         }
         else
         {
-            conversationSnapshot?.RemoveListener(view.ConfigureAvatarSnapshot);
+            view.Hide();
             AudioScriptableObjects.dialogClose.Play(true);
         }
     }
 
     public void Dispose()
     {
-        conversationSnapshot?.RemoveListener(view.ConfigureAvatarSnapshot);
-
-        view.chatHudView.inputField.onSelect.RemoveListener(ChatHUDViewInputField_OnSelect);
-
+        view.OnInputFieldSelected -= ChatHUDViewInputField_OnSelect;
         view.OnPressBack -= View_OnPressBack;
 
         if (chatController != null)
             chatController.OnAddMessage -= OnAddMessage;
 
-        if (view != null)
-            UnityEngine.Object.Destroy(view.gameObject);
+        view?.Dispose();
+    }
+    
+    public void ForceFocus()
+    {
+        SetVisibility(true);
+        view.FocusInputField();
     }
 
-    void OnAddMessage(ChatMessage message)
+    private void OnAddMessage(ChatMessage message)
     {
         if (!IsMessageFomCurrentConversation(message))
             return;
 
-        view.chatHudView.controller.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message));
+        chatHudController.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message));
 
-        if (view.userId == conversationUserId)
+        if (conversationProfile.userId == conversationUserId)
         {
             // The messages from 'conversationUserId' are marked as read if his private chat window is currently open
             MarkUserChatMessagesAsRead(conversationUserId, (long) message.timestamp);
         }
     }
-
-    bool IsMessageFomCurrentConversation(ChatMessage message) { return message.messageType == ChatMessage.Type.PRIVATE && (message.sender == conversationUserId || message.recipient == conversationUserId); }
-
-    public void ForceFocus()
+    
+    private void View_OnPressBack()
     {
-        SetVisibility(true);
-        view.chatHudView.FocusInputField();
+        OnPressBack?.Invoke();
+    }
+
+    private bool IsMessageFomCurrentConversation(ChatMessage message)
+    {
+        return message.messageType == ChatMessage.Type.PRIVATE &&
+               (message.sender == conversationUserId || message.recipient == conversationUserId);
     }
 
     private void MarkUserChatMessagesAsRead(string userId, long? timestamp = null)
@@ -177,11 +173,13 @@ public class PrivateChatWindowHUDController : IHUD
         {
             while (iterator.MoveNext())
             {
-                lastReadChatMessagesList.Add(new KeyValuePair<string, long>(iterator.Current.Key, iterator.Current.Value));
+                lastReadChatMessagesList.Add(new KeyValuePair<string, long>(iterator.Current.Key,
+                    iterator.Current.Value));
             }
         }
 
-        PlayerPrefsUtils.SetString(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES, JsonConvert.SerializeObject(lastReadChatMessagesList));
+        PlayerPrefsUtils.SetString(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES,
+            JsonConvert.SerializeObject(lastReadChatMessagesList));
         PlayerPrefsUtils.Save();
     }
 
@@ -189,7 +187,9 @@ public class PrivateChatWindowHUDController : IHUD
     {
         CommonScriptableObjects.lastReadChatMessages.Clear();
 
-        List<KeyValuePair<string, long>> lastReadChatMessagesList = JsonConvert.DeserializeObject<List<KeyValuePair<string, long>>>(PlayerPrefs.GetString(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES));
+        List<KeyValuePair<string, long>> lastReadChatMessagesList =
+            JsonConvert.DeserializeObject<List<KeyValuePair<string, long>>>(
+                PlayerPrefs.GetString(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES));
         if (lastReadChatMessagesList != null)
         {
             foreach (var item in lastReadChatMessagesList)
@@ -199,7 +199,7 @@ public class PrivateChatWindowHUDController : IHUD
         }
     }
 
-    private void ChatHUDViewInputField_OnSelect(string message)
+    private void ChatHUDViewInputField_OnSelect()
     {
         // The messages from 'conversationUserId' are marked as read if the player clicks on the input field of the private chat
         MarkUserChatMessagesAsRead(conversationUserId);

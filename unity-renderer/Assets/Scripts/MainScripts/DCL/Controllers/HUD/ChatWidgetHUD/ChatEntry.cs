@@ -4,7 +4,6 @@ using System;
 using DCL.SettingsCommon;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
@@ -71,12 +70,12 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     public Model model { get; private set; }
 
-    public event UnityAction<string> OnPress;
-    public event UnityAction<ChatEntry> OnPressRightButton;
-    public event UnityAction<ChatEntry> OnTriggerHover;
-    public event UnityAction<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
-    public event UnityAction OnCancelHover;
-    public event UnityAction OnCancelGotoHover;
+    public event Action<string> OnPress;
+    public event Action<ChatEntry> OnPressRightButton;
+    public event Action<ChatEntry> OnTriggerHover;
+    public event Action<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
+    public event Action OnCancelHover;
+    public event Action OnCancelGotoHover;
 
     private List<string> textCoords = new List<string>();
 

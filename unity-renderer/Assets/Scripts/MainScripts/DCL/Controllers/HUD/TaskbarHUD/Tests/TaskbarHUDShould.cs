@@ -1,10 +1,8 @@
-using DCL.SettingsPanelHUD;
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
-using NSubstitute;
+using NUnit.Framework;
 using UnityEngine;
 
 public class TaskbarHUDShould : IntegrationTestSuite_Legacy
@@ -65,9 +63,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController.Initialize(null, null);
         controller.AddWorldChatWindow(worldChatWindowController);
 
-        Assert.IsTrue(worldChatWindowController.view.transform.parent == view.leftWindowContainer,
+        Assert.IsTrue(worldChatWindowController.view.Transform.parent == view.leftWindowContainer,
             "Chat window isn't inside taskbar window container!");
-        Assert.IsTrue(worldChatWindowController.view.gameObject.activeSelf, "Chat window is disabled!");
+        Assert.IsTrue(worldChatWindowController.view.IsActive, "Chat window is disabled!");
     }
 
     [Test]
@@ -93,7 +91,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             "Anchored position should be zero or it won't be correctly placed inside the taskbar";
         const string badPivotMsg = "Pivot should be zero or it won't be correctly placed inside the taskbar";
 
-        RectTransform rt = privateChatController.view.transform as RectTransform;
+        RectTransform rt = privateChatController.view.Transform;
         Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
@@ -101,7 +99,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController.Initialize(chatController, null);
         controller.AddWorldChatWindow(worldChatWindowController);
 
-        rt = worldChatWindowController.view.transform as RectTransform;
+        rt = worldChatWindowController.view.Transform;
         Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
@@ -109,7 +107,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         friendsHudController.Initialize(friendsController, UserProfile.GetOwnUserProfile(), chatController);
         controller.AddFriendsWindow(friendsHudController);
 
-        rt = friendsHudController.view.Transform as RectTransform;
+        rt = friendsHudController.view.Transform;
         Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
@@ -133,12 +131,12 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(headButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.chatButton.lineOnIndicator.isVisible);
-        Assert.IsTrue(controller.privateChatWindowHud.view.gameObject.activeInHierarchy);
+        Assert.IsTrue(controller.privateChatWindowHud.view.IsActive);
 
         //NOTE(Brian): Toggle friends window on and test all other windows are untoggled
         view.friendsButton.toggleButton.onClick.Invoke();
 
-        Assert.IsFalse(controller.privateChatWindowHud.view.gameObject.activeInHierarchy);
+        Assert.IsFalse(controller.privateChatWindowHud.view.IsActive);
         Assert.IsFalse(headButton.lineOnIndicator.isVisible);
         Assert.IsTrue(view.friendsButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.chatButton.lineOnIndicator.isVisible);
@@ -146,7 +144,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         //NOTE(Brian): Toggle friends window off and test all other windows are untoggled
         view.friendsButton.toggleButton.onClick.Invoke();
 
-        Assert.IsFalse(controller.privateChatWindowHud.view.gameObject.activeInHierarchy);
+        Assert.IsFalse(controller.privateChatWindowHud.view.IsActive);
         Assert.IsFalse(headButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
 
@@ -154,7 +152,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view.friendsButton.toggleButton.onClick.Invoke();
         view.chatButton.toggleButton.onClick.Invoke();
 
-        Assert.IsTrue(controller.worldChatWindowHud.view.gameObject.activeInHierarchy);
+        Assert.IsTrue(controller.worldChatWindowHud.view.IsActive);
         Assert.IsFalse(controller.friendsHud.view.IsActive());
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
     }

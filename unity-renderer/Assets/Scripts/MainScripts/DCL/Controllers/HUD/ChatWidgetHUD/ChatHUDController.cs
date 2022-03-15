@@ -3,13 +3,12 @@ using DCL;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Events;
-using Object = UnityEngine.Object;
 
 public class ChatHUDController : IDisposable
 {
-    public static int MAX_CHAT_ENTRIES { internal set; get; } = 30;
+    public const int MAX_CHAT_ENTRIES = 30;
 
-    public ChatHUDView view;
+    public IChatHUDComponentView view;
 
     public event UnityAction<string> OnPressPrivateMessage;
 
@@ -23,37 +22,19 @@ public class ChatHUDController : IDisposable
         this.profanityFilter = profanityFilter;
     }
 
-    public void Initialize(ChatHUDView view = null, UnityAction<ChatMessage> onSendMessage = null)
+    public void Initialize(IChatHUDComponentView view = null, Action<ChatMessage> onSendMessage = null)
     {
         this.view = view ?? ChatHUDView.Create();
-
-        this.view.Initialize(this, onSendMessage);
+        view.OnSendMessage += onSendMessage;
 
         this.view.OnPressPrivateMessage -= View_OnPressPrivateMessage;
         this.view.OnPressPrivateMessage += View_OnPressPrivateMessage;
-
-        if (this.view.contextMenu != null)
-        {
-            this.view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
-            this.view.contextMenu.OnShowMenu += ContextMenu_OnShowMenu;
-        }
+        this.view.OnShowMenu -= ContextMenu_OnShowMenu;
+        this.view.OnShowMenu += ContextMenu_OnShowMenu;
 
         closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
         closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
-    }
-
-    void View_OnPressPrivateMessage(string friendUserId) { OnPressPrivateMessage?.Invoke(friendUserId); }
-
-    private void ContextMenu_OnShowMenu() { view.OnMessageCancelHover(); }
-
-    private void OnCloseButtonPressed(DCLAction_Trigger action)
-    {
-        if (view.contextMenu != null)
-        {
-            view.contextMenu.Hide();
-            view.confirmationDialog.Hide();
-        }
     }
 
     public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
@@ -71,22 +52,16 @@ public class ChatHUDController : IDisposable
             
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
-        if (view.entries.Count > MAX_CHAT_ENTRIES)
-        {
-            Object.Destroy(view.entries[0].gameObject);
-            view.entries.Remove(view.entries[0]);
-        }
+        if (view.EntryCount > MAX_CHAT_ENTRIES)
+            view.RemoveFirstEntry();
     }
 
     public void Dispose()
     {
         view.OnPressPrivateMessage -= View_OnPressPrivateMessage;
-        if (view.contextMenu != null)
-        {
-            view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
-        }
+        view.OnShowMenu -= ContextMenu_OnShowMenu;
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
-        Object.Destroy(view.gameObject);
+        view.Dispose();
     }
 
     public static ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)
@@ -132,6 +107,12 @@ public class ChatHUDController : IDisposable
 
         return model;
     }
+    
+    private void View_OnPressPrivateMessage(string friendUserId) => OnPressPrivateMessage?.Invoke(friendUserId);
+
+    private void ContextMenu_OnShowMenu() => view.HideHoverLabel();
+
+    private void OnCloseButtonPressed(DCLAction_Trigger action) => view.Hide();
     
     private bool IsProfanityFilteringEnabled()
     {
