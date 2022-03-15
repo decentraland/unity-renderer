@@ -8,6 +8,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
+using UnityEngine.EventSystems;
+using DCL;
 
 public class ChatHUDView : MonoBehaviour
 {
@@ -24,7 +26,9 @@ public class ChatHUDView : MonoBehaviour
     public ScrollRect scrollRect;
     public ChatHUDController controller;
     public GameObject messageHoverPanel;
+    public GameObject messageHoverGotoPanel;
     public TextMeshProUGUI messageHoverText;
+    public TextMeshProUGUI messageHoverGotoText;
     public UserContextMenu contextMenu;
     public UserContextConfirmationDialog confirmationDialog;
 
@@ -154,7 +158,9 @@ public class ChatHUDView : MonoBehaviour
             chatEntry.OnPressRightButton += OnOpenContextMenu;
 
         chatEntry.OnTriggerHover += OnMessageTriggerHover;
+        chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
         chatEntry.OnCancelHover += OnMessageCancelHover;
+        chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
 
         entries.Add(chatEntry);
 
@@ -244,10 +250,23 @@ public class ChatHUDView : MonoBehaviour
         messageHoverPanel.SetActive(true);
     }
 
+    protected virtual void OnMessageCoordinatesTriggerHover(ChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
+    {
+        messageHoverGotoText.text = $"{parcelCoordinates.ToString()} INFO";
+        messageHoverGotoPanel.transform.position = new Vector3(Input.mousePosition.x, chatEntry.hoverPanelPositionReference.transform.position.y, chatEntry.hoverPanelPositionReference.transform.position.z);
+        messageHoverGotoPanel.SetActive(true);
+    }
+
     public void OnMessageCancelHover()
     {
         messageHoverPanel.SetActive(false);
         messageHoverText.text = string.Empty;
+    }
+
+    public void OnMessageCancelGotoHover()
+    {
+        messageHoverGotoPanel.SetActive(false);
+        messageHoverGotoText.text = string.Empty;
     }
 
     public void SortEntries()
@@ -280,5 +299,10 @@ public class ChatHUDView : MonoBehaviour
         }
 
         dateSeparators.Clear();
+    }
+    
+    public void SetGotoPanelStatus(bool isActive) 
+    {
+        DataStore.i.HUDs.gotoPanelVisible.Set(isActive);
     }
 }

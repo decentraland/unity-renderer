@@ -45,8 +45,12 @@ namespace DCL
         public TextMeshProUGUI highlightedParcelText;
         public Transform overlayContainer;
         public Transform globalUserMarkerContainer;
-
         public RectTransform playerPositionIcon;
+
+        public static System.Action<int, int> OnParcelClicked;
+        public static System.Action OnCursorFarFromParcel;
+
+        public float scaleFactor = 1f;
 
         // Used as a reference of the coordinates origin in-map and as a parcel width/height reference
         public RectTransform centeredReferenceParcel;
@@ -82,9 +86,6 @@ namespace DCL
             get { return parcelHighlightEnabledValue; }
         }
 
-        public static System.Action<int, int> OnParcelClicked;
-        public static System.Action OnCursorFarFromParcel;
-
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private Dictionary<Vector2Int, Image> highlightedLands = new Dictionary<Vector2Int, Image>();
         private List<Vector2Int> landsWithContent = new List<Vector2Int>();
@@ -109,7 +110,6 @@ namespace DCL
             isInitialized = true;
             EnsurePools();
             atlas.InitializeChunks();
-
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
 
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
@@ -334,7 +334,7 @@ namespace DCL
 
         void UpdateParcelHold()
         {
-            if(Vector3.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE)
+            if(Vector3.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE / (scaleFactor * 2.5f))
             {
                 OnCursorFarFromParcel?.Invoke();
             }

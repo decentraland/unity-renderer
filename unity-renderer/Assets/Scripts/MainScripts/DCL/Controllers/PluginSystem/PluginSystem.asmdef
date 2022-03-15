@@ -1,5 +1,5 @@
 {
-    "name": "FeatureController",
+    "name": "PluginSystem",
     "rootNamespace": "",
     "references": [
         "GUID:bd51ff2b035ce4ab4be7c38c43c88889",
@@ -18,8 +18,11 @@
         "GUID:d8caa1f2d8e6c2b49a7c564e2b81bf89",
         "GUID:d854a4b265f0e4ab6b27af4b554b3d0a",
         "GUID:dd2bdb4c07be4110a5b57bf41484b080",
+        "GUID:09600e66f7105974d89e5003ddee82a4",
         "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
-        "GUID:044764b0a8d94a2fbdcdc9e02e6da0de"
+        "GUID:044764b0a8d94a2fbdcdc9e02e6da0de",
+        "GUID:49fff50e0023442eaa00a73b083a6d08",
+        "GUID:81fbd0260d07a69449fb0fc6ed29d254"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

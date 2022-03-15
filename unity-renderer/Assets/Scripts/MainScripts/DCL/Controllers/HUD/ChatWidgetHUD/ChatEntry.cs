@@ -7,9 +7,15 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using DCL;
 
 public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    private const string COORDINATES_COLOR_PRIVATE = "#4886E3";
+    private const string COORDINATES_COLOR_PUBLIC = "#62C6FF";
+
     public struct Model
     {
         public enum SubType
@@ -49,12 +55,16 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     [SerializeField] internal Color nonPlayerNameColor = Color.white;
     [SerializeField] CanvasGroup group;
     [SerializeField] internal float timeToHoverPanel = 1f;
+    [SerializeField] internal float timeToHoverGotoPanel = 1f;
 
     [NonSerialized] public string messageLocalDateTime;
 
     bool fadeEnabled = false;
     double fadeoutStartTime;
     float hoverPanelTimer = 0;
+    float hoverGotoPanelTimer = 0;
+    bool isOverCoordinates = false;
+    ParcelCoordinates currentCoordinates;
 
     public RectTransform hoverPanelPositionReference;
     public RectTransform contextMenuPositionReference;
@@ -64,7 +74,11 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     public event UnityAction<string> OnPress;
     public event UnityAction<ChatEntry> OnPressRightButton;
     public event UnityAction<ChatEntry> OnTriggerHover;
+    public event UnityAction<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
     public event UnityAction OnCancelHover;
+    public event UnityAction OnCancelGotoHover;
+
+    private List<string> textCoords = new List<string>();
 
     public void Populate(Model chatEntryModel)
     {
@@ -126,6 +140,21 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             body.text = $"{chatEntryModel.bodyText}";
         }
 
+        if (CoordinateUtils.HasValidTextCoordinates(body.text)) {
+            List<string> textCoordinates = CoordinateUtils.GetTextCoordinates(body.text);
+            for (int i = 0; i < textCoordinates.Count; i++)
+            {
+                PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(textCoordinates[i]));
+                string coordinatesColor;
+                if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
+                    coordinatesColor = COORDINATES_COLOR_PRIVATE;
+                else
+                    coordinatesColor = COORDINATES_COLOR_PUBLIC;
+
+                body.text = body.text.Replace(textCoordinates[i], $"<link={textCoordinates[i]}><color={coordinatesColor}><u>{textCoordinates[i]}</u></color></link>");
+            }
+        }
+
         messageLocalDateTime = UnixTimeStampToLocalDateTime(chatEntryModel.timestamp).ToString();
 
         Utils.ForceUpdateLayout(transform as RectTransform);
@@ -172,10 +201,25 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         }
     }
 
+    private void PreloadSceneMetadata(ParcelCoordinates parcelCoordinates)
+    {
+        if (MinimapMetadata.GetMetadata().GetSceneInfo(parcelCoordinates.x, parcelCoordinates.y) == null)
+            WebInterface.RequestScenesInfoAroundParcel(new Vector2(parcelCoordinates.x, parcelCoordinates.y), 2);
+    }
+
     public void OnPointerClick(PointerEventData pointerEventData)
     {
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, null);
+            if (linkIndex != -1)
+            {
+                DataStore.i.HUDs.gotoPanelVisible.Set(true);
+                TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
+                ParcelCoordinates parcelCoordinate = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
+                DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
+            }
+
             if (model.messageType != ChatMessage.Type.PRIVATE)
                 return;
 
@@ -191,12 +235,27 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         }
     }
 
-    public void OnPointerEnter(PointerEventData pointerEventData) { hoverPanelTimer = timeToHoverPanel; }
+    public void OnPointerEnter(PointerEventData pointerEventData) 
+    {
+        if (pointerEventData == null)
+            return;
+
+        hoverPanelTimer = timeToHoverPanel;
+    }
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
-        hoverPanelTimer = 0f;
+        if (pointerEventData == null)
+            return;
 
+        hoverPanelTimer = 0f;
+        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, null);
+        if (linkIndex == -1)
+        {
+            isOverCoordinates = false;
+            hoverGotoPanelTimer = 0;
+            OnCancelGotoHover?.Invoke();
+        }
         OnCancelHover?.Invoke();
     }
 
@@ -222,8 +281,26 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     void Update()
     {
         Fade();
-
+        CheckHoverCoordinates();
         ProcessHoverPanelTimer();
+        ProcessHoverGotoPanelTimer();
+    }
+
+    private void CheckHoverCoordinates()
+    {
+        if (isOverCoordinates)
+            return;
+
+        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, Input.mousePosition, null);
+
+        if (linkIndex == -1)
+            return;
+
+        isOverCoordinates = true;
+        TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
+        currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
+        hoverGotoPanelTimer = timeToHoverGotoPanel;
+        OnCancelHover?.Invoke();
     }
 
     void Fade()
@@ -250,7 +327,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     void ProcessHoverPanelTimer()
     {
-        if (hoverPanelTimer <= 0f)
+        if (hoverPanelTimer <= 0f || isOverCoordinates)
             return;
 
         hoverPanelTimer -= Time.deltaTime;
@@ -259,6 +336,20 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             hoverPanelTimer = 0f;
 
             OnTriggerHover?.Invoke(this);
+        }
+    }
+
+    void ProcessHoverGotoPanelTimer()
+    {
+        if (hoverGotoPanelTimer <= 0f || !isOverCoordinates)
+            return;
+
+        hoverGotoPanelTimer -= Time.deltaTime;
+        if (hoverGotoPanelTimer <= 0f)
+        {
+            hoverGotoPanelTimer = 0f;
+
+            OnTriggerHoverGoto?.Invoke(this, currentCoordinates);
         }
     }
 

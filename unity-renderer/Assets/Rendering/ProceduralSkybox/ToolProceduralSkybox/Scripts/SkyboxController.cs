@@ -44,6 +44,9 @@ namespace DCL.Skybox
         private int syncCounter = 0;
         private int syncAfterCount = 10;
 
+        // Report to kernel
+        private ITimeReporter timeReporter { get; set; } = new TimeReporter();
+
         public SkyboxController()
         {
             i = this;
@@ -307,6 +310,7 @@ namespace DCL.Skybox
 
             // Convert minutes in seconds and then normalize with cycle time
             timeNormalizationFactor = lifecycleDuration * 60 / cycleTime;
+            timeReporter.Configure(timeNormalizationFactor, cycleTime);
 
             GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
             return true;
@@ -441,6 +445,7 @@ namespace DCL.Skybox
 
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
             DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
+            timeReporter.ReportTime(timeOfTheDay);
 
             float normalizedDayTime = GetNormalizedDayTime();
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, cycleTime);
@@ -467,6 +472,8 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.useDynamicSkybox.OnChange -= UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange -= FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange -= ReflectionResolution_OnChange;
+
+            timeReporter.Dispose();
         }
 
         public void PauseTime(bool overrideTime = false, float newTime = 0)
@@ -478,6 +485,7 @@ namespace DCL.Skybox
                 configuration.ApplyOnMaterial(selectedMat, (float)timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
                 ApplyAvatarColor(GetNormalizedDayTime());
             }
+            timeReporter.ReportTime(timeOfTheDay);
         }
 
         public void ResumeTime(bool overrideTime = false, float newTime = 0)

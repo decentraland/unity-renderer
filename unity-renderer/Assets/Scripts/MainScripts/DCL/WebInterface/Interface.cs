@@ -587,6 +587,12 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class SetDisabledPortableExperiencesPayload
+        {
+            public string[] idsToDisable;
+        }
+
+        [System.Serializable]
         public class WearablesRequestFiltersPayload
         {
             public string ownedByUser;
@@ -641,6 +647,15 @@ namespace DCL.Interface
         {
             public string userId;
             public RayInfo ray = new RayInfo();
+        }
+
+        [System.Serializable]
+        public class TimeReportPayload
+        {
+            public float timeNormalizationFactor;
+            public float cycleTime;
+            public bool isPaused;
+            public float time;
         }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -771,6 +786,7 @@ namespace DCL.Interface
         private static CloseUserAvatarPayload closeUserAvatarPayload = new CloseUserAvatarPayload();
         private static StringPayload stringPayload = new StringPayload();
         private static KillPortableExperiencePayload killPortableExperiencePayload = new KillPortableExperiencePayload();
+        private static SetDisabledPortableExperiencesPayload setDisabledPortableExperiencesPayload = new SetDisabledPortableExperiencesPayload();
         private static RequestWearablesPayload requestWearablesPayload = new RequestWearablesPayload();
         private static SearchENSOwnerPayload searchEnsOwnerPayload = new SearchENSOwnerPayload();
         private static HeadersPayload headersPayload = new HeadersPayload();
@@ -779,6 +795,7 @@ namespace DCL.Interface
         public static AvatarOnClickPayload avatarOnClickPayload = new AvatarOnClickPayload();
         private static UUIDEvent<EmptyPayload> onPointerHoverEnterEvent = new UUIDEvent<EmptyPayload>();
         private static UUIDEvent<EmptyPayload> onPointerHoverExitEvent = new UUIDEvent<EmptyPayload>();
+        private static TimeReportPayload timeReportPayload = new TimeReportPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -1082,8 +1099,6 @@ namespace DCL.Interface
         [System.Serializable]
         public class SaveAvatarPayload
         {
-            public string face;
-            public string face128;
             public string face256;
             public string body;
             public bool isSignUpFlow;
@@ -1136,13 +1151,11 @@ namespace DCL.Interface
 
         public static void RequestOwnProfileUpdate() { SendMessage("RequestOwnProfileUpdate"); }
 
-        public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
+        public static void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
         {
             var payload = new SaveAvatarPayload()
             {
                 avatar = avatar,
-                face = System.Convert.ToBase64String(faceSnapshot.EncodeToPNG()),
-                face128 = System.Convert.ToBase64String(face128Snapshot.EncodeToPNG()),
                 face256 = System.Convert.ToBase64String(face256Snapshot.EncodeToPNG()),
                 body = System.Convert.ToBase64String(bodySnapshot.EncodeToPNG()),
                 isSignUpFlow = isSignUpFlow
@@ -1357,10 +1370,18 @@ namespace DCL.Interface
             SendMessage("CloseUserAvatar", closeUserAvatarPayload);
         }
 
+        // Warning: Use this method only for PEXs non-associated to smart wearables.
+        //          For PEX associated to smart wearables use 'SetDisabledPortableExperiences'.
         public static void KillPortableExperience(string portableExperienceId)
         {
             killPortableExperiencePayload.portableExperienceId = portableExperienceId;
             SendMessage("KillPortableExperience", killPortableExperiencePayload);
+        }
+
+        public static void SetDisabledPortableExperiences(string[] idsToDisable)
+        {
+            setDisabledPortableExperiencesPayload.idsToDisable = idsToDisable;
+            SendMessage("SetDisabledPortableExperiences", setDisabledPortableExperiencesPayload);
         }
 
         public static void RequestWearables(
@@ -1467,6 +1488,15 @@ namespace DCL.Interface
         {
             onPointerHoverExitEvent.uuid = uuid;
             SendSceneEvent(sceneId, "uuidEvent", onPointerHoverExitEvent);
-        }   
+        }
+
+        public static void ReportTime(float time, bool isPaused, float timeNormalizationFactor, float cycleTime)
+        {
+            timeReportPayload.time = time;
+            timeReportPayload.isPaused = isPaused;
+            timeReportPayload.timeNormalizationFactor = timeNormalizationFactor;
+            timeReportPayload.cycleTime = cycleTime;
+            SendMessage("ReportDecentralandTime", timeReportPayload);
+        }
     }
 }

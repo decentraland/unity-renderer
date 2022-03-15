@@ -90,7 +90,7 @@ public class BuilderInWorldPlugin : IPlugin
 
     public void Dispose()
     {
-        if (DataStore.i.common.isWorldBeingDestroyed.Get())
+        if (DataStore.i.common.isApplicationQuitting.Get())
             return;
 
         editor.Dispose();
