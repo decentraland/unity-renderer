@@ -15,6 +15,17 @@ namespace DCL.Skybox
             configType = Additional3DElements.Dome;
             nameInEditor = name;
         }
+
+        public override bool IsConfigActive()
+        {
+            bool configActive = true;
+
+            if (!enabled)
+            {
+                configActive = false;
+            }
+            return configActive;
+        }
     }
 
     [System.Serializable]

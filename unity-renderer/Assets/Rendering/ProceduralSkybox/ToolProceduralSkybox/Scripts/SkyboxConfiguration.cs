@@ -187,34 +187,37 @@ namespace DCL.Skybox
             Shader.SetGlobalColor(ShaderUtils.LightColor, avatarEditorLightColor);
         }
 
-        public void ApplyDomeConfigurations(List<Material> materials3D, float dayTime, float normalizedDayTime, int slotCount, Light directionalLightGO = null, float cycleTime = 24)
+        public void ApplyDomeConfigurations(List<DomeReferences> domeReferences, float dayTime, float normalizedDayTime, int slotCount, Light directionalLightGO = null, float cycleTime = 24)
         {
             float percentage = normalizedDayTime * 100;
+            int domeCount = 0;
 
             for (int i = 0; i < additional3Dconfig.Count; i++)
             {
                 if (!additional3Dconfig[i].enabled)
                 {
+                    // Change all texture layer rendering to NotRendering
                     continue;
                 }
 
                 //Apply config
                 //General Values
-                materials3D[i].SetColor(SkyboxShaderUtils.LightTint, directionalLightLayer.tintColor.Evaluate(normalizedDayTime));
-                materials3D[i].SetVector(SkyboxShaderUtils.LightDirection, directionalLightGO.transform.rotation.eulerAngles);
+                domeReferences[domeCount].domeMat.SetColor(SkyboxShaderUtils.LightTint, directionalLightLayer.tintColor.Evaluate(normalizedDayTime));
+                domeReferences[domeCount].domeMat.SetVector(SkyboxShaderUtils.LightDirection, directionalLightGO.transform.rotation.eulerAngles);
 
                 // Apply Base Values
-                materials3D[i].SetColor(SkyboxShaderUtils.SkyColor, additional3Dconfig[i].backgroundLayer.skyColor.Evaluate(normalizedDayTime));
-                materials3D[i].SetColor(SkyboxShaderUtils.GroundColor, additional3Dconfig[i].backgroundLayer.groundColor.Evaluate(normalizedDayTime));
+                domeReferences[domeCount].domeMat.SetColor(SkyboxShaderUtils.SkyColor, additional3Dconfig[i].backgroundLayer.skyColor.Evaluate(normalizedDayTime));
+                domeReferences[domeCount].domeMat.SetColor(SkyboxShaderUtils.GroundColor, additional3Dconfig[i].backgroundLayer.groundColor.Evaluate(normalizedDayTime));
 
                 // Apply Horizon Values
-                materials3D[i].SetColor(SkyboxShaderUtils.HorizonColor, additional3Dconfig[i].backgroundLayer.horizonColor.Evaluate(normalizedDayTime));
-                materials3D[i].SetFloat(SkyboxShaderUtils.HorizonHeight, GetTransitionValue(additional3Dconfig[i].backgroundLayer.horizonHeight, percentage, 0f));
-                materials3D[i].SetFloat(SkyboxShaderUtils.HorizonWidth, GetTransitionValue(additional3Dconfig[i].backgroundLayer.horizonWidth, percentage, 0f));
-                materials3D[i].SetTexture(SkyboxShaderUtils.HorizonMask, additional3Dconfig[i].backgroundLayer.horizonMask);
-                materials3D[i].SetVector(SkyboxShaderUtils.HorizonMaskValues, additional3Dconfig[i].backgroundLayer.horizonMaskValues);
+                domeReferences[domeCount].domeMat.SetColor(SkyboxShaderUtils.HorizonColor, additional3Dconfig[i].backgroundLayer.horizonColor.Evaluate(normalizedDayTime));
+                domeReferences[domeCount].domeMat.SetFloat(SkyboxShaderUtils.HorizonHeight, GetTransitionValue(additional3Dconfig[i].backgroundLayer.horizonHeight, percentage, 0f));
+                domeReferences[domeCount].domeMat.SetFloat(SkyboxShaderUtils.HorizonWidth, GetTransitionValue(additional3Dconfig[i].backgroundLayer.horizonWidth, percentage, 0f));
+                domeReferences[domeCount].domeMat.SetTexture(SkyboxShaderUtils.HorizonMask, additional3Dconfig[i].backgroundLayer.horizonMask);
+                domeReferences[domeCount].domeMat.SetVector(SkyboxShaderUtils.HorizonMaskValues, additional3Dconfig[i].backgroundLayer.horizonMaskValues);
 
-                ApplyAllSlots(materials3D[i], additional3Dconfig[i].layers, dayTime, normalizedDayTime, slotCount, cycleTime);
+                ApplyAllSlots(domeReferences[domeCount].domeMat, additional3Dconfig[i].layers, dayTime, normalizedDayTime, slotCount, cycleTime);
+                domeCount++;
             }
         }
 

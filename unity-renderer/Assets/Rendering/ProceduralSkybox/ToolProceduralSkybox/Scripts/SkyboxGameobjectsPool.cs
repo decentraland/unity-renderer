@@ -11,8 +11,9 @@ namespace DCL.Skybox
         public bool domeInUse;
     }
 
-    public class SkyboxEditorUtilsObjectPool
+    public class SkyboxGameobjectsPool
     {
+        const float domeDefaultSize = 50;
         const string domeResourcesPath = "SkyboxPrefabs/Dome";
 
         private GameObject skyboxElements;
@@ -53,6 +54,7 @@ namespace DCL.Skybox
                         dome.domeGO = domeElements.transform.GetChild(i).gameObject;
                         dome.domeGO.GetComponent<Renderer>().material = Object.Instantiate(MaterialReferenceContainer.i.domeMat);
                         dome.domeMat = dome.domeGO.GetComponent<Renderer>().sharedMaterial;
+                        dome.domeGO.SetActive(false);
                         domeObjects.Enqueue(dome);
                     }
                 }
@@ -73,7 +75,7 @@ namespace DCL.Skybox
 
         #region 3D Domes
 
-        public Material GetDomeMaterial()
+        private DomeReferences GetDomeReference()
         {
             DomeReferences dome = null;
             if (domeObjects.Count <= 0)
@@ -85,12 +87,13 @@ namespace DCL.Skybox
                 dome = domeObjects.Dequeue();
             }
 
+            dome.domeGO.SetActive(true);
             // Resize dome object
-            dome.domeGO.transform.localScale = dome.domeGO.transform.localScale + Vector3.one * numberOf3DObjects;
+            //dome.domeGO.transform.localScale = dome.domeGO.transform.localScale + Vector3.one * numberOf3DObjects;
             // Add to active objects
             activeDomeObjects.Enqueue(dome);
             numberOf3DObjects++;
-            return dome.domeMat;
+            return dome;
         }
 
         DomeReferences InstantiateNewDome()
@@ -112,6 +115,29 @@ namespace DCL.Skybox
             dome.domeMat = obj.GetComponent<Renderer>().sharedMaterial;
 
             return dome;
+        }
+
+        public List<DomeReferences> GetOrderedGameobjectList(List<Config3DDome> configList)
+        {
+            ResetObjects();
+            List<DomeReferences> orderedList = new List<DomeReferences>();
+            // make a list of domes for each active dome config
+
+            for (int i = 0; i < configList.Count; i++)
+            {
+                if (!configList[i].IsConfigActive())
+                {
+                    continue;
+                }
+
+                DomeReferences dome = GetDomeReference();
+
+                // resize
+                dome.domeGO.transform.localScale = domeDefaultSize * Vector3.one + Vector3.one * i;
+                orderedList.Insert(0, dome);
+            }
+
+            return orderedList;
         }
 
         #endregion
