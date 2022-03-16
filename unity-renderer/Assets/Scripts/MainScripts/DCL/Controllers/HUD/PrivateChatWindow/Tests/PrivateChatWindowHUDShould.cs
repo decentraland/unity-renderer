@@ -77,17 +77,17 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);
         ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(0).senderId);
-        Assert.AreEqual("message1", GetViewEntryModel(0).bodyText);
+        Assert.AreEqual(ChatUtils.AddNoParse("message1"), GetViewEntryModel(0).bodyText);
 
         Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);
         ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(1).senderId);
-        Assert.AreEqual("message2", GetViewEntryModel(1).bodyText);
+        Assert.AreEqual(ChatUtils.AddNoParse("message2"), GetViewEntryModel(1).bodyText);
 
         Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);
         ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(2).senderId);
-        Assert.AreEqual("message3", GetViewEntryModel(2).bodyText);
+        Assert.AreEqual(ChatUtils.AddNoParse("message3"), GetViewEntryModel(2).bodyText);
     }
 
     [Test]
@@ -108,15 +108,15 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 
         Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(0).senderId);
-        Assert.AreEqual("message1", GetViewEntryModel(0).bodyText);
+        Assert.AreEqual(ChatUtils.AddNoParse("message1"), GetViewEntryModel(0).bodyText);
 
         Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(1).senderId);
-        Assert.AreEqual("message2", GetViewEntryModel(1).bodyText);
+        Assert.AreEqual(ChatUtils.AddNoParse("message2"), GetViewEntryModel(1).bodyText);
 
         Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(2).senderId);
-        Assert.AreEqual("message3", GetViewEntryModel(2).bodyText);
+        Assert.AreEqual(ChatUtils.AddNoParse("message3"), GetViewEntryModel(2).bodyText);
     }
 
     [UnityTest]
