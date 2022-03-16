@@ -58,7 +58,7 @@ public class ChatHUDController : IDisposable
 
     public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
-        chatEntryModel.bodyText = AddNoParse(chatEntryModel.bodyText);
+        chatEntryModel.bodyText = ChatUtils.AddNoParse(chatEntryModel.bodyText);
 
         if (IsProfanityFilteringEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
         {
@@ -76,14 +76,6 @@ public class ChatHUDController : IDisposable
             Object.Destroy(view.entries[0].gameObject);
             view.entries.Remove(view.entries[0]);
         }
-    }
-
-    private string AddNoParse(string message)
-    {
-        var filteredMessage = message.Replace("noparse", "");
-        filteredMessage = filteredMessage.Insert(0, "<noparse>");
-        filteredMessage = filteredMessage.Insert(filteredMessage.Length, "</noparse>");
-        return filteredMessage;
     }
 
     public void Dispose()
