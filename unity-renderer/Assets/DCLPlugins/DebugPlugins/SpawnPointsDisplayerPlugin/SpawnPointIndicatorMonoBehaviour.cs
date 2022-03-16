@@ -3,9 +3,6 @@ using UnityEngine;
 
 internal class SpawnPointIndicatorMonoBehaviour : MonoBehaviour
 {
-    internal const float LOOKAT_INDICATOR_HEIGHT = 2;
-    internal const float TEXT_HEIGHT = 0.3f;
-
     [SerializeField] internal Transform lookAtIndicator;
     [SerializeField] internal Transform areaIndicator;
     [SerializeField] internal TextMeshPro areaText;
@@ -32,12 +29,11 @@ internal class SpawnPointIndicatorMonoBehaviour : MonoBehaviour
 
     public void SetPosition(in Vector3 position)
     {
-        areaIndicator.position = position;
-        lookAtIndicator.position = new Vector3(position.x, position.y + LOOKAT_INDICATOR_HEIGHT, position.z);
+        transform.position = position;
+        areaIndicator.localPosition = Vector3.zero;
 
-        var textPosition = areaTextTransform.position;
-        textPosition.Set(position.x, textPosition.y, position.z);
-        areaTextTransform.position = textPosition;
+        lookAtIndicator.localPosition = new Vector3(0, lookAtIndicator.localPosition.y, 0);
+        areaTextTransform.localPosition = new Vector3(0, areaTextTransform.localPosition.y, 0);
     }
 
     public void SetRotation(in Quaternion? rotation)
@@ -54,10 +50,12 @@ internal class SpawnPointIndicatorMonoBehaviour : MonoBehaviour
     public void SetSize(in Vector3 size)
     {
         areaIndicator.localScale = size;
+        var lookAtPosition = lookAtIndicator.localPosition;
+        var textPosition = areaTextTransform.localPosition;
+        lookAtPosition.y = textPosition.y = size.y * 0.5f;
 
-        var textPosition = areaTextTransform.position;
-        textPosition.Set(textPosition.x, size.y + TEXT_HEIGHT, textPosition.z);
-        areaTextTransform.position = textPosition;
+        lookAtIndicator.localPosition = lookAtPosition;
+        areaTextTransform.localPosition = textPosition;
     }
 
     public void SetName(in string name)

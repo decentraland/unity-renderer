@@ -44,25 +44,22 @@ namespace Tests
             indicator.SetPosition(position);
 
             Assert.AreEqual(position, spawnPointGO.areaIndicator.position);
-            Assert.AreEqual(new Vector3(position.x, position.y + SpawnPointIndicatorMonoBehaviour.LOOKAT_INDICATOR_HEIGHT, position.z),
-                spawnPointGO.lookAtIndicator.position);
-            Assert.AreEqual(new Vector3(position.x, spawnPointGO.areaTextTransform.position.y, position.z),
-                spawnPointGO.areaTextTransform.position);
+            Assert.AreEqual(Vector3.zero, spawnPointGO.areaIndicator.localPosition);
         }
 
         [Test]
         public void SetSizeCorrectly()
         {
             ISpawnPointIndicator indicator = new SpawnPointIndicator(spawnPointGO);
-            Vector3 size = new Vector3(2, 0, 1);
+            Vector3 size = new Vector3(2, 1, 1);
             indicator.SetSize(size);
 
-            var expectedTextPosition = new Vector3(spawnPointGO.areaTextTransform.position.x,
-                size.y + SpawnPointIndicatorMonoBehaviour.TEXT_HEIGHT,
-                spawnPointGO.areaTextTransform.position.z);
+            var expectedTextPosition = new Vector3(0, 0.5f, 0);
+            var expectedArrowPosition = new Vector3(0, 0.5f, 0);
 
             Assert.AreEqual(size, spawnPointGO.areaIndicator.localScale);
-            Assert.AreEqual(expectedTextPosition.ToString(), spawnPointGO.areaTextTransform.position.ToString());
+            Assert.AreEqual(expectedTextPosition.ToString(), spawnPointGO.areaTextTransform.localPosition.ToString());
+            Assert.AreEqual(expectedArrowPosition.ToString(), spawnPointGO.lookAtIndicator.localPosition.ToString());
         }
 
         [Test]
