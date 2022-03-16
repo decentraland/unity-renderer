@@ -172,6 +172,18 @@ namespace DCL
             PreviewMenuPayload data =  JsonUtility.FromJson<PreviewMenuPayload>(payload);
             DataStore.i.debugConfig.isPreviewMenuActive.Set(data.enabled);
         }
+        
+        public void ToggleSceneSpawnPoints(string payload)
+        {
+            ToggleSpawnPointsPayload data = Utils.FromJsonWithNulls<ToggleSpawnPointsPayload>(payload);
+            // handle `undefined` `enabled` which means to update "spawnpoints" without changing it enabled state
+            if (!data.enabled.HasValue)
+            {
+                var prevData = DataStore.i.debugConfig.showSceneSpawnPoints.Get(data.sceneId);
+                data.enabled = prevData == null || !prevData.enabled.HasValue ? false : prevData.enabled;
+            }
+            DataStore.i.debugConfig.showSceneSpawnPoints.AddOrSet(data.sceneId, data);
+        }        
 
 #if UNITY_EDITOR
         [ContextMenu("Run Performance Meter Tool for 30 seconds")]
