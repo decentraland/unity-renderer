@@ -307,7 +307,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void UpdateAvatarPreview(AvatarModel avatarModel)
     {
-        if (avatarModel?.wearables == null)
+        if (avatarModel?.wearables == null || loadingSpinnerGameObject.activeSelf)
             return;
 
         doneButton.interactable = false;
