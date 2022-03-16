@@ -23,7 +23,8 @@ public class WorldChatWindowHUDController : IHUD
     public event UnityAction<string> OnPressPrivateMessage;
     public event System.Action OnOpen;
 
-    public void Initialize(IChatController chatController, IMouseCatcher mouseCatcher,
+    public void Initialize(IChatController chatController,
+        IMouseCatcher mouseCatcher,
         IWorldChatComponentView view = null)
     {
         view ??= WorldChatWindowHUDView.Create();

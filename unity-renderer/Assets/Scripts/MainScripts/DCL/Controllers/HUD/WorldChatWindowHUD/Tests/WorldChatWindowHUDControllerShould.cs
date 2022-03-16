@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
+public class WorldChatWindowHUDControllerShould : IntegrationTestSuite_Legacy
 {
     private WorldChatWindowHUDController controller;
     private IWorldChatComponentView view;
@@ -164,5 +164,12 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
         view.OnMessageUpdated += Raise.Event<Action<string>>("/r ");
         
         view.Received(1).SetInputField($"/w {model.name} ");
+    }
+    
+    [Test]
+    public void HandleMouseCatcherProperly()
+    {
+        mouseCatcher.RaiseMouseLock();
+        view.Received(1).ActivatePreview();
     }
 }

@@ -73,6 +73,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler, IWorl
 
     public void Dispose()
     {
+        if (!this) return;
         if (gameObject)
             Destroy(gameObject);
     }
