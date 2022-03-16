@@ -21,6 +21,8 @@ namespace DCL
         public class LoadingHUD
         {
             public readonly BaseVariable<bool> visible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> fadeIn = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> fadeOut = new BaseVariable<bool>(false);
             public readonly BaseVariable<string> message = new BaseVariable<string>(null);
             public readonly BaseVariable<float> percentage = new BaseVariable<float>(0);
             public readonly BaseVariable<bool> showTips = new BaseVariable<bool>(false);

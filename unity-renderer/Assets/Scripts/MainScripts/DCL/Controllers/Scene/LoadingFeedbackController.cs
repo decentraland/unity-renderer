@@ -97,7 +97,7 @@ namespace DCL
 
         private void RefreshFeedbackMessage()
         {
-            if (!DataStore.i.HUDs.loadingHUD.visible.Get())
+            if (!DataStore.i.HUDs.loadingHUD.fadeIn.Get())
                 return;
 
             string loadingText = string.Empty;
