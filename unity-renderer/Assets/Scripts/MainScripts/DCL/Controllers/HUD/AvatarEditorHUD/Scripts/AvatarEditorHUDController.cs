@@ -518,9 +518,11 @@ public class AvatarEditorHUDController : IHUD
     {
         foreach (var wearable in model.wearables)
         {
-            view.UnequipWearable(wearable);
-            model.wearables.Remove(wearable);
+            if (!wearable.IsEmote())
+                view.UnequipWearable(wearable);
         }
+
+        model.wearables.Clear();
     }
 
     private void ProcessCatalog(BaseDictionary<string, WearableItem> catalog)
