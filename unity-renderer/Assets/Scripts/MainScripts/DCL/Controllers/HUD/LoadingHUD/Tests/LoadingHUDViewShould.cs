@@ -27,7 +27,7 @@ namespace Tests.LoadingHUD
         [TestCase(false)]
         public void SetVisibilityProperly(bool visible)
         {
-            hudView.SetVisible(visible);
+            hudView.SetVisible(visible, true);
             Assert.AreEqual(visible, hudView.showHideAnimator.isVisible);
         }
 

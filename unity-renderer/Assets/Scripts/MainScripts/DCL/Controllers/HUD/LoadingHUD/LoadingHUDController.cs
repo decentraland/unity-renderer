@@ -17,13 +17,12 @@ public class LoadingHUDController : IHUD
     {
         view = CreateView();
         ClearEvents();
-        SetViewVisible(fadeIn.Get());
+        SetViewVisible(fadeIn.Get(), true);
         view?.SetMessage(message.Get());
         view?.SetPercentage(percentage.Get() / 100f);
         view?.SetTips(showTips.Get());
 
         // set initial states to prevent reconciliation errors
-        //visible.OnChange += OnVisibleHUDChanged;
         fadeIn.OnChange += OnFadeInChange;
         fadeOut.OnChange += OnFadeOutChange;
         
@@ -32,23 +31,19 @@ public class LoadingHUDController : IHUD
         showTips.OnChange += OnShowTipsChanged;
     }
 
-    private void OnVisibleHUDChanged(bool current, bool previous) { SetViewVisible(current); }
+    private void OnVisibleHUDChanged(bool current, bool previous) { SetViewVisible(current, false); }
     private void OnMessageChanged(string current, string previous) { view?.SetMessage(current); }
     private void OnPercentageChanged(float current, float previous) { view?.SetPercentage(current / 100f); }
     private void OnShowTipsChanged(bool current, bool previous) { view?.SetTips(current); }
     private void OnFadeInChange(bool current, bool previous)
     {
-        Debug.Log($"On Fade in change to {current}");
-
         if (current)
-            SetViewVisible(true);
+            SetViewVisible(true, false);
     }
     private void OnFadeOutChange(bool current, bool previous)
     {
-        Debug.Log($"On Fade out change to {current}");
-
         if (current)
-            SetViewVisible(false);
+            SetViewVisible(false, false);
     }
 
     public void SetVisibility(bool visible) { this.visible.Set(visible); }
@@ -67,11 +62,9 @@ public class LoadingHUDController : IHUD
         showTips.OnChange -= OnShowTipsChanged;
     }
 
-    internal void SetViewVisible(bool isVisible) 
+    internal void SetViewVisible(bool isVisible, bool instant) 
     {
         Debug.Log($"set view visible {isVisible}");
-        view?.SetVisible(isVisible);
-        //fadeIn.Set(false);
-        //fadeOut.Set(false);
+        view?.SetVisible(isVisible, instant);
     }
 }

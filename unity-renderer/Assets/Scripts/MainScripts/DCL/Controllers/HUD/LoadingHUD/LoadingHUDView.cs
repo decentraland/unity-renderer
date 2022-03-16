@@ -30,7 +30,6 @@ public class LoadingHUDView : MonoBehaviour
 
     private void OnFinishHide(ShowHideAnimator obj)
     {
-        Debug.Log("Finish hide");
         showHideAnimator.OnWillFinishHide -= OnFinishHide;
         DataStore.i.HUDs.loadingHUD.fadeIn.Set(false);
         DataStore.i.HUDs.loadingHUD.fadeOut.Set(false);
@@ -39,23 +38,22 @@ public class LoadingHUDView : MonoBehaviour
 
     private void OnFinishStart(ShowHideAnimator obj)
     {
-        Debug.Log("Finish start");
         showHideAnimator.OnWillFinishStart -= OnFinishStart;
         DataStore.i.HUDs.loadingHUD.fadeIn.Set(false);
         DataStore.i.HUDs.loadingHUD.fadeOut.Set(false);
         DataStore.i.HUDs.loadingHUD.visible.Set(false);
     }
 
-    public void SetVisible(bool isVisible) {
+    public void SetVisible(bool isVisible, bool instant) {
         if (isVisible)
         {
             showHideAnimator.OnWillFinishStart += OnFinishStart;
-            showHideAnimator.Show();
+            showHideAnimator.Show(instant);
         }
         else
         {
             showHideAnimator.OnWillFinishHide += OnFinishHide;
-            showHideAnimator.Hide();
+            showHideAnimator.Hide(instant);
         }
     }
 
