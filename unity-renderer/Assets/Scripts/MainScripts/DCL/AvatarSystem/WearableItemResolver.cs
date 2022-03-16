@@ -23,6 +23,9 @@ namespace AvatarSystem
 
                 for (int i = 0; i < allItems.Length; i++)
                 {
+                    if (allItems[i] == null)
+                        continue;
+
                     if (allItems[i].IsEmote())
                         emotes.Add(allItems[i]);
                     else
