@@ -49,6 +49,7 @@ internal class PreviewMenuController : IDisposable
         showBoundingBox.Dispose();
         showFps.Dispose();
         menuView.Dispose();
+        spawnPoints.Dispose();
     }
 
     private static bool IsFPSPanelOn()
