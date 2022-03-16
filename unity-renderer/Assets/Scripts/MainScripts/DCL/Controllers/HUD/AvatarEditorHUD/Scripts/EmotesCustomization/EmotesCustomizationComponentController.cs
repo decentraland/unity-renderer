@@ -127,17 +127,17 @@ namespace EmotesCustomization
         internal List<string> GetDefaultEmotes()
         {
             return new List<string> 
-            { 
-                "wave", 
+            {
+                "handsair", 
+                "wave",
                 "fistpump", 
-                "robot", 
-                "raiseHand", 
-                "clap", 
-                "money", 
-                "kiss", 
-                "hammer", 
-                "tik", 
-                "tektonik" 
+                "dance",
+                "raiseHand",
+                "clap",
+                "money",
+                "kiss",
+                "headexplode",
+                "shrug"
             };
         }
 
