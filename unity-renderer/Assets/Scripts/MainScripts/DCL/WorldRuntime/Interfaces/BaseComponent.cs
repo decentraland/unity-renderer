@@ -55,7 +55,10 @@ namespace DCL.Components
 
         public bool IsValid() { return this != null; }
 
-        public virtual void Cleanup() { updateHandler.Cleanup(); }
+        public virtual void Cleanup()
+        {
+            updateHandler?.Cleanup();
+        }
 
         public virtual void OnPoolRelease() { Cleanup(); }
 
