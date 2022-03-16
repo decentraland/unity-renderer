@@ -1,3 +1,4 @@
+using System.Collections;
 using DCL;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -5,6 +6,7 @@ using System.IO;
 using DCL.Models;
 using Unity.PerformanceTesting;
 using UnityEngine;
+using UnityEngine.TestTools;
 using QueueMode = DCL.QueueMode;
 
 namespace MessagingBusTest
@@ -37,10 +39,10 @@ namespace MessagingBusTest
             }
         }
 
-        [Test, Performance]
+        [UnityTest, Performance]
         [Category("Explicit")]
         [Explicit]
-        public void MeasureTimeToEnqueueThousandMessages()
+        public IEnumerator MeasureTimeToEnqueueThousandMessages()
         {
             Measure.Method(() =>
                 {
@@ -55,12 +57,14 @@ namespace MessagingBusTest
                 .IterationsPerMeasurement(10)
                 .GC()
                 .Run();
+
+            yield return null;
         }
 
-        [Test, Performance]
+        [UnityTest, Performance]
         [Category("Explicit")]
         [Explicit]
-        public void MeasureTimeToProcessThousandMessages()
+        public IEnumerator MeasureTimeToProcessThousandMessages()
         {
             Measure.Method(() =>
                    {
@@ -85,6 +89,8 @@ namespace MessagingBusTest
                    .IterationsPerMeasurement(10)
                    .GC()
                    .Run();
+            
+            yield return null;
         }
 
         private void EnqueueNextMessage()
@@ -158,8 +164,8 @@ namespace MessagingBusTest
             return SceneMessageUtilities.DecodeSceneMessage(sceneId, message, tag);
         }
 
-        [Test]
-        public void LossyMessageIsReplaced()
+        [UnityTest]
+        public IEnumerator LossyMessageIsReplaced()
         {
             string entityId = "entity";
             DummyMessageHandler messageProcessHandler = new DummyMessageHandler();
@@ -180,10 +186,12 @@ namespace MessagingBusTest
 
             Assert.AreEqual(1, bus.unreliableMessagesReplaced);
             Assert.AreEqual(1, bus.pendingMessagesCount);
+
+            return null;
         }
 
-        [Test]
-        public void RemoveEntityShouldClearLossyMessages()
+        [UnityTest]
+        public IEnumerator RemoveEntityShouldClearLossyMessages()
         {
             string entityId = "entity";
             DummyMessageHandler messageProcessHandler = new DummyMessageHandler();
@@ -211,6 +219,8 @@ namespace MessagingBusTest
 
             Assert.AreEqual(0, bus.unreliableMessagesReplaced);
             Assert.AreEqual(3, bus.pendingMessagesCount);
+            
+            return null;
         }
     }
 }
