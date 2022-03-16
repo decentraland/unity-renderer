@@ -1,5 +1,6 @@
 {
     "name": "WorldChatWindowHUDTests",
+    "rootNamespace": "",
     "references": [
         "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
         "GUID:bfcb62efe121edb4cb291924b28114eb",
@@ -21,7 +22,9 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

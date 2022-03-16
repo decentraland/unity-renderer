@@ -27,11 +27,11 @@ public class ChatEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void BePopulatedCorrectly()
     {
-        var message = new ChatEntry.Model()
+        var message = new ChatEntry.Model
         {
             messageType = ChatMessage.Type.PUBLIC,
             senderName = "user-test",
-            recipientName = "",
+            recipientName = "receiver-test",
             bodyText = "test message",
         };
 
@@ -46,10 +46,14 @@ public class ChatEntryShould : IntegrationTestSuite_Legacy
 
         entry.Populate(message);
         Assert.AreEqual(entry.privateToMessageColor, entry.username.color);
+        Assert.AreEqual("<b>To receiver-test:</b>", entry.username.text);
+        Assert.AreEqual("<b>To receiver-test:</b> test message", entry.body.text);
 
         message.subType = ChatEntry.Model.SubType.PRIVATE_FROM;
         entry.Populate(message);
         Assert.AreEqual(entry.privateFromMessageColor, entry.username.color);
+        Assert.AreEqual("<b>From user-test:</b>", entry.username.text);
+        Assert.AreEqual("<b>From user-test:</b> test message", entry.body.text);
 
         message.messageType = ChatMessage.Type.SYSTEM;
         entry.Populate(message);

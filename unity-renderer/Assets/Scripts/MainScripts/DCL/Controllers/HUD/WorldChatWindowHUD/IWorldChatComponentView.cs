@@ -16,14 +16,12 @@ public interface IWorldChatComponentView
     IChatHUDComponentView ChatHUD { get; }
     RectTransform Transform { get; }
 
-    void SetInputFillWithWhisper(string user);
     void SetInputField(string text);
     void ActivatePreview();
     void DeactivatePreview();
     void Dispose();
     void Hide();
-    void ResetInputField();
-    void Deselect();
+    void ResetInputField(bool loseFocus = false);
     void FocusInputField();
     void Show();
 }

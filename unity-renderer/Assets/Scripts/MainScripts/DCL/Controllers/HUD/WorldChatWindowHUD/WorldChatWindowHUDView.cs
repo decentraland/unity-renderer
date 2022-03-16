@@ -44,12 +44,6 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler, IWorl
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
     }
 
-    public void SetInputFillWithWhisper(string user)
-    {
-        chatHudView.inputField.text = $"/w {user} ";
-        chatHudView.inputField.MoveTextEnd(false);
-    }
-
     public void SetInputField(string text)
     {
         chatHudView.inputField.text = text;
@@ -85,9 +79,12 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler, IWorl
 
     public void Hide() => gameObject.SetActive(false);
 
-    public void ResetInputField() => chatHudView.ResetInputField();
-
-    public void Deselect() => EventSystem.current.SetSelectedGameObject(null);
+    public void ResetInputField(bool loseFocus = false)
+    {
+        chatHudView.ResetInputField();
+        if (loseFocus)
+            EventSystem.current.SetSelectedGameObject(null);
+    }
 
     public void FocusInputField() => chatHudView.FocusInputField();
 
