@@ -11,6 +11,7 @@ public class LimitInputField : MonoBehaviour
     public event System.Action OnEmptyValue;
     public event System.Action OnInputAvailable;
     public event System.Action OnInputFocused;
+    public event System.Action OnInputLostFocus;
 
     public event System.Action<string> OnInputChange;
 
@@ -42,6 +43,8 @@ public class LimitInputField : MonoBehaviour
             hasBeenEmpty = true;
     }
 
+    public bool HasFocus() => hasFocus;
+    
     public void SetCharacterLimit(int limit)
     {
         characterLimit = limit;
@@ -74,6 +77,8 @@ public class LimitInputField : MonoBehaviour
         {
             inputFieldbackgroundImg.enabled = false;
         }
+        
+        OnInputLostFocus?.Invoke();
     }
 
     private void InputFocused(string value)
