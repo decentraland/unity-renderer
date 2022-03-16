@@ -28,6 +28,8 @@ namespace EmotesCustomization
         internal BaseCollection<EquippedEmoteData> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
         internal BaseCollection<string> currentLoadedEmotes => DataStore.i.emotesCustomization.currentLoadedEmotes;
         internal BaseVariable<string> emoteForPreviewing => DataStore.i.emotesCustomization.emoteForPreviewing;
+        internal BaseVariable<string> emoteForEquipping => DataStore.i.emotesCustomization.emoteForEquipping;
+        internal BaseVariable<string> emoteForUnequipping => DataStore.i.emotesCustomization.emoteForUnequipping;
         internal BaseVariable<bool> avatarHasBeenSaved => DataStore.i.emotesCustomization.avatarHasBeenSaved;
         internal BaseDictionary<(string bodyshapeId, string emoteId), AnimationClip> emoteAnimations => DataStore.i.emotes.animations;
         internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
@@ -320,13 +322,15 @@ namespace EmotesCustomization
 
         internal void OnEmoteEquipped(string emoteId, int slotNumber) 
         {
-            emoteForPreviewing.Set(emoteId, true);
             StoreEquippedEmotes();
+            emoteForPreviewing.Set(emoteId, true);
+            emoteForEquipping.Set(emoteId, true);
         }
 
         internal void OnEmoteUnequipped(string emoteId, int slotNumber)
         {
             StoreEquippedEmotes();
+            emoteForUnequipping.Set(emoteId, true);
         }
 
         internal void OnSlotSelected(string emoteId, int slotNumber) { emoteForPreviewing.Set(emoteId, true); }

@@ -40,7 +40,8 @@ public class AvatarEditorHUDController : IHUD
     BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
     BaseCollection<string> currentLoadedEmotes => DataStore.i.emotesCustomization.currentLoadedEmotes;
     BaseVariable<string> emoteForPreviewing => DataStore.i.emotesCustomization.emoteForPreviewing;
-    BaseCollection<EquippedEmoteData> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
+    BaseVariable<string> emoteForEquipping => DataStore.i.emotesCustomization.emoteForEquipping;
+    BaseVariable<string> emoteForUnequipping => DataStore.i.emotesCustomization.emoteForUnequipping;
     BaseVariable<bool> avatarHasBeenSaved => DataStore.i.emotesCustomization.avatarHasBeenSaved;
     private bool isSkinsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_skins");
 
@@ -60,7 +61,6 @@ public class AvatarEditorHUDController : IHUD
     private float prevRenderScale = 1.0f;
     private Transform emotesSectionTransform;
     private bool isAvatarPreviewReady = false;
-    private List<string> emotesPendingToBeEquippedInAvatarPreview = new List<string>();
 
     public AvatarEditorHUDView view;
 
@@ -101,8 +101,8 @@ public class AvatarEditorHUDController : IHUD
         isEmotesCustomizationSelected.OnChange += IsEmotesCustomizationSelectedChanged;
         currentLoadedEmotes.OnAdded += OnNewEmoteAdded;
         emoteForPreviewing.OnChange += OnPreviewEmote;
-        equippedEmotes.OnSet += OnEquippedEmotesSet;
-        OnEquippedEmotesSet(equippedEmotes.Get());
+        emoteForEquipping.OnChange += OnEmoteEquipped;
+        emoteForUnequipping.OnChange += OnEmoteUnequipped;
 
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
     }
@@ -490,16 +490,6 @@ public class AvatarEditorHUDController : IHUD
         }
     }
 
-    public void UnequipAllWearables()
-    {
-        List<WearableItem> wearablesToRemove = model.wearables.Where(x => !x.IsEmote()).ToList();
-        foreach (var wearable in wearablesToRemove)
-        {
-            view.UnequipWearable(wearable);
-            model.wearables.Remove(wearable);
-        }
-    }
-
     private void EquipEmote(WearableItem emote)
     {
         if (!emote.IsEmote())
@@ -512,12 +502,24 @@ public class AvatarEditorHUDController : IHUD
         }
     }
 
-    private void UnequippedAllEmotes()
+    private void UnequipEmote(WearableItem emote)
     {
-        List<WearableItem> emotesToRemove = model.wearables.Where(x => x.IsEmote()).ToList();
-        foreach (var item in emotesToRemove)
+        if (!emote.IsEmote())
+            return;
+
+        if (model.wearables.Contains(emote))
         {
-            model.wearables.Remove(item);
+            model.wearables.Remove(emote);
+            avatarIsDirty = true;
+        }
+    }
+
+    public void UnequipAllWearables()
+    {
+        foreach (var wearable in model.wearables)
+        {
+            view.UnequipWearable(wearable);
+            model.wearables.Remove(wearable);
         }
     }
 
@@ -714,7 +716,8 @@ public class AvatarEditorHUDController : IHUD
         isEmotesCustomizationSelected.OnChange -= IsEmotesCustomizationSelectedChanged;
         currentLoadedEmotes.OnAdded -= OnNewEmoteAdded;
         emoteForPreviewing.OnChange -= OnPreviewEmote;
-        equippedEmotes.OnSet -= OnEquippedEmotesSet;
+        emoteForEquipping.OnChange -= OnEmoteEquipped;
+        emoteForUnequipping.OnChange -= OnEmoteUnequipped;
 
         CleanUp();
     }
@@ -722,7 +725,6 @@ public class AvatarEditorHUDController : IHUD
     public void CleanUp()
     {
         UnequipAllWearables();
-        UnequippedAllEmotes();
 
         if (view != null)
             view.CleanUp();
@@ -844,17 +846,19 @@ public class AvatarEditorHUDController : IHUD
 
     private void OnPreviewEmote(string currentEmoteId, string previousEmoteId) { view.PlayPreviewEmote(currentEmoteId); }
 
-    private void OnEquippedEmotesSet(IEnumerable<EquippedEmoteData> emotes)
+    private void OnEmoteEquipped(string currentEmoteId, string previousEmoteId)
     {
-        UnequippedAllEmotes();
+        catalog.TryGetValue(currentEmoteId, out WearableItem equippedEmote);
 
-        foreach (EquippedEmoteData equippedEmoteData in emotes)
-        {
-            if (equippedEmoteData == null)
-                continue;
+        if (equippedEmote != null)
+            EquipEmote(equippedEmote);
+    }
 
-            catalog.TryGetValue(equippedEmoteData.id, out WearableItem emote);
-            EquipEmote(emote);
-        }
+    private void OnEmoteUnequipped(string currentEmoteId, string previousEmoteId)
+    {
+        catalog.TryGetValue(currentEmoteId, out WearableItem unequippedEmote);
+
+        if (unequippedEmote != null)
+            UnequipEmote(unequippedEmote);
     }
 }
