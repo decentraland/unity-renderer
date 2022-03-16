@@ -150,11 +150,13 @@ namespace DCL
                 //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
                 yield return MaterialCachingHelper.Process(asset.renderers.ToList(), enableRenderers: false, settings.cachingFlags);
 
-                var animators = assetBundleModelGO.GetComponentsInChildren<Animation>(true);
-
-                for (int animIndex = 0; animIndex < animators.Length; animIndex++)
+                var animators = MeshesInfoUtils.ExtractUniqueAnimations(assetBundleModelGO);
+                asset.animationClipSize = 0; // TODO(Brian): Extract animation clip size from metadata
+                asset.meshDataSize = 0; // TODO(Brian): Extract mesh clip size from metadata
+                
+                foreach (var animator in animators)
                 {
-                    animators[animIndex].cullingType = AnimationCullingType.AlwaysAnimate;
+                    animator.cullingType = AnimationCullingType.AlwaysAnimate;
                 }
 
 #if UNITY_EDITOR
