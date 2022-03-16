@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using DCL.Interface;
 using NUnit.Framework;
+using UnityEngine;
 
 public class ChatHUDViewShould : IntegrationTestSuite_Legacy
 {
@@ -30,7 +30,7 @@ public class ChatHUDViewShould : IntegrationTestSuite_Legacy
         
         view.FocusInputField();
         view.inputField.text = testMessage;
-        view.inputField.ProcessEvent(new UnityEngine.Event { keyCode = UnityEngine.KeyCode.Escape });
+        view.inputField.ProcessEvent(new Event { keyCode = KeyCode.Escape });
         view.inputField.onSubmit.Invoke(testMessage);
         
         Assert.AreEqual("", lastMsgSent.body);

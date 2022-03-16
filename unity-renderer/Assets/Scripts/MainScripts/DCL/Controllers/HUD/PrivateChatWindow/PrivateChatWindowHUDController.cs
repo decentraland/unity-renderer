@@ -11,24 +11,26 @@ public class PrivateChatWindowHUDController : IHUD
     private const string PLAYER_PREFS_LAST_READ_CHAT_MESSAGES = "LastReadChatMessages";
 
     public IPrivateChatComponentView view;
-    public bool resetInputFieldOnSubmit = true;
 
     public string conversationUserId { get; private set; } = string.Empty;
-    public string conversationUserName { get; private set; } = string.Empty;
-
+    
+    private string conversationUserName = string.Empty;
     private ChatHUDController chatHudController;
     private IChatController chatController;
     private UserProfile conversationProfile;
 
     public event System.Action OnPressBack;
 
-    public void Initialize(IChatController chatController)
+    public void Initialize(IChatController chatController, IPrivateChatComponentView view = null)
     {
-        view = PrivateChatWindowHUDView.Create(this);
+        view ??= PrivateChatWindowHUDView.Create();
+        this.view = view;
         view.OnPressBack -= View_OnPressBack;
         view.OnPressBack += View_OnPressBack;
         view.OnInputFieldSelected -= ChatHUDViewInputField_OnSelect;
         view.OnInputFieldSelected += ChatHUDViewInputField_OnSelect;
+        view.OnClose += OnCloseView;
+        view.OnMinimize += OnMinimizeView;
 
         chatHudController = new ChatHUDController(DataStore.i);
         chatHudController.Initialize(view.ChatHUD);
@@ -47,6 +49,8 @@ public class PrivateChatWindowHUDController : IHUD
         SetVisibility(false);
     }
 
+    private void OnMinimizeView() => SetVisibility(false);
+
     public void Configure(string newConversationUserId)
     {
         if (string.IsNullOrEmpty(newConversationUserId) || newConversationUserId == conversationUserId)
@@ -62,7 +66,7 @@ public class PrivateChatWindowHUDController : IHUD
 
         view.CleanAllEntries();
 
-        var messageEntries = chatController.GetEntries().Where((x) => IsMessageFomCurrentConversation(x)).ToList();
+        var messageEntries = chatController.GetEntries().Where(IsMessageFomCurrentConversation).ToList();
         foreach (var v in messageEntries)
         {
             OnAddMessage(v);
@@ -74,14 +78,12 @@ public class PrivateChatWindowHUDController : IHUD
         if (string.IsNullOrEmpty(conversationUserName))
             return;
 
-        bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body) &&
-                              !string.IsNullOrEmpty(message.recipient);
-
-        if (!isValidMessage || resetInputFieldOnSubmit)
-        {
-            view.ResetInputField();
-            view.FocusInputField();
-        }
+        bool isValidMessage = !string.IsNullOrEmpty(message.body)
+                              && !string.IsNullOrWhiteSpace(message.body)
+                              && !string.IsNullOrEmpty(message.recipient);
+      
+        view.ResetInputField();
+        view.FocusInputField();
 
         if (!isValidMessage)
             return;
@@ -103,13 +105,10 @@ public class PrivateChatWindowHUDController : IHUD
             view.Show();
             // The messages from 'conversationUserId' are marked as read once the private chat is opened
             MarkUserChatMessagesAsRead(conversationUserId);
-
-            AudioScriptableObjects.dialogOpen.Play(true);
         }
         else
         {
             view.Hide();
-            AudioScriptableObjects.dialogClose.Play(true);
         }
     }
 
@@ -117,6 +116,8 @@ public class PrivateChatWindowHUDController : IHUD
     {
         view.OnInputFieldSelected -= ChatHUDViewInputField_OnSelect;
         view.OnPressBack -= View_OnPressBack;
+        view.OnClose -= OnCloseView;
+        view.OnMinimize -= OnMinimizeView;
 
         if (chatController != null)
             chatController.OnAddMessage -= OnAddMessage;
@@ -144,10 +145,9 @@ public class PrivateChatWindowHUDController : IHUD
         }
     }
     
-    private void View_OnPressBack()
-    {
-        OnPressBack?.Invoke();
-    }
+    private void OnCloseView() => SetVisibility(false);
+    
+    private void View_OnPressBack() => OnPressBack?.Invoke();
 
     private bool IsMessageFomCurrentConversation(ChatMessage message)
     {

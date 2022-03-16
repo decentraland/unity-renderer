@@ -16,7 +16,6 @@ public class PrivateChatWindowHUDView : MonoBehaviour, IPrivateChatComponentView
     public Button closeButton;
     public JumpInButton jumpInButton;
     public ChatHUDView chatHudView;
-    public PrivateChatWindowHUDController controller;
     public TMP_Text windowTitleText;
     public RawImage profilePictureImage;
 
@@ -50,23 +49,19 @@ public class PrivateChatWindowHUDView : MonoBehaviour, IPrivateChatComponentView
     public event Action OnClose;
     public event Action<ChatMessage> OnSendMessage;
 
-    void Awake() { chatHudView.OnSendMessage += ChatHUDView_OnSendMessage; }
+    void Awake()
+    {
+        chatHudView.OnSendMessage += ChatHUDView_OnSendMessage;
+        minimizeButton.onClick.AddListener(OnMinimizeButtonPressed);
+        closeButton.onClick.AddListener(OnCloseButtonPressed);
+        backButton.onClick.AddListener(() => { OnPressBack?.Invoke(); });
+    }
 
     void OnEnable() { Utils.ForceUpdateLayout(transform as RectTransform); }
 
-    public static PrivateChatWindowHUDView Create(PrivateChatWindowHUDController controller)
+    public static PrivateChatWindowHUDView Create()
     {
-        var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<PrivateChatWindowHUDView>();
-        view.Initialize(controller);
-        return view;
-    }
-
-    private void Initialize(PrivateChatWindowHUDController controller)
-    {
-        this.controller = controller;
-        this.minimizeButton.onClick.AddListener(OnMinimizeButtonPressed);
-        this.closeButton.onClick.AddListener(OnCloseButtonPressed);
-        this.backButton.onClick.AddListener(() => { OnPressBack?.Invoke(); });
+        return Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<PrivateChatWindowHUDView>();
     }
 
     public void ChatHUDView_OnSendMessage(ChatMessage message)
@@ -75,22 +70,14 @@ public class PrivateChatWindowHUDView : MonoBehaviour, IPrivateChatComponentView
             return;
 
         message.messageType = ChatMessage.Type.PRIVATE;
-        message.recipient = controller.conversationUserName;
+        message.recipient = profile.userName;
 
         OnSendMessage?.Invoke(message);
     }
 
-    public void OnMinimizeButtonPressed()
-    {
-        controller.SetVisibility(false);
-        OnMinimize?.Invoke();
-    }
+    private void OnMinimizeButtonPressed() => OnMinimize?.Invoke();
 
-    public void OnCloseButtonPressed()
-    {
-        controller.SetVisibility(false);
-        OnClose?.Invoke();
-    }
+    private void OnCloseButtonPressed() => OnClose?.Invoke();
     
     public void Setup(UserProfile profile)
     {
@@ -111,12 +98,14 @@ public class PrivateChatWindowHUDView : MonoBehaviour, IPrivateChatComponentView
     {
         gameObject.SetActive(true);
         chatHudView.scrollRect.verticalNormalizedPosition = 0;
+        AudioScriptableObjects.dialogOpen.Play(true);
     }
 
     public void Hide()
     {
         profile?.snapshotObserver?.RemoveListener(ConfigureAvatarSnapshot);
         gameObject.SetActive(false);
+        AudioScriptableObjects.dialogClose.Play(true);
     }
 
     public void Dispose()
