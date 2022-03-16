@@ -230,7 +230,7 @@ namespace DCL.Builder
             
             // Note: if the aerialscreenshot is not available, this means that the scene has been deployed
             // from the panel instead of the editor, so we don't have the scene to rotate, we publish it to north directly
-            bool publishFromPanel = scene.aerialScreenshotTexture == null;
+            bool publishFromPanel = scene.aerialScreenshotTexture == null && scene.sceneType == IBuilderScene.SceneType.PROJECT;
             
             builderInWorldBridge.PublishScene(filesToDecode, files, metadata, statelessManifest, publishFromPanel);
         }
