@@ -62,30 +62,29 @@ namespace MessagingBusTest
         [Explicit]
         public void MeasureTimeToProcessThousandMessages()
         {
-            controller.StartBus(MessagingBusType.INIT);
-
             Measure.Method(() =>
-                {
-                    var processed = controller.initBus.processedMessagesCount;
-                    Assert.IsTrue(controller.initBus.pendingMessagesCount > 1000);
-                    while (controller.initBus.processedMessagesCount < processed + 1000)
-                    {
-                        controller.initBus.ProcessQueue(0.1f, out _);
-                    }
-                })
-                .SetUp(() =>
-                {
-                    SetupTests();
-                    for (var i = 0; i < 1001; i++)
-                    {
-                        EnqueueNextMessage();
-                    }
-                })
-                .WarmupCount(3)
-                .MeasurementCount(10)
-                .IterationsPerMeasurement(10)
-                .GC()
-                .Run();
+                   {
+                       var processed = controller.initBus.processedMessagesCount;
+                       Assert.IsTrue(controller.initBus.pendingMessagesCount > 1000);
+                       while (controller.initBus.processedMessagesCount < processed + 1000)
+                       {
+                           controller.initBus.ProcessQueue(0.1f, out _);
+                       }
+                   })
+                   .SetUp(() =>
+                   {
+                       SetupTests();
+                       controller.StartBus(MessagingBusType.INIT);
+                       for (var i = 0; i < 1001; i++)
+                       {
+                           EnqueueNextMessage();
+                       }
+                   })
+                   .WarmupCount(3)
+                   .MeasurementCount(10)
+                   .IterationsPerMeasurement(10)
+                   .GC()
+                   .Run();
         }
 
         private void EnqueueNextMessage()
@@ -160,12 +159,11 @@ namespace MessagingBusTest
         }
 
         [Test]
-        [Category("Explicit")]
-        [Explicit]
         public void LossyMessageIsReplaced()
         {
             string entityId = "entity";
-            MessagingBus bus = new MessagingBus(MessagingBusType.SYSTEM, new DummyMessageHandler(), null);
+            DummyMessageHandler messageProcessHandler = new DummyMessageHandler();
+            MessagingBus bus = new MessagingBus(MessagingBusType.SYSTEM, messageProcessHandler, new MessagingController(new MessagingControllersManager(messageProcessHandler), messageProcessHandler));
 
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
@@ -185,12 +183,11 @@ namespace MessagingBusTest
         }
 
         [Test]
-        [Category("Explicit")]
-        [Explicit]
         public void RemoveEntityShouldClearLossyMessages()
         {
             string entityId = "entity";
-            MessagingBus bus = new MessagingBus(MessagingBusType.SYSTEM, new DummyMessageHandler(), null);
+            DummyMessageHandler messageProcessHandler = new DummyMessageHandler();
+            MessagingBus bus = new MessagingBus(MessagingBusType.SYSTEM, messageProcessHandler, new MessagingController(new MessagingControllersManager(messageProcessHandler), messageProcessHandler));
 
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
