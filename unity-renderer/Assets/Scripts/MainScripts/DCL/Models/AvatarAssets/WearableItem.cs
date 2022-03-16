@@ -35,7 +35,7 @@ public class WearableItem
     }
 
     public Data data;
-    public EmoteDataV0 emoteDataV0 = null;
+    public EmoteDataV0 emoteDataV0;
     public string id;
 
     public string baseUrl;
