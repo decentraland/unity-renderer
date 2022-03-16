@@ -30,21 +30,6 @@ namespace DCL.Emotes
             this.dataStore.animations.Clear();
             this.dataStore.emotesOnUse.OnRefCountUpdated += OnRefCountUpdated;
 
-            var item = JsonConvert.DeserializeObject<WearableItem>(Resources.Load<TextAsset>("emoteDef").text);
-            item.baseUrl = new System.Uri(Application.dataPath + "/../TestResources").AbsoluteUri + "/Avatar/Assets/";
-            foreach (var rep in item.data.representations)
-            {
-                rep.contents = rep.contents.Select((x) =>
-                                  {
-                                      x.hash = x.key;
-                                      return x;
-                                  })
-                                  .ToArray();
-            }
-
-            item.thumbnail = "";
-            CatalogController.i.EmbedWearables(new [] { item });
-
             InitializeEmbeddedEmotes();
             InitializeEmotes(this.dataStore.emotesOnUse.GetAllRefCounts());
         }
