@@ -65,7 +65,8 @@ namespace DCL
             RemoveRendereable(self, sceneId, r);
         }
 
-        public static void AddMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId, Material material )
+        public static void AddMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId,
+            Material material)
         {
             var r = new Rendereable();
             r.materials.Add(material);
@@ -73,12 +74,36 @@ namespace DCL
             AddRendereable(self, sceneId, r);
         }
 
-        public static void RemoveMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId, Material material )
+        public static void RemoveMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId,
+            Material material)
         {
             var r = new Rendereable();
             r.materials.Add(material);
             r.ownerId = ownerId;
             RemoveRendereable(self, sceneId, r);
+        }
+
+        public static void AddAudioClip(this DataStore_WorldObjects self, string sceneId, AudioClip clip)
+        {
+            if (!self.sceneData.ContainsKey(sceneId))
+                return;
+
+            // NOTE(Brian): entityId is not used here, so audio clips do not work with the ignoreOwners
+            //              feature. This is done on purpose as ignoreOwners is only used by the smart item component
+            //              and should be deprecated. Also, supporting this would complicate the tracking logic and
+            //              has a high maintenance cost.
+
+            var sceneData = self.sceneData[sceneId];
+            sceneData.audioClips.Add(clip);
+        }
+
+        public static void RemoveAudioClip(this DataStore_WorldObjects self, string sceneId, AudioClip clip)
+        {
+            if (!self.sceneData.ContainsKey(sceneId))
+                return;
+
+            var sceneData = self.sceneData[sceneId];
+            sceneData.audioClips.Remove(clip);
         }
 
 
@@ -90,7 +115,7 @@ namespace DCL
                 return;
             }
 
-            if (string.IsNullOrEmpty(sceneId))
+            if (string.IsNullOrEmpty(sceneId) || !self.sceneData.ContainsKey(sceneId))
             {
                 logger.LogWarning($"AddRendereable", $"invalid sceneId! (id: {sceneId})");
                 return;
@@ -113,6 +138,8 @@ namespace DCL
             sceneData.renderers.Add(rendereable.renderers);
             sceneData.owners.Add(rendereable.ownerId);
             sceneData.triangles.Set( sceneData.triangles.Get() + rendereable.totalTriangleCount);
+            sceneData.animationClipSize.Set(sceneData.animationClipSize.Get() + rendereable.animationClipSize);
+            sceneData.meshDataSize.Set(sceneData.meshDataSize.Get() + rendereable.meshDataSize);
         }
 
         public static void RemoveRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
@@ -146,6 +173,8 @@ namespace DCL
             sceneData.renderers.Remove(rendereable.renderers);
             sceneData.owners.Remove(rendereable.ownerId);
             sceneData.triangles.Set( sceneData.triangles.Get() - rendereable.totalTriangleCount);
+            sceneData.animationClipSize.Set(sceneData.animationClipSize.Get() - rendereable.animationClipSize);
+            sceneData.meshDataSize.Set(sceneData.meshDataSize.Get() - rendereable.meshDataSize);
         }
     }
 }
