@@ -23,7 +23,8 @@
         "category": "upper_body",
         "tags": [
             "base-wearable"
-        ]
+        ],
+        "rarity" : "epic"
     },
     "emoteDataV0": {
         "loop": false 
@@ -33,14 +34,14 @@
     "i18n": [
         {
             "code": "en",
-            "text": "Yellow Sweater"
+            "text": "Emote Test"
         },
         {
             "code": "es",
-            "text": "Suéter Amarillo"
+            "text": "Emote Español test"
         }
     ],
-    "thumbnail": "QmcBB9qUtjzmu4qLyqBJ5oAd5dqCw5tgVUwfpG2NYsWESk",
+    "thumbnail": "Jacket5.png",
     "description": "",
     "rarity": ""
 }
