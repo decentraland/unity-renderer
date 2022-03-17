@@ -158,7 +158,6 @@ namespace DCL
                         remainingAttemps--;
                         if (remainingAttemps > 0)
                         {
-                            Debug.LogWarning($"Retrying web request: {url} ({remainingAttemps} attemps remaining)");
                             resultOp.Dispose();
                             resultOp = SendWebRequest(requestType, url, downloadHandler, OnSuccess, OnFail, remainingAttemps, timeout, disposeOnCompleted, headers, resultOp);
                         }
