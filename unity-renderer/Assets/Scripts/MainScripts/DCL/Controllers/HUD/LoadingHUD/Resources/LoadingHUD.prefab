@@ -355,7 +355,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hideOnEnable: 0
-  animSpeedFactor: 1
+  animSpeedFactor: 0.5
   disableAfterFadeOut: 0
   visibleParam: visible
 --- !u!225 &-566327302672007162
