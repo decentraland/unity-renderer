@@ -96,7 +96,19 @@ namespace DCL.Builder
             {
                 foreach (Vector2Int landParcel in land.parcels)
                 {
-                    if(land.scenes.Count > 0 && !land.scenes[0].isEmpty)
+                    bool found = false;
+                    foreach (Scene scene in land.scenes)
+                    {
+                        foreach (Vector2Int sceneParcel in scene.parcels)
+                        {
+                            if (sceneParcel == landParcel)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(found)
                         landsToHighlightWithContent.Add(landParcel);
                     else
                         landsToHighlight.Add(landParcel);
