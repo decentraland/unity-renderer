@@ -1,0 +1,46 @@
+﻿{
+    "id": "emote",
+    "data": {
+        "representations": [
+            {
+                "bodyShapes": [
+                    "urn:decentraland:off-chain:base-avatars:BaseFemale",
+                    "urn:decentraland:off-chain:base-avatars:BaseMale"
+                ],
+                "mainFile": "FW_NFT_Emote02.glb",
+                "overrideReplaces": [
+                ],
+                "overrideHides": [
+                ],
+                "contents": [
+                    {
+                        "key": "FW_NFT_Emote02.glb",
+                        "hash": "FW_NFT_Emote02.glb"
+                    }
+                ]
+            }
+        ],
+        "category": "upper_body",
+        "tags": [
+            "base-wearable"
+        ]
+    },
+    "emoteDataV0": {
+        "loop": false 
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+        {
+            "code": "en",
+            "text": "Yellow Sweater"
+        },
+        {
+            "code": "es",
+            "text": "Suéter Amarillo"
+        }
+    ],
+    "thumbnail": "QmcBB9qUtjzmu4qLyqBJ5oAd5dqCw5tgVUwfpG2NYsWESk",
+    "description": "",
+    "rarity": ""
+}
