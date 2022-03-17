@@ -158,7 +158,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2579257a83b4440793e0791716c8360b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  root: {fileID: 0}
   lookAtIndicator: {fileID: 2815004449201490178}
   areaIndicator: {fileID: 5226825368737200735}
   areaText: {fileID: 5043865060807413299}
@@ -394,7 +393,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 22d4d24d58713409db2fbe6a7c577d34, type: 2}
+      objectReference: {fileID: 2100000, guid: 7c96e2f21ee0941f096c304aa4e8f6a6, type: 2}
     - target: {fileID: 100006, guid: 0e4bc46e301b6498180af5ba0d8d9d59, type: 3}
       propertyPath: m_Name
       value: ArrowMesh
