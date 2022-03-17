@@ -1,4 +1,5 @@
 using System;
+using DCL.Helpers;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -13,14 +14,17 @@ internal interface ISpawnPointIndicator : IDisposable
 internal class SpawnPointIndicator : ISpawnPointIndicator
 {
     private SpawnPointIndicatorMonoBehaviour spawnPointIndicatorBehaviour;
+    private Vector3 position;
 
     public SpawnPointIndicator(SpawnPointIndicatorMonoBehaviour spawnPointIndicatorBehaviour)
     {
         this.spawnPointIndicatorBehaviour = spawnPointIndicatorBehaviour;
+        CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
     }
 
     void IDisposable.Dispose()
     {
+        CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
         if (!spawnPointIndicatorBehaviour.isDestroyed)
         {
             Object.Destroy(spawnPointIndicatorBehaviour.gameObject);
@@ -34,7 +38,8 @@ internal class SpawnPointIndicator : ISpawnPointIndicator
 
     void ISpawnPointIndicator.SetPosition(in Vector3 position)
     {
-        spawnPointIndicatorBehaviour.SetPosition(position);
+        this.position = position;
+        spawnPointIndicatorBehaviour.SetPosition(PositionUtils.WorldToUnityPosition(position));
     }
 
     void ISpawnPointIndicator.SetSize(in Vector3 size)
@@ -45,5 +50,10 @@ internal class SpawnPointIndicator : ISpawnPointIndicator
     void ISpawnPointIndicator.SetRotation(in Quaternion? rotation)
     {
         spawnPointIndicatorBehaviour.SetRotation(rotation);
+    }
+
+    void OnWorldReposition(Vector3 current, Vector3 previous)
+    {
+        spawnPointIndicatorBehaviour.SetPosition(PositionUtils.WorldToUnityPosition(position));
     }
 }

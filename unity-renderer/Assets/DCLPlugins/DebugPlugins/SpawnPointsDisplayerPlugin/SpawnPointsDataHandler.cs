@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL.Helpers;
 using UnityEngine;
 using Variables.SpawnPoints;
 
@@ -116,7 +115,7 @@ internal class SpawnPointsDataHandler : ISpawnPointsDataHandler
         float y = spawnPoint.position.y[0] + size.y * 0.5f;
         float z = spawnPoint.position.z[0] + size.z * 0.5f;
 
-        return PositionUtils.WorldToUnityPosition(new Vector3(x, y, z));
+        return new Vector3(x, y, z);
     }
 
     internal static Quaternion? GetLookAtRotation(in SceneSpawnPoint spawnPoint, in Vector3 position)
@@ -126,8 +125,7 @@ internal class SpawnPointsDataHandler : ISpawnPointsDataHandler
             return null;
         }
 
-        var cameraTarget = PositionUtils.WorldToUnityPosition(spawnPoint.cameraTarget.Value);
-        return Quaternion.LookRotation(cameraTarget - position);
+        return Quaternion.LookRotation(spawnPoint.cameraTarget.Value - position);
     }
 
     private static bool IsSpawnArea(in SceneSpawnPoint spawnPoint)
