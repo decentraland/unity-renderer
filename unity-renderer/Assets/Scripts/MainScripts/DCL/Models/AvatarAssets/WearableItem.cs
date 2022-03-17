@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Emotes;
+using UnityEngine;
 
 [Serializable]
 public class WearableItem
@@ -43,6 +44,7 @@ public class WearableItem
 
     public i18n[] i18n;
     public string thumbnail;
+    public Sprite thumbnailSprite;
 
     //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
     public string rarity;

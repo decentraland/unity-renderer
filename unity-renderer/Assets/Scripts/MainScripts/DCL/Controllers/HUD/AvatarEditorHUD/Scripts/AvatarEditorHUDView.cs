@@ -1,6 +1,9 @@
+using DCL;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,8 +14,14 @@ public class AvatarEditorHUDView : MonoBehaviour
     private static readonly int RANDOMIZE_ANIMATOR_LOADING_BOOL = Animator.StringToHash("Loading");
     private const string VIEW_PATH = "AvatarEditorHUD";
     private const string VIEW_OBJECT_NAME = "_AvatarEditorHUD";
+    internal const int AVATAR_SECTION_INDEX = 0;
+    internal const string AVATAR_SECTION_TITLE = "<b>Avatar</b>";
+    internal const int EMOTES_SECTION_INDEX = 1;
+    internal const string EMOTES_SECTION_TITLE = "<b>Emotes</b>";
+    private const string RESET_PREVIEW_ANIMATION = "Idle";
 
     public bool isOpen { get; private set; }
+    internal BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
 
     internal bool arePanelsInitialized = false;
 
@@ -101,6 +110,12 @@ public class AvatarEditorHUDView : MonoBehaviour
     [SerializeField] private GameObject skinsPopulatedListContainer;
     [SerializeField] private GameObject skinsEmptyListContainer;
 
+    [Header("Section Selector")]
+    [SerializeField] internal SectionSelectorComponentView sectionSelector;
+    [SerializeField] internal TMP_Text sectionTitle;
+    [SerializeField] internal GameObject avatarSection;
+    [SerializeField] internal GameObject emotesSection;
+
     internal static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
@@ -139,6 +154,8 @@ public class AvatarEditorHUDView : MonoBehaviour
             button.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
 
         characterPreviewController.camera.enabled = false;
+        
+        ConfigureSectionSelector();
     }
 
     public void SetIsWeb3(bool isWeb3User)
@@ -290,7 +307,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void UpdateAvatarPreview(AvatarModel avatarModel)
     {
-        if (avatarModel?.wearables == null)
+        if (avatarModel?.wearables == null || loadingSpinnerGameObject.activeSelf)
             return;
 
         doneButton.interactable = false;
@@ -369,6 +386,15 @@ public class AvatarEditorHUDView : MonoBehaviour
     private void OnDoneButton()
     {
         doneButton.interactable = false;
+        CoroutineStarter.Start(TakeSnapshotsAfterStopPreviewAnimation());
+
+    }
+
+    private IEnumerator TakeSnapshotsAfterStopPreviewAnimation()
+    {
+        // We need to stop the current preview animation in order to take a correct snapshot
+        ResetPreviewEmote();
+        yield return new WaitForSeconds(0.2f);
         characterPreviewController.TakeSnapshots(OnSnapshotsReady, OnSnapshotsFailed);
     }
 
@@ -434,6 +460,9 @@ public class AvatarEditorHUDView : MonoBehaviour
             Destroy(characterPreviewController.gameObject);
             characterPreviewController = null;
         }
+
+        sectionSelector.GetSection(0).onSelect.RemoveAllListeners();
+        sectionSelector.GetSection(1).onSelect.RemoveAllListeners();
     }
 
     public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
@@ -453,7 +482,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         rectTransform.anchorMax = Vector2.one;
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
         rectTransform.localPosition = Vector2.zero;
-        rectTransform.offsetMax = new Vector2(0f, 50f);
+        rectTransform.offsetMax = new Vector2(0f, 0f);
         rectTransform.offsetMin = Vector2.zero;
     }
 
@@ -463,4 +492,44 @@ public class AvatarEditorHUDView : MonoBehaviour
         skinsEmptyListContainer.SetActive(!show);
         skinsConnectWalletButtonContainer.SetActive(show);
     }
+
+    internal void ConfigureSectionSelector()
+    {
+        sectionTitle.text = AVATAR_SECTION_TITLE;
+
+        sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
+        {
+            avatarSection.SetActive(isSelected);
+
+            if (isSelected)
+            {
+                sectionTitle.text = AVATAR_SECTION_TITLE;
+                ResetPreviewEmote();
+            }
+
+            isEmotesCustomizationSelected.Set(false, notifyEvent: false);
+        });
+        sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
+        {
+            emotesSection.SetActive(isSelected);
+
+            if (isSelected)
+            {
+                sectionTitle.text = EMOTES_SECTION_TITLE;
+                ResetPreviewEmote();
+            }
+
+            characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
+            isEmotesCustomizationSelected.Set(true, notifyEvent: false);
+        });
+    }
+
+    internal void SetSectionActive(int sectionIndex, bool isActive)
+    {
+        sectionSelector.GetSection(sectionIndex).SetActive(isActive);
+    }
+    
+    public void PlayPreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
+
+    public void ResetPreviewEmote() { PlayPreviewEmote(RESET_PREVIEW_ANIMATION); }
 }

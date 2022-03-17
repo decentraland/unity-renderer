@@ -30,6 +30,12 @@ public interface IImageComponentView
     void SetImage(string uri);
 
     /// <summary>
+    /// Indicates if we want to cache the last uri request.
+    /// </summary>
+    /// <param name="isEnabled">True for caching the last uri request.</param>
+    void SetLastUriRequestCached(bool isEnabled);
+
+    /// <summary>
     /// Resize the image size to fit into the parent.
     /// </summary>
     /// <param name="fitParent">True to fit the size.</param>
@@ -56,6 +62,8 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     internal Sprite currentSprite;
     internal ILazyTextureObserver imageObserver = new LazyTextureObserver();
     internal Vector2 lastParentSize;
+    internal string currentUriLoading = null;
+    internal string lastLoadedUri = null;
 
     public override void Start() { imageObserver.AddListener(OnImageObserverUpdated); }
 
@@ -76,6 +84,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         if (model == null)
             return;
 
+        SetLastUriRequestCached(model.lastUriCached);
         if (model.sprite != null)
             SetImage(model.sprite);
         else if (model.texture != null)
@@ -90,6 +99,8 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     {
         base.Dispose();
 
+        currentUriLoading = null;
+        lastLoadedUri = null;
         imageObserver.RemoveListener(OnImageObserverUpdated);
         Destroy(currentSprite);
     }
@@ -102,6 +113,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
             return;
 
         image.sprite = sprite;
+        lastLoadedUri = null;
         SetFitParent(model.fitParent);
     }
 
@@ -126,6 +138,9 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
 
     public void SetImage(string uri)
     {
+        if (model.lastUriCached && uri == lastLoadedUri)
+            return;
+
         model.uri = uri;
 
         if (!Application.isPlaying)
@@ -133,10 +148,18 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
 
         SetLoadingIndicatorVisible(true);
         if (!string.IsNullOrEmpty(uri))
+        {
+            currentUriLoading = uri;
             imageObserver.RefreshWithUri(uri);
+        }
         else
+        {
+            lastLoadedUri = null;
             OnImageObserverUpdated(null);
+        }
     }
+
+    public void SetLastUriRequestCached(bool isEnabled) { model.lastUriCached = isEnabled; }
 
     public void SetFitParent(bool fitParent)
     {
@@ -152,16 +175,18 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         loadingIndicator.SetActive(isVisible);
     }
 
-    internal void OnImageObserverUpdated(Texture texture)
+    internal void OnImageObserverUpdated(Texture2D texture)
     {
         if (Application.isPlaying)
             Destroy(currentSprite);
         else
             DestroyImmediate(currentSprite);
 
-        currentSprite = texture != null ? Sprite.Create((Texture2D)texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)) : null;
+        currentSprite = texture != null ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)) : null;
         SetImage(currentSprite);
         SetLoadingIndicatorVisible(false);
+        lastLoadedUri = currentUriLoading;
+        currentUriLoading = null;
         OnLoaded?.Invoke(currentSprite);
     }
 
