@@ -125,7 +125,7 @@ namespace DCL.Skybox
 
             for (int i = 0; i < configList.Count; i++)
             {
-                if (!configList[i].IsConfigActive())
+                if (!configList[i].enabled)
                 {
                     continue;
                 }

@@ -372,6 +372,32 @@ namespace DCL.Skybox
 
                 GUI.enabled = true;
 
+                Color circleColor = Color.green;
+                switch (configs3D[i].layers.renderType)
+                {
+                    case LayerRenderType.Rendering:
+                        circleColor = Color.green;
+                        break;
+                    case LayerRenderType.NotRendering:
+                        circleColor = Color.gray;
+                        break;
+                    case LayerRenderType.Conflict_Playing:
+                        circleColor = Color.yellow;
+                        break;
+                    case LayerRenderType.Conflict_NotPlaying:
+                        circleColor = Color.red;
+                        break;
+                    default:
+                        break;
+                }
+
+                Color normalContentColor = GUI.color;
+                GUI.color = circleColor;
+
+                EditorGUILayout.LabelField(('\u29BF').ToString(), renderingMarkerStyle, GUILayout.Width(60), GUILayout.Height(20));
+
+                GUI.color = normalContentColor;
+
                 // Dome context menu
                 if (GUILayout.Button(":", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
@@ -398,7 +424,17 @@ namespace DCL.Skybox
                         domeList.Insert(index + 1, new Config3DDome("Dome " + (domeList.Count + 1)));
                         Repaint();
                     };
-                    ShowDomeContextMenu(deleteBtnClicked, addBtnClicked, list);
+
+                    // Anonymous method for Paste layer
+                    GenericMenu.MenuFunction2 pasteBtnClicked = (object obj) =>
+                    {
+                        ArrayList list = obj as ArrayList;
+                        List<Config3DDome> domeList = list[0] as List<Config3DDome>;
+                        int index = (int)list[1];
+                        copiedLayer.DeepCopy(domeList[index].layers);
+                        Repaint();
+                    };
+                    ShowDomeContextMenu(deleteBtnClicked, addBtnClicked, pasteBtnClicked, list);
                 }
                 EditorGUILayout.EndHorizontal();
 
@@ -411,7 +447,7 @@ namespace DCL.Skybox
 
                     EditorGUILayout.BeginVertical("box");
                     GUILayout.Space(10);
-                    RenderTextureLayers(configs3D[i].layers, false);
+                    RenderTextureLayer(configs3D[i].layers);
                     GUILayout.Space(10);
                     EditorGUILayout.EndVertical();
                     EditorGUI.indentLevel--;
@@ -431,13 +467,15 @@ namespace DCL.Skybox
             }
         }
 
-        void ShowDomeContextMenu(GenericMenu.MenuFunction2 OnDeleteBtnClicked, GenericMenu.MenuFunction2 OnAddBtnClicked, object list)
+        void ShowDomeContextMenu(GenericMenu.MenuFunction2 OnDeleteBtnClicked, GenericMenu.MenuFunction2 OnAddBtnClicked, GenericMenu.MenuFunction2 OnPasteBtnClicked, object list)
         {
             // Create menu
             GenericMenu menu = new GenericMenu();
 
             // Add option
             menu.AddItem(new GUIContent("Add"), false, OnAddBtnClicked, list);
+            // Paste option
+            menu.AddItem(new GUIContent("Paste"), false, OnPasteBtnClicked, list);
 
             menu.AddSeparator("");
             // Delete option

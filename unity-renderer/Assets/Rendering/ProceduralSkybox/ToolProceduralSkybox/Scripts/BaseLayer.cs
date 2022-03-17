@@ -102,6 +102,7 @@ namespace DCL.Skybox
             particleRotation = new List<TransitioningVector3>();
         }
 
+        // Copy details of present layer on the passed layer
         public void DeepCopy(TextureLayer layer)
         {
             layer.slotID = this.slotID;

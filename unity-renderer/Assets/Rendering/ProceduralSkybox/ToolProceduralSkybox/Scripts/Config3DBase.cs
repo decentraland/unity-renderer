@@ -18,6 +18,6 @@ namespace DCL.Skybox
         public bool expandedInEditor = false;
         public string nameInEditor = "";
 
-        public virtual bool IsConfigActive() { return true; }
+        public virtual bool IsConfigActive(float currentTime, float cycleTime = 24) { return true; }
     }
 }

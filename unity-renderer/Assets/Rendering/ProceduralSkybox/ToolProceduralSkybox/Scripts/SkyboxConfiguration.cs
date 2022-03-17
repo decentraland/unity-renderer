@@ -200,6 +200,16 @@ namespace DCL.Skybox
                     continue;
                 }
 
+                // If dome is not active due to time, Increment dome number, close dome GO and continue
+                if (!additional3Dconfig[i].IsConfigActive(dayTime, cycleTime))
+                {
+                    domeReferences[domeCount].domeGO.SetActive(false);
+                    domeCount++;
+                    continue;
+                }
+
+                domeReferences[domeCount].domeGO.SetActive(true);
+
                 //Apply config
                 //General Values
                 domeReferences[domeCount].domeMat.SetColor(SkyboxShaderUtils.LightTint, directionalLightLayer.tintColor.Evaluate(normalizedDayTime));
@@ -216,7 +226,9 @@ namespace DCL.Skybox
                 domeReferences[domeCount].domeMat.SetTexture(SkyboxShaderUtils.HorizonMask, additional3Dconfig[i].backgroundLayer.horizonMask);
                 domeReferences[domeCount].domeMat.SetVector(SkyboxShaderUtils.HorizonMaskValues, additional3Dconfig[i].backgroundLayer.horizonMaskValues);
 
-                ApplyAllSlots(domeReferences[domeCount].domeMat, additional3Dconfig[i].layers, dayTime, normalizedDayTime, slotCount, cycleTime);
+
+                //ApplyAllSlots(domeReferences[domeCount].domeMat, additional3Dconfig[i].layers, dayTime, normalizedDayTime, slotCount, cycleTime);
+                ApplyTextureLayer(domeReferences[domeCount].domeMat, dayTime, normalizedDayTime, 0, additional3Dconfig[i].layers, cycleTime);
                 domeCount++;
             }
         }

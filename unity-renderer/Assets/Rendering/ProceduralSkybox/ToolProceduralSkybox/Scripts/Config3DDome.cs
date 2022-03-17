@@ -8,7 +8,7 @@ namespace DCL.Skybox
     public class Config3DDome : Config3DBase
     {
         public BackgroundLayer backgroundLayer = new BackgroundLayer();
-        public List<TextureLayer> layers = new List<TextureLayer>();
+        public TextureLayer layers = new TextureLayer();
 
         public Config3DDome(string name)
         {
@@ -16,14 +16,39 @@ namespace DCL.Skybox
             nameInEditor = name;
         }
 
-        public override bool IsConfigActive()
+        public override bool IsConfigActive(float currentTime, float cycleTime = 24)
         {
-            bool configActive = true;
+            bool configActive = false;
 
             if (!enabled)
             {
-                configActive = false;
+                layers.renderType = LayerRenderType.NotRendering;
+                return configActive;
             }
+
+
+            float endTimeEdited = layers.timeSpan_End;
+            float dayTimeEdited = currentTime;
+
+            if (layers.timeSpan_End < layers.timeSpan_start)
+            {
+                endTimeEdited = cycleTime + layers.timeSpan_End;
+                if (currentTime < layers.timeSpan_start)
+                {
+                    dayTimeEdited = cycleTime + currentTime;
+                }
+            }
+
+            if (dayTimeEdited >= layers.timeSpan_start && dayTimeEdited <= endTimeEdited)
+            {
+                configActive = true;
+                layers.renderType = LayerRenderType.Rendering;
+            }
+            else
+            {
+                layers.renderType = LayerRenderType.NotRendering;
+            }
+
             return configActive;
         }
     }
