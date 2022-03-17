@@ -391,9 +391,6 @@ namespace UnityGLTF
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
-            isDestroyed = true;
-            CleanUp();
-            
             if (state != State.COMPLETED)
             {
                 ctokenSource.Cancel();

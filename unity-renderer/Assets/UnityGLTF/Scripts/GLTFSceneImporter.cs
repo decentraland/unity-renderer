@@ -397,7 +397,7 @@ namespace UnityGLTF
             {
                 if (mesh.Value.Primitives != null)
                 {
-                    await ConstructMeshAttributes(mesh.Value, mesh);
+                    await ConstructMeshAttributes(mesh.Value, mesh, token);
                 }
             }
 
@@ -430,7 +430,7 @@ namespace UnityGLTF
             }
         }
 
-        private async UniTask ConstructMeshAttributes(GLTFMesh mesh, MeshId meshId)
+        private async UniTask ConstructMeshAttributes(GLTFMesh mesh, MeshId meshId, CancellationToken token)
         {
             int meshIdIndex = meshId.Id;
 
@@ -450,7 +450,7 @@ namespace UnityGLTF
 
                 if (_assetCache.MeshCache[meshIdIndex][i].MeshAttributes.Count == 0)
                 {
-                    await ConstructMeshAttributes(primitive, meshIdIndex, i);
+                    await ConstructMeshAttributes(primitive, meshIdIndex, i, token);
 
                     if (primitive.Material != null && !pendingImageBuffers.Contains(primitive.Material.Value))
                     {
@@ -465,7 +465,7 @@ namespace UnityGLTF
         static List<string> streamingImagesStaticList = new List<string>();
         List<string> streamingImagesLocalList = new List<string>();
 
-        protected async UniTask ConstructImageBuffer(GLTFTexture texture, int textureIndex, bool linear)
+        protected async UniTask ConstructImageBuffer(GLTFTexture texture, int textureIndex, bool linear, CancellationToken token)
         {
             int sourceId = GetTextureSourceId(texture);
             GLTFImage image = _gltfRoot.Images[sourceId];
@@ -474,7 +474,7 @@ namespace UnityGLTF
             {
                 while (streamingImagesStaticList.Contains(image.Uri))
                 {
-                    await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
+                    await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: token);
                 }
             }
 
@@ -489,7 +489,7 @@ namespace UnityGLTF
                     streamingImagesStaticList.Add(image.Uri);
                     streamingImagesLocalList.Add(image.Uri);
 
-                    await _loader.LoadStream(image.Uri, CancellationToken.None);
+                    await _loader.LoadStream(image.Uri, token);
                     _assetCache.ImageStreamCache[sourceId] = _loader.LoadedStream;
 
                     streamingImagesStaticList.Remove(image.Uri);
@@ -498,7 +498,7 @@ namespace UnityGLTF
                 else if (image.Uri == null && image.BufferView != null && _assetCache.BufferCache[image.BufferView.Value.Buffer.Id] == null)
                 {
                     int bufferIndex = image.BufferView.Value.Buffer.Id;
-                    await ConstructBuffer(_gltfRoot.Buffers[bufferIndex], bufferIndex);
+                    await ConstructBuffer(_gltfRoot.Buffers[bufferIndex], bufferIndex, token);
                 }
             }
 
@@ -579,12 +579,15 @@ namespace UnityGLTF
             InitializeGltfTopLevelObject();
 
             await ConstructScene(scene, showSceneObj, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (SceneParent != null)
                 CreatedObject.transform.SetParent(SceneParent, false);
+
+            _lastLoadedScene = CreatedObject;
         }
 
-        protected async UniTask ConstructBuffer(GLTFBuffer buffer, int bufferIndex)
+        protected async UniTask ConstructBuffer(GLTFBuffer buffer, int bufferIndex, CancellationToken token)
         {
             if (buffer.Uri == null)
             {
@@ -610,7 +613,7 @@ namespace UnityGLTF
                     }
                     else
                     {
-                        await _loader.LoadStream(buffer.Uri, CancellationToken.None);
+                        await _loader.LoadStream(buffer.Uri, token);
                         bufferDataStream = _loader.LoadedStream;
                         PersistentAssetCache.AddBuffer(buffer.Uri, id, bufferDataStream);
                     }
@@ -623,7 +626,7 @@ namespace UnityGLTF
             }
         }
 
-        private async UniTask ConstructImage(  TextureCreationSettings settings, GLTFImage image, int imageCacheIndex) //, bool markGpuOnly = false, bool linear = true)
+        private async UniTask ConstructImage(  TextureCreationSettings settings, GLTFImage image, int imageCacheIndex, CancellationToken cancellationToken) //, bool markGpuOnly = false, bool linear = true)
         {
             if (_assetCache.ImageCache[imageCacheIndex] != null)
                 return;
@@ -642,16 +645,16 @@ namespace UnityGLTF
 
                 BufferCacheData bufferContents = _assetCache.BufferCache[bufferView.Buffer.Id];
                 bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
-                await bufferContents.Stream.ReadAsync(data, 0, data.Length);
+                await bufferContents.Stream.ReadAsync(data, 0, data.Length, cancellationToken);
 
-                await ConstructUnityTexture(settings, data, imageCacheIndex);
+                ConstructUnityTexture(settings, data, imageCacheIndex);
             }
             else
             {
                 string uri = image.Uri;
                 byte[] bufferData = null;
 
-                await TaskUtils.Run(() => URIHelper.TryParseBase64(uri, out bufferData));
+                await TaskUtils.Run(() => URIHelper.TryParseBase64(uri, out bufferData), cancellationToken: cancellationToken);
 
                 Stream stream = null;
 
@@ -668,10 +671,10 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex)
+        protected void ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex)
         {
             Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, settings.generateMipmaps, settings.linear);
-            texture.name = "GLTFGeneratedTexture";
+
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
 
@@ -690,8 +693,6 @@ namespace UnityGLTF
             
             // Resizing must be the last step to avoid breaking the texture when copying with Graphics.CopyTexture()
             _assetCache.ImageCache[imageCacheIndex] = CheckAndReduceTextureSize(texture, settings.linear);
-
-            await UniTask.Yield();
         }
 
         protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex)
@@ -703,7 +704,7 @@ namespace UnityGLTF
             {
                 using (MemoryStream memoryStream = stream as MemoryStream)
                 {
-                    await ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
+                    ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
                 }
             }
 
@@ -712,7 +713,7 @@ namespace UnityGLTF
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     await fileStream.CopyToAsync(memoryStream);
-                    await ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
+                    ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
                 }
             }
         }
@@ -746,7 +747,7 @@ namespace UnityGLTF
             return dstTex;
         }
 
-        protected virtual async UniTask ConstructMeshAttributes(MeshPrimitive primitive, int meshID, int primitiveIndex)
+        protected virtual async UniTask ConstructMeshAttributes(MeshPrimitive primitive, int meshID, int primitiveIndex, CancellationToken token)
         {
             if (_assetCache.MeshCache[meshID][primitiveIndex].MeshAttributes.Count == 0)
             {
@@ -761,7 +762,7 @@ namespace UnityGLTF
                     // on cache miss, load the buffer
                     if (_assetCache.BufferCache[bufferId] == null)
                     {
-                        await ConstructBuffer(buffer, bufferId);
+                        await ConstructBuffer(buffer, bufferId, token);
                     }
 
                     AttributeAccessor attributeAccessor = new AttributeAccessor
@@ -780,7 +781,7 @@ namespace UnityGLTF
 
                     if (_assetCache.BufferCache[bufferId] == null)
                     {
-                        await ConstructBuffer(primitive.Indices.Value.BufferView.Value.Buffer.Value, bufferId);
+                        await ConstructBuffer(primitive.Indices.Value.BufferView.Value.Buffer.Value, bufferId, token);
                     }
 
                     AttributeAccessor indexBuilder = new AttributeAccessor
@@ -797,7 +798,7 @@ namespace UnityGLTF
                 {
                     GLTFHelpers.BuildMeshAttributes(ref attributeAccessors);
                     TransformAttributes(ref attributeAccessors);
-                }, CancellationToken.None);
+                }, cancellationToken: token);
 
                 _assetCache.MeshCache[meshID][primitiveIndex].MeshAttributes = attributeAccessors;
             }
@@ -1280,19 +1281,21 @@ namespace UnityGLTF
                 for (int i = 0; i < scene.Nodes.Count; ++i)
                 {
                     token.ThrowIfCancellationRequested();
+
                     NodeId node = scene.Nodes[i];
 
                     Node nodeToLoad = _gltfRoot.Nodes[node.Id];
 
-                    await ConstructBufferData(nodeToLoad, CancellationToken.None);
-                    await ConstructNode(nodeToLoad, node.Id, CancellationToken.None, CreatedObject.transform);
+                    await ConstructBufferData(nodeToLoad, token);
+                    await ConstructNode(nodeToLoad, node.Id, token, CreatedObject.transform);
                 }
             }
 
             foreach (var gltfMaterial in pendingImageBuffers)
             {
                 token.ThrowIfCancellationRequested();
-                await ConstructMaterialImageBuffers(gltfMaterial);
+
+                await ConstructMaterialImageBuffers(gltfMaterial, token);
             }
 
             var stopWatch = new Stopwatch();
@@ -1301,13 +1304,14 @@ namespace UnityGLTF
             for (int i = 0; i < nodesWithMeshes.Count; i++)
             {
                 token.ThrowIfCancellationRequested();
+
                 NodeId_Like nodeId = nodesWithMeshes[i];
                 Node node = nodeId.Value;
                 
                 await ConstructMesh(mesh: node.Mesh.Value,
                     parent: _assetCache.NodeCache[nodeId.Id].transform,
                     meshId: node.Mesh.Id,
-                    skin: node.Skin != null ? node.Skin.Value : null);
+                    skin: node.Skin != null ? node.Skin.Value : null, token);
 
                 if ( stopWatch.ElapsedMilliseconds > 5)
                 {
@@ -1317,6 +1321,7 @@ namespace UnityGLTF
             }
 
             stopWatch.Stop();
+            token.ThrowIfCancellationRequested();
 
             if (_gltfRoot.Animations != null && _gltfRoot.Animations.Count > 0)
             {
@@ -1326,14 +1331,16 @@ namespace UnityGLTF
                 animation.playAutomatically = true;
                 animation.cullingType = AnimationCullingType.AlwaysAnimate;
 
-                for (int i = 0; i < _gltfRoot.Animations.Count; ++i)
+                int animationsCount = _gltfRoot.Animations.Count;
+
+                for (int i = 0; i < animationsCount; ++i)
                 {
                     token.ThrowIfCancellationRequested();
 
                     GLTFAnimation gltfAnimation = null;
                     AnimationCacheData animationCache = null;
 
-                    await LoadAnimationBufferData(_gltfRoot.Animations[i]);
+                    await LoadAnimationBufferData(_gltfRoot.Animations[i], i, token);
 
                     AnimationClip clip = ConstructClip(i, out gltfAnimation, out animationCache);
 
@@ -1351,7 +1358,7 @@ namespace UnityGLTF
             }
         }
 
-        async UniTask LoadAnimationBufferData(GLTFAnimation animation)
+        async UniTask LoadAnimationBufferData(GLTFAnimation animation, int animationId, CancellationToken token)
         {
             var typeMap = new Dictionary<int, string>();
 
@@ -1376,7 +1383,7 @@ namespace UnityGLTF
 
                 if (bufferCacheData == null)
                 {
-                    await ConstructBuffer(_gltfRoot.Buffers[bufferId], bufferId);
+                    await ConstructBuffer(_gltfRoot.Buffers[bufferId], bufferId, token);
                     bufferCacheData = _assetCache.BufferCache[bufferId];
 
                     if (VERBOSE)
@@ -1391,7 +1398,7 @@ namespace UnityGLTF
 
                 if (bufferCacheData == null)
                 {
-                    await ConstructBuffer(_gltfRoot.Buffers[anotherBufferId], anotherBufferId);
+                    await ConstructBuffer(_gltfRoot.Buffers[anotherBufferId], anotherBufferId, token);
                     bufferCacheData = _assetCache.BufferCache[anotherBufferId];
 
                     if (VERBOSE)
@@ -1524,7 +1531,7 @@ namespace UnityGLTF
             found.Invoke(nodeId);
         }
 
-        protected virtual async UniTask SetupBones(Skin skin, MeshPrimitive primitive, SkinnedMeshRenderer renderer, GameObject primitiveObj, Mesh curMesh)
+        protected virtual async UniTask SetupBones(Skin skin, MeshPrimitive primitive, SkinnedMeshRenderer renderer, GameObject primitiveObj, Mesh curMesh, CancellationToken token)
         {
             var boneCount = skin.Joints.Count;
             Transform[] bones = new Transform[boneCount];
@@ -1534,7 +1541,7 @@ namespace UnityGLTF
             // on cache miss, load the buffer
             if (_assetCache.BufferCache[bufferId] == null)
             {
-                await ConstructBuffer(_gltfRoot.Buffers[bufferId], bufferId);
+                await ConstructBuffer(_gltfRoot.Buffers[bufferId], bufferId, token);
             }
 
             AttributeAccessor attributeAccessor = new AttributeAccessor
@@ -1615,7 +1622,7 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual async UniTask ConstructPrimitiveMaterials(  GLTFMesh mesh, int meshId, int primitiveIndex)
+        protected virtual async UniTask ConstructPrimitiveMaterials(  GLTFMesh mesh, int meshId, int primitiveIndex, CancellationToken cancellationToken)
         {
             var primitive = mesh.Primitives[primitiveIndex];
             int materialIndex = primitive.Material?.Id ?? -1;
@@ -1624,11 +1631,13 @@ namespace UnityGLTF
 
             Renderer renderer = primitiveObj.GetComponent<Renderer>();
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             //// NOTE(Brian): Texture loading
             if (useMaterialTransition && initialVisibility)
             {
                 var matController = primitiveObj.AddComponent<MaterialTransitionController>();
-                await DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController);
+                await DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController, cancellationToken);
             }
             else
             {
@@ -1637,7 +1646,7 @@ namespace UnityGLTF
                     renderer.sharedMaterial = LoadingTextureMaterial;
                 }
 
-                await DownloadAndConstructMaterial(primitive, materialIndex, renderer, null);
+                await DownloadAndConstructMaterial(primitive, materialIndex, renderer, null, cancellationToken);
 
                 if (LoadingTextureMaterial == null)
                 {
@@ -1646,7 +1655,7 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual async UniTask ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin)
+        protected virtual async UniTask ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin, CancellationToken cancellationToken)
         {
             bool isColliderMesh = parent.name.Contains("_collider");
 
@@ -1659,9 +1668,10 @@ namespace UnityGLTF
             {
                 var primitive = mesh.Primitives[i];
 
-                await ConstructMeshPrimitive(primitive, meshId, i);
+                await ConstructMeshPrimitive(primitive, meshId, i, cancellationToken);
                 await ThrottleWatch(stopwatch, 5);
 
+                cancellationToken.ThrowIfCancellationRequested();
                 var primitiveObj = new GameObject("Primitive");
                 primitiveObj.transform.SetParent(parent, false);
                 primitiveObj.SetActive(useMaterialTransition || LoadingTextureMaterial != null);
@@ -1686,7 +1696,7 @@ namespace UnityGLTF
 
                         if (HasBones(skin))
                         {
-                            await SetupBones(skin, primitive, skinnedMeshRenderer, primitiveObj, curMesh);
+                            await SetupBones(skin, primitive, skinnedMeshRenderer, primitiveObj, curMesh, cancellationToken);
                             await ThrottleWatch(stopwatch, 5);
                         }
 
@@ -1701,7 +1711,7 @@ namespace UnityGLTF
                         OnRendererCreated?.Invoke(meshRenderer);
                     }
 
-                    await ConstructPrimitiveMaterials(mesh, meshId, i);
+                    await ConstructPrimitiveMaterials(mesh, meshId, i, cancellationToken);
                     await ThrottleWatch(stopwatch, 5);
                 }
                 else
@@ -1734,7 +1744,7 @@ namespace UnityGLTF
             }
         }
 
-        async UniTask DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController)
+        async UniTask DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController, CancellationToken cancellationToken)
         {
             bool shouldUseDefaultMaterial = primitive.Material == null;
 
@@ -1743,8 +1753,10 @@ namespace UnityGLTF
             if ((shouldUseDefaultMaterial && _defaultLoadedMaterial == null) ||
                 (!shouldUseDefaultMaterial && _assetCache.MaterialCache[materialIndex] == null))
             {
-                await ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialIndex);
+                await ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialIndex, cancellationToken);
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             MaterialCacheData materialCacheData =
                 materialIndex >= 0 ? _assetCache.MaterialCache[materialIndex] : _defaultLoadedMaterial;
@@ -1770,7 +1782,7 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual async UniTask ConstructMeshPrimitive(MeshPrimitive primitive, int meshID, int primitiveIndex)
+        protected virtual async UniTask ConstructMeshPrimitive(MeshPrimitive primitive, int meshID, int primitiveIndex, CancellationToken cancellationToken)
         {
             _assetCache.MeshCache[meshID][primitiveIndex] ??= new MeshCacheData();
 
@@ -1785,6 +1797,8 @@ namespace UnityGLTF
                 };
 
                 UnityMeshData unityMeshData = ConvertAccessorsToUnityTypes(meshConstructionData);
+
+                cancellationToken.ThrowIfCancellationRequested();
 
                 /*await TaskUtils.RunThrottledCoroutine(
                                    ConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData),
@@ -1849,7 +1863,7 @@ namespace UnityGLTF
             };
         }
 
-        protected virtual async UniTask ConstructMaterialImageBuffers(GLTFMaterial def)
+        protected virtual async UniTask ConstructMaterialImageBuffers(GLTFMaterial def, CancellationToken token)
         {
             var tasks = new List<UniTask>(8);
 
@@ -1860,13 +1874,13 @@ namespace UnityGLTF
                 if (pbr.BaseColorTexture != null)
                 {
                     var textureId = pbr.BaseColorTexture.Index;
-                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, false));
+                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, false, token));
                 }
 
                 if (pbr.MetallicRoughnessTexture != null)
                 {
                     var textureId = pbr.MetallicRoughnessTexture.Index;
-                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true));
+                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true, token));
                 }
             }
 
@@ -1875,14 +1889,14 @@ namespace UnityGLTF
                 if (def.CommonConstant.LightmapTexture != null)
                 {
                     var textureId = def.CommonConstant.LightmapTexture.Index;
-                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true));
+                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true, token));
                 }
             }
 
             if (def.NormalTexture != null)
             {
                 var textureId = def.NormalTexture.Index;
-                tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true));
+                tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true, token));
             }
 
             if (def.OcclusionTexture != null)
@@ -1893,14 +1907,14 @@ namespace UnityGLTF
                       && def.PbrMetallicRoughness.MetallicRoughnessTexture != null
                       && def.PbrMetallicRoughness.MetallicRoughnessTexture.Index.Id == textureId.Id))
                 {
-                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true));
+                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true, token));
                 }
             }
 
             if (def.EmissiveTexture != null)
             {
                 var textureId = def.EmissiveTexture.Index;
-                tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, false));
+                tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, false, token));
             }
 
             // pbr_spec_gloss extension
@@ -1913,13 +1927,13 @@ namespace UnityGLTF
                 if (specGlossDef.DiffuseTexture != null)
                 {
                     var textureId = specGlossDef.DiffuseTexture.Index;
-                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true));
+                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true, token));
                 }
 
                 if (specGlossDef.SpecularGlossinessTexture != null)
                 {
                     var textureId = specGlossDef.SpecularGlossinessTexture.Index;
-                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true));
+                    tasks.Add(ConstructImageBuffer(textureId.Value, textureId.Id, true, token));
                 }
             }
 
@@ -2103,7 +2117,7 @@ namespace UnityGLTF
             return areValid;
         }
 
-        protected virtual async UniTask ConstructMaterial( GLTFMaterial def, int materialIndex)
+        protected virtual async UniTask ConstructMaterial( GLTFMaterial def, int materialIndex, CancellationToken cancellationToken)
         {
             IUniformMap mapper;
             const string specGlossExtName = KHR_materials_pbrSpecularGlossinessExtensionFactory.EXTENSION_NAME;
@@ -2150,6 +2164,8 @@ namespace UnityGLTF
             mapper.AlphaMode = def.AlphaMode;
             mapper.DoubleSided = def.DoubleSided;
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (def.PbrMetallicRoughness != null && mapper is IMetalRoughUniformMap mrMapper)
             {
                 var pbr = def.PbrMetallicRoughness;
@@ -2159,7 +2175,7 @@ namespace UnityGLTF
                 if (pbr.BaseColorTexture != null)
                 {
                     TextureId textureId = pbr.BaseColorTexture.Index;
-                    await ConstructTexture(textureId.Value, textureId.Id, false);
+                    await ConstructTexture(textureId.Value, textureId.Id, false, cancellationToken);
                     mrMapper.BaseColorTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
 
                     mrMapper.BaseColorTexCoord = pbr.BaseColorTexture.TexCoord;
@@ -2178,7 +2194,7 @@ namespace UnityGLTF
                 if (pbr.MetallicRoughnessTexture != null)
                 {
                     TextureId textureId = pbr.MetallicRoughnessTexture.Index;
-                    await ConstructTexture(textureId.Value, textureId.Id, true);
+                    await ConstructTexture(textureId.Value, textureId.Id, true, cancellationToken);
                     mrMapper.MetallicRoughnessTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                     mrMapper.MetallicRoughnessTexCoord = pbr.MetallicRoughnessTexture.TexCoord;
                     mrMapper.RoughnessFactor = 0;
@@ -2198,7 +2214,7 @@ namespace UnityGLTF
                 if (specGloss.DiffuseTexture != null)
                 {
                     TextureId textureId = specGloss.DiffuseTexture.Index;
-                    await ConstructTexture(textureId.Value, textureId.Id, true);
+                    await ConstructTexture(textureId.Value, textureId.Id, true, cancellationToken);
                     sgMapper.DiffuseTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                     sgMapper.DiffuseTexCoord = specGloss.DiffuseTexture.TexCoord;
                     ExtTextureTransformExtension ext = GetTextureTransform(specGloss.DiffuseTexture);
@@ -2217,7 +2233,7 @@ namespace UnityGLTF
                 if (specGloss.SpecularGlossinessTexture != null)
                 {
                     TextureId textureId = specGloss.SpecularGlossinessTexture.Index;
-                    await ConstructTexture(textureId.Value, textureId.Id, true);
+                    await ConstructTexture(textureId.Value, textureId.Id, true, cancellationToken);
                     sgMapper.SpecularGlossinessTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                 }
             }
@@ -2225,7 +2241,7 @@ namespace UnityGLTF
             if (def.NormalTexture != null)
             {
                 TextureId textureId = def.NormalTexture.Index;
-                await ConstructTexture(textureId.Value, textureId.Id, true);
+                await ConstructTexture(textureId.Value, textureId.Id, true, cancellationToken);
                 mapper.NormalTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                 mapper.NormalTexCoord = def.NormalTexture.TexCoord;
                 mapper.NormalTexScale = def.NormalTexture.Scale;
@@ -2235,14 +2251,14 @@ namespace UnityGLTF
             {
                 mapper.OcclusionTexStrength = def.OcclusionTexture.Strength;
                 TextureId textureId = def.OcclusionTexture.Index;
-                await ConstructTexture(textureId.Value, textureId.Id, true);
+                await ConstructTexture(textureId.Value, textureId.Id, true, cancellationToken);
                 mapper.OcclusionTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
             }
 
             if (def.EmissiveTexture != null)
             {
                 TextureId textureId = def.EmissiveTexture.Index;
-                await ConstructTexture(textureId.Value, textureId.Id, false);
+                await ConstructTexture(textureId.Value, textureId.Id, false, cancellationToken);
                 mapper.EmissiveTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                 mapper.EmissiveTexCoord = def.EmissiveTexture.TexCoord;
             }
@@ -2328,9 +2344,11 @@ namespace UnityGLTF
             return settings;
         }
 
-        protected virtual async UniTask ConstructTexture(  GLTFTexture texture, int textureIndex, bool linear)
+        protected virtual async UniTask ConstructTexture(  GLTFTexture texture, int textureIndex, bool linear, CancellationToken cancellationToken)
         {
-            await UniTask.WaitUntil(() => _assetCache.TextureCache[textureIndex] != null);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await UniTask.WaitUntil(() => _assetCache.TextureCache[textureIndex] != null, cancellationToken: cancellationToken);
 
             if (_assetCache.TextureCache[textureIndex].CachedTexture != null)
                 return;
@@ -2362,8 +2380,8 @@ namespace UnityGLTF
             }
             else
             {
-                await ConstructImage(settings, image, sourceId);
-
+                await ConstructImage(settings, image, sourceId, cancellationToken);
+                
                 if (_assetCache.ImageCache[sourceId] == null)
                 {
                     Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {image.Uri} / {id}, applying invalid-tex texture...");
@@ -2383,6 +2401,8 @@ namespace UnityGLTF
             }
 
             _assetCache.TextureCache[textureIndex].CachedTexture = source;
+
+            cancellationToken.ThrowIfCancellationRequested();
         }
 
         protected virtual void ConstructImageFromGLB(GLTFImage image, int imageCacheIndex)
