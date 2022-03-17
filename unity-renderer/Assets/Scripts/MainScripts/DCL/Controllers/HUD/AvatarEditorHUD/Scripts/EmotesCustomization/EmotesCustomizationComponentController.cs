@@ -125,11 +125,11 @@ namespace EmotesCustomization
 
         internal List<string> GetDefaultEmotes()
         {
-            return new List<string> 
+            return new List<string>
             {
-                "handsair", 
+                "handsair",
                 "wave",
-                "fistpump", 
+                "fistpump",
                 "dance",
                 "raiseHand",
                 "clap",
@@ -318,7 +318,7 @@ namespace EmotesCustomization
             equippedEmotes.Set(newEquippedEmotesList);
         }
 
-        internal void OnEmoteEquipped(string emoteId, int slotNumber) 
+        internal void OnEmoteEquipped(string emoteId, int slotNumber)
         {
             StoreEquippedEmotes();
             emoteForPreviewing.Set(emoteId, true);
