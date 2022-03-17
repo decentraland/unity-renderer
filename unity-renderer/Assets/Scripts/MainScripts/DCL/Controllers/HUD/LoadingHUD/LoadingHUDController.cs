@@ -62,9 +62,5 @@ public class LoadingHUDController : IHUD
         showTips.OnChange -= OnShowTipsChanged;
     }
 
-    internal void SetViewVisible(bool isVisible, bool instant) 
-    {
-        Debug.Log($"set view visible {isVisible}");
-        view?.SetVisible(isVisible, instant);
-    }
+    internal void SetViewVisible(bool isVisible, bool instant) { view?.SetVisible(isVisible, instant); }
 }

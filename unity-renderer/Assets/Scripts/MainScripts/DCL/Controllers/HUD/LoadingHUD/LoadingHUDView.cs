@@ -33,7 +33,7 @@ public class LoadingHUDView : MonoBehaviour
         showHideAnimator.OnWillFinishHide -= OnFinishHide;
         DataStore.i.HUDs.loadingHUD.fadeIn.Set(false);
         DataStore.i.HUDs.loadingHUD.fadeOut.Set(false);
-        DataStore.i.HUDs.loadingHUD.visible.Set(true);
+        DataStore.i.HUDs.loadingHUD.visible.Set(false);
     }
 
     private void OnFinishStart(ShowHideAnimator obj)
@@ -41,7 +41,7 @@ public class LoadingHUDView : MonoBehaviour
         showHideAnimator.OnWillFinishStart -= OnFinishStart;
         DataStore.i.HUDs.loadingHUD.fadeIn.Set(false);
         DataStore.i.HUDs.loadingHUD.fadeOut.Set(false);
-        DataStore.i.HUDs.loadingHUD.visible.Set(false);
+        DataStore.i.HUDs.loadingHUD.visible.Set(true);
     }
 
     public void SetVisible(bool isVisible, bool instant) {

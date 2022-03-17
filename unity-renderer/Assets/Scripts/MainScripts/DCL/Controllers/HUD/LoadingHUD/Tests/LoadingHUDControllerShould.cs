@@ -7,7 +7,8 @@ public class LoadingHUDControllerShould
 {
     private LoadingHUDController hudController;
     private LoadingHUDView hudView;
-    private BaseVariable<bool> visible => DataStore.i.HUDs.loadingHUD.visible;
+    private BaseVariable<bool> fadeIn => DataStore.i.HUDs.loadingHUD.fadeIn;
+    private BaseVariable<bool> fadeOut => DataStore.i.HUDs.loadingHUD.fadeOut;
     private BaseVariable<string> message => DataStore.i.HUDs.loadingHUD.message;
     private BaseVariable<bool> showTips => DataStore.i.HUDs.loadingHUD.showTips;
 
@@ -28,14 +29,14 @@ public class LoadingHUDControllerShould
     [Test]
     public void ReactToLoadingHUDVisibleTrue()
     {
-        visible.Set(true, true); //Force event notification
+        fadeIn.Set(true, true); //Force event notification
         Assert.AreEqual(hudView.showHideAnimator.isVisible, true);
     }
 
     [Test]
     public void ReactToLoadingHUDVisibleFalse()
     {
-        visible.Set(false, true); //Force event notification
+        fadeOut.Set(false, true); //Force event notification
         Assert.AreEqual(hudView.showHideAnimator.isVisible, false);
     }
 
