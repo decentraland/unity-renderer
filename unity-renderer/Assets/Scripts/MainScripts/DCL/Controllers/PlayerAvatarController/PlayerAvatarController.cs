@@ -156,7 +156,6 @@ public class PlayerAvatarController : MonoBehaviour
                 //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
                 var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
                 wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
-                wearableItems.Add("emote");
 
                 await avatar.Load(wearableItems, new AvatarSettings
                 {
