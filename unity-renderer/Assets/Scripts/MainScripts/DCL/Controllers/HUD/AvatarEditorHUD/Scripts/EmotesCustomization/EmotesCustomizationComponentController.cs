@@ -57,8 +57,7 @@ namespace EmotesCustomization
         {
             LoadEquippedEmotes();
             ConfigureView();
-            ConfigureCatalog(catalog);
-            ConfigureUserProfile(userProfile);
+            ConfigureUserProfileAndCatalog(userProfile, catalog);
             ConfigureShortcuts();
 
             isInitialized.Set(view.viewTransform);
@@ -126,11 +125,11 @@ namespace EmotesCustomization
 
         internal List<string> GetDefaultEmotes()
         {
-            return new List<string> 
+            return new List<string>
             {
-                "handsair", 
+                "handsair",
                 "wave",
-                "fistpump", 
+                "fistpump",
                 "dance",
                 "raiseHand",
                 "clap",
@@ -177,14 +176,6 @@ namespace EmotesCustomization
                 LoadEquippedEmotes();
                 UpdateEmoteSlots();
             }
-        }
-
-        internal void ConfigureCatalog(BaseDictionary<string, WearableItem> catalog)
-        {
-            this.catalog = catalog;
-            this.catalog.OnAdded += AddEmote;
-            this.catalog.OnRemoved += RemoveEmote;
-            emoteAnimations.OnAdded += OnAnimationAdded;
         }
 
         internal void ProcessCatalog()
@@ -263,11 +254,14 @@ namespace EmotesCustomization
             };
         }
 
-        internal void ConfigureUserProfile(UserProfile userProfile)
+        internal void ConfigureUserProfileAndCatalog(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
         {
             this.userProfile = userProfile;
+            this.catalog = catalog;
+
             this.userProfile.OnInventorySet += OnUserProfileInventorySet;
             this.userProfile.OnUpdate += OnUserProfileUpdated;
+
             OnUserProfileUpdated(this.userProfile);
         }
 
@@ -277,6 +271,10 @@ namespace EmotesCustomization
                 return;
 
             this.userProfile.OnUpdate -= OnUserProfileUpdated;
+            catalog.OnAdded += AddEmote;
+            catalog.OnRemoved += RemoveEmote;
+            emoteAnimations.OnAdded += OnAnimationAdded;
+
             ProcessCatalog();
         }
 
@@ -320,7 +318,7 @@ namespace EmotesCustomization
             equippedEmotes.Set(newEquippedEmotesList);
         }
 
-        internal void OnEmoteEquipped(string emoteId, int slotNumber) 
+        internal void OnEmoteEquipped(string emoteId, int slotNumber)
         {
             StoreEquippedEmotes();
             emoteForPreviewing.Set(emoteId, true);
