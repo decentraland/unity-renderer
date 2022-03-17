@@ -85,6 +85,9 @@ namespace DCL
 
         public static void AddAudioClip(this DataStore_WorldObjects self, string sceneId, AudioClip clip)
         {
+            if (!self.sceneData.ContainsKey(sceneId))
+                return;
+
             // NOTE(Brian): entityId is not used here, so audio clips do not work with the ignoreOwners
             //              feature. This is done on purpose as ignoreOwners is only used by the smart item component
             //              and should be deprecated. Also, supporting this would complicate the tracking logic and
@@ -96,6 +99,9 @@ namespace DCL
 
         public static void RemoveAudioClip(this DataStore_WorldObjects self, string sceneId, AudioClip clip)
         {
+            if (!self.sceneData.ContainsKey(sceneId))
+                return;
+
             var sceneData = self.sceneData[sceneId];
             sceneData.audioClips.Remove(clip);
         }
@@ -109,7 +115,7 @@ namespace DCL
                 return;
             }
 
-            if (string.IsNullOrEmpty(sceneId))
+            if (string.IsNullOrEmpty(sceneId) || !self.sceneData.ContainsKey(sceneId))
             {
                 logger.LogWarning($"AddRendereable", $"invalid sceneId! (id: {sceneId})");
                 return;
