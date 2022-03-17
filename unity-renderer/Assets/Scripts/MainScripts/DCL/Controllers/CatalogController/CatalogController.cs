@@ -293,7 +293,15 @@ public class CatalogController : MonoBehaviour
             awaitingWearablesByContextPromises.Remove(context);
 
             if (string.IsNullOrEmpty(errorMessage))
+            {
+                if (context == OWNED_WEARABLES_CONTEXT)
+                {
+                    if (!newWearablesAddedIntoCatalog.Contains(customEmote))
+                        newWearablesAddedIntoCatalog = newWearablesAddedIntoCatalog.Union(new[] { customEmote }).ToArray();
+                }
+
                 promise.Resolve(newWearablesAddedIntoCatalog);
+            }
             else
                 promise.Reject(errorMessage);
         }

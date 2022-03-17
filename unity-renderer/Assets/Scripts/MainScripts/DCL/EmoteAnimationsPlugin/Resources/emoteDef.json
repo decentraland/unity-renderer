@@ -21,10 +21,7 @@
             }
         ],
         "category": "upper_body",
-        "tags": [
-            "base-wearable"
-        ],
-        "rarity" : "epic"
+        "tags": [],
     },
     "emoteDataV0": {
         "loop": false 
@@ -41,7 +38,7 @@
             "text": "Emote Español test"
         }
     ],
-    "thumbnail": "Jacket5.png",
-    "description": "",
-    "rarity": ""
+    "thumbnail": "fashion_pose_256.png",
+    "description": "This is a test emote!",
+    "rarity" : "epic"
 }
