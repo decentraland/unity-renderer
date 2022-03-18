@@ -120,13 +120,14 @@ namespace DCL
 
             if (string.IsNullOrEmpty(sceneId) || !self.sceneData.ContainsKey(sceneId))
             {
-                logger.LogWarning($"AddRendereable", $"invalid sceneId! (id: {sceneId})");
+                logger.Log($"AddRendereable", $"invalid sceneId! (id: {sceneId})");
                 return;
             }
 
             if (string.IsNullOrEmpty(rendereable.ownerId))
             {
-                logger.LogError($"AddRendereable", $"invalid ownerId! Make sure to assign ownerId to the given rendereable (hint: it's the entityId)");
+                logger.Log($"AddRendereable",
+                    $"invalid ownerId! Make sure to assign ownerId to the given rendereable (hint: it's the entityId)");
                 return;
             }
 
@@ -159,13 +160,14 @@ namespace DCL
 
             if ( string.IsNullOrEmpty(sceneId) || !self.sceneData.ContainsKey(sceneId) )
             {
-                logger.LogWarning($"RemoveRendereable", $"invalid sceneId! (id: {sceneId})");
+                logger.Log($"RemoveRendereable", $"invalid sceneId! (id: {sceneId})");
                 return;
             }
 
             if (string.IsNullOrEmpty(rendereable.ownerId))
             {
-                logger.LogError($"AddRendereable", $"invalid ownerId! Make sure to assign ownerId to the given rendereable (hint: it's the entityId)");
+                logger.Log($"AddRendereable",
+                    $"invalid ownerId! Make sure to assign ownerId to the given rendereable (hint: it's the entityId)");
                 return;
             }
 
