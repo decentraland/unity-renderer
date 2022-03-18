@@ -3,7 +3,6 @@ using DCL;
 using DCL.Helpers;
 using DCL.Interface;
 using System.Collections.Generic;
-using System.Linq;
 using DCL.Configuration;
 using DCL.Emotes;
 using Newtonsoft.Json;
@@ -30,13 +29,7 @@ public class CatalogController : MonoBehaviour
     private static List<string> pendingRequestsToSend = new List<string>();
     private float timeSinceLastUnusedWearablesCheck = 0f;
 
-    private WearableItem customEmote;
-    public void Awake()
-    {
-        i = this;
-        customEmote = JsonConvert.DeserializeObject<WearableItem>(Resources.Load<TextAsset>("emoteDef").text);
-        customEmote.baseUrl = new Uri(Application.dataPath + "/../TestResources").AbsoluteUri + "/Avatar/Assets/";
-    }
+    public void Awake() { i = this; }
 
     private void Update()
     {
@@ -99,9 +92,6 @@ public class CatalogController : MonoBehaviour
 
         if (request == null)
             return;
-
-        if (!wearableCatalog.ContainsKey(customEmote.id))
-            request.wearables = request.wearables.Union(new [] { customEmote }).ToArray();
 
         AddWearablesToCatalog(request.wearables);
 
@@ -293,15 +283,7 @@ public class CatalogController : MonoBehaviour
             awaitingWearablesByContextPromises.Remove(context);
 
             if (string.IsNullOrEmpty(errorMessage))
-            {
-                if (context == OWNED_WEARABLES_CONTEXT)
-                {
-                    if (!newWearablesAddedIntoCatalog.Contains(customEmote))
-                        newWearablesAddedIntoCatalog = newWearablesAddedIntoCatalog.Union(new[] { customEmote }).ToArray();
-                }
-
                 promise.Resolve(newWearablesAddedIntoCatalog);
-            }
             else
                 promise.Reject(errorMessage);
         }

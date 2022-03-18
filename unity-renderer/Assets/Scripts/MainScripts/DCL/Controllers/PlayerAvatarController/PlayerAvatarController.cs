@@ -212,7 +212,4 @@ public class PlayerAvatarController : MonoBehaviour
         avatarLoadingCts = null;
         avatar?.Dispose();
     }
-
-    [ContextMenu("Play custom emote")]
-    public void Play() { userProfile.SetAvatarExpression("emote"); }
 }
