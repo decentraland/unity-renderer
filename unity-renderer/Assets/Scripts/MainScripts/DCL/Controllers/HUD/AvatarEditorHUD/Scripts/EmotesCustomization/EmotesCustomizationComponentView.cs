@@ -263,15 +263,9 @@ namespace EmotesCustomization
             emoteInfoPanel.transform.localPosition = Vector3.zero;
         }
 
-        public void CloseEmoteInfoPanel()
-        {
-            emoteInfoPanel.SetActive(false);
-        }
+        public void CloseEmoteInfoPanel() { emoteInfoPanel.SetActive(false); }
 
-        public EmoteCardComponentView GetEmoteCardById(string emoteId)
-        {
-            return GetAllEmoteCards().FirstOrDefault(x => x.model.id == emoteId);
-        }
+        public EmoteCardComponentView GetEmoteCardById(string emoteId) { return GetAllEmoteCards().FirstOrDefault(x => x.model.id == emoteId); }
 
         public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
@@ -285,10 +279,7 @@ namespace EmotesCustomization
             emoteInfoPanel.SetActive(false);
         }
 
-        internal void OnEmoteSelected(string emoteId)
-        {
-            selectedCard = GetEmoteCardById(emoteId);
-        }
+        internal void OnEmoteSelected(string emoteId) { selectedCard = GetEmoteCardById(emoteId); }
 
         internal void ConfigureEmotesPool()
         {

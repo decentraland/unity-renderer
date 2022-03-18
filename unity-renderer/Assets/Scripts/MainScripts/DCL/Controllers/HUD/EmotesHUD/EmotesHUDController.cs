@@ -13,8 +13,7 @@ namespace EmotesCustomization
         private BaseVariable<bool> isStartMenuOpen => DataStore.i.exploreV2.isOpen;
         private BaseVariable<bool> canStartMenuBeOpened => DataStore.i.exploreV2.isSomeModalOpen;
         private bool shortcutsCanBeUsed => !isStartMenuOpen.Get();
-        private BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
-        private BaseCollection<EquippedEmoteData> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
+        private DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
         private BaseDictionary<(string bodyshapeId, string emoteId), AnimationClip> emoteAnimations => DataStore.i.emotes.animations;
 
         private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -54,8 +53,8 @@ namespace EmotesCustomization
 
             this.userProfile = userProfile;
             this.catalog = catalog;
-            equippedEmotes.OnSet += OnEquippedEmotesSet;
-            OnEquippedEmotesSet(equippedEmotes.Get());
+            emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
+            OnEquippedEmotesSet(emotesCustomizationDataStore.equippedEmotes.Get());
             emoteAnimations.OnAdded += OnAnimationAdded;
 
             ConfigureShortcuts();
@@ -82,7 +81,7 @@ namespace EmotesCustomization
         private void UpdateEmoteSlots()
         {
             List<EmotesHUDView.EmoteSlotData> emotesToSet = new List<EmotesHUDView.EmoteSlotData>();
-            foreach (EquippedEmoteData equippedEmoteData in equippedEmotes.Get())
+            foreach (EquippedEmoteData equippedEmoteData in emotesCustomizationDataStore.equippedEmotes.Get())
             {
                 if (equippedEmoteData != null)
                 {
@@ -184,7 +183,7 @@ namespace EmotesCustomization
             closeWindow.OnTriggered -= OnCloseWindowPressed;
             ownUserProfile.OnAvatarEmoteSet -= OnAvatarEmoteSet;
             emotesVisible.OnChange -= OnEmoteVisibleChanged;
-            equippedEmotes.OnSet -= OnEquippedEmotesSet;
+            emotesCustomizationDataStore.equippedEmotes.OnSet -= OnEquippedEmotesSet;
             emoteAnimations.OnAdded -= OnAnimationAdded;
             shortcut0InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut1InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
@@ -259,34 +258,34 @@ namespace EmotesCustomization
             switch (action)
             {
                 case DCLAction_Trigger.ToggleEmoteShortcut0:
-                    PlayEmote(equippedEmotes[0]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[0]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut1:
-                    PlayEmote(equippedEmotes[1]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[1]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut2:
-                    PlayEmote(equippedEmotes[2]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[2]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut3:
-                    PlayEmote(equippedEmotes[3]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[3]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut4:
-                    PlayEmote(equippedEmotes[4]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[4]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut5:
-                    PlayEmote(equippedEmotes[5]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[5]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut6:
-                    PlayEmote(equippedEmotes[6]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[6]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut7:
-                    PlayEmote(equippedEmotes[7]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[7]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut8:
-                    PlayEmote(equippedEmotes[8]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[8]?.id);
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut9:
-                    PlayEmote(equippedEmotes[9]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[9]?.id);
                     break;
             }
 
@@ -309,7 +308,7 @@ namespace EmotesCustomization
         {
             emotesVisible.Set(false);
             isAvatarEditorVisible.Set(true);
-            isEmotesCustomizationSelected.Set(true);
+            emotesCustomizationDataStore.isEmotesCustomizationSelected.Set(true);
         }
     }
 }
