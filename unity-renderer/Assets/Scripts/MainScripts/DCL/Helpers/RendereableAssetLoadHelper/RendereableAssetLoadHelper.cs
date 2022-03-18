@@ -19,7 +19,7 @@ namespace DCL.Components
         public static bool useCustomContentServerUrl = false;
         public static string customContentServerUrl;
 
-        public static LoadingType defaultLoadingType = LoadingType.GLTF_ONLY;
+        public static LoadingType defaultLoadingType = LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK;
 
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
 
