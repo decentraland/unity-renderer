@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using DCL;
 using DCL.Models;
 using Newtonsoft.Json;
@@ -9,7 +10,7 @@ using Assert = UnityEngine.Assertions.Assert;
 public class MessageQueueHandler_Mock : IMessageQueueHandler
 {
     public List<QueuedSceneMessage_Scene> messagesList = new List<QueuedSceneMessage_Scene>();
-    public Queue<QueuedSceneMessage_Scene> sceneMessagesPool { get; } = new Queue<QueuedSceneMessage_Scene>();
+    public ConcurrentQueue<QueuedSceneMessage_Scene> sceneMessagesPool { get; } = new ConcurrentQueue<QueuedSceneMessage_Scene>();
 
     private static bool OUTPUT_ASSERT_CODE_ON_CONSOLE = false;
     private int i = 0;

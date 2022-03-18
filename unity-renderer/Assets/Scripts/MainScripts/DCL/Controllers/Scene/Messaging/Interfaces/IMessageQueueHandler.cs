@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace DCL
 {
     public interface IMessageQueueHandler
     {
         void EnqueueSceneMessage(QueuedSceneMessage_Scene message);
-        Queue<QueuedSceneMessage_Scene> sceneMessagesPool { get; }
+        ConcurrentQueue<QueuedSceneMessage_Scene> sceneMessagesPool { get; }
     }
 }

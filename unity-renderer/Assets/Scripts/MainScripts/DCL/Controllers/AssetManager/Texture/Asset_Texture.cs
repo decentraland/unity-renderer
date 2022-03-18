@@ -10,7 +10,6 @@ namespace DCL
     {
         public Texture2D texture { get; set; }
         public Asset_Texture dependencyAsset; // to store the default tex asset and release it accordingly
-
         public event System.Action OnCleanup;
 
         public void ConfigureTexture(TextureWrapMode textureWrapMode, FilterMode textureFilterMode, bool makeNoLongerReadable = true)
