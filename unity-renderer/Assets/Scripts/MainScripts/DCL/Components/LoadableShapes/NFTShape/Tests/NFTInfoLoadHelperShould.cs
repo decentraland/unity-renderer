@@ -15,14 +15,16 @@ public class NFTInfoLoadHelperShould
     public void CallFailWhenFetchFails()
     {
         //Act - Assert
-        loadHelper.FetchNFTInfo("testAddress", "testId", info => Assert.Fail(), Assert.Pass);
+        loadHelper.OnFetchInfoSuccess += info => Assert.Fail();
+        loadHelper.OnFetchInfoFail += Assert.Pass;
+        loadHelper.FetchNFTInfo("testAddress", "testId");
     }
 
     [Test]
     public void DisposeCorrectly()
     {
         //Arrange
-        loadHelper.FetchNFTInfo("testAddress", "testId", null, null);
+        loadHelper.FetchNFTInfo("testAddress", "testId");
 
         //Act
         loadHelper.Dispose();

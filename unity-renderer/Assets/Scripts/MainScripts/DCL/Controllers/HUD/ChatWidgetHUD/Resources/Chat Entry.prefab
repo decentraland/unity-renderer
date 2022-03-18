@@ -145,6 +145,7 @@ MonoBehaviour:
   nonPlayerNameColor: {r: 0.88235295, g: 0.9764706, b: 0.98039216, a: 1}
   group: {fileID: -2281352007695473291}
   timeToHoverPanel: 1
+  timeToHoverGotoPanel: 1
   hoverPanelPositionReference: {fileID: 1110658662034786025}
   contextMenuPositionReference: {fileID: 650554326901945825}
 --- !u!114 &8041991267711887529

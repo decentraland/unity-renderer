@@ -41,6 +41,8 @@ namespace DCL.Controllers
 
         void OnRendererStateChange(bool newValue, bool oldValue)
         {
+            blockerInstanceHandler.SetCollision(newValue);
+            
             if (newValue && DataStore.i.debugConfig.isDebugMode.Get())
                 SetEnabled(false);
         }
@@ -189,7 +191,7 @@ namespace DCL.Controllers
             // Add missing blockers
             foreach (var coords in blockersToAdd)
             {
-                blockerInstanceHandler.ShowBlocker(coords);
+                blockerInstanceHandler.ShowBlocker(coords, false, CommonScriptableObjects.rendererState.Get());
             }
         }
     }

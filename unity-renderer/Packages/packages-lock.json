@@ -240,6 +240,13 @@
       "dependencies": {},
       "hash": "cdd11bb74398afae73e71b6fe01114f597a6ce08"
     },
+    "ru.threedisevenzeror.unitygifdecoder": {
+      "version": "https://github.com/3DI70R/Unity-GifDecoder.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "90ffa399087521817ab03ce9213ec33b38e4492f"
+    },
     "com.unity.modules.androidjni": {
       "version": "1.0.0",
       "depth": 0,

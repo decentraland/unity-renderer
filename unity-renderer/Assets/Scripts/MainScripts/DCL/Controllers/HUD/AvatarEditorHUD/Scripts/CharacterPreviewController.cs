@@ -61,14 +61,16 @@ public class CharacterPreviewController : MonoBehaviour
             { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
             { CameraFocus.BodySnapshot, bodySnapshotTemplate },
         };
+        IAnimator animator = avatarContainer.gameObject.GetComponentInChildren<IAnimator>();
         avatar = new AvatarSystem.Avatar(
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-            avatarContainer.gameObject.GetComponentInChildren<IAnimator>(),
+            animator,
             new Visibility(),
             new NoLODs(),
             new SimpleGPUSkinning(),
-            new GPUSkinningThrottler()
+            new GPUSkinningThrottler(),
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes)
         );
         mouseWheelAction.OnValueChanged += OnMouseWheelChangeValue;
     }

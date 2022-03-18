@@ -78,6 +78,8 @@ public class HUDController : IHUDController
 
     public TaskbarHUDController taskbarHud => GetHUDElement(HUDElementID.TASKBAR) as TaskbarHUDController;
 
+    public LoadingHUDController loadingHud => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
+
     public WorldChatWindowHUDController worldChatWindowHud =>
         GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowHUDController;
 
@@ -91,6 +93,8 @@ public class HUDController : IHUDController
     public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
 
     public HelpAndSupportHUDController helpAndSupportHud => GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
+
+    public MinimapHUDController minimapHUD => GetHUDElement(HUDElementID.MINIMAP) as MinimapHUDController;
 
     public UsersAroundListHUDController usersAroundListHud => GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
     public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
@@ -151,7 +155,15 @@ public class HUDController : IHUDController
             case HUDElementID.NONE:
                 break;
             case HUDElementID.MINIMAP:
-                CreateHudElement(configuration, hudElementId);
+                if (minimapHud == null)
+                {
+                    CreateHudElement(configuration, hudElementId);
+
+                    if (minimapHud != null)
+                    {
+                        minimapHud.Initialize();
+                    }
+                }
                 break;
             case HUDElementID.PROFILE_HUD:
                 CreateHudElement(configuration, hudElementId);
@@ -251,9 +263,7 @@ public class HUDController : IHUDController
                         taskbarHud.Initialize(
                             SceneReferences.i.mouseCatcher,
                             ChatController.i,
-                            FriendsController.i,
-                            DCL.Environment.i.world.sceneController,
-                            DCL.Environment.i.world.state);
+                            FriendsController.i);
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
 
@@ -325,9 +335,13 @@ public class HUDController : IHUDController
 
                 break;
             case HUDElementID.LOADING:
-                CreateHudElement(configuration, hudElementId);
-                if (configuration.active)
-                    loadingController.Initialize();
+                if (loadingHud == null)
+                {
+                    CreateHudElement(configuration, hudElementId);
+                    if (loadingHud != null && configuration.active)
+                        loadingController.Initialize();
+
+                }
                 break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message
