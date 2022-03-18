@@ -84,6 +84,8 @@ public class AvatarEditorHUDView : MonoBehaviour
     [Header("Collectibles")]
     [SerializeField]
     internal GameObject web3Container;
+    [SerializeField]
+    internal GameObject web3ContainerEmptyList;
 
     [SerializeField]
     internal GameObject noWeb3Container;
@@ -95,8 +97,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     [SerializeField] internal GameObject skinsWeb3Container;
 
     [SerializeField] internal GameObject skinsMissingWeb3Container;
-    
-    [SerializeField] internal GameObject skinsConnectWalletButtonContainer;
 
     [SerializeField] private GameObject skinsPopulatedListContainer;
     [SerializeField] private GameObject skinsEmptyListContainer;
@@ -122,6 +122,12 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         isOpen = false;
         arePanelsInitialized = false;
+        characterPreviewRotation.OnPointerAction += SetCanScroll;
+    }
+
+    private void SetCanScroll(bool canScroll)
+    {
+        characterPreviewController.canScroll = canScroll;
     }
 
     private void Initialize(AvatarEditorHUDController controller)
@@ -426,6 +432,8 @@ public class AvatarEditorHUDView : MonoBehaviour
         if (hairColorSelector != null)
             hairColorSelector.OnColorChanged -= controller.HairColorClicked;
 
+        characterPreviewRotation.OnPointerAction -= SetCanScroll;
+        
         if (this != null)
             Destroy(gameObject);
 
@@ -437,6 +445,12 @@ public class AvatarEditorHUDView : MonoBehaviour
     }
 
     public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
+
+    public void ShowCollectiblesPopulatedList(bool isActive) 
+    {
+        web3Container.SetActive(isActive);
+        web3ContainerEmptyList.SetActive(!isActive);
+    }
 
     public void ShowCollectiblesLoadingRetry(bool isActive) { collectiblesItemSelector.ShowRetryLoading(isActive); }
 
@@ -461,6 +475,5 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         skinsPopulatedListContainer.SetActive(show);
         skinsEmptyListContainer.SetActive(!show);
-        skinsConnectWalletButtonContainer.SetActive(show);
     }
 }

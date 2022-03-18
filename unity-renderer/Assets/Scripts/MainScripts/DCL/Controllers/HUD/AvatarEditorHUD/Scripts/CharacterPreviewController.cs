@@ -20,6 +20,13 @@ public class CharacterPreviewController : MonoBehaviour
     private const int SUPERSAMPLING = 1;
     private const float CAMERA_TRANSITION_TIME = 0.5f;
 
+    [SerializeField]
+    internal InputAction_Measurable mouseWheelAction;
+
+    private float mouseWheelThreshold = 0.04f;
+
+    public bool canScroll = false;
+
     public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 
     public enum CameraFocus
@@ -65,6 +72,19 @@ public class CharacterPreviewController : MonoBehaviour
             new GPUSkinningThrottler(),
             new EmoteAnimationEquipper(animator, DataStore.i.emotes)
         );
+        mouseWheelAction.OnValueChanged += OnMouseWheelChangeValue;
+    }
+
+    private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
+    {
+        if (!canScroll) return;
+        if (value > -mouseWheelThreshold && value < mouseWheelThreshold) return;
+
+        if (value < -mouseWheelThreshold)
+            SetFocus(CameraFocus.DefaultEditing, true);
+
+        if (value > mouseWheelThreshold)
+            SetFocus(CameraFocus.FaceEditing, true);
     }
 
     public void UpdateModel(AvatarModel newModel, Action onDone)
@@ -80,6 +100,7 @@ public class CharacterPreviewController : MonoBehaviour
         loadingCts?.Cancel();
         loadingCts?.Dispose();
         loadingCts = null;
+        mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
         avatar?.Dispose();
     }
 
