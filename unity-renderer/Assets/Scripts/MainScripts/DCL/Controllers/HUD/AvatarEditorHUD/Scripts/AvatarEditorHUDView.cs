@@ -2,6 +2,7 @@ using DCL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
@@ -525,7 +526,11 @@ public class AvatarEditorHUDView : MonoBehaviour
         });
     }
 
-    internal void SetSectionActive(int sectionIndex, bool isActive) { sectionSelector.GetSection(sectionIndex).SetActive(isActive); }
+    internal void SetSectionActive(int sectionIndex, bool isActive) 
+    { 
+        sectionSelector.GetSection(sectionIndex).SetActive(isActive);
+        sectionSelector.gameObject.SetActive(sectionSelector.GetAllSections().Count(x => x.IsActive()) > 1);
+    }
     
     public void PlayPreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
 
