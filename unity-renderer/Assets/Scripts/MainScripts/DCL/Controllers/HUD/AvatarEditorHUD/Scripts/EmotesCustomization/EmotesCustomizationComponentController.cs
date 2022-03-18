@@ -60,6 +60,7 @@ namespace EmotesCustomization
         {
             view.onEmoteEquipped -= OnEmoteEquipped;
             view.onEmoteUnequipped -= OnEmoteUnequipped;
+            view.onSellEmoteClicked -= OnSellEmoteClicked;
             view.onSlotSelected -= OnSlotSelected;
             isStarMenuOpen.OnChange -= IsStarMenuOpenChanged;
             avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
@@ -138,6 +139,7 @@ namespace EmotesCustomization
             view = CreateView();
             view.onEmoteEquipped += OnEmoteEquipped;
             view.onEmoteUnequipped += OnEmoteUnequipped;
+            view.onSellEmoteClicked += OnSellEmoteClicked;
             view.onSlotSelected += OnSlotSelected;
             isStarMenuOpen.OnChange += IsStarMenuOpenChanged;
             avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
@@ -320,6 +322,8 @@ namespace EmotesCustomization
             StoreEquippedEmotes();
             emotesCustomizationDataStore.emoteForUnequipping.Set(emoteId, true);
         }
+
+        internal void OnSellEmoteClicked(string emoteId) { emotesCustomizationDataStore.emoteForSelling.Set(emoteId, true); }
 
         internal void OnSlotSelected(string emoteId, int slotNumber) { emotesCustomizationDataStore.emoteForPreviewing.Set(emoteId, true); }
 

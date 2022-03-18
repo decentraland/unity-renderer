@@ -19,6 +19,11 @@ namespace EmotesCustomization
         event Action<string, int> onEmoteUnequipped;
 
         /// <summary>
+        /// It will be triggered when the sell button of an emote detail card is clicked.
+        /// </summary>
+        event Action<string> onSellEmoteClicked;
+
+        /// <summary>
         /// It will be triggered when a slot is selected.
         /// </summary>
         event Action<string, int> onSlotSelected;
@@ -126,6 +131,7 @@ namespace EmotesCustomization
 
         public event Action<string, int> onEmoteEquipped;
         public event Action<string, int> onEmoteUnequipped;
+        public event Action<string> onSellEmoteClicked;
         public event Action<string, int> onSlotSelected;
 
         internal Pool emoteCardsPool;
@@ -141,9 +147,9 @@ namespace EmotesCustomization
             base.Awake();
 
             emoteSlotSelector.onSlotSelected += OnSlotSelected;
+            emoteInfoPanel.closeButton.onClick.AddListener(() => emoteInfoPanel.SetActive(false));
 
             ConfigureEmotesPool();
-            ConfigureEmoteInfoPanel();
         }
 
         public override void Start()
@@ -261,6 +267,8 @@ namespace EmotesCustomization
             emoteInfoPanel.SetActive(true);
             emoteInfoPanel.transform.SetParent(anchorTransform);
             emoteInfoPanel.transform.localPosition = Vector3.zero;
+            emoteInfoPanel.sellButton.onClick.RemoveAllListeners();
+            emoteInfoPanel.sellButton.onClick.AddListener(() => onSellEmoteClicked?.Invoke(emoteModel.id));
         }
 
         public void CloseEmoteInfoPanel() { emoteInfoPanel.SetActive(false); }
@@ -294,15 +302,6 @@ namespace EmotesCustomization
 
                 emoteCardsPool.ForcePrewarm();
             }
-        }
-
-        internal void ConfigureEmoteInfoPanel()
-        {
-            emoteInfoPanel.closeButton.onClick.AddListener(() => emoteInfoPanel.SetActive(false));
-            emoteInfoPanel.sellButton.onClick.AddListener(() =>
-            {
-                // TODO (Santi): GO TO SELL LINK...
-            });
         }
 
         internal EmoteCardComponentView InstantiateAndConfigureEmoteCard(EmoteCardComponentModel emotesInfo)

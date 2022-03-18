@@ -96,6 +96,7 @@ public class AvatarEditorHUDController : IHUD
         emotesCustomizationDataStore.emoteForPreviewing.OnChange += OnPreviewEmote;
         emotesCustomizationDataStore.emoteForEquipping.OnChange += OnEmoteEquipped;
         emotesCustomizationDataStore.emoteForUnequipping.OnChange += OnEmoteUnequipped;
+        emotesCustomizationDataStore.emoteForSelling.OnChange += OnRedirectToEmoteSelling;
 
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
     }
@@ -713,6 +714,7 @@ public class AvatarEditorHUDController : IHUD
         emotesCustomizationDataStore.emoteForPreviewing.OnChange -= OnPreviewEmote;
         emotesCustomizationDataStore.emoteForEquipping.OnChange -= OnEmoteEquipped;
         emotesCustomizationDataStore.emoteForUnequipping.OnChange -= OnEmoteUnequipped;
+        emotesCustomizationDataStore.emoteForSelling.OnChange -= OnRedirectToEmoteSelling;
 
         CleanUp();
     }
@@ -856,4 +858,6 @@ public class AvatarEditorHUDController : IHUD
         if (unequippedEmote != null)
             UnequipEmote(unequippedEmote);
     }
+
+    private void OnRedirectToEmoteSelling(string currentEmoteId, string previousEmoteId) { SellCollectible(currentEmoteId); }
 }
