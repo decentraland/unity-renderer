@@ -224,7 +224,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f773eba74bc03149bd8a05af1aec01f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseWheelAction: {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
   camera: {fileID: 3830021777958501345}
   defaultEditingTemplate: {fileID: 2524994584819242542}
   faceEditingTemplate: {fileID: 7575988263520695659}
