@@ -192,6 +192,7 @@ namespace DCL.Builder
         private void RemoveMapRendererFromContainer()
         {
             MapRenderer.i.CleanLandsHighlights();
+            MapRenderer.i.ClearLandHighlightsInfo();
             MapRenderer.i.SetHighlightStyle(MapParcelHighlight.HighlighStyle.DEFAULT);
             MapRenderer.i.atlas.viewport = minimapViewport;
             MapRenderer.i.transform.SetParent(mapRendererMinimapParent);
