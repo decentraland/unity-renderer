@@ -2,6 +2,7 @@ using DCL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
@@ -19,9 +20,10 @@ public class AvatarEditorHUDView : MonoBehaviour
     internal const int EMOTES_SECTION_INDEX = 1;
     internal const string EMOTES_SECTION_TITLE = "<b>Emotes</b>";
     private const string RESET_PREVIEW_ANIMATION = "Idle";
+    private const float TIME_TO_RESET_PREVIEW_ANIMATION = 0.2f;
 
     public bool isOpen { get; private set; }
-    internal BaseVariable<bool> isEmotesCustomizationSelected => DataStore.i.emotesCustomization.isEmotesCustomizationSelected;
+    internal DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
 
     internal bool arePanelsInitialized = false;
 
@@ -394,7 +396,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         // We need to stop the current preview animation in order to take a correct snapshot
         ResetPreviewEmote();
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(TIME_TO_RESET_PREVIEW_ANIMATION);
         characterPreviewController.TakeSnapshots(OnSnapshotsReady, OnSnapshotsFailed);
     }
 
@@ -461,8 +463,8 @@ public class AvatarEditorHUDView : MonoBehaviour
             characterPreviewController = null;
         }
 
-        sectionSelector.GetSection(0).onSelect.RemoveAllListeners();
-        sectionSelector.GetSection(1).onSelect.RemoveAllListeners();
+        sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
+        sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
     }
 
     public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
@@ -482,7 +484,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         rectTransform.anchorMax = Vector2.one;
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
         rectTransform.localPosition = Vector2.zero;
-        rectTransform.offsetMax = new Vector2(0f, 0f);
+        rectTransform.offsetMax = Vector2.zero;
         rectTransform.offsetMin = Vector2.zero;
     }
 
@@ -507,7 +509,7 @@ public class AvatarEditorHUDView : MonoBehaviour
                 ResetPreviewEmote();
             }
 
-            isEmotesCustomizationSelected.Set(false, notifyEvent: false);
+            emotesCustomizationDataStore.isEmotesCustomizationSelected.Set(false, notifyEvent: false);
         });
         sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
         {
@@ -520,13 +522,14 @@ public class AvatarEditorHUDView : MonoBehaviour
             }
 
             characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
-            isEmotesCustomizationSelected.Set(true, notifyEvent: false);
+            emotesCustomizationDataStore.isEmotesCustomizationSelected.Set(true, notifyEvent: false);
         });
     }
 
-    internal void SetSectionActive(int sectionIndex, bool isActive)
-    {
+    internal void SetSectionActive(int sectionIndex, bool isActive) 
+    { 
         sectionSelector.GetSection(sectionIndex).SetActive(isActive);
+        sectionSelector.gameObject.SetActive(sectionSelector.GetAllSections().Count(x => x.IsActive()) > 1);
     }
     
     public void PlayPreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }

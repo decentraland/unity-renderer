@@ -1,4 +1,3 @@
-using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -106,6 +105,7 @@ namespace EmotesCustomization
         private void OnSlotHover(string emoteName) { selectedEmoteName.text = emoteName; }
 
         private void Close() { OnClose?.Invoke(); }
+
         public void OnDestroy() { CleanUp(); }
 
         public void CleanUp()

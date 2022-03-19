@@ -18,6 +18,7 @@ namespace DCL
         public readonly BaseVariable<string> emoteForPreviewing = new BaseVariable<string>(null);
         public readonly BaseVariable<string> emoteForEquipping = new BaseVariable<string>(null);
         public readonly BaseVariable<string> emoteForUnequipping = new BaseVariable<string>(null);
+        public readonly BaseVariable<string> emoteForSelling = new BaseVariable<string>(null);
         public readonly BaseVariable<bool> avatarHasBeenSaved = new BaseVariable<bool>(false);
     }
 }

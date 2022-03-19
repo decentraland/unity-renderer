@@ -142,7 +142,7 @@ namespace UnityGLTF
         protected MaterialCacheData _defaultLoadedMaterial = null;
 
         protected string _gltfFileName;
-        private readonly GLTFThrottlingCounter throttlingCounter;
+        private readonly IThrottlingCounter throttlingCounter;
         protected GLBStream _gltfStream;
         protected GLTFRoot _gltfRoot;
         protected AssetCache _assetCache;
@@ -181,14 +181,14 @@ namespace UnityGLTF
         /// <param name="gltfFileName">glTF file relative to data loader path</param>
         /// <param name="externalDataLoader">Loader to load external data references</param>
         /// <param name="throttlingCounter">Used to determine if we should throttle some Main-thread only processes</param>
-        public GLTFSceneImporter(string id, string gltfFileName, ILoader externalDataLoader, GLTFThrottlingCounter throttlingCounter) : this(externalDataLoader)
+        public GLTFSceneImporter(string id, string gltfFileName, ILoader externalDataLoader, IThrottlingCounter throttlingCounter) : this(externalDataLoader)
         {
             _gltfFileName = gltfFileName;
             this.throttlingCounter = throttlingCounter;
             this.id = string.IsNullOrEmpty(id) ? gltfFileName : id;
         }
 
-        public GLTFSceneImporter(string id, GLTFRoot rootNode, ILoader externalDataLoader, GLTFThrottlingCounter throttlingCounter, Stream gltfStream = null) : this(externalDataLoader)
+        public GLTFSceneImporter(string id, GLTFRoot rootNode, ILoader externalDataLoader, IThrottlingCounter throttlingCounter, Stream gltfStream = null) : this(externalDataLoader)
         {
             this.id = id;
             _gltfRoot = rootNode;

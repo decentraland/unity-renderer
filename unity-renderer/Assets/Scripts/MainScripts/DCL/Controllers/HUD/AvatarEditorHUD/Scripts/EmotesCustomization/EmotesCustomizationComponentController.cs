@@ -2,7 +2,6 @@ using DCL;
 using DCL.Helpers;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -24,13 +23,7 @@ namespace EmotesCustomization
         internal const int NUMBER_OF_SLOTS = 10;
         internal const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedNFTEmotes";
 
-        internal BaseVariable<Transform> isInitialized => DataStore.i.emotesCustomization.isInitialized;
-        internal BaseCollection<EquippedEmoteData> equippedEmotes => DataStore.i.emotesCustomization.equippedEmotes;
-        internal BaseCollection<string> currentLoadedEmotes => DataStore.i.emotesCustomization.currentLoadedEmotes;
-        internal BaseVariable<string> emoteForPreviewing => DataStore.i.emotesCustomization.emoteForPreviewing;
-        internal BaseVariable<string> emoteForEquipping => DataStore.i.emotesCustomization.emoteForEquipping;
-        internal BaseVariable<string> emoteForUnequipping => DataStore.i.emotesCustomization.emoteForUnequipping;
-        internal BaseVariable<bool> avatarHasBeenSaved => DataStore.i.emotesCustomization.avatarHasBeenSaved;
+        internal DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
         internal BaseDictionary<(string bodyshapeId, string emoteId), AnimationClip> emoteAnimations => DataStore.i.emotes.animations;
         internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
         internal bool isEmotesCustomizationSectionOpen => isStarMenuOpen.Get() && view.isActive;
@@ -60,17 +53,18 @@ namespace EmotesCustomization
             ConfigureUserProfileAndCatalog(userProfile, catalog);
             ConfigureShortcuts();
 
-            isInitialized.Set(view.viewTransform);
+            emotesCustomizationDataStore.isInitialized.Set(view.viewTransform);
         }
 
         public void Dispose()
         {
             view.onEmoteEquipped -= OnEmoteEquipped;
             view.onEmoteUnequipped -= OnEmoteUnequipped;
+            view.onSellEmoteClicked -= OnSellEmoteClicked;
             view.onSlotSelected -= OnSlotSelected;
             isStarMenuOpen.OnChange -= IsStarMenuOpenChanged;
             avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
-            avatarHasBeenSaved.OnChange -= OnAvatarHasBeenSavedChanged;
+            emotesCustomizationDataStore.avatarHasBeenSaved.OnChange -= OnAvatarHasBeenSavedChanged;
             catalog.OnAdded -= AddEmote;
             catalog.OnRemoved -= RemoveEmote;
             emoteAnimations.OnAdded -= OnAnimationAdded;
@@ -120,7 +114,7 @@ namespace EmotesCustomization
                 storedEquippedEmotesData.Add(
                     string.IsNullOrEmpty(emoteId) ? null : new EquippedEmoteData { id = emoteId, cachedThumbnail = null });
             }
-            equippedEmotes.Set(storedEquippedEmotesData);
+            emotesCustomizationDataStore.equippedEmotes.Set(storedEquippedEmotesData);
         }
 
         internal List<string> GetDefaultEmotes()
@@ -145,16 +139,14 @@ namespace EmotesCustomization
             view = CreateView();
             view.onEmoteEquipped += OnEmoteEquipped;
             view.onEmoteUnequipped += OnEmoteUnequipped;
+            view.onSellEmoteClicked += OnSellEmoteClicked;
             view.onSlotSelected += OnSlotSelected;
             isStarMenuOpen.OnChange += IsStarMenuOpenChanged;
             avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
-            avatarHasBeenSaved.OnChange += OnAvatarHasBeenSavedChanged;
+            emotesCustomizationDataStore.avatarHasBeenSaved.OnChange += OnAvatarHasBeenSavedChanged;
         }
 
-        internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen)
-        {
-            view.CloseEmoteInfoPanel();
-        }
+        internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen) { view.CloseEmoteInfoPanel(); }
 
         internal void OnAvatarEditorVisibleChanged(bool current, bool previous) { view.SetActive(current); }
 
@@ -163,7 +155,7 @@ namespace EmotesCustomization
             if (wasAvatarSaved)
             {
                 List<string> emotesIdsToStore = new List<string>();
-                foreach (EquippedEmoteData equippedEmoteData in equippedEmotes.Get())
+                foreach (EquippedEmoteData equippedEmoteData in emotesCustomizationDataStore.equippedEmotes.Get())
                 {
                     emotesIdsToStore.Add(equippedEmoteData != null ? equippedEmoteData.id : null);
                 }
@@ -180,7 +172,7 @@ namespace EmotesCustomization
 
         internal void ProcessCatalog()
         {
-            currentLoadedEmotes.Set(new List<string>());
+            emotesCustomizationDataStore.currentLoadedEmotes.Set(new List<string>());
             view.CleanEmotes();
 
             using (var iterator = catalog.Get().GetEnumerator())
@@ -194,13 +186,13 @@ namespace EmotesCustomization
 
         internal void AddEmote(string id, WearableItem wearable)
         {
-            if (!wearable.IsEmote() || currentLoadedEmotes.Contains(id))
+            if (!wearable.IsEmote() || emotesCustomizationDataStore.currentLoadedEmotes.Contains(id))
                 return;
 
             if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)
                 return;
 
-            currentLoadedEmotes.Add(id);
+            emotesCustomizationDataStore.currentLoadedEmotes.Add(id);
             EmoteCardComponentModel emoteToAdd = ParseWearableItemIntoEmoteCardModel(wearable);
             EmoteCardComponentView newEmote = view.AddEmote(emoteToAdd);
             newEmote.SetAsLoading(true);
@@ -215,7 +207,7 @@ namespace EmotesCustomization
 
         internal void RemoveEmote(string id, WearableItem wearable)
         {
-            currentLoadedEmotes.Remove(id);
+            emotesCustomizationDataStore.currentLoadedEmotes.Remove(id);
             view.RemoveEmote(id);
             UpdateEmoteSlots();
         }
@@ -282,12 +274,12 @@ namespace EmotesCustomization
 
         internal void UpdateEmoteSlots()
         {
-            for (int i = 0; i < equippedEmotes.Count(); i++)
+            for (int i = 0; i < emotesCustomizationDataStore.equippedEmotes.Count(); i++)
             {
                 if (i > NUMBER_OF_SLOTS)
                     break;
 
-                if (equippedEmotes[i] == null)
+                if (emotesCustomizationDataStore.equippedEmotes[i] == null)
                 {
                     EmoteSlotCardComponentView existingEmoteIntoSlot = view.currentSlots.FirstOrDefault(x => x.model.slotNumber == i);
                     if (existingEmoteIntoSlot != null)
@@ -296,8 +288,8 @@ namespace EmotesCustomization
                     continue;
                 }
 
-                catalog.TryGetValue(equippedEmotes[i].id, out WearableItem emoteItem);
-                if (emoteItem != null && currentLoadedEmotes.Contains(emoteItem.id))
+                catalog.TryGetValue(emotesCustomizationDataStore.equippedEmotes[i].id, out WearableItem emoteItem);
+                if (emoteItem != null && emotesCustomizationDataStore.currentLoadedEmotes.Contains(emoteItem.id))
                     view.EquipEmote(emoteItem.id, emoteItem.GetName(), i, false, false);
             }
         }
@@ -315,23 +307,25 @@ namespace EmotesCustomization
                     };
             }
 
-            equippedEmotes.Set(newEquippedEmotesList);
+            emotesCustomizationDataStore.equippedEmotes.Set(newEquippedEmotesList);
         }
 
         internal void OnEmoteEquipped(string emoteId, int slotNumber)
         {
             StoreEquippedEmotes();
-            emoteForPreviewing.Set(emoteId, true);
-            emoteForEquipping.Set(emoteId, true);
+            emotesCustomizationDataStore.emoteForPreviewing.Set(emoteId, true);
+            emotesCustomizationDataStore.emoteForEquipping.Set(emoteId, true);
         }
 
         internal void OnEmoteUnequipped(string emoteId, int slotNumber)
         {
             StoreEquippedEmotes();
-            emoteForUnequipping.Set(emoteId, true);
+            emotesCustomizationDataStore.emoteForUnequipping.Set(emoteId, true);
         }
 
-        internal void OnSlotSelected(string emoteId, int slotNumber) { emoteForPreviewing.Set(emoteId, true); }
+        internal void OnSellEmoteClicked(string emoteId) { emotesCustomizationDataStore.emoteForSelling.Set(emoteId, true); }
+
+        internal void OnSlotSelected(string emoteId, int slotNumber) { emotesCustomizationDataStore.emoteForPreviewing.Set(emoteId, true); }
 
         internal void ConfigureShortcuts()
         {
