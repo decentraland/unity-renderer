@@ -140,8 +140,8 @@ public class AvatarEditorHUDController : IHUD
                          .Then((ownedWearables) =>
                          {
                              ownedWearablesAlreadyLoaded = true;
-                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
                              LoadUserProfile(userProfile, true);
+                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
                              view.ShowCollectiblesLoadingSpinner(false);
                              view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
                          })
