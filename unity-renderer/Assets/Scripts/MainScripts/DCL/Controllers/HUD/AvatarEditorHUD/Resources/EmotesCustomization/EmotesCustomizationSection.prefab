@@ -2253,7 +2253,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -2263,7 +2263,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -2318,7 +2318,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -2695,7 +2695,7 @@ PrefabInstance:
     - target: {fileID: 6677185329619746147, guid: ed97e568b39c83d418f317eca9336523,
         type: 3}
       propertyPath: m_Pivot.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6677185329619746147, guid: ed97e568b39c83d418f317eca9336523,
         type: 3}
@@ -2710,7 +2710,7 @@ PrefabInstance:
     - target: {fileID: 6677185329619746147, guid: ed97e568b39c83d418f317eca9336523,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6677185329619746147, guid: ed97e568b39c83d418f317eca9336523,
         type: 3}
@@ -2720,7 +2720,7 @@ PrefabInstance:
     - target: {fileID: 6677185329619746147, guid: ed97e568b39c83d418f317eca9336523,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6677185329619746147, guid: ed97e568b39c83d418f317eca9336523,
         type: 3}

@@ -38,7 +38,7 @@ namespace EmotesCustomization
             base.Awake();
 
             emoteSlotSelector.onSlotSelected += OnSlotSelected;
-            emoteInfoPanel.closeButton.onClick.AddListener(() => emoteInfoPanel.SetActive(false));
+            emoteInfoPanel.closeButton.onClick.AddListener(() => SetEmoteInfoPanelActive(false));
 
             ConfigureEmotesPool();
         }
@@ -119,7 +119,7 @@ namespace EmotesCustomization
                 existingEmoteCard.SetEmoteAsAssignedInSelectedSlot(existingEmoteCard.model.assignedSlot == selectedSlot);
             }
 
-            emoteInfoPanel.SetActive(false);
+            SetEmoteInfoPanelActive(false);
 
             if (notifyEvent)
                 onEmoteEquipped?.Invoke(emoteId, slotNumber);
@@ -144,7 +144,8 @@ namespace EmotesCustomization
                 null,
                 null,
                 string.Empty);
-            emoteInfoPanel.SetActive(false);
+
+            SetEmoteInfoPanelActive(false);
 
             if (notifyEvent)
                 onEmoteUnequipped?.Invoke(emoteId, slotNumber);
@@ -155,14 +156,14 @@ namespace EmotesCustomization
             emoteInfoPanel.SetModel(NFTItemInfo.Model.FromEmoteItem(emoteModel));
             emoteInfoPanel.SetBackgroundColor(backgroundColor);
             emoteInfoPanel.SetRarityName(emoteModel.rarity);
-            emoteInfoPanel.SetActive(true);
+            SetEmoteInfoPanelActive(true);
             emoteInfoPanel.transform.SetParent(anchorTransform);
             emoteInfoPanel.transform.localPosition = Vector3.zero;
             emoteInfoPanel.sellButton.onClick.RemoveAllListeners();
             emoteInfoPanel.sellButton.onClick.AddListener(() => onSellEmoteClicked?.Invoke(emoteModel.id));
         }
 
-        public void CloseEmoteInfoPanel() { emoteInfoPanel.SetActive(false); }
+        public void SetEmoteInfoPanelActive(bool isActive) { emoteInfoPanel.SetActive(isActive); }
 
         public EmoteCardComponentView GetEmoteCardById(string emoteId) { return GetAllEmoteCards().FirstOrDefault(x => x.model.id == emoteId); }
 
@@ -177,7 +178,7 @@ namespace EmotesCustomization
             else
                 UnequipEmote(emoteId, selectedSlot);
 
-            emoteInfoPanel.SetActive(false);
+            SetEmoteInfoPanelActive(false);
         }
 
         internal void OnEmoteSelected(string emoteId) { selectedCard = GetEmoteCardById(emoteId); }
@@ -222,6 +223,7 @@ namespace EmotesCustomization
                 existingEmoteCard.SetEmoteAsAssignedInSelectedSlot(existingEmoteCard.model.assignedSlot == slotNumber);
             }
 
+            SetEmoteInfoPanelActive(false);
             onSlotSelected?.Invoke(emoteId, slotNumber);
         }
 

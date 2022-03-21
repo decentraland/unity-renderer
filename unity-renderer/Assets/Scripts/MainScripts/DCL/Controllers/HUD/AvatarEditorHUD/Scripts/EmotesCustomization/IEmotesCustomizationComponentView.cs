@@ -95,9 +95,9 @@ namespace EmotesCustomization
         void OpenEmoteInfoPanel(EmoteCardComponentModel emoteModel, Color backgroundColor, Transform anchorTransform);
 
         /// <summary>
-        /// Close the info panel.
+        /// Set the info panel active/inactive.
         /// </summary>
-        void CloseEmoteInfoPanel();
+        void SetEmoteInfoPanelActive(bool isActive);
 
         /// <summary>
         /// Get an emote card by id.

@@ -137,7 +137,7 @@ namespace EmotesCustomization
             emotesCustomizationDataStore.avatarHasBeenSaved.OnChange += OnAvatarHasBeenSavedChanged;
         }
 
-        internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen) { view.CloseEmoteInfoPanel(); }
+        internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen) { view.SetEmoteInfoPanelActive(false); }
 
         internal void OnAvatarEditorVisibleChanged(bool current, bool previous) { view.SetActive(current); }
 
