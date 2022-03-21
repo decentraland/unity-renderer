@@ -106,7 +106,6 @@ namespace EmotesCustomization
         [SerializeField] internal GameObject emoteNameContainer;
         [SerializeField] internal TMP_Text emoteNameText;
         [SerializeField] internal TMP_Text assignedSlotNumberText;
-        [SerializeField] internal ImageComponentView assignedInCurrentSlotMarkImage;
         [SerializeField] internal ButtonComponentView mainButton;
         [SerializeField] internal ButtonComponentView infoButton;
         [SerializeField] internal GameObject cardSelectionFrame;
@@ -287,8 +286,6 @@ namespace EmotesCustomization
         {
             model.isSelected = isSelected;
 
-            cardSelectionFrame.SetActive(isSelected);
-
             if (selectionAnimator != null)
                 selectionAnimator.SetBool(ON_SELECTED_CARD_COMPONENT_BOOL, isSelected);
 
@@ -338,7 +335,7 @@ namespace EmotesCustomization
         internal void RefreshVisualCardStatus()
         {
             RefreshAssignedSlotTextVisibility();
-            RefreshAssignedInCurrentSlotMarkVisibility();
+            RefreshSelectionFrameVisibility();
             RefreshCardButtonsVisibility();
         }
 
@@ -347,17 +344,15 @@ namespace EmotesCustomization
             if (assignedSlotNumberText == null)
                 return;
 
-            assignedSlotNumberText.gameObject.SetActive(
-                !model.isAssignedInSelectedSlot &&
-                model.assignedSlot >= 0);
+            assignedSlotNumberText.gameObject.SetActive(model.assignedSlot >= 0);
         }
 
-        internal void RefreshAssignedInCurrentSlotMarkVisibility()
+        internal void RefreshSelectionFrameVisibility()
         {
-            if (assignedInCurrentSlotMarkImage == null)
+            if (cardSelectionFrame == null)
                 return;
 
-            assignedInCurrentSlotMarkImage.gameObject.SetActive(model.isAssignedInSelectedSlot);
+            cardSelectionFrame.SetActive(model.isSelected || model.isAssignedInSelectedSlot);
         }
 
         internal void RefreshCardButtonsVisibility()
