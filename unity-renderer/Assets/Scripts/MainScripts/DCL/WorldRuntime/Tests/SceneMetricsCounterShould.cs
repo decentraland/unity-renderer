@@ -61,11 +61,11 @@ public class SceneMetricsCounterShould
         dataStore.AddAudioClip("1", audioClip2);
         dataStore.AddAudioClip("2", audioClip3);
 
-        Assert.That(sceneMetricsCounter.currentCount.audioClipMemoryScore, Is.EqualTo(166000));
+        Assert.That(sceneMetricsCounter.currentCount.audioClipMemoryScore, Is.EqualTo(86000));
 
         dataStore.RemoveAudioClip("1", audioClip1);
 
-        Assert.That(sceneMetricsCounter.currentCount.audioClipMemoryScore, Is.EqualTo(83000));
+        Assert.That(sceneMetricsCounter.currentCount.audioClipMemoryScore, Is.EqualTo(43000));
 
         dataStore.RemoveAudioClip("1", audioClip2);
 
@@ -149,11 +149,11 @@ public class SceneMetricsCounterShould
         dataStore.AddRendereable("1", rendereable2);
         dataStore.AddRendereable("2", rendereable3);
 
-        Assert.That(sceneMetricsCounter.currentCount.textureMemoryScore, Is.EqualTo(240843));
+        Assert.That(sceneMetricsCounter.currentCount.textureMemoryScore, Is.EqualTo(120421));
 
         dataStore.RemoveRendereable("1", rendereable2);
 
-        Assert.That(sceneMetricsCounter.currentCount.textureMemoryScore, Is.EqualTo(229375));
+        Assert.That(sceneMetricsCounter.currentCount.textureMemoryScore, Is.EqualTo(114687));
 
         dataStore.RemoveRendereable("1", rendereable1);
 
