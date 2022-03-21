@@ -292,7 +292,9 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         List<BaseComponentView> extractedItems = new List<BaseComponentView>();
         foreach (BaseComponentView item in instantiatedItems)
         {
-            item.transform.SetParent(null);
+            if (item != null)
+                item.transform.SetParent(null);
+
             extractedItems.Add(item);
         }
 
@@ -437,7 +439,8 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         List<BaseComponentView> itemsToDestroy = ExtractItems();
         foreach (BaseComponentView itemToDestroy in itemsToDestroy)
         {
-            DestroyImmediate(itemToDestroy.gameObject);
+            if (itemToDestroy != null)
+                DestroyImmediate(itemToDestroy.gameObject);
         }
         itemsToDestroy.Clear();
 

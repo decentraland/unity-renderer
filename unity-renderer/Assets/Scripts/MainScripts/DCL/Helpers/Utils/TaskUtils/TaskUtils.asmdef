@@ -1,0 +1,20 @@
+{
+    "name": "UniTaskUtils",
+    "rootNamespace": "",
+    "references": [
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:760a1d365aad58044916992b072cf2a6",
+        "GUID:ee6523961ef177343ad763fcd55c7c46"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

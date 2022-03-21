@@ -58,6 +58,8 @@ public class ChatHUDController : IDisposable
 
     public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
+        chatEntryModel.bodyText = ChatUtils.AddNoParse(chatEntryModel.bodyText);
+
         if (IsProfanityFilteringEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
         {
             chatEntryModel.bodyText = profanityFilter.Filter(chatEntryModel.bodyText);

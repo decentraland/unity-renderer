@@ -16,8 +16,6 @@ public class BlockersControllerShould
     [SetUp]
     protected void SetUp()
     {
-        RenderProfileManifest.i.Initialize();
-
         var allLoadedParcelCoords = new HashSet<Vector2Int>();
         allLoadedParcelCoords.Add(new Vector2Int(0, 0));
         allLoadedParcelCoords.Add(new Vector2Int(-1, 0));

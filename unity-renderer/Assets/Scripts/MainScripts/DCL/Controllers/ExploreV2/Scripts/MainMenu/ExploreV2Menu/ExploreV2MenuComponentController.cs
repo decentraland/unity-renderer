@@ -56,9 +56,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> emotesVisible => DataStore.i.HUDs.emotesVisible;
     internal BaseVariable<bool> chatInputVisible => DataStore.i.HUDs.chatInputVisible;
     internal BooleanVariable playerInfoCardVisible => CommonScriptableObjects.playerInfoCardVisibleState;
+    internal MouseCatcher mouseCatcher;
 
     public void Initialize()
     {
+        mouseCatcher = SceneReferences.i?.mouseCatcher;
         exploreV2Analytics = CreateAnalyticsController();
         view = CreateView();
         SetVisibility(false);
@@ -225,7 +227,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (visible)
         {
-            Utils.UnlockCursor();
+            mouseCatcher?.UnlockCursor();
 
             if (DataStore.i.common.isTutorialRunning.Get())
                 view.GoToSection(ExploreV2MenuComponentView.DEFAULT_SECTION);
@@ -528,7 +530,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentProfileCard.SetIsClaimedName(profile.hasClaimedName);
         view.currentProfileCard.SetProfileName(profile.userName);
         view.currentProfileCard.SetProfileAddress(profile.ethAddress);
-        view.currentProfileCard.SetProfilePicture(profile.face128SnapshotURL);
+        view.currentProfileCard.SetProfilePicture(profile.face256SnapshotURL);
     }
 
     internal void OnCloseButtonPressed(bool fromShortcut)
@@ -592,5 +594,5 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal virtual IExploreV2Analytics CreateAnalyticsController() => new ExploreV2Analytics.ExploreV2Analytics();
 
-    internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
+    protected internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
 }

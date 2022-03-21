@@ -12,6 +12,38 @@ namespace AvatarSystem
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
         private readonly Dictionary<string, WearableItem> wearablesRetrieved = new Dictionary<string, WearableItem>();
 
+        public async UniTask<(List<WearableItem> wearables, List<WearableItem> emotes)> ResolveAndSplit(IEnumerable<string> wearableIds, CancellationToken ct = default)
+        {
+            try
+            {
+                WearableItem[] allItems = await Resolve(wearableIds, ct);
+
+                List<WearableItem> wearables = new List<WearableItem>();
+                List<WearableItem> emotes = new List<WearableItem>();
+
+                for (int i = 0; i < allItems.Length; i++)
+                {
+                    if (allItems[i] == null)
+                        continue;
+
+                    if (allItems[i].IsEmote())
+                        emotes.Add(allItems[i]);
+                    else
+                        wearables.Add(allItems[i]);
+                }
+
+                return (
+                    wearables,
+                    emotes
+                );
+            }
+            catch (OperationCanceledException)
+            {
+                //No disposing required
+                throw;
+            }
+        }
+
         public async UniTask<WearableItem[]> Resolve(IEnumerable<string> wearableId, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();

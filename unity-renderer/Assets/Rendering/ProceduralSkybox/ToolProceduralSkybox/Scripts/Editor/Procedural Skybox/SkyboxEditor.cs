@@ -200,7 +200,6 @@ namespace DCL.Skybox
 
         #endregion
 
-        [MenuItem("Window/Skybox Editor")]
         static void Init()
         {
             SkyboxEditorWindow window = (SkyboxEditorWindow)EditorWindow.GetWindow(typeof(SkyboxEditorWindow));

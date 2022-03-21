@@ -18,8 +18,14 @@ public class MinimapHUDController : IHUD
         CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChange;
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
         minimapZoom.Set(1f);
+        UpdateData(model);
+    }
 
-        view = MinimapHUDView.Create(this);
+    protected internal virtual MinimapHUDView CreateView() { return MinimapHUDView.Create(this); }
+
+    public void Initialize() 
+    {
+        view = CreateView();
         UpdateData(model);
     }
 

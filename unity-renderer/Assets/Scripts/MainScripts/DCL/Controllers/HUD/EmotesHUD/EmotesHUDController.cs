@@ -18,7 +18,7 @@ public class EmotesHUDController : IHUD
         view.Initialize(EmoteCalled);
         view.OnClose += OnViewClosed;
 
-        ownUserProfile.OnAvatarExpressionSet += OnAvatarEmoteSet;
+        ownUserProfile.OnAvatarEmoteSet += OnAvatarEmoteSet;
         emotesVisible.OnChange += OnEmoteVisibleChanged;
         OnEmoteVisibleChanged(emotesVisible.Get(), false);
     }
@@ -51,7 +51,7 @@ public class EmotesHUDController : IHUD
     {
         ownUserProfile.snapshotObserver.RemoveListener(view.UpdateAvatarSprite);
         closeWindow.OnTriggered -= OnCloseWindowPressed;
-        ownUserProfile.OnAvatarExpressionSet -= OnAvatarEmoteSet;
+        ownUserProfile.OnAvatarEmoteSet -= OnAvatarEmoteSet;
         emotesVisible.OnChange -= OnEmoteVisibleChanged;
 
         if (view != null)

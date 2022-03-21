@@ -143,7 +143,7 @@ namespace DCL
             resultOp.disposeOnCompleted = disposeOnCompleted;
             ongoingWebRequests.Add(resultOp);
 
-            UnityWebRequestAsyncOperation requestOp = resultOp.webRequest.SendWebRequest();
+            UnityWebRequestAsyncOperation requestOp = resultOp.SendWebRequest();
             requestOp.completed += (asyncOp) =>
             {
                 if (!resultOp.isDisposed)
@@ -158,7 +158,6 @@ namespace DCL
                         remainingAttemps--;
                         if (remainingAttemps > 0)
                         {
-                            Debug.LogWarning($"Retrying web request: {url} ({remainingAttemps} attemps remaining)");
                             resultOp.Dispose();
                             resultOp = SendWebRequest(requestType, url, downloadHandler, OnSuccess, OnFail, remainingAttemps, timeout, disposeOnCompleted, headers, resultOp);
                         }
