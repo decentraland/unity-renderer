@@ -155,6 +155,9 @@ namespace EmotesCustomization
 
         public void SetVisibility_Internal(bool visible)
         {
+            if (isStartMenuOpen.Get())
+                return;
+
             if (emoteJustTriggeredFromShortcut)
             {
                 emoteJustTriggeredFromShortcut = false;

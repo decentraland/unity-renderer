@@ -53,7 +53,7 @@ public class AvatarEditorHUDController : IHUD
     private float lastTimeOwnedWearablesChecked = 0;
     private float prevRenderScale = 1.0f;
     private Transform emotesSectionTransform;
-    private bool isAvatarPreviewReady = false;
+    private bool isAvatarPreviewReady;
 
     public AvatarEditorHUDView view;
 
@@ -91,7 +91,7 @@ public class AvatarEditorHUDController : IHUD
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, false);
         emotesCustomizationDataStore.isInitialized.OnChange += InitializeEmotesSection;
         InitializeEmotesSection(emotesCustomizationDataStore.isInitialized.Get(), null);
-        emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange += IsEmotesCustomizationSelectedChanged;
+        emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange += HandleEmotesCostumizationSelection;
         emotesCustomizationDataStore.currentLoadedEmotes.OnAdded += OnNewEmoteAdded;
         emotesCustomizationDataStore.emoteForPreviewing.OnChange += OnPreviewEmote;
         emotesCustomizationDataStore.emoteForEquipping.OnChange += OnEmoteEquipped;
@@ -709,7 +709,7 @@ public class AvatarEditorHUDController : IHUD
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
         exploreV2IsOpen.OnChange -= ExploreV2IsOpenChanged;
         emotesCustomizationDataStore.isInitialized.OnChange -= InitializeEmotesSection;
-        emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange -= IsEmotesCustomizationSelectedChanged;
+        emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange -= HandleEmotesCostumizationSelection;
         emotesCustomizationDataStore.currentLoadedEmotes.OnAdded -= OnNewEmoteAdded;
         emotesCustomizationDataStore.emoteForPreviewing.OnChange -= OnPreviewEmote;
         emotesCustomizationDataStore.emoteForEquipping.OnChange -= OnEmoteEquipped;
@@ -825,7 +825,7 @@ public class AvatarEditorHUDController : IHUD
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
     }
 
-    private void IsEmotesCustomizationSelectedChanged(bool current, bool previous)
+    private void HandleEmotesCostumizationSelection(bool current, bool previous)
     {
         if (!current)
             return;

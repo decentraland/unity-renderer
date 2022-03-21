@@ -309,7 +309,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void UpdateAvatarPreview(AvatarModel avatarModel)
     {
-        if (avatarModel?.wearables == null || loadingSpinnerGameObject.activeSelf)
+        if (IsAvatarPreviewLoading(avatarModel))
             return;
 
         doneButton.interactable = false;
@@ -326,6 +326,8 @@ public class AvatarEditorHUDView : MonoBehaviour
                 randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
             });
     }
+
+    private bool IsAvatarPreviewLoading(AvatarModel avatarModel) { return avatarModel?.wearables == null || loadingSpinnerGameObject.activeSelf; }
 
     public void AddWearable(WearableItem wearableItem, int amount,
         Func<WearableItem, bool> hideOtherWearablesToastStrategy,

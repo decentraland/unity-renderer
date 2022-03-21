@@ -8,16 +8,6 @@ using UnityEngine;
 
 namespace EmotesCustomization
 {
-    public interface IEmotesCustomizationComponentController : IDisposable
-    {
-        /// <summary>
-        /// Initializes the emotes customization controller.
-        /// </summary>
-        /// <param name="userProfile">User profile.</param>
-        /// <param name="catalog">Wearables catalog.</param>
-        void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog);
-    }
-
     public class EmotesCustomizationComponentController : IEmotesCustomizationComponentController
     {
         internal const int NUMBER_OF_SLOTS = 10;
@@ -388,7 +378,7 @@ namespace EmotesCustomization
 
         internal void OnShowInfoInputActionTriggered(DCLAction_Hold action)
         {
-            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null || view.selectedCard.model.isLoading)
+            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null || !view.selectedCard.model.isCollectible || view.selectedCard.model.isLoading)
                 return;
 
             view.OpenEmoteInfoPanel(
