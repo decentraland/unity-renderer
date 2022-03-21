@@ -8,16 +8,6 @@ using UnityEngine;
 
 namespace EmotesCustomization
 {
-    public interface IEmotesCustomizationComponentController : IDisposable
-    {
-        /// <summary>
-        /// Initializes the emotes customization controller.
-        /// </summary>
-        /// <param name="userProfile">User profile.</param>
-        /// <param name="catalog">Wearables catalog.</param>
-        void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog);
-    }
-
     public class EmotesCustomizationComponentController : IEmotesCustomizationComponentController
     {
         internal const int NUMBER_OF_SLOTS = 10;
@@ -105,6 +95,7 @@ namespace EmotesCustomization
                 if (string.IsNullOrEmpty(emoteId))
                     continue;
 
+                // TODO: We should avoid static calls and create injectable interfaces
                 CatalogController.RequestWearable(emoteId);
             }
 
@@ -146,7 +137,7 @@ namespace EmotesCustomization
             emotesCustomizationDataStore.avatarHasBeenSaved.OnChange += OnAvatarHasBeenSavedChanged;
         }
 
-        internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen) { view.CloseEmoteInfoPanel(); }
+        internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen) { view.SetEmoteInfoPanelActive(false); }
 
         internal void OnAvatarEditorVisibleChanged(bool current, bool previous) { view.SetActive(current); }
 
@@ -160,6 +151,7 @@ namespace EmotesCustomization
                     emotesIdsToStore.Add(equippedEmoteData != null ? equippedEmoteData.id : null);
                 }
 
+                // TODO: We should avoid static calls and create injectable interfaces
                 PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(emotesIdsToStore));
                 PlayerPrefsUtils.Save();
             }
@@ -189,7 +181,7 @@ namespace EmotesCustomization
             if (!wearable.IsEmote() || emotesCustomizationDataStore.currentLoadedEmotes.Contains(id))
                 return;
 
-            if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)
+            if (!wearable.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE) && userProfile.GetItemAmount(id) == 0)
                 return;
 
             emotesCustomizationDataStore.currentLoadedEmotes.Add(id);
@@ -281,7 +273,7 @@ namespace EmotesCustomization
 
                 if (emotesCustomizationDataStore.equippedEmotes[i] == null)
                 {
-                    EmoteSlotCardComponentView existingEmoteIntoSlot = view.currentSlots.FirstOrDefault(x => x.model.slotNumber == i);
+                    EmoteSlotCardComponentView existingEmoteIntoSlot = view.GetSlot(i);
                     if (existingEmoteIntoSlot != null)
                         view.UnequipEmote(existingEmoteIntoSlot.model.emoteId, i, false);
 
@@ -388,7 +380,7 @@ namespace EmotesCustomization
 
         internal void OnShowInfoInputActionTriggered(DCLAction_Hold action)
         {
-            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null || view.selectedCard.model.isLoading)
+            if (!isEmotesCustomizationSectionOpen || view.selectedCard == null || !view.selectedCard.model.isCollectible || view.selectedCard.model.isLoading)
                 return;
 
             view.OpenEmoteInfoPanel(
