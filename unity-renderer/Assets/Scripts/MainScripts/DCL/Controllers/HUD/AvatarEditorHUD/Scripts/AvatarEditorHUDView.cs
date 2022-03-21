@@ -502,6 +502,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
         {
             avatarSection.SetActive(isSelected);
+            randomizeButton.gameObject.SetActive(true);
 
             if (isSelected)
             {
@@ -514,6 +515,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
         {
             emotesSection.SetActive(isSelected);
+            randomizeButton.gameObject.SetActive(false);
 
             if (isSelected)
             {
