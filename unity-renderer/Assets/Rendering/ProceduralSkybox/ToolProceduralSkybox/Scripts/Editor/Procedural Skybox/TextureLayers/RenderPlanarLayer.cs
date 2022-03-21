@@ -18,12 +18,6 @@ namespace DCL.Skybox
             // Anim Speed
             RenderSimpleValues.RenderFloatField(SkyboxEditorLiterals.animSpeed, ref layer.flipbookAnimSpeed);
 
-            // Normal Texture
-            RenderSimpleValues.RenderTexture(SkyboxEditorLiterals.normalMap, ref layer.textureNormal);
-
-            // Normal Intensity
-            RenderSimpleValues.RenderFloatFieldAsSlider(SkyboxEditorLiterals.normalIntensity, ref layer.normalIntensity, 0, 1);
-
             // Gradient
             RenderSimpleValues.RenderColorGradientField(layer.color, SkyboxEditorLiterals.color, layer.timeSpan_start, layer.timeSpan_End, true);
 

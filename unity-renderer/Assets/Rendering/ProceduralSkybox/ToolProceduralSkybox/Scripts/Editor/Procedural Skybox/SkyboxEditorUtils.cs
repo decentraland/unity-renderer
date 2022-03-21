@@ -8,6 +8,7 @@ namespace DCL.Skybox
     {
         Timeline_Tags,
         BG_Layer,
+        Horizon_Plane,
         Ambient_Layer,
         Avatar_Layer,
         Fog_Layer,

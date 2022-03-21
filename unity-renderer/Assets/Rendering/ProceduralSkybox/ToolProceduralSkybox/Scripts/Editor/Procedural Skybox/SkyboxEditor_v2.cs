@@ -33,7 +33,7 @@ namespace DCL.Skybox
         private List<string> renderingOrderList;
 
         private float leftPanelWidth;
-        private List<RightPanelPins> rightPanelPins = new List<RightPanelPins>() { new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = "Background Layer" } };
+        private List<RightPanelPins> rightPanelPins = new List<RightPanelPins>() { new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = SkyboxEditorLiterals.backgroundLayer } };
 
         [MenuItem("Window/Skybox Editor")]
         static void Init()
@@ -315,6 +315,12 @@ namespace DCL.Skybox
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
+            if (GUILayout.Button(SkyboxEditorLiterals.horizonPlane, EditorStyles.toolbarButton))
+            {
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Horizon_Plane, name = SkyboxEditorLiterals.horizonPlane });
+            }
+
+            EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button(SkyboxEditorLiterals.ambientLayer, EditorStyles.toolbarButton))
             {
                 AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Ambient_Layer, name = SkyboxEditorLiterals.ambientLayer });
@@ -466,6 +472,9 @@ namespace DCL.Skybox
                     break;
                 case SkyboxEditorToolsParts.BG_Layer:
                     RenderBackgroundColorLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration);
+                    break;
+                case SkyboxEditorToolsParts.Horizon_Plane:
+                    RenderHorizonPlane.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration);
                     break;
                 case SkyboxEditorToolsParts.Ambient_Layer:
                     RenderAmbientLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration);
