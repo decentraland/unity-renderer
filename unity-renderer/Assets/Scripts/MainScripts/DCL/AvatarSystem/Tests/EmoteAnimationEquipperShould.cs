@@ -98,7 +98,7 @@ namespace Test.AvatarSystem
             equipper.bodyShapeId = "female";
             equipper.emotes.AddRange(new [] { "old0", "old1", "old2" });
 
-            equipper.SetEquippedEmotes("", new []
+            equipper.SetEquippedEmotes("male", new []
             {
                 new WearableItem { id = "new0" },
                 new WearableItem { id = "new1" },
@@ -108,9 +108,9 @@ namespace Test.AvatarSystem
             Assert.AreEqual(9, dataStore.emotesOnUse.GetRefCount(("female", "old0")));
             Assert.AreEqual(10, dataStore.emotesOnUse.GetRefCount(("female", "old1")));
             Assert.AreEqual(11, dataStore.emotesOnUse.GetRefCount(("female", "old2")));
-            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("female", "new0")));
-            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("female", "new1")));
-            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("female", "new2")));
+            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("male", "new0")));
+            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("male", "new1")));
+            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("male", "new2")));
         }
 
         [Test]
