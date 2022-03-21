@@ -341,6 +341,7 @@ namespace DCL.Builder
         
         IEnumerator GetTexture(string url) {
             UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+            www.SetRequestHeader("Cache-Control","no-cache, no-store, must-revalidate");
             yield return www.SendWebRequest();
 
             if (www.result != UnityWebRequest.Result.Success) {
