@@ -41,13 +41,13 @@ namespace AvatarSystem
 
         public void SetEquippedEmotes(string bodyShapeId, IEnumerable<WearableItem> emotes)
         {
-            this.bodyShapeId = bodyShapeId;
             foreach (string emoteId in this.emotes)
             {
-                dataStoreEmotes.emotesOnUse.DecreaseRefCount((bodyShapeId, emoteId));
+                dataStoreEmotes.emotesOnUse.DecreaseRefCount((this.bodyShapeId, emoteId));
             }
             this.emotes.Clear();
 
+            this.bodyShapeId = bodyShapeId;
             foreach (WearableItem emote in emotes)
             {
                 this.emotes.Add(emote.id);

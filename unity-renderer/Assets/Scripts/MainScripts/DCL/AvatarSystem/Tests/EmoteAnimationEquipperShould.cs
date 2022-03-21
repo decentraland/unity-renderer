@@ -95,6 +95,7 @@ namespace Test.AvatarSystem
             dataStore.emotesOnUse.SetRefCount(("female", "old0"), 10);
             dataStore.emotesOnUse.SetRefCount(("female", "old1"), 11);
             dataStore.emotesOnUse.SetRefCount(("female", "old2"), 12);
+            equipper.bodyShapeId = "female";
             equipper.emotes.AddRange(new [] { "old0", "old1", "old2" });
 
             equipper.SetEquippedEmotes("", new []

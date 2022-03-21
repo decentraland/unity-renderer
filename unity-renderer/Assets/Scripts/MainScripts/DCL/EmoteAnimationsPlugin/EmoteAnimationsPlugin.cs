@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
+using DCL.Configuration;
 using Newtonsoft.Json;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -24,6 +25,7 @@ namespace DCL.Emotes
         public EmoteAnimationsPlugin(DataStore_Emotes dataStore, EmoteAnimationLoaderFactory emoteAnimationLoaderFactory, IWearableItemResolver wearableItemResolver)
         {
             animationsModelsContainer = new GameObject("_EmoteAnimationsHolder");
+            animationsModelsContainer.transform.position = EnvironmentSettings.MORDOR;
             this.dataStore = dataStore;
             this.emoteAnimationLoaderFactory = emoteAnimationLoaderFactory;
             this.wearableItemResolver = wearableItemResolver;
@@ -112,6 +114,7 @@ namespace DCL.Emotes
                 return;
 
             dataStore.animations.Remove((bodyShapeId, emoteId));
+            loaders.Remove((bodyShapeId, emoteId));
             loader?.Dispose();
         }
 
