@@ -8,10 +8,10 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-public class WorldChatWindowHUDControllerShould : IntegrationTestSuite_Legacy
+public class ChannelChatWindowControllerShould : IntegrationTestSuite_Legacy
 {
-    private WorldChatWindowHUDController controller;
-    private IWorldChatComponentView view;
+    private ChannelChatWindowController controller;
+    private IChannelChatWindowView view;
     private IChatHUDComponentView internalChatView;
     private ChatController_Mock chatController;
     private MouseCatcher_Mock mouseCatcher;
@@ -42,11 +42,11 @@ public class WorldChatWindowHUDControllerShould : IntegrationTestSuite_Legacy
         //             Adding this here because its used by the chat flow in ChatMessageToChatEntry.
         userProfileController.AddUserProfileToCatalog(ownProfileModel);
 
-        controller = new WorldChatWindowHUDController();
+        controller = new ChannelChatWindowController();
         chatController = new ChatController_Mock();
         mouseCatcher = new MouseCatcher_Mock();
 
-        view = Substitute.For<IWorldChatComponentView>();
+        view = Substitute.For<IChannelChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();
         view.ChatHUD.Returns(internalChatView);
         controller.Initialize(chatController, mouseCatcher, view);

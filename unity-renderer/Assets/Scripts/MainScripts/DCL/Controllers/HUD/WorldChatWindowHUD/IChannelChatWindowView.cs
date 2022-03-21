@@ -2,7 +2,7 @@
 using DCL.Interface;
 using UnityEngine;
 
-public interface IWorldChatComponentView
+public interface IChannelChatWindowView
 {
     event Action OnClose;
     event Action<string> OnMessageUpdated;

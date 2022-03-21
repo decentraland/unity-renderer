@@ -1,10 +1,9 @@
-using System;
 using DCL;
 using DCL.HelpAndSupportHUD;
+using DCL.Helpers;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.SettingsPanelHUD;
-using LoadingHUD;
 using SignupHUD;
 using UnityEngine;
 
@@ -51,7 +50,9 @@ public class HUDFactory : IHUDFactory
                 hudElement = new TermsOfServiceHUDController();
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
-                hudElement = new WorldChatWindowHUDController();
+                hudElement = new WorldChatWindowController(DataStore.i, new ChannelChatWindowController(),
+                    new PrivateChatWindowHUDController(), CommonScriptableObjects.lastReadWorldChatMessages,
+                    new DefaultPlayerPrefs(), new UserProfileWebInterfaceBridge());
                 break;
             case HUDElementID.FRIENDS:
                 hudElement = new FriendsHUDController();

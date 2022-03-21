@@ -5,11 +5,11 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class WorldChatWindowHUDController : IHUD
+public class ChannelChatWindowController : IHUD
 {
     private const string PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES = "LastReadWorldChatMessages";
 
-    public IWorldChatComponentView view;
+    public IChannelChatWindowView view;
 
     private ChatHUDController chatHudController;
     private IChatController chatController;
@@ -25,9 +25,9 @@ public class WorldChatWindowHUDController : IHUD
 
     public void Initialize(IChatController chatController,
         IMouseCatcher mouseCatcher,
-        IWorldChatComponentView view = null)
+        IChannelChatWindowView view = null)
     {
-        view ??= WorldChatWindowHUDView.Create();
+        view ??= ChannelChatWindowView.Create();
         this.view = view;
         view.OnClose += OnViewClosed;
         view.OnMessageUpdated += OnMessageUpdated;
@@ -140,16 +140,6 @@ public class WorldChatWindowHUDController : IHUD
             view.SetInputField(setInputText);
     }
 
-    public void MarkWorldChatMessagesAsRead(long? timestamp = null)
-    {
-        long timeMark = System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        if (timestamp != null && timestamp.Value > timeMark)
-            timeMark = timestamp.Value;
-
-        CommonScriptableObjects.lastReadWorldChatMessages.Set(timeMark);
-        SaveLatestReadWorldChatMessagesStatus();
-    }
-
     private void ChatHUDController_OnPressPrivateMessage(string friendUserId)
     {
         OnPressPrivateMessage?.Invoke(friendUserId);
@@ -185,13 +175,6 @@ public class WorldChatWindowHUDController : IHUD
 
         if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
             lastPrivateMessageReceivedSender = UserProfileController.userProfilesCatalog.Get(message.sender).userName;
-    }
-
-    private void SaveLatestReadWorldChatMessagesStatus()
-    {
-        PlayerPrefsUtils.SetString(PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES,
-            CommonScriptableObjects.lastReadWorldChatMessages.Get().ToString());
-        PlayerPrefsUtils.Save();
     }
 
     private void LoadLatestReadWorldChatMessagesStatus()

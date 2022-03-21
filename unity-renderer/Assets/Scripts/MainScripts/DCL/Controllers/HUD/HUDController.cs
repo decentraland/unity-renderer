@@ -80,8 +80,8 @@ public class HUDController : IHUDController
 
     public LoadingHUDController loadingHud => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
 
-    public WorldChatWindowHUDController worldChatWindowHud =>
-        GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowHUDController;
+    public WorldChatWindowController worldChatWindowHud =>
+        GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowController;
 
     public PrivateChatWindowHUDController privateChatWindowHud =>
         GetHUDElement(HUDElementID.PRIVATE_CHAT_WINDOW) as PrivateChatWindowHUDController;
@@ -116,7 +116,7 @@ public class HUDController : IHUDController
         bool anyInputFieldIsSelected = EventSystem.current != null &&
                                        EventSystem.current.currentSelectedGameObject != null &&
                                        EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
-                                       (!worldChatWindowHud.view.IsInputFieldFocused || !worldChatWindowHud.view.IsPreview);
+                                       (!worldChatWindowHud.IsInputFieldFocused || !worldChatWindowHud.IsPreview);
 
         if (anyInputFieldIsSelected ||
             settingsPanelHud.view.isOpen ||
@@ -201,11 +201,12 @@ public class HUDController : IHUDController
 
                     if (worldChatWindowHud != null)
                     {
-                        worldChatWindowHud.Initialize(ChatController.i, SceneReferences.i.mouseCatcher);
+                        worldChatWindowHud.Initialize(ChatController.i, SceneReferences.i.mouseCatcher,
+                            WorldChatWindowComponentView.Create());
                         worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
                         worldChatWindowHud.OnPressPrivateMessage += OpenPrivateChatWindow;
-                        worldChatWindowHud.view.OnDeactivatePreview -= View_OnDeactivatePreview;
-                        worldChatWindowHud.view.OnDeactivatePreview += View_OnDeactivatePreview;
+                        worldChatWindowHud.OnDeactivatePreview -= View_OnDeactivatePreview;
+                        worldChatWindowHud.OnDeactivatePreview += View_OnDeactivatePreview;
 
                         taskbarHud?.AddWorldChatWindow(worldChatWindowHud);
                     }
@@ -394,7 +395,7 @@ public class HUDController : IHUDController
         if (worldChatWindowHud != null)
         {
             worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
-            worldChatWindowHud.view.OnDeactivatePreview -= View_OnDeactivatePreview;
+            worldChatWindowHud.OnDeactivatePreview -= View_OnDeactivatePreview;
         }
 
         if (privateChatWindowHud != null)

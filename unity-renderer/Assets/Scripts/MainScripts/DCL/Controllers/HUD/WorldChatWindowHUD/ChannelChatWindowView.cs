@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler, IWorldChatComponentView
+public class ChannelChatWindowView : MonoBehaviour, IPointerClickHandler, IChannelChatWindowView
 {
     const string VIEW_PATH = "World Chat Window";
 
@@ -31,9 +31,9 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler, IWorl
     public IChatHUDComponentView ChatHUD => chatHudView;
     public RectTransform Transform => (RectTransform) transform;
 
-    public static WorldChatWindowHUDView Create()
+    public static ChannelChatWindowView Create()
     {
-        var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<WorldChatWindowHUDView>();
+        var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<ChannelChatWindowView>();
         return view;
     }
 

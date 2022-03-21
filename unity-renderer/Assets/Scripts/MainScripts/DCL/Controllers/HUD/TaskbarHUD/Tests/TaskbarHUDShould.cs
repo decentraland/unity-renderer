@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private GameObject userProfileGO;
     private PrivateChatWindowHUDController privateChatController;
     private FriendsHUDController friendsHudController;
-    private WorldChatWindowHUDController worldChatWindowController;
+    private WorldChatWindowController worldChatWindowController;
     private UserProfileController userProfileController;
 
     protected override List<GameObject> SetUp_LegacySystems()
@@ -59,13 +60,17 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void AddWorldChatWindowProperly()
     {
-        worldChatWindowController = new WorldChatWindowHUDController();
-        worldChatWindowController.Initialize(null, null);
+        worldChatWindowController = new WorldChatWindowController(new DataStore(),
+            new ChannelChatWindowController(), new PrivateChatWindowHUDController(),
+            ScriptableObject.CreateInstance<LongVariable>(),
+            Substitute.For<IPlayerPrefs>(), Substitute.For<IUserProfileBridge>());
+        worldChatWindowController.Initialize(Substitute.For<IChatController>(),
+            Substitute.For<IMouseCatcher>(), Substitute.For<IWorldChatWindowView>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
-        Assert.IsTrue(worldChatWindowController.view.Transform.parent == view.leftWindowContainer,
+        Assert.IsTrue(worldChatWindowController.View.Transform.parent == view.leftWindowContainer,
             "Chat window isn't inside taskbar window container!");
-        Assert.IsTrue(worldChatWindowController.view.IsActive, "Chat window is disabled!");
+        Assert.IsTrue(worldChatWindowController.View.IsActive, "Chat window is disabled!");
     }
 
     [Test]
@@ -95,11 +100,15 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
-        worldChatWindowController = new WorldChatWindowHUDController();
-        worldChatWindowController.Initialize(chatController, null);
+        worldChatWindowController = new WorldChatWindowController(new DataStore(),
+            new ChannelChatWindowController(), new PrivateChatWindowHUDController(),
+            ScriptableObject.CreateInstance<LongVariable>(),
+            Substitute.For<IPlayerPrefs>(), Substitute.For<IUserProfileBridge>());
+        worldChatWindowController.Initialize(chatController,
+            Substitute.For<IMouseCatcher>(), Substitute.For<IWorldChatWindowView>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
-        rt = worldChatWindowController.view.Transform;
+        rt = worldChatWindowController.View.Transform;
         Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
@@ -152,7 +161,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view.friendsButton.toggleButton.onClick.Invoke();
         view.chatButton.toggleButton.onClick.Invoke();
 
-        Assert.IsTrue(controller.worldChatWindowHud.view.IsActive);
+        Assert.IsTrue(controller.worldChatWindowHud.View.IsActive);
         Assert.IsFalse(controller.friendsHud.view.IsActive());
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
     }

@@ -19,7 +19,7 @@ public class TaskbarHUDController : IHUD
     }
 
     public TaskbarHUDView view;
-    public WorldChatWindowHUDController worldChatWindowHud;
+    public WorldChatWindowController worldChatWindowHud;
     public PrivateChatWindowHUDController privateChatWindowHud;
     public FriendsHUDController friendsHud;
     public HelpAndSupportHUDController helpAndSupportHud;
@@ -140,7 +140,7 @@ public class TaskbarHUDController : IHUD
     {
         worldChatWindowHud.SetVisibility(true);
         worldChatWindowHud.MarkWorldChatMessagesAsRead();
-        worldChatWindowHud.view.DeactivatePreview();
+        worldChatWindowHud.DeactivatePreview();
         worldChatWindowHud.OnPressReturn();
         OnAnyTaskbarButtonClicked?.Invoke();
     }
@@ -150,7 +150,7 @@ public class TaskbarHUDController : IHUD
         if (view.AllButtonsToggledOff())
         {
             worldChatWindowHud.SetVisibility(true);
-            worldChatWindowHud.view.ActivatePreview();
+            worldChatWindowHud.ActivatePreview();
         }
         else
         {
@@ -180,20 +180,20 @@ public class TaskbarHUDController : IHUD
         }
 
         worldChatWindowHud.SetVisibility(true);
-        worldChatWindowHud.view.ActivatePreview();
+        worldChatWindowHud.ActivatePreview();
 
         MarkWorldChatAsReadIfOtherWindowIsOpen();
     }
 
-    public void AddWorldChatWindow(WorldChatWindowHUDController controller)
+    public void AddWorldChatWindow(WorldChatWindowController controller)
     {
-        if (controller == null || controller.view == null)
+        if (controller == null || controller.View == null)
         {
             Debug.LogWarning("AddChatWindow >>> World Chat Window doesn't exist yet!");
             return;
         }
 
-        if (controller.view.Transform.parent == view.leftWindowContainer)
+        if (controller.View.Transform.parent == view.leftWindowContainer)
             return;
 
         controller.view.Transform.SetParent(view.leftWindowContainer, false);
@@ -202,7 +202,7 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud = controller;
 
         view.OnAddChatWindow();
-        worldChatWindowHud.view.OnClose += () => { view.friendsButton.SetToggleState(false, false); };
+        worldChatWindowHud.View.OnClose += () => { view.friendsButton.SetToggleState(false, false); };
 
         view.chatButton.SetToggleState(true);
         view.chatButton.SetToggleState(false);
@@ -405,8 +405,8 @@ public class TaskbarHUDController : IHUD
             return;
 
         view.chatButton.SetToggleState(false, false);
-        worldChatWindowHud.view.ResetInputField();
-        worldChatWindowHud.view.ActivatePreview();
+        worldChatWindowHud.ResetInputField();
+        worldChatWindowHud.ActivatePreview();
     }
 
     public void SetVoiceChatRecording(bool recording) { view?.voiceChatButton.SetOnRecording(recording); }
@@ -418,7 +418,7 @@ public class TaskbarHUDController : IHUD
         bool anyInputFieldIsSelected = EventSystem.current != null &&
                                        EventSystem.current.currentSelectedGameObject != null &&
                                        EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
-                                       (!worldChatWindowHud.view.IsInputFieldFocused || !worldChatWindowHud.view.IsPreview);
+                                       (!worldChatWindowHud.IsInputFieldFocused || !worldChatWindowHud.IsPreview);
 
         if (anyInputFieldIsSelected)
             return;
