@@ -8,6 +8,7 @@ using DCL.Configuration;
 using UnityEngine;
 using DCL.Helpers;
 using TMPro;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace DCL.Builder
@@ -143,6 +144,7 @@ namespace DCL.Builder
 
         [Space]
         [SerializeField] private RawImageFillParent thumbnail;
+        [SerializeField] private RawImageFillParent thumbnailError;
 
         ProjectData IProjectCardView.projectData => projectData;
         ISearchInfo IProjectCardView.searchInfo { get; } = new SearchInfo();
@@ -327,12 +329,41 @@ namespace DCL.Builder
             }
 
             thumbnailPromise = new AssetPromise_Texture(projectThumbnailUrl, storeTexAsNonReadable: false);
-            thumbnailPromise.OnSuccessEvent += texture => SetThumbnail(texture.texture);
+            thumbnailPromise.OnSuccessEvent += texture => thumbnailError.texture =texture.texture;
             thumbnailPromise.OnFailEvent += (texture, error) => SetThumbnail(null);
 
             loadingImgGameObject.SetActive(true);
             thumbnail.enabled = false;
             AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
+            
+            CoroutineStarter.Start( GetTexture(projectThumbnailUrl));
+        }
+        
+        IEnumerator GetTexture(string url) {
+            UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+            yield return www.SendWebRequest();
+
+            if (www.result != UnityWebRequest.Result.Success) {
+                Debug.Log(www.error);
+            }
+            else {
+                Texture mainTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+                Texture2D texture2D = new Texture2D(mainTexture.width, mainTexture.height, TextureFormat.RGBA32, false);
+  
+                RenderTexture currentRT = RenderTexture.active;
+  
+                RenderTexture renderTexture = new RenderTexture(mainTexture.width, mainTexture.height, 32);
+                Graphics.Blit(mainTexture, renderTexture);
+  
+                RenderTexture.active = renderTexture;
+                texture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+                texture2D.Apply();
+  
+                Color[] pixels = texture2D.GetPixels();
+  
+                RenderTexture.active = currentRT;
+                SetThumbnail(texture2D);
+            }
         }
 
         public void SetThumbnail(Texture2D thumbnailTexture)
