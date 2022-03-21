@@ -9,7 +9,7 @@ public interface IChatHUDComponentView
     
     int EntryCount { get; }
 
-    void HideHoverLabel();
+    void OnMessageCancelHover();
     void AddEntry(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false);
     void Dispose();
     void RemoveFirstEntry();

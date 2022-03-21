@@ -1,10 +1,12 @@
 ﻿using System;
 using DCL.Interface;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class WorldChatWindowComponentView : MonoBehaviour, IWorldChatWindowView
+public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowView
 {
     [SerializeField] private CollapsableDirectChatListComponentView directChatList;
+    [SerializeField] private Button closeButton;
     
     public event Action OnClose;
     
@@ -14,6 +16,12 @@ public class WorldChatWindowComponentView : MonoBehaviour, IWorldChatWindowView
     public static WorldChatWindowComponentView Create()
     {
         return Instantiate(Resources.Load<WorldChatWindowComponentView>("SocialBarV1/ConversationListHUD"));
+    }
+
+    public override void Awake()
+    {
+        base.Awake();
+        closeButton.onClick.AddListener(() => OnClose?.Invoke());
     }
 
     public void Initialize(IChatController chatController)
@@ -28,6 +36,11 @@ public class WorldChatWindowComponentView : MonoBehaviour, IWorldChatWindowView
     public void SetDirectRecipient(UserProfile user, ChatMessage recentMessage)
     {
         directChatList.Set(user.userId, new DirectChatEntry.DirectChatEntryModel(
-            user.userId, user.userName, "TODO", user.face256SnapshotURL));
+            user.userId, user.userName, recentMessage.body, user.face256SnapshotURL));
+    }
+
+    public override void RefreshControl()
+    {
+        throw new NotImplementedException();
     }
 }

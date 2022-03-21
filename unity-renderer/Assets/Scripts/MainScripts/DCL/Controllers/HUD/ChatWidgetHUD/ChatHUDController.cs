@@ -110,7 +110,7 @@ public class ChatHUDController : IDisposable
     
     private void View_OnPressPrivateMessage(string friendUserId) => OnPressPrivateMessage?.Invoke(friendUserId);
 
-    private void ContextMenu_OnShowMenu() => view.HideHoverLabel();
+    private void ContextMenu_OnShowMenu() => view.OnMessageCancelHover();
 
     private void OnCloseButtonPressed(DCLAction_Trigger action) => view.Hide();
     

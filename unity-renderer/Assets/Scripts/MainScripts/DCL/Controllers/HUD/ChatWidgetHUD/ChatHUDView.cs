@@ -1,14 +1,13 @@
-using DCL.Helpers;
-using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using DCL;
+using DCL.Helpers;
+using DCL.Interface;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Text.RegularExpressions;
-using UnityEngine.EventSystems;
-using DCL;
 
 public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 {
@@ -246,8 +245,8 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 
         if (temporarilyMutedSenders.ContainsKey(senderName))
         {
-            System.DateTime muteTimestamp = CreateBaseDateTime().AddMilliseconds(temporarilyMutedSenders[senderName]).ToLocalTime();
-            if ((System.DateTime.Now - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
+            DateTime muteTimestamp = CreateBaseDateTime().AddMilliseconds(temporarilyMutedSenders[senderName]).ToLocalTime();
+            if ((DateTime.Now - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
                 isSpamming = true;
             else
                 temporarilyMutedSenders.Remove(senderName);
@@ -256,9 +255,9 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         return isSpamming;
     }
 
-    private System.DateTime CreateBaseDateTime()
+    private DateTime CreateBaseDateTime()
     {
-        return new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+        return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
     }
 
     private void OnOpenContextMenu(ChatEntry chatEntry)

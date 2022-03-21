@@ -196,7 +196,7 @@ public class TaskbarHUDController : IHUD
         if (controller.View.Transform.parent == view.leftWindowContainer)
             return;
 
-        controller.view.Transform.SetParent(view.leftWindowContainer, false);
+        controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
 
         worldChatWindowHud = controller;
