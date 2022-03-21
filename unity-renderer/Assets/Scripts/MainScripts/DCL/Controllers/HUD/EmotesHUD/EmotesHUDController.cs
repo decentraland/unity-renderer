@@ -99,7 +99,7 @@ namespace EmotesCustomization
 
                     if (emoteItem != null)
                     {
-                        if (!emoteItem.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(emoteItem.id) == 0)
+                        if (!emoteItem.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE) && userProfile.GetItemAmount(emoteItem.id) == 0)
                         {
                             emotesToSet.Add(null);
                         }

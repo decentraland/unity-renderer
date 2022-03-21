@@ -179,7 +179,7 @@ namespace EmotesCustomization
             if (!wearable.IsEmote() || emotesCustomizationDataStore.currentLoadedEmotes.Contains(id))
                 return;
 
-            if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)
+            if (!wearable.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE) && userProfile.GetItemAmount(id) == 0)
                 return;
 
             emotesCustomizationDataStore.currentLoadedEmotes.Add(id);

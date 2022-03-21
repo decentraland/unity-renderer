@@ -201,7 +201,7 @@ public class AvatarEditorHUDController : IHUD
             for (int i = 0; i < userProfile.avatar.wearables.Count; i++)
             {
                 if (catalog.TryGetValue(userProfile.avatar.wearables[i], out WearableItem wearable) &&
-                    !wearable.data.tags.Contains("base-wearable"))
+                    !wearable.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE))
                 {
                     equippedOwnedWearables.Add(userProfile.avatar.wearables[i]);
                 }
@@ -537,7 +537,7 @@ public class AvatarEditorHUDController : IHUD
 
     private void AddWearable(string id, WearableItem wearable)
     {
-        if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)
+        if (!wearable.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE) && userProfile.GetItemAmount(id) == 0)
         {
             return;
         }
