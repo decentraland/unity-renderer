@@ -247,14 +247,15 @@ public class BuilderInWorldBridge : MonoBehaviour
         WebInterface.StopIsolatedMode(config);
     }
 
-    public void PublishScene(Dictionary<string, object > filesToDecode, Dictionary<string, object > files, CatalystSceneEntityMetadata metadata, StatelessManifest statelessManifest )
+    public void PublishScene(Dictionary<string, object > filesToDecode, Dictionary<string, object > files, CatalystSceneEntityMetadata metadata, StatelessManifest statelessManifest, bool publishFromPanel )
     {
         payload.filesToDecode = filesToDecode;
         payload.files = files;
         payload.metadata = metadata;
         payload.pointers = metadata.scene.parcels;
         payload.statelessManifest = statelessManifest;
-
+        payload.reloadSingleScene = publishFromPanel;
+        
         WebInterface.PublishStatefulScene(payload);
     }
 

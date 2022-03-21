@@ -155,6 +155,7 @@ public class ProtocolV2
         public CatalystSceneEntityMetadata metadata;
         public string[] pointers;
         public StatelessManifest statelessManifest;
+        public bool reloadSingleScene = false;
     }
 
     #endregion

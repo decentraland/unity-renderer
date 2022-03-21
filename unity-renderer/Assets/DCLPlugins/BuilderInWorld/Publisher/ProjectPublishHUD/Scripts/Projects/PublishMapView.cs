@@ -87,7 +87,7 @@ namespace DCL.Builder
         {
             MapRenderer.i.transform.localScale = Vector3.one * currentZoomScale;
         }
-        
+
         internal void UpdateOwnedLands()
         {
             List<Vector2Int> landsToHighlight = new List<Vector2Int>();
@@ -96,7 +96,19 @@ namespace DCL.Builder
             {
                 foreach (Vector2Int landParcel in land.parcels)
                 {
-                    if(land.scenes.Count > 0 && !land.scenes[0].isEmpty)
+                    bool found = false;
+                    foreach (Scene scene in land.scenes)
+                    {
+                        foreach (Vector2Int sceneParcel in scene.parcels)
+                        {
+                            if (sceneParcel == landParcel)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(found)
                         landsToHighlightWithContent.Add(landParcel);
                     else
                         landsToHighlight.Add(landParcel);
@@ -155,16 +167,18 @@ namespace DCL.Builder
             atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;
 
             lastScale = MapRenderer.i.transform.localScale.x;
-            currentZoomScale = 2f;
-            ApplyCurrentZoom();
+            
             MapRenderer.i.SetHighlightStyle(MapParcelHighlight.HighlighStyle.BUILDER_DISABLE);
             MapRenderer.i.atlas.viewport = scrollRect.viewport;
             MapRenderer.i.transform.SetParent(scrollRectContentTransform);
             MapRenderer.i.atlas.UpdateCulling();
             MapRenderer.i.OnMovedParcelCursor += ParcelHovered;
             MapRenderer.i.SetPointOfInterestActive(false);
-                    MapRenderer.i.SetPlayerIconActive(false);
+            MapRenderer.i.SetPlayerIconActive(false);
             MapRenderer.i.SetOtherPlayersIconActive(false);
+            
+            currentZoomScale = 2f;
+            ApplyCurrentZoom();
             
             scrollRect.content = MapRenderer.i.atlas.chunksParent.transform as RectTransform;
             initialContentPosition = scrollRect.content.anchoredPosition;
@@ -178,6 +192,7 @@ namespace DCL.Builder
         private void RemoveMapRendererFromContainer()
         {
             MapRenderer.i.CleanLandsHighlights();
+            MapRenderer.i.ClearLandHighlightsInfo();
             MapRenderer.i.SetHighlightStyle(MapParcelHighlight.HighlighStyle.DEFAULT);
             MapRenderer.i.atlas.viewport = minimapViewport;
             MapRenderer.i.transform.SetParent(mapRendererMinimapParent);

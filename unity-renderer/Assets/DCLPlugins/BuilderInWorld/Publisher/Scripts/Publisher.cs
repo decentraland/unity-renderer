@@ -227,7 +227,12 @@ namespace DCL.Builder
         {
             startPublishingTimestamp = Time.realtimeSinceStartup;
             BIWAnalytics.StartScenePublish(scene.scene.metricsCounter.currentCount);
-            builderInWorldBridge.PublishScene(filesToDecode, files, metadata, statelessManifest);
+            
+            // Note: if the aerialscreenshot is not available, this means that the scene has been deployed
+            // from the panel instead of the editor, so we don't have the scene to rotate, we publish it to north directly
+            bool publishFromPanel = scene.aerialScreenshotTexture == null && scene.sceneType == IBuilderScene.SceneType.PROJECT;
+            
+            builderInWorldBridge.PublishScene(filesToDecode, files, metadata, statelessManifest, publishFromPanel);
         }
 
         private void PublishEnd(bool isOk, string message)

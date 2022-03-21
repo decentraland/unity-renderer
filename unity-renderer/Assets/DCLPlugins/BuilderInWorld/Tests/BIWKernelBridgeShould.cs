@@ -52,7 +52,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
         sceneJson.scene.parcels = new [] { "0,0"};
         
         //Act
-        biwBridge.PublishScene(new Dictionary<string, object>(),new Dictionary<string, object>(), sceneJson,new StatelessManifest());
+        biwBridge.PublishScene(new Dictionary<string, object>(),new Dictionary<string, object>(), sceneJson,new StatelessManifest(),false);
 
         //Assert
         CheckMessageReceived();

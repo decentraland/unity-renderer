@@ -4,6 +4,7 @@ using DCL;
 using DCL.Builder;
 using DCL.Helpers;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -50,6 +51,7 @@ namespace Tests
             catalyst.GetDeployedScenes(Arg.Any<string[]>()).Returns(new Promise<CatalystSceneEntityPayload[]>());
 
             IContext context = BIWTestUtils.CreateMockedContext();
+            context.builderAPIController.Configure().GetAllProjectsData().Returns(new Promise<List<ProjectData>>());
             controller.Initialize(context,sectionsController, scenesViewController,
                 landsesController, projectsController, newProjectFlowController, theGraph, catalyst);
         }

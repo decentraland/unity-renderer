@@ -472,9 +472,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         fetchLandPromise
             .Then(LandsFetched)
             .Catch(LandsFetchedError);
-
-        if (!DataStore.i.builderInWorld.isDevBuild.Get())
-            return;
+        
         FetchProjectData();
     }
 
