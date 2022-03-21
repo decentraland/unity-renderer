@@ -132,8 +132,8 @@ namespace DCL
             sceneData.textures.OnAdded -= OnTextureAdded;
             sceneData.textures.OnRemoved -= OnTextureRemoved;
 
-            sceneData.meshes.OnAdded -= OnDataChanged;
-            sceneData.meshes.OnRemoved -= OnDataChanged;
+            sceneData.meshes.OnAdded -= OnMeshAdded;
+            sceneData.meshes.OnRemoved -= OnMeshRemoved;
 
             sceneData.animationClipSize.OnChange -= OnAnimationClipSizeChange;
             sceneData.meshDataSize.OnChange -= OnMeshDataSizeChange;
