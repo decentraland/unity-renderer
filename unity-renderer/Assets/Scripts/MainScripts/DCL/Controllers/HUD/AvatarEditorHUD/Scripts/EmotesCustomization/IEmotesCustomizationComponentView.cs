@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -111,5 +111,12 @@ namespace EmotesCustomization
         /// </summary>
         /// <param name="isActive">True for activating it.</param>
         void SetActive(bool isActive);
+
+        /// <summary>
+        /// Get a specific slot component.
+        /// </summary>
+        /// <param name="slotNumber">Slot number to get.</param>
+        /// <returns></returns>
+        EmoteSlotCardComponentView GetSlot(int slotNumber);
     }
 }

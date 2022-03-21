@@ -46,6 +46,9 @@ namespace EmotesCustomization
 
         public void Configure(BaseComponentModel newModel)
         {
+            if (model == newModel)
+                return;
+
             model = (EmoteSlotCardComponentModel)newModel;
             RefreshControl();
         }

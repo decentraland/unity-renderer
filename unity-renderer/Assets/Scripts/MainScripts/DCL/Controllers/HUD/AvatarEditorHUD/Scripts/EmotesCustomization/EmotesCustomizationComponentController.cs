@@ -95,6 +95,7 @@ namespace EmotesCustomization
                 if (string.IsNullOrEmpty(emoteId))
                     continue;
 
+                // TODO: We should avoid static calls and create injectable interfaces
                 CatalogController.RequestWearable(emoteId);
             }
 
@@ -150,6 +151,7 @@ namespace EmotesCustomization
                     emotesIdsToStore.Add(equippedEmoteData != null ? equippedEmoteData.id : null);
                 }
 
+                // TODO: We should avoid static calls and create injectable interfaces
                 PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(emotesIdsToStore));
                 PlayerPrefsUtils.Save();
             }
@@ -271,7 +273,7 @@ namespace EmotesCustomization
 
                 if (emotesCustomizationDataStore.equippedEmotes[i] == null)
                 {
-                    EmoteSlotCardComponentView existingEmoteIntoSlot = view.currentSlots.FirstOrDefault(x => x.model.slotNumber == i);
+                    EmoteSlotCardComponentView existingEmoteIntoSlot = view.GetSlot(i);
                     if (existingEmoteIntoSlot != null)
                         view.UnequipEmote(existingEmoteIntoSlot.model.emoteId, i, false);
 
