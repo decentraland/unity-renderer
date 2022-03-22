@@ -80,10 +80,10 @@ namespace DCL
             {
                 gltfComponent = asset.container.AddComponent<GLTFComponent>();
 
-                gltfComponent.Initialize(webRequestController, AssetPromiseKeeper_GLTF.i.throttlingCounter);
+                gltfComponent.Initialize(webRequestController);
                 gltfComponent.RegisterCallbacks(MeshCreated, RendererCreated);
 
-                GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
+                GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings
                 {
                     useVisualFeedback = settings.visibleFlags ==
                                         AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION,
@@ -107,6 +107,8 @@ namespace DCL
                             MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
                         asset.materials = MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers);
                         asset.textures = MeshesInfoUtils.ExtractUniqueTextures(asset.materials);
+                        asset.animationClipSize = gltfComponent.GetAnimationClipMemorySize();
+                        asset.meshDataSize = gltfComponent.GetMeshesMemorySize(); 
                     }
 
                     OnSuccess.Invoke();

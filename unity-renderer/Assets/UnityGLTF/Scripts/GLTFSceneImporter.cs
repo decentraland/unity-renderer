@@ -142,7 +142,7 @@ namespace UnityGLTF
         protected MaterialCacheData _defaultLoadedMaterial = null;
 
         protected string _gltfFileName;
-        private readonly GLTFThrottlingCounter throttlingCounter;
+        private readonly IThrottlingCounter throttlingCounter;
         protected GLBStream _gltfStream;
         protected GLTFRoot _gltfRoot;
         protected AssetCache _assetCache;
@@ -171,20 +171,24 @@ namespace UnityGLTF
         //             This is because the GLTF cache cleanup setup expects ref owners to be the entire GLTF object.
         HashSet<Material> usedMaterials = new HashSet<Material>();
 
+        const int KEYFRAME_SIZE = 32;
+        public long meshesEstimatedSize { get; private set; }
+        public long animationsEstimatedSize { get; private set; }
+
         /// <summary>
         /// Creates a GLTFSceneBuilder object which will be able to construct a scene based off a url
         /// </summary>
         /// <param name="gltfFileName">glTF file relative to data loader path</param>
         /// <param name="externalDataLoader">Loader to load external data references</param>
         /// <param name="throttlingCounter">Used to determine if we should throttle some Main-thread only processes</param>
-        public GLTFSceneImporter(string id, string gltfFileName, ILoader externalDataLoader, GLTFThrottlingCounter throttlingCounter) : this(externalDataLoader)
+        public GLTFSceneImporter(string id, string gltfFileName, ILoader externalDataLoader, IThrottlingCounter throttlingCounter) : this(externalDataLoader)
         {
             _gltfFileName = gltfFileName;
             this.throttlingCounter = throttlingCounter;
             this.id = string.IsNullOrEmpty(id) ? gltfFileName : id;
         }
 
-        public GLTFSceneImporter(string id, GLTFRoot rootNode, ILoader externalDataLoader, GLTFThrottlingCounter throttlingCounter, Stream gltfStream = null) : this(externalDataLoader)
+        public GLTFSceneImporter(string id, GLTFRoot rootNode, ILoader externalDataLoader, IThrottlingCounter throttlingCounter, Stream gltfStream = null) : this(externalDataLoader)
         {
             this.id = id;
             _gltfRoot = rootNode;
@@ -675,8 +679,6 @@ namespace UnityGLTF
 
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
-            texture = CheckAndReduceTextureSize(texture);
-            _assetCache.ImageCache[imageCacheIndex] = texture;
 
             // We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
 #if !UNITY_STANDALONE || UNITY_EDITOR
@@ -690,6 +692,9 @@ namespace UnityGLTF
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
+            
+            // Resizing must be the last step to avoid breaking the texture when copying with Graphics.CopyTexture()
+            _assetCache.ImageCache[imageCacheIndex] = CheckAndReduceTextureSize(texture, settings.linear);
 
             await UniTask.Yield();
         }
@@ -724,7 +729,7 @@ namespace UnityGLTF
         }
 
         // Note that if the texture is reduced in size, the source one is destroyed
-        protected Texture2D CheckAndReduceTextureSize(Texture2D source)
+        protected Texture2D CheckAndReduceTextureSize(Texture2D source, bool linear = false)
         {
             if (source.width <= maxTextureSize && source.height <= maxTextureSize)
                 return source;
@@ -742,7 +747,7 @@ namespace UnityGLTF
                 factor = (float)maxTextureSize / height;
             }
 
-            Texture2D dstTex = TextureHelpers.Resize(source, (int) (width * factor), (int) (height * factor));
+            Texture2D dstTex = TextureHelpers.Resize(source, (int) (width * factor), (int) (height * factor), linear);
 
             if (Application.isPlaying)
                 Object.Destroy(source);
@@ -1123,6 +1128,9 @@ namespace UnityGLTF
                     // copy all key frames data to animation curve and add it to the clip
                     AnimationCurve curve = new AnimationCurve(keyframeCollection);
                     clip.SetCurve(relativePath, curveType, propertyNames[index], curve);
+                    animationsEstimatedSize += KEYFRAME_SIZE * keyframeCollection.Length;
+                    animationsEstimatedSize += relativePath.Length;
+                    animationsEstimatedSize += propertyNames[index].Length;
                 }
             }
             else
@@ -1132,6 +1140,9 @@ namespace UnityGLTF
                     // copy all key frames data to animation curve and add it to the clip
                     AnimationCurve curve = new AnimationCurve(keyframes[ci]);
                     clip.SetCurve(relativePath, curveType, propertyNames[ci], curve);
+                    animationsEstimatedSize += KEYFRAME_SIZE * keyframes[ci].Length;
+                    animationsEstimatedSize += relativePath.Length;
+                    animationsEstimatedSize += propertyNames[ci].Length;
                 }
             }
         }
@@ -1255,6 +1266,9 @@ namespace UnityGLTF
             };
 
             _assetCache.AnimationCache[animationId].LoadedAnimationClip = clip;
+
+            // Animation instance memory overhead
+            animationsEstimatedSize += 20;
 
             // needed because Animator component is unavailable at runtime
             clip.legacy = true;
@@ -2017,6 +2031,7 @@ namespace UnityGLTF
                 await  UniTask.Yield();
             }
         }
+
         private async UniTask AsyncConstructUnityMesh(MeshConstructionData meshConstructionData, int meshId, int primitiveIndex, UnityMeshData unityMeshData)
         {
             var stopwatch = new Stopwatch();
@@ -2033,6 +2048,8 @@ namespace UnityGLTF
 
             _assetCache.MeshCache[meshId][primitiveIndex].LoadedMesh = mesh;
 
+            meshesEstimatedSize += GLTFSceneImporterUtils.ComputeEstimatedMeshSize(unityMeshData);
+            
             mesh.vertices = unityMeshData.Vertices;
             await ThrottleWatch(stopwatch, 1);
             mesh.normals = unityMeshData.Normals;

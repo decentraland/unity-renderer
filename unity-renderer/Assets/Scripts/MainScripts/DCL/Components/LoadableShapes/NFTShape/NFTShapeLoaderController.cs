@@ -1,14 +1,10 @@
 using DCL.Components;
 using DCL.Helpers.NFT;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using DCL;
-using Newtonsoft.Json;
 using NFTShape_Internal;
-using UnityGLTF.Loader;
 
 public class NFTShapeLoaderController : MonoBehaviour
 {
@@ -37,8 +33,8 @@ public class NFTShapeLoaderController : MonoBehaviour
     public GameObject errorFeedback;
 
     [HideInInspector] public bool alreadyLoadedAsset = false;
-    [HideInInspector] public INFTInfoLoadHelper nftInfoLoadHelper;
-    internal INFTAssetLoadHelper nftAssetLoadHelper;
+    private INFTInfoLoadHelper nftInfoLoadHelper;
+    private INFTAssetLoadHelper nftAssetLoadHelper;
     private NFTShapeHQImageHandler hqTextureHandler = null;
     private Coroutine loadNftAssetCoroutine;
 
@@ -67,25 +63,32 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     static readonly int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
     static readonly int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
-
-
-    bool isDestroyed = false;
-
-
     void Awake()
     {
         // NOTE: we use half scale to keep backward compatibility cause we are using 512px to normalize the scale with a 256px value that comes from the images
         meshRenderer.transform.localScale = new Vector3(0.5f, 0.5f, 1);
 
         InitializeMaterials();
+        
         nftInfoLoadHelper = new NFTInfoLoadHelper();
         nftAssetLoadHelper = new NFTAssetLoadHelper();
+    }
+
+    private void OnEnable()
+    {
+        nftInfoLoadHelper.OnFetchInfoSuccess += FetchNFTInfoSuccess;
+        nftInfoLoadHelper.OnFetchInfoFail += FetchNFTInfoFail;
+    }
+
+    private void OnDisable()
+    {
+        nftInfoLoadHelper.OnFetchInfoSuccess -= FetchNFTInfoSuccess;
+        nftInfoLoadHelper.OnFetchInfoFail -= FetchNFTInfoFail;
     }
 
     private void Start() { spinner.layer = LayerMask.NameToLayer("ViewportCullingIgnored"); }
 
     void Update() { hqTextureHandler?.Update(); }
-
     
     public void LoadAsset(string url, bool loadEvenIfAlreadyLoaded = false)
     {
@@ -145,11 +148,11 @@ public class NFTShapeLoaderController : MonoBehaviour
     private void FetchNFTContents()
     {
         ShowLoading(true);
-        nftInfoLoadHelper.FetchNFTInfo(darURLRegistry, darURLAsset, FetchNFTInfoSuccess, FetchNFTInfoFail);
+        nftInfoLoadHelper.FetchNFTInfo(darURLRegistry, darURLAsset);
     }
 
     private void FetchNFTInfoSuccess(NFTInfo nftInfo)
-    {
+    {   
         loadNftAssetCoroutine = StartCoroutine(LoadNFTAssetCoroutine(nftInfo));
     }
 
@@ -219,7 +222,7 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         UpdateTexture(texture);
 
-        if (resizeFrameMesh && !isDestroyed && meshRenderer != null)
+        if (resizeFrameMesh && meshRenderer != null)
         {
             float w, h;
             w = h = 0.5f;

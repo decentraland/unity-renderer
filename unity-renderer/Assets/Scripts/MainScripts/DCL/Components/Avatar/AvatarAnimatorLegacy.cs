@@ -27,13 +27,13 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     const float MAX_VELOCITY = 6.25f;
 
     [System.Serializable]
-    public class BaseClipsIds
+    public class AvatarLocomotion
     {
-        public string idle;
-        public string walk;
-        public string run;
-        public string jump;
-        public string fall;
+        public AnimationClip idle;
+        public AnimationClip walk;
+        public AnimationClip run;
+        public AnimationClip jump;
+        public AnimationClip fall;
     }
 
     [System.Serializable]
@@ -49,11 +49,11 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         public float deltaTime;
     }
 
-    [SerializeField] internal AvatarAnimationsVariable maleAnimations;
-    [SerializeField] internal AvatarAnimationsVariable femaleAnimations;
+    [SerializeField] internal AvatarLocomotion femaleLocomotions;
+    [SerializeField] internal AvatarLocomotion maleLocomotions;
+    AvatarLocomotion currentLocomotions;
 
     public new Animation animation;
-    public BaseClipsIds baseClipsIds;
     public BlackBoard blackboard;
     public Transform target;
 
@@ -63,7 +63,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     internal System.Action<BlackBoard> currentState;
 
     Vector3 lastPosition;
-    AvatarAnimationsVariable currentAnimations;
     bool isOwnPlayer = false;
     private AvatarAnimationEventHandler animEventHandler;
 
@@ -157,22 +156,22 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             return;
         }
 
-        animation[baseClipsIds.run].normalizedSpeed = bb.movementSpeed / bb.deltaTime * bb.runSpeedFactor;
-        animation[baseClipsIds.walk].normalizedSpeed = bb.movementSpeed / bb.deltaTime * bb.walkSpeedFactor;
+        animation[currentLocomotions.run.name].normalizedSpeed = bb.movementSpeed / bb.deltaTime * bb.runSpeedFactor;
+        animation[currentLocomotions.walk.name].normalizedSpeed = bb.movementSpeed / bb.deltaTime * bb.walkSpeedFactor;
 
         float movementSpeed = bb.movementSpeed / bb.deltaTime;
 
         if (movementSpeed > runMinSpeed)
         {
-            animation.CrossFade(baseClipsIds.run, RUN_TRANSITION_TIME);
+            animation.CrossFade(currentLocomotions.run.name, RUN_TRANSITION_TIME);
         }
         else if (movementSpeed > walkMinSpeed)
         {
-            animation.CrossFade(baseClipsIds.walk, WALK_TRANSITION_TIME);
+            animation.CrossFade(currentLocomotions.walk.name, WALK_TRANSITION_TIME);
         }
         else
         {
-            animation.CrossFade(baseClipsIds.idle, IDLE_TRANSITION_TIME);
+            animation.CrossFade(currentLocomotions.idle.name, IDLE_TRANSITION_TIME);
         }
 
         if (!bb.isGrounded)
@@ -186,17 +185,17 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     {
         if (bb.verticalSpeed > 0)
         {
-            animation.CrossFade(baseClipsIds.jump, JUMP_TRANSITION_TIME, PlayMode.StopAll);
+            animation.CrossFade(currentLocomotions.jump.name, JUMP_TRANSITION_TIME, PlayMode.StopAll);
         }
         else
         {
-            animation.CrossFade(baseClipsIds.fall, FALL_TRANSITION_TIME, PlayMode.StopAll);
+            animation.CrossFade(currentLocomotions.fall.name, FALL_TRANSITION_TIME, PlayMode.StopAll);
         }
 
         if (bb.isGrounded)
         {
-            animation.Blend(baseClipsIds.jump, 0, AIR_EXIT_TRANSITION_TIME);
-            animation.Blend(baseClipsIds.fall, 0, AIR_EXIT_TRANSITION_TIME);
+            animation.Blend(currentLocomotions.jump.name, 0, AIR_EXIT_TRANSITION_TIME);
+            animation.Blend(currentLocomotions.fall.name, 0, AIR_EXIT_TRANSITION_TIME);
             currentState = State_Ground;
             Update(bb.deltaTime);
         }
@@ -233,6 +232,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (string.IsNullOrEmpty(expressionTriggerId))
             return;
 
+        if (animation.GetClip(expressionTriggerId) == null)
+            return;
+
         var mustTriggerAnimation = !string.IsNullOrEmpty(expressionTriggerId) && blackboard.expressionTriggerTimestamp != expressionTriggerTimestamp;
 
         blackboard.expressionTriggerId = expressionTriggerId;
@@ -259,35 +261,24 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         animation.Stop();
     }
 
-    public void SetIdleFrame() { animation.Play(baseClipsIds.idle); }
+    public void SetIdleFrame() { animation.Play(currentLocomotions.idle.name); }
 
-    public void BindBodyShape(Animation animation, string bodyShapeType, Transform target)
+    public void PrepareLocomotionAnims(string bodyshapeId)
     {
-        this.target = target;
-        this.animation = animation;
-
-        if (bodyShapeType.Contains(WearableLiterals.BodyShapes.MALE))
+        if (bodyshapeId.Contains(WearableLiterals.BodyShapes.MALE))
         {
-            currentAnimations = maleAnimations;
+            currentLocomotions = maleLocomotions;
         }
-        else if (bodyShapeType.Contains(WearableLiterals.BodyShapes.FEMALE))
+        else if (bodyshapeId.Contains(WearableLiterals.BodyShapes.FEMALE))
         {
-            currentAnimations = femaleAnimations;
+            currentLocomotions = femaleLocomotions;
         }
 
-        for (var i = 0; i < currentAnimations.Get().Length; i++)
-        {
-            var animationToId = currentAnimations.Get()[i];
-            if (this.animation.GetClip(animationToId.id) == null)
-            {
-                // animationToId.id and animationToId.clip.name must be the same or we get big performance drop here
-                // Already coordinated with art team to have the animations with the correct ids
-                this.animation.AddClip(animationToId.clip, animationToId.id);
-            }
-        }
-
-        SetIdleFrame();
-        animation.Sample();
+        EquipEmote(currentLocomotions.idle.name, currentLocomotions.idle);
+        EquipEmote(currentLocomotions.walk.name, currentLocomotions.walk);
+        EquipEmote(currentLocomotions.run.name, currentLocomotions.run);
+        EquipEmote(currentLocomotions.jump.name, currentLocomotions.jump);
+        EquipEmote(currentLocomotions.fall.name, currentLocomotions.fall);
     }
 
     // AvatarSystem entry points
@@ -302,12 +293,28 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         animation = armatureParent.gameObject.GetOrCreateComponent<Animation>();
         armatureParent.gameObject.GetOrCreateComponent<StickerAnimationListener>();
 
-        BindBodyShape(animation, bodyshapeId, target);
+        PrepareLocomotionAnims(bodyshapeId);
+        SetIdleFrame();
+        animation.Sample();
         InitializeAvatarAudioAndParticleHandlers(animation);
         return true;
     }
 
-    public void PlayExpression(string expressionId, long timestamps) { SetExpressionValues(expressionId, timestamps); }
+    public void PlayEmote(string emoteId, long timestamps) { SetExpressionValues(emoteId, timestamps); }
+
+    public void EquipEmote(string emoteId, AnimationClip clip)
+    {
+        if (animation.GetClip(emoteId) != null)
+            animation.RemoveClip(emoteId);
+        animation.AddClip(clip, emoteId);
+    }
+
+    public void UnequipEmote(string emoteId)
+    {
+        if (animation.GetClip(emoteId) == null)
+            return;
+        animation.RemoveClip(emoteId);
+    }
 
     private void InitializeAvatarAudioAndParticleHandlers(Animation createdAnimation)
     {

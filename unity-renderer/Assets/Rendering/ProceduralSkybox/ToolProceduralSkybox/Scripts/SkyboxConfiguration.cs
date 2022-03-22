@@ -408,13 +408,11 @@ namespace DCL.Skybox
         {
             if (lightGO == null)
             {
-                Debug.LogError("Directional Light option is on, with light reference");
                 return;
             }
 
             if (directionalLightLayer.lightDirection.Count == 0)
             {
-                Debug.Log("Directional Light option is on with no rotation data");
                 return;
             }
 

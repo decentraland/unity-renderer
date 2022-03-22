@@ -5,6 +5,169 @@ using UnityEngine;
 public class SceneMetricsCounterShould
 {
     [Test]
+    public void CountAnimationClipMemoryWhenAddedAndRemoved()
+    {
+        DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
+
+        dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
+        dataStore.sceneData.Add("2", new DataStore_WorldObjects.SceneData());
+        sceneMetricsCounter.Enable();
+
+        Rendereable rendereable1 = new Rendereable();
+        rendereable1.ownerId = "A";
+        rendereable1.animationClipSize = 256;
+
+        Rendereable rendereable2 = new Rendereable();
+        rendereable2.ownerId = "B";
+        rendereable2.animationClipSize = 512;
+
+        Rendereable rendereable3 = new Rendereable();
+        rendereable3.ownerId = "C";
+        rendereable3.animationClipSize = 1024;
+
+        dataStore.AddRendereable("1", rendereable1);
+        dataStore.AddRendereable("1", rendereable2);
+        dataStore.AddRendereable("2", rendereable3);
+
+        Assert.That(sceneMetricsCounter.currentCount.animationClipMemory, Is.EqualTo(768));
+
+        dataStore.RemoveRendereable("1", rendereable2);
+
+        Assert.That(sceneMetricsCounter.currentCount.animationClipMemory, Is.EqualTo(256));
+
+        dataStore.RemoveRendereable("1", rendereable1);
+
+        Assert.That(sceneMetricsCounter.currentCount.animationClipMemory, Is.EqualTo(0));
+
+        sceneMetricsCounter.Dispose();
+    }
+
+    [Test]
+    public void CountAudioClipMemoryWhenAddedAndRemoved()
+    {
+        DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
+
+        dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
+        dataStore.sceneData.Add("2", new DataStore_WorldObjects.SceneData());
+        sceneMetricsCounter.Enable();
+
+        var audioClip1 = AudioClip.Create("Test1", 10000, 2, 44250, false, null, null);
+        var audioClip2 = AudioClip.Create("Test2", 10000, 2, 44250, false, null, null);
+        var audioClip3 = AudioClip.Create("Test3", 10000, 2, 44250, false, null, null);
+
+        dataStore.AddAudioClip("1", audioClip1);
+        dataStore.AddAudioClip("1", audioClip2);
+        dataStore.AddAudioClip("2", audioClip3);
+
+        Assert.That(sceneMetricsCounter.currentCount.audioClipMemory, Is.EqualTo(166000));
+
+        dataStore.RemoveAudioClip("1", audioClip1);
+
+        Assert.That(sceneMetricsCounter.currentCount.audioClipMemory, Is.EqualTo(83000));
+
+        dataStore.RemoveAudioClip("1", audioClip2);
+
+        Assert.That(sceneMetricsCounter.currentCount.audioClipMemory, Is.EqualTo(0));
+
+        sceneMetricsCounter.Dispose();
+
+        Object.Destroy(audioClip1);
+        Object.Destroy(audioClip2);
+        Object.Destroy(audioClip3);
+    }
+
+    [Test]
+    public void CountMeshesMemoryWhenAddedAndRemoved()
+    {
+        DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
+
+        dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
+        dataStore.sceneData.Add("2", new DataStore_WorldObjects.SceneData());
+        sceneMetricsCounter.Enable();
+
+        Rendereable rendereable1 = new Rendereable();
+        rendereable1.ownerId = "A";
+        rendereable1.meshDataSize = 1024;
+
+        Rendereable rendereable2 = new Rendereable();
+        rendereable2.ownerId = "B";
+        rendereable2.meshDataSize = 1024;
+
+        Rendereable rendereable3 = new Rendereable();
+        rendereable3.ownerId = "C";
+        rendereable3.meshDataSize = 1024;
+
+        dataStore.AddRendereable("1", rendereable1);
+        dataStore.AddRendereable("1", rendereable2);
+        dataStore.AddRendereable("2", rendereable3);
+
+        Assert.That(sceneMetricsCounter.currentCount.meshMemory, Is.EqualTo(2048));
+
+        dataStore.RemoveRendereable("1", rendereable2);
+
+        Assert.That(sceneMetricsCounter.currentCount.meshMemory, Is.EqualTo(1024));
+
+        dataStore.RemoveRendereable("1", rendereable1);
+
+        Assert.That(sceneMetricsCounter.currentCount.meshMemory, Is.EqualTo(0));
+
+        sceneMetricsCounter.Dispose();
+    }
+
+    [Test]
+    public void CountTexturesMemoryWhenAddedAndRemoved()
+    {
+        DataStore_WorldObjects dataStore = new DataStore_WorldObjects();
+        var sceneMetricsCounter = new SceneMetricsCounter(dataStore, "1", Vector2Int.zero, 10);
+
+        dataStore.sceneData.Add("1", new DataStore_WorldObjects.SceneData());
+        dataStore.sceneData.Add("2", new DataStore_WorldObjects.SceneData());
+        sceneMetricsCounter.Enable();
+
+        Texture2D tex1 = new Texture2D(128, 128);
+        Texture2D tex2 = new Texture2D(64, 64);
+        Texture2D tex3 = new Texture2D(32, 32);
+        Texture2D tex4 = new Texture2D(16, 16);
+
+        Rendereable rendereable1 = new Rendereable();
+        rendereable1.ownerId = "A";
+        rendereable1.textures.Add(tex1);
+        rendereable1.textures.Add(tex2);
+
+        Rendereable rendereable2 = new Rendereable();
+        rendereable2.ownerId = "B";
+        rendereable2.textures.Add(tex3);
+
+        Rendereable rendereable3 = new Rendereable();
+        rendereable3.ownerId = "C";
+        rendereable3.textures.Add(tex4);
+
+        dataStore.AddRendereable("1", rendereable1);
+        dataStore.AddRendereable("1", rendereable2);
+        dataStore.AddRendereable("2", rendereable3);
+
+        Assert.That(sceneMetricsCounter.currentCount.textureMemory, Is.EqualTo(240843));
+
+        dataStore.RemoveRendereable("1", rendereable2);
+
+        Assert.That(sceneMetricsCounter.currentCount.textureMemory, Is.EqualTo(229375));
+
+        dataStore.RemoveRendereable("1", rendereable1);
+
+        Assert.That(sceneMetricsCounter.currentCount.textureMemory, Is.EqualTo(0));
+
+        sceneMetricsCounter.Dispose();
+
+        UnityEngine.Object.Destroy(tex1);
+        UnityEngine.Object.Destroy(tex2);
+        UnityEngine.Object.Destroy(tex3);
+        UnityEngine.Object.Destroy(tex4);
+    }
+
+    [Test]
     public void CountEntitiesWhenAddedAndRemoved()
     {
         var dataStore = new DataStore_WorldObjects();

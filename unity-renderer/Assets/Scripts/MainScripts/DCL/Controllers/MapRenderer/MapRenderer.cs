@@ -18,6 +18,8 @@ namespace DCL
         const string MINIMAP_USER_ICONS_POOL_NAME = "MinimapUserIconsPool";
         const int MINIMAP_USER_ICONS_MAX_PREWARM = 30;
         private const int MAX_CURSOR_PARCEL_DISTANCE = 40;
+        private const int MAX_SCENE_CHARACTER_TITLE = 29;
+        private const string EMPTY_PARCEL_NAME = "Empty parcel";
         private int NAVMAP_CHUNK_LAYER;
 
         public static MapRenderer i { get; private set; }
@@ -264,6 +266,9 @@ namespace DCL
             if (scenesOfInterest.Contains(sceneInfo))
                 return;
 
+            if (IsEmptyParcel(sceneInfo))
+                return;
+
             scenesOfInterest.Add(sceneInfo);
 
             GameObject go = Object.Instantiate(scenesOfInterestIconPrefab.gameObject, overlayContainer.transform);
@@ -276,15 +281,31 @@ namespace DCL
             }
 
             centerTile /= (float)sceneInfo.parcels.Count;
+            float distance = float.PositiveInfinity;
+            Vector2 centerParcel = Vector2.zero;
+            foreach (var parcel in sceneInfo.parcels)
+            {
+                if (Vector2.Distance(centerTile, parcel) < distance)
+                {
+                    distance = Vector2.Distance(centerParcel, parcel);
+                    centerParcel = parcel;
+                }
+                
+            }
 
-            (go.transform as RectTransform).anchoredPosition = MapUtils.GetTileToLocalPosition(centerTile.x, centerTile.y);
+            (go.transform as RectTransform).anchoredPosition = MapUtils.GetTileCenterToLocalPosition(centerParcel.x, centerParcel.y);
 
             MapSceneIcon icon = go.GetComponent<MapSceneIcon>();
 
             if (icon.title != null)
-                icon.title.text = sceneInfo.name;
+                icon.title.text = sceneInfo.name.Length > MAX_SCENE_CHARACTER_TITLE ? sceneInfo.name.Substring(0, MAX_SCENE_CHARACTER_TITLE - 1) : sceneInfo.name;
 
             scenesOfInterestMarkers.Add(sceneInfo, go);
+        }
+
+        private bool IsEmptyParcel(MinimapMetadata.MinimapSceneInfo sceneInfo)
+        {
+            return (sceneInfo.name != null && sceneInfo.name.Equals(EMPTY_PARCEL_NAME));
         }
 
         private void OnOtherPlayersAdded(string userId, Player player)

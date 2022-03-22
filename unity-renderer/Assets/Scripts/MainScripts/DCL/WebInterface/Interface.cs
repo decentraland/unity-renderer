@@ -610,6 +610,12 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class SetDisabledPortableExperiencesPayload
+        {
+            public string[] idsToDisable;
+        }
+
+        [System.Serializable]
         public class WearablesRequestFiltersPayload
         {
             public string ownedByUser;
@@ -806,6 +812,7 @@ namespace DCL.Interface
         private static CloseUserAvatarPayload closeUserAvatarPayload = new CloseUserAvatarPayload();
         private static StringPayload stringPayload = new StringPayload();
         private static KillPortableExperiencePayload killPortableExperiencePayload = new KillPortableExperiencePayload();
+        private static SetDisabledPortableExperiencesPayload setDisabledPortableExperiencesPayload = new SetDisabledPortableExperiencesPayload();
         private static RequestWearablesPayload requestWearablesPayload = new RequestWearablesPayload();
         private static SearchENSOwnerPayload searchEnsOwnerPayload = new SearchENSOwnerPayload();
         private static HeadersPayload headersPayload = new HeadersPayload();
@@ -1464,10 +1471,18 @@ namespace DCL.Interface
             SendMessage("CloseUserAvatar", closeUserAvatarPayload);
         }
 
+        // Warning: Use this method only for PEXs non-associated to smart wearables.
+        //          For PEX associated to smart wearables use 'SetDisabledPortableExperiences'.
         public static void KillPortableExperience(string portableExperienceId)
         {
             killPortableExperiencePayload.portableExperienceId = portableExperienceId;
             SendMessage("KillPortableExperience", killPortableExperiencePayload);
+        }
+
+        public static void SetDisabledPortableExperiences(string[] idsToDisable)
+        {
+            setDisabledPortableExperiencesPayload.idsToDisable = idsToDisable;
+            SendMessage("SetDisabledPortableExperiences", setDisabledPortableExperiencesPayload);
         }
 
         public static void RequestWearables(

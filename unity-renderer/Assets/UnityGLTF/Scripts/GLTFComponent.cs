@@ -44,7 +44,7 @@ namespace UnityGLTF
         public int Timeout = 8;
         public Material LoadingTextureMaterial;
         public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
-        private GLTFThrottlingCounter throttlingCounter;
+        private static readonly IThrottlingCounter throttlingCounter = new GLTFThrottlingCounter();
 
         public bool InitialVisibility
         {
@@ -106,10 +106,9 @@ namespace UnityGLTF
 
         public Action<Exception> OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
 
-        public void Initialize(IWebRequestController webRequestController, GLTFThrottlingCounter throttlingCounter)
+        public void Initialize( IWebRequestController webRequestController)
         {
             this.webRequestController = webRequestController;
-            this.throttlingCounter = throttlingCounter;
         }
 
         public void LoadAsset(string baseUrl, string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null, AssetIdConverter fileToHashConverter = null)
@@ -289,6 +288,8 @@ namespace UnityGLTF
                         else
                         {
                             loadedAssetRootGameObject = sceneImporter.CreatedObject;
+                            animationsEstimatedSize = sceneImporter.animationsEstimatedSize;
+                            meshesEstimatedSize = sceneImporter.meshesEstimatedSize;
 
                             sceneImporter?.Dispose();
                             sceneImporter = null;
@@ -371,6 +372,19 @@ namespace UnityGLTF
         public void Load(string url) { throw new NotImplementedException(); }
 
         public void SetPrioritized() { prioritizeDownload = true; }
+
+        private long animationsEstimatedSize;
+        private long meshesEstimatedSize;
+        public long GetAnimationClipMemorySize()
+        {
+            return animationsEstimatedSize;
+        }
+
+        public long GetMeshesMemorySize()
+        {
+            return meshesEstimatedSize;
+        }
+
         private void OnDestroy()
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
