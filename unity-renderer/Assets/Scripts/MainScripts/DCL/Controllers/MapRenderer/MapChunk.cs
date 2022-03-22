@@ -36,6 +36,7 @@ namespace DCL
 
                 var newTexture = new Texture2D(result.width, result.height, result.format, true);
                 newTexture.SetPixels32(result.GetPixels32(0), 0);
+                newTexture.Compress(false);
                 newTexture.Apply(true);
                 Destroy(result);
 
