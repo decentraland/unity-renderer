@@ -32,9 +32,9 @@ namespace DCL.Emotes
                 throw new Exception($"No representation for {bodyShapeId} of emote: {emote.id}");
             }
 
-            await retriever.Retrieve(container, emote.GetContentProvider(bodyShapeId), emote.baseUrlBundles, representation.mainFile, ct);
+            Rendereable rendereable = await retriever.Retrieve(container, emote.GetContentProvider(bodyShapeId), emote.baseUrlBundles, representation.mainFile, ct);
 
-            animation = retriever.rendereable.container.GetComponentInChildren<Animation>()?.clip;
+            animation = rendereable.container.GetComponentInChildren<Animation>()?.clip;
         }
 
         public void Dispose() { retriever?.Dispose(); }

@@ -5,6 +5,7 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using NSubstitute;
+using NSubstitute.Core.Arguments;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -59,6 +60,13 @@ namespace DCL.Emotes
             AnimationClip clip = Resources.Load<AnimationClip>("tik");
             animation.clip = clip;
             Rendereable rendereable = new Rendereable { container = container, };
+            retriever.Retrieve(
+                         Arg.Any<GameObject>(),
+                         Arg.Any<ContentProvider>(),
+                         Arg.Any<string>(),
+                         Arg.Any<string>(),
+                         Arg.Any<CancellationToken>())
+                     .Returns(new UniTask<Rendereable>(rendereable));
             retriever.rendereable.Returns(rendereable);
 
             await loader.LoadEmote(container, new WearableItem
