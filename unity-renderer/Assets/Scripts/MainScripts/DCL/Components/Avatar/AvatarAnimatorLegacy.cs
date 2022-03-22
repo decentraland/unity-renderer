@@ -319,7 +319,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     private void InitializeAvatarAudioAndParticleHandlers(Animation createdAnimation)
     {
         //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
-        AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventHandler>();
+        AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.GetOrCreateComponent<AvatarAnimationEventHandler>();
         AudioContainer audioContainer = transform.GetComponentInChildren<AudioContainer>();
         if (audioContainer != null)
         {

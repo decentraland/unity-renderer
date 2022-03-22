@@ -56,5 +56,6 @@ namespace DCL
         public DataStore_Performance performance => i.Get<DataStore_Performance>();
         public DataStore_ExperiencesViewer experiencesViewer => i.Get<DataStore_ExperiencesViewer>();
         public DataStore_Emotes emotes => i.Get<DataStore_Emotes>();
+        public DataStore_EmotesCustomization emotesCustomization => i.Get<DataStore_EmotesCustomization>();
     }
 }

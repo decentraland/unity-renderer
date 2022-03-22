@@ -16,7 +16,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -24,8 +25,11 @@ MonoBehaviour:
     id: wave
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Wave
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 5ff44e022ab99054bb0a1f79b2077c4f, type: 3}
     rarity: 
     description: wave
     issuedId: 0
@@ -34,7 +38,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -42,8 +47,11 @@ MonoBehaviour:
     id: fistpump
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Fist Pump
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 2b2f4028cd39d984e80dabe0732fdd87, type: 3}
     rarity: 
     description: fistpump
     issuedId: 0
@@ -52,7 +60,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -60,8 +69,11 @@ MonoBehaviour:
     id: robot
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Robot
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 736224c3cee06814dbf03a9bc3396382, type: 3}
     rarity: 
     description: robot
     issuedId: 0
@@ -70,7 +82,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -78,8 +91,11 @@ MonoBehaviour:
     id: raiseHand
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Raise Hand
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: ff8a6278dd9d9334da10fa959cdb26dc, type: 3}
     rarity: 
     description: raiseHand
     issuedId: 0
@@ -88,7 +104,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -96,8 +113,11 @@ MonoBehaviour:
     id: clap
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Clap
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: ff531623182fec8479d734ac8df22d8f, type: 3}
     rarity: 
     description: clap
     issuedId: 0
@@ -106,7 +126,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -114,8 +135,11 @@ MonoBehaviour:
     id: money
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Money
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: e2b6332b93b06ab488a93d40b83c69fe, type: 3}
     rarity: 
     description: money
     issuedId: 0
@@ -124,7 +148,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -132,8 +157,11 @@ MonoBehaviour:
     id: kiss
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Kiss
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 8845b5e9671db49409bf747319c8f5c7, type: 3}
     rarity: 
     description: kiss
     issuedId: 0
@@ -142,7 +170,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -150,8 +179,11 @@ MonoBehaviour:
     id: hammer
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Hammer
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 90d19c500d961c44f8941c69dcdae46a, type: 3}
     rarity: 
     description: hammer
     issuedId: 0
@@ -160,7 +192,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -168,8 +201,11 @@ MonoBehaviour:
     id: tik
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Tik
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 832a50a328da0294f809c85f37abca0e, type: 3}
     rarity: 
     description: tik
     issuedId: 0
@@ -178,7 +214,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -186,8 +223,11 @@ MonoBehaviour:
     id: tektonik
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Tektonik
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 84771a68677a08b43a7247d73aa5a6d8, type: 3}
     rarity: 
     description: tektonik
     issuedId: 0
@@ -196,7 +236,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -204,8 +245,11 @@ MonoBehaviour:
     id: dontsee
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Don't See
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 4ee2739d276aba843bd732c5a4a40dad, type: 3}
     rarity: 
     description: dontsee
     issuedId: 0
@@ -214,7 +258,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -222,8 +267,11 @@ MonoBehaviour:
     id: handsair
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Hands Air
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 5d9d324d9b1257f4cbeed858807c2c06, type: 3}
     rarity: 
     description: handsair
     issuedId: 0
@@ -232,7 +280,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -240,8 +289,11 @@ MonoBehaviour:
     id: shrug
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Shrug
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: f992e8febb67b5d47a24e9f16d5cc190, type: 3}
     rarity: 
     description: shrug
     issuedId: 0
@@ -250,7 +302,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -258,8 +311,11 @@ MonoBehaviour:
     id: disco
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Disco
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 5dc96a095ce3483459044bf3e74ccb59, type: 3}
     rarity: 
     description: disco
     issuedId: 0
@@ -268,7 +324,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -276,8 +333,11 @@ MonoBehaviour:
     id: dab
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Dab
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: e6a1e80b5ad78344ab7aa751eb27c30d, type: 3}
     rarity: 
     description: dab
     issuedId: 0
@@ -286,7 +346,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -294,8 +355,11 @@ MonoBehaviour:
     id: headexplode
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Head Explode
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: db09a3000c06f1e46a56c971875a6aa1, type: 3}
     rarity: 
     description: headexplode
     issuedId: 0
@@ -304,7 +368,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -312,8 +377,11 @@ MonoBehaviour:
     id: dance
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Dance
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: fb2a51422f4f0f84ca589e9716428e06, type: 3}
     rarity: 
     description: dance
     issuedId: 0
@@ -322,7 +390,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -330,8 +399,11 @@ MonoBehaviour:
     id: snowfall
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Snowfall
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 9622f862db0a54f49a26e220aac90cbe, type: 3}
     rarity: 
     description: snowfall
     issuedId: 0
@@ -340,7 +412,8 @@ MonoBehaviour:
   - data:
       representations: []
       category: 
-      tags: []
+      tags:
+      - base-wearable
       replaces: []
       hides: []
     emoteDataV0:
@@ -348,64 +421,13 @@ MonoBehaviour:
     id: hohoho
     baseUrl: 
     baseUrlBundles: 
-    i18n: []
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
     thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 08fb89e42a3f7d44e9b2a391aa41aff6, type: 3}
     rarity: 
     description: hohoho
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: c9d790909990ed64ca2326c86e1c4033, type: 2}
     maleAnimation: {fileID: 7400000, guid: 7ce91a41fdad8e648b9d5d46ec1f5fba, type: 2}
-  - data:
-      representations: []
-      category: 
-      tags: []
-      replaces: []
-      hides: []
-    emoteDataV0:
-      loop: 0
-    id: crafting
-    baseUrl: 
-    baseUrlBundles: 
-    i18n: []
-    thumbnail: 
-    rarity: 
-    description: crafting
-    issuedId: 0
-    femaleAnimation: {fileID: 7400000, guid: 19ca4695c461be14eabf22802d26c434, type: 2}
-    maleAnimation: {fileID: 7400000, guid: 0f8758ad5d2c9614eaf737f7d5a02683, type: 2}
-  - data:
-      representations: []
-      category: 
-      tags: []
-      replaces: []
-      hides: []
-    emoteDataV0:
-      loop: 0
-    id: snowballhit
-    baseUrl: 
-    baseUrlBundles: 
-    i18n: []
-    thumbnail: 
-    rarity: 
-    description: snowballhit
-    issuedId: 0
-    femaleAnimation: {fileID: 7400000, guid: 6a12fe7f3598e7c4cbf02a207488314c, type: 2}
-    maleAnimation: {fileID: 7400000, guid: ae751f28919a9da45901722032494cd7, type: 2}
-  - data:
-      representations: []
-      category: 
-      tags: []
-      replaces: []
-      hides: []
-    emoteDataV0:
-      loop: 0
-    id: snowballthrow
-    baseUrl: 
-    baseUrlBundles: 
-    i18n: []
-    thumbnail: 
-    rarity: 
-    description: snowballthrow
-    issuedId: 0
-    femaleAnimation: {fileID: 7400000, guid: 4b450ac229af40043857d0ed27200535, type: 2}
-    maleAnimation: {fileID: 7400000, guid: 410500199428da6479aff90425c0ad9e, type: 2}

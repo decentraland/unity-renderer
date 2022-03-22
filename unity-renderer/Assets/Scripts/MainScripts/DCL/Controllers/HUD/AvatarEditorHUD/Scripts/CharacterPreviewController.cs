@@ -69,6 +69,12 @@ public class CharacterPreviewController : MonoBehaviour
 
     public void UpdateModel(AvatarModel newModel, Action onDone)
     {
+        if (newModel.HaveSameWearablesAndColors(currentAvatarModel))
+        {
+            onDone?.Invoke();
+            return;
+        }
+
         loadingCts?.Cancel();
         loadingCts?.Dispose();
         loadingCts = new CancellationTokenSource();
@@ -85,12 +91,6 @@ public class CharacterPreviewController : MonoBehaviour
 
     private async UniTaskVoid UpdateModelRoutine(AvatarModel newModel, Action onDone, CancellationToken ct)
     {
-        if (newModel.HaveSameWearablesAndColors(currentAvatarModel))
-        {
-            onDone?.Invoke();
-            return;
-        }
-
         currentAvatarModel.CopyFrom(newModel);
         List<string> wearables = new List<string>(newModel.wearables);
         wearables.Add(newModel.bodyShape);
@@ -197,4 +197,8 @@ public class CharacterPreviewController : MonoBehaviour
     }
 
     public void Rotate(float rotationVelocity) { avatarContainer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up); }
+
+    public AvatarModel GetCurrentModel() { return currentAvatarModel; }
+
+    public void PlayEmote(string emoteId, long timestamp) { avatar.PlayEmote(emoteId, timestamp); }
 }
