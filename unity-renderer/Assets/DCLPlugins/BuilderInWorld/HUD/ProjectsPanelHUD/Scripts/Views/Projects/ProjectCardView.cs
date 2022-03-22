@@ -1,13 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
-using DCL;
-using DCL.Builder;
 using DCL.Configuration;
 using UnityEngine;
 using DCL.Helpers;
 using TMPro;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace DCL.Builder
@@ -154,7 +152,6 @@ namespace DCL.Builder
 
         private string thumbnailId = null;
         private Transform defaultParent;
-        private AssetPromise_Texture thumbnailPromise;
         private bool scenesAreVisible = false;
         private bool isDestroyed = false;
 
@@ -183,8 +180,6 @@ namespace DCL.Builder
 
         public void Dispose()
         {
-            AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
-
             editorButton.onClick.RemoveAllListeners();
             expandButton.onClick.RemoveAllListeners();
             contextMenuButton.onClick.RemoveAllListeners();
@@ -313,26 +308,36 @@ namespace DCL.Builder
             }
 
             this.thumbnailId = thumbnailId;
-
-            if (thumbnailPromise != null)
-            {
-                AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
-                thumbnailPromise = null;
-            }
-
+            
             if (string.IsNullOrEmpty(projectThumbnailUrl))
             {
                 SetThumbnail((Texture2D) null);
                 return;
             }
 
-            thumbnailPromise = new AssetPromise_Texture(projectThumbnailUrl, storeTexAsNonReadable: false);
-            thumbnailPromise.OnSuccessEvent += texture => SetThumbnail(texture.texture);
-            thumbnailPromise.OnFailEvent += (texture, error) => SetThumbnail(null);
-
             loadingImgGameObject.SetActive(true);
             thumbnail.enabled = false;
-            AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
+
+            GetThumbnail(projectThumbnailUrl);
+        }
+        
+        public void GetThumbnail(string url)
+        {
+            Dictionary<string, string> headers = new Dictionary<string, string>();
+            headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            Environment.i.platform.webRequest.GetTexture(
+                url: url,
+                OnSuccess: (webRequestResult) =>
+                {
+                    Texture2D texture2D = DownloadHandlerTexture.GetContent(webRequestResult.webRequest);
+                    SetThumbnail(texture2D);
+                },
+                OnFail: (webRequestResult) =>
+                {
+                    Debug.Log(webRequestResult.webRequest.error);
+                    loadingImgGameObject.SetActive(false);
+                },
+                headers: headers);
         }
 
         public void SetThumbnail(Texture2D thumbnailTexture)

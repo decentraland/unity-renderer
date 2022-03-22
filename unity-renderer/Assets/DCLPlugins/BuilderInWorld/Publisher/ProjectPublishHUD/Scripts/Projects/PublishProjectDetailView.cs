@@ -321,7 +321,7 @@ namespace DCL.Builder
             }
         }
 
-        private void RotateLeft()
+        private void RotateRight()
         {
             projectRotation--;
             if (projectRotation < 0)
@@ -329,7 +329,7 @@ namespace DCL.Builder
             SetRotation(projectRotation);
         }
 
-        private void RotateRight()
+        private void RotateLeft()
         {
             projectRotation++;
             if (projectRotation > PublishInfo.ProjectRotation.WEST)
