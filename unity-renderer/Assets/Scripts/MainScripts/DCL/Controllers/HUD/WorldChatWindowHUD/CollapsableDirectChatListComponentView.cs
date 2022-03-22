@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using DCL;
 using UIComponents.CollapsableSortedList;
@@ -14,6 +15,8 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private Pool entryPool;
     private IChatController chatController;
+
+    public event Action<DirectChatEntry> OnOpenChat;
 
     public void Initialize(IChatController chatController)
     {
@@ -42,7 +45,8 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         pooleableEntries.Add(userId, newFriendEntry);
         var entry = newFriendEntry.gameObject.GetComponent<DirectChatEntry>();
         Add(userId, entry);
-        entry.Init(chatController, userContextMenu);
+        entry.Initialize(chatController, userContextMenu);
+        entry.OnOpenChat += () => OnOpenChat?.Invoke(entry);
     }
     
     private Pool GetEntryPool()

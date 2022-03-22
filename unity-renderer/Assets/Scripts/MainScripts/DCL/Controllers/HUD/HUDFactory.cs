@@ -51,8 +51,9 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(DataStore.i, new ChannelChatWindowController(),
-                    new PrivateChatWindowHUDController(), CommonScriptableObjects.lastReadWorldChatMessages,
-                    new DefaultPlayerPrefs(), new UserProfileWebInterfaceBridge());
+                    CommonScriptableObjects.lastReadWorldChatMessages,
+                    new DefaultPlayerPrefs(), new UserProfileWebInterfaceBridge(),
+                    FriendsController.i, ChatController.i, SceneReferences.i.mouseCatcher);
                 break;
             case HUDElementID.FRIENDS:
                 hudElement = new FriendsHUDController();

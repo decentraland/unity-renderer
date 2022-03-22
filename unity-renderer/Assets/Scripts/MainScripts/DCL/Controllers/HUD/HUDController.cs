@@ -201,8 +201,7 @@ public class HUDController : IHUDController
 
                     if (worldChatWindowHud != null)
                     {
-                        worldChatWindowHud.Initialize(ChatController.i, SceneReferences.i.mouseCatcher,
-                            WorldChatWindowComponentView.Create());
+                        worldChatWindowHud.Initialize(WorldChatWindowComponentView.Create());
                         worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
                         worldChatWindowHud.OnPressPrivateMessage += OpenPrivateChatWindow;
                         worldChatWindowHud.OnDeactivatePreview -= View_OnDeactivatePreview;

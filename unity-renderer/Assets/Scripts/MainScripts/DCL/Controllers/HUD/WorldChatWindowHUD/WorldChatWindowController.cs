@@ -11,11 +11,14 @@ public class WorldChatWindowController : IHUD
 
     private readonly DataStore dataStore;
     private readonly ChannelChatWindowController channelChatWindowController;
-    private readonly PrivateChatWindowHUDController privateChatWindowController;
     private readonly LongVariable lastReadWorldChatMessages;
     private readonly IPlayerPrefs playerPrefs;
     private readonly IUserProfileBridge userProfileBridge;
+    private readonly IFriendsController friendsController;
+    private readonly IChatController chatController;
+    private readonly IMouseCatcher mouseCatcher;
     private Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
+    private Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
 
@@ -31,38 +34,46 @@ public class WorldChatWindowController : IHUD
 
     public WorldChatWindowController(DataStore dataStore,
         ChannelChatWindowController channelChatWindowController,
-        PrivateChatWindowHUDController privateChatWindowController,
         LongVariable lastReadWorldChatMessages,
         IPlayerPrefs playerPrefs,
-        IUserProfileBridge userProfileBridge)
+        IUserProfileBridge userProfileBridge,
+        IFriendsController friendsController,
+        IChatController chatController,
+        IMouseCatcher mouseCatcher)
     {
         this.dataStore = dataStore;
         this.channelChatWindowController = channelChatWindowController;
-        this.privateChatWindowController = privateChatWindowController;
         this.lastReadWorldChatMessages = lastReadWorldChatMessages;
         this.playerPrefs = playerPrefs;
         this.userProfileBridge = userProfileBridge;
+        this.friendsController = friendsController;
+        this.chatController = chatController;
+        this.mouseCatcher = mouseCatcher;
     }
 
-    public void Initialize(IChatController chatController,
-        IMouseCatcher mouseCatcher,
-        IWorldChatWindowView view)
+    public void Initialize(IWorldChatWindowView view)
     {
         channelChatWindowController.Initialize(chatController, mouseCatcher);
-        privateChatWindowController.Initialize(chatController);
-        view.Initialize(chatController);
         this.view = view;
+        view.Initialize(chatController);
+        view.OnClose += HandleViewCloseRequest;
+        view.OnOpenChat += OpenPrivateChat;
         ownUserProfile = userProfileBridge.GetOwn();
-        var privateChatsByRecipient = GetPrivateChatsByRecipient(chatController.GetEntries());
+        var privateChatsByRecipient = GetLastPrivateChatByRecipient(chatController.GetEntries());
+        lastPrivateMessages = privateChatsByRecipient.ToDictionary(pair => pair.Key.userId, pair => pair.Value);
         recipientsFromPrivateChats = privateChatsByRecipient.Keys.ToDictionary(profile => profile.userId);
         ShowDirectChats(privateChatsByRecipient);
         chatController.OnAddMessage += HandleMessageAdded;
+        friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
     }
 
     public void Dispose()
     {
+        view.OnClose -= HandleViewCloseRequest;
+        view.OnOpenChat -= OpenPrivateChat;
+        chatController.OnAddMessage -= HandleMessageAdded;
+        friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         channelChatWindowController.Dispose();
-        privateChatWindowController.Dispose();
     }
 
     public void SetVisibility(bool visible)
@@ -107,15 +118,32 @@ public class WorldChatWindowController : IHUD
             channelChatWindowController.view.ResetInputField();
     }
 
-    private void ShowDirectChats(Dictionary<UserProfile, List<ChatMessage>> privateChatsByRecipient)
+    private void OpenPrivateChat(string userId)
+    {
+        OnPressPrivateMessage?.Invoke(userId);
+    }
+
+    private void HandleViewCloseRequest() => SetVisibility(false);
+    
+    private void HandleUserStatusChanged(string userId, FriendsController.UserStatus status)
+    {
+        if (!recipientsFromPrivateChats.ContainsKey(userId)) return;
+        if (!lastPrivateMessages.ContainsKey(userId)) return;
+        var profile = recipientsFromPrivateChats[userId];
+        view.SetDirectRecipient(profile, lastPrivateMessages[userId], ownUserProfile.IsBlocked(userId), status.presence);
+    }
+
+    private void ShowDirectChats(Dictionary<UserProfile, ChatMessage> privateChatsByRecipient)
     {
         // TODO: throttle in case of hiccups
         foreach (var pair in privateChatsByRecipient)
         {
             var user = pair.Key;
-            var chats = pair.Value;
+            var message = pair.Value;
             view.SetDirectRecipient(user,
-                chats.OrderByDescending(message => message.timestamp).First());
+                message,
+                ownUserProfile.IsBlocked(user.userId),
+                friendsController.GetUserStatus(user.userId).presence);
         }
     }
 
@@ -125,7 +153,8 @@ public class WorldChatWindowController : IHUD
         var profile = ExtractRecipient(message);
         if (recipientsFromPrivateChats.ContainsKey(profile.userId)) return;
         recipientsFromPrivateChats.Add(profile.userId, profile);
-        view.SetDirectRecipient(profile, message);
+        view.SetDirectRecipient(profile, message, ownUserProfile.IsBlocked(profile.userId),
+            friendsController.GetUserStatus(profile.userId).presence);
     }
 
     private void SaveLatestReadWorldChatMessagesStatus()
@@ -135,18 +164,18 @@ public class WorldChatWindowController : IHUD
         playerPrefs.Save();
     }
 
-    private Dictionary<UserProfile, List<ChatMessage>> GetPrivateChatsByRecipient(IEnumerable<ChatMessage> messages)
+    private Dictionary<UserProfile, ChatMessage> GetLastPrivateChatByRecipient(IEnumerable<ChatMessage> messages)
     {
-        var chatsByRecipient = new Dictionary<UserProfile, List<ChatMessage>>();
+        var chatsByRecipient = new Dictionary<UserProfile, ChatMessage>();
 
         foreach (var message in messages)
         {
             if (message.messageType != ChatMessage.Type.PRIVATE) continue;
             var profile = ExtractRecipient(message);
             if (!chatsByRecipient.ContainsKey(profile))
-                chatsByRecipient.Add(profile, new List<ChatMessage>());
-            var chats = chatsByRecipient[profile];
-            chats.Add(message);
+                chatsByRecipient.Add(profile, message);
+            else if (message.timestamp > chatsByRecipient[profile].timestamp)
+                chatsByRecipient[profile] = message;
         }
 
         return chatsByRecipient;

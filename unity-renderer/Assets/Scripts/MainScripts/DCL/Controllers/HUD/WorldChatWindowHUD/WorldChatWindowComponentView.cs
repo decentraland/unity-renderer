@@ -9,6 +9,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] private Button closeButton;
     
     public event Action OnClose;
+    public event Action<string> OnOpenChat; 
     
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -22,6 +23,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         base.Awake();
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
+        directChatList.OnOpenChat += entry => OnOpenChat?.Invoke(entry.Model.userId);
     }
 
     public void Initialize(IChatController chatController)
@@ -33,10 +35,15 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public void Hide() => gameObject.SetActive(false);
 
-    public void SetDirectRecipient(UserProfile user, ChatMessage recentMessage)
+    public void SetDirectRecipient(UserProfile user, ChatMessage recentMessage, bool isBlocked, PresenceStatus presence)
     {
         directChatList.Set(user.userId, new DirectChatEntry.DirectChatEntryModel(
-            user.userId, user.userName, recentMessage.body, user.face256SnapshotURL));
+            user.userId,
+            user.userName,
+            recentMessage.body,
+            user.face256SnapshotURL,
+            isBlocked,
+            presence));
     }
 
     public override void RefreshControl()
