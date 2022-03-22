@@ -58,6 +58,7 @@ namespace DCL
         [Obsolete("Deprecated HUD Element")]
         AVATAR_NAMES = 31,
 
+        [Obsolete("Deprecated HUD Element, this feature is initialized from the Feature Flags system")]
         EMOTES = 32,
 
         COUNT = 33
