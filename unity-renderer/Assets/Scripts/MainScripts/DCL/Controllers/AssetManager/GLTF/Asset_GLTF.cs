@@ -18,6 +18,7 @@ namespace DCL
         public HashSet<Renderer> renderers = new HashSet<Renderer>();
         public HashSet<Material> materials = new HashSet<Material>();
         public HashSet<Texture> textures = new HashSet<Texture>();
+        public HashSet<AnimationClip> animationClips = new HashSet<AnimationClip>();
         public int totalTriangleCount = 0;
         public long animationClipSize = 0;
         public long meshDataSize = 0;
@@ -39,6 +40,8 @@ namespace DCL
             result.materials = new HashSet<Material>(materials);
             result.textures = new HashSet<Texture>(textures);
             result.meshToTriangleCount = new Dictionary<Mesh, int>(meshToTriangleCount);
+            result.animationClips = new HashSet<AnimationClip>(animationClips);
+
             return result;
         }
 

@@ -15,7 +15,9 @@ public class MemoryScoreFormulasShould
         var texture = new Texture2D(100, 100);
         texture.Apply(false, true);
         long score = MetricsScoreUtils.ComputeTextureScore(texture);
-        Assert.That(score, Is.GreaterThan(Profiler.GetRuntimeMemorySizeLong(texture)));
+        // NOTE(Brian): We have to divide the expectancy by 2 because on editor/standalone runtime the
+        //              reported memory is doubled when it shouldn't.
+        Assert.That(score, Is.GreaterThan(Profiler.GetRuntimeMemorySizeLong(texture) / 2));
         Object.Destroy(texture);
     }
 
@@ -24,7 +26,9 @@ public class MemoryScoreFormulasShould
     {
         var audioClip = AudioClip.Create("test", 10000, 2, 11000, false);
         long score = MetricsScoreUtils.ComputeAudioClipScore(audioClip);
-        Assert.That(score, Is.GreaterThan(Profiler.GetRuntimeMemorySizeLong(audioClip)));
+        // NOTE(Brian): We have to divide the expectancy by 2 because on editor/standalone runtime the
+        //              reported memory is doubled when it shouldn't.
+        Assert.That(score, Is.GreaterThan(Profiler.GetRuntimeMemorySizeLong(audioClip) / 2));
         Object.Destroy(audioClip);
     }
 
