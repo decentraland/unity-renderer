@@ -11,6 +11,7 @@ using SignupHUD;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Environment = System.Environment;
+using EmotesCustomization;
 
 public class HUDController : IHUDController
 {
@@ -180,10 +181,6 @@ public class HUDController : IHUDController
                 CreateHudElement(configuration, hudElementId);
                 if (settingsPanelHud != null)
                     settingsPanelHud.Initialize();
-                break;
-            case HUDElementID.EXPRESSIONS:
-            case HUDElementID.EMOTES:
-                CreateHudElement(configuration, hudElementId);
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
                 CreateHudElement(configuration, hudElementId);

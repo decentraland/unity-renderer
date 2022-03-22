@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
 using DCL;
+using EmotesCustomization;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine.TestTools;
-using UnityEngine.UI;
 
 namespace ExpressionsHUD_Test
 {
@@ -15,7 +14,7 @@ namespace ExpressionsHUD_Test
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new EmotesHUDController();
+            controller = new EmotesHUDController(null, null);
         }
 
         [UnityTearDown]
@@ -35,7 +34,7 @@ namespace ExpressionsHUD_Test
         [Test]
         public void UpdateOwnUserProfileWhenExpressionIsCalled()
         {
-            controller.EmoteCalled("wave");
+            controller.PlayEmote("wave");
 
             Assert.AreEqual("wave", UserProfile.GetOwnUserProfile().avatar.expressionTriggerId);
         }
@@ -50,7 +49,7 @@ namespace ExpressionsHUD_Test
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new EmotesHUDController();
+            controller = new EmotesHUDController(null, null);
             view = controller.view;
         }
 
@@ -59,18 +58,6 @@ namespace ExpressionsHUD_Test
             DataStore.Clear();
             controller.Dispose();
             yield return base.TearDown();
-        }
-
-        [Test]
-        public void RegisterButtonsCallbackProperly()
-        {
-            string expressionCalled = null;
-            EmotesHUDView.ExpressionClicked callback = (x) => expressionCalled = x;
-            view.Initialize(callback);
-
-            view.buttonToEmotesMap[0].button.OnPointerDown(null);
-
-            Assert.AreEqual(view.buttonToEmotesMap[0].expressionId, expressionCalled);
         }
 
         [Test]
