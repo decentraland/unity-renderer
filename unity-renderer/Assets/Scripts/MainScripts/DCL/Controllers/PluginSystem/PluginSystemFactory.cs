@@ -27,6 +27,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag(() => new PlacesAndEventsFeature(), "explorev2");
             pluginSystem.RegisterWithFlag(() => new SkyboxController(), "procedural_skybox");
             pluginSystem.RegisterWithFlag(() => new EmotesCustomizationFeature(), "emotes_customization");
+            pluginSystem.Register(() => new EmotesWheelFeature());
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

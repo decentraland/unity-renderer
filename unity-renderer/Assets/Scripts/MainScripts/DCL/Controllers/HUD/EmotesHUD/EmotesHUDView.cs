@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,13 @@ namespace EmotesCustomization
         [SerializeField] internal ButtonComponentView openCustomizeButton;
         [SerializeField] internal TMP_Text selectedEmoteName;
         [SerializeField] internal List<RarityColor> rarityColors;
+        [SerializeField] internal GameObject customizeTitle;
+
+        // TODO (Santi): Remove it when we don't longer need keep the retrocompatibility.
+        [SerializeField] internal List<GameObject> gameObjectsToHideWhenCustomizeFFIsDeactivated;
+
+        // TODO (Santi): Remove it when we don't longer need keep the retrocompatibility.
+        private bool isEmotesCustomizationFFEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("emotes_customization");
 
         public static EmotesHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesHUDView>(); }
 
@@ -43,7 +51,13 @@ namespace EmotesCustomization
                 closeButtons[i].onPointerDown += Close;
             }
 
-            openCustomizeButton.onClick.AddListener(() => OnCustomizeClicked?.Invoke());
+            openCustomizeButton.onClick.AddListener(() =>
+            {
+                if (!isEmotesCustomizationFFEnabled)
+                    return;
+
+                OnCustomizeClicked?.Invoke();
+            });
 
             selectedEmoteName.text = string.Empty;
         }
@@ -55,9 +69,18 @@ namespace EmotesCustomization
 
             gameObject.SetActive(visible);
             if (visible)
+            {
+                foreach (GameObject go in gameObjectsToHideWhenCustomizeFFIsDeactivated)
+                {
+                    go.SetActive(isEmotesCustomizationFFEnabled);
+                }
+
                 AudioScriptableObjects.dialogOpen.Play(true);
+            }
             else
+            {
                 AudioScriptableObjects.dialogClose.Play(true);
+            }
         }
 
         public List<EmoteWheelSlot> SetEmotes(List<EmoteSlotData> emotes)

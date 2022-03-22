@@ -2872,6 +2872,11 @@ MonoBehaviour:
     markColor: {r: 0.4509804, g: 0.827451, b: 0.827451, a: 1}
   - rarity: uncommon
     markColor: {r: 1, g: 0.5137255, b: 0.38431373, a: 1}
+  customizeTitle: {fileID: 0}
+  gameObjectsToHideWhenCustomizeFFIsDeactivated:
+  - {fileID: 1910573828672085254}
+  - {fileID: 6312816947023763406}
+  - {fileID: 1553858409177893017}
 --- !u!222 &5211374839953244563
 CanvasRenderer:
   m_ObjectHideFlags: 0
