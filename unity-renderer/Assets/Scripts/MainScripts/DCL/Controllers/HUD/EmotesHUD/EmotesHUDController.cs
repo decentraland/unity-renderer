@@ -122,6 +122,9 @@ namespace EmotesCustomization
 
         private void UpdateEmoteSlots()
         {
+            if (catalog == null)
+                return;
+
             List<EmotesHUDView.EmoteSlotData> emotesToSet = new List<EmotesHUDView.EmoteSlotData>();
             foreach (EquippedEmoteData equippedEmoteData in emotesCustomizationDataStore.equippedEmotes.Get())
             {
