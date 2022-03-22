@@ -4,9 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading;
-using Cysharp.Threading.Tasks;
-using DCL.Helpers;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -15,7 +12,6 @@ using UnityGLTF;
 using UnityGLTF.Cache;
 using GLTF;
 using GLTF.Schema;
-using UnityGLTF.Loader;
 
 namespace DCL.ABConverter
 {
@@ -44,11 +40,8 @@ namespace DCL.ABConverter
             public ErrorCodes lastErrorCode { get; internal set; }
         }
 
-        public event System.Action<GLTFSceneImporter> OnGLTFWillLoad;
-
         public readonly State state = new State();
 
-        private const float IMPORTING_TIMEOUT = 60f * 10f;
         private const string MAIN_SHADER_AB_NAME = "MainShader_Delete_Me";
         private const float MAX_TEXTURE_SIZE = 512f;
         private const string VERSION = "2.0";
@@ -67,9 +60,6 @@ namespace DCL.ABConverter
         private Environment env;
         private static Logger log = new Logger("ABConverter.Core");
         private string logBuffer;
-
-        private Dictionary<string, GLTFSceneImporter> gltfToWait = new Dictionary<string, GLTFSceneImporter>();
-        private List<FileStream> openStreams = new List<FileStream>();
 
         public Core(Environment env, ClientSettings settings = null)
         {
@@ -127,60 +117,15 @@ namespace DCL.ABConverter
             bool shouldGenerateAssetBundles = generateAssetBundles;
             bool assetsAlreadyDumped = false;
 
-            GLTFImporter.PreloadedGLTFObjects.Clear();
-            string currentLoadingGLTF = "";
-            
-            assetsToMark.Clear();
-            
             //TODO(Brian): Use async-await instead of Application.update
             void UpdateLoop()
             {
                 try
                 {
-                    //(Kinerius): Now that the loading of GLTFs is async, we wait for them to finish and then we store
-                    //          the result on a static list so the gltf importer can make use of them in a sync manner
-                    if (gltfToWait.Count > 0)
-                    {
-                        var dumpList = new List<string>();
-
-                        foreach ((string key, GLTFSceneImporter value) in gltfToWait)
-                        {
-                            if (!value.IsCompleted && string.IsNullOrEmpty(currentLoadingGLTF))
-                            {
-                                value.LoadScene(CancellationToken.None).Preserve().Forget();
-                                currentLoadingGLTF = key;
-                            }
-                            
-                            if (value.IsCompleted)
-                            {
-                                GLTFImporter.PreloadedGLTFObjects.Add(GetRelativePath(key), value.lastLoadedScene);
-                                
-                                env.assetDatabase.ImportAsset(key, ImportAssetOptions.ImportRecursive | ImportAssetOptions.ForceUpdate);
-                                
-                                dumpList.Add(key);
-                                currentLoadingGLTF = null;
-                            }
-                        }
-
-                        foreach (string s in dumpList)
-                        {
-                            gltfToWait.Remove(s);
-                        }
-
-                        return;
-                    }
-
                     //NOTE(Brian): We have to check this because the ImportAsset for GLTFs is not synchronous, and must execute some delayed calls
                     //             after the import asset finished. Therefore, we have to make sure those calls finished before continuing.
-                    if (!GLTFImporter.finishedImporting && Time.realtimeSinceStartup - timer < IMPORTING_TIMEOUT)
-                    {
+                    if (!GLTFImporter.finishedImporting && Time.realtimeSinceStartup - timer < 60)
                         return;
-                    }
-
-                    if (Time.realtimeSinceStartup - timer >= IMPORTING_TIMEOUT)
-                    {
-                        log.Error("Importing timeout!");
-                    }
 
                     env.assetDatabase.Refresh();
 
@@ -195,14 +140,8 @@ namespace DCL.ABConverter
                             shouldGenerateAssetBundles = false;
 
                         //NOTE(Brian): return in order to wait for GLTFImporter.finishedImporting flag, as it will set asynchronously.
-
                         return;
                     }
-
-                    CleanupCache();
-                    
-                    env.assetDatabase.Refresh();
-                    env.assetDatabase.SaveAssets();
 
                     EditorApplication.update -= UpdateLoop;
 
@@ -257,42 +196,6 @@ namespace DCL.ABConverter
             }
 
             EditorApplication.update += UpdateLoop;
-        }
-        private static string GetRelativePath(string key)
-        {
-            var path = key;
-            string dataPath = Application.dataPath.Replace('\\', '/');
-            path = path.Replace('\\', '/');
-
-            if (path.StartsWith(dataPath))
-                path =  "Assets" + path.Substring(dataPath.Length);
-
-            return path;
-        }
-
-        private void CleanupCache()
-        {
-            List<Stream> streamsToDispose = new List<Stream>();
-
-            foreach (var streamDataKvp in PersistentAssetCache.StreamCacheByUri)
-            {
-                if (streamDataKvp.Value.stream != null)
-                    streamsToDispose.Add(streamDataKvp.Value.stream);
-            }
-
-            foreach (var s in streamsToDispose)
-            {
-                s.Dispose();
-            }
-
-            foreach (var stream in openStreams)
-            {
-                stream.Dispose();
-            }
-
-            PersistentAssetCache.ClearImageCache();
-            MarkAllAssetBundles(assetsToMark);
-            MarkShaderAssetBundle();
         }
 
         public void ConvertDumpedAssets(Action<ErrorCodes> OnFinish = null)
@@ -352,7 +255,6 @@ namespace DCL.ABConverter
             if (string.IsNullOrEmpty(path))
             {
                 log.Error("Core - GetAssetDependenciesMappingPairs() - Invalid target asset data! aborting dependencies population");
-
                 return;
             }
 
@@ -391,7 +293,6 @@ namespace DCL.ABConverter
                     {
                         if (string.IsNullOrEmpty(asset.Uri))
                             continue;
-
                         mappingPairsList.AddRange(parcelInfoApiData.data[0].content.contents.Where(x => x.file.Contains(asset.Uri)).ToArray());
 
                         log.Info("Core - GetAssetDependenciesMappingPairs - Images -> uri: " + asset.Uri + " -> name: " + asset.Name);
@@ -409,13 +310,13 @@ namespace DCL.ABConverter
         /// </summary>
         /// <param name="rawContents">An array containing all the assets to be dumped.</param>
         /// <returns>true if succeeded</returns>
-        List<AssetPath> assetsToMark = new List<AssetPath>();
-
         private bool DumpAssets(ContentServerUtils.MappingPair[] rawContents)
         {
             List<AssetPath> gltfPaths = ABConverter.Utils.GetPathsFromPairs(finalDownloadedPath, rawContents, Config.gltfExtensions);
             List<AssetPath> bufferPaths = ABConverter.Utils.GetPathsFromPairs(finalDownloadedPath, rawContents, Config.bufferExtensions);
             List<AssetPath> texturePaths = ABConverter.Utils.GetPathsFromPairs(finalDownloadedPath, rawContents, Config.textureExtensions);
+
+            List<AssetPath> assetsToMark = new List<AssetPath>();
 
             if (!FilterDumpList(ref gltfPaths))
                 return false;
@@ -424,10 +325,19 @@ namespace DCL.ABConverter
             assetsToMark.AddRange(DumpImportableAssets(texturePaths));
             DumpRawAssets(bufferPaths);
 
+            GLTFImporter.OnGLTFRootIsConstructed -= ABConverter.Utils.FixGltfRootInvalidUriCharacters;
+            GLTFImporter.OnGLTFRootIsConstructed += ABConverter.Utils.FixGltfRootInvalidUriCharacters;
+
             foreach (var gltfPath in gltfPaths)
             {
                 assetsToMark.Add(DumpGltf(gltfPath, texturePaths, bufferPaths));
             }
+
+            env.assetDatabase.Refresh();
+            env.assetDatabase.SaveAssets();
+
+            MarkAllAssetBundles(assetsToMark);
+            MarkShaderAssetBundle();
 
             return true;
         }
@@ -449,9 +359,9 @@ namespace DCL.ABConverter
                 int gltfCount = gltfPaths.Count;
 
                 gltfPaths = gltfPaths.Where(
-                                         assetPath =>
-                                             !env.file.Exists(settings.finalAssetBundlePath + assetPath.hash))
-                                     .ToList();
+                        assetPath =>
+                            !env.file.Exists(settings.finalAssetBundlePath + assetPath.hash))
+                    .ToList();
 
                 int skippedCount = gltfCount - gltfPaths.Count;
                 skippedAssets += skippedCount;
@@ -465,7 +375,6 @@ namespace DCL.ABConverter
             if (shouldBuildAssetBundles)
             {
                 log.Info("All assets in this scene were already generated!. Skipping.");
-
                 return false;
             }
 
@@ -481,6 +390,9 @@ namespace DCL.ABConverter
         /// <returns>gltf AssetPath if dump succeeded, null if don't</returns>
         internal AssetPath DumpGltf(AssetPath gltfPath, List<AssetPath> texturePaths, List<AssetPath> bufferPaths)
         {
+            List<Stream> streamsToDispose = new List<Stream>();
+
+            PersistentAssetCache.ImageCacheByUri.Clear();
             PersistentAssetCache.StreamCacheByUri.Clear();
 
             log.Verbose("Start injecting stuff into " + gltfPath.hash);
@@ -504,7 +416,24 @@ namespace DCL.ABConverter
             //             The GLTFImporter will use the PersistentAssetCache to resolve them.
             string path = DownloadAsset(gltfPath);
 
+            if (path != null)
+            {
+                env.assetDatabase.Refresh();
+                env.assetDatabase.SaveAssets();
+            }
+
             log.Verbose("End load " + gltfPath.hash);
+
+            foreach (var streamDataKvp in PersistentAssetCache.StreamCacheByUri)
+            {
+                if (streamDataKvp.Value.stream != null)
+                    streamsToDispose.Add(streamDataKvp.Value.stream);
+            }
+
+            foreach (var s in streamsToDispose)
+            {
+                s.Dispose();
+            }
 
             return path != null ? gltfPath : null;
         }
@@ -526,7 +455,7 @@ namespace DCL.ABConverter
                 if (env.file.Exists(assetPath.finalPath))
                     continue;
 
-                var finalDlPath = DownloadAsset(assetPath, false);
+                var finalDlPath = DownloadAsset(assetPath);
 
                 if (string.IsNullOrEmpty(finalDlPath))
                 {
@@ -560,13 +489,12 @@ namespace DCL.ABConverter
                     continue;
 
                 //NOTE(Brian): try to get an AB before getting the original texture, so we bind the dependencies correctly
-                string fullPathToTag = DownloadAsset(assetPath, false);
+                string fullPathToTag = DownloadAsset(assetPath);
 
                 if (fullPathToTag == null)
                 {
                     result.Remove(assetPath);
                     log.Error("Failed to get texture dependencies! failing asset: " + assetPath.hash);
-
                     continue;
                 }
 
@@ -638,7 +566,7 @@ namespace DCL.ABConverter
         /// </summary>
         /// <param name="assetPath">The AssetPath object referencing the asset to be downloaded</param>
         /// <returns>The file output path. Null if download failed.</returns>
-        internal string DownloadAsset(AssetPath assetPath, bool isGLTF = true)
+        internal string DownloadAsset(AssetPath assetPath)
         {
             string outputPath = assetPath.finalPath;
             string outputPathDir = Path.GetDirectoryName(outputPath);
@@ -647,7 +575,6 @@ namespace DCL.ABConverter
             if (env.file.Exists(outputPath))
             {
                 log.Verbose("Skipping already generated asset: " + outputPath);
-
                 return outputPath;
             }
 
@@ -660,14 +587,12 @@ namespace DCL.ABConverter
                 if (downloadHandler == null)
                 {
                     log.Error($"Download failed! {finalUrl} -- null DownloadHandler");
-
                     return null;
                 }
             }
             catch (HttpRequestException e)
             {
                 log.Error($"Download failed! {finalUrl} -- {e.Message}");
-
                 return null;
             }
 
@@ -681,43 +606,9 @@ namespace DCL.ABConverter
 
             env.file.WriteAllBytes(outputPath, assetData);
 
-            if (isGLTF)
-            {
-                GLTFSceneImporter gltfSceneImporter = CreateGLTFScene(outputPath);
-                gltfToWait.Add(outputPath, gltfSceneImporter);
-            }
-            else
-            {
-                env.assetDatabase.ImportAsset(outputPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ImportRecursive);
-            }
+            env.assetDatabase.ImportAsset(outputPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ImportRecursive);
 
             return outputPath;
-        }
-
-        private GLTFSceneImporter CreateGLTFScene(string projectFilePath)
-        {
-            ILoader fileLoader = new GLTFFileLoader(Path.GetDirectoryName(projectFilePath));
-
-            var stream = File.OpenRead(projectFilePath);
-            openStreams.Add(stream);
-            GLTFRoot gLTFRoot;
-            GLTFParser.ParseJson(stream, out gLTFRoot);
-
-            Utils.FixGltfRootInvalidUriCharacters(gLTFRoot);
-
-            var loader = new GLTFSceneImporter(Path.GetFullPath(projectFilePath), gLTFRoot, fileLoader, new GLTFThrottlingCounter(), stream);
-            loader.addImagesToPersistentCaching = false; // Since we control the PersistentAssetCache during AB Conversion, we don't want the importer to mess with that
-            loader.addMaterialsToPersistentCaching = false;
-            loader.initialVisibility = true;
-            loader.useMaterialTransition = false;
-            loader.maximumLod = 300; // todo: fix this later
-            loader.forceGPUOnlyMesh = false;
-            loader.forceGPUOnlyTex = false;
-
-            OnGLTFWillLoad?.Invoke(loader);
-
-            return loader;
-
         }
 
         /// <summary>
@@ -792,20 +683,19 @@ namespace DCL.ABConverter
 
             // 1. Convert flagged folders to asset bundles only to automatically get dependencies for the metadata
             manifest = env.buildPipeline.BuildAssetBundles(settings.finalAssetBundlePath, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle, BuildTarget.WebGL);
-
+            
             if (manifest == null)
             {
                 log.Error("Error generating asset bundle!");
-
                 return false;
             }
-
+        
             // 2. Create metadata (dependencies, version, timestamp) and store in the target folders to be converted again later with the metadata inside
             AssetBundleMetadataBuilder.Generate(env.file, finalDownloadedPath, hashLowercaseToHashProper, manifest, VERSION, MAIN_SHADER_AB_NAME);
 
             env.assetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate | ImportAssetOptions.ImportRecursive);
             env.assetDatabase.SaveAssets();
-
+            
             // 3. Convert flagged folders to asset bundles again but this time they have the metadata file inside
             manifest = env.buildPipeline.BuildAssetBundles(settings.finalAssetBundlePath, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle, BuildTarget.WebGL);
 
@@ -824,7 +714,6 @@ namespace DCL.ABConverter
             }
 
             logBuffer += $"\nFree disk space after conv: {PathUtils.GetFreeSpace()}";
-
             return true;
         }
 

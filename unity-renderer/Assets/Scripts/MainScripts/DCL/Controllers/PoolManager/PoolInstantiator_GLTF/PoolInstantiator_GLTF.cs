@@ -23,8 +23,8 @@ namespace DCL
 
             if (gltfInstance == null)
             {
-                Debug.LogWarning("PoolInstantiator_GLTF: Invalid GLTF! Couldn't duplicate correctly.");
-                GameObject result = Object.Instantiate(original);
+                Debug.LogError("PoolInstantiator_GLTF: Invalid GLTF! Couldn't duplicate correctly.");
+                GameObject result = Instantiate(original);
                 result.name += "_Error";
                 return result;
             }
