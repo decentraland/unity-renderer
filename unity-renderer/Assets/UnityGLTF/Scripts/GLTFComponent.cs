@@ -299,7 +299,7 @@ namespace UnityGLTF
                         else
                             OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
                     }
-
+                    
                     CleanUp();
                     Destroy(loadingPlaceholder);
                     Destroy(this);
@@ -377,6 +377,8 @@ namespace UnityGLTF
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
+            CleanUp();
+            
             if (state != State.COMPLETED)
             {
                 ctokenSource.Cancel();
@@ -385,8 +387,6 @@ namespace UnityGLTF
         }
         private void CleanUp()
         {
-            sceneImporter?.Dispose();
-
             if (state == State.QUEUED)
             {
                 DequeueDownload();
@@ -401,6 +401,8 @@ namespace UnityGLTF
             {
                 OnFail_Internal(null);
             }
+
+            state = State.NONE;
         }
 
         bool IDownloadQueueElement.ShouldPrioritizeDownload() { return prioritizeDownload; }
@@ -415,8 +417,8 @@ namespace UnityGLTF
 
         float IDownloadQueueElement.GetSqrDistance()
         {
-            if (mainCamera == null)
-                return 0;
+            if (mainCamera == null || transform == null)
+                return float.MaxValue;
 
             Vector3 cameraPosition = mainCamera.transform.position;
             Vector3 gltfPosition = transform.position;
