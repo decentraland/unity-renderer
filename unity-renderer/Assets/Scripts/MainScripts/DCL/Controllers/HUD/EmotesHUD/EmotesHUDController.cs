@@ -71,11 +71,10 @@ namespace EmotesCustomization
             emoteAnimations.OnAdded += OnAnimationAdded;
 
             ConfigureShortcuts();
-            CheckRetrocompatibility();
         }
 
         // TODO (Santi): Remove it when we don't longer need keep the retrocompatibility.
-        private void CheckRetrocompatibility()
+        private void LoadDefaultEmotesIfNeeded()
         {
             if (!isEmotesCustomizationFFEnabled)
             {
@@ -204,6 +203,8 @@ namespace EmotesCustomization
 
             if (visible)
             {
+                LoadDefaultEmotesIfNeeded();
+
                 DCL.Helpers.Utils.UnlockCursor();
 
                 if (userProfile != null &&
