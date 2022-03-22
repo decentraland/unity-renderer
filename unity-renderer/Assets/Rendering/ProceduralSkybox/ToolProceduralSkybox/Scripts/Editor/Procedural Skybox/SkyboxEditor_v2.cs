@@ -28,8 +28,6 @@ namespace DCL.Skybox
         private string newConfigName;
         private bool overridingController;
 
-        private MaterialReferenceContainer.Mat_Layer matLayer = null;
-
         private List<string> renderingOrderList;
 
         private float leftPanelWidth;
@@ -525,7 +523,7 @@ namespace DCL.Skybox
                 UpdateConfigurationsList();
             }
 
-            if (matLayer == null || selectedMat == null)
+            if (selectedMat == null)
             {
                 UpdateMaterial();
             }
@@ -576,15 +574,8 @@ namespace DCL.Skybox
 
         void InitializeMaterial()
         {
-            matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(5);
-
-            if (matLayer == null)
-            {
-                matLayer = MaterialReferenceContainer.i.materials[0];
-            }
-
-            selectedMat = matLayer.material;
-            selectedConfiguration.ResetMaterial(selectedMat, matLayer.numberOfSlots);
+            selectedMat = MaterialReferenceContainer.i.skyboxMat;
+            selectedConfiguration.ResetMaterial(selectedMat, MaterialReferenceContainer.i.skyboxMatSlots);
             RenderSettings.skybox = selectedMat;
         }
 
@@ -649,7 +640,7 @@ namespace DCL.Skybox
         private void ApplyOnMaterial()
         {
             EnsureDependencies();
-            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, SkyboxEditorUtils.GetNormalizedDayTime(timeOfTheDay), matLayer.numberOfSlots, directionalLight);
+            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, SkyboxEditorUtils.GetNormalizedDayTime(timeOfTheDay), MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)
