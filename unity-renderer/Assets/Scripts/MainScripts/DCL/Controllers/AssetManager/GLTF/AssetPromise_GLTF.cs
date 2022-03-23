@@ -80,7 +80,7 @@ namespace DCL
             {
                 gltfComponent = asset.container.AddComponent<GLTFComponent>();
 
-                gltfComponent.Initialize(webRequestController);
+                gltfComponent.Initialize(webRequestController, AssetPromiseKeeper_GLTF.i.throttlingCounter);
                 gltfComponent.RegisterCallbacks(MeshCreated, RendererCreated);
 
                 GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings
