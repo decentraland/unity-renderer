@@ -343,108 +343,17 @@ namespace DCL.Skybox
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
 
-            RenderLeftPanelBaseSkybox();
+            RenderLeftPanelBaseSkyboxLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, renderingOrderList);
+
+            // Render 3D layers
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.threeDLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
+
+            EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
+
+            RenderLeftPanel3DLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel);
 
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndScrollView();
-        }
-
-        private void RenderLeftPanelBaseSkybox()
-        {
-            // Loop through texture layer and print the name of all layers
-            for (int i = 0; i < selectedConfiguration.layers.Count; i++)
-            {
-
-                EditorGUILayout.BeginHorizontal(toolSize.leftPanelHorizontal);
-
-                selectedConfiguration.layers[i].enabled = EditorGUILayout.Toggle(selectedConfiguration.layers[i].enabled, GUILayout.Width(toolSize.layerActiveCheckboxSize), GUILayout.Height(toolSize.layerActiveCheckboxSize));
-
-                if (GUILayout.Button(selectedConfiguration.layers[i].nameInEditor, GUILayout.Width(toolSize.layerButtonWidth)))
-                {
-                    AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Base_Skybox, name = selectedConfiguration.layers[i].nameInEditor, baseSkyboxSelectedIndex = i });
-                }
-
-                selectedConfiguration.layers[i].slotID = EditorGUILayout.Popup(selectedConfiguration.layers[i].slotID, renderingOrderList.ToArray(), GUILayout.Width(toolSize.layerRenderWidth));
-
-                if (i == 0)
-                {
-                    GUI.enabled = false;
-                }
-                if (GUILayout.Button(SkyboxEditorLiterals.upArrow.ToString()))
-                {
-                    TextureLayer temp = null;
-
-                    if (i >= 1)
-                    {
-                        temp = selectedConfiguration.layers[i - 1];
-                        selectedConfiguration.layers[i - 1] = selectedConfiguration.layers[i];
-                        selectedConfiguration.layers[i] = temp;
-                    }
-                }
-
-                GUI.enabled = true;
-
-                if (i == selectedConfiguration.layers.Count - 1)
-                {
-                    GUI.enabled = false;
-                }
-
-                if (GUILayout.Button(SkyboxEditorLiterals.downArrow.ToString()))
-                {
-                    TextureLayer temp = null;
-                    if (i < (selectedConfiguration.layers.Count - 1))
-                    {
-                        temp = selectedConfiguration.layers[i + 1];
-                        selectedConfiguration.layers[i + 1] = selectedConfiguration.layers[i];
-                        selectedConfiguration.layers[i] = temp;
-                    }
-                    break;
-                }
-
-                GUI.enabled = true;
-
-                if (GUILayout.Button(SkyboxEditorLiterals.sign_remove))
-                {
-                    selectedConfiguration.layers.RemoveAt(i);
-                    break;
-                }
-
-                Color circleColor = Color.green;
-                switch (selectedConfiguration.layers[i].renderType)
-                {
-                    case LayerRenderType.Rendering:
-                        circleColor = Color.green;
-                        break;
-                    case LayerRenderType.NotRendering:
-                        circleColor = Color.gray;
-                        break;
-                    case LayerRenderType.Conflict_Playing:
-                        circleColor = Color.yellow;
-                        break;
-                    case LayerRenderType.Conflict_NotPlaying:
-                        circleColor = Color.red;
-                        break;
-                    default:
-                        break;
-                }
-
-                Color normalContentColor = GUI.color;
-                GUI.color = circleColor;
-
-                EditorGUILayout.LabelField(SkyboxEditorLiterals.renderMarker.ToString(), SkyboxEditorStyles.Instance.renderingMarkerStyle, GUILayout.Width(20), GUILayout.Height(20));
-
-                GUI.color = normalContentColor;
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
-            }
-            Rect r = EditorGUILayout.BeginHorizontal();
-            if (GUI.Button(new Rect(r.width - 35, r.y, 25, 25), SkyboxEditorLiterals.sign_add))
-            {
-                selectedConfiguration.layers.Add(new TextureLayer("Tex Layer " + (selectedConfiguration.layers.Count + 1)));
-            }
-            EditorGUILayout.EndHorizontal();
-
         }
 
         #endregion
@@ -479,6 +388,9 @@ namespace DCL.Skybox
                     break;
                 case SkyboxEditorToolsParts.Base_Skybox:
                     RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration.layers[obj.baseSkyboxSelectedIndex]);
+                    break;
+                case SkyboxEditorToolsParts.Elements3D_Dome:
+                    RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration.additional3Dconfig[obj.dome3DElementsIndex].layers);
                     break;
                 default:
                     break;

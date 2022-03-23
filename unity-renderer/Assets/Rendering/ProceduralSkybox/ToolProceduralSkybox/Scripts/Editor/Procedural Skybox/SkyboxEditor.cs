@@ -213,6 +213,7 @@ namespace DCL.Skybox
 
         #endregion
 
+        [MenuItem("Window/Skybox Editor Old")]
         static void Init()
         {
             SkyboxEditorWindow window = (SkyboxEditorWindow)EditorWindow.GetWindow(typeof(SkyboxEditorWindow));
@@ -332,7 +333,7 @@ namespace DCL.Skybox
                 configs3D[i].enabled = EditorGUILayout.Toggle(configs3D[i].enabled, GUILayout.Width(20), GUILayout.Height(10));
                 GUILayout.Space(10);
                 configs3D[i].expandedInEditor = EditorGUILayout.Foldout(configs3D[i].expandedInEditor, GUIContent.none, true, foldoutStyle);
-                configs3D[i].nameInEditor = EditorGUILayout.TextField(configs3D[i].nameInEditor, GUILayout.Width(100), GUILayout.ExpandWidth(false));
+                configs3D[i].layers.nameInEditor = EditorGUILayout.TextField(configs3D[i].layers.nameInEditor, GUILayout.Width(100), GUILayout.ExpandWidth(false));
 
                 if (i == 0)
                 {

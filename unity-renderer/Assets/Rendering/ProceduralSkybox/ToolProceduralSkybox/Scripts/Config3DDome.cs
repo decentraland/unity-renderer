@@ -13,7 +13,7 @@ namespace DCL.Skybox
         public Config3DDome(string name)
         {
             configType = Additional3DElements.Dome;
-            nameInEditor = name;
+            layers = new TextureLayer(name);
         }
 
         public override bool IsConfigActive(float currentTime, float cycleTime = 24)
