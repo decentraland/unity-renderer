@@ -1,28 +1,30 @@
 using System;
-using System.Collections.Generic;
-using System.Threading;
+using System.Collections;
+using System.IO;
 using DCL;
+using DCL.Components;
 using UnityEngine;
 using UnityGLTF.Loader;
-using UnityGLTF.Scripts;
-using Cysharp.Threading.Tasks;
+using WaitUntil = UnityEngine.WaitUntil;
 
 namespace UnityGLTF
 {
     /// <summary>
     /// Component to load a GLTF scene with
     /// </summary>
-    public class GLTFComponent : MonoBehaviour, IGLTFComponent
+    public class GLTFComponent : MonoBehaviour, ILoadable, IDownloadQueueElement
     {
-        private static bool VERBOSE = false;
+        public static bool VERBOSE = false;
+
+        public static int maxSimultaneousDownloads = 10;
 
         public static int downloadingCount;
         public static event Action OnDownloadingProgressUpdate;
 
+        public static int totalDownloadedCount;
         public static int queueCount;
 
-        private static readonly BaseVariable<int> maxSimultaneousDownloads = DataStore.i.performance.maxDownloads;
-        private static readonly DownloadQueueHandler downloadQueueHandler = new DownloadQueueHandler(maxSimultaneousDownloads.Get(), () => downloadingCount);
+        private static DownloadQueueHandler downloadQueueHandler = new DownloadQueueHandler(maxSimultaneousDownloads, () => downloadingCount);
 
         public class Settings
         {
@@ -36,6 +38,7 @@ namespace UnityGLTF
         public string GLTFUri = null;
         public string idPrefix = null;
 
+        public bool Multithreaded = false;
         public bool UseStream = false;
         public bool UseVisualFeedback = true;
         private bool addMaterialsToPersistentCaching = true;
@@ -44,7 +47,7 @@ namespace UnityGLTF
         public int Timeout = 8;
         public Material LoadingTextureMaterial;
         public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
-        private static readonly IThrottlingCounter throttlingCounter = new GLTFThrottlingCounter();
+        public GLTFThrottlingCounter throttlingCounter;
 
         public bool InitialVisibility
         {
@@ -52,7 +55,6 @@ namespace UnityGLTF
             set
             {
                 initialVisibility = value;
-
                 if (sceneImporter != null)
                 {
                     sceneImporter.initialVisibility = value;
@@ -62,7 +64,7 @@ namespace UnityGLTF
 
         public GameObject loadingPlaceholder;
         public Action OnFinishedLoadingAsset;
-        private Action<Exception> OnFailedLoadingAsset;
+        public Action<Exception> OnFailedLoadingAsset;
 
         [HideInInspector] public bool alreadyLoadedAsset = false;
         [HideInInspector] public GameObject loadedAssetRootGameObject;
@@ -88,33 +90,21 @@ namespace UnityGLTF
 
         private bool alreadyDecrementedRefCount;
         private AsyncCoroutineHelper asyncCoroutineHelper;
-        private GLTFSceneImporter sceneImporter { get; set; }
+        private Coroutine loadingRoutine = null;
+        public GLTFSceneImporter sceneImporter { get; private set; }
         private Camera mainCamera;
         private IWebRequestController webRequestController;
         private bool prioritizeDownload = false;
         private string baseUrl = "";
 
-        private Action<Mesh> meshCreatedCallback;
-        private Action<Renderer> rendererCreatedCallback;
-
-        private Settings settings;
-
-        private  CancellationTokenSource ctokenSource;
-        private bool isDestroyed;
-
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
         public Action<Exception> OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
 
-        public void Initialize( IWebRequestController webRequestController)
-        {
-            this.webRequestController = webRequestController;
-        }
+        public void Initialize(IWebRequestController webRequestController) { this.webRequestController = webRequestController; }
 
         public void LoadAsset(string baseUrl, string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null, AssetIdConverter fileToHashConverter = null)
         {
-            ctokenSource = new CancellationTokenSource();
-
             if (alreadyLoadedAsset && !loadEvenIfAlreadyLoaded)
             {
                 return;
@@ -125,6 +115,12 @@ namespace UnityGLTF
 
             if (!string.IsNullOrEmpty(idPrefix))
                 this.idPrefix = idPrefix;
+
+            if (loadingRoutine != null)
+            {
+                Debug.LogError($"ERROR: trying to load GLTF when is already loading {idPrefix}");
+                return;
+            }
 
             alreadyDecrementedRefCount = false;
             state = State.NONE;
@@ -137,17 +133,20 @@ namespace UnityGLTF
             }
 
             this.fileToHashConverter = fileToHashConverter;
-            this.settings = settings;
-            CancellationToken cancellationToken = ctokenSource.Token;
 
-            Internal_LoadAsset(settings, cancellationToken)
-                .Forget();
-        }
-
-        public void RegisterCallbacks(Action<Mesh> meshCreated, Action<Renderer> rendererCreated)
-        {
-            rendererCreatedCallback = rendererCreated;
-            meshCreatedCallback = meshCreated;
+            if ( throttlingCounter != null )
+            {
+                loadingRoutine = this.StartThrottledCoroutine(
+                    enumerator: LoadAssetCoroutine(settings),
+                    onException: OnFail_Internal,
+                    timeBudgetCounter: throttlingCounter.EvaluateTimeBudget);
+            }
+            else
+            {
+                loadingRoutine = this.StartThrowingCoroutine(
+                    enumerator: LoadAssetCoroutine(settings),
+                    onException: OnFail_Internal);
+            }
         }
 
         void ApplySettings(Settings settings)
@@ -176,6 +175,11 @@ namespace UnityGLTF
                 return;
 
             state = State.FAILED;
+            
+            CoroutineStarter.Stop(loadingRoutine);
+            loadingRoutine = null;
+            
+            DecrementDownloadCount();
 
             OnFailedLoadingAsset?.Invoke(exception);
 
@@ -208,7 +212,6 @@ namespace UnityGLTF
                 downloadingCount--;
                 OnDownloadingProgressUpdate?.Invoke();
                 alreadyDecrementedRefCount = true;
-
                 if (VERBOSE)
                 {
                     Debug.Log($"(ERROR) downloadingCount-- = {downloadingCount}");
@@ -216,11 +219,11 @@ namespace UnityGLTF
             }
         }
 
-        private async UniTaskVoid Internal_LoadAsset(Settings settings, CancellationToken token)
+        public IEnumerator LoadAssetCoroutine(Settings settings)
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isApplicationQuitting.Get())
-                return;
+                yield break;
 #endif
             
             if (!string.IsNullOrEmpty(GLTFUri))
@@ -230,6 +233,8 @@ namespace UnityGLTF
                     Debug.Log("LoadAssetCoroutine() GLTFUri ->" + GLTFUri);
                 }
 
+                asyncCoroutineHelper = gameObject.GetComponent<AsyncCoroutineHelper>() ?? gameObject.AddComponent<AsyncCoroutineHelper>();
+
                 sceneImporter = null;
                 ILoader loader = null;
 
@@ -237,45 +242,92 @@ namespace UnityGLTF
 
                 try
                 {
-                    loader = new WebRequestLoader(baseUrl, webRequestController, fileToHashConverter);
-                    string id = string.IsNullOrEmpty(idPrefix) ? GLTFUri : idPrefix;
+                    if (UseStream)
+                    {
+                        // Path.Combine treats paths that start with the separator character
+                        // as absolute paths, ignoring the first path passed in. This removes
+                        // that character to properly handle a filename written with it.
+                        GLTFUri = GLTFUri.TrimStart(new[]
+                            {Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar});
+                        string fullPath = Path.Combine(Application.streamingAssetsPath, GLTFUri);
+                        string directoryPath = URIHelper.GetDirectoryName(fullPath);
+                        loader = new GLTFFileLoader(directoryPath);
+                        sceneImporter = new GLTFSceneImporter(
+                            null,
+                            Path.GetFileName(GLTFUri),
+                            loader,
+                            asyncCoroutineHelper
+                        );
+                    }
+                    else
+                    {
+                        loader = new WebRequestLoader(baseUrl, webRequestController, fileToHashConverter);
 
-                    SetupSceneImporter(settings, id, loader);
+                        string id = string.IsNullOrEmpty(idPrefix) ? GLTFUri : idPrefix;
 
-                    EnqueueDownload();
+                        sceneImporter = new GLTFSceneImporter(
+                            id,
+                            GLTFUri,
+                            loader,
+                            asyncCoroutineHelper
+                        );
+                    }
 
-                    await UniTask.WaitUntil( () => downloadQueueHandler.CanDownload(this), cancellationToken: token);
-                    token.ThrowIfCancellationRequested();
+                    if (sceneImporter.CreatedObject != null)
+                    {
+                        Destroy(sceneImporter.CreatedObject);
+                    }
 
-                    DequeueDownload();
+                    sceneImporter.SceneParent = gameObject.transform;
+                    sceneImporter.Collider = Collider;
+                    sceneImporter.maximumLod = MaximumLod;
+                    sceneImporter.Timeout = Timeout;
+                    sceneImporter.isMultithreaded = Multithreaded;
+                    sceneImporter.useMaterialTransition = UseVisualFeedback;
+                    sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
+                    sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
+                    sceneImporter.initialVisibility = initialVisibility;
+                    sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
+                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh && DataStore.i.featureFlags.flags.Get()
+                        .IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
+
+                    float time = Time.realtimeSinceStartup;
+
+                    queueCount++;
+
+                    state = State.QUEUED;
+                    downloadQueueHandler.Queue(this);
+
+                    yield return new WaitUntil(() => downloadQueueHandler.CanDownload(this));
+
+                    queueCount--;
+                    totalDownloadedCount++;
+
+                    if (this == null)
+                        yield break;
 
                     IncrementDownloadCount();
+
                     state = State.DOWNLOADING;
+                    downloadQueueHandler.Dequeue(this);
 
                     if (transform != null)
                     {
-                        await sceneImporter.LoadScene(token);
-                        token.ThrowIfCancellationRequested();
+                        yield return sceneImporter.LoadScene(-1);
 
                         // Override the shaders on all materials if a shader is provided
                         if (shaderOverride != null)
                         {
-                            OverrideShaders();
+                            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+                            foreach (Renderer renderer in renderers)
+                            {
+                                renderer.sharedMaterial.shader = shaderOverride;
+                            }
                         }
                     }
 
                     state = State.COMPLETED;
-                    alreadyLoadedAsset = true;
                     DecrementDownloadCount();
-                }
-                catch (Exception e) when (!(e is OperationCanceledException))
-                {
-#if UNITY_STANDALONE || UNITY_EDITOR
-                    if (DataStore.i.common.isApplicationQuitting.Get())
-                        return;
-#endif
-                    
-                    Debug.LogException(e);
                 }
                 finally
                 {
@@ -294,79 +346,28 @@ namespace UnityGLTF
                             sceneImporter?.Dispose();
                             sceneImporter = null;
                         }
-                    }
-                    
-                    if (!isDestroyed)
-                    {
-                        if (!token.IsCancellationRequested)
-                        {
-                            if ( state == State.COMPLETED)
-                                OnFinishedLoadingAsset?.Invoke();
-                            else
-                                OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
-                        }
 
-                        CleanUp();
-                        Destroy(loadingPlaceholder);
-                        Destroy(this);
-                        isDestroyed = true;
+                        loader = null;
                     }
+
+                    alreadyLoadedAsset = true;
+
+                    CoroutineStarter.Stop(loadingRoutine);
+                    loadingRoutine = null;
+
+                    if ( state == State.COMPLETED )
+                        OnFinishedLoadingAsset?.Invoke();
+                    else
+                        OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
+
+                    Destroy(loadingPlaceholder);
+                    Destroy(this);
                 }
             }
             else
             {
                 Debug.Log("couldn't load GLTF because url is empty");
             }
-        }
-        private void OverrideShaders()
-        {
-            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
-
-            foreach (Renderer renderer in renderers)
-            {
-                renderer.sharedMaterial.shader = shaderOverride;
-            }
-        }
-
-        private void SetupSceneImporter(Settings settings, string id, ILoader loader)
-        {
-            sceneImporter = new GLTFSceneImporter(
-                id,
-                GLTFUri,
-                loader,
-                throttlingCounter
-            );
-
-            if (sceneImporter.CreatedObject != null)
-            {
-                Destroy(sceneImporter.CreatedObject);
-            }
-
-            sceneImporter.SceneParent = gameObject.transform;
-            sceneImporter.Collider = Collider;
-            sceneImporter.maximumLod = MaximumLod;
-            sceneImporter.useMaterialTransition = UseVisualFeedback;
-            sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
-            sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
-            sceneImporter.initialVisibility = initialVisibility;
-            sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
-
-            sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh
-                                             && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
-
-            sceneImporter.OnMeshCreated += meshCreatedCallback;
-            sceneImporter.OnRendererCreated += rendererCreatedCallback;
-        }
-        private void DequeueDownload()
-        {
-            queueCount--;
-            downloadQueueHandler.Dequeue(this);
-        }
-        private void EnqueueDownload()
-        {
-            queueCount++;
-            state = State.QUEUED;
-            downloadQueueHandler.Queue(this);
         }
 
         public void Load(string url) { throw new NotImplementedException(); }
@@ -391,50 +392,33 @@ namespace UnityGLTF
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
-            isDestroyed = true;
-            CleanUp();
-            
-            if (state != State.COMPLETED)
+            if (sceneImporter != null)
             {
-                ctokenSource.Cancel();
-                ctokenSource.Dispose();
+                sceneImporter.Dispose();
             }
-        }
-        private void CleanUp()
-        {
-            sceneImporter?.Dispose();
 
             if (state == State.QUEUED)
             {
-                DequeueDownload();
+                queueCount--;
             }
 
-            if (state == State.DOWNLOADING)
-            {
-                DecrementDownloadCount();
-            }
+            downloadQueueHandler.Dequeue(this);
 
-            if (!alreadyLoadedAsset)
+            if (!alreadyLoadedAsset && loadingRoutine != null)
             {
                 OnFail_Internal(null);
+                return;
             }
+
+            DecrementDownloadCount();
         }
 
         bool IDownloadQueueElement.ShouldPrioritizeDownload() { return prioritizeDownload; }
 
-        bool IDownloadQueueElement.ShouldForceDownload()
-        {
-#if UNITY_EDITOR_OSX
-            return false;
-#endif
-            return mainCamera == null;
-        }
+        bool IDownloadQueueElement.ShouldForceDownload() { return mainCamera == null; }
 
         float IDownloadQueueElement.GetSqrDistance()
         {
-            if (mainCamera == null)
-                return 0;
-
             Vector3 cameraPosition = mainCamera.transform.position;
             Vector3 gltfPosition = transform.position;
             gltfPosition.y = cameraPosition.y;
