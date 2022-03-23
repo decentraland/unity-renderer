@@ -35,7 +35,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
 
         controller = new TaskbarHUDController();
-        controller.Initialize(null, chatController, null, null, null);
+        controller.Initialize(null, chatController, null);
         view = controller.view;
 
         Assert.IsTrue(view != null, "Taskbar view is null?");
@@ -117,12 +117,12 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 
         var buttonList = view.GetButtonList();
 
-        Assert.AreEqual(3, buttonList.Count, "Chat head is missing when receiving a private message?");
+        Assert.AreEqual(5, buttonList.Count, "Chat head is missing when receiving a private message?");
 
         Assert.IsFalse(view.chatButton.toggledOn);
-        Assert.IsTrue(buttonList[2] is ChatHeadButton);
+        Assert.IsTrue(buttonList[3] is ChatHeadButton);
 
-        ChatHeadButton headButton = buttonList[2] as ChatHeadButton;
+        ChatHeadButton headButton = buttonList[3] as ChatHeadButton;
         Assert.IsFalse(headButton.toggledOn);
         Assert.IsTrue(headButton.toggleButton.interactable);
 
@@ -156,39 +156,5 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(controller.worldChatWindowHud.view.gameObject.activeInHierarchy);
         Assert.IsFalse(controller.friendsHud.view.gameObject.activeInHierarchy);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
-    }
-
-    [Test]
-    public void AddPortableExperienceItemProperly()
-    {
-        // Arrange
-        string testPEId = "test-pe";
-
-        // Act
-        view.AddPortableExperienceElement(testPEId, "Test PE", "");
-
-        // Assert
-        var newPE = view.rightButtonsContainer.GetComponentInChildren<PortableExperienceTaskbarItem>();
-        Assert.IsNotNull(newPE, "There should exists a PortableExperienceTaskbarItem as child!");
-        Assert.AreEqual(0, newPE.gameObject.transform.GetSiblingIndex(), "The sibling index for the new Portable Experience should be 0!");
-        Assert.IsTrue(view.activePortableExperienceItems.ContainsKey(testPEId), "The activePortableExperienceItems dictionary should contains the new PE added!");
-        Assert.IsTrue(view.activePortableExperiencesPoolables.ContainsKey(testPEId), "The activePortableExperiencesPoolables dictionary should contains the new PE added!");
-    }
-
-    [Test]
-    public void RemovePortableExperienceItemProperly()
-    {
-        // Arrange
-        string testPEId = "test-pe";
-
-        // Act
-        view.AddPortableExperienceElement(testPEId, "Test PE", "");
-        view.RemovePortableExperienceElement(testPEId);
-
-        // Assert
-        var newPE = view.rightButtonsContainer.GetComponentInChildren<PortableExperienceTaskbarItem>();
-        Assert.IsNull(newPE, "There should not exists a PortableExperienceTaskbarItem as child!");
-        Assert.IsFalse(view.activePortableExperienceItems.ContainsKey(testPEId), "The activePortableExperienceItems dictionary should not contains the new PE added!");
-        Assert.IsFalse(view.activePortableExperiencesPoolables.ContainsKey(testPEId), "The activePortableExperiencesPoolables dictionary should not contains the new PE added!");
     }
 }

@@ -11,6 +11,22 @@
         public int entities;
         public float sceneHeight;
 
+        public long textureMemoryScore;
+        public long meshMemoryScore;
+        public long audioClipMemoryScore;
+        public long animationClipMemoryScore;
+
+        public long textureMemoryProfiler;
+        public long meshMemoryProfiler;
+        public long audioClipMemoryProfiler;
+        public long animationClipMemoryProfiler;
+
+        public long totalMemoryScore =>
+            textureMemoryScore + meshMemoryScore + audioClipMemoryScore + animationClipMemoryScore;
+
+        public long totalMemoryProfiler =>
+            textureMemoryProfiler + meshMemoryProfiler + audioClipMemoryProfiler + animationClipMemoryProfiler;
+
         public SceneMetricsModel Clone() { return (SceneMetricsModel) MemberwiseClone(); }
 
         public static bool operator >(SceneMetricsModel lhs, SceneMetricsModel rhs)
@@ -38,6 +54,14 @@
             result.textures -= rhs.textures;
             result.meshes -= rhs.meshes;
             result.triangles -= rhs.triangles;
+            result.meshMemoryScore -= rhs.meshMemoryScore;
+            result.textureMemoryScore -= rhs.textureMemoryScore;
+            result.animationClipMemoryScore -= rhs.animationClipMemoryScore;
+            result.audioClipMemoryScore -= rhs.audioClipMemoryScore;
+            result.meshMemoryProfiler -= rhs.meshMemoryProfiler;
+            result.textureMemoryProfiler -= rhs.textureMemoryProfiler;
+            result.animationClipMemoryProfiler -= rhs.animationClipMemoryProfiler;
+            result.audioClipMemoryProfiler -= rhs.audioClipMemoryProfiler;
             return result;
         }
 
@@ -50,12 +74,34 @@
             result.textures += rhs.textures;
             result.meshes += rhs.meshes;
             result.triangles += rhs.triangles;
+            result.meshMemoryScore += rhs.meshMemoryScore;
+            result.textureMemoryScore += rhs.textureMemoryScore;
+            result.animationClipMemoryScore += rhs.animationClipMemoryScore;
+            result.audioClipMemoryScore += rhs.audioClipMemoryScore;
+            result.meshMemoryProfiler += rhs.meshMemoryProfiler;
+            result.textureMemoryProfiler += rhs.textureMemoryProfiler;
+            result.animationClipMemoryProfiler += rhs.animationClipMemoryProfiler;
+            result.audioClipMemoryProfiler += rhs.audioClipMemoryProfiler;
             return result;
         }
 
         public override string ToString()
         {
-            return $"Textures: {textures} - Triangles: {triangles} - Materials: {materials} - Meshes: {meshes} - Bodies: {bodies} - Entities: {entities} - Scene Height: {sceneHeight}";
+            string result = "";
+
+            result += $"Textures: {textures}";
+            result += $"- Triangles: {triangles}";
+            result += $"- Meshes: {meshes}";
+            result += $"- Materials: {materials}";
+            result += $"- Entities: {entities}";
+            result += $"- Bodies: {bodies}";
+            result += $"- Scene Height: {sceneHeight}";
+            result += $"- Mesh Memory: {meshMemoryScore}";
+            result += $"- Texture Memory: {textureMemoryScore}";
+            result += $"- Audio Memory: {audioClipMemoryScore}";
+            result += $"- Animation Memory: {animationClipMemoryScore}";
+
+            return result;
         }
     }
 }

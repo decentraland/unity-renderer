@@ -7,6 +7,7 @@ namespace AvatarSystem
 {
     public interface IWearableItemResolver : IDisposable
     {
+        UniTask<(List<WearableItem> wearables, List<WearableItem> emotes)> ResolveAndSplit( IEnumerable<string> wearableIds, CancellationToken ct = default);
         UniTask<WearableItem[]> Resolve(IEnumerable<string> wearableId, CancellationToken ct = default);
         UniTask<WearableItem> Resolve(string wearableId, CancellationToken ct = default);
 

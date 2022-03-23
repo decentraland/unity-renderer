@@ -84,6 +84,26 @@ namespace DCL.Models
         private static List<int> texIdsCache = new List<int>();
         private static List<string> texNameCache = new List<string>();
 
+        public static HashSet<Animation> ExtractUniqueAnimations(GameObject container)
+        {
+            return new HashSet<Animation>(container.GetComponentsInChildren<Animation>(true));
+        }
+
+        public static HashSet<AnimationClip> ExtractUniqueAnimationClips(HashSet<Animation> animations)
+        {
+            HashSet<AnimationClip> result = new HashSet<AnimationClip>();
+
+            foreach (var anim in animations)
+            {
+                foreach (AnimationState state in anim)
+                {
+                    result.Add(state.clip);
+                }
+            }
+
+            return result;
+        }
+
         public static HashSet<Renderer> ExtractUniqueRenderers(GameObject container)
         {
             return new HashSet<Renderer>(container.GetComponentsInChildren<Renderer>(true));

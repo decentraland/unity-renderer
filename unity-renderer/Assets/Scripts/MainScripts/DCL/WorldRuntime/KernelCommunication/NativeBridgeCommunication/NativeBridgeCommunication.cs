@@ -303,14 +303,12 @@ public class NativeBridgeCommunication : IKernelCommunication
 
     internal static QueuedSceneMessage_Scene GetSceneMessageInstance()
     {
-        QueuedSceneMessage_Scene message;
-
         var sceneMessagesPool = queueHandler.sceneMessagesPool;
 
-        if (sceneMessagesPool.Count > 0)
-            message = sceneMessagesPool.Dequeue();
-        else
+        if (!sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene message))
+        {
             message = new QueuedSceneMessage_Scene();
+        }
 
         message.sceneId = currentSceneId;
         message.tag = currentTag;

@@ -11,6 +11,7 @@ using SignupHUD;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Environment = System.Environment;
+using EmotesCustomization;
 
 public class HUDController : IHUDController
 {
@@ -181,10 +182,6 @@ public class HUDController : IHUDController
                 if (settingsPanelHud != null)
                     settingsPanelHud.Initialize();
                 break;
-            case HUDElementID.EXPRESSIONS:
-            case HUDElementID.EMOTES:
-                CreateHudElement(configuration, hudElementId);
-                break;
             case HUDElementID.PLAYER_INFO_CARD:
                 CreateHudElement(configuration, hudElementId);
                 break;
@@ -263,9 +260,7 @@ public class HUDController : IHUDController
                         taskbarHud.Initialize(
                             SceneReferences.i.mouseCatcher,
                             ChatController.i,
-                            FriendsController.i,
-                            DCL.Environment.i.world.sceneController,
-                            DCL.Environment.i.world.state);
+                            FriendsController.i);
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
 

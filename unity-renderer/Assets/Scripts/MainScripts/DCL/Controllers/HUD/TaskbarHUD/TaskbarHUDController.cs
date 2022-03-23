@@ -31,30 +31,30 @@ public class TaskbarHUDController : IHUD
     private InputAction_Trigger toggleFriendsTrigger;
     private InputAction_Trigger closeWindowTrigger;
     private InputAction_Trigger toggleWorldChatTrigger;
-    private ISceneController sceneController;
-    private IWorldState worldState;
+    private Transform experiencesViewerTransform;
 
     public event System.Action OnAnyTaskbarButtonClicked;
 
     public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
+
+    internal BaseVariable<Transform> isEmotesSectionInitialized => DataStore.i.emotesCustomization.isInitialized;
+    internal BaseVariable<bool> isEmotesVisible => DataStore.i.HUDs.emotesVisible;
+    internal BaseVariable<Transform> isExperiencesViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
+    internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
+    internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
 
     protected internal virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(this, chatController, friendsController); }
 
     public void Initialize(
         IMouseCatcher mouseCatcher,
         IChatController chatController,
-        IFriendsController friendsController,
-        ISceneController sceneController,
-        IWorldState worldState)
+        IFriendsController friendsController)
     {
         this.friendsController = friendsController;
         this.mouseCatcher = mouseCatcher;
         this.chatController = chatController;
 
         view = CreateView();
-
-        this.sceneController = sceneController;
-        this.worldState = worldState;
 
         if (mouseCatcher != null)
         {
@@ -73,6 +73,10 @@ public class TaskbarHUDController : IHUD
         view.OnChatToggleOn += View_OnChatToggleOn;
         view.OnFriendsToggleOff += View_OnFriendsToggleOff;
         view.OnFriendsToggleOn += View_OnFriendsToggleOn;
+        view.OnEmotesToggleOff += View_OnEmotesToggleOff;
+        view.OnEmotesToggleOn += View_OnEmotesToggleOn;
+        view.OnExperiencesToggleOff += View_OnExperiencesToggleOff;
+        view.OnExperiencesToggleOn += View_OnExperiencesToggleOn;
 
         toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
         toggleFriendsTrigger.OnTriggered -= ToggleFriendsTrigger_OnTriggered;
@@ -86,28 +90,28 @@ public class TaskbarHUDController : IHUD
         toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
         toggleWorldChatTrigger.OnTriggered += ToggleWorldChatTrigger_OnTriggered;
 
+        isEmotesSectionInitialized.OnChange += InitializeEmotesSelector;
+        InitializeEmotesSelector(isEmotesSectionInitialized.Get(), null);
+        isEmotesVisible.OnChange += IsEmotesVisibleChanged;
+        
+        isExperiencesViewerOpen.OnChange += IsExperiencesViewerOpenChanged;
+
         if (chatController != null)
         {
             chatController.OnAddMessage -= OnAddMessage;
             chatController.OnAddMessage += OnAddMessage;
         }
 
-        if (this.sceneController != null && this.worldState != null)
-        {
-            this.sceneController.OnNewPortableExperienceSceneAdded += SceneController_OnNewPortableExperienceSceneAdded;
-            this.sceneController.OnNewPortableExperienceSceneRemoved += SceneController_OnNewPortableExperienceSceneRemoved;
-
-            List<GlobalScene> activePortableExperiences = WorldStateUtils.GetActivePortableExperienceScenes();
-            for (int i = 0; i < activePortableExperiences.Count; i++)
-            {
-                SceneController_OnNewPortableExperienceSceneAdded(activePortableExperiences[i]);
-            }
-        }
-
         view.leftWindowContainerAnimator.Show();
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
         DataStore.i.builderInWorld.showTaskBar.OnChange += SetVisibility;
+
+        isExperiencesViewerInitialized.OnChange += InitializeExperiencesViewer;
+        InitializeExperiencesViewer(isExperiencesViewerInitialized.Get(), null);
+
+        numOfLoadedExperiences.OnChange += NumOfLoadedExperiencesChanged;
+        NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
     }
 
     private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindowHud.SetVisibility(false); }
@@ -119,6 +123,22 @@ public class TaskbarHUDController : IHUD
     }
 
     private void View_OnFriendsToggleOff() { friendsHud?.SetVisibility(false); }
+
+    private void View_OnEmotesToggleOn()
+    {
+        isEmotesVisible.Set(true);
+        OnAnyTaskbarButtonClicked?.Invoke();
+    }
+
+    private void View_OnEmotesToggleOff() { isEmotesVisible.Set(false); }
+    
+    private void View_OnExperiencesToggleOn()
+    {
+        isExperiencesViewerOpen.Set(true);
+        OnAnyTaskbarButtonClicked?.Invoke();
+    }
+
+    private void View_OnExperiencesToggleOff() { isExperiencesViewerOpen.Set(false); }
 
     private void ToggleFriendsTrigger_OnTriggered(DCLAction_Trigger action)
     {
@@ -193,6 +213,7 @@ public class TaskbarHUDController : IHUD
             return;
 
         controller.view.transform.SetParent(view.leftWindowContainer, false);
+        experiencesViewerTransform?.SetAsLastSibling();
 
         worldChatWindowHud = controller;
 
@@ -223,6 +244,7 @@ public class TaskbarHUDController : IHUD
             return;
 
         controller.view.transform.SetParent(view.leftWindowContainer, false);
+        experiencesViewerTransform?.SetAsLastSibling();
 
         privateChatWindowHud = controller;
 
@@ -270,6 +292,7 @@ public class TaskbarHUDController : IHUD
             return;
 
         controller.view.transform.SetParent(view.leftWindowContainer, false);
+        experiencesViewerTransform?.SetAsLastSibling();
 
         friendsHud = controller;
         view.OnAddFriendsWindow();
@@ -280,6 +303,54 @@ public class TaskbarHUDController : IHUD
         };
 
         friendsHud.view.friendsList.OnDeleteConfirmation += (userIdToRemove) => { view.chatHeadsGroup.RemoveChatHead(userIdToRemove); };
+    }
+
+    private void InitializeEmotesSelector(Transform current, Transform previous) 
+    {
+        if (current == null)
+            return;
+
+        view.OnAddEmotesWindow(); 
+    }
+
+    private void IsEmotesVisibleChanged(bool current, bool previous)
+    {
+        if (current && !isEmotesVisible.Get())
+            return;
+
+        view.emotesButton.SetToggleState(current, false);
+
+        if (!current)
+            MarkWorldChatAsReadIfOtherWindowIsOpen();
+    }
+
+    internal void InitializeExperiencesViewer(Transform currentViewTransform, Transform previousViewTransform)
+    {
+        if (currentViewTransform == null)
+            return;
+
+        experiencesViewerTransform = currentViewTransform;
+        experiencesViewerTransform.SetParent(view.leftWindowContainer, false);
+        experiencesViewerTransform.SetAsLastSibling();
+
+        view.OnAddExperiencesWindow();
+    }
+
+    private void IsExperiencesViewerOpenChanged(bool current, bool previous)
+    {
+        if (current)
+            return;
+
+        view.experiencesButton.SetToggleState(false, false);
+        MarkWorldChatAsReadIfOtherWindowIsOpen();
+    }
+
+    private void NumOfLoadedExperiencesChanged(int current, int previous)
+    {
+        view.SetExperiencesVisbility(current > 0);
+
+        if (current == 0)
+            View_OnExperiencesToggleOff();
     }
 
     public void OnAddVoiceChat() { view.OnAddVoiceChat(); }
@@ -309,6 +380,10 @@ public class TaskbarHUDController : IHUD
             view.OnChatToggleOn -= View_OnChatToggleOn;
             view.OnFriendsToggleOff -= View_OnFriendsToggleOff;
             view.OnFriendsToggleOn -= View_OnFriendsToggleOn;
+            view.OnEmotesToggleOff -= View_OnEmotesToggleOff;
+            view.OnEmotesToggleOn -= View_OnEmotesToggleOn;
+            view.OnExperiencesToggleOff -= View_OnExperiencesToggleOff;
+            view.OnExperiencesToggleOn -= View_OnExperiencesToggleOn;
 
             UnityEngine.Object.Destroy(view.gameObject);
         }
@@ -331,13 +406,12 @@ public class TaskbarHUDController : IHUD
         if (chatController != null)
             chatController.OnAddMessage -= OnAddMessage;
 
-        if (sceneController != null)
-        {
-            sceneController.OnNewPortableExperienceSceneAdded -= SceneController_OnNewPortableExperienceSceneAdded;
-            sceneController.OnNewPortableExperienceSceneRemoved -= SceneController_OnNewPortableExperienceSceneRemoved;
-        }
-
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
+        isEmotesSectionInitialized.OnChange -= InitializeEmotesSelector;
+        isEmotesVisible.OnChange -= IsEmotesVisibleChanged;
+        isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
+        isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
+        numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
@@ -410,24 +484,4 @@ public class TaskbarHUDController : IHUD
         if (!AnyWindowsDifferentThanChatIsOpen())
             worldChatWindowHud.MarkWorldChatMessagesAsRead();
     }
-
-    private void SceneController_OnNewPortableExperienceSceneAdded(IParcelScene scene)
-    {
-        GlobalScene newPortableExperienceScene = scene as GlobalScene;
-
-        if ( newPortableExperienceScene == null )
-        {
-            Debug.LogError("Portable experience must be of type GlobalScene!");
-            return;
-        }
-
-        view.AddPortableExperienceElement(
-            scene.sceneData.id,
-            newPortableExperienceScene.sceneName,
-            newPortableExperienceScene.iconUrl);
-    }
-
-    private void SceneController_OnNewPortableExperienceSceneRemoved(string portableExperienceSceneIdToRemove) { view.RemovePortableExperienceElement(portableExperienceSceneIdToRemove); }
-
-    public void KillPortableExperience(string portableExperienceSceneIdToKill) { WebInterface.KillPortableExperience(portableExperienceSceneIdToKill); }
 }

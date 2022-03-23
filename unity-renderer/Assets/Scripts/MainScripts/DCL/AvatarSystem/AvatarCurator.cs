@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -27,17 +28,24 @@ namespace AvatarSystem
         /// <param name="ct"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async UniTask<(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables)> Curate(AvatarSettings settings, IEnumerable<string> wearablesId, CancellationToken ct = default)
+        public async UniTask<(
+            WearableItem bodyshape,
+            WearableItem eyes,
+            WearableItem eyebrows,
+            WearableItem mouth,
+            List<WearableItem> wearables,
+            List<WearableItem> emotes
+            )> Curate(AvatarSettings settings, IEnumerable<string> wearablesId, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
             try
             {
-                WearableItem[] wearableItems =  await wearableItemResolver.Resolve(wearablesId, ct);
+                (List<WearableItem> wearableItems, List<WearableItem> emotes) =  await wearableItemResolver.ResolveAndSplit(wearablesId, ct);
                 HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategories(settings.bodyshapeId, wearableItems);
 
                 Dictionary<string, WearableItem> wearablesByCategory = new Dictionary<string, WearableItem>();
-                for (int i = 0; i < wearableItems.Length; i++)
+                for (int i = 0; i < wearableItems.Count; i++)
                 {
                     WearableItem wearableItem = wearableItems[i];
 
@@ -88,7 +96,8 @@ namespace AvatarSystem
                     wearablesByCategory.ContainsKey(WearableLiterals.Categories.EYES) ? wearablesByCategory[WearableLiterals.Categories.EYES] : null,
                     wearablesByCategory.ContainsKey(WearableLiterals.Categories.EYEBROWS) ? wearablesByCategory[WearableLiterals.Categories.EYEBROWS] : null,
                     wearablesByCategory.ContainsKey(WearableLiterals.Categories.MOUTH) ? wearablesByCategory[WearableLiterals.Categories.MOUTH] : null,
-                    wearables
+                    wearables,
+                    emotes.ToList()
                 );
             }
             catch (OperationCanceledException)
@@ -96,9 +105,10 @@ namespace AvatarSystem
                 //No Disposing required
                 throw;
             }
-            catch
+            catch (Exception e)
             {
                 Debug.Log("Failed curating avatar wearables");
+                ExceptionDispatchInfo.Capture(e).Throw();
                 throw;
             }
         }
