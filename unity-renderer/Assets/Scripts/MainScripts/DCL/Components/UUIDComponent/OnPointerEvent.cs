@@ -179,5 +179,7 @@ namespace DCL.Components
         public virtual void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit) { }
 
         public virtual PointerInputEventType GetEventType() { return PointerInputEventType.NONE; }
+
+        protected override string uuidComponentName { get; }
     }
 }

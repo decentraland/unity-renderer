@@ -1,14 +1,15 @@
-using DCL.Components;
+using System;
 using System.Collections;
+using DCL.Components;
 using DCL.Helpers;
-using UnityEngine;
 using DCL.Models;
+using UnityEngine;
 
 namespace DCL
 {
     public class Billboard : BaseComponent
     {
-        [System.Serializable]
+        [Serializable]
         public class Model : BaseModel
         {
             public bool x = true;
@@ -21,6 +22,8 @@ namespace DCL
         Transform entityTransform;
         Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
         Vector3 lastPosition;
+
+        public override string componentName => "billboard";
 
         private void Awake() { model = new Model(); }
 
@@ -63,7 +66,7 @@ namespace DCL
 
         Vector3 GetLookAtVector()
         {
-            bool hasTextShape = entity.components.ContainsKey(Models.CLASS_ID_COMPONENT.TEXT_SHAPE);
+            bool hasTextShape = entity.components.ContainsKey(CLASS_ID_COMPONENT.TEXT_SHAPE);
             Vector3 lookAtDir = hasTextShape ? (entityTransform.position - cameraPosition) : (cameraPosition - entityTransform.position);
 
             Model model = (Model) this.model;

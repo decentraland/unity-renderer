@@ -31,5 +31,7 @@ namespace DCL.Components
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.UUID_ON_UP; }
 
         public override PointerInputEventType GetEventType() { return PointerInputEventType.UP; }
+
+        protected override string uuidComponentName => "pointerUp";
     }
 }

@@ -11,6 +11,8 @@ public class QuestTrackingInfo : BaseComponent
 
     private QuestModel cachedModel;
 
+    public override string componentName => "questTrackingComponent";
+
     private void Awake() { model = new QuestModel(); }
 
     new public QuestModel GetModel() { return cachedModel; }

@@ -61,6 +61,8 @@ namespace DCL.Components
         private Model cachedModel;
         private Material cachedFontMaterial;
 
+        public override string componentName => "text";
+
         private void Awake()
         {
             model = new Model();

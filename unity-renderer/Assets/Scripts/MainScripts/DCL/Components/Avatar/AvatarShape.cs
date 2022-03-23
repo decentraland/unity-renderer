@@ -50,6 +50,8 @@ namespace DCL
         private ILazyTextureObserver currentLazyObserver;
         private bool isGlobalSceneAvatar = true;
 
+        public override string componentName => "avatarShape";
+
         private void Awake()
         {
             model = new AvatarModel();

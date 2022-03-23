@@ -684,6 +684,32 @@ namespace DCL.Controllers
                         }
                     }
                     return;
+                default:
+                    {
+                        IEntityComponent component = entity.components.FirstOrDefault(kp => kp.Value.componentName == componentName).Value;
+                        if (component == null)
+                            break;
+
+                        entity.components.Remove((CLASS_ID_COMPONENT)component.GetClassId());
+
+                        if (component is ICleanable cleanableComponent)
+                            cleanableComponent.Cleanup();
+
+                        bool released = false;
+                        if (component is IPoolableObjectContainer poolableContainer)
+                        {
+                            if (poolableContainer.poolableObject != null)
+                            {
+                                poolableContainer.poolableObject.Release();
+                                released = true;
+                            }
+                        }
+                        if (!released)
+                        {
+                            Utils.SafeDestroy(component.GetTransform()?.gameObject);
+                        }
+                        break;
+                    }                
             }
         }
 

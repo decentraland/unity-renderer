@@ -31,6 +31,8 @@ namespace DCL.Components
         public long playedAtTimestamp = 0;
         private bool isOutOfBoundaries = false;
 
+        public override string componentName => "AudioSource";
+
         private void Awake()
         {
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();

@@ -43,6 +43,8 @@ namespace DCL.Components
         Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
         Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
 
+        public override string componentName => "animator";
+
         private void Awake() { model = new Model(); }
 
         private void OnDestroy()
