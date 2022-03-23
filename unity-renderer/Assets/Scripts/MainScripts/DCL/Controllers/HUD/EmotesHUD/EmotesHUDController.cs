@@ -48,8 +48,25 @@ namespace EmotesCustomization
         private bool ownedWearablesAlreadyRequested = false;
         private BaseDictionary<string, EmoteWheelSlot> slotsInLoadingState = new BaseDictionary<string, EmoteWheelSlot>();
 
+        // TODO (Santi): Remove it when we don't longer need keep the retrocompatibility.
+        private List<string> oldEmotes;
+
         public EmotesHUDController(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
         {
+            oldEmotes = new List<string>
+            {
+                "handsair",
+                "wave",
+                "fistpump",
+                "dance",
+                "raiseHand",
+                "clap",
+                "money",
+                "kiss",
+                "headexplode",
+                "shrug"
+            };
+
             closeWindow = Resources.Load<InputAction_Trigger>("CloseWindow");
             closeWindow.OnTriggered += OnCloseWindowPressed;
 
@@ -71,30 +88,15 @@ namespace EmotesCustomization
             emoteAnimations.OnAdded += OnAnimationAdded;
 
             ConfigureShortcuts();
-            CheckRetrocompatibility();
         }
 
         // TODO (Santi): Remove it when we don't longer need keep the retrocompatibility.
-        private void CheckRetrocompatibility()
+        private void LoadDefaultEmotesIfNeeded()
         {
             if (!isEmotesCustomizationFFEnabled)
             {
-                List<string> storedEquippedEmotes = new List<string>
-                {
-                    "handsair",
-                    "wave",
-                    "fistpump",
-                    "dance",
-                    "raiseHand",
-                    "clap",
-                    "money",
-                    "kiss",
-                    "headexplode",
-                    "shrug"
-                };
-
                 List<EquippedEmoteData> storedEquippedEmotesData = new List<EquippedEmoteData>();
-                foreach (string emoteId in storedEquippedEmotes)
+                foreach (string emoteId in oldEmotes)
                 {
                     storedEquippedEmotesData.Add(new EquippedEmoteData { id = emoteId, cachedThumbnail = null });
                 }
@@ -204,6 +206,8 @@ namespace EmotesCustomization
 
             if (visible)
             {
+                LoadDefaultEmotesIfNeeded();
+
                 DCL.Helpers.Utils.UnlockCursor();
 
                 if (userProfile != null &&
@@ -387,43 +391,43 @@ namespace EmotesCustomization
                     break;
                 case DCLAction_Trigger.ToggleShortcut0:
                     if (emotesVisible.Get() || !isEmotesCustomizationFFEnabled)
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[0]?.id);
+                        PlayEmote(isEmotesCustomizationFFEnabled ? emotesCustomizationDataStore.equippedEmotes[0]?.id : oldEmotes[0]);
                     break;
                 case DCLAction_Trigger.ToggleShortcut1:
                     if (emotesVisible.Get() || !isEmotesCustomizationFFEnabled)
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[1]?.id);
+                        PlayEmote(isEmotesCustomizationFFEnabled ? emotesCustomizationDataStore.equippedEmotes[1]?.id : oldEmotes[1]);
                     break;
                 case DCLAction_Trigger.ToggleShortcut2:
                     if (emotesVisible.Get() || !isEmotesCustomizationFFEnabled)
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[2]?.id);
+                        PlayEmote(isEmotesCustomizationFFEnabled ? emotesCustomizationDataStore.equippedEmotes[2]?.id : oldEmotes[2]);
                     break;
                 case DCLAction_Trigger.ToggleShortcut3:
                     if (emotesVisible.Get() || !isEmotesCustomizationFFEnabled)
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[3]?.id);
+                        PlayEmote(isEmotesCustomizationFFEnabled ? emotesCustomizationDataStore.equippedEmotes[3]?.id : oldEmotes[3]);
                     break;
                 case DCLAction_Trigger.ToggleShortcut4:
                     if (emotesVisible.Get() || !isEmotesCustomizationFFEnabled)
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[4]?.id);
+                        PlayEmote(isEmotesCustomizationFFEnabled ? emotesCustomizationDataStore.equippedEmotes[4]?.id : oldEmotes[4]);
                     break;
                 case DCLAction_Trigger.ToggleShortcut5:
                     if (emotesVisible.Get() || !isEmotesCustomizationFFEnabled)
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[5]?.id);
+                        PlayEmote(isEmotesCustomizationFFEnabled ? emotesCustomizationDataStore.equippedEmotes[5]?.id : oldEmotes[5]);
                     break;
                 case DCLAction_Trigger.ToggleShortcut6:
                     if (emotesVisible.Get() || !isEmotesCustomizationFFEnabled)
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[6]?.id);
+                        PlayEmote(isEmotesCustomizationFFEnabled ? emotesCustomizationDataStore.equippedEmotes[6]?.id : oldEmotes[6]);
                     break;
                 case DCLAction_Trigger.ToggleShortcut7:
                     if (emotesVisible.Get() || !isEmotesCustomizationFFEnabled)
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[7]?.id);
+                        PlayEmote(isEmotesCustomizationFFEnabled ? emotesCustomizationDataStore.equippedEmotes[7]?.id : oldEmotes[7]);
                     break;
                 case DCLAction_Trigger.ToggleShortcut8:
                     if (emotesVisible.Get() || !isEmotesCustomizationFFEnabled)
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[8]?.id);
+                        PlayEmote(isEmotesCustomizationFFEnabled ? emotesCustomizationDataStore.equippedEmotes[8]?.id : oldEmotes[8]);
                     break;
                 case DCLAction_Trigger.ToggleShortcut9:
                     if (emotesVisible.Get() || !isEmotesCustomizationFFEnabled)
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[9]?.id);
+                        PlayEmote(isEmotesCustomizationFFEnabled ? emotesCustomizationDataStore.equippedEmotes[9]?.id : oldEmotes[9]);
                     break;
             }
         }

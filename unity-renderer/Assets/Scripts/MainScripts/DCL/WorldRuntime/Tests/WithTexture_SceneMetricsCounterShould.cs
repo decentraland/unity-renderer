@@ -5,6 +5,7 @@ using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneMetricsCounter

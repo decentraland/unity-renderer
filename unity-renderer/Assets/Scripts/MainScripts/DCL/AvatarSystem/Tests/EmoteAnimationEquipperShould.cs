@@ -39,9 +39,9 @@ namespace Test.AvatarSystem
         [Test]
         public void SetEmoteListAndUpdateUses()
         {
-            dataStore.emotesOnUse.SetRefCount("emote0", 0);
-            dataStore.emotesOnUse.SetRefCount("emote1", 1);
-            dataStore.emotesOnUse.SetRefCount("emote2", 2);
+            dataStore.emotesOnUse.SetRefCount(("female", "emote0"), 0);
+            dataStore.emotesOnUse.SetRefCount(("female", "emote1"), 1);
+            dataStore.emotesOnUse.SetRefCount(("female", "emote2"), 2);
 
             equipper.SetEquippedEmotes("female", new []
             {
@@ -54,9 +54,9 @@ namespace Test.AvatarSystem
             Assert.AreEqual("emote0" , equipper.emotes[0]);
             Assert.AreEqual("emote1" , equipper.emotes[1]);
             Assert.AreEqual("emote2" , equipper.emotes[2]);
-            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount("emote0"));
-            Assert.AreEqual(2, dataStore.emotesOnUse.GetRefCount("emote1"));
-            Assert.AreEqual(3, dataStore.emotesOnUse.GetRefCount("emote2"));
+            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("female", "emote0")));
+            Assert.AreEqual(2, dataStore.emotesOnUse.GetRefCount(("female", "emote1")));
+            Assert.AreEqual(3, dataStore.emotesOnUse.GetRefCount(("female", "emote2")));
         }
 
         [Test]
@@ -92,24 +92,25 @@ namespace Test.AvatarSystem
         [Test]
         public void DecreaseRefCountOfPrevEmotes()
         {
-            dataStore.emotesOnUse.SetRefCount("old0", 10);
-            dataStore.emotesOnUse.SetRefCount("old1", 11);
-            dataStore.emotesOnUse.SetRefCount("old2", 12);
+            dataStore.emotesOnUse.SetRefCount(("female", "old0"), 10);
+            dataStore.emotesOnUse.SetRefCount(("female", "old1"), 11);
+            dataStore.emotesOnUse.SetRefCount(("female", "old2"), 12);
+            equipper.bodyShapeId = "female";
             equipper.emotes.AddRange(new [] { "old0", "old1", "old2" });
 
-            equipper.SetEquippedEmotes("", new []
+            equipper.SetEquippedEmotes("male", new []
             {
                 new WearableItem { id = "new0" },
                 new WearableItem { id = "new1" },
                 new WearableItem { id = "new2" },
             });
 
-            Assert.AreEqual(9, dataStore.emotesOnUse.GetRefCount("old0"));
-            Assert.AreEqual(10, dataStore.emotesOnUse.GetRefCount("old1"));
-            Assert.AreEqual(11, dataStore.emotesOnUse.GetRefCount("old2"));
-            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount("new0"));
-            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount("new1"));
-            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount("new2"));
+            Assert.AreEqual(9, dataStore.emotesOnUse.GetRefCount(("female", "old0")));
+            Assert.AreEqual(10, dataStore.emotesOnUse.GetRefCount(("female", "old1")));
+            Assert.AreEqual(11, dataStore.emotesOnUse.GetRefCount(("female", "old2")));
+            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("male", "new0")));
+            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("male", "new1")));
+            Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("male", "new2")));
         }
 
         [Test]

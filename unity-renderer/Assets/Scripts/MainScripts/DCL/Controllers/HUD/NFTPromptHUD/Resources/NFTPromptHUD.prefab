@@ -4209,7 +4209,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 851b72df6e5bd4b91a42eb20ae6323f0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d6993c6f413d843cd86f9221b1f98736, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -4659,15 +4659,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e798386ae9422d2428a43e293bb4add7, type: 3}
---- !u!224 &1460111516450856479 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 2113852084972505189, guid: e798386ae9422d2428a43e293bb4add7,
-    type: 3}
-  m_PrefabInstance: {fileID: 654907563950986874}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4660436856838827317 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5312981286632553295, guid: e798386ae9422d2428a43e293bb4add7,
+    type: 3}
+  m_PrefabInstance: {fileID: 654907563950986874}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &1460111516450856479 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2113852084972505189, guid: e798386ae9422d2428a43e293bb4add7,
     type: 3}
   m_PrefabInstance: {fileID: 654907563950986874}
   m_PrefabAsset: {fileID: 0}
@@ -4832,7 +4832,7 @@ PrefabInstance:
     - target: {fileID: 1893788018749953862, guid: 19d77508a9e1e44029db75cc00b71c03,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2020970618945887429, guid: 19d77508a9e1e44029db75cc00b71c03,
         type: 3}
