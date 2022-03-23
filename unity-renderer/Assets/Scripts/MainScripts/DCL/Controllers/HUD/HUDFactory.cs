@@ -59,7 +59,8 @@ public class HUDFactory : IHUDFactory
                 hudElement = new FriendsHUDController();
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
-                hudElement = new PrivateChatWindowHUDController();
+                hudElement = new PrivateChatWindowHUDController(DataStore.i, new UserProfileWebInterfaceBridge(),
+                    ChatController.i, FriendsController.i);
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();

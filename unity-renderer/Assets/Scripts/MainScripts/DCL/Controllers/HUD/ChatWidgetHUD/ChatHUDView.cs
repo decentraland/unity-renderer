@@ -311,7 +311,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         }
     }
 
-    public void CleanAllEntries()
+    public void ClearAllEntries()
     {
         foreach (var entry in entries)
         {

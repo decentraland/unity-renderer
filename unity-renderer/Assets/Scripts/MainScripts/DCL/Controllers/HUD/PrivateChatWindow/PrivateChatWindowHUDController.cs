@@ -13,17 +13,40 @@ public class PrivateChatWindowHUDController : IHUD
     public IPrivateChatComponentView view;
 
     public string conversationUserId { get; private set; } = string.Empty;
-    
+
+    private readonly DataStore dataStore;
+    private readonly IUserProfileBridge userProfileBridge;
+    private readonly IChatController chatController;
+    private readonly IFriendsController friendsController;
     private string conversationUserName = string.Empty;
     private ChatHUDController chatHudController;
-    private IChatController chatController;
     private UserProfile conversationProfile;
+
+    private bool isSocialBarV1Enabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("social_bar_v1");
 
     public event System.Action OnPressBack;
 
-    public void Initialize(IChatController chatController, IPrivateChatComponentView view = null)
+    public PrivateChatWindowHUDController(DataStore dataStore,
+        IUserProfileBridge userProfileBridge,
+        IChatController chatController,
+        IFriendsController friendsController)
     {
-        view ??= PrivateChatWindowHUDView.Create();
+        this.dataStore = dataStore;
+        this.userProfileBridge = userProfileBridge;
+        this.chatController = chatController;
+        this.friendsController = friendsController;
+    }
+
+    public void Initialize(IPrivateChatComponentView view = null)
+    {
+        if (view == null)
+        {
+            if (isSocialBarV1Enabled)
+                view = PrivateChatWindowComponentView.Create();
+            else
+                view = PrivateChatWindowHUDView.Create();
+        }
+
         this.view = view;
         view.OnPressBack -= View_OnPressBack;
         view.OnPressBack += View_OnPressBack;
@@ -37,8 +60,6 @@ public class PrivateChatWindowHUDController : IHUD
         LoadLatestReadChatMessagesStatus();
 
         view.OnSendMessage += SendChatMessage;
-
-        this.chatController = chatController;
 
         if (chatController != null)
         {
@@ -56,15 +77,19 @@ public class PrivateChatWindowHUDController : IHUD
         if (string.IsNullOrEmpty(newConversationUserId) || newConversationUserId == conversationUserId)
             return;
 
-        UserProfile newConversationUserProfile = UserProfileController.userProfilesCatalog.Get(newConversationUserId);
+        UserProfile newConversationUserProfile = userProfileBridge.Get(newConversationUserId);
 
         conversationUserId = newConversationUserId;
         conversationUserName = newConversationUserProfile.userName;
         conversationProfile = newConversationUserProfile;
 
-        view.Setup(newConversationUserProfile);
+        var userStatus = friendsController.GetUserStatus(conversationUserId);
 
-        view.CleanAllEntries();
+        view.Setup(newConversationUserProfile,
+            userStatus.presence == PresenceStatus.ONLINE,
+            userProfileBridge.GetOwn().IsBlocked(conversationUserId));
+
+        chatHudController.ClearAllEntries();
 
         var messageEntries = chatController.GetEntries().Where(IsMessageFomCurrentConversation).ToList();
         foreach (var v in messageEntries)
@@ -81,9 +106,9 @@ public class PrivateChatWindowHUDController : IHUD
         bool isValidMessage = !string.IsNullOrEmpty(message.body)
                               && !string.IsNullOrWhiteSpace(message.body)
                               && !string.IsNullOrEmpty(message.recipient);
-      
-        view.ResetInputField();
-        view.FocusInputField();
+
+        chatHudController.ResetInputField();
+        chatHudController.FocusInputField();
 
         if (!isValidMessage)
             return;
@@ -101,7 +126,13 @@ public class PrivateChatWindowHUDController : IHUD
         if (visible)
         {
             if (conversationProfile != null)
-                view.Setup(conversationProfile);
+            {
+                var userStatus = friendsController.GetUserStatus(conversationUserId);
+                view.Setup(conversationProfile,
+                    userStatus.presence == PresenceStatus.ONLINE,
+                    userProfileBridge.GetOwn().IsBlocked(conversationUserId));
+            }
+
             view.Show();
             // The messages from 'conversationUserId' are marked as read once the private chat is opened
             MarkUserChatMessagesAsRead(conversationUserId);
@@ -124,11 +155,11 @@ public class PrivateChatWindowHUDController : IHUD
 
         view?.Dispose();
     }
-    
+
     public void ForceFocus()
     {
         SetVisibility(true);
-        view.FocusInputField();
+        chatHudController.FocusInputField();
     }
 
     private void OnAddMessage(ChatMessage message)
@@ -144,9 +175,9 @@ public class PrivateChatWindowHUDController : IHUD
             MarkUserChatMessagesAsRead(conversationUserId, (long) message.timestamp);
         }
     }
-    
+
     private void OnCloseView() => SetVisibility(false);
-    
+
     private void View_OnPressBack() => OnPressBack?.Invoke();
 
     private bool IsMessageFomCurrentConversation(ChatMessage message)

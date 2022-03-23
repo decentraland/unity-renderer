@@ -1,0 +1,16 @@
+{
+    "name": "SocialBarHUD",
+    "rootNamespace": "",
+    "references": [
+        "GUID:81f3218b29e049144b175dad2ebbac1b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

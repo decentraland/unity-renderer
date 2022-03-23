@@ -61,11 +61,14 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddWorldChatWindowProperly()
     {
         worldChatWindowController = new WorldChatWindowController(new DataStore(),
-            new ChannelChatWindowController(), new PrivateChatWindowHUDController(),
+            new ChannelChatWindowController(),
             ScriptableObject.CreateInstance<LongVariable>(),
-            Substitute.For<IPlayerPrefs>(), Substitute.For<IUserProfileBridge>());
-        worldChatWindowController.Initialize(Substitute.For<IChatController>(),
-            Substitute.For<IMouseCatcher>(), Substitute.For<IWorldChatWindowView>());
+            Substitute.For<IPlayerPrefs>(),
+            Substitute.For<IUserProfileBridge>(),
+            Substitute.For<IFriendsController>(),
+            Substitute.For<IChatController>(),
+            Substitute.For<IMouseCatcher>());
+        worldChatWindowController.Initialize(Substitute.For<IWorldChatWindowView>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
         Assert.IsTrue(worldChatWindowController.View.Transform.parent == view.leftWindowContainer,
@@ -88,8 +91,11 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void ToggleWindowsProperly()
     {
-        privateChatController = new PrivateChatWindowHUDController();
-        privateChatController.Initialize(chatController);
+        privateChatController = new PrivateChatWindowHUDController(new DataStore(),
+            Substitute.For<IUserProfileBridge>(),
+            chatController,
+            Substitute.For<IFriendsController>());
+        privateChatController.Initialize(Substitute.For<IPrivateChatComponentView>());
         controller.AddPrivateChatWindow(privateChatController);
 
         const string badPositionMsg =
@@ -101,11 +107,14 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
         worldChatWindowController = new WorldChatWindowController(new DataStore(),
-            new ChannelChatWindowController(), new PrivateChatWindowHUDController(),
+            new ChannelChatWindowController(),
             ScriptableObject.CreateInstance<LongVariable>(),
-            Substitute.For<IPlayerPrefs>(), Substitute.For<IUserProfileBridge>());
-        worldChatWindowController.Initialize(chatController,
-            Substitute.For<IMouseCatcher>(), Substitute.For<IWorldChatWindowView>());
+            Substitute.For<IPlayerPrefs>(),
+            Substitute.For<IUserProfileBridge>(),
+            Substitute.For<IFriendsController>(),
+            chatController,
+            Substitute.For<IMouseCatcher>());
+        worldChatWindowController.Initialize(Substitute.For<IWorldChatWindowView>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
         rt = worldChatWindowController.View.Transform;

@@ -79,7 +79,7 @@ public class PrivateChatWindowHUDView : MonoBehaviour, IPrivateChatComponentView
 
     private void OnCloseButtonPressed() => OnClose?.Invoke();
     
-    public void Setup(UserProfile profile)
+    public void Setup(UserProfile profile, bool isOnline, bool isBlocked)
     {
         this.profile = profile;
         ConfigureTitle(this.profile.userName);
@@ -87,12 +87,6 @@ public class PrivateChatWindowHUDView : MonoBehaviour, IPrivateChatComponentView
         this.profile.snapshotObserver?.RemoveListener(ConfigureAvatarSnapshot);
         this.profile.snapshotObserver?.AddListener(ConfigureAvatarSnapshot);
     }
-
-    public void CleanAllEntries() => chatHudView.CleanAllEntries();
-
-    public void ResetInputField() => chatHudView.ResetInputField();
-
-    public void FocusInputField() => chatHudView.FocusInputField();
 
     public void Show()
     {

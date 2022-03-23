@@ -3,6 +3,7 @@ using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using DCL.Helpers;
 using NSubstitute;
 using UnityEngine.TestTools;
@@ -174,8 +175,11 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 
     private void InitializeChatWindowController(IChatController chatController)
     {
-        controller = new PrivateChatWindowHUDController();
-        controller.Initialize(chatController, view);
+        controller = new PrivateChatWindowHUDController(new DataStore(),
+            Substitute.For<IUserProfileBridge>(),
+            chatController,
+            Substitute.For<IFriendsController>());
+        controller.Initialize(view);
         controller.Configure(testProfileModel.userId);
         controller.SetVisibility(true);
     }

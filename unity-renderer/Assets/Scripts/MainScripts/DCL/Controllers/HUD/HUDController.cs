@@ -244,7 +244,7 @@ public class HUDController : IHUDController
 
                     if (privateChatWindowHud != null)
                     {
-                        privateChatWindowHud.Initialize(ChatController.i);
+                        privateChatWindowHud.Initialize();
                         privateChatWindowHud.OnPressBack -= PrivateChatWindowHud_OnPressBack;
                         privateChatWindowHud.OnPressBack += PrivateChatWindowHud_OnPressBack;
 

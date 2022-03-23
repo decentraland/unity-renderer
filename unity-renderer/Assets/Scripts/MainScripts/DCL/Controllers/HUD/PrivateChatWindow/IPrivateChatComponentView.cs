@@ -14,10 +14,7 @@ public interface IPrivateChatComponentView
     bool IsActive { get; }
     RectTransform Transform { get; }
 
-    void Setup(UserProfile profile);
-    void CleanAllEntries();
-    void ResetInputField();
-    void FocusInputField();
+    void Setup(UserProfile profile, bool isOnline, bool isBlocked);
     void Show();
     void Hide();
     void Dispose();

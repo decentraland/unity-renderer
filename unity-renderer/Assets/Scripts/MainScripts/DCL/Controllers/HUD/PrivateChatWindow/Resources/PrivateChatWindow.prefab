@@ -1051,10 +1051,11 @@ MonoBehaviour:
   chatEntriesContainer: {fileID: 6452473416983833199}
   scrollRect: {fileID: 5302075511252737345}
   messageHoverPanel: {fileID: 272799298560250154}
+  messageHoverGotoPanel: {fileID: 0}
   messageHoverText: {fileID: 2894773378673333929}
+  messageHoverGotoText: {fileID: 0}
   contextMenu: {fileID: 0}
   confirmationDialog: {fileID: 0}
-  gotoPanel: {fileID: 0}
 --- !u!1 &5971340815546429105
 GameObject:
   m_ObjectHideFlags: 0
@@ -2718,27 +2719,27 @@ PrefabInstance:
         type: 3}
       propertyPath: container
       value: 
-      objectReference: {fileID: 6895584436729269697}
+      objectReference: {fileID: 0}
     - target: {fileID: 5815241513015753506, guid: 486cb7198dd7515498189de8c605a1a3,
         type: 3}
       propertyPath: panelText
       value: 
-      objectReference: {fileID: 8864282891643552311}
+      objectReference: {fileID: 0}
     - target: {fileID: 5815241513015753506, guid: 486cb7198dd7515498189de8c605a1a3,
         type: 3}
       propertyPath: sceneOwnerText
       value: 
-      objectReference: {fileID: 5650158324357394174}
+      objectReference: {fileID: 0}
     - target: {fileID: 5815241513015753506, guid: 486cb7198dd7515498189de8c605a1a3,
         type: 3}
       propertyPath: sceneTitleText
       value: 
-      objectReference: {fileID: 2565017754971546600}
+      objectReference: {fileID: 0}
     - target: {fileID: 5815241513015753506, guid: 486cb7198dd7515498189de8c605a1a3,
         type: 3}
       propertyPath: teleportButton
       value: 
-      objectReference: {fileID: 5394976669094014222}
+      objectReference: {fileID: 0}
     - target: {fileID: 5935033239361829758, guid: 486cb7198dd7515498189de8c605a1a3,
         type: 3}
       propertyPath: m_fontAsset
@@ -3249,60 +3250,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &6895584436729269697 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1536081226567698313, guid: 486cb7198dd7515498189de8c605a1a3,
-    type: 3}
-  m_PrefabInstance: {fileID: 5396236211427936840}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &8864282891643552311 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3595854292268845183, guid: 486cb7198dd7515498189de8c605a1a3,
-    type: 3}
-  m_PrefabInstance: {fileID: 5396236211427936840}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2565017754971546600 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7600825135979112864, guid: 486cb7198dd7515498189de8c605a1a3,
-    type: 3}
-  m_PrefabInstance: {fileID: 5396236211427936840}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5650158324357394174 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 327123611452892342, guid: 486cb7198dd7515498189de8c605a1a3,
-    type: 3}
-  m_PrefabInstance: {fileID: 5396236211427936840}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5394976669094014222 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 17317910349178694, guid: 486cb7198dd7515498189de8c605a1a3,
-    type: 3}
-  m_PrefabInstance: {fileID: 5396236211427936840}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &7611361798710637238
