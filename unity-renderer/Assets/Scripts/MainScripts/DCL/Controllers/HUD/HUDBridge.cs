@@ -47,7 +47,7 @@ public class HUDBridge : MonoBehaviour
 
     public void SetVoiceChatEnabledByScene(int enabledPayload)
     {
-        Debug.Log($"VOICECHATDEBUG: Set voice chat enabled by scene {talking}");
+        Debug.Log($"VOICECHATDEBUG: Set voice chat enabled by scene {enabledPayload}");
         bool isEnabled = enabledPayload != 0;
         HUDController.i.taskbarHud?.SetVoiceChatEnabledByScene(isEnabled);
     }
