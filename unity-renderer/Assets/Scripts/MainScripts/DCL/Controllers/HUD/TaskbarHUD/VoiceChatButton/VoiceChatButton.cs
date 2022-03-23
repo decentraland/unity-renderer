@@ -17,13 +17,13 @@ public class VoiceChatButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     private bool isEnabledByScene = true;
 
     public void OnPointerDown(PointerEventData eventData) {
-        Debug.Log("Pointer down");
+        Debug.Log("VOICECHATDEBUG: Pointer down");
         voiceChatAction.RaiseOnStarted(); 
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("Pointer up");
+        Debug.Log("VOICECHATDEBUG: Pointer up");
         voiceChatAction.RaiseOnFinished(); 
     }
 

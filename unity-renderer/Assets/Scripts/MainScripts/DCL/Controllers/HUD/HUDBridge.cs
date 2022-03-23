@@ -40,16 +40,21 @@ public class HUDBridge : MonoBehaviour
         HUDController.i.termsOfServiceHud?.ShowTermsOfService(model);
     }
 
-    public void SetPlayerTalking(string talking) { HUDController.i.taskbarHud?.SetVoiceChatRecording("true".Equals(talking)); }
+    public void SetPlayerTalking(string talking) {
+        Debug.Log($"VOICECHATDEBUG: Set player talking {talking}");
+        HUDController.i.taskbarHud?.SetVoiceChatRecording("true".Equals(talking)); 
+    }
 
     public void SetVoiceChatEnabledByScene(int enabledPayload)
     {
+        Debug.Log($"VOICECHATDEBUG: Set voice chat enabled by scene {talking}");
         bool isEnabled = enabledPayload != 0;
         HUDController.i.taskbarHud?.SetVoiceChatEnabledByScene(isEnabled);
     }
 
     public void SetUserTalking(string payload)
     {
+        Debug.Log($"VOICECHATDEBUG: Set user talking {payload}");
         var model = JsonUtility.FromJson<UserTalkingModel>(payload);
         HUDController.i.usersAroundListHud?.SetUserRecording(model.userId, model.talking);
     }
