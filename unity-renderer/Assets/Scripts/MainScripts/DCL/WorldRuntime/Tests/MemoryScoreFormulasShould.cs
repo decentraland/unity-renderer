@@ -65,7 +65,7 @@ public class MemoryScoreFormulasShould
         keeper.Cleanup();
     }
 
-    [UnityTest]
+    [UnityTest, Explicit]
     public IEnumerator OvershootMeshMemoryWhenScoreIsComputed()
     {
         AssetPromiseKeeper_GLTF keeper = new AssetPromiseKeeper_GLTF();

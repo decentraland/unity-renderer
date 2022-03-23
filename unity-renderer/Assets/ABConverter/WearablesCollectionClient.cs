@@ -266,12 +266,12 @@ namespace DCL.ABConverter
 
             var pairs = ExtractMappingPairs(new List<WearableItem>() { items.Dequeue() });
             
-            abConverterCoreController.OnGLTFWillLoad += OnWearableLoad;
+            UnityGLTF.GLTFImporter.OnGLTFWillLoad += OnWearableLoad;
             
             abConverterCoreController.Convert(pairs.ToArray(),
                 (err) =>
                 {
-                    abConverterCoreController.OnGLTFWillLoad -= OnWearableLoad;
+                    UnityGLTF.GLTFImporter.OnGLTFWillLoad -= OnWearableLoad;
                     abConverterCoreController.CleanupWorkingFolders();
                     DumpWearableQueue(abConverterCoreController, items, OnWearableLoad, OnConversionFinish);
                 });
