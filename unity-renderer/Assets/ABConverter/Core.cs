@@ -50,6 +50,7 @@ namespace DCL.ABConverter
         internal readonly string finalDownloadedAssetDbPath;
         public Dictionary<string, string> hashLowercaseToHashProper = new Dictionary<string, string>();
         internal bool generateAssetBundles = true;
+        internal bool exitApplicationWhenFinished = true;
 
         public ClientSettings settings;
 
@@ -741,7 +742,9 @@ namespace DCL.ABConverter
             log.Info(logBuffer);
 
             CleanupWorkingFolders();
-            Utils.Exit((int) errorCode);
+            
+            if(exitApplicationWhenFinished)
+                Utils.Exit((int) errorCode);
         }
 
         /// <summary>
