@@ -220,16 +220,6 @@ public class BIWEntity
         lastPositionReported = rootEntity.gameObject.transform.position;
         lastScaleReported = rootEntity.gameObject.transform.lossyScale;
         lastRotationReported = rootEntity.gameObject.transform.rotation;
-        
-        // Note: This is a unity bug where colliders are not updated when we move/scale/rotate the item
-        // We workaround it by disabling and reenabling the physics after selection / deselection
-        foreach (List<GameObject> gameObjects in collidersGameObjectDictionary.Values)
-        {
-            foreach (GameObject colliderGameObject in gameObjects)
-            {
-                colliderGameObject.SetActive(false);
-            }
-        }
     }
 
     public void Deselect()
@@ -243,16 +233,6 @@ public class BIWEntity
             rootEntity.gameObject.transform.SetParent(originalParent);
 
         SetOriginalMaterials();
-        
-        // Note: This is a unity bug where colliders are not updated when we move/scale/rotate the item
-        // We workaround it by disabling and reenabling the physics
-        foreach (List<GameObject> gameObjects in collidersGameObjectDictionary.Values)
-        {
-            foreach (GameObject colliderGameObject in gameObjects)
-            {
-                colliderGameObject.SetActive(true);
-            }
-        }
     }
 
     public void ToggleShowStatus()
