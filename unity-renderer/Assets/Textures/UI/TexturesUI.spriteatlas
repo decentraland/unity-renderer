@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 5047646
+    totalSpriteSurfaceArea: 5051166
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -378,6 +378,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7566cf5f3986d4c32a672de8279ced32, type: 3}
   - {fileID: 21300000, guid: d40ff76fa8b254a8c9ed7c57ce1c9e21, type: 3}
   - {fileID: 21300000, guid: d6993c6f413d843cd86f9221b1f98736, type: 3}
+  - {fileID: 21300000, guid: 9760167f5e769f346901fb593d8ea864, type: 3}
   - {fileID: 21300000, guid: 4c6087aff340cef47b3f706424261aaf, type: 3}
   - {fileID: 21300000, guid: 60e92aaf3c91f4bc18ec574bed72f832, type: 3}
   - {fileID: 21300000, guid: 774f1dafe0ff34d158a77a6aafef1a49, type: 3}
@@ -705,6 +706,7 @@ SpriteAtlas:
   - LogOutIcon
   - RoundedContainer44
   - CloseButton
+  - JumpIcon
   - InputFieldBuilder
   - ControlsIcon
   - WarningIcon
