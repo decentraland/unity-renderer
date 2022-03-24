@@ -10,25 +10,31 @@ public class ABGLTF : MonoBehaviour
     public Material abMaterial;
 
     private float lastTime = 0;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+
+    private Dictionary<Renderer, Material[]> rendererDict  = new Dictionary<Renderer, Material[]>();
+
 
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.A))
         {
-            if (lastTime + 2 <= Time.timeSinceLevelLoad)
+            if (lastTime + 0.8f <= Time.timeSinceLevelLoad)
+            {
+                ChangeGLTFABMaterialsOfCurrentScene();
+            }
+        }
+        
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.Q))
+        {
+            if (lastTime + 0.8f <= Time.timeSinceLevelLoad)
             {
                 ChangeGLTFABMaterials();
             }
         }
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.B))
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.F))
         {
-            if (lastTime + 2 <= Time.timeSinceLevelLoad)
+            if (lastTime + 0.8f <= Time.timeSinceLevelLoad)
             {
                 RevertChanges();
             }
@@ -38,11 +44,24 @@ public class ABGLTF : MonoBehaviour
     void ChangeGLTFABMaterials()
     {
         lastTime = Time.timeSinceLevelLoad;
+        var gameObjects = GameObject.FindObjectsOfType(typeof(GameObject));
+        foreach (var gameObject in gameObjects)
+        {
+            var converted = (GameObject) gameObject;
+            if (converted.transform.parent == null)
+            {
+                ChangeMaterials(converted.transform);
+            }
+        }
+    }
+    
+    void ChangeGLTFABMaterialsOfCurrentScene()
+    {
+        lastTime = Time.timeSinceLevelLoad;
         var currentScene = FindSceneForPlayer();
         var sceneTransform = currentScene.GetSceneTransform();
 
         ChangeMaterials(sceneTransform);
-        
     }
 
     void ChangeMaterials(Transform transform)
@@ -58,8 +77,11 @@ public class ABGLTF : MonoBehaviour
                     if (childGameObject.name.Contains("AB: "))
                     {
                         var renderers = childGameObject.GetComponentsInChildren<Renderer>();
+                  
                         foreach (Renderer renderer in renderers)
                         {
+                            if(!rendererDict.ContainsKey(renderer))
+                                rendererDict.Add(renderer,renderer.materials);
                             renderer.material = abMaterial;
                         }
                     }
@@ -68,6 +90,8 @@ public class ABGLTF : MonoBehaviour
                         var renderers = childGameObject.GetComponentsInChildren<Renderer>();
                         foreach (Renderer renderer in renderers)
                         {
+                            if(!rendererDict.ContainsKey(renderer))
+                                rendererDict.Add(renderer,renderer.materials);
                             renderer.material = gltfMaterial;
                         }
                     }
@@ -82,7 +106,12 @@ public class ABGLTF : MonoBehaviour
 
     void RevertChanges()
     {
+        foreach (KeyValuePair<Renderer,Material[]> keyValuePair in rendererDict)
+        {
+            keyValuePair.Key.materials = keyValuePair.Value;
+        }
         
+        rendererDict.Clear();
     }
     
     public IParcelScene FindSceneForPlayer()
