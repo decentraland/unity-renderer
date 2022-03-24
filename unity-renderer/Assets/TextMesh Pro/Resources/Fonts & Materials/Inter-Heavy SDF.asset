@@ -6960,7 +6960,11 @@ MonoBehaviour:
   m_FontFeatureTable:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
-  m_FallbackFontAssetTable: []
+  m_FallbackFontAssetTable:
+  - {fileID: 11400000, guid: 12845077d31bee1468307150759c606c, type: 2}
+  - {fileID: 11400000, guid: 662b8ece470eb0b4ea6df6a34c63e483, type: 2}
+  - {fileID: 11400000, guid: a71ebcb8ca75ab94291ada9ad14a52c8, type: 2}
+  - {fileID: 11400000, guid: 3627e5b9c528dbd4f8d8b88968239c1a, type: 2}
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: 8c0adec13d7db4e5cb69b6dfe123550b
