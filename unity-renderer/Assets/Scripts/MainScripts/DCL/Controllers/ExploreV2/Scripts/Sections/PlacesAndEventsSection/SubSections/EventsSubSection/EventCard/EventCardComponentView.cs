@@ -144,6 +144,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal InputAction_Trigger closeAction;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
+    [SerializeField] internal ButtonComponentView jumpinButtonForNotLive;
     [SerializeField] internal ButtonComponentView subscribeEventButton;
     [SerializeField] internal ButtonComponentView unsubscribeEventButton;
     [SerializeField] internal GameObject imageContainer;
@@ -160,6 +161,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal EventCardComponentModel model;
 
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
+    public Button.ButtonClickedEvent onJumpInForNotLiveClick => jumpinButtonForNotLive?.onClick;
     public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
     public Button.ButtonClickedEvent onSubscribeClick => subscribeEventButton?.onClick;
     public Button.ButtonClickedEvent onUnsubscribeClick => unsubscribeEventButton?.onClick;
@@ -326,7 +328,10 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             eventDateText.gameObject.SetActive(!isLive);
 
         if (jumpinButton != null)
-            jumpinButton.gameObject.SetActive(isLive);
+            jumpinButton.gameObject.SetActive(isEventCardModal || isLive);
+
+        if (jumpinButtonForNotLive)
+            jumpinButtonForNotLive.gameObject.SetActive(!isEventCardModal && !isLive);
 
         if (subscribeEventButton != null)
             subscribeEventButton.gameObject.SetActive(!isLive && !model.isSubscribed);
