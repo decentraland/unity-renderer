@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
+using UnityEditor.Experimental;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityGLTF;
