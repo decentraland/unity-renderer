@@ -5,7 +5,7 @@ using DCL;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
 
-public class CollapsableDirectChatListComponentView : CollapsableSortedListComponentViewT<string, DirectChatEntry>
+public class CollapsableDirectChatListComponentView : CollapsableSortedListComponentView<string, DirectChatEntry>
 {
     private const string POOL_NAME_PREFIX = "DirectChatEntriesPool_";
     

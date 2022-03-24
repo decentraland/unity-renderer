@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UIComponents.CollapsableSortedList
 {
-    public class CollapsableSortedListComponentViewT<K, V> : BaseComponentView
+    public class CollapsableSortedListComponentView<K, V> : BaseComponentView
         where V : Component
     {
         private readonly Dictionary<K, V> entries = new Dictionary<K, V>();

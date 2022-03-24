@@ -7,6 +7,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 {
     [SerializeField] private CollapsableDirectChatListComponentView directChatList;
     [SerializeField] private Button closeButton;
+    [SerializeField] private Model model;
     
     public event Action OnClose;
     public event Action<string> OnOpenChat; 
@@ -48,6 +49,14 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public override void RefreshControl()
     {
-        throw new NotImplementedException();
+        directChatList.Clear();
+        foreach (var entry in model.entries)
+            directChatList.Set(entry.userId, entry);
+    }
+
+    [Serializable]
+    private class Model
+    {
+        public DirectChatEntry.DirectChatEntryModel[] entries;
     }
 }
