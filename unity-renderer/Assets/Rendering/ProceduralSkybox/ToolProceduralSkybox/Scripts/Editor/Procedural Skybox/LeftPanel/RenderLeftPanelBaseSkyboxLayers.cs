@@ -62,12 +62,6 @@ namespace DCL.Skybox
 
                 GUI.enabled = true;
 
-                if (GUILayout.Button(SkyboxEditorLiterals.sign_remove))
-                {
-                    config.layers.RemoveAt(i);
-                    break;
-                }
-
                 Color circleColor = Color.green;
                 switch (config.layers[i].renderType)
                 {
@@ -93,6 +87,42 @@ namespace DCL.Skybox
                 EditorGUILayout.LabelField(SkyboxEditorLiterals.renderMarker.ToString(), SkyboxEditorStyles.Instance.renderingMarkerStyle, GUILayout.Width(20), GUILayout.Height(20));
 
                 GUI.color = normalContentColor;
+
+                // Dome context menu
+                if (GUILayout.Button(":", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                {
+                    ArrayList list = new ArrayList();
+                    list.Add(config.layers);
+                    list.Add(i);
+
+                    // Anonymous method for delete operation
+                    GenericMenu.MenuFunction2 deleteBtnClicked = (object obj) =>
+                    {
+                        ArrayList list = obj as ArrayList;
+                        List<TextureLayer> layerList = list[0] as List<TextureLayer>;
+                        int index = (int)list[1];
+                        layerList.RemoveAt(index);
+                    };
+
+                    // Anonymous method for Add operation
+                    GenericMenu.MenuFunction2 addBtnClicked = (object obj) =>
+                    {
+                        ArrayList list = obj as ArrayList;
+                        List<TextureLayer> layerList = list[0] as List<TextureLayer>;
+                        int index = (int)list[1];
+                        layerList.Insert(index + 1, new TextureLayer("New Layer"));
+                    };
+
+                    // Anonymous method for Paste layer
+                    GenericMenu.MenuFunction2 pasteBtnClicked = (object obj) =>
+                    {
+                        //ArrayList list = obj as ArrayList;
+                        //List<Config3DDome> domeList = list[0] as List<Config3DDome>;
+                        //int index = (int)list[1];
+                        //copiedLayer.DeepCopy(domeList[index].layers);
+                    };
+                    ShowBaseLayersContextMenu(deleteBtnClicked, addBtnClicked, pasteBtnClicked, list);
+                }
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
@@ -100,12 +130,29 @@ namespace DCL.Skybox
             Rect r = EditorGUILayout.BeginHorizontal();
             if (GUI.Button(new Rect(r.width - 35, r.y, 25, 25), SkyboxEditorLiterals.sign_add))
             {
-                config.layers.Add(new TextureLayer("Tex Layer " + (config.layers.Count + 1)));
+                config.layers.Add(new TextureLayer("New Layer"));
             }
 
             EditorGUILayout.Space(25);
             EditorGUILayout.EndHorizontal();
 
+        }
+
+        private static void ShowBaseLayersContextMenu(GenericMenu.MenuFunction2 OnDeleteBtnClicked, GenericMenu.MenuFunction2 OnAddBtnClicked, GenericMenu.MenuFunction2 OnPasteBtnClicked, object list)
+        {
+            // Create menu
+            GenericMenu menu = new GenericMenu();
+
+            // Add option
+            menu.AddItem(new GUIContent("Add"), false, OnAddBtnClicked, list);
+            // Paste option
+            menu.AddItem(new GUIContent("Paste"), false, OnPasteBtnClicked, list);
+
+            menu.AddSeparator("");
+            // Delete option
+            menu.AddItem(new GUIContent("Delete"), false, OnDeleteBtnClicked, list);
+
+            menu.ShowAsContext();
         }
     }
 }
