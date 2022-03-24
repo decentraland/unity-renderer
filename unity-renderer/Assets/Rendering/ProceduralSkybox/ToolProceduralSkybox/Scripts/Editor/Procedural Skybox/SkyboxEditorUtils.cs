@@ -20,8 +20,8 @@ namespace DCL.Skybox
     {
         public string name;
         public SkyboxEditorToolsParts part;
-        public int baseSkyboxSelectedIndex;
-        public int dome3DElementsIndex;
+        public TextureLayer baseSkyboxTargetLayer = null;
+        public Config3DDome targetDomeElement;
         public bool pinned;
         public Vector2 scroll;
     }

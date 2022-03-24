@@ -20,7 +20,7 @@ namespace DCL.Skybox
 
                 if (GUILayout.Button(config.additional3Dconfig[i].layers.nameInEditor, GUILayout.Width(toolSize.layerButtonWidth)))
                 {
-                    AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Elements3D_Dome, name = config.additional3Dconfig[i].layers.nameInEditor, dome3DElementsIndex = i });
+                    AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Elements3D_Dome, name = config.additional3Dconfig[i].layers.nameInEditor, targetDomeElement = config.additional3Dconfig[i] });
                 }
 
                 if (i == 0)

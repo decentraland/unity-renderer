@@ -91,77 +91,13 @@ namespace DCL.Skybox
             topLeft = toolSize.topPanelLeftStart + width + toolSize.panelsPadding;
             width = position.width - toolSize.toolRightPadding - topLeft;
             GUILayout.BeginArea(new Rect(topLeft + toolSize.rightPanelPadding.xMin, top + toolSize.rightPanelPadding.yMin, width - toolSize.rightPanelPadding.xMax, height - toolSize.rightPanelPadding.yMax));
-            RenderPinnedRightPanel(topLeft + toolSize.rightPanelPadding.xMin, top + toolSize.rightPanelPadding.yMin, width - toolSize.rightPanelPadding.xMax, height - toolSize.rightPanelPadding.yMax);
+            RenderRightPanel(topLeft + toolSize.rightPanelPadding.xMin, top + toolSize.rightPanelPadding.yMin, width - toolSize.rightPanelPadding.xMax, height - toolSize.rightPanelPadding.yMax);
             GUILayout.EndArea();
 
             if (GUI.changed)
             {
                 ApplyOnMaterial();
             }
-        }
-
-        void RenderPinnedRightPanel(float topLeft, float top, float width, float height)
-        {
-            RefreshPinnedPanels();
-
-            rightPanelScrollPos = EditorGUILayout.BeginScrollView(rightPanelScrollPos);
-
-            topLeft = 0;
-            top = 0;
-
-            for (int i = 0; i < rightPanelPins.Count - 1; i++)
-            {
-                // Make a box for pinned panel
-                EditorGUI.DrawRect(new Rect(0 + toolSize.pinnedPanelBGOffset.x, top + toolSize.pinnedPanelBGOffset.y, width + toolSize.pinnedPanelBGOffset.width, toolSize.pinnedPanelHeight + toolSize.pinnedPanelBGOffset.height), toolSize.panelBGColor);
-                GUILayout.BeginArea(new Rect(0, top, width - toolSize.rightPanelPadding.xMax, toolSize.pinnedPanelHeight));
-                RenderRightPanel(rightPanelPins[i]);
-                GUILayout.EndArea();
-
-                topLeft = 0;
-                top = top + toolSize.pinnedPanelHeight + toolSize.pinnedPanelBGOffset.yMax + toolSize.pinnedPanelBGOffset.yMax;
-            }
-
-            // Make a box for pinned panel
-            EditorGUI.DrawRect(new Rect(0 + toolSize.pinnedPanelBGOffset.x, top + toolSize.pinnedPanelBGOffset.y, width + toolSize.pinnedPanelBGOffset.width, height), toolSize.panelBGColor);
-            GUILayout.BeginArea(new Rect(0, top, width - toolSize.rightPanelPadding.xMax, height - top));
-            RenderRightPanel(rightPanelPins[rightPanelPins.Count - 1]);
-            GUILayout.EndArea();
-
-            EditorGUILayout.EndScrollView();
-        }
-
-        private void AddToRightPanel(RightPanelPins obj)
-        {
-            List<RightPanelPins> pinnedPanels = new List<RightPanelPins>();
-            // Remove
-            for (int i = 0; i < rightPanelPins.Count; i++)
-            {
-                if (rightPanelPins[i].pinned)
-                {
-                    pinnedPanels.Add(rightPanelPins[i]);
-                }
-            }
-            pinnedPanels.Add(obj);
-            // Add
-            rightPanelPins = pinnedPanels;
-        }
-
-        private void RefreshPinnedPanels()
-        {
-            List<RightPanelPins> pinnedPanels = new List<RightPanelPins>();
-
-            for (int i = 0; i < rightPanelPins.Count; i++)
-            {
-                if (rightPanelPins[i].pinned)
-                {
-                    pinnedPanels.Add(rightPanelPins[i]);
-                }
-                else if (i == (rightPanelPins.Count - 1))
-                {
-                    pinnedPanels.Add(rightPanelPins[i]);
-                }
-            }
-            rightPanelPins = pinnedPanels;
         }
 
         #region Top Panel
@@ -360,7 +296,93 @@ namespace DCL.Skybox
 
         #region Right Panel
 
-        private void RenderRightPanel(RightPanelPins obj)
+        private void AddToRightPanel(RightPanelPins obj)
+        {
+            List<RightPanelPins> pinnedPanels = new List<RightPanelPins>();
+            // Remove
+            for (int i = 0; i < rightPanelPins.Count; i++)
+            {
+                if (rightPanelPins[i].pinned)
+                {
+                    pinnedPanels.Add(rightPanelPins[i]);
+                }
+            }
+            pinnedPanels.Add(obj);
+            // Add
+            rightPanelPins = pinnedPanels;
+        }
+
+        void RenderRightPanel(float topLeft, float top, float width, float height)
+        {
+            RefreshPinnedPanels();
+
+            rightPanelScrollPos = EditorGUILayout.BeginScrollView(rightPanelScrollPos);
+
+            topLeft = 0;
+            top = 0;
+
+            for (int i = 0; i < rightPanelPins.Count - 1; i++)
+            {
+                // Make a box for pinned panel
+                EditorGUI.DrawRect(new Rect(0 + toolSize.pinnedPanelBGOffset.x, top + toolSize.pinnedPanelBGOffset.y, width + toolSize.pinnedPanelBGOffset.width, toolSize.pinnedPanelHeight + toolSize.pinnedPanelBGOffset.height), toolSize.panelBGColor);
+                GUILayout.BeginArea(new Rect(0, top, width - toolSize.rightPanelPadding.xMax, toolSize.pinnedPanelHeight));
+                RenderPinnedRightPanel(rightPanelPins[i]);
+                GUILayout.EndArea();
+
+                topLeft = 0;
+                top = top + toolSize.pinnedPanelHeight + toolSize.pinnedPanelBGOffset.yMax + toolSize.pinnedPanelBGOffset.yMax;
+            }
+
+            // Make a box for pinned panel
+            EditorGUI.DrawRect(new Rect(0 + toolSize.pinnedPanelBGOffset.x, top + toolSize.pinnedPanelBGOffset.y, width + toolSize.pinnedPanelBGOffset.width, height), toolSize.panelBGColor);
+            GUILayout.BeginArea(new Rect(0, top, width - toolSize.rightPanelPadding.xMax, height - top));
+
+            if (rightPanelPins.Count > 0)
+            {
+                RenderPinnedRightPanel(rightPanelPins[rightPanelPins.Count - 1]);
+            }
+
+            GUILayout.EndArea();
+
+            EditorGUILayout.EndScrollView();
+        }
+
+        private void RefreshPinnedPanels()
+        {
+            List<RightPanelPins> pinnedPanels = new List<RightPanelPins>();
+
+            for (int i = 0; i < rightPanelPins.Count; i++)
+            {
+                // Check if pinned panel object (in case of Base_Skybox and Elements3D_Dome) is deleted or not if deleted continue
+                if (rightPanelPins[i].part == SkyboxEditorToolsParts.Base_Skybox)
+                {
+                    if (!selectedConfiguration.layers.Contains(rightPanelPins[i].baseSkyboxTargetLayer))
+                    {
+                        continue;
+                    }
+                }
+
+                if (rightPanelPins[i].part == SkyboxEditorToolsParts.Elements3D_Dome)
+                {
+                    if (!selectedConfiguration.additional3Dconfig.Contains(rightPanelPins[i].targetDomeElement))
+                    {
+                        continue;
+                    }
+                }
+
+                if (rightPanelPins[i].pinned)
+                {
+                    pinnedPanels.Add(rightPanelPins[i]);
+                }
+                else if (i == (rightPanelPins.Count - 1))
+                {
+                    pinnedPanels.Add(rightPanelPins[i]);
+                }
+            }
+            rightPanelPins = pinnedPanels;
+        }
+
+        private void RenderPinnedRightPanel(RightPanelPins obj)
         {
             RenderRightPanelHeading(obj.name, obj);
             obj.scroll = EditorGUILayout.BeginScrollView(obj.scroll);
@@ -387,10 +409,10 @@ namespace DCL.Skybox
                     DirectionalLightLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration, directionalLight);
                     break;
                 case SkyboxEditorToolsParts.Base_Skybox:
-                    RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration.layers[obj.baseSkyboxSelectedIndex]);
+                    RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.baseSkyboxTargetLayer);
                     break;
                 case SkyboxEditorToolsParts.Elements3D_Dome:
-                    RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration.additional3Dconfig[obj.dome3DElementsIndex].layers);
+                    RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.targetDomeElement.layers);
                     break;
                 default:
                     break;

@@ -20,7 +20,7 @@ namespace DCL.Skybox
 
                 if (GUILayout.Button(config.layers[i].nameInEditor, GUILayout.Width(toolSize.layerButtonWidth)))
                 {
-                    AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Base_Skybox, name = config.layers[i].nameInEditor, baseSkyboxSelectedIndex = i });
+                    AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Base_Skybox, name = config.layers[i].nameInEditor, baseSkyboxTargetLayer = config.layers[i] });
                 }
 
                 config.layers[i].slotID = EditorGUILayout.Popup(config.layers[i].slotID, renderingOrderList.ToArray(), GUILayout.Width(toolSize.layerRenderWidth));
