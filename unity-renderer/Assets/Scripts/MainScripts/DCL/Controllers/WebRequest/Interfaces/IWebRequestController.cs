@@ -96,7 +96,8 @@ namespace DCL
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
-            bool isReadable = true);
+            bool isReadable = true,
+            Dictionary<string, string> headers = null);
 
         /// <summary>
         /// Download an audio clip from a url.

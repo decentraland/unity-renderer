@@ -35,6 +35,8 @@ namespace DCL.Builder
         private PublishInfo publishInfo;
         private IBuilderScene.SceneType lastTypeWhoStartedPublish;
         private TYPE type = TYPE.PUBLISH;
+
+        private float rotationToApply = 0f;
         
         public void Initialize(IContext context)
         {
@@ -234,6 +236,17 @@ namespace DCL.Builder
 
         internal void ApplyRotation(IBuilderScene scene, PublishInfo.ProjectRotation rotation)
         {
+            rotationToApply = 90f * (int)rotation;
+            RotationScene(scene, rotationToApply);
+        }
+
+        internal void UndoRotationToScene(IBuilderScene scene)
+        {
+            RotationScene(scene, -rotationToApply);
+        }
+
+        internal void RotationScene(IBuilderScene scene, float amount)
+        {
             // Note: if the aerialscreenshot is not available, this means that the scene has been deployed
             // from the panel instead of the editor, so we don't have the scene to rotate, we publish it to north directly
             if (scene.aerialScreenshotTexture == null)
@@ -241,8 +254,8 @@ namespace DCL.Builder
             
             var transform = scene.scene.GetSceneTransform();
             Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(scene.scene);
-            
-            transform.RotateAround(middlePoint,Vector3.up,90f*(int)rotation);
+
+            transform.RotateAround(middlePoint,Vector3.up,amount);
             scene.UpdateManifestFromScene();
         }
 
@@ -252,9 +265,6 @@ namespace DCL.Builder
             {
                 // We assign the scene to deploy
                 builderSceneToDeploy = scene;
-
-                // We apply the rotation of the scene
-                ApplyRotation(scene, info.rotation);
 
                 // Prepare the thumbnail
                 byte[] thumbnail = scene.sceneScreenshotTexture.EncodeToPNG();
@@ -268,9 +278,15 @@ namespace DCL.Builder
                 // Prepare scene.json
                 CatalystSceneEntityMetadata sceneJson = CreateSceneJson(scene, info);
 
+                // We apply the rotation of the scene so the entities are rotated
+                ApplyRotation(scene, info.rotation);
+                
                 // Group all entities files
                 StatelessManifest statelessManifest = ManifestTranslator.WebBuilderSceneToStatelessManifest(scene.manifest.scene);
 
+                // We undo the rotation of the scene
+                UndoRotationToScene(scene);
+                
                 // This files are not encoded
                 Dictionary<string, object> entityFiles = new Dictionary<string, object>
                 {
@@ -378,6 +394,7 @@ namespace DCL.Builder
             string[] parcels = new string[builderScene.scene.sceneData.parcels.Length];
             int cont = 0;
 
+            // Size
             Vector2Int sceneSize = BIWUtils.GetSceneSize(builderScene.scene);
             for (int x = 0; x < sceneSize.x; x++)
             {
