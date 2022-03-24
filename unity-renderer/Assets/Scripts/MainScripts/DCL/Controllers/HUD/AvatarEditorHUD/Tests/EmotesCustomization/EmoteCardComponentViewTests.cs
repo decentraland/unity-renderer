@@ -126,9 +126,9 @@ public class EmoteCardComponentViewTests : MonoBehaviour
 
         // Assert
         if (useNullSprite)
-            Assert.AreEqual(emoteCardComponent.defaultEmotePicture, emoteCardComponent.model.pictureSprite, "The pciture sprite does not match in the model.");
+            Assert.AreEqual(emoteCardComponent.defaultEmotePicture, emoteCardComponent.model.pictureSprite, "The picture sprite does not match in the model.");
         else
-            Assert.AreEqual(testSprite, emoteCardComponent.model.pictureSprite, "The pciture sprite does not match in the model.");
+            Assert.AreEqual(testSprite, emoteCardComponent.model.pictureSprite, "The picture sprite does not match in the model.");
     }
 
     [Test]
@@ -141,9 +141,9 @@ public class EmoteCardComponentViewTests : MonoBehaviour
 
         // Assert
         if (string.IsNullOrEmpty(testUri))
-            Assert.AreEqual(emoteCardComponent.defaultEmotePicture, emoteCardComponent.model.pictureSprite, "The pciture sprite does not match in the model.");
+            Assert.AreEqual(emoteCardComponent.defaultEmotePicture, emoteCardComponent.model.pictureSprite, "The picture sprite does not match in the model.");
         else
-            Assert.AreEqual(testUri, emoteCardComponent.model.pictureUri, "The pciture uri does not match in the model.");
+            Assert.AreEqual(testUri, emoteCardComponent.model.pictureUri, "The picture uri does not match in the model.");
     }
 
     [Test]
