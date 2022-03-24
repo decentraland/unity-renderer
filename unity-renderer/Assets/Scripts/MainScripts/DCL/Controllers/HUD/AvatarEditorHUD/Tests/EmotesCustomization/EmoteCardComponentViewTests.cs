@@ -1,7 +1,6 @@
 using EmotesCustomization;
 using NUnit.Framework;
 using UnityEngine;
-
 public class EmoteCardComponentViewTests : MonoBehaviour
 {
     private EmoteCardComponentView emoteCardComponent;
@@ -260,15 +259,65 @@ public class EmoteCardComponentViewTests : MonoBehaviour
     }
 
     [Test]
-    public void RefreshAssignedSlotTextVisibilityCorrectly()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RefreshAssignedSlotTextVisibilityCorrectly(bool hasSlotAssigned)
     {
         // Arrange
-        emoteCardComponent.assignedSlotNumberText.gameObject.SetActive(false);
+        emoteCardComponent.assignedSlotNumberText.gameObject.SetActive(!hasSlotAssigned);
+        emoteCardComponent.model.assignedSlot = hasSlotAssigned ? 0 : -1;
 
         // Act
         emoteCardComponent.RefreshAssignedSlotTextVisibility();
 
         // Assert
-        Assert.IsTrue(emoteCardComponent.assignedSlotNumberText.gameObject.activeSelf);
+        Assert.AreEqual(hasSlotAssigned, emoteCardComponent.assignedSlotNumberText.gameObject.activeSelf);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RefreshSelectionFrameVisibilityCorrectly(bool isSelected)
+    {
+        // Arrange
+        emoteCardComponent.cardSelectionFrame.SetActive(!isSelected);
+        emoteCardComponent.model.isSelected = isSelected;
+
+        // Act
+        emoteCardComponent.RefreshSelectionFrameVisibility();
+
+        // Assert
+        Assert.AreEqual(isSelected, emoteCardComponent.cardSelectionFrame.activeSelf);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RefreshCardButtonsVisibilityCorrectly(bool isCollectible)
+    {
+        // Arrange
+        emoteCardComponent.infoButton.gameObject.SetActive(!isCollectible);
+        emoteCardComponent.model.isCollectible = isCollectible;
+
+        // Act
+        emoteCardComponent.RefreshCardButtonsVisibility();
+
+        // Assert
+        Assert.AreEqual(isCollectible, emoteCardComponent.infoButton.gameObject.activeSelf);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RaiseOnEmoteImageLoadedCorrectly(bool useNullSprite)
+    {
+        // Act
+        emoteCardComponent.OnEmoteImageLoaded(useNullSprite ? null : testSprite);
+
+        // Assert
+        if (useNullSprite)
+            Assert.AreEqual(emoteCardComponent.defaultEmotePicture, emoteCardComponent.model.pictureSprite, "The pciture sprite does not match in the model.");
+        else
+            Assert.AreEqual(testSprite, emoteCardComponent.model.pictureSprite, "The pciture sprite does not match in the model.");
     }
 }
