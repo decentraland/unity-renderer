@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
@@ -30,10 +32,11 @@ namespace DCL.Emotes
             this.emoteAnimationLoaderFactory = emoteAnimationLoaderFactory;
             this.wearableItemResolver = wearableItemResolver;
             this.dataStore.animations.Clear();
-            this.dataStore.emotesOnUse.OnRefCountUpdated += OnRefCountUpdated;
 
             InitializeEmbeddedEmotes();
             InitializeEmotes(this.dataStore.emotesOnUse.GetAllRefCounts());
+
+            this.dataStore.emotesOnUse.OnRefCountUpdated += OnRefCountUpdated;
         }
 
         private void InitializeEmbeddedEmotes()
@@ -52,6 +55,7 @@ namespace DCL.Emotes
                     //We match the animation id with its name due to performance reasons
                     //Unity's Animation uses the name to play the clips.
                     embeddedEmote.maleAnimation.name = embeddedEmote.id;
+                    dataStore.emotesOnUse.SetRefCount((MALE,  embeddedEmote.id), 5000);
                     dataStore.animations.Add((MALE, embeddedEmote.id), embeddedEmote.maleAnimation);
                     loaders.Add((MALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
                 }
@@ -61,6 +65,7 @@ namespace DCL.Emotes
                     //We match the animation id with its name due to performance reasons
                     //Unity's Animation uses the name to play the clips.
                     embeddedEmote.femaleAnimation.name = embeddedEmote.id;
+                    dataStore.emotesOnUse.SetRefCount((FEMALE,  embeddedEmote.id), 5000);
                     dataStore.animations.Add((FEMALE, embeddedEmote.id), embeddedEmote.femaleAnimation);
                     loaders.Add((FEMALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
                 }
@@ -101,9 +106,10 @@ namespace DCL.Emotes
 
                 dataStore.animations.Add((bodyShapeId, emoteId), animationLoader.animation);
             }
-            catch
+            catch (Exception e)
             {
                 loaders.Remove((bodyShapeId, emoteId));
+                ExceptionDispatchInfo.Capture(e).Throw();
                 throw;
             }
         }
