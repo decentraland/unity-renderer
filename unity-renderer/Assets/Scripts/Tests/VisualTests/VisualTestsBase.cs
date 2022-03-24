@@ -8,6 +8,7 @@ using DCL.Helpers;
 using UnityEngine.Rendering.Universal;
 using Object = UnityEngine.Object;
 
+// test
 public class VisualTestsBase : IntegrationTestSuite_Legacy
 {
     protected ParcelScene scene;
