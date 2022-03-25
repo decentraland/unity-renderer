@@ -7,6 +7,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
@@ -36,6 +37,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     private readonly Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private readonly List<ChatEntry.Model> lastMessages = new List<ChatEntry.Model>();
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
+    private readonly Dictionary<Action, UnityAction<string>> inputFieldListeners = new Dictionary<Action, UnityAction<string>>();
     
     private Match whisperRegexMatch;
     private bool enableFadeoutMode;
@@ -52,6 +54,22 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         {
             if (contextMenu != null)
                 contextMenu.OnShowMenu -= value;
+        }
+    }
+
+    public event Action OnInputFieldSelected
+    {
+        add
+        {
+            void Action(string s) => value.Invoke();
+            inputFieldListeners[value] = Action;
+            inputField.onSelect.AddListener(Action);
+        }
+        remove
+        {
+            if (!inputFieldListeners.ContainsKey(value)) return;
+            inputField.onSelect.RemoveListener(inputFieldListeners[value]);
+            inputFieldListeners.Remove(value);
         }
     }
 

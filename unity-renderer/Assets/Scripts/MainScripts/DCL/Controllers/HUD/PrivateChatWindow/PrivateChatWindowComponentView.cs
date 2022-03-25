@@ -8,14 +8,12 @@ using UnityEngine.UI;
 public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatComponentView
 {
     [SerializeField] private Button backButton;
-    [SerializeField] private Button closeButton;
     [SerializeField] private UserThumbnailComponentView userThumbnail;
     [SerializeField] private TMP_Text userNameLabel;
     [SerializeField] private PrivateChatHUDView chatView;
     [SerializeField] private Model model;
 
     public event Action OnPressBack;
-    public event Action OnInputFieldSelected;
     public event Action<ChatMessage> OnSendMessage;
     public event Action OnMinimize;
     public event Action OnClose;
@@ -54,7 +52,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     {
         model = new Model
         {
-            userId = profile.userId,
             faceSnapshotUrl = profile.face256SnapshotURL,
             userName = profile.userName,
             isUserOnline = isOnline,
@@ -70,7 +67,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [Serializable]
     private struct Model
     {
-        public string userId;
         public string userName;
         public string faceSnapshotUrl;
         public bool isUserBlocked;

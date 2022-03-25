@@ -19,25 +19,9 @@ public class PrivateChatWindowHUDView : MonoBehaviour, IPrivateChatComponentView
     public TMP_Text windowTitleText;
     public RawImage profilePictureImage;
 
-    private readonly Dictionary<Action, UnityAction<string>> inputFieldListeners = new Dictionary<Action, UnityAction<string>>();
     private UserProfile profile;
 
     public event Action OnPressBack;
-    public event Action OnInputFieldSelected
-    {
-        add
-        {
-            void Action(string s) => value.Invoke();
-            inputFieldListeners[value] = Action;
-            chatHudView.inputField.onSelect.AddListener(Action);
-        }
-        remove
-        {
-            if (!inputFieldListeners.ContainsKey(value)) return;
-            chatHudView.inputField.onSelect.RemoveListener(inputFieldListeners[value]);
-            inputFieldListeners.Remove(value);
-        }
-    }
 
     public IChatHUDComponentView ChatHUD => chatHudView;
     public bool IsActive => gameObject.activeSelf;

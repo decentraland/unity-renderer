@@ -5,7 +5,6 @@ using UnityEngine;
 public interface IPrivateChatComponentView
 {
     event Action OnPressBack;
-    event Action OnInputFieldSelected;
     event Action<ChatMessage> OnSendMessage;
     event Action OnMinimize;
     event Action OnClose;

@@ -11,6 +11,7 @@ public class ChatHUDController : IDisposable
     public IChatHUDComponentView view;
 
     public event UnityAction<string> OnPressPrivateMessage;
+    public event Action OnInputFieldSelected;
 
     private readonly DataStore dataStore;
     private readonly RegexProfanityFilter profanityFilter;
@@ -31,6 +32,8 @@ public class ChatHUDController : IDisposable
         this.view.OnPressPrivateMessage += View_OnPressPrivateMessage;
         this.view.OnShowMenu -= ContextMenu_OnShowMenu;
         this.view.OnShowMenu += ContextMenu_OnShowMenu;
+        this.view.OnInputFieldSelected -= OnInputFieldSelected;
+        this.view.OnInputFieldSelected += OnInputFieldSelected;
 
         closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
