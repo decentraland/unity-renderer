@@ -468,7 +468,7 @@ namespace DCL.Controllers
 
             if (entity == null)
             {
-                Debug.LogError($"scene '{sceneData.id}': Can't create entity component if the entity {entityId} doesn't exist!");
+                Debug.LogError($"scene '{sceneData.id}': Can't create entity component {classId} if the entity {entityId} doesn't exist!");
                 return null;
             }
 

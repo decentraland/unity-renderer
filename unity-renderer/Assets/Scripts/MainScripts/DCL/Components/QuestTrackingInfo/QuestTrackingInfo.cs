@@ -26,8 +26,10 @@ public class QuestTrackingInfo : BaseComponent
         if (!(newModel is QuestModel quest))
             return;
 
-        bool isDifferentQuest = cachedModel != null && quest.id != cachedModel.id;
-        cachedModel = (QuestModel) this.model;
+        if (string.IsNullOrEmpty(quest.id))
+            return;
+
+        bool isDifferentQuest = cachedModel == null || quest.id != cachedModel.id;
         if (isDifferentQuest)
             questsController.RemoveQuest(cachedModel);
 

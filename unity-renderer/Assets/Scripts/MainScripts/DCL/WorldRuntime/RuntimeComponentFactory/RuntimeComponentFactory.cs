@@ -119,7 +119,7 @@ namespace DCL
         {
             if (!builders.ContainsKey(classId))
             {
-                Debug.LogError($"Unknown classId");
+                Debug.LogError($"Unknown classId {classId}");
                 return null;
             }
 

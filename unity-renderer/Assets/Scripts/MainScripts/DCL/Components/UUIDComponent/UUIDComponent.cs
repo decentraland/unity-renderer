@@ -6,7 +6,7 @@ using DCL.Models;
 
 namespace DCL
 {
-    public abstract class UUIDComponent : BaseComponent
+    public class UUIDComponent : BaseComponent
     {
         [Serializable]
         public class Model : BaseModel
@@ -38,7 +38,7 @@ namespace DCL
 
         public override string componentName => uuidComponentName;
 
-        protected abstract string uuidComponentName { get; }
+        protected virtual string uuidComponentName { get; }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {

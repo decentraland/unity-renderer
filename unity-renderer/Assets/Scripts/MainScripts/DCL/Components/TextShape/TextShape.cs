@@ -224,7 +224,7 @@ namespace DCL.Components
             }
         }
 
-        public override int GetClassId() { return (int) CLASS_ID.UI_TEXT_SHAPE; }
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.TEXT_SHAPE; }
 
         public override void Cleanup()
         {
