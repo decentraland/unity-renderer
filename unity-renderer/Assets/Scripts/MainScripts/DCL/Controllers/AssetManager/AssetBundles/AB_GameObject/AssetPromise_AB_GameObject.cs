@@ -86,12 +86,18 @@ namespace DCL
             else
                 return $"subPromise == null? state = {state}";
         }
-
+        
         public IEnumerator LoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
         {
             subPromise = new AssetPromise_AB(contentUrl, hash, asset.container.transform);
             bool success = false;
+            Exception loadingException = null;
             subPromise.OnSuccessEvent += (x) => success = true;
+            subPromise.OnFailEvent += ( ab,  exception) =>
+            {
+                loadingException = exception;
+                success = false;
+            };
             asset.ownerPromise = subPromise;
             AssetPromiseKeeper_AB.i.Keep(subPromise);
 
@@ -111,7 +117,14 @@ namespace DCL
             }
             else
             {
-                OnFail?.Invoke(new Exception($"AB sub-promise asset or container is null. Asset: {subPromise.asset}, container: {asset.container}"));
+                if (loadingException != null)
+                {
+                    OnFail?.Invoke(loadingException);   
+                }
+                else
+                {
+                    OnFail?.Invoke(new Exception($"AB sub-promise asset or container is null. Asset: {subPromise.asset}, container: {asset.container}"));
+                }
             }
         }
 
