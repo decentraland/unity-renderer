@@ -9,8 +9,8 @@ public static class TextureHelpers
             return source;
 
         float factor = 1.0f;
-        int width = source.width;
-        int height = source.height;
+        int width = Mathf.Max(source.width, 1);
+        int height = Mathf.Max(source.height, 1);
 
         if (width >= height)
         {
