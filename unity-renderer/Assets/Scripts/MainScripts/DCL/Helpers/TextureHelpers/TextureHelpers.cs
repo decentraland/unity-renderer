@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 public static class TextureHelpers
 {
-    public static Texture2D ClampSize(Texture2D source, int maxTextureSize, bool linear = false)
+    public static Texture2D ClampSize(Texture2D source, int maxTextureSize, bool linear = false, bool useGPUCopy = true)
     {
         if (source.width <= maxTextureSize && source.height <= maxTextureSize)
             return source;
@@ -21,7 +21,7 @@ public static class TextureHelpers
             factor = (float)maxTextureSize / height;
         }
 
-        Texture2D dstTex = Resize(source, (int) (width * factor), (int) (height * factor), linear);
+        Texture2D dstTex = Resize(source, (int) (width * factor), (int) (height * factor), linear, useGPUCopy);
 
         if (Application.isPlaying)
             Object.Destroy(source);
@@ -31,10 +31,10 @@ public static class TextureHelpers
         return dstTex;
     }
 
-    public static Texture2D Resize(Texture2D source, int newWidth, int newHeight, bool linear = false)
+    public static Texture2D Resize(Texture2D source, int newWidth, int newHeight, bool linear = false, bool useGPUCopy = true)
     {
         // RenderTexture default format is ARGB32
-        Texture2D nTex = new Texture2D(newWidth, newHeight, source.format, 1, linear);
+        Texture2D nTex = new Texture2D(newWidth, newHeight, TextureFormat.ARGB32, 1, linear);
         nTex.filterMode = source.filterMode;
         nTex.wrapMode = source.wrapMode;
 
@@ -45,9 +45,17 @@ public static class TextureHelpers
         RenderTexture.active = rt;
         Graphics.Blit(source, rt);
 
-        //TODO: use Graphics.CopyTexture(rt, nTex);
-        nTex.ReadPixels(new Rect(0, 0, newWidth, newHeight), 0, 0);
-        nTex.Apply();
+
+        bool supportsGPUTextureCopy = SystemInfo.copyTextureSupport != CopyTextureSupport.None;
+        if (supportsGPUTextureCopy && useGPUCopy)
+        {
+            Graphics.CopyTexture(rt, nTex);
+        }
+        else
+        {
+            nTex.ReadPixels(new Rect(0, 0, newWidth, newHeight), 0, 0);
+            nTex.Apply();
+        }
 
         RenderTexture.ReleaseTemporary(rt);
         RenderTexture.active = null;
