@@ -19,6 +19,7 @@ namespace DCL
         bool storeDefaultTextureInAdvance = false;
         bool storeTexAsNonReadable = false;
         private readonly int maxTextureSize;
+        public float resizingFactor { get; private set; }
 
         WebRequestAsyncOperation webRequestOp = null;
 
@@ -64,6 +65,7 @@ namespace DCL
                         if (asset != null)
                         {
                             Texture2D texture = DownloadHandlerTexture.GetContent(webRequestResult.webRequest);
+                            resizingFactor = TextureHelpers.GetScalingFactor(texture.width, texture.height, maxTextureSize);
                             asset.texture = TextureHelpers.ClampSize(texture, maxTextureSize, useGPUCopy: false);
 
                             if (TextureUtils.IsQuestionMarkPNG(asset.texture))
@@ -88,6 +90,7 @@ namespace DCL
                 byte[] decodedTexture = Convert.FromBase64String(url.Substring(PLAIN_BASE64_PROTOCOL.Length));
                 asset.texture = new Texture2D(1, 1);
                 asset.texture.LoadImage(decodedTexture);
+                resizingFactor = TextureHelpers.GetScalingFactor(asset.texture.width, asset.texture.height, maxTextureSize);
                 asset.texture = TextureHelpers.ClampSize(asset.texture, maxTextureSize);
                 OnSuccess?.Invoke();
             }

@@ -8,18 +8,10 @@ public static class TextureHelpers
         if (source.width <= maxTextureSize && source.height <= maxTextureSize)
             return source;
 
-        float factor = 1.0f;
         int width = source.width;
         int height = source.height;
 
-        if (width >= height)
-        {
-            factor = (float)maxTextureSize / width;
-        }
-        else
-        {
-            factor = (float)maxTextureSize / height;
-        }
+        float factor = GetScalingFactor(width, height, maxTextureSize);
 
         Texture2D dstTex = Resize(source, (int) (width * factor), (int) (height * factor), linear, useGPUCopy);
 
@@ -29,6 +21,15 @@ public static class TextureHelpers
             Object.DestroyImmediate(source);
 
         return dstTex;
+    }
+
+    public static float GetScalingFactor(int width, int height, int maxTextureSize)
+    {
+        if (width >= height)
+        {
+            return (float)maxTextureSize / width;
+        }
+        return (float)maxTextureSize / height;
     }
 
     public static Texture2D Resize(Texture2D source, int newWidth, int newHeight, bool linear = false, bool useGPUCopy = true)
