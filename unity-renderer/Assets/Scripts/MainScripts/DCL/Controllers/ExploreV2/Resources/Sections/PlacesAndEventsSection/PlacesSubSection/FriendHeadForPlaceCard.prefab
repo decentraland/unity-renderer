@@ -677,6 +677,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24,
         type: 3}
+    - target: {fileID: 4618068140710309132, guid: 7c46860097fdafb4abd62085d2045ad9,
+        type: 3}
+      propertyPath: model.lastUriCached
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4840955537636468590, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -691,7 +696,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 91e559f524592ad4a94afd8829f86e75,
+      objectReference: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24,
         type: 3}
     - target: {fileID: 6044329464138306421, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}

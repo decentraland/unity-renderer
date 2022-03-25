@@ -168,9 +168,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     public override void Start()
     {
-        if (eventImage != null)
-            eventImage.OnLoaded += OnEventImageLoaded;
-
         if (closeCardButton != null)
             closeCardButton.onClick.AddListener(CloseModal);
 
@@ -251,10 +248,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         base.Dispose();
 
         if (eventImage != null)
-        {
-            eventImage.OnLoaded -= OnEventImageLoaded;
             eventImage.Dispose();
-        }
 
         if (closeCardButton != null)
             closeCardButton.onClick.RemoveAllListeners();
@@ -468,8 +462,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         eventInfoContainer.SetActive(!isVisible);
         loadingSpinner.SetActive(isVisible);
     }
-
-    internal void OnEventImageLoaded(Sprite sprite) { SetEventPicture(sprite); }
 
     internal void RebuildCardLayouts()
     {

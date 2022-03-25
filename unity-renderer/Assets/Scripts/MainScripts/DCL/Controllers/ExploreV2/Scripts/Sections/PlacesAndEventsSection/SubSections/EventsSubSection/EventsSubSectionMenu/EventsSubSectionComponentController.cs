@@ -59,6 +59,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal int currentUpcomingEventsShowed = 0;
     internal bool reloadEvents = false;
     internal IExploreV2Analytics exploreV2Analytics;
+    internal float lastTimeAPIChecked = 0;
 
     public EventsSubSectionComponentController(
         IEventsSubSectionComponentView view,
@@ -84,6 +85,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal void FirstLoading()
     {
         reloadEvents = true;
+        lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         RequestAllEvents();
 
         view.OnEventsSubSectionEnable += RequestAllEvents;
@@ -103,14 +105,20 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         if (!reloadEvents)
             return;
 
-        currentUpcomingEventsShowed = view.currentUpcomingEventsPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
         view.RestartScrollViewPosition();
+
+        if (Time.realtimeSinceStartup < lastTimeAPIChecked + PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
+            return;
+
+        currentUpcomingEventsShowed = view.currentUpcomingEventsPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
         view.SetFeaturedEventsAsLoading(true);
         view.SetTrendingEventsAsLoading(true);
         view.SetUpcomingEventsAsLoading(true);
         view.SetShowMoreUpcomingEventsButtonActive(false);
         view.SetGoingEventsAsLoading(true);
+        
         reloadEvents = false;
+        lastTimeAPIChecked = Time.realtimeSinceStartup;
 
         if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
             RequestAllEventsFromAPI();
