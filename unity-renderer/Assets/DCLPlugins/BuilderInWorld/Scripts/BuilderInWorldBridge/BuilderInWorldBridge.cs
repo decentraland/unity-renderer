@@ -35,6 +35,32 @@ public class BuilderInWorldBridge : MonoBehaviour
     private EntityPayload entityPayload = new EntityPayload();
     private EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
     internal BuilderProjectPayload builderProjectPayload = new BuilderProjectPayload();
+    
+    public IParcelScene FindSceneForPlayer()
+    {
+        foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
+        {
+            if (WorldStateUtils.IsCharacterInsideScene(scene))
+                return scene;
+        }
+
+        return null;
+    }
+    
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.E))
+        {
+            var scene = FindSceneForPlayer();
+            StartKernelEditMode(scene);
+        }
+        
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.R))
+        {
+            var scene = FindSceneForPlayer();
+            ExitKernelEditMode(scene);
+        }
+    }
 
     #region MessagesFromKernel
 
