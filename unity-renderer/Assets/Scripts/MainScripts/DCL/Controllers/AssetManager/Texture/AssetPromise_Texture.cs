@@ -88,7 +88,7 @@ namespace DCL
                 byte[] decodedTexture = Convert.FromBase64String(url.Substring(PLAIN_BASE64_PROTOCOL.Length));
                 asset.texture = new Texture2D(1, 1);
                 asset.texture.LoadImage(decodedTexture);
-                asset.texture = TextureHelpers.ClampSize(asset.texture, DataStore.i.textureSize.generalMaxSize.Get());
+                asset.texture = TextureHelpers.ClampSize(asset.texture, maxTextureSize);
                 OnSuccess?.Invoke();
             }
         }
