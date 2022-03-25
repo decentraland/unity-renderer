@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL.Interface;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,8 +8,12 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 {
     [SerializeField] private CollapsableDirectChatListComponentView directChatList;
     [SerializeField] private Button closeButton;
+    [SerializeField] private GameObject directChatsLoadingContainer;
+    [SerializeField] private GameObject directChatsContainer;
+    [SerializeField] private TMP_Text directChatsHeaderLabel;
+    [SerializeField] private ScrollRect scroll;
     [SerializeField] private Model model;
-    
+
     public event Action OnClose;
     public event Action<string> OnOpenChat; 
     
@@ -25,6 +30,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         base.Awake();
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         directChatList.OnOpenChat += entry => OnOpenChat?.Invoke(entry.Model.userId);
+        UpdateDirectChatsHeader();
     }
 
     public void Initialize(IChatController chatController)
@@ -36,7 +42,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public void Hide() => gameObject.SetActive(false);
 
-    public void SetDirectRecipient(UserProfile user, ChatMessage recentMessage, bool isBlocked, PresenceStatus presence)
+    public void SetPrivateRecipient(UserProfile user, ChatMessage recentMessage, bool isBlocked, PresenceStatus presence)
     {
         directChatList.Set(user.userId, new DirectChatEntry.DirectChatEntryModel(
             user.userId,
@@ -45,18 +51,38 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             user.face256SnapshotURL,
             isBlocked,
             presence));
+        UpdateDirectChatsHeader();
     }
+
+    public void ShowPrivateChatsLoading() => SetPrivateChatLoadingVisibility(true);
+
+    public void HidePrivateChatsLoading() => SetPrivateChatLoadingVisibility(false);
 
     public override void RefreshControl()
     {
         directChatList.Clear();
         foreach (var entry in model.entries)
             directChatList.Set(entry.userId, entry);
+        SetPrivateChatLoadingVisibility(model.isLoadingDirectChats);
+    }
+
+    private void SetPrivateChatLoadingVisibility(bool visible)
+    {
+        model.isLoadingDirectChats = visible;
+        directChatsLoadingContainer.SetActive(visible);
+        directChatsContainer.SetActive(!visible);
+        scroll.enabled = !visible;
+    }
+
+    private void UpdateDirectChatsHeader()
+    {
+        directChatsHeaderLabel.text = $"Direct Messages ({directChatList.Count()})";
     }
 
     [Serializable]
     private class Model
     {
         public DirectChatEntry.DirectChatEntryModel[] entries;
+        public bool isLoadingDirectChats;
     }
 }

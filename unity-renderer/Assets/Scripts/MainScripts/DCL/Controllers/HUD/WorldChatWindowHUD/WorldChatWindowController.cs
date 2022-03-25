@@ -62,10 +62,14 @@ public class WorldChatWindowController : IHUD
         var privateChatsByRecipient = GetLastPrivateChatByRecipient(chatController.GetEntries());
         lastPrivateMessages = privateChatsByRecipient.ToDictionary(pair => pair.Key.userId, pair => pair.Value);
         recipientsFromPrivateChats = privateChatsByRecipient.Keys.ToDictionary(profile => profile.userId);
-        ShowDirectChats(privateChatsByRecipient);
+        ShowPrivateChats(privateChatsByRecipient);
+        view.ShowPrivateChatsLoading();
         chatController.OnAddMessage += HandleMessageAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
+        friendsController.OnInitialized += HandleFriendsControllerInitialization;
     }
+
+    private void HandleFriendsControllerInitialization() => view.HidePrivateChatsLoading();
 
     public void Dispose()
     {
@@ -73,6 +77,7 @@ public class WorldChatWindowController : IHUD
         view.OnOpenChat -= OpenPrivateChat;
         chatController.OnAddMessage -= HandleMessageAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
+        friendsController.OnInitialized -= HandleFriendsControllerInitialization;
         channelChatWindowController.Dispose();
     }
 
@@ -130,17 +135,17 @@ public class WorldChatWindowController : IHUD
         if (!recipientsFromPrivateChats.ContainsKey(userId)) return;
         if (!lastPrivateMessages.ContainsKey(userId)) return;
         var profile = recipientsFromPrivateChats[userId];
-        view.SetDirectRecipient(profile, lastPrivateMessages[userId], ownUserProfile.IsBlocked(userId), status.presence);
+        view.SetPrivateRecipient(profile, lastPrivateMessages[userId], ownUserProfile.IsBlocked(userId), status.presence);
     }
 
-    private void ShowDirectChats(Dictionary<UserProfile, ChatMessage> privateChatsByRecipient)
+    private void ShowPrivateChats(Dictionary<UserProfile, ChatMessage> privateChatsByRecipient)
     {
         // TODO: throttle in case of hiccups
         foreach (var pair in privateChatsByRecipient)
         {
             var user = pair.Key;
             var message = pair.Value;
-            view.SetDirectRecipient(user,
+            view.SetPrivateRecipient(user,
                 message,
                 ownUserProfile.IsBlocked(user.userId),
                 friendsController.GetUserStatus(user.userId).presence);
@@ -153,7 +158,7 @@ public class WorldChatWindowController : IHUD
         var profile = ExtractRecipient(message);
         if (recipientsFromPrivateChats.ContainsKey(profile.userId)) return;
         recipientsFromPrivateChats.Add(profile.userId, profile);
-        view.SetDirectRecipient(profile, message, ownUserProfile.IsBlocked(profile.userId),
+        view.SetPrivateRecipient(profile, message, ownUserProfile.IsBlocked(profile.userId),
             friendsController.GetUserStatus(profile.userId).presence);
     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -99,7 +100,7 @@ namespace UIComponents.CollapsableSortedList
 
         public virtual void Clear()
         {
-            foreach (var userId in entries.Keys)
+            foreach (var userId in entries.Keys.ToList())
                 Remove(userId);
 
             entries.Clear();

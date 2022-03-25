@@ -30,6 +30,14 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
             || regex.IsMatch(entry.Model.lastMessage));
     }
 
+    public override DirectChatEntry Remove(string key)
+    {
+        if (pooleableEntries.ContainsKey(key))
+            pooleableEntries[key].Release();
+        pooleableEntries.Remove(key);
+        return base.Remove(key);
+    }
+
     public void Set(string userId, DirectChatEntry.DirectChatEntryModel entryModel)
     {
         if (!Contains(entryModel.userId))

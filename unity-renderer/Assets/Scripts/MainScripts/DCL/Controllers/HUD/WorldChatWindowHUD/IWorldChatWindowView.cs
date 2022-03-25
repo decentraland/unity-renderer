@@ -13,5 +13,7 @@ public interface IWorldChatWindowView
     void Initialize(IChatController chatController);
     void Show();
     void Hide();
-    void SetDirectRecipient(UserProfile user, ChatMessage recentMessage, bool isBlocked, PresenceStatus presence);
+    void SetPrivateRecipient(UserProfile user, ChatMessage recentMessage, bool isBlocked, PresenceStatus presence);
+    void ShowPrivateChatsLoading();
+    void HidePrivateChatsLoading();
 }

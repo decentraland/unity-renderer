@@ -82,6 +82,7 @@ public class DirectChatEntry : BaseComponentView
     private void Dock(UserContextMenu userContextMenu) =>
         userContextMenu.transform.position = userContextMenuPositionReference.position;
 
+    [Serializable]
     public struct DirectChatEntryModel
     {
         public string userId;
