@@ -550,7 +550,12 @@ namespace DCL.ABConverter
                 factor = (float)maxTextureSize / height;
             }
 
-            Texture2D dstTex = TextureHelpers.Resize(tmpTex, (int)(width * factor), (int)(height * factor));
+            // Minimum factor should be 1, otherwise Unity throws an exception for using tex size 0 and the whole conversion is aborted
+            factor = Mathf.Max(1, factor);
+            int newWidth = (int)(width * factor);
+            int newHeight = (int)(height * factor);
+
+            Texture2D dstTex = TextureHelpers.Resize(tmpTex, newWidth, newHeight);
             byte[] endTex = ImageConversion.EncodeToPNG(dstTex);
             UnityEngine.Object.DestroyImmediate(tmpTex);
 
