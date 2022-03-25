@@ -139,10 +139,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     public void SetImage(string uri)
     {
         if (model.lastUriCached && uri == lastLoadedUri)
-        {
-            Debug.Log($"SANTI --> URI [{uri}] CACHED!!");
             return;
-        }
 
         model.uri = uri;
 
