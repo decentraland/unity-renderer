@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
+using TMPro;
 using UnityEngine;
 
 public class ABGLTF : MonoBehaviour
 {
+    public TextMeshProUGUI text;
     public Material gltfMaterial;
     public Material abMaterial;
 
@@ -13,7 +15,8 @@ public class ABGLTF : MonoBehaviour
 
     private Dictionary<Renderer, Material[]> rendererDict  = new Dictionary<Renderer, Material[]>();
 
-
+    private int abCount = 0;
+    private int gltfCount = 0;
     // Update is called once per frame
     void Update()
     {
@@ -21,6 +24,7 @@ public class ABGLTF : MonoBehaviour
         {
             if (lastTime + 0.8f <= Time.timeSinceLevelLoad)
             {
+                text.gameObject.SetActive(true);
                 ChangeGLTFABMaterialsOfCurrentScene();
             }
         }
@@ -29,6 +33,7 @@ public class ABGLTF : MonoBehaviour
         {
             if (lastTime + 0.8f <= Time.timeSinceLevelLoad)
             {
+                text.gameObject.SetActive(true);
                 ChangeGLTFABMaterials();
             }
         }
@@ -37,12 +42,15 @@ public class ABGLTF : MonoBehaviour
             if (lastTime + 0.8f <= Time.timeSinceLevelLoad)
             {
                 RevertChanges();
+                text.gameObject.SetActive(false);
             }
         }
     }
 
     void ChangeGLTFABMaterials()
     {
+        abCount = 0;
+        gltfCount = 0;
         lastTime = Time.timeSinceLevelLoad;
         var gameObjects = GameObject.FindObjectsOfType(typeof(GameObject));
         foreach (var gameObject in gameObjects)
@@ -57,6 +65,8 @@ public class ABGLTF : MonoBehaviour
     
     void ChangeGLTFABMaterialsOfCurrentScene()
     {
+        abCount = 0;
+        gltfCount = 0;
         lastTime = Time.timeSinceLevelLoad;
         var currentScene = FindSceneForPlayer();
         var sceneTransform = currentScene.GetSceneTransform();
@@ -74,9 +84,9 @@ public class ABGLTF : MonoBehaviour
                 if (childTransform.gameObject.name.Contains("GLTF Shape"))
                 {
                     var childGameObject = childTransform.GetChild(0).gameObject;
-                    if (childGameObject.name.Contains("AB: "))
+                    if (childGameObject.name.Contains("AB: ") && !childGameObject.name.Contains("GLTF: "))
                     {
-                        var renderers = childGameObject.GetComponentsInChildren<Renderer>();
+                        var renderers = childGameObject.GetComponentsInChildren<Renderer>(true);
                   
                         foreach (Renderer renderer in renderers)
                         {
@@ -84,16 +94,19 @@ public class ABGLTF : MonoBehaviour
                                 rendererDict.Add(renderer,renderer.materials);
                             renderer.material = abMaterial;
                         }
+                        abCount++;
                     }
                     else
                     {
-                        var renderers = childGameObject.GetComponentsInChildren<Renderer>();
+                        var renderers = childGameObject.GetComponentsInChildren<Renderer>(true);
                         foreach (Renderer renderer in renderers)
                         {
                             if(!rendererDict.ContainsKey(renderer))
                                 rendererDict.Add(renderer,renderer.materials);
                             renderer.material = gltfMaterial;
                         }
+                        
+                        gltfCount++;
                     }
                 }
                 else
@@ -102,6 +115,8 @@ public class ABGLTF : MonoBehaviour
                 }
             }
         }
+
+        text.text = "GLTFs: " + gltfCount + "    AB: " + abCount;
     }
 
     void RevertChanges()
