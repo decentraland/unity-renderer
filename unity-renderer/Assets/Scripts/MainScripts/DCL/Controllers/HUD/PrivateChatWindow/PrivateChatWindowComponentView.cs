@@ -45,6 +45,9 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             isOnline = model.isUserOnline
         });
         userNameLabel.SetText(model.userName);
+        chatView.ClearAllEntries();
+        foreach (var model in model.entries)
+            chatView.AddEntry(model.ToChatEntry(), true);
     }
 
     public void Setup(UserProfile profile, bool isOnline, bool isBlocked)
@@ -72,5 +75,33 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         public string faceSnapshotUrl;
         public bool isUserBlocked;
         public bool isUserOnline;
+        public ChatEntryModel[] entries;
+    }
+
+    [Serializable]
+    private class ChatEntryModel
+    {
+        public string bodyText;
+        public string senderId;
+        public string senderName;
+        public string recipientName;
+        public string otherUserId;
+        public ulong timestamp;
+        public ChatEntry.Model.SubType type;
+
+        public ChatEntry.Model ToChatEntry()
+        {
+            return new ChatEntry.Model
+            {
+                timestamp = timestamp,
+                bodyText = bodyText,
+                messageType = ChatMessage.Type.PRIVATE,
+                otherUserId = otherUserId,
+                recipientName = recipientName,
+                senderId = senderId,
+                senderName = senderName,
+                subType = type
+            };
+        }
     }
 }

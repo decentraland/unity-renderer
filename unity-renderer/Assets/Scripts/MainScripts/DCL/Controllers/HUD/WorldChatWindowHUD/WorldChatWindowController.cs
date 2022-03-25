@@ -63,7 +63,8 @@ public class WorldChatWindowController : IHUD
         lastPrivateMessages = privateChatsByRecipient.ToDictionary(pair => pair.Key.userId, pair => pair.Value);
         recipientsFromPrivateChats = privateChatsByRecipient.Keys.ToDictionary(profile => profile.userId);
         ShowPrivateChats(privateChatsByRecipient);
-        view.ShowPrivateChatsLoading();
+        if (privateChatsByRecipient.Count == 0)
+            view.ShowPrivateChatsLoading();
         chatController.OnAddMessage += HandleMessageAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
