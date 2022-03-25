@@ -12,6 +12,8 @@ public interface IPlacesAndEventsSectionComponentController : IDisposable
 
 public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSectionComponentController
 {
+    internal const float MIN_TIME_TO_CHECK_API = 60f;
+
     public event Action<bool> OnCloseExploreV2;
 
     internal IPlacesAndEventsSectionComponentView view;

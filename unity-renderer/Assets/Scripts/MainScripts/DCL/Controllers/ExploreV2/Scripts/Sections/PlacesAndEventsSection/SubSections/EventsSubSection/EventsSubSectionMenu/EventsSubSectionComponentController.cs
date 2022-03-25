@@ -49,6 +49,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public event Action OnCloseExploreV2;
     internal event Action OnEventsFromAPIUpdated;
 
+    internal const int MAX_NUMBER_OF_FEATURED_EVENTS = 20;
     internal const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
     internal const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 1;
     internal const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 2;
@@ -59,6 +60,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal int currentUpcomingEventsShowed = 0;
     internal bool reloadEvents = false;
     internal IExploreV2Analytics exploreV2Analytics;
+    internal float lastTimeAPIChecked = 0;
 
     public EventsSubSectionComponentController(
         IEventsSubSectionComponentView view,
@@ -84,6 +86,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal void FirstLoading()
     {
         reloadEvents = true;
+        lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         RequestAllEvents();
 
         view.OnEventsSubSectionEnable += RequestAllEvents;
@@ -103,14 +106,20 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         if (!reloadEvents)
             return;
 
-        currentUpcomingEventsShowed = view.currentUpcomingEventsPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
         view.RestartScrollViewPosition();
+
+        if (Time.realtimeSinceStartup < lastTimeAPIChecked + PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
+            return;
+
+        currentUpcomingEventsShowed = view.currentUpcomingEventsPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
         view.SetFeaturedEventsAsLoading(true);
         view.SetTrendingEventsAsLoading(true);
         view.SetUpcomingEventsAsLoading(true);
         view.SetShowMoreUpcomingEventsButtonActive(false);
         view.SetGoingEventsAsLoading(true);
+        
         reloadEvents = false;
+        lastTimeAPIChecked = Time.realtimeSinceStartup;
 
         if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
             RequestAllEventsFromAPI();
@@ -149,7 +158,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public void LoadFeaturedEvents()
     {
         List<EventCardComponentModel> featuredEvents = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI
+            .Where(e => e.highlighted)
+            .Take(MAX_NUMBER_OF_FEATURED_EVENTS)
+            .ToList();
 
         if (eventsFiltered.Count == 0)
             eventsFiltered = eventsFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_EVENTS).ToList();

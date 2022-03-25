@@ -330,17 +330,6 @@ public class EventCardComponentViewTests
     }
 
     [Test]
-    public void CallOnPlaceImageLoadedCorrectly()
-    {
-        // Act
-        eventCardComponent.OnEventImageLoaded(testSprite);
-
-        // Assert
-        Assert.AreEqual(testSprite, eventCardComponent.model.eventPictureSprite, "The event card picture sprite does not match in the model.");
-        Assert.AreEqual(testSprite, eventCardComponent.eventImage.image.sprite, "The event card image does not match.");
-    }
-
-    [Test]
     public void CloseModalCorrectly()
     {
         // Arrange
