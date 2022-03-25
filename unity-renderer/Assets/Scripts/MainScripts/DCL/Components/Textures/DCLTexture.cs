@@ -36,6 +36,7 @@ namespace DCL
         public FilterMode unitySamplingMode;
         public Texture2D texture;
         protected bool isDisposed;
+        public float resizingFactor => texturePromise?.resizingFactor ?? 1;
 
         public Dictionary<ISharedComponent, HashSet<string>> attachedComponents = new Dictionary<ISharedComponent, HashSet<string>>();
 
