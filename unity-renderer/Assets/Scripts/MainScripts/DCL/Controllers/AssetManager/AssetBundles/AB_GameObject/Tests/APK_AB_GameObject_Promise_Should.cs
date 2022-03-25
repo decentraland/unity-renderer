@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using AssetPromiseKeeper_Tests;
 using DCL;
 using DCL.Helpers;
@@ -141,6 +142,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             yield return prom;
 
             Assert.IsTrue(failed == true, "The broken paladin AssetBundle contains no GameObjects and should fail!");
+            LogAssert.Expect(LogType.Exception, new Regex("^.*?AB sub-promise asset or container is null"));
         }
     }
 }
