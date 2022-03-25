@@ -169,7 +169,7 @@ namespace DCL.Components
                     animationClips = x.animationClips,
                     meshDataSize = x.meshDataSize
                 };
-
+                x.container.name = "AB: " + x.container.name;
                 OnSuccessWrapper(r, OnSuccess);
             };
 
