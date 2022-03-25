@@ -27,11 +27,12 @@ namespace DCL.Skybox
         private bool creatingNewConfig;
         private string newConfigName;
         private bool overridingController;
-
         private List<string> renderingOrderList;
 
         private float leftPanelWidth;
         private List<RightPanelPins> rightPanelPins = new List<RightPanelPins>() { new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = "Background Layer" } };
+
+        private CopyFunctionality copyPasteObj;
 
         [MenuItem("Window/Skybox Editor")]
         static void Init()
@@ -279,7 +280,7 @@ namespace DCL.Skybox
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
 
-            RenderLeftPanelBaseSkyboxLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, renderingOrderList);
+            RenderLeftPanelBaseSkyboxLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, renderingOrderList, copyPasteObj);
 
             // Render 3D layers
             EditorGUILayout.LabelField(SkyboxEditorLiterals.threeDLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
@@ -460,6 +461,11 @@ namespace DCL.Skybox
             if (selectedMat == null)
             {
                 UpdateMaterial();
+            }
+
+            if (copyPasteObj == null)
+            {
+                copyPasteObj = new CopyFunctionality();
             }
 
             EditorUtility.SetDirty(selectedConfiguration);

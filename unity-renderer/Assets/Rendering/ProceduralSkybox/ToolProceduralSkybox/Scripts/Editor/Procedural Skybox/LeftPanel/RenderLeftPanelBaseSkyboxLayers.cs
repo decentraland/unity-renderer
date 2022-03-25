@@ -8,7 +8,7 @@ namespace DCL.Skybox
 {
     public class RenderLeftPanelBaseSkyboxLayers
     {
-        public static void Render(ref float timeOfTheDay, EditorToolMeasurements toolSize, SkyboxConfiguration config, Action<RightPanelPins> AddToRightPanel, List<string> renderingOrderList)
+        public static void Render(ref float timeOfTheDay, EditorToolMeasurements toolSize, SkyboxConfiguration config, Action<RightPanelPins> AddToRightPanel, List<string> renderingOrderList, CopyFunctionality copyPasteObj)
         {
             // Loop through texture layer and print the name of all layers
             for (int i = 0; i < config.layers.Count; i++)
@@ -113,15 +113,24 @@ namespace DCL.Skybox
                         layerList.Insert(index + 1, new TextureLayer("New Layer"));
                     };
 
+                    // Anonymous method for copy layer
+                    GenericMenu.MenuFunction2 copyBtnClicked = (object obj) =>
+                    {
+                        ArrayList list = obj as ArrayList;
+                        List<TextureLayer> layerList = list[0] as List<TextureLayer>;
+                        int index = (int)list[1];
+                        copyPasteObj.SetTextureLayer(layerList[index]);
+                    };
+
                     // Anonymous method for Paste layer
                     GenericMenu.MenuFunction2 pasteBtnClicked = (object obj) =>
                     {
-                        //ArrayList list = obj as ArrayList;
-                        //List<Config3DDome> domeList = list[0] as List<Config3DDome>;
-                        //int index = (int)list[1];
-                        //copiedLayer.DeepCopy(domeList[index].layers);
+                        ArrayList list = obj as ArrayList;
+                        List<TextureLayer> layerList = list[0] as List<TextureLayer>;
+                        int index = (int)list[1];
+                        copyPasteObj.GetCopiedTextureLayer().DeepCopy(layerList[index]);
                     };
-                    ShowBaseLayersContextMenu(deleteBtnClicked, addBtnClicked, pasteBtnClicked, list);
+                    ShowBaseLayersContextMenu(copyPasteObj, deleteBtnClicked, addBtnClicked, copyBtnClicked, pasteBtnClicked, list);
                 }
                 EditorGUILayout.EndHorizontal();
 
@@ -138,15 +147,26 @@ namespace DCL.Skybox
 
         }
 
-        private static void ShowBaseLayersContextMenu(GenericMenu.MenuFunction2 OnDeleteBtnClicked, GenericMenu.MenuFunction2 OnAddBtnClicked, GenericMenu.MenuFunction2 OnPasteBtnClicked, object list)
+        private static void ShowBaseLayersContextMenu(CopyFunctionality copyPasteObj, GenericMenu.MenuFunction2 OnDeleteBtnClicked, GenericMenu.MenuFunction2 OnAddBtnClicked, GenericMenu.MenuFunction2 OnCopyBtnClicked, GenericMenu.MenuFunction2 OnPasteBtnClicked, object list)
         {
             // Create menu
             GenericMenu menu = new GenericMenu();
 
             // Add option
             menu.AddItem(new GUIContent("Add"), false, OnAddBtnClicked, list);
+
+            // Copy option
+            menu.AddItem(new GUIContent("Copy"), false, OnCopyBtnClicked, list);
+
             // Paste option
-            menu.AddItem(new GUIContent("Paste"), false, OnPasteBtnClicked, list);
+            if (copyPasteObj.IsTextureLayerAvailable())
+            {
+                menu.AddItem(new GUIContent("Paste"), false, OnPasteBtnClicked, list);
+            }
+            else
+            {
+                menu.AddDisabledItem(new GUIContent("Paste"));
+            }
 
             menu.AddSeparator("");
             // Delete option

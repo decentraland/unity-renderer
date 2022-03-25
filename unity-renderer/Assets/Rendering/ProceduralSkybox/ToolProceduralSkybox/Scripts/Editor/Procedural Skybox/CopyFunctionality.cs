@@ -6,7 +6,7 @@ namespace DCL.Skybox
 {
     public class CopyFunctionality
     {
-        public TextureLayer copiedLayer;
+        private TextureLayer copiedLayer;
 
         public bool IsTextureLayerAvailable()
         {
