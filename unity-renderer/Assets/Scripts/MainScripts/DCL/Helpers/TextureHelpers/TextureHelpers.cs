@@ -9,8 +9,8 @@ public static class TextureHelpers
             return source;
 
         float factor = 1.0f;
-        int width = Mathf.Max(source.width, 1);
-        int height = Mathf.Max(source.height, 1);
+        int width = source.width;
+        int height = source.height;
 
         if (width >= height)
         {
@@ -33,6 +33,9 @@ public static class TextureHelpers
 
     public static Texture2D Resize(Texture2D source, int newWidth, int newHeight, bool linear = false, bool useGPUCopy = true)
     {
+        newWidth = Mathf.Max(1, newWidth);
+        newHeight = Mathf.Max(1, newHeight);
+
         // RenderTexture default format is ARGB32
         Texture2D nTex = new Texture2D(newWidth, newHeight, TextureFormat.ARGB32, 1, linear);
         nTex.filterMode = source.filterMode;
