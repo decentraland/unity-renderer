@@ -1655,31 +1655,17 @@ namespace UnityGLTF
             }
         }
 
-        // This throttle is local to this object and its not shared across all GLTF Importers
-        private async UniTask LocalThrottle(Stopwatch watch, long limit)
-        {
-            if (watch.ElapsedMilliseconds > limit)
-            {
-                watch.Restart();
-                await UniTask.Yield();
-            }
-        }
-        
         protected virtual async UniTask ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin, CancellationToken cancellationToken)
         {
             bool isColliderMesh = parent.name.Contains("_collider");
 
             _assetCache.MeshCache[meshId] ??= new MeshCacheData[mesh.Primitives.Count];
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
             for (int i = 0; i < mesh.Primitives.Count; ++i)
             {
                 var primitive = mesh.Primitives[i];
 
                 await ConstructMeshPrimitive(primitive, meshId, i, cancellationToken);
-                await LocalThrottle(stopwatch, 5);
 
                 cancellationToken.ThrowIfCancellationRequested();
                 var primitiveObj = new GameObject("Primitive");
@@ -1707,7 +1693,6 @@ namespace UnityGLTF
                         if (HasBones(skin))
                         {
                             await SetupBones(skin, primitive, skinnedMeshRenderer, primitiveObj, curMesh, cancellationToken);
-                            await LocalThrottle(stopwatch, 5);
                         }
 
                         OnRendererCreated?.Invoke(skinnedMeshRenderer);
@@ -1722,7 +1707,6 @@ namespace UnityGLTF
                     }
 
                     await ConstructPrimitiveMaterials(mesh, meshId, i, cancellationToken);
-                    await LocalThrottle(stopwatch, 5);
                 }
                 else
                 {
@@ -1749,8 +1733,6 @@ namespace UnityGLTF
 
                         break;
                 }
-
-                stopwatch.Restart();
             }
         }
 
