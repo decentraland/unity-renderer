@@ -283,7 +283,6 @@ namespace UnityGLTF
                     sceneImporter.maximumLod = MaximumLod;
                     sceneImporter.Timeout = Timeout;
                     sceneImporter.isMultithreaded = Multithreaded;
-                    sceneImporter.maxTextureSize = DataStore.i.textureSize.gltfMaxSize.Get();
                     sceneImporter.useMaterialTransition = UseVisualFeedback;
                     sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;

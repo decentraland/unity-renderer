@@ -3,39 +3,37 @@ using UnityEngine.Rendering;
 
 public static class TextureHelpers
 {
-    public static Texture2D ClampSize(Texture2D source, int maxTextureSize, bool linear = false, bool useGPUCopy = true)
+    public static void EnsureTexture2DMaxSize(ref Texture2D texture, int maxTextureSize)
     {
-        if (source.width <= maxTextureSize && source.height <= maxTextureSize)
-            return source;
+        if (texture == null)
+            return;
 
-        float factor = 1.0f;
-        int width = source.width;
-        int height = source.height;
+        if (texture.width == 0 || texture.height == 0)
+            return;
 
-        if (width >= height)
+        if (Mathf.Max(texture.height, texture.width) <= maxTextureSize)
+            return;
+
+        int w, h;
+        if (texture.height > texture.width)
         {
-            factor = (float)maxTextureSize / width;
+            h = maxTextureSize;
+            w = (int) ((texture.width / (float) texture.height) * h);
         }
         else
         {
-            factor = (float)maxTextureSize / height;
+            w = maxTextureSize;
+            h = (int) ((texture.height / (float) texture.width) * w);
         }
 
-        Texture2D dstTex = Resize(source, (int) (width * factor), (int) (height * factor), linear, useGPUCopy);
-
-        if (Application.isPlaying)
-            Object.Destroy(source);
-        else
-            Object.DestroyImmediate(source);
-
-        return dstTex;
+        var newTexture = Resize(texture, w, h);
+        var oldTexture = texture;
+        texture = newTexture;
+        Object.Destroy(oldTexture);
     }
 
-    public static Texture2D Resize(Texture2D source, int newWidth, int newHeight, bool linear = false, bool useGPUCopy = true)
+    public static Texture2D Resize(Texture2D source, int newWidth, int newHeight, bool linear = false)
     {
-        newWidth = Mathf.Max(1, newWidth);
-        newHeight = Mathf.Max(1, newHeight);
-
         // RenderTexture default format is ARGB32
         Texture2D nTex = new Texture2D(newWidth, newHeight, TextureFormat.ARGB32, 1, linear);
         nTex.filterMode = source.filterMode;
@@ -47,10 +45,9 @@ public static class TextureHelpers
 
         RenderTexture.active = rt;
         Graphics.Blit(source, rt);
-
-
+        
         bool supportsGPUTextureCopy = SystemInfo.copyTextureSupport != CopyTextureSupport.None;
-        if (supportsGPUTextureCopy && useGPUCopy)
+        if (supportsGPUTextureCopy)
         {
             Graphics.CopyTexture(rt, nTex);
         }

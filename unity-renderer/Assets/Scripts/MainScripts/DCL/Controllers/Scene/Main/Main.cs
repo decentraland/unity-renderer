@@ -52,7 +52,6 @@ namespace DCL
             Application.quitting += () => DataStore.i.common.isApplicationQuitting.Set(true);
 #endif
 
-            InitializeDataStore();
             SetupPlugins();
 
             InitializeCommunication();
@@ -61,12 +60,6 @@ namespace DCL
             // We should re-enable this later as produces a performance regression.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
-        }
-
-        protected virtual void InitializeDataStore()
-        {
-            DataStore.i.textureSize.gltfMaxSize.Set(512);
-            DataStore.i.textureSize.generalMaxSize.Set(2048);
         }
 
         protected virtual void InitializeCommunication()
