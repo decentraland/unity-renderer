@@ -120,7 +120,6 @@ namespace DCL
                         texture.filterMode = unitySamplingMode;
                         texture.Compress(false);
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
-                        texture = TextureHelpers.ClampSize(texture, DataStore.i.textureSize.generalMaxSize.Get());
                     }
                 }
                 else
