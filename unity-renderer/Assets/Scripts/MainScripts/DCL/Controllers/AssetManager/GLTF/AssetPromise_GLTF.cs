@@ -56,9 +56,6 @@ namespace DCL
 
         protected override void OnBeforeLoadOrReuse()
         {
-#if UNITY_EDITOR
-            asset.container.name = "GLTF: " + this.id;
-#endif
             settings.ApplyBeforeLoad(asset.container.transform);
         }
 
