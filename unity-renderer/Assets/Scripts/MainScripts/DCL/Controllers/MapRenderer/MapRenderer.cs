@@ -35,6 +35,7 @@ namespace DCL
         public RawImage parcelHighlightImage;
         public TextMeshProUGUI highlightedParcelText;
         public Transform overlayContainer;
+        public Transform overlayContainerPlayers;
         public Transform globalUserMarkerContainer;
         public RectTransform playerPositionIcon;
 
@@ -131,7 +132,7 @@ namespace DCL
             {
                 usersInfoPool = PoolManager.i.AddPool(
                     MINIMAP_USER_ICONS_POOL_NAME,
-                    Instantiate(userIconPrefab.gameObject, overlayContainer.transform),
+                    Instantiate(userIconPrefab.gameObject, overlayContainerPlayers.transform),
                     maxPrewarmCount: MINIMAP_USER_ICONS_MAX_PREWARM,
                     isPersistent: true);
 
@@ -313,7 +314,7 @@ namespace DCL
             var poolable = usersInfoPool.Get();
             var marker = poolable.gameObject.GetComponent<MapUserIcon>();
             marker.gameObject.name = $"UserIcon-{player.name}";
-            marker.gameObject.transform.SetParent(overlayContainer.transform, true);
+            marker.gameObject.transform.SetParent(overlayContainerPlayers.transform, true);
             marker.Populate(player);
             usersInfoMarkers.Add(userId, poolable);
         }
