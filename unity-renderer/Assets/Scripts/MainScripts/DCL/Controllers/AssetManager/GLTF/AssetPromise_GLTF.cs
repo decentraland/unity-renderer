@@ -108,7 +108,9 @@ namespace DCL
                         asset.materials = MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers);
                         asset.textures = MeshesInfoUtils.ExtractUniqueTextures(asset.materials);
                         asset.animationClipSize = gltfComponent.GetAnimationClipMemorySize();
-                        asset.meshDataSize = gltfComponent.GetMeshesMemorySize(); 
+                        asset.meshDataSize = gltfComponent.GetMeshesMemorySize();
+                        var animations = MeshesInfoUtils.ExtractUniqueAnimations(asset.container);
+                        asset.animationClips = MeshesInfoUtils.ExtractUniqueAnimationClips(animations);
                     }
 
                     OnSuccess.Invoke();

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text.RegularExpressions;
 using AssetPromiseKeeper_Tests;
 using DCL;
 using DCL.Helpers;
@@ -83,6 +84,8 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
         public IEnumerator AB_GameObject_FailCorrectlyWhenGivenWrongURL()
         {
             string invalidHash = "Qm_InVaLiD_hAsH";
+            
+            LogAssert.Expect(LogType.Exception, new Regex("^.*?HTTP/1.1 404 Not Found"));
 
             var prom = CreatePromise(invalidHash);
             Asset_AB_GameObject asset = null;

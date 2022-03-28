@@ -76,6 +76,7 @@ public class EventsSubSectionComponentControllerTests
         // Arrange
         eventsSubSectionComponentController.currentUpcomingEventsShowed = -1;
         eventsSubSectionComponentController.reloadEvents = true;
+        eventsSubSectionComponentController.lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
 
         // Act

@@ -226,17 +226,6 @@ public class PlaceCardComponentViewTests
     }
 
     [Test]
-    public void CallOnPlaceImageLoadedCorrectly()
-    {
-        // Act
-        placeCardComponent.OnPlaceImageLoaded(testSprite);
-
-        // Assert
-        Assert.AreEqual(testSprite, placeCardComponent.model.placePictureSprite, "The place card picture sprite does not match in the model.");
-        Assert.AreEqual(testSprite, placeCardComponent.placeImage.image.sprite, "The place card image does not match.");
-    }
-
-    [Test]
     public void InitializeFriendsTrackerCorrectly()
     {
         // Arrange

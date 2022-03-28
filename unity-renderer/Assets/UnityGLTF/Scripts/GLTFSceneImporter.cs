@@ -123,7 +123,7 @@ namespace UnityGLTF
 
         public bool useMaterialTransition { get => useMaterialTransitionValue && !renderingIsDisabled; set => useMaterialTransitionValue = value; }
 
-        public int maxTextureSize = 1024;
+        public int maxTextureSize = 512;
         private const float SAME_KEYFRAME_TIME_DELTA = 0.0001f;
 
         protected struct GLBStream
@@ -572,7 +572,9 @@ namespace UnityGLTF
             }
 
             cancellationToken.ThrowIfCancellationRequested();
+            
             CreatedObject = new GameObject(string.IsNullOrEmpty(scene.Name) ? ("GLTFScene") : scene.Name);
+            _lastLoadedScene = CreatedObject;
 
             InitializeGltfTopLevelObject();
 
@@ -645,7 +647,7 @@ namespace UnityGLTF
                 bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
                 await bufferContents.Stream.ReadAsync(data, 0, data.Length, cancellationToken);
 
-                await ConstructUnityTexture(settings, data, imageCacheIndex, cancellationToken);
+                ConstructUnityTexture(settings, data, imageCacheIndex);
             }
             else
             {
@@ -665,16 +667,12 @@ namespace UnityGLTF
                     stream = _assetCache.ImageStreamCache[imageCacheIndex];
                 }
 
-                await ConstructUnityTexture(settings, stream, imageCacheIndex, cancellationToken);
+                await ConstructUnityTexture(settings, stream, imageCacheIndex);
             }
-
-            cancellationToken.ThrowIfCancellationRequested();
         }
 
-        protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex, CancellationToken cancellationToken)
+        protected void ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, settings.generateMipmaps, settings.linear);
 
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
@@ -695,37 +693,29 @@ namespace UnityGLTF
             
             // Resizing must be the last step to avoid breaking the texture when copying with Graphics.CopyTexture()
             _assetCache.ImageCache[imageCacheIndex] = CheckAndReduceTextureSize(texture, settings.linear);
-
-            await UniTask.Yield();
         }
 
-        protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex, CancellationToken cancellationToken)
+        protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex)
         {
             if (stream == null)
                 return;
-
-            cancellationToken.ThrowIfCancellationRequested();
 
             if (stream is MemoryStream)
             {
                 using (MemoryStream memoryStream = stream as MemoryStream)
                 {
-                    await ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
+                    ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
                 }
             }
-
-            cancellationToken.ThrowIfCancellationRequested();
 
             if (stream is FileStream fileStream)
             {
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     await fileStream.CopyToAsync(memoryStream);
-                    await ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
+                    ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
                 }
             }
-
-            cancellationToken.ThrowIfCancellationRequested();
         }
 
         // Note that if the texture is reduced in size, the source one is destroyed
@@ -1290,6 +1280,8 @@ namespace UnityGLTF
             {
                 for (int i = 0; i < scene.Nodes.Count; ++i)
                 {
+                    token.ThrowIfCancellationRequested();
+
                     NodeId node = scene.Nodes[i];
 
                     Node nodeToLoad = _gltfRoot.Nodes[node.Id];
@@ -1301,6 +1293,8 @@ namespace UnityGLTF
 
             foreach (var gltfMaterial in pendingImageBuffers)
             {
+                token.ThrowIfCancellationRequested();
+
                 await ConstructMaterialImageBuffers(gltfMaterial, token);
             }
 
@@ -1309,6 +1303,8 @@ namespace UnityGLTF
 
             for (int i = 0; i < nodesWithMeshes.Count; i++)
             {
+                token.ThrowIfCancellationRequested();
+
                 NodeId_Like nodeId = nodesWithMeshes[i];
                 Node node = nodeId.Value;
                 
@@ -1325,6 +1321,7 @@ namespace UnityGLTF
             }
 
             stopWatch.Stop();
+            token.ThrowIfCancellationRequested();
 
             if (_gltfRoot.Animations != null && _gltfRoot.Animations.Count > 0)
             {
@@ -1334,8 +1331,12 @@ namespace UnityGLTF
                 animation.playAutomatically = true;
                 animation.cullingType = AnimationCullingType.AlwaysAnimate;
 
-                for (int i = 0; i < _gltfRoot.Animations.Count; ++i)
+                int animationsCount = _gltfRoot.Animations.Count;
+
+                for (int i = 0; i < animationsCount; ++i)
                 {
+                    token.ThrowIfCancellationRequested();
+
                     GLTFAnimation gltfAnimation = null;
                     AnimationCacheData animationCache = null;
 
@@ -2380,9 +2381,7 @@ namespace UnityGLTF
             else
             {
                 await ConstructImage(settings, image, sourceId, cancellationToken);
-
-                cancellationToken.ThrowIfCancellationRequested();
-
+                
                 if (_assetCache.ImageCache[sourceId] == null)
                 {
                     Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {image.Uri} / {id}, applying invalid-tex texture...");
