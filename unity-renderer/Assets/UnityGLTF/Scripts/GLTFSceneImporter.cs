@@ -1946,6 +1946,8 @@ namespace UnityGLTF
             };
 
             _assetCache.MeshCache[meshId][primitiveIndex].LoadedMesh = mesh;
+            
+            meshesEstimatedSize += GLTFSceneImporterUtils.ComputeEstimatedMeshSize(unityMeshData);
 
             mesh.vertices = unityMeshData.Vertices;
 
