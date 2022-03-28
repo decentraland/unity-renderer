@@ -1348,12 +1348,14 @@ namespace DCL.Interface
 
         public static void SendSetVoiceChatRecording(bool recording)
         {
+            Debug.Log($"VOICECHATDEBUG: Send voice chat recording {recording}");
             setVoiceChatRecordingPayload.recording = recording;
             SendMessage("SetVoiceChatRecording", setVoiceChatRecordingPayload);
         }
 
         public static void ToggleVoiceChatRecording()
         {
+            Debug.Log("VOICECHATDEBUG: Toggle voice chat recording");
             SendMessage("ToggleVoiceChatRecording");
         }
 
