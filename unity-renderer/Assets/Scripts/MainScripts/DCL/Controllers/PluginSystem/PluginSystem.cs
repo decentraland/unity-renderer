@@ -30,12 +30,13 @@ namespace DCL
         /// </summary>
         /// <param name="pluginBuilder">The PluginBuilder delegate instance used to instance this plugin.</param>
         /// <returns>True if the plugin defined by the PluginBuilder delegate is currently enabled</returns>
-        public bool IsEnabled(PluginBuilder pluginBuilder)
+        public bool IsEnabled<T>() where T : IPlugin
         {
-            if (!allPlugins.plugins.ContainsKey(pluginBuilder))
+            Type type = typeof(T);
+            if (!allPlugins.plugins.ContainsKey(type))
                 return false;
 
-            return allPlugins.plugins[pluginBuilder].isEnabled;
+            return allPlugins.plugins[type].isEnabled;
         }
 
         /// <summary>
@@ -43,10 +44,10 @@ namespace DCL
         /// </summary>
         /// <param name="pluginBuilder">The builder used to construct the plugin.</param>
         /// <param name="featureFlag">The flag to be bounded. When this flag is true, the plugin will be created.</param>
-        public void RegisterWithFlag(PluginBuilder pluginBuilder, string featureFlag)
+        public void RegisterWithFlag<T>(PluginBuilder pluginBuilder, string featureFlag) where T : IPlugin
         {
-            Register(pluginBuilder, false);
-            BindFlag(pluginBuilder, featureFlag);
+            Register<T>(pluginBuilder, false);
+            BindFlag<T>(pluginBuilder, featureFlag);
         }
 
         /// <summary>
@@ -54,12 +55,13 @@ namespace DCL
         /// </summary>
         /// <param name="pluginBuilder">The pluginBuilder instance. This instance will create the plugin when enabled.</param>
         /// <param name="enable">If true, the plugin will be constructed as soon as this method is called.</param>
-        public void Register(PluginBuilder pluginBuilder, bool enable = true)
+        public void Register<T>(PluginBuilder pluginBuilder, bool enable = true) where T : IPlugin
         {
+            Type type = typeof(T);
             Assert.IsNotNull(pluginBuilder);
 
             PluginInfo pluginInfo = new PluginInfo() { builder = pluginBuilder };
-            allPlugins.Add(pluginBuilder, pluginInfo);
+            allPlugins.Add(type, pluginInfo);
 
             if (enable)
                 pluginInfo.Enable();
@@ -69,18 +71,19 @@ namespace DCL
         /// Unregisters a registered plugin. If the plugin was active, it will be disposed.
         /// </summary>
         /// <param name="plugin">The plugin builder instance used to register the plugin.</param>
-        public void Unregister(PluginBuilder plugin)
+        public void Unregister<T>() where T : IPlugin
         {
-            if ( !allPlugins.plugins.ContainsKey(plugin))
+            Type type = typeof(T);
+            if ( !allPlugins.plugins.ContainsKey(type))
                 return;
 
-            PluginInfo info = allPlugins.plugins[plugin];
+            PluginInfo info = allPlugins.plugins[type];
             info.Disable();
 
             string flag = info.flag;
 
-            allPlugins.Remove(plugin);
-            pluginGroupByFlag[flag].Remove(plugin);
+            allPlugins.Remove(type);
+            pluginGroupByFlag[flag].Remove(type);
         }
 
         /// <summary>
@@ -89,14 +92,15 @@ namespace DCL
         /// </summary>
         /// <param name="plugin">The given plugin builder.</param>
         /// <param name="featureFlag">The given feature flag. If this feature flag is set to true the plugin will be created.</param>
-        public void BindFlag(PluginBuilder plugin, string featureFlag)
+        public void BindFlag<T>(PluginBuilder plugin, string featureFlag) where T : IPlugin
         {
+            Type type = typeof(T);
             Assert.IsNotNull(plugin);
 
             if ( !pluginGroupByFlag.ContainsKey(featureFlag) )
                 pluginGroupByFlag.Add(featureFlag, new PluginGroup());
 
-            pluginGroupByFlag[featureFlag].Add(plugin, allPlugins.plugins[plugin]);
+            pluginGroupByFlag[featureFlag].Add(type, allPlugins.plugins[type]);
         }
 
         /// <summary>

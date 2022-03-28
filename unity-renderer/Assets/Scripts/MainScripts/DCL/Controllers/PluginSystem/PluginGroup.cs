@@ -1,26 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DCL
 {
     public class PluginGroup
     {
-        public Dictionary<PluginBuilder, PluginInfo> plugins = new Dictionary<PluginBuilder, PluginInfo>();
+        public Dictionary<Type, PluginInfo> plugins = new Dictionary<Type, PluginInfo>();
 
-        public bool Add(PluginBuilder plugin, PluginInfo pluginInfo)
+        public bool Add(Type type, PluginInfo pluginInfo)
         {
-            if ( plugins.ContainsKey(plugin) )
+            if ( plugins.ContainsKey(type) )
                 return false;
 
-            plugins.Add(plugin, pluginInfo);
+            plugins.Add(type, pluginInfo);
             return true;
         }
 
-        public bool Remove(PluginBuilder plugin)
+        public bool Remove(Type type)
         {
-            if ( !plugins.ContainsKey(plugin))
+            if ( !plugins.ContainsKey(type))
                 return false;
 
-            plugins.Remove(plugin);
+            plugins.Remove(type);
             return true;
         }
     }
