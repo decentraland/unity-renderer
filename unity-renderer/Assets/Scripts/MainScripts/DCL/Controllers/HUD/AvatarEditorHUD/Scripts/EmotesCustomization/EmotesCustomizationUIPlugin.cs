@@ -1,13 +1,13 @@
-namespace EmotesCustomization
+namespace DCL.EmotesCustomization
 {
     /// <summary>
     /// Plugin feature that initialize the Emotes Customization feature.
     /// </summary>
-    public class EmotesCustomizationFeature : IPlugin
+    public class EmotesCustomizationUIPlugin : IPlugin
     {
         public IEmotesCustomizationComponentController emotesCustomizationComponentController;
 
-        public EmotesCustomizationFeature()
+        public EmotesCustomizationUIPlugin()
         {
             emotesCustomizationComponentController = CreateController();
             emotesCustomizationComponentController.Initialize(UserProfile.GetOwnUserProfile(), CatalogController.wearableCatalog);

@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace EmotesCustomization
+namespace DCL.EmotesCustomization
 {
     public interface IEmotesCustomizationComponentController : IDisposable
     {

@@ -1,11 +1,10 @@
-using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 
-namespace EmotesCustomization
+namespace DCL.EmotesWheel
 {
     public class EmotesHUDView : MonoBehaviour
     {
@@ -35,12 +34,9 @@ namespace EmotesCustomization
         [SerializeField] internal TMP_Text selectedEmoteName;
         [SerializeField] internal List<RarityColor> rarityColors;
         [SerializeField] internal GameObject customizeTitle;
-
-        // TODO (Santi): Remove it when we don't longer need keep the retrocompatibility.
         [SerializeField] internal List<GameObject> gameObjectsToHideWhenCustomizeFFIsDeactivated;
 
-        // TODO (Santi): Remove it when we don't longer need keep the retrocompatibility.
-        private bool isEmotesCustomizationFFEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("emotes_customization");
+        private DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
 
         public static EmotesHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesHUDView>(); }
 
@@ -53,7 +49,7 @@ namespace EmotesCustomization
 
             openCustomizeButton.onClick.AddListener(() =>
             {
-                if (!isEmotesCustomizationFFEnabled)
+                if (emotesCustomizationDataStore.isInitialized.Get() == null)
                     return;
 
                 OnCustomizeClicked?.Invoke();
@@ -72,7 +68,7 @@ namespace EmotesCustomization
             {
                 foreach (GameObject go in gameObjectsToHideWhenCustomizeFFIsDeactivated)
                 {
-                    go.SetActive(isEmotesCustomizationFFEnabled);
+                    go.SetActive(emotesCustomizationDataStore.isInitialized.Get() != null);
                 }
 
                 AudioScriptableObjects.dialogOpen.Play(true);

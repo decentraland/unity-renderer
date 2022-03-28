@@ -1,17 +1,13 @@
-using DCL;
-using DCL.Helpers;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace EmotesCustomization
+namespace DCL.EmotesCustomization
 {
     public class EmotesCustomizationComponentController : IEmotesCustomizationComponentController
     {
         internal const int NUMBER_OF_SLOTS = 10;
-        internal const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedNFTEmotes";
 
         internal DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
         internal BaseDictionary<(string bodyshapeId, string emoteId), AnimationClip> emoteAnimations => DataStore.i.emotes.animations;
@@ -38,10 +34,12 @@ namespace EmotesCustomization
 
         public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
         {
-            LoadEquippedEmotes();
             ConfigureView();
             ConfigureUserProfileAndCatalog(userProfile, catalog);
             ConfigureShortcuts();
+
+            emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
+            OnEquippedEmotesSet(emotesCustomizationDataStore.equippedEmotes.Get());
 
             emotesCustomizationDataStore.isInitialized.Set(view.viewTransform);
         }
@@ -54,7 +52,7 @@ namespace EmotesCustomization
             view.onSlotSelected -= OnSlotSelected;
             isStarMenuOpen.OnChange -= IsStarMenuOpenChanged;
             avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
-            emotesCustomizationDataStore.avatarHasBeenSaved.OnChange -= OnAvatarHasBeenSavedChanged;
+            emotesCustomizationDataStore.equippedEmotes.OnSet -= OnEquippedEmotesSet;
             catalog.OnAdded -= AddEmote;
             catalog.OnRemoved -= RemoveEmote;
             emoteAnimations.OnAdded -= OnAnimationAdded;
@@ -74,55 +72,18 @@ namespace EmotesCustomization
             shortcut9InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
         }
 
-        internal void LoadEquippedEmotes()
+        internal void OnEquippedEmotesSet(IEnumerable<EquippedEmoteData> equippedEmotes)
         {
-            List<string> storedEquippedEmotes;
-
-            try
+            foreach (EquippedEmoteData equippedEmote in equippedEmotes)
             {
-                storedEquippedEmotes = JsonConvert.DeserializeObject<List<string>>(PlayerPrefsUtils.GetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY));
-            }
-            catch
-            {
-                storedEquippedEmotes = null;
-            }
-
-            if (storedEquippedEmotes == null)
-                storedEquippedEmotes = GetDefaultEmotes();
-
-            foreach (string emoteId in storedEquippedEmotes)
-            {
-                if (string.IsNullOrEmpty(emoteId))
+                if (equippedEmote == null || string.IsNullOrEmpty(equippedEmote.id))
                     continue;
 
                 // TODO: We should avoid static calls and create injectable interfaces
-                CatalogController.RequestWearable(emoteId);
+                CatalogController.RequestWearable(equippedEmote.id);
             }
 
-            List<EquippedEmoteData> storedEquippedEmotesData = new List<EquippedEmoteData>();
-            foreach (string emoteId in storedEquippedEmotes)
-            {
-                storedEquippedEmotesData.Add(
-                    string.IsNullOrEmpty(emoteId) ? null : new EquippedEmoteData { id = emoteId, cachedThumbnail = null });
-            }
-            emotesCustomizationDataStore.equippedEmotes.Set(storedEquippedEmotesData);
-        }
-
-        internal List<string> GetDefaultEmotes()
-        {
-            return new List<string>
-            {
-                "handsair",
-                "wave",
-                "fistpump",
-                "dance",
-                "raiseHand",
-                "clap",
-                "money",
-                "kiss",
-                "headexplode",
-                "shrug"
-            };
+            UpdateEmoteSlots();
         }
 
         internal void ConfigureView()
@@ -134,33 +95,11 @@ namespace EmotesCustomization
             view.onSlotSelected += OnSlotSelected;
             isStarMenuOpen.OnChange += IsStarMenuOpenChanged;
             avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
-            emotesCustomizationDataStore.avatarHasBeenSaved.OnChange += OnAvatarHasBeenSavedChanged;
         }
 
         internal void IsStarMenuOpenChanged(bool currentIsOpen, bool previousIsOpen) { view.SetEmoteInfoPanelActive(false); }
 
         internal void OnAvatarEditorVisibleChanged(bool current, bool previous) { view.SetActive(current); }
-
-        internal void OnAvatarHasBeenSavedChanged(bool wasAvatarSaved, bool previous)
-        {
-            if (wasAvatarSaved)
-            {
-                List<string> emotesIdsToStore = new List<string>();
-                foreach (EquippedEmoteData equippedEmoteData in emotesCustomizationDataStore.equippedEmotes.Get())
-                {
-                    emotesIdsToStore.Add(equippedEmoteData != null ? equippedEmoteData.id : null);
-                }
-
-                // TODO: We should avoid static calls and create injectable interfaces
-                PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(emotesIdsToStore));
-                PlayerPrefsUtils.Save();
-            }
-            else
-            {
-                LoadEquippedEmotes();
-                UpdateEmoteSlots();
-            }
-        }
 
         internal void ProcessCatalog()
         {
