@@ -14,7 +14,8 @@ namespace DCL.Builder
     {
         private const string BIGGER_LAND_TO_PUBLISH_TEXT = "Your scene is bigger than any Land you own.\nBrowse the Marketplace and buy some new Land where you can deploy.";
         private const string NO_LAND_TO_PUBLISH_TEXT = "To publish a scene first you need a Land where you can deploy it. Browse the marketplace to get some and show the world what you have created.";
-
+        public const string UNPUBLISH_EMPTY_SCENE_NAME = "Empty";
+        
         public enum TYPE
         {
             PUBLISH = 0,
@@ -145,7 +146,7 @@ namespace DCL.Builder
 
             //Display info
             sceneJson.display = new CatalystSceneEntityMetadata.Display();
-            sceneJson.display.title = "Empty";
+            sceneJson.display.title = UNPUBLISH_EMPTY_SCENE_NAME;
 
             //Scenes
             sceneJson.scene = new CatalystSceneEntityMetadata.Scene();
@@ -156,14 +157,14 @@ namespace DCL.Builder
 
             //  All parcels 
             string[] parcels = new string[size.x*size.y];
-            int cont = 0;
+            int count = 0;
 
             for (int x = 0; x < size.x; x++)
             {
                 for (int y = 0; y < size.y; y++)
                 {
-                    parcels[cont] = (coords.x + x) + "," + (coords.y + y);
-                    cont++;
+                    parcels[count] = (coords.x + x) + "," + (coords.y + y);
+                    count++;
                 }
             }
 
