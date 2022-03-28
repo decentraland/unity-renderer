@@ -22,7 +22,7 @@ namespace DCL
             pluginSystem.Register(() => new SkyboxController());
             pluginSystem.Register(() => new GotoPanelPlugin());
             pluginSystem.Register(() => new ExperiencesViewerFeature());
-            pluginSystem.Register(() => new EmoteAnimationsPlugin(DataStore.i.emotes, new EmoteAnimationLoaderFactory(), new WearableItemResolver()));
+            pluginSystem.Register(() => new EmoteAnimationsPlugin());
             pluginSystem.RegisterWithFlag(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag(() => new PlacesAndEventsFeature(), "explorev2");
