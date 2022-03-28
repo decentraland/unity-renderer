@@ -1,5 +1,5 @@
 using DCL;
-using EmotesCustomization;
+using DCL.EmotesWheel;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
