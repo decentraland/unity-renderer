@@ -116,6 +116,9 @@ namespace UnityGLTF
 
         public bool forceGPUOnlyMesh = true;
         public bool forceGPUOnlyTex = true;
+        
+        // this setting forces coroutines to be ran in a single call
+        public bool forceSyncCoroutines = false;
 
         private bool useMaterialTransitionValue = true;
 
@@ -537,9 +540,16 @@ namespace UnityGLTF
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await TaskUtils.RunThrottledCoroutine(GLTFParser.ParseJsonDelayed(_gltfStream.Stream, _gltfRoot, _gltfStream.StartPosition),
-                    exception => throw exception,
-                    throttlingCounter.EvaluateTimeBudget);
+                IEnumerator coroutine = GLTFParser.ParseJsonDelayed(_gltfStream.Stream, _gltfRoot, _gltfStream.StartPosition);
+
+                if (forceSyncCoroutines)
+                {
+                    CoroutineUtils.RunCoroutineSync(coroutine);
+                }
+                else
+                {
+                    await TaskUtils.RunThrottledCoroutine(coroutine, exception => throw exception, throttlingCounter.EvaluateTimeBudget);
+                }
             }
 
             if (_gltfRoot == null)
@@ -1792,11 +1802,17 @@ namespace UnityGLTF
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await TaskUtils.RunThrottledCoroutine(
-                                   ConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData),
-                                   exception => throw exception,
-                                   throttlingCounter.EvaluateTimeBudget)
-                               .AttachExternalCancellation(cancellationToken);
+                IEnumerator coroutine = ConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData);
+
+                if (forceSyncCoroutines)
+                {
+                    CoroutineUtils.RunCoroutineSync(coroutine);
+                }
+                else
+                {
+                    await TaskUtils.RunThrottledCoroutine(coroutine, exception => throw exception, throttlingCounter.EvaluateTimeBudget)
+                                   .AttachExternalCancellation(cancellationToken);
+                }
             }
         }
 
@@ -1946,7 +1962,7 @@ namespace UnityGLTF
             };
 
             _assetCache.MeshCache[meshId][primitiveIndex].LoadedMesh = mesh;
-            
+
             meshesEstimatedSize += GLTFSceneImporterUtils.ComputeEstimatedMeshSize(unityMeshData);
 
             mesh.vertices = unityMeshData.Vertices;
@@ -2015,8 +2031,6 @@ namespace UnityGLTF
                 mesh.UploadMeshData(true);
             }
         }
-
-
 
         // This check is to avoid broken meshes fatal error "Failed setting triangles. Some indices are referencing out of bounds vertices."
         private bool AreMeshTrianglesValid(int[] triangles, int vertexCount)
