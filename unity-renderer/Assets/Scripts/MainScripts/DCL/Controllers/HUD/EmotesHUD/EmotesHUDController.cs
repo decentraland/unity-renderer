@@ -67,6 +67,8 @@ namespace DCL.EmotesWheel
             emoteAnimations.OnAdded += OnAnimationAdded;
 
             ConfigureShortcuts();
+
+            emotesCustomizationDataStore.isWheelInitialized.Set(true);
         }
 
         public void SetVisibility(bool visible)

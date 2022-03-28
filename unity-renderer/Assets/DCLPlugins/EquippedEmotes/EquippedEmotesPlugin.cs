@@ -56,6 +56,9 @@ namespace DCL.EquippedEmotes
 
         internal void SaveEquippedEmotesInLocalStorage(bool wasAvatarSaved, bool previous)
         {
+            if (emotesCustomizationDataStore.isInitialized.Get() == null)
+                return;
+
             if (wasAvatarSaved)
             {
                 List<string> emotesIdsToStore = new List<string>();
