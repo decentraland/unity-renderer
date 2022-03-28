@@ -99,6 +99,9 @@ namespace DCL.Builder
                     bool found = false;
                     foreach (Scene scene in land.scenes)
                     {
+                        if(scene.isEmpty)
+                            continue;
+                        
                         foreach (Vector2Int sceneParcel in scene.parcels)
                         {
                             if (sceneParcel == landParcel)

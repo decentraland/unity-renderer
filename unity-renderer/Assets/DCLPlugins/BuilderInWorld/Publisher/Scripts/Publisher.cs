@@ -14,7 +14,13 @@ namespace DCL.Builder
     {
         private const string BIGGER_LAND_TO_PUBLISH_TEXT = "Your scene is bigger than any Land you own.\nBrowse the Marketplace and buy some new Land where you can deploy.";
         private const string NO_LAND_TO_PUBLISH_TEXT = "To publish a scene first you need a Land where you can deploy it. Browse the marketplace to get some and show the world what you have created.";
-
+        public const string UNPUBLISH_EMPTY_SCENE_NAME = "Empty";
+        
+        public enum TYPE
+        {
+            PUBLISH = 0,
+            UNPUBLISH = 1
+        }
         public event Action<bool> OnPublishFinish;
         
         private IPublishProjectController projectPublisher;
@@ -29,6 +35,7 @@ namespace DCL.Builder
         private IBuilderScene builderSceneToDeploy;
         private PublishInfo publishInfo;
         private IBuilderScene.SceneType lastTypeWhoStartedPublish;
+        private TYPE type = TYPE.PUBLISH;
 
         private float rotationToApply = 0f;
         
@@ -114,6 +121,7 @@ namespace DCL.Builder
             }
             
             DataStore.i.builderInWorld.areShortcutsBlocked.Set(true);
+            type = TYPE.PUBLISH;
             
             switch (scene.sceneType)
             {
@@ -126,6 +134,74 @@ namespace DCL.Builder
             }
 
             lastTypeWhoStartedPublish = scene.sceneType;
+        }
+
+        public async void Unpublish(Vector2Int coords, Vector2Int size)
+        {
+            type = TYPE.UNPUBLISH;
+            
+            var manifest = BIWUtils.CreateEmptyDefaultBuilderManifest(size, BIWUtils.Vector2INTToString(coords));
+            
+            CatalystSceneEntityMetadata sceneJson = new CatalystSceneEntityMetadata();
+
+            //Display info
+            sceneJson.display = new CatalystSceneEntityMetadata.Display();
+            sceneJson.display.title = UNPUBLISH_EMPTY_SCENE_NAME;
+
+            //Scenes
+            sceneJson.scene = new CatalystSceneEntityMetadata.Scene();
+
+            //  Base Parcels 
+            string baseParcels = BIWUtils.Vector2INTToString(coords);
+            sceneJson.scene.@base = baseParcels;
+
+            //  All parcels 
+            string[] parcels = new string[size.x*size.y];
+            int count = 0;
+
+            for (int x = 0; x < size.x; x++)
+            {
+                for (int y = 0; y < size.y; y++)
+                {
+                    parcels[count] = (coords.x + x) + "," + (coords.y + y);
+                    count++;
+                }
+            }
+
+            sceneJson.scene.parcels = parcels;
+
+            //Main
+            sceneJson.main = BIWSettings.DEPLOYMENT_BUNDLED_GAME_FILE;
+
+            //Source
+            sceneJson.source = new CatalystSceneEntityMetadata.Source();
+            sceneJson.source.origin = BIWSettings.DEPLOYMENT_SOURCE_TYPE;
+            sceneJson.source.version = 1;
+            sceneJson.source.layout = new CatalystSceneEntityMetadata.Source.Layout();
+            sceneJson.source.layout.rows = size.x.ToString();
+            sceneJson.source.layout.cols = size.y.ToString();
+            sceneJson.source.point = coords;
+            sceneJson.source.isEmpty = true;
+            
+
+            // Prepare the assets
+            List<SceneObject> assets = manifest.scene.assets.Values.ToList();
+
+            // Download the assets files
+            Dictionary<string, object> downloadedFiles = await DownloadAssetFiles(assets);
+            
+            // This files are not encoded
+            Dictionary<string, object> entityFiles = new Dictionary<string, object>
+            {
+                { BIWSettings.DEPLOYMENT_SCENE_FILE, sceneJson },
+                { BIWSettings.DEPLOYMENT_ASSETS, assets },
+            };
+            
+            // Prepare the stateless manifest
+            StatelessManifest statelessManifest = ManifestTranslator.WebBuilderSceneToStatelessManifest(manifest.scene);
+            
+            // Sent scene to kernel
+            StartUnpublishScene(downloadedFiles,entityFiles,statelessManifest, sceneJson);
         }
 
         internal void Canceled()
@@ -239,6 +315,11 @@ namespace DCL.Builder
             }
         }
 
+        private void StartUnpublishScene(Dictionary<string, object > filesToDecode, Dictionary<string, object > files,StatelessManifest statelessManifest, CatalystSceneEntityMetadata metadata)
+        {
+            builderInWorldBridge.PublishScene(filesToDecode, files, metadata, statelessManifest, true);
+        }
+        
         private void StartPublishScene(IBuilderScene scene, Dictionary<string, object > filesToDecode, Dictionary<string, object > files, CatalystSceneEntityMetadata metadata, StatelessManifest statelessManifest )
         {
             startPublishingTimestamp = Time.realtimeSinceStartup;
@@ -253,30 +334,40 @@ namespace DCL.Builder
 
         private void PublishEnd(bool isOk, string message)
         {
-            if (isOk)
+            if (type == TYPE.UNPUBLISH)
             {
-                // We notify the success of the deployment
-                progressController.DeploySuccess();
-
-                // Remove link to a land if exists
-                builderSceneToDeploy.manifest.project.creation_coords = null;
-
-                // Update project on the builder server
-                context.builderAPIController.SetManifest(builderSceneToDeploy.manifest);
+                PublishSceneResultPayload payload = new PublishSceneResultPayload();
+                payload.ok = isOk;
+                payload.error = message;
+                DataStore.i.builderInWorld.unpublishSceneResult.Set(payload);
             }
             else
             {
-                progressController.DeployError(message);
-            }
-            string successString = isOk ? "Success" : message;
-            BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.currentCount, successString, Time.realtimeSinceStartup - startPublishingTimestamp);
+                if (isOk)
+                {
+                    // We notify the success of the deployment
+                    progressController.DeploySuccess();
 
-            if (isOk)
-                builderSceneToDeploy = null;
-            
-            DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
-            
-            OnPublishFinish?.Invoke(isOk);
+                    // Remove link to a land if exists
+                    builderSceneToDeploy.manifest.project.creation_coords = null;
+
+                    // Update project on the builder server
+                    context.builderAPIController.SetManifest(builderSceneToDeploy.manifest);
+                }
+                else
+                {
+                    progressController.DeployError(message);
+                }
+                string successString = isOk ? "Success" : message;
+                BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.currentCount, successString, Time.realtimeSinceStartup - startPublishingTimestamp);
+
+                if (isOk)
+                    builderSceneToDeploy = null;
+
+                DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
+
+                OnPublishFinish?.Invoke(isOk);
+            }
         }
 
         internal CatalystSceneEntityMetadata CreateSceneJson(IBuilderScene builderScene, PublishInfo info)

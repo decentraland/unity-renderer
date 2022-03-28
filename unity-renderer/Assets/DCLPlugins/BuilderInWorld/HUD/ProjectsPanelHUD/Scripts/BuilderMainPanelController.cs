@@ -172,7 +172,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         this.theGraph = theGraph;
         this.catalyst = catalyst;
 
-        this.unpublishPopupController = new UnpublishPopupController(view.GetUnpublishPopup());
+        this.unpublishPopupController = new UnpublishPopupController(context,view.GetUnpublishPopup());
 
         // set listeners for sections, setup searchbar for section, handle request for opening a new section
         sectionsHandler = new SectionsHandler(sectionsController, scenesViewController, landsesController, projectsController, view.GetSearchBar());
