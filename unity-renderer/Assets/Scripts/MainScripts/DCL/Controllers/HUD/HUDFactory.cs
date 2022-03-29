@@ -49,20 +49,36 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.TERMS_OF_SERVICE:
                 hudElement = new TermsOfServiceHUDController();
                 break;
-            case HUDElementID.WORLD_CHAT_WINDOW:
-                hudElement = new WorldChatWindowController(new UserProfileWebInterfaceBridge(),
-                    FriendsController.i, ChatController.i);
-                break;
             case HUDElementID.FRIENDS:
                 hudElement = new FriendsHUDController();
                 break;
+            case HUDElementID.WORLD_CHAT_WINDOW:
+                hudElement = new WorldChatWindowController(
+                    new UserProfileWebInterfaceBridge(),
+                    FriendsController.i, ChatController.i);
+                // hudElement = new WorldChatWindowController(
+                //     new FakeUserProfileBridge(new UserProfileWebInterfaceBridge()),
+                //     new FakeFriendsController(), new FakeChatController());
+                break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
-                hudElement = new PrivateChatWindowController(DataStore.i, new UserProfileWebInterfaceBridge(),
+                hudElement = new PrivateChatWindowController(DataStore.i,
+                    new UserProfileWebInterfaceBridge(),
                     ChatController.i, FriendsController.i, new DefaultPlayerPrefs());
+                // hudElement = new PrivateChatWindowController(DataStore.i,
+                //     new FakeUserProfileBridge(new UserProfileWebInterfaceBridge()),
+                //     new FakeChatController(), new FakeFriendsController(), new DefaultPlayerPrefs());
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
-                hudElement = new PublicChatChannelController(ChatController.i, SceneReferences.i.mouseCatcher,
-                    new DefaultPlayerPrefs(), CommonScriptableObjects.lastReadWorldChatMessages);
+                hudElement = new PublicChatChannelController(ChatController.i, 
+                    SceneReferences.i.mouseCatcher,
+                    new DefaultPlayerPrefs(),
+                    CommonScriptableObjects.lastReadWorldChatMessages,
+                    new UserProfileWebInterfaceBridge());
+                // hudElement = new PublicChatChannelController(new FakeChatController(),
+                //     SceneReferences.i.mouseCatcher,
+                //     new DefaultPlayerPrefs(),
+                //     CommonScriptableObjects.lastReadWorldChatMessages,
+                //     new FakeUserProfileBridge(new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();
