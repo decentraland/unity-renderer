@@ -5,19 +5,10 @@ namespace DCL.EmotesCustomization
     /// </summary>
     public class EmotesCustomizationUIPlugin : IPlugin
     {
-        public IEmotesCustomizationComponentController emotesCustomizationComponentController;
+        internal DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
 
-        public EmotesCustomizationUIPlugin()
-        {
-            emotesCustomizationComponentController = CreateController();
-            emotesCustomizationComponentController.Initialize(UserProfile.GetOwnUserProfile(), CatalogController.wearableCatalog);
-        }
+        public EmotesCustomizationUIPlugin() { emotesCustomizationDataStore.isEmotesCustomizationInitialized.Set(true); }
 
-        internal virtual IEmotesCustomizationComponentController CreateController() => new EmotesCustomizationComponentController();
-
-        public void Dispose()
-        {
-            emotesCustomizationComponentController.Dispose();
-        }
+        public void Dispose() { }
     }
 }

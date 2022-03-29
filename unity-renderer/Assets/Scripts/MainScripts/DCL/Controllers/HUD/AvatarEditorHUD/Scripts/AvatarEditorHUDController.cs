@@ -1,4 +1,5 @@
 using DCL;
+using DCL.EmotesCustomization;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.NotificationModel;
@@ -52,8 +53,9 @@ public class AvatarEditorHUDController : IHUD
     private bool avatarIsDirty = false;
     private float lastTimeOwnedWearablesChecked = 0;
     private float prevRenderScale = 1.0f;
-    private Transform emotesSectionTransform;
     private bool isAvatarPreviewReady;
+
+    internal IEmotesCustomizationComponentController emotesCustomizationComponentController;
 
     public AvatarEditorHUDView view;
 
@@ -89,14 +91,18 @@ public class AvatarEditorHUDController : IHUD
         this.userProfile.OnUpdate += LoadUserProfile;
 
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, false);
-        emotesCustomizationDataStore.isInitialized.OnChange += InitializeEmotesSection;
-        InitializeEmotesSection(emotesCustomizationDataStore.isInitialized.Get(), null);
+        emotesCustomizationDataStore.isEmotesCustomizationInitialized.OnChange += InitializeEmotesSection;
+        InitializeEmotesSection(emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get(), false);
         emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange += HandleEmotesCostumizationSelection;
         emotesCustomizationDataStore.currentLoadedEmotes.OnAdded += OnNewEmoteAdded;
-        emotesCustomizationDataStore.emoteForPreviewing.OnChange += OnPreviewEmote;
-        emotesCustomizationDataStore.emoteForEquipping.OnChange += OnEmoteEquipped;
-        emotesCustomizationDataStore.emoteForUnequipping.OnChange += OnEmoteUnequipped;
-        emotesCustomizationDataStore.emoteForSelling.OnChange += OnRedirectToEmoteSelling;
+
+        if (emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get())
+        {
+            emotesCustomizationComponentController.onEmotePreviewed += OnPreviewEmote;
+            emotesCustomizationComponentController.onEmoteEquipped += OnEmoteEquipped;
+            emotesCustomizationComponentController.onEmoteUnequipped += OnEmoteUnequipped;
+            emotesCustomizationComponentController.onEmoteSell += OnRedirectToEmoteSelling;
+        }
 
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
     }
@@ -708,13 +714,17 @@ public class AvatarEditorHUDController : IHUD
         configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
         exploreV2IsOpen.OnChange -= ExploreV2IsOpenChanged;
-        emotesCustomizationDataStore.isInitialized.OnChange -= InitializeEmotesSection;
+        emotesCustomizationDataStore.isEmotesCustomizationInitialized.OnChange -= InitializeEmotesSection;
         emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange -= HandleEmotesCostumizationSelection;
         emotesCustomizationDataStore.currentLoadedEmotes.OnAdded -= OnNewEmoteAdded;
-        emotesCustomizationDataStore.emoteForPreviewing.OnChange -= OnPreviewEmote;
-        emotesCustomizationDataStore.emoteForEquipping.OnChange -= OnEmoteEquipped;
-        emotesCustomizationDataStore.emoteForUnequipping.OnChange -= OnEmoteUnequipped;
-        emotesCustomizationDataStore.emoteForSelling.OnChange -= OnRedirectToEmoteSelling;
+
+        if (emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get())
+        {
+            emotesCustomizationComponentController.onEmotePreviewed -= OnPreviewEmote;
+            emotesCustomizationComponentController.onEmoteEquipped -= OnEmoteEquipped;
+            emotesCustomizationComponentController.onEmoteUnequipped -= OnEmoteUnequipped;
+            emotesCustomizationComponentController.onEmoteSell -= OnRedirectToEmoteSelling;
+        }
 
         CleanUp();
     }
@@ -743,7 +753,7 @@ public class AvatarEditorHUDController : IHUD
         if (DataStore.i.common.isSignUpFlow.Get())
             DataStore.i.HUDs.signupVisible.Set(true);
 
-        emotesCustomizationDataStore.avatarHasBeenSaved.Set(true, true);
+        emotesCustomizationDataStore.equippedEmotes.Set(emotesCustomizationDataStore.unsavedEquippedEmotes.Get());
         avatarIsDirty = false;
         SetVisibility(false);
     }
@@ -777,7 +787,10 @@ public class AvatarEditorHUDController : IHUD
         if (!current && avatarIsDirty)
         {
             LoadUserProfile(userProfile, true);
-            emotesCustomizationDataStore.avatarHasBeenSaved.Set(false, true);
+
+            if (emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get())
+                emotesCustomizationComponentController.RestoreEmoteSlots();
+
             avatarIsDirty = false;
         }
     }
@@ -814,13 +827,14 @@ public class AvatarEditorHUDController : IHUD
         return true;
     }
 
-    private void InitializeEmotesSection(Transform currentViewTransform, Transform previousViewTransform)
+    private void InitializeEmotesSection(bool current, bool previous)
     {
-        if (currentViewTransform == null)
+        if (!current)
             return;
 
-        emotesSectionTransform = currentViewTransform;
-        emotesSectionTransform.SetParent(view.emotesSection.transform, false);
+        emotesCustomizationComponentController = CreateEmotesController();
+        IEmotesCustomizationComponentView emotesSectionView = emotesCustomizationComponentController.Initialize(userProfile, catalog);
+        emotesSectionView.viewTransform.SetParent(view.emotesSection.transform, false);
 
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
     }
@@ -841,23 +855,25 @@ public class AvatarEditorHUDController : IHUD
         UpdateAvatarPreview();
     }
 
-    private void OnPreviewEmote(string currentEmoteId, string previousEmoteId) { view.PlayPreviewEmote(currentEmoteId); }
+    private void OnPreviewEmote(string emoteId) { view.PlayPreviewEmote(emoteId); }
 
-    private void OnEmoteEquipped(string currentEmoteId, string previousEmoteId)
+    private void OnEmoteEquipped(string emoteId)
     {
-        catalog.TryGetValue(currentEmoteId, out WearableItem equippedEmote);
+        catalog.TryGetValue(emoteId, out WearableItem equippedEmote);
 
         if (equippedEmote != null)
             EquipEmote(equippedEmote);
     }
 
-    private void OnEmoteUnequipped(string currentEmoteId, string previousEmoteId)
+    private void OnEmoteUnequipped(string emoteId)
     {
-        catalog.TryGetValue(currentEmoteId, out WearableItem unequippedEmote);
+        catalog.TryGetValue(emoteId, out WearableItem unequippedEmote);
 
         if (unequippedEmote != null)
             UnequipEmote(unequippedEmote);
     }
 
-    private void OnRedirectToEmoteSelling(string currentEmoteId, string previousEmoteId) { SellCollectible(currentEmoteId); }
+    private void OnRedirectToEmoteSelling(string emoteId) { SellCollectible(emoteId); }
+
+    internal virtual IEmotesCustomizationComponentController CreateEmotesController() => new EmotesCustomizationComponentController();
 }

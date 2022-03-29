@@ -1,7 +1,6 @@
 using DCL.Helpers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace DCL.EquippedEmotes
 {
@@ -18,18 +17,18 @@ namespace DCL.EquippedEmotes
         {
             LoadDefaultEquippedEmotes();
 
-            emotesCustomizationDataStore.isInitialized.OnChange += OnEmotesCustomizationInitialized;
-            OnEmotesCustomizationInitialized(emotesCustomizationDataStore.isInitialized.Get(), null);
+            emotesCustomizationDataStore.isEmotesCustomizationInitialized.OnChange += OnEmotesCustomizationInitialized;
+            OnEmotesCustomizationInitialized(emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get(), false);
 
-            emotesCustomizationDataStore.avatarHasBeenSaved.OnChange += SaveEquippedEmotesInLocalStorage;
+            emotesCustomizationDataStore.equippedEmotes.OnSet += SaveEquippedEmotesInLocalStorage;
         }
 
-        private void OnEmotesCustomizationInitialized(Transform current, Transform previous)
+        private void OnEmotesCustomizationInitialized(bool current, bool previous)
         {
-            if (current == null)
+            if (!current)
                 return;
 
-            emotesCustomizationDataStore.isInitialized.OnChange -= OnEmotesCustomizationInitialized;
+            emotesCustomizationDataStore.isEmotesCustomizationInitialized.OnChange -= OnEmotesCustomizationInitialized;
             LoadEquippedEmotesFromLocalStorage();
         }
 
@@ -54,27 +53,20 @@ namespace DCL.EquippedEmotes
             SetEquippedEmotes(storedEquippedEmotes);
         }
 
-        internal void SaveEquippedEmotesInLocalStorage(bool wasAvatarSaved, bool previous)
+        internal void SaveEquippedEmotesInLocalStorage(IEnumerable<EquippedEmoteData> equippedEmotes)
         {
-            if (emotesCustomizationDataStore.isInitialized.Get() == null)
+            if (!emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get())
                 return;
 
-            if (wasAvatarSaved)
+            List<string> emotesIdsToStore = new List<string>();
+            foreach (EquippedEmoteData equippedEmoteData in emotesCustomizationDataStore.equippedEmotes.Get())
             {
-                List<string> emotesIdsToStore = new List<string>();
-                foreach (EquippedEmoteData equippedEmoteData in emotesCustomizationDataStore.equippedEmotes.Get())
-                {
-                    emotesIdsToStore.Add(equippedEmoteData != null ? equippedEmoteData.id : null);
-                }
+                emotesIdsToStore.Add(equippedEmoteData != null ? equippedEmoteData.id : null);
+            }
 
-                // TODO: We should avoid static calls and create injectable interfaces
-                PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(emotesIdsToStore));
-                PlayerPrefsUtils.Save();
-            }
-            else
-            {
-                LoadEquippedEmotesFromLocalStorage();
-            }
+            // TODO: We should avoid static calls and create injectable interfaces
+            PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(emotesIdsToStore));
+            PlayerPrefsUtils.Save();
         }
 
         internal List<string> GetDefaultEmotes()
@@ -107,8 +99,8 @@ namespace DCL.EquippedEmotes
 
         public void Dispose()
         {
-            emotesCustomizationDataStore.isInitialized.OnChange -= OnEmotesCustomizationInitialized;
-            emotesCustomizationDataStore.avatarHasBeenSaved.OnChange += SaveEquippedEmotesInLocalStorage;
+            emotesCustomizationDataStore.isEmotesCustomizationInitialized.OnChange -= OnEmotesCustomizationInitialized;
+            emotesCustomizationDataStore.equippedEmotes.OnSet -= SaveEquippedEmotesInLocalStorage;
         }
     }
 }
