@@ -1,4 +1,4 @@
-using EmotesCustomization;
+using DCL.EmotesCustomization;
 using NUnit.Framework;
 using UnityEngine;
 public class EmoteCardComponentViewTests : MonoBehaviour
