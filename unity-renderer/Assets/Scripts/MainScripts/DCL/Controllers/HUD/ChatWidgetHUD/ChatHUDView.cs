@@ -43,7 +43,6 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     private Match whisperRegexMatch;
     private bool enableFadeoutMode;
 
-    public event Action<string> OnPressPrivateMessage;
     public event Action OnShowMenu
     {
         add
@@ -189,9 +188,6 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
             chatEntry.SetFadeout(false);
 
         chatEntry.Populate(chatEntryModel);
-
-        if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
-            chatEntry.OnPress += OnPressPrivateMessage;
 
         if (chatEntryModel.messageType == ChatMessage.Type.PUBLIC || chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
             chatEntry.OnPressRightButton += OnOpenContextMenu;

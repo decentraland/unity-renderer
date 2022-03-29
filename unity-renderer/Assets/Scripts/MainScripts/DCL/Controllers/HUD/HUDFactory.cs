@@ -57,8 +57,8 @@ public class HUDFactory : IHUDFactory
                 hudElement = new FriendsHUDController();
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
-                hudElement = new PrivateChatWindowHUDController(DataStore.i, new UserProfileWebInterfaceBridge(),
-                    ChatController.i, FriendsController.i);
+                hudElement = new PrivateChatWindowController(DataStore.i, new UserProfileWebInterfaceBridge(),
+                    ChatController.i, FriendsController.i, new DefaultPlayerPrefs());
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
                 hudElement = new PublicChatChannelController(ChatController.i, SceneReferences.i.mouseCatcher,

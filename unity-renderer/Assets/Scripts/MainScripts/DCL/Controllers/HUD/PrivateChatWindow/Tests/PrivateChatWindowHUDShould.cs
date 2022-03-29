@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 {
     private NotificationsController notificationsController;
-    private PrivateChatWindowHUDController controller;
+    private PrivateChatWindowController controller;
     private IPrivateChatComponentView view;
     private IChatHUDComponentView internalChatView;
     private UserProfileModel ownProfileModel;
@@ -175,10 +175,11 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 
     private void InitializeChatWindowController(IChatController chatController)
     {
-        controller = new PrivateChatWindowHUDController(new DataStore(),
+        controller = new PrivateChatWindowController(new DataStore(),
             Substitute.For<IUserProfileBridge>(),
             chatController,
-            Substitute.For<IFriendsController>());
+            Substitute.For<IFriendsController>(),
+            Substitute.For<IPlayerPrefs>());
         controller.Initialize(view);
         controller.Configure(testProfileModel.userId);
         controller.SetVisibility(true);

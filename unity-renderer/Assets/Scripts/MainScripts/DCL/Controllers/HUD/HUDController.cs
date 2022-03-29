@@ -84,8 +84,8 @@ public class HUDController : IHUDController
     public WorldChatWindowController worldChatWindowHud =>
         GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowController;
 
-    public PrivateChatWindowHUDController privateChatWindowHud =>
-        GetHUDElement(HUDElementID.PRIVATE_CHAT_WINDOW) as PrivateChatWindowHUDController;
+    public PrivateChatWindowController PrivateChatWindow =>
+        GetHUDElement(HUDElementID.PRIVATE_CHAT_WINDOW) as PrivateChatWindowController;
 
     public PublicChatChannelController PublicChatChannelHud =>
         GetHUDElement(HUDElementID.PUBLIC_CHAT_CHANNEL) as PublicChatChannelController;
@@ -254,18 +254,18 @@ public class HUDController : IHUDController
                 else
                     UpdateHudElement(configuration, HUDElementID.PUBLIC_CHAT_CHANNEL);
                 
-                if (privateChatWindowHud == null)
+                if (PrivateChatWindow == null)
                 {
                     CreateHudElement(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
 
-                    if (privateChatWindowHud != null)
+                    if (PrivateChatWindow != null)
                     {
-                        privateChatWindowHud.Initialize();
-                        privateChatWindowHud.SetVisibility(false);
-                        privateChatWindowHud.OnPressBack -= PrivateChatWindowHud_OnPressBack;
-                        privateChatWindowHud.OnPressBack += PrivateChatWindowHud_OnPressBack;
+                        PrivateChatWindow.Initialize();
+                        PrivateChatWindow.SetVisibility(false);
+                        PrivateChatWindow.OnPressBack -= PrivateChatWindowHud_OnPressBack;
+                        PrivateChatWindow.OnPressBack += PrivateChatWindowHud_OnPressBack;
 
-                        taskbarHud?.AddPrivateChatWindow(privateChatWindowHud);
+                        taskbarHud?.AddPrivateChatWindow(PrivateChatWindow);
                     }
                 }
                 else
@@ -419,7 +419,7 @@ public class HUDController : IHUDController
 
     private void PrivateChatWindowHud_OnPressBack()
     {
-        privateChatWindowHud?.SetVisibility(false);
+        PrivateChatWindow?.SetVisibility(false);
         taskbarHud?.OpenChatList();
     }
 
@@ -465,8 +465,8 @@ public class HUDController : IHUDController
             worldChatWindowHud.OnDeactivatePreview -= View_OnDeactivatePreview;
         }
 
-        if (privateChatWindowHud != null)
-            privateChatWindowHud.OnPressBack -= PrivateChatWindowHud_OnPressBack;
+        if (PrivateChatWindow != null)
+            PrivateChatWindow.OnPressBack -= PrivateChatWindowHud_OnPressBack;
 
         if (PublicChatChannelHud != null)
         {

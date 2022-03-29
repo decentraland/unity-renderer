@@ -4,7 +4,6 @@ using DCL.Interface;
 public interface IChatHUDComponentView
 {
     event Action<ChatMessage> OnSendMessage;
-    event Action<string> OnPressPrivateMessage;
     event Action OnShowMenu;
     event Action OnInputFieldSelected;
     

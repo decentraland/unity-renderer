@@ -1,12 +1,12 @@
-using DCL.Interface;
-using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
-using UnityEngine;
+using DCL.Interface;
+using Newtonsoft.Json;
 
-public class PrivateChatWindowHUDController : IHUD
+public class PrivateChatWindowController : IHUD
 {
     private const string PLAYER_PREFS_LAST_READ_CHAT_MESSAGES = "LastReadChatMessages";
 
@@ -18,23 +18,26 @@ public class PrivateChatWindowHUDController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IChatController chatController;
     private readonly IFriendsController friendsController;
+    private readonly IPlayerPrefs playerPrefs;
     private string conversationUserName = string.Empty;
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
 
     private bool isSocialBarV1Enabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("social_bar_v1");
 
-    public event System.Action OnPressBack;
+    public event Action OnPressBack;
 
-    public PrivateChatWindowHUDController(DataStore dataStore,
+    public PrivateChatWindowController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
         IChatController chatController,
-        IFriendsController friendsController)
+        IFriendsController friendsController,
+        IPlayerPrefs playerPrefs)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
         this.chatController = chatController;
         this.friendsController = friendsController;
+        this.playerPrefs = playerPrefs;
     }
 
     public void Initialize(IPrivateChatComponentView view = null)
@@ -57,15 +60,14 @@ public class PrivateChatWindowHUDController : IHUD
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnInputFieldSelected -= HandleInputFieldSelection;
         chatHudController.OnInputFieldSelected += HandleInputFieldSelection;
+        chatHudController.OnSendMessage += SendChatMessage;
         chatHudController.FocusInputField();
         LoadLatestReadChatMessagesStatus();
 
-        view.OnSendMessage += SendChatMessage;
-
         if (chatController != null)
         {
-            chatController.OnAddMessage -= OnAddMessage;
-            chatController.OnAddMessage += OnAddMessage;
+            chatController.OnAddMessage -= HandleMessageReceived;
+            chatController.OnAddMessage += HandleMessageReceived;
         }
     }
 
@@ -93,14 +95,17 @@ public class PrivateChatWindowHUDController : IHUD
         var messageEntries = chatController.GetEntries().Where(IsMessageFomCurrentConversation).ToList();
         foreach (var v in messageEntries)
         {
-            OnAddMessage(v);
+            HandleMessageReceived(v);
         }
     }
 
     public void SendChatMessage(ChatMessage message)
     {
-        if (string.IsNullOrEmpty(conversationUserName))
-            return;
+        if (string.IsNullOrEmpty(message.body)) return;
+        if (string.IsNullOrEmpty(conversationUserName)) return;
+        
+        message.messageType = ChatMessage.Type.PRIVATE;
+        message.recipient = conversationProfile.userName;
 
         bool isValidMessage = !string.IsNullOrEmpty(message.body)
                               && !string.IsNullOrWhiteSpace(message.body)
@@ -109,8 +114,7 @@ public class PrivateChatWindowHUDController : IHUD
         chatHudController.ResetInputField();
         chatHudController.FocusInputField();
 
-        if (!isValidMessage)
-            return;
+        if (!isValidMessage) return;
 
         // If Kernel allowed for private messages without the whisper param we could avoid this line
         message.body = $"/w {message.recipient} {message.body}";
@@ -150,7 +154,7 @@ public class PrivateChatWindowHUDController : IHUD
         view.OnMinimize -= OnMinimizeView;
 
         if (chatController != null)
-            chatController.OnAddMessage -= OnAddMessage;
+            chatController.OnAddMessage -= HandleMessageReceived;
 
         view?.Dispose();
     }
@@ -161,7 +165,7 @@ public class PrivateChatWindowHUDController : IHUD
         chatHudController.FocusInputField();
     }
 
-    private void OnAddMessage(ChatMessage message)
+    private void HandleMessageReceived(ChatMessage message)
     {
         if (!IsMessageFomCurrentConversation(message))
             return;
@@ -187,7 +191,7 @@ public class PrivateChatWindowHUDController : IHUD
 
     private void MarkUserChatMessagesAsRead(string userId, long? timestamp = null)
     {
-        long timeMark = System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        long timeMark = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         if (timestamp != null && timestamp.Value > timeMark)
             timeMark = timestamp.Value;
 
@@ -208,9 +212,9 @@ public class PrivateChatWindowHUDController : IHUD
             }
         }
 
-        PlayerPrefsUtils.SetString(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES,
+        playerPrefs.Set(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES,
             JsonConvert.SerializeObject(lastReadChatMessagesList));
-        PlayerPrefsUtils.Save();
+        playerPrefs.Save();
     }
 
     private void LoadLatestReadChatMessagesStatus()
@@ -219,7 +223,7 @@ public class PrivateChatWindowHUDController : IHUD
 
         List<KeyValuePair<string, long>> lastReadChatMessagesList =
             JsonConvert.DeserializeObject<List<KeyValuePair<string, long>>>(
-                PlayerPrefs.GetString(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES));
+                playerPrefs.GetString(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES));
         if (lastReadChatMessagesList != null)
         {
             foreach (var item in lastReadChatMessagesList)

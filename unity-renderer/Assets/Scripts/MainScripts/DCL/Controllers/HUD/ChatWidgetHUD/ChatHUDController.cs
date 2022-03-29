@@ -2,20 +2,18 @@ using System;
 using DCL;
 using DCL.Interface;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class ChatHUDController : IDisposable
 {
     public const int MAX_CHAT_ENTRIES = 30;
 
-    public IChatHUDComponentView view;
-
-    public event UnityAction<string> OnPressPrivateMessage;
     public event Action OnInputFieldSelected;
+    public event Action<ChatMessage> OnSendMessage;
 
     private readonly DataStore dataStore;
     private readonly RegexProfanityFilter profanityFilter;
     private InputAction_Trigger closeWindowTrigger;
+    private IChatHUDComponentView view;
 
     public ChatHUDController(DataStore dataStore, RegexProfanityFilter profanityFilter = null)
     {
@@ -28,12 +26,12 @@ public class ChatHUDController : IDisposable
         this.view = view ?? ChatHUDView.Create();
         view.OnSendMessage += onSendMessage;
 
-        this.view.OnPressPrivateMessage -= View_OnPressPrivateMessage;
-        this.view.OnPressPrivateMessage += View_OnPressPrivateMessage;
         this.view.OnShowMenu -= ContextMenu_OnShowMenu;
         this.view.OnShowMenu += ContextMenu_OnShowMenu;
         this.view.OnInputFieldSelected -= OnInputFieldSelected;
         this.view.OnInputFieldSelected += OnInputFieldSelected;
+        this.view.OnSendMessage -= OnSendMessage;
+        this.view.OnSendMessage += OnSendMessage;
 
         closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
@@ -61,7 +59,6 @@ public class ChatHUDController : IDisposable
 
     public void Dispose()
     {
-        view.OnPressPrivateMessage -= View_OnPressPrivateMessage;
         view.OnShowMenu -= ContextMenu_OnShowMenu;
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
         view.Dispose();
@@ -118,8 +115,6 @@ public class ChatHUDController : IDisposable
     public void FocusInputField() => view.FocusInputField();
     
     public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
-    
-    private void View_OnPressPrivateMessage(string friendUserId) => OnPressPrivateMessage?.Invoke(friendUserId);
 
     private void ContextMenu_OnShowMenu() => view.OnMessageCancelHover();
 

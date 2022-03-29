@@ -31,11 +31,9 @@ public class PrivateChatWindowHUDView : MonoBehaviour, IPrivateChatComponentView
 
     public event Action OnMinimize;
     public event Action OnClose;
-    public event Action<ChatMessage> OnSendMessage;
 
     void Awake()
     {
-        chatHudView.OnSendMessage += ChatHUDView_OnSendMessage;
         minimizeButton.onClick.AddListener(OnMinimizeButtonPressed);
         closeButton.onClick.AddListener(OnCloseButtonPressed);
         backButton.onClick.AddListener(() => { OnPressBack?.Invoke(); });
@@ -46,17 +44,6 @@ public class PrivateChatWindowHUDView : MonoBehaviour, IPrivateChatComponentView
     public static PrivateChatWindowHUDView Create()
     {
         return Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<PrivateChatWindowHUDView>();
-    }
-
-    public void ChatHUDView_OnSendMessage(ChatMessage message)
-    {
-        if (string.IsNullOrEmpty(message.body))
-            return;
-
-        message.messageType = ChatMessage.Type.PRIVATE;
-        message.recipient = profile.userName;
-
-        OnSendMessage?.Invoke(message);
     }
 
     private void OnMinimizeButtonPressed() => OnMinimize?.Invoke();

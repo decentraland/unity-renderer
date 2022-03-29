@@ -18,7 +18,7 @@ public class TaskbarHUDController : IHUD
 
     public TaskbarHUDView view;
     public WorldChatWindowController worldChatWindowHud;
-    public PrivateChatWindowHUDController privateChatWindowHud;
+    public PrivateChatWindowController privateChatWindow;
     private PublicChatChannelController publicChatChannel;
     public FriendsHUDController friendsHud;
     public HelpAndSupportHUDController helpAndSupportHud;
@@ -107,7 +107,7 @@ public class TaskbarHUDController : IHUD
         NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
     }
 
-    private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindowHud.SetVisibility(false); }
+    private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindow.SetVisibility(false); }
 
     private void View_OnFriendsToggleOn()
     {
@@ -244,7 +244,7 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.SetVisibility(true);
     }
 
-    public void AddPrivateChatWindow(PrivateChatWindowHUDController controller)
+    public void AddPrivateChatWindow(PrivateChatWindowController controller)
     {
         if (controller == null || controller.view == null)
         {
@@ -258,14 +258,14 @@ public class TaskbarHUDController : IHUD
         controller.view.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
 
-        privateChatWindowHud = controller;
+        privateChatWindow = controller;
 
-        privateChatWindowHud.view.OnMinimize += () =>
+        privateChatWindow.view.OnMinimize += () =>
         {
             ChatHeadButton btn = view.GetButtonList()
                                      .FirstOrDefault(
                                          (x) => x is ChatHeadButton &&
-                                                (x as ChatHeadButton).profile.userId == privateChatWindowHud.conversationUserId) as
+                                                (x as ChatHeadButton).profile.userId == privateChatWindow.conversationUserId) as
                 ChatHeadButton;
 
             if (btn != null)
@@ -274,12 +274,12 @@ public class TaskbarHUDController : IHUD
             MarkWorldChatAsReadIfOtherWindowIsOpen();
         };
 
-        privateChatWindowHud.view.OnClose += () =>
+        privateChatWindow.view.OnClose += () =>
         {
             ChatHeadButton btn = view.GetButtonList()
                                      .FirstOrDefault(
                                          (x) => x is ChatHeadButton &&
-                                                (x as ChatHeadButton).profile.userId == privateChatWindowHud.conversationUserId) as
+                                                (x as ChatHeadButton).profile.userId == privateChatWindow.conversationUserId) as
                 ChatHeadButton;
 
             if (btn != null)
@@ -372,9 +372,9 @@ public class TaskbarHUDController : IHUD
 
     private void OpenPrivateChatWindow(string userId)
     {
-        privateChatWindowHud.Configure(userId);
-        privateChatWindowHud.SetVisibility(true);
-        privateChatWindowHud.ForceFocus();
+        privateChatWindow.Configure(userId);
+        privateChatWindow.SetVisibility(true);
+        privateChatWindow.ForceFocus();
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
@@ -488,7 +488,7 @@ public class TaskbarHUDController : IHUD
     private bool AnyWindowsDifferentThanChatIsOpen()
     {
         return (friendsHud != null && friendsHud.view.IsActive()) ||
-               (privateChatWindowHud != null && privateChatWindowHud.view.IsActive);
+               (privateChatWindow != null && privateChatWindow.view.IsActive);
     }
 
     private void MarkWorldChatAsReadIfOtherWindowIsOpen()

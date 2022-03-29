@@ -15,7 +15,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private readonly ChatController_Mock chatController = new ChatController_Mock();
 
     private GameObject userProfileGO;
-    private PrivateChatWindowHUDController privateChatController;
+    private PrivateChatWindowController privateChatController;
     private FriendsHUDController friendsHudController;
     private WorldChatWindowController worldChatWindowController;
     private UserProfileController userProfileController;
@@ -87,7 +87,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void ToggleWindowsProperly()
     {
-        privateChatController = new PrivateChatWindowHUDController(new DataStore(),
+        privateChatController = new PrivateChatWindowController(new DataStore(),
             Substitute.For<IUserProfileBridge>(),
             chatController,
             Substitute.For<IFriendsController>());
@@ -141,12 +141,12 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(headButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.chatButton.lineOnIndicator.isVisible);
-        Assert.IsTrue(controller.privateChatWindowHud.view.IsActive);
+        Assert.IsTrue(controller.privateChatWindow.view.IsActive);
 
         //NOTE(Brian): Toggle friends window on and test all other windows are untoggled
         view.friendsButton.toggleButton.onClick.Invoke();
 
-        Assert.IsFalse(controller.privateChatWindowHud.view.IsActive);
+        Assert.IsFalse(controller.privateChatWindow.view.IsActive);
         Assert.IsFalse(headButton.lineOnIndicator.isVisible);
         Assert.IsTrue(view.friendsButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.chatButton.lineOnIndicator.isVisible);
@@ -154,7 +154,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         //NOTE(Brian): Toggle friends window off and test all other windows are untoggled
         view.friendsButton.toggleButton.onClick.Invoke();
 
-        Assert.IsFalse(controller.privateChatWindowHud.view.IsActive);
+        Assert.IsFalse(controller.privateChatWindow.view.IsActive);
         Assert.IsFalse(headButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
 
