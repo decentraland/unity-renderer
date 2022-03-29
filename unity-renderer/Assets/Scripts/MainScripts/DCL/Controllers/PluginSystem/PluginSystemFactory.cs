@@ -13,6 +13,9 @@ namespace DCL
         {
             var pluginSystem = new PluginSystem();
 
+            // Ideally the Plugin class itself should be a really small entry point with a parameterless constructor
+            // the heavy lifting should be done by another class (following the Humble Object Pattern)
+
             pluginSystem.Register<DebugPluginFeature>(() => new DebugPluginFeature());
             pluginSystem.Register<ShortcutsFeature>(() => new ShortcutsFeature());
             pluginSystem.Register<ExploreV2Feature>(() => new ExploreV2Feature());
@@ -22,7 +25,7 @@ namespace DCL
             pluginSystem.Register<SkyboxController>(() => new SkyboxController());
             pluginSystem.Register<GotoPanelPlugin>(() => new GotoPanelPlugin());
             pluginSystem.Register<ExperiencesViewerFeature>(() => new ExperiencesViewerFeature());
-            pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin(DataStore.i.emotes, new EmoteAnimationLoaderFactory(), new WearableItemResolver()));
+            pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature(), "explorev2");
