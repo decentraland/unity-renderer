@@ -141,12 +141,7 @@ namespace DCL
             
             kernelCommunication?.Dispose();
         }
-
-        private void OnDestroy()
-        {
-            Debug.Log("DESTROYING!");
-        }
-
+        
         protected virtual void InitializeSceneDependencies()
         {
             gameObject.AddComponent<UserProfileController>();
