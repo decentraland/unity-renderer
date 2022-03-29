@@ -20,10 +20,7 @@ public class ChannelChatWindowView : MonoBehaviour, IPointerClickHandler, IChann
     public event Action OnActivatePreview;
     public event Action OnClose;
     public event Action OnBack;
-    public event Action<string> OnMessageUpdated;
-    public event Action<ChatMessage> OnSendMessage;
 
-    private ChatMessage lastWhisperMessageSent;
     private string lastInputText = string.Empty;
 
     public bool IsActive => gameObject.activeInHierarchy;
@@ -39,7 +36,6 @@ public class ChannelChatWindowView : MonoBehaviour, IPointerClickHandler, IChann
 
     private void Awake()
     {
-        chatHudView.OnSendMessage += ChatHUDView_OnSendMessage;
         chatHudView.inputField.onValueChanged.AddListener(OnTextInputValueChanged);
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
     }
@@ -85,29 +81,12 @@ public class ChannelChatWindowView : MonoBehaviour, IPointerClickHandler, IChann
         DeactivatePreview();
     }
 
-    public void OnTextInputValueChanged(string text)
+    private void OnTextInputValueChanged(string text)
     {
         if (IsPreview)
             chatHudView.inputField.text = lastInputText;
         else
             lastInputText = chatHudView.inputField.text;
-
-        OnMessageUpdated?.Invoke(text);
-    }
-
-    public void ChatHUDView_OnSendMessage(ChatMessage message)
-    {
-        if (message.messageType == ChatMessage.Type.PRIVATE && !string.IsNullOrEmpty(message.body))
-            lastWhisperMessageSent = message;
-        else
-            lastWhisperMessageSent = null;
-
-        if (lastWhisperMessageSent != null)
-            StartCoroutine(WaitAndUpdateInputText($"/w {lastWhisperMessageSent.recipient} "));
-        else
-            StartCoroutine(WaitAndUpdateInputText(string.Empty));
-
-        OnSendMessage?.Invoke(message);
     }
 
     private IEnumerator WaitAndUpdateInputText(string newText)

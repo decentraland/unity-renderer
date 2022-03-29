@@ -53,10 +53,11 @@ public class PrivateChatWindowController : IHUD
         this.view = view;
         view.OnPressBack -= View_OnPressBack;
         view.OnPressBack += View_OnPressBack;
+        view.OnClose -= OnCloseView;
         view.OnClose += OnCloseView;
         view.OnMinimize += OnMinimizeView;
 
-        chatHudController = new ChatHUDController(DataStore.i);
+        chatHudController = new ChatHUDController(DataStore.i, userProfileBridge);
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnInputFieldSelected -= HandleInputFieldSelection;
         chatHudController.OnInputFieldSelected += HandleInputFieldSelection;
@@ -92,11 +93,11 @@ public class PrivateChatWindowController : IHUD
 
         chatHudController.ClearAllEntries();
 
-        var messageEntries = chatController.GetEntries().Where(IsMessageFomCurrentConversation).ToList();
+        var messageEntries = chatController.GetEntries()
+            .Where(IsMessageFomCurrentConversation)
+            .ToList();
         foreach (var v in messageEntries)
-        {
             HandleMessageReceived(v);
-        }
     }
 
     public void SendChatMessage(ChatMessage message)
@@ -170,7 +171,7 @@ public class PrivateChatWindowController : IHUD
         if (!IsMessageFomCurrentConversation(message))
             return;
 
-        chatHudController.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message));
+        chatHudController.AddChatMessage(message);
 
         if (conversationProfile.userId == conversationUserId)
         {

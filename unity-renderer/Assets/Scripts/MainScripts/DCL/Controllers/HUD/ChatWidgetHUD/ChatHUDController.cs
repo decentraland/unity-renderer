@@ -9,15 +9,20 @@ public class ChatHUDController : IDisposable
 
     public event Action OnInputFieldSelected;
     public event Action<ChatMessage> OnSendMessage;
+    public event Action<string> OnMessageUpdated;
 
     private readonly DataStore dataStore;
+    private readonly IUserProfileBridge userProfileBridge;
     private readonly RegexProfanityFilter profanityFilter;
     private InputAction_Trigger closeWindowTrigger;
     private IChatHUDComponentView view;
 
-    public ChatHUDController(DataStore dataStore, RegexProfanityFilter profanityFilter = null)
+    public ChatHUDController(DataStore dataStore,
+        IUserProfileBridge userProfileBridge,
+        RegexProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
+        this.userProfileBridge = userProfileBridge;
         this.profanityFilter = profanityFilter;
     }
 
@@ -32,10 +37,17 @@ public class ChatHUDController : IDisposable
         this.view.OnInputFieldSelected += OnInputFieldSelected;
         this.view.OnSendMessage -= OnSendMessage;
         this.view.OnSendMessage += OnSendMessage;
+        this.view.OnMessageUpdated -= OnMessageUpdated;
+        this.view.OnMessageUpdated += OnMessageUpdated;
 
         closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
         closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
+    }
+
+    public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false)
+    {
+        AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom);
     }
 
     public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
@@ -50,7 +62,7 @@ public class ChatHUDController : IDisposable
             if (!string.IsNullOrEmpty(chatEntryModel.recipientName))
                 chatEntryModel.recipientName = profanityFilter.Filter(chatEntryModel.recipientName);
         }
-            
+        
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (view.EntryCount > MAX_CHAT_ENTRIES)
@@ -60,11 +72,14 @@ public class ChatHUDController : IDisposable
     public void Dispose()
     {
         view.OnShowMenu -= ContextMenu_OnShowMenu;
+        view.OnMessageUpdated -= OnMessageUpdated;
+        view.OnSendMessage -= OnSendMessage;
+        view.OnInputFieldSelected -= OnInputFieldSelected;
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
         view.Dispose();
     }
 
-    public static ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)
+    public ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)
     {
         ChatEntry.Model model = new ChatEntry.Model();
 
@@ -76,13 +91,13 @@ public class ChatHUDController : IDisposable
 
         if (message.recipient != null)
         {
-            var recipientProfile = UserProfileController.userProfilesCatalog.Get(message.recipient);
+            var recipientProfile = userProfileBridge.Get(message.recipient);
             model.recipientName = recipientProfile != null ? recipientProfile.userName : message.recipient;
         }
 
         if (message.sender != null)
         {
-            var senderProfile = UserProfileController.userProfilesCatalog.Get(message.sender);
+            var senderProfile = userProfileBridge.Get(message.sender);
             model.senderName = senderProfile != null ? senderProfile.userName : message.sender;
             model.senderId = message.sender;
         }

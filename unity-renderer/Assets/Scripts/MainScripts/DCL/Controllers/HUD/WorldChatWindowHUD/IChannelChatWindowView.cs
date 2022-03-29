@@ -6,8 +6,6 @@ public interface IChannelChatWindowView
 {
     event Action OnClose;
     event Action OnBack;
-    event Action<string> OnMessageUpdated;
-    event Action<ChatMessage> OnSendMessage;
     event Action OnDeactivatePreview;
     event Action OnActivatePreview;
     

@@ -8,13 +8,13 @@ using UnityEngine.UI;
 public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatComponentView
 {
     [SerializeField] private Button backButton;
+    [SerializeField] private Button closeButton;
     [SerializeField] private UserThumbnailComponentView userThumbnail;
     [SerializeField] private TMP_Text userNameLabel;
     [SerializeField] private PrivateChatHUDView chatView;
     [SerializeField] private Model model;
 
     public event Action OnPressBack;
-    public event Action<ChatMessage> OnSendMessage;
     public event Action OnMinimize;
     public event Action OnClose;
 
@@ -31,7 +31,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     {
         base.Awake();
         backButton.onClick.AddListener(() => OnPressBack?.Invoke());
-        backButton.onClick.AddListener(() => OnClose?.Invoke());
+        closeButton.onClick.AddListener(() => OnClose?.Invoke());
     }
 
     public override void RefreshControl()
@@ -43,9 +43,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             isOnline = model.isUserOnline
         });
         userNameLabel.SetText(model.userName);
-        chatView.ClearAllEntries();
-        foreach (var model in model.entries)
-            chatView.AddEntry(model.ToChatEntry(), true);
     }
 
     public void Setup(UserProfile profile, bool isOnline, bool isBlocked)
@@ -55,8 +52,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             faceSnapshotUrl = profile.face256SnapshotURL,
             userName = profile.userName,
             isUserOnline = isOnline,
-            isUserBlocked = isBlocked,
-            entries = new ChatEntryModel[0]
+            isUserBlocked = isBlocked
         };
         RefreshControl();
     }
@@ -72,7 +68,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         public string faceSnapshotUrl;
         public bool isUserBlocked;
         public bool isUserOnline;
-        public ChatEntryModel[] entries;
     }
 
     [Serializable]

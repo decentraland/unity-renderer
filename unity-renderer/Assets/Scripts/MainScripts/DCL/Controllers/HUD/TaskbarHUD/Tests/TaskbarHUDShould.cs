@@ -90,7 +90,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         privateChatController = new PrivateChatWindowController(new DataStore(),
             Substitute.For<IUserProfileBridge>(),
             chatController,
-            Substitute.For<IFriendsController>());
+            Substitute.For<IFriendsController>(),
+            Substitute.For<IPlayerPrefs>());
         privateChatController.Initialize(Substitute.For<IPrivateChatComponentView>());
         controller.AddPrivateChatWindow(privateChatController);
 

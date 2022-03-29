@@ -187,6 +187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backButton: {fileID: 7105410192847587965}
+  closeButton: {fileID: 480243386072958103}
   userThumbnail: {fileID: 1493733428180905244}
   userNameLabel: {fileID: 8296143100839953432}
   chatView: {fileID: 8729223757020298212}

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
@@ -18,8 +19,10 @@ public class PublicChatChannelController : IHUD
     private readonly IMouseCatcher mouseCatcher;
     private readonly IPlayerPrefs playerPrefs;
     private readonly LongVariable lastReadWorldChatMessages;
+    private readonly IUserProfileBridge userProfileBridge;
     private ChatHUDController chatHudController;
     private int invalidSubmitLastFrame;
+    private ChatMessage lastWhisperMessageSent;
 
     internal string lastPrivateMessageReceivedSender = string.Empty;
 
@@ -29,12 +32,14 @@ public class PublicChatChannelController : IHUD
     public PublicChatChannelController(IChatController chatController,
         IMouseCatcher mouseCatcher,
         IPlayerPrefs playerPrefs,
-        LongVariable lastReadWorldChatMessages)
+        LongVariable lastReadWorldChatMessages,
+        IUserProfileBridge userProfileBridge)
     {
         this.chatController = chatController;
         this.mouseCatcher = mouseCatcher;
         this.playerPrefs = playerPrefs;
         this.lastReadWorldChatMessages = lastReadWorldChatMessages;
+        this.userProfileBridge = userProfileBridge;
     }
 
     public void Initialize(IChannelChatWindowView view = null)
@@ -50,17 +55,19 @@ public class PublicChatChannelController : IHUD
         this.view = view;
         view.OnClose += HandleViewClosed;
         view.OnBack += HandleViewBacked;
-        view.OnMessageUpdated += OnMessageUpdated;
-        view.OnSendMessage += SendChatMessage;
 
-        chatHudController = new ChatHUDController(DataStore.i, ProfanityFilterSharedInstances.regexFilter);
+        chatHudController = new ChatHUDController(DataStore.i,
+            new UserProfileWebInterfaceBridge(),
+            ProfanityFilterSharedInstances.regexFilter);
         chatHudController.Initialize(view.ChatHUD);
+        chatHudController.OnSendMessage += SendChatMessage;
+        chatHudController.OnMessageUpdated += OnMessageUpdated;
         LoadLatestReadWorldChatMessagesStatus();
 
         if (chatController != null)
         {
-            chatController.OnAddMessage -= OnAddMessage;
-            chatController.OnAddMessage += OnAddMessage;
+            chatController.OnAddMessage -= HandleMessageReceived;
+            chatController.OnAddMessage += HandleMessageReceived;
         }
 
         if (mouseCatcher != null)
@@ -73,31 +80,44 @@ public class PublicChatChannelController : IHUD
     {
         // TODO: retrieve data from a channel provider
         view.Setup(channelId, "General", "Any useful description here");
+        
+        chatHudController.ClearAllEntries();
+        var messageEntries = chatController.GetEntries()
+            .ToList();
+        foreach (var v in messageEntries)
+            HandleMessageReceived(v);
     }
 
     public void Dispose()
     {
         view.OnClose -= HandleViewClosed;
         view.OnBack -= HandleViewBacked;
-        view.OnMessageUpdated -= OnMessageUpdated;
 
         if (chatController != null)
-            chatController.OnAddMessage -= OnAddMessage;
+            chatController.OnAddMessage -= HandleMessageReceived;
 
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock -= view.ActivatePreview;
 
-        view.OnSendMessage -= SendChatMessage;
+        chatHudController.OnSendMessage -= SendChatMessage;
+        chatHudController.OnMessageUpdated -= OnMessageUpdated;
 
         view?.Dispose();
     }
 
-    //NOTE(Brian): Send chat responsibilities must be on the chatHud containing window like this one, this way we ensure
-    //             it can be reused by the private messaging windows down the road.
     public void SendChatMessage(ChatMessage message)
     {
         bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
         bool isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
+        
+        if (isPrivateMessage && !string.IsNullOrEmpty(message.body))
+            lastWhisperMessageSent = message;
+        else
+            lastWhisperMessageSent = null;
+
+        chatHudController.SetInputFieldText(lastWhisperMessageSent != null
+            ? $"/w {lastWhisperMessageSent.recipient} "
+            : string.Empty);
 
         if (!isValidMessage)
         {
@@ -139,7 +159,7 @@ public class PublicChatChannelController : IHUD
             EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null)
             return false;
 
-        if ((Time.frameCount - invalidSubmitLastFrame) < 2)
+        if (Time.frameCount - invalidSubmitLastFrame < 2)
             return false;
 
         ForceFocus();
@@ -156,7 +176,9 @@ public class PublicChatChannelController : IHUD
         SaveLatestReadWorldChatMessagesStatus();
     }
 
-    public void ForceFocus(string setInputText = null)
+    public void ResetInputField() => chatHudController.ResetInputField();
+
+    private void ForceFocus(string setInputText = null)
     {
         SetVisibility(true);
         chatHudController.FocusInputField();
@@ -166,9 +188,7 @@ public class PublicChatChannelController : IHUD
         if (!string.IsNullOrEmpty(setInputText))
             chatHudController.SetInputFieldText(setInputText);
     }
-    
-    public void ResetInputField() => chatHudController.ResetInputField();
-    
+
     private void SaveLatestReadWorldChatMessagesStatus()
     {
         playerPrefs.Set(PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES,
@@ -199,15 +219,14 @@ public class PublicChatChannelController : IHUD
         return false;
     }
 
-    private void OnAddMessage(ChatMessage message)
+    private void HandleMessageReceived(ChatMessage message)
     {
-        if (IsOldPrivateMessage(message))
-            return;
+        if (IsOldPrivateMessage(message)) return;
 
-        chatHudController.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message), view.IsPreview);
+        chatHudController.AddChatMessage(message, view.IsPreview);
 
         if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
-            lastPrivateMessageReceivedSender = UserProfileController.userProfilesCatalog.Get(message.sender).userName;
+            lastPrivateMessageReceivedSender = userProfileBridge.Get(message.sender).userName;
     }
 
     private void LoadLatestReadWorldChatMessagesStatus()

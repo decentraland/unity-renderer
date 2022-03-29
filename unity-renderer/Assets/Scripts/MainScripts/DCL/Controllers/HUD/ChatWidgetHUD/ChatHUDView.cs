@@ -13,8 +13,8 @@ using UnityEngine.UI;
 
 public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 {
-    static string VIEW_PATH = "Chat Widget";
-    string ENTRY_PATH = "Chat Entry";
+    private const string VIEW_PATH = "Chat Widget";
+    private const string ENTRY_PATH = "Chat Entry";
     private const int MAX_CONTINUOUS_MESSAGES = 6;
     private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
     private const int TEMPORARILY_MUTE_MINUTES = 10;
@@ -31,17 +31,21 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     public UserContextMenu contextMenu;
     public UserContextConfirmationDialog confirmationDialog;
 
-    [NonSerialized] public List<ChatEntry> entries = new List<ChatEntry>();
-    [NonSerialized] public List<DateSeparatorEntry> dateSeparators = new List<DateSeparatorEntry>();
+    [NonSerialized] protected List<ChatEntry> entries = new List<ChatEntry>();
+    [NonSerialized] protected List<DateSeparatorEntry> dateSeparators = new List<DateSeparatorEntry>();
 
     private readonly ChatMessage currentMessage = new ChatMessage();
     private readonly Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private readonly List<ChatEntry.Model> lastMessages = new List<ChatEntry.Model>();
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
-    private readonly Dictionary<Action, UnityAction<string>> inputFieldListeners = new Dictionary<Action, UnityAction<string>>();
-    
+
+    private readonly Dictionary<Action, UnityAction<string>> inputFieldListeners =
+        new Dictionary<Action, UnityAction<string>>();
+
     private Match whisperRegexMatch;
     private bool enableFadeoutMode;
+
+    public event Action<string> OnMessageUpdated;
 
     public event Action OnShowMenu
     {
@@ -75,7 +79,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     }
 
     public event Action<ChatMessage> OnSendMessage;
-    
+
     public int EntryCount => entries.Count;
 
     public static ChatHUDView Create()
@@ -89,6 +93,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         inputField.onSubmit.AddListener(OnInputFieldSubmit);
         inputField.onSelect.AddListener(OnInputFieldSelect);
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
+        inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str));
     }
 
     private void OnInputFieldSubmit(string message)
@@ -117,9 +122,15 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         OnSendMessage?.Invoke(currentMessage);
     }
 
-    private void OnInputFieldSelect(string message) { AudioScriptableObjects.inputFieldFocus.Play(true); }
+    private void OnInputFieldSelect(string message)
+    {
+        AudioScriptableObjects.inputFieldFocus.Play(true);
+    }
 
-    private void OnInputFieldDeselect(string message) { AudioScriptableObjects.inputFieldUnfocus.Play(true); }
+    private void OnInputFieldDeselect(string message)
+    {
+        AudioScriptableObjects.inputFieldUnfocus.Play(true);
+    }
 
     public void ResetInputField(bool loseFocus = false)
     {
@@ -129,7 +140,10 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
             EventSystem.current.SetSelectedGameObject(null);
     }
 
-    void OnEnable() { Utils.ForceUpdateLayout(transform as RectTransform); }
+    void OnEnable()
+    {
+        Utils.ForceUpdateLayout(transform as RectTransform);
+    }
 
     public void FocusInputField()
     {
@@ -189,7 +203,8 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 
         chatEntry.Populate(chatEntryModel);
 
-        if (chatEntryModel.messageType == ChatMessage.Type.PUBLIC || chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
+        if (chatEntryModel.messageType == ChatMessage.Type.PUBLIC ||
+            chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
             chatEntry.OnPressRightButton += OnOpenContextMenu;
 
         chatEntry.OnTriggerHover += OnMessageTriggerHover;
@@ -208,17 +223,17 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 
         if (string.IsNullOrEmpty(chatEntryModel.senderId))
             return;
-            
+
         if (lastMessages.Count == 0)
         {
             lastMessages.Add(chatEntryModel);
         }
-        else if(lastMessages[lastMessages.Count-1].senderName == chatEntryModel.senderName)
+        else if (lastMessages[lastMessages.Count - 1].senderName == chatEntryModel.senderName)
         {
             if (MessagesSentTooFast(lastMessages[lastMessages.Count - 1].timestamp, chatEntryModel.timestamp))
             {
                 lastMessages.Add(chatEntryModel);
-                    
+
                 if (lastMessages.Count == MAX_CONTINUOUS_MESSAGES)
                 {
                     temporarilyMutedSenders.Add(chatEntryModel.senderName, chatEntryModel.timestamp);
@@ -237,7 +252,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     }
 
     public void Dispose() => Destroy(gameObject);
-    
+
     public void RemoveFirstEntry()
     {
         if (entries.Count <= 0) return;
@@ -264,12 +279,13 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     {
         if (string.IsNullOrEmpty(senderName))
             return false;
-        
+
         bool isSpamming = false;
 
         if (temporarilyMutedSenders.ContainsKey(senderName))
         {
-            DateTime muteTimestamp = CreateBaseDateTime().AddMilliseconds(temporarilyMutedSenders[senderName]).ToLocalTime();
+            DateTime muteTimestamp =
+                CreateBaseDateTime().AddMilliseconds(temporarilyMutedSenders[senderName]).ToLocalTime();
             if ((DateTime.Now - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
                 isSpamming = true;
             else
@@ -304,7 +320,9 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     protected virtual void OnMessageCoordinatesTriggerHover(ChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
     {
         messageHoverGotoText.text = $"{parcelCoordinates.ToString()} INFO";
-        messageHoverGotoPanel.transform.position = new Vector3(Input.mousePosition.x, chatEntry.hoverPanelPositionReference.transform.position.y, chatEntry.hoverPanelPositionReference.transform.position.z);
+        messageHoverGotoPanel.transform.position = new Vector3(Input.mousePosition.x,
+            chatEntry.hoverPanelPositionReference.transform.position.y,
+            chatEntry.hoverPanelPositionReference.transform.position.z);
         messageHoverGotoPanel.SetActive(true);
     }
 
@@ -351,8 +369,8 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 
         dateSeparators.Clear();
     }
-    
-    public void SetGotoPanelStatus(bool isActive) 
+
+    public void SetGotoPanelStatus(bool isActive)
     {
         DataStore.i.HUDs.gotoPanelVisible.Set(isActive);
     }

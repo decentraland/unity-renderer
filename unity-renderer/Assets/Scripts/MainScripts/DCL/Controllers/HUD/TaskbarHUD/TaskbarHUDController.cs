@@ -230,6 +230,9 @@ public class TaskbarHUDController : IHUD
     {
         var button = view.chatHeadsGroup.AddChatHead(userId, (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         button.toggleButton.onClick.Invoke();
+        privateChatWindow.Configure(userId);
+        worldChatWindowHud.SetVisibility(false);
+        privateChatWindow.SetVisibility(true);
     }
 
     public void OpenPublicChatChannel(string channelId)

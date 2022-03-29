@@ -15,8 +15,6 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     
     public event Action OnClose;
     public event Action OnBack;
-    public event Action<string> OnMessageUpdated;
-    public event Action<ChatMessage> OnSendMessage;
     public event Action OnDeactivatePreview;
     public event Action OnActivatePreview;
 

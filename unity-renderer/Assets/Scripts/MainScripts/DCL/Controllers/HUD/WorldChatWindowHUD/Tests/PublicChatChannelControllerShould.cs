@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-public class ChannelChatWindowControllerShould : IntegrationTestSuite_Legacy
+public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
 {
     private PublicChatChannelController controller;
     private IChannelChatWindowView view;
@@ -44,7 +44,8 @@ public class ChannelChatWindowControllerShould : IntegrationTestSuite_Legacy
 
         controller = new PublicChatChannelController(chatController, mouseCatcher,
             Substitute.For<IPlayerPrefs>(),
-            ScriptableObject.CreateInstance<LongVariable>());
+            ScriptableObject.CreateInstance<LongVariable>(),
+            Substitute.For<IUserProfileBridge>());
         chatController = new ChatController_Mock();
         mouseCatcher = new MouseCatcher_Mock();
 
@@ -74,11 +75,14 @@ public class ChannelChatWindowControllerShould : IntegrationTestSuite_Legacy
             sender = ownProfileModel.userId,
             recipient = testProfileModel.userId
         };
-        
+
         chatController.RaiseAddMessage(sentPM);
-        
+
         internalChatView.Received(1).AddEntry(Arg.Is<ChatEntry.Model>(model =>
-            model.Equals(ChatHUDController.ChatMessageToChatEntry(sentPM))));
+            model.messageType == sentPM.messageType
+            && model.bodyText == sentPM.body
+            && model.senderId == sentPM.sender
+            && model.otherUserId == sentPM.recipient));
     }
 
     [Test]
@@ -90,12 +94,13 @@ public class ChannelChatWindowControllerShould : IntegrationTestSuite_Legacy
             body = "test message",
             sender = testProfileModel.userId
         };
-        
+
         chatController.RaiseAddMessage(chatMessage);
-        
-        var chatEntryModel = ChatHUDController.ChatMessageToChatEntry(chatMessage);
+
         internalChatView.Received(1).AddEntry(Arg.Is<ChatEntry.Model>(model =>
-            model.Equals(chatEntryModel)));
+            model.messageType == chatMessage.messageType
+            && model.bodyText == chatMessage.body
+            && model.senderId == chatMessage.sender));
     }
 
     [UnityTest]
@@ -113,7 +118,7 @@ public class ChannelChatWindowControllerShould : IntegrationTestSuite_Legacy
             };
 
         WebInterface.OnMessageFromEngine += messageCallback;
-        controller.SendChatMessage(new ChatMessage { body = "test message" });
+        controller.SendChatMessage(new ChatMessage {body = "test message"});
         Assert.IsTrue(messageWasSent);
         WebInterface.OnMessageFromEngine -= messageCallback;
         yield return null;
@@ -138,15 +143,15 @@ public class ChannelChatWindowControllerShould : IntegrationTestSuite_Legacy
     public IEnumerator WhisperLastPrivateMessageSenderOnReply()
     {
         UserProfile ownProfile = UserProfile.GetOwnUserProfile();
-        
+
         var model = new UserProfileModel
         {
             userId = "testUserId",
             name = "testUserName",
         };
-        
+
         userProfileController.AddUserProfileToCatalog(model);
-        
+
         var msg = new ChatMessage
         {
             body = "test message",
@@ -154,20 +159,20 @@ public class ChannelChatWindowControllerShould : IntegrationTestSuite_Legacy
             recipient = ownProfile.userId,
             messageType = ChatMessage.Type.PRIVATE
         };
-        
+
         yield return null;
-        
+
         chatController.AddMessageToChatWindow(JsonUtility.ToJson(msg));
-        
+
         yield return null;
-        
+
         Assert.AreEqual(controller.lastPrivateMessageReceivedSender, model.name);
 
-        view.OnMessageUpdated += Raise.Event<Action<string>>("/r ");
-        
+        internalChatView.OnMessageUpdated += Raise.Event<Action<string>>("/r ");
+
         internalChatView.Received(1).SetInputFieldText($"/w {model.name} ");
     }
-    
+
     [Test]
     public void HandleMouseCatcherProperly()
     {
