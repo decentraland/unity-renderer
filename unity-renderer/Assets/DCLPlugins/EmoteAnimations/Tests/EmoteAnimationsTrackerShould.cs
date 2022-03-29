@@ -8,9 +8,9 @@ using UnityEngine;
 
 namespace DCL.Emotes
 {
-    public class EmoteAnimationsPluginShould
+    public class EmoteAnimationsTrackerShould
     {
-        private EmoteAnimationsPlugin emoteAnimationsPlugin;
+        private EmoteAnimationsTracker tracker;
         private DataStore_Emotes dataStore;
         private EmoteAnimationLoaderFactory loaderFactory;
         private IWearableItemResolver resolver;
@@ -24,7 +24,7 @@ namespace DCL.Emotes
             loaderFactory = Substitute.ForPartsOf<EmoteAnimationLoaderFactory>();
             loaderFactory.Get().Returns(Substitute.For<IEmoteAnimationLoader>());
             resolver = Substitute.For<IWearableItemResolver>();
-            emoteAnimationsPlugin = new EmoteAnimationsPlugin(dataStore, loaderFactory, resolver);
+            tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, resolver);
         }
 
         [TearDown]
@@ -38,7 +38,7 @@ namespace DCL.Emotes
             {
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.FEMALE, emote.id)], emote.femaleAnimation);
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.MALE, emote.id)], emote.maleAnimation);
-                Assert.IsTrue(emoteAnimationsPlugin.loaders.ContainsKey((WearableLiterals.BodyShapes.MALE, emote.id)));
+                Assert.IsTrue(tracker.loaders.ContainsKey((WearableLiterals.BodyShapes.MALE, emote.id)));
                 Assert.AreEqual(CatalogController.wearableCatalog[emote.id], emote);
             }
         }
@@ -59,7 +59,7 @@ namespace DCL.Emotes
 
             loaderFactory.Received().Get();
             resolver.Received().Resolve("emote0", Arg.Any<CancellationToken>());
-            loader.Received().LoadEmote(emoteAnimationsPlugin.animationsModelsContainer, emote, bodyShapeId, Arg.Any<CancellationToken>());
+            loader.Received().LoadEmote(tracker.animationsModelsContainer, emote, bodyShapeId, Arg.Any<CancellationToken>());
             Assert.AreEqual(tikAnim, dataStore.animations[(bodyShapeId, "emote0")]);
         }
 
@@ -67,7 +67,7 @@ namespace DCL.Emotes
         public void ReactToEquipEmotesIncreasingReferenceWithExistentLoader()
         {
             loaderFactory.ClearReceivedCalls();
-            emoteAnimationsPlugin.loaders.Add((WearableLiterals.BodyShapes.FEMALE, "emote0"), Substitute.For<IEmoteAnimationLoader>());
+            tracker.loaders.Add((WearableLiterals.BodyShapes.FEMALE, "emote0"), Substitute.For<IEmoteAnimationLoader>());
 
             dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, "emote0"));
 
@@ -82,11 +82,11 @@ namespace DCL.Emotes
             var tikAnim = Resources.Load<AnimationClip>("tik");
             dataStore.animations.Add((bodyshapeId, "emote0"), tikAnim);
             IEmoteAnimationLoader loader = Substitute.For<IEmoteAnimationLoader>();
-            emoteAnimationsPlugin.loaders.Add((bodyshapeId, "emote0"), loader);
+            tracker.loaders.Add((bodyshapeId, "emote0"), loader);
 
             dataStore.emotesOnUse.SetRefCount((bodyshapeId, "emote0"), 0);
 
-            Assert.IsFalse(emoteAnimationsPlugin.loaders.ContainsKey((bodyshapeId, "emote0")));
+            Assert.IsFalse(tracker.loaders.ContainsKey((bodyshapeId, "emote0")));
             loader.Received().Dispose();
             Assert.IsFalse(dataStore.animations.ContainsKey((bodyshapeId, "emote0")));
         }
