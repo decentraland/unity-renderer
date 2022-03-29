@@ -22,6 +22,7 @@ namespace DCL.Components
         public UIScreenSpace()
         {
             CommonScriptableObjects.playerWorldPosition.OnChange += OnPlayerWorldPositionChanged;
+            DataStore.i.HUDs.isSceneUIEnabled.OnChange += OnChangeSceneUI;
             model = new Model();
         }
 
@@ -63,6 +64,12 @@ namespace DCL.Components
             {
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
             }
+        }
+
+        void OnChangeSceneUI(bool current, bool previous)
+        {
+            canvasGroup.alpha = current ? 1f : 0f;
+            canvasGroup.blocksRaycasts = current;
         }
 
         void OnPlayerWorldPositionChanged(Vector3 current, Vector3 previous)
