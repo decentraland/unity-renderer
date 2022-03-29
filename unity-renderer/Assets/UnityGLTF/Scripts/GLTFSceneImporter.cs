@@ -1308,7 +1308,7 @@ namespace UnityGLTF
             animationsEstimatedSize += 20;
 
             // needed because Animator component is unavailable at runtime
-            clip.legacy = true;
+            clip.legacy = false;
 
             return clip;
         }
@@ -1358,6 +1358,9 @@ namespace UnityGLTF
                 Animation animation = CreatedObject.AddComponent<Animation>();
                 animation.playAutomatically = true;
                 animation.cullingType = AnimationCullingType.AlwaysAnimate;
+                Animator animator = CreatedObject.AddComponent<Animator>();
+                AnimatorOverrideController overrideAnimator = Object.Instantiate(Resources.Load<AnimatorOverrideController>("AnimatorOverride"));
+                animator.runtimeAnimatorController = overrideAnimator;
 
                 for (int i = 0; i < _gltfRoot.Animations.Count; ++i)
                 {
@@ -1377,6 +1380,7 @@ namespace UnityGLTF
                     if (i == 0)
                     {
                         animation.clip = clip;
+                        overrideAnimator["toreplace"] = clip;
                     }
                 }
             }
