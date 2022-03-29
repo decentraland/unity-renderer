@@ -49,7 +49,7 @@ namespace DCL.EmotesWheel
 
             openCustomizeButton.onClick.AddListener(() =>
             {
-                if (emotesCustomizationDataStore.isInitialized.Get() == null)
+                if (!emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get())
                     return;
 
                 OnCustomizeClicked?.Invoke();
@@ -68,7 +68,7 @@ namespace DCL.EmotesWheel
             {
                 foreach (GameObject go in gameObjectsToHideWhenCustomizeFFIsDeactivated)
                 {
-                    go.SetActive(emotesCustomizationDataStore.isInitialized.Get() != null);
+                    go.SetActive(emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get());
                 }
 
                 AudioScriptableObjects.dialogOpen.Play(true);
