@@ -2,7 +2,7 @@ using DCL.EmotesCustomization;
 using NUnit.Framework;
 using UnityEngine;
 
-public class EmoteSlotCardComponentViewTests : MonoBehaviour
+public class EmoteSlotCardComponentViewTests
 {
     private EmoteSlotCardComponentView emoteSlotCardComponent;
     private Texture2D testTexture;

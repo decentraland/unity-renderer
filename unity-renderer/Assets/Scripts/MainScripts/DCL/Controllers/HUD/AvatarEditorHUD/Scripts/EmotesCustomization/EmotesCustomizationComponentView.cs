@@ -59,6 +59,7 @@ namespace DCL.EmotesCustomization
         {
             base.Dispose();
 
+            CleanEmotes();
             emoteSlotSelector.onSlotSelected -= OnSlotSelected;
             emoteInfoPanel.closeButton.onClick.RemoveAllListeners();
             emoteInfoPanel.sellButton.onClick.RemoveAllListeners();

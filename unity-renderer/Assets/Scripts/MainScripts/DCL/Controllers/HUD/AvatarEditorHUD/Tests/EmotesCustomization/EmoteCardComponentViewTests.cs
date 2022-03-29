@@ -1,7 +1,7 @@
 using DCL.EmotesCustomization;
 using NUnit.Framework;
 using UnityEngine;
-public class EmoteCardComponentViewTests : MonoBehaviour
+public class EmoteCardComponentViewTests
 {
     private EmoteCardComponentView emoteCardComponent;
     private Texture2D testTexture;
