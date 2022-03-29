@@ -1,33 +1,54 @@
+using System;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class ChannelChatWindowController : IHUD
+public class PublicChatChannelController : IHUD
 {
     private const string PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES = "LastReadWorldChatMessages";
 
     public IChannelChatWindowView view;
 
+    private readonly IChatController chatController;
+    private readonly IMouseCatcher mouseCatcher;
+    private readonly IPlayerPrefs playerPrefs;
+    private readonly LongVariable lastReadWorldChatMessages;
     private ChatHUDController chatHudController;
-    private IChatController chatController;
-    private IMouseCatcher mouseCatcher;
     private int invalidSubmitLastFrame;
 
     internal string lastPrivateMessageReceivedSender = string.Empty;
 
     private UserProfile ownProfile => UserProfile.GetOwnUserProfile();
+    private bool isSocialBarV1Enabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("social_bar_v1");
 
     public event UnityAction<string> OnPressPrivateMessage;
-    public event System.Action OnOpen;
+    public event Action OnOpen;
 
-    public void Initialize(IChatController chatController,
+    public PublicChatChannelController(IChatController chatController,
         IMouseCatcher mouseCatcher,
-        IChannelChatWindowView view = null)
+        IPlayerPrefs playerPrefs,
+        LongVariable lastReadWorldChatMessages)
     {
-        view ??= ChannelChatWindowView.Create();
+        this.chatController = chatController;
+        this.mouseCatcher = mouseCatcher;
+        this.playerPrefs = playerPrefs;
+        this.lastReadWorldChatMessages = lastReadWorldChatMessages;
+    }
+
+    public void Initialize(IChannelChatWindowView view = null)
+    {
+        if (view == null)
+        {
+            if (isSocialBarV1Enabled)
+                view = PublicChatChannelComponentView.Create();
+            else
+                view = ChannelChatWindowView.Create();
+        }
+        
         this.view = view;
         view.OnClose += OnViewClosed;
         view.OnMessageUpdated += OnMessageUpdated;
@@ -39,9 +60,6 @@ public class ChannelChatWindowController : IHUD
         chatHudController.OnPressPrivateMessage += ChatHUDController_OnPressPrivateMessage;
         LoadLatestReadWorldChatMessagesStatus();
 
-        this.chatController = chatController;
-        this.mouseCatcher = mouseCatcher;
-
         if (chatController != null)
         {
             chatController.OnAddMessage -= OnAddMessage;
@@ -52,6 +70,12 @@ public class ChannelChatWindowController : IHUD
         {
             mouseCatcher.OnMouseLock += view.ActivatePreview;
         }
+    }
+
+    public void Setup(string channelId)
+    {
+        // TODO: retrieve data from a channel provider
+        view.Setup(channelId, "General", "Any useful description here");
     }
 
     public void Dispose()
@@ -82,7 +106,7 @@ public class ChannelChatWindowController : IHUD
 
         if (!isValidMessage)
         {
-            view.ResetInputField(true);
+            chatHudController.ResetInputField(true);
 
             if (!isPrivateMessage && !view.IsPreview)
             {
@@ -94,8 +118,8 @@ public class ChannelChatWindowController : IHUD
             return;
         }
 
-        view.ResetInputField();
-        view.FocusInputField();
+        chatHudController.ResetInputField();
+        chatHudController.FocusInputField();
 
         if (isPrivateMessage)
         {
@@ -119,7 +143,7 @@ public class ChannelChatWindowController : IHUD
 
         if (EventSystem.current != null &&
             EventSystem.current.currentSelectedGameObject != null &&
-            EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null)
+            EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null)
             return false;
 
         if ((Time.frameCount - invalidSubmitLastFrame) < 2)
@@ -128,16 +152,35 @@ public class ChannelChatWindowController : IHUD
         ForceFocus();
         return true;
     }
+    
+    public void MarkChatMessagesAsRead(long timestamp = 0)
+    {
+        long timeMark = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        if (timestamp != 0 && timestamp > timeMark)
+            timeMark = timestamp;
+
+        lastReadWorldChatMessages.Set(timeMark);
+        SaveLatestReadWorldChatMessagesStatus();
+    }
 
     public void ForceFocus(string setInputText = null)
     {
         SetVisibility(true);
-        view.FocusInputField();
+        chatHudController.FocusInputField();
         view.DeactivatePreview();
         SceneReferences.i?.mouseCatcher.UnlockCursor();
 
         if (!string.IsNullOrEmpty(setInputText))
-            view.SetInputField(setInputText);
+            chatHudController.SetInputFieldText(setInputText);
+    }
+    
+    public void ResetInputField() => chatHudController.ResetInputField();
+    
+    private void SaveLatestReadWorldChatMessagesStatus()
+    {
+        playerPrefs.Set(PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES,
+            lastReadWorldChatMessages.Get().ToString());
+        playerPrefs.Save();
     }
 
     private void ChatHUDController_OnPressPrivateMessage(string friendUserId)
@@ -150,7 +193,7 @@ public class ChannelChatWindowController : IHUD
     private void OnMessageUpdated(string message)
     {
         if (!string.IsNullOrEmpty(lastPrivateMessageReceivedSender) && message == "/r ")
-            view.SetInputField($"/w {lastPrivateMessageReceivedSender} ");
+            chatHudController.SetInputFieldText($"/w {lastPrivateMessageReceivedSender} ");
     }
 
     private bool IsOldPrivateMessage(ChatMessage message)
@@ -182,9 +225,9 @@ public class ChannelChatWindowController : IHUD
         CommonScriptableObjects.lastReadWorldChatMessages.Set(0);
         string storedLastReadWorldChatMessagesString =
             PlayerPrefsUtils.GetString(PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES);
-        CommonScriptableObjects.lastReadWorldChatMessages.Set(System.Convert.ToInt64(
+        CommonScriptableObjects.lastReadWorldChatMessages.Set(Convert.ToInt64(
             string.IsNullOrEmpty(storedLastReadWorldChatMessagesString)
                 ? 0
-                : System.Convert.ToInt64(storedLastReadWorldChatMessagesString)));
+                : Convert.ToInt64(storedLastReadWorldChatMessagesString)));
     }
 }

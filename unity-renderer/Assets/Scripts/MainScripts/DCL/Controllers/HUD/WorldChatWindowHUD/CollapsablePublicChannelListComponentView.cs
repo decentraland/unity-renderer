@@ -5,32 +5,24 @@ using DCL;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
 
-public class CollapsableDirectChatListComponentView : CollapsableSortedListComponentView<string, PrivateChatEntry>
+public class CollapsablePublicChannelListComponentView : CollapsableSortedListComponentView<string, PublicChannelEntry>
 {
-    private const string POOL_NAME_PREFIX = "DirectChatEntriesPool_";
+    private const string POOL_NAME_PREFIX = "PublicChannelEntriesPool_";
     
-    [SerializeField] private PrivateChatEntry entryPrefab;
-    [SerializeField] private UserContextMenu userContextMenu;
+    [SerializeField] private PublicChannelEntry entryPrefab;
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private Pool entryPool;
-    private IChatController chatController;
 
-    public event Action<PrivateChatEntry> OnOpenChat;
-
-    public void Initialize(IChatController chatController)
-    {
-        this.chatController = chatController;
-    }
+    public event Action<PublicChannelEntry> OnOpenChat;
 
     public void Filter(string search)
     {
         var regex = new Regex(search, RegexOptions.IgnoreCase);
-        Filter(entry => regex.IsMatch(entry.Model.userName)
-            || regex.IsMatch(entry.Model.lastMessage));
+        Filter(entry => regex.IsMatch(entry.Model.name));
     }
 
-    public override PrivateChatEntry Remove(string key)
+    public override PublicChannelEntry Remove(string key)
     {
         if (pooleableEntries.ContainsKey(key))
             pooleableEntries[key].Release();
@@ -38,22 +30,21 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         return base.Remove(key);
     }
 
-    public void Set(string userId, PrivateChatEntry.PrivateChatEntryModel entryModel)
+    public void Set(string channelId, PublicChannelEntry.PublicChannelEntryModel entryModel)
     {
-        if (!Contains(entryModel.userId))
-            CreateEntry(userId);
-        var entry = Get(userId);
+        if (!Contains(entryModel.channelId))
+            CreateEntry(channelId);
+        var entry = Get(channelId);
         entry.Set(entryModel);
     }
     
-    private void CreateEntry(string userId)
+    private void CreateEntry(string channelId)
     {
         entryPool = GetEntryPool();
         var newFriendEntry = entryPool.Get();
-        pooleableEntries.Add(userId, newFriendEntry);
-        var entry = newFriendEntry.gameObject.GetComponent<PrivateChatEntry>();
-        Add(userId, entry);
-        entry.Initialize(chatController, userContextMenu);
+        pooleableEntries.Add(channelId, newFriendEntry);
+        var entry = newFriendEntry.gameObject.GetComponent<PublicChannelEntry>();
+        Add(channelId, entry);
         entry.OnOpenChat += () => OnOpenChat?.Invoke(entry);
     }
     

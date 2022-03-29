@@ -8,6 +8,7 @@ using DCL.Interface;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
@@ -61,13 +62,14 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     {
         add
         {
+            if (value == null) return;
             void Action(string s) => value.Invoke();
             inputFieldListeners[value] = Action;
             inputField.onSelect.AddListener(Action);
         }
         remove
         {
-            if (!inputFieldListeners.ContainsKey(value)) return;
+            if (value == null) return;
             inputField.onSelect.RemoveListener(inputFieldListeners[value]);
             inputFieldListeners.Remove(value);
         }
@@ -120,10 +122,12 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 
     private void OnInputFieldDeselect(string message) { AudioScriptableObjects.inputFieldUnfocus.Play(true); }
 
-    public void ResetInputField()
+    public void ResetInputField(bool loseFocus = false)
     {
         inputField.text = string.Empty;
         inputField.caretColor = Color.white;
+        if (loseFocus)
+            EventSystem.current.SetSelectedGameObject(null);
     }
 
     void OnEnable() { Utils.ForceUpdateLayout(transform as RectTransform); }
@@ -132,6 +136,12 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     {
         inputField.ActivateInputField();
         inputField.Select();
+    }
+
+    public void SetInputFieldText(string text)
+    {
+        inputField.text = text;
+        inputField.MoveTextEnd(false);
     }
 
     bool EntryIsVisible(ChatEntry entry)

@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 
 public class ChannelChatWindowControllerShould : IntegrationTestSuite_Legacy
 {
-    private ChannelChatWindowController controller;
+    private PublicChatChannelController controller;
     private IChannelChatWindowView view;
     private IChatHUDComponentView internalChatView;
     private ChatController_Mock chatController;
@@ -42,14 +42,16 @@ public class ChannelChatWindowControllerShould : IntegrationTestSuite_Legacy
         //             Adding this here because its used by the chat flow in ChatMessageToChatEntry.
         userProfileController.AddUserProfileToCatalog(ownProfileModel);
 
-        controller = new ChannelChatWindowController();
+        controller = new PublicChatChannelController(chatController, mouseCatcher,
+            Substitute.For<IPlayerPrefs>(),
+            ScriptableObject.CreateInstance<LongVariable>());
         chatController = new ChatController_Mock();
         mouseCatcher = new MouseCatcher_Mock();
 
         view = Substitute.For<IChannelChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();
         view.ChatHUD.Returns(internalChatView);
-        controller.Initialize(chatController, mouseCatcher, view);
+        controller.Initialize(view);
 
         Assert.IsTrue(view != null, "World chat hud view is null?");
         Assert.IsTrue(controller != null, "World chat hud controller is null?");
@@ -163,7 +165,7 @@ public class ChannelChatWindowControllerShould : IntegrationTestSuite_Legacy
 
         view.OnMessageUpdated += Raise.Event<Action<string>>("/r ");
         
-        view.Received(1).SetInputField($"/w {model.name} ");
+        internalChatView.Received(1).SetInputFieldText($"/w {model.name} ");
     }
     
     [Test]

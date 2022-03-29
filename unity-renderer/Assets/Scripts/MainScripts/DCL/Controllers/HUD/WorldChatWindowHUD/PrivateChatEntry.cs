@@ -3,10 +3,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DirectChatEntry : BaseComponentView
+public class PrivateChatEntry : BaseComponentView
 {
     [SerializeField] private Button openChatButton;
-    [SerializeField] private DirectChatEntryModel model;
+    [SerializeField] private PrivateChatEntryModel model;
     [SerializeField] private TMP_Text userNameLabel;
     [SerializeField] private TMP_Text lastMessageLabel;
     [SerializeField] private ImageComponentView picture;
@@ -20,7 +20,7 @@ public class DirectChatEntry : BaseComponentView
     private UserContextMenu userContextMenu;
     private IChatController chatController;
 
-    public DirectChatEntryModel Model => model;
+    public PrivateChatEntryModel Model => model;
 
     public event Action OnOpenChat;
 
@@ -44,7 +44,7 @@ public class DirectChatEntry : BaseComponentView
         userContextMenu.OnBlock += HandleUserBlocked;
     }
 
-    public void Set(DirectChatEntryModel model)
+    public void Set(PrivateChatEntryModel model)
     {
         this.model = model;
         RefreshControl();
@@ -56,7 +56,7 @@ public class DirectChatEntry : BaseComponentView
         lastMessageLabel.text = model.lastMessage;
         picture.Configure(new ImageComponentModel {uri = model.pictureUrl});
         SetBlockStatus(model.isBlocked);
-        SetPresence(model.presence);
+        SetPresence(model.isOnline);
         unreadNotifications.Initialize(chatController, model.userId);
     }
     
@@ -72,34 +72,34 @@ public class DirectChatEntry : BaseComponentView
         blockedContainer.SetActive(isBlocked);
     }
 
-    private void SetPresence(PresenceStatus presence)
+    private void SetPresence(bool isOnline)
     {
-        model.presence = presence;
-        onlineStatusContainer.SetActive(model.presence == PresenceStatus.ONLINE && !model.isBlocked);
-        offlineStatusContainer.SetActive(model.presence != PresenceStatus.ONLINE && !model.isBlocked);
+        model.isOnline = isOnline;
+        onlineStatusContainer.SetActive(isOnline && !model.isBlocked);
+        offlineStatusContainer.SetActive(!isOnline && !model.isBlocked);
     }
 
     private void Dock(UserContextMenu userContextMenu) =>
         userContextMenu.transform.position = userContextMenuPositionReference.position;
 
     [Serializable]
-    public struct DirectChatEntryModel
+    public struct PrivateChatEntryModel
     {
         public string userId;
         public string userName;
         public string lastMessage;
         public string pictureUrl;
         public bool isBlocked;
-        public PresenceStatus presence;
+        public bool isOnline;
 
-        public DirectChatEntryModel(string userId, string userName, string lastMessage, string pictureUrl, bool isBlocked, PresenceStatus presence)
+        public PrivateChatEntryModel(string userId, string userName, string lastMessage, string pictureUrl, bool isBlocked, bool isOnline)
         {
             this.userId = userId;
             this.userName = userName;
             this.lastMessage = lastMessage;
             this.pictureUrl = pictureUrl;
             this.isBlocked = isBlocked;
-            this.presence = presence;
+            this.isOnline = isOnline;
         }
     }
 }

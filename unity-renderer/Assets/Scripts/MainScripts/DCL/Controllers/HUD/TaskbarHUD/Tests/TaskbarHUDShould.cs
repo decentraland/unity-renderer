@@ -60,14 +60,10 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void AddWorldChatWindowProperly()
     {
-        worldChatWindowController = new WorldChatWindowController(new DataStore(),
-            new ChannelChatWindowController(),
-            ScriptableObject.CreateInstance<LongVariable>(),
-            Substitute.For<IPlayerPrefs>(),
+        worldChatWindowController = new WorldChatWindowController(
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
-            Substitute.For<IChatController>(),
-            Substitute.For<IMouseCatcher>());
+            Substitute.For<IChatController>());
         worldChatWindowController.Initialize(Substitute.For<IWorldChatWindowView>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -106,14 +102,10 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
-        worldChatWindowController = new WorldChatWindowController(new DataStore(),
-            new ChannelChatWindowController(),
-            ScriptableObject.CreateInstance<LongVariable>(),
-            Substitute.For<IPlayerPrefs>(),
+        worldChatWindowController = new WorldChatWindowController(
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
-            chatController,
-            Substitute.For<IMouseCatcher>());
+            chatController);
         worldChatWindowController.Initialize(Substitute.For<IWorldChatWindowView>());
         controller.AddWorldChatWindow(worldChatWindowController);
 

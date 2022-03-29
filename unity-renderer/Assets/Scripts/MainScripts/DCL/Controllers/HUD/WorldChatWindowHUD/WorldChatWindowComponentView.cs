@@ -1,11 +1,11 @@
 ﻿using System;
-using DCL.Interface;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowView
 {
+    [SerializeField] private CollapsablePublicChannelListComponentView publicChannelList;
     [SerializeField] private CollapsableDirectChatListComponentView directChatList;
     [SerializeField] private Button closeButton;
     [SerializeField] private GameObject directChatsLoadingContainer;
@@ -15,8 +15,9 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] private Model model;
 
     public event Action OnClose;
-    public event Action<string> OnOpenChat; 
-    
+    public event Action<string> OnOpenPrivateChat;
+    public event Action<string> OnOpenPublicChannel;
+
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeInHierarchy;
     
@@ -29,7 +30,8 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         base.Awake();
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
-        directChatList.OnOpenChat += entry => OnOpenChat?.Invoke(entry.Model.userId);
+        directChatList.OnOpenChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
+        publicChannelList.OnOpenChat += entry => OnOpenPublicChannel?.Invoke(entry.Model.channelId);
         UpdateDirectChatsHeader();
     }
 
@@ -42,16 +44,26 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public void Hide() => gameObject.SetActive(false);
 
-    public void SetPrivateRecipient(UserProfile user, ChatMessage recentMessage, bool isBlocked, PresenceStatus presence)
+    public void SetPrivateChat(PrivateChatModel model)
     {
-        directChatList.Set(user.userId, new DirectChatEntry.DirectChatEntryModel(
+        var user = model.user;
+        directChatList.Set(user.userId, new PrivateChatEntry.PrivateChatEntryModel(
             user.userId,
             user.userName,
-            recentMessage.body,
+            model.recentMessage.body,
             user.face256SnapshotURL,
-            isBlocked,
-            presence));
+            model.isBlocked,
+            model.isOnline));
         UpdateDirectChatsHeader();
+    }
+
+    public void SetPublicChannel(PublicChatChannelModel model)
+    {
+        publicChannelList.Set(model.channelId, new PublicChannelEntry.PublicChannelEntryModel
+        {
+            channelId = model.channelId,
+            name = model.name
+        });
     }
 
     public void ShowPrivateChatsLoading() => SetPrivateChatLoadingVisibility(true);
@@ -60,8 +72,11 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public override void RefreshControl()
     {
+        publicChannelList.Clear();
+        foreach (var entry in model.publicChannels)
+            publicChannelList.Set(entry.channelId, entry);
         directChatList.Clear();
-        foreach (var entry in model.entries)
+        foreach (var entry in model.privateChats)
             directChatList.Set(entry.userId, entry);
         SetPrivateChatLoadingVisibility(model.isLoadingDirectChats);
     }
@@ -82,7 +97,8 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [Serializable]
     private class Model
     {
-        public DirectChatEntry.DirectChatEntryModel[] entries;
+        public PrivateChatEntry.PrivateChatEntryModel[] privateChats;
+        public PublicChannelEntry.PublicChannelEntryModel[] publicChannels;
         public bool isLoadingDirectChats;
     }
 }

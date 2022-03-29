@@ -113,9 +113,11 @@ public class ChatHUDController : IDisposable
     
     public void ClearAllEntries() => view.ClearAllEntries();
 
-    public void ResetInputField() => view.ResetInputField();
+    public void ResetInputField(bool loseFocus = false) => view.ResetInputField(loseFocus);
     
     public void FocusInputField() => view.FocusInputField();
+    
+    public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
     
     private void View_OnPressPrivateMessage(string friendUserId) => OnPressPrivateMessage?.Invoke(friendUserId);
 

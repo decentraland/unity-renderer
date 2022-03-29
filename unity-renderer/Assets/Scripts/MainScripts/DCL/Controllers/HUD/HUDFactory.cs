@@ -50,10 +50,8 @@ public class HUDFactory : IHUDFactory
                 hudElement = new TermsOfServiceHUDController();
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
-                hudElement = new WorldChatWindowController(DataStore.i, new ChannelChatWindowController(),
-                    CommonScriptableObjects.lastReadWorldChatMessages,
-                    new DefaultPlayerPrefs(), new UserProfileWebInterfaceBridge(),
-                    FriendsController.i, ChatController.i, SceneReferences.i.mouseCatcher);
+                hudElement = new WorldChatWindowController(new UserProfileWebInterfaceBridge(),
+                    FriendsController.i, ChatController.i);
                 break;
             case HUDElementID.FRIENDS:
                 hudElement = new FriendsHUDController();
@@ -61,6 +59,10 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowHUDController(DataStore.i, new UserProfileWebInterfaceBridge(),
                     ChatController.i, FriendsController.i);
+                break;
+            case HUDElementID.PUBLIC_CHAT_CHANNEL:
+                hudElement = new PublicChatChannelController(ChatController.i, SceneReferences.i.mouseCatcher,
+                    new DefaultPlayerPrefs(), CommonScriptableObjects.lastReadWorldChatMessages);
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();

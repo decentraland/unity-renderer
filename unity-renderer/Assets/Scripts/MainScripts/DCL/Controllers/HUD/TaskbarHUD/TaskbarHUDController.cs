@@ -1,10 +1,8 @@
 using DCL;
-using DCL.Controllers;
 using DCL.HelpAndSupportHUD;
 using DCL.Helpers;
 using DCL.Interface;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -21,6 +19,7 @@ public class TaskbarHUDController : IHUD
     public TaskbarHUDView view;
     public WorldChatWindowController worldChatWindowHud;
     public PrivateChatWindowHUDController privateChatWindowHud;
+    private PublicChatChannelController publicChatChannel;
     public FriendsHUDController friendsHud;
     public HelpAndSupportHUDController helpAndSupportHud;
 
@@ -32,6 +31,8 @@ public class TaskbarHUDController : IHUD
     private InputAction_Trigger closeWindowTrigger;
     private InputAction_Trigger toggleWorldChatTrigger;
     private Transform experiencesViewerTransform;
+
+    private bool isSocialBarV1Enabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("social_bar_v1");
 
     public event System.Action OnAnyTaskbarButtonClicked;
 
@@ -138,23 +139,36 @@ public class TaskbarHUDController : IHUD
 
     private void View_OnChatToggleOn()
     {
-        worldChatWindowHud.SetVisibility(true);
-        worldChatWindowHud.MarkWorldChatMessagesAsRead();
-        worldChatWindowHud.DeactivatePreview();
-        worldChatWindowHud.OnPressReturn();
+        if (isSocialBarV1Enabled)
+        {
+            worldChatWindowHud.SetVisibility(true);
+        }
+        else
+        {
+            publicChatChannel.SetVisibility(true);
+            publicChatChannel.MarkChatMessagesAsRead();
+            publicChatChannel.view.DeactivatePreview();
+            publicChatChannel.OnPressReturn();
+        }
+        
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
     private void View_OnChatToggleOff()
     {
-        if (view.AllButtonsToggledOff())
-        {
-            worldChatWindowHud.SetVisibility(true);
-            worldChatWindowHud.ActivatePreview();
-        }
+        if (isSocialBarV1Enabled)
+            worldChatWindowHud.SetVisibility(false);
         else
         {
-            worldChatWindowHud.SetVisibility(false);
+            if (view.AllButtonsToggledOff())
+            {
+                publicChatChannel.SetVisibility(true);
+                publicChatChannel.view.ActivatePreview();
+            }
+            else
+            {
+                publicChatChannel.SetVisibility(false);
+            }
         }
     }
 
@@ -179,10 +193,12 @@ public class TaskbarHUDController : IHUD
             btn.SetToggleState(false);
         }
 
-        worldChatWindowHud.SetVisibility(true);
-        worldChatWindowHud.ActivatePreview();
-
-        MarkWorldChatAsReadIfOtherWindowIsOpen();
+        if (!isSocialBarV1Enabled)
+        {
+            publicChatChannel.SetVisibility(true);
+            publicChatChannel.view.ActivatePreview();
+            MarkWorldChatAsReadIfOtherWindowIsOpen();
+        }
     }
 
     public void AddWorldChatWindow(WorldChatWindowController controller)
@@ -212,8 +228,14 @@ public class TaskbarHUDController : IHUD
 
     public void OpenPrivateChatTo(string userId)
     {
-        var button = view.chatHeadsGroup.AddChatHead(userId, (ulong) System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        var button = view.chatHeadsGroup.AddChatHead(userId, (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         button.toggleButton.onClick.Invoke();
+    }
+
+    public void OpenPublicChannel(string channelId)
+    {
+        publicChatChannel.Setup(channelId);
+        publicChatChannel.SetVisibility(true);
     }
 
     public void AddPrivateChatWindow(PrivateChatWindowHUDController controller)
@@ -262,6 +284,22 @@ public class TaskbarHUDController : IHUD
 
             MarkWorldChatAsReadIfOtherWindowIsOpen();
         };
+    }
+
+    public void AddPublicChatChannel(PublicChatChannelController controller)
+    {
+        if (controller?.view == null)
+        {
+            Debug.LogWarning("AddPublicChatChannel >>> Public Chat Window doesn't exist yet!");
+            return;
+        }
+
+        if (controller.view.Transform.parent == view.leftWindowContainer) return;
+
+        controller.view.Transform.SetParent(view.leftWindowContainer, false);
+        experiencesViewerTransform?.SetAsLastSibling();
+        
+        publicChatChannel = controller;
     }
 
     public void AddFriendsWindow(FriendsHUDController controller)
@@ -388,7 +426,10 @@ public class TaskbarHUDController : IHUD
         if (anyInputFieldIsSelected)
             return;
 
-        worldChatWindowHud.OnPressReturn();
+        if (isSocialBarV1Enabled)
+            worldChatWindowHud.OpenLastActiveChat();
+        else
+            publicChatChannel.OnPressReturn();
 
         if (AnyWindowsDifferentThanChatIsOpen())
         {
@@ -405,8 +446,11 @@ public class TaskbarHUDController : IHUD
             return;
 
         view.chatButton.SetToggleState(false, false);
-        worldChatWindowHud.ResetInputField();
-        worldChatWindowHud.ActivatePreview();
+        if (!isSocialBarV1Enabled)
+        {
+            publicChatChannel.ResetInputField();
+            publicChatChannel.view.ActivatePreview();
+        }
     }
 
     public void SetVoiceChatRecording(bool recording) { view?.voiceChatButton.SetOnRecording(recording); }
@@ -430,8 +474,9 @@ public class TaskbarHUDController : IHUD
 
     void OnAddMessage(ChatMessage message)
     {
+        if (isSocialBarV1Enabled) return;
         if (!AnyWindowsDifferentThanChatIsOpen() && message.messageType == ChatMessage.Type.PUBLIC)
-            worldChatWindowHud.MarkWorldChatMessagesAsRead((long) message.timestamp);
+            publicChatChannel.MarkChatMessagesAsRead((long) message.timestamp);
     }
 
     private bool AnyWindowsDifferentThanChatIsOpen()
@@ -442,7 +487,8 @@ public class TaskbarHUDController : IHUD
 
     private void MarkWorldChatAsReadIfOtherWindowIsOpen()
     {
+        if (isSocialBarV1Enabled) return;
         if (!AnyWindowsDifferentThanChatIsOpen())
-            worldChatWindowHud.MarkWorldChatMessagesAsRead();
+            publicChatChannel.MarkChatMessagesAsRead();
     }
 }

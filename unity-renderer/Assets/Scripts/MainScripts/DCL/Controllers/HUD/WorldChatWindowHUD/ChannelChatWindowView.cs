@@ -27,7 +27,6 @@ public class ChannelChatWindowView : MonoBehaviour, IPointerClickHandler, IChann
 
     public bool IsActive => gameObject.activeInHierarchy;
     public bool IsPreview { get; private set; }
-    public bool IsInputFieldFocused => chatHudView.inputField.isFocused;
     public IChatHUDComponentView ChatHUD => chatHudView;
     public RectTransform Transform => (RectTransform) transform;
 
@@ -42,12 +41,6 @@ public class ChannelChatWindowView : MonoBehaviour, IPointerClickHandler, IChann
         chatHudView.OnSendMessage += ChatHUDView_OnSendMessage;
         chatHudView.inputField.onValueChanged.AddListener(OnTextInputValueChanged);
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
-    }
-
-    public void SetInputField(string text)
-    {
-        chatHudView.inputField.text = text;
-        chatHudView.inputField.MoveTextEnd(false);
     }
 
     public void DeactivatePreview()
@@ -80,16 +73,11 @@ public class ChannelChatWindowView : MonoBehaviour, IPointerClickHandler, IChann
 
     public void Hide() => gameObject.SetActive(false);
 
-    public void ResetInputField(bool loseFocus = false)
-    {
-        chatHudView.ResetInputField();
-        if (loseFocus)
-            EventSystem.current.SetSelectedGameObject(null);
-    }
-
-    public void FocusInputField() => chatHudView.FocusInputField();
-
     public void Show() => gameObject.SetActive(true);
+    
+    public void Setup(string channelId, string name, string description)
+    {
+    }
 
     public void OnPointerClick(PointerEventData eventData)
     {

@@ -5,7 +5,8 @@ using UnityEngine;
 public interface IWorldChatWindowView
 {
     event Action OnClose;
-    event Action<string> OnOpenChat;
+    event Action<string> OnOpenPrivateChat;
+    event Action<string> OnOpenPublicChannel;
     
     RectTransform Transform { get; }
     bool IsActive { get; }
@@ -13,7 +14,8 @@ public interface IWorldChatWindowView
     void Initialize(IChatController chatController);
     void Show();
     void Hide();
-    void SetPrivateRecipient(UserProfile user, ChatMessage recentMessage, bool isBlocked, PresenceStatus presence);
+    void SetPrivateChat(PrivateChatModel model);
+    void SetPublicChannel(PublicChatChannelModel model);
     void ShowPrivateChatsLoading();
     void HidePrivateChatsLoading();
 }

@@ -59,8 +59,9 @@ namespace DCL
         AVATAR_NAMES = 31,
 
         EMOTES = 32,
+        PUBLIC_CHAT_CHANNEL = 33,
 
-        COUNT = 33
+        COUNT = 34
     }
 
     public interface IHUDFactory : IService

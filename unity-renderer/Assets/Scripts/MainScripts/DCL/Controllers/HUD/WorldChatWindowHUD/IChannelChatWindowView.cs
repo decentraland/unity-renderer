@@ -12,16 +12,13 @@ public interface IChannelChatWindowView
     
     bool IsActive { get; }
     bool IsPreview { get; }
-    bool IsInputFieldFocused { get; }
     IChatHUDComponentView ChatHUD { get; }
     RectTransform Transform { get; }
 
-    void SetInputField(string text);
     void ActivatePreview();
     void DeactivatePreview();
     void Dispose();
     void Hide();
-    void ResetInputField(bool loseFocus = false);
-    void FocusInputField();
     void Show();
+    void Setup(string channelId, string name, string description);
 }
