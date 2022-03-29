@@ -241,7 +241,7 @@ namespace DCL.Skybox
 
         private void RenderLeftPanel()
         {
-            leftPanelScrollPos = EditorGUILayout.BeginScrollView(leftPanelScrollPos);
+            leftPanelScrollPos = EditorGUILayout.BeginScrollView(leftPanelScrollPos, true, false);
             EditorGUILayout.BeginVertical();
             // Render BG Layer Button
             if (GUILayout.Button(SkyboxEditorLiterals.backgroundLayer, EditorStyles.toolbarButton))
@@ -287,7 +287,7 @@ namespace DCL.Skybox
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
 
-            RenderLeftPanel3DLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel);
+            RenderLeftPanel3DLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, copyPasteObj);
 
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndScrollView();
@@ -497,6 +497,14 @@ namespace DCL.Skybox
                 directionalLight = temp.AddComponent<Light>();
                 directionalLight.type = LightType.Directional;
             }
+
+            // Init 3D
+            //Init3DSetup();
+            if (skyboxObjects == null)
+            {
+                skyboxObjects = new SkyboxGameobjectsPool();
+                skyboxObjects.Initialize3DObjects(selectedConfiguration);
+            }
         }
 
         void TakeControlAtRuntime()
@@ -577,10 +585,12 @@ namespace DCL.Skybox
 
         void PauseTime() { isPaused = true; }
 
+        private SkyboxGameobjectsPool skyboxObjects;
         private void ApplyOnMaterial()
         {
             EnsureDependencies();
             selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, SkyboxEditorUtils.GetNormalizedDayTime(timeOfTheDay), MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
+            selectedConfiguration.ApplyDomeConfigurations(skyboxObjects.GetOrderedGameobjectList(selectedConfiguration.additional3Dconfig), timeOfTheDay, SkyboxEditorUtils.GetNormalizedDayTime(timeOfTheDay), 1, directionalLight);
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)

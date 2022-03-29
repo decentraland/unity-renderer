@@ -442,8 +442,6 @@ namespace DCL.Skybox
                 {
                     EditorGUILayout.Separator();
                     EditorGUI.indentLevel++;
-                    RenderDomeBackgroundLayer(configs3D[i]);
-                    EditorGUILayout.Separator();
 
                     EditorGUILayout.BeginVertical("box");
                     GUILayout.Space(10);
@@ -482,27 +480,6 @@ namespace DCL.Skybox
             menu.AddItem(new GUIContent("Delete"), false, OnDeleteBtnClicked, list);
 
             menu.ShowAsContext();
-        }
-
-        void RenderDomeBackgroundLayer(Config3DDome domeObj)
-        {
-            RenderColorGradientField(domeObj.backgroundLayer.skyColor, "Sky Color", 0, 24);
-            RenderColorGradientField(domeObj.backgroundLayer.horizonColor, "Horizon Color", 0, 24);
-            RenderColorGradientField(domeObj.backgroundLayer.groundColor, "Ground Color", 0, 24);
-
-            EditorGUILayout.Separator();
-            RenderTransitioningFloat(domeObj.backgroundLayer.horizonHeight, "Horizon Height", "%", "value", true, -1, 1);
-
-            EditorGUILayout.Space(10);
-            RenderTransitioningFloat(domeObj.backgroundLayer.horizonWidth, "Horizon Width", "%", "value", true, -1, 1);
-
-            EditorGUILayout.Separator();
-
-            // Horizon Mask
-            RenderTexture("Texture", ref domeObj.backgroundLayer.horizonMask);
-
-            // Horizon mask values
-            RenderVector3Field("Horizon Mask Values", ref domeObj.backgroundLayer.horizonMaskValues);
         }
 
         #endregion

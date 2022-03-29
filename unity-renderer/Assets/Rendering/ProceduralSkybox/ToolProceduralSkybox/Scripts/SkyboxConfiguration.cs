@@ -214,20 +214,6 @@ namespace DCL.Skybox
                 //General Values
                 domeReferences[domeCount].domeMat.SetColor(SkyboxShaderUtils.LightTint, directionalLightLayer.tintColor.Evaluate(normalizedDayTime));
                 domeReferences[domeCount].domeMat.SetVector(SkyboxShaderUtils.LightDirection, directionalLightGO.transform.rotation.eulerAngles);
-
-                // Apply Base Values
-                domeReferences[domeCount].domeMat.SetColor(SkyboxShaderUtils.SkyColor, additional3Dconfig[i].backgroundLayer.skyColor.Evaluate(normalizedDayTime));
-                domeReferences[domeCount].domeMat.SetColor(SkyboxShaderUtils.GroundColor, additional3Dconfig[i].backgroundLayer.groundColor.Evaluate(normalizedDayTime));
-
-                // Apply Horizon Values
-                domeReferences[domeCount].domeMat.SetColor(SkyboxShaderUtils.HorizonColor, additional3Dconfig[i].backgroundLayer.horizonColor.Evaluate(normalizedDayTime));
-                domeReferences[domeCount].domeMat.SetFloat(SkyboxShaderUtils.HorizonHeight, GetTransitionValue(additional3Dconfig[i].backgroundLayer.horizonHeight, percentage, 0f));
-                domeReferences[domeCount].domeMat.SetFloat(SkyboxShaderUtils.HorizonWidth, GetTransitionValue(additional3Dconfig[i].backgroundLayer.horizonWidth, percentage, 0f));
-                domeReferences[domeCount].domeMat.SetTexture(SkyboxShaderUtils.HorizonMask, additional3Dconfig[i].backgroundLayer.horizonMask);
-                domeReferences[domeCount].domeMat.SetVector(SkyboxShaderUtils.HorizonMaskValues, additional3Dconfig[i].backgroundLayer.horizonMaskValues);
-
-
-                //ApplyAllSlots(domeReferences[domeCount].domeMat, additional3Dconfig[i].layers, dayTime, normalizedDayTime, slotCount, cycleTime);
                 ApplyTextureLayer(domeReferences[domeCount].domeMat, dayTime, normalizedDayTime, 0, additional3Dconfig[i].layers, cycleTime);
                 domeCount++;
             }
