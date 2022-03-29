@@ -1308,7 +1308,7 @@ namespace UnityGLTF
             animationsEstimatedSize += 20;
 
             // needed because Animator component is unavailable at runtime
-            clip.legacy = false;
+            clip.legacy = true;
 
             return clip;
         }
@@ -1374,6 +1374,7 @@ namespace UnityGLTF
                     ProcessCurves(CreatedObject.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache);
                     
                     clip.wrapMode = WrapMode.Loop;
+                    clip.legacy = false;
 
                     animation.AddClip(clip, clip.name);
 
