@@ -1,21 +1,20 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Networking;
 using Environment = DCL.Environment;
 
-#if WINDOWS_UWP
-using System.Threading.Tasks;
-#endif
-
 namespace UnityGLTF.Loader
 {
     public class WebRequestLoader : ILoader
     {
+        private const int TIMEOUT_IN_SECONDS = 300;
         public Stream LoadedStream { get; private set; }
         public bool HasSyncLoadMethod { get; private set; }
         public AssetIdConverter assetIdConverter { get; private set; }
@@ -33,7 +32,7 @@ namespace UnityGLTF.Loader
             assetIdConverter = fileToHashConverter;
         }
 
-        public IEnumerator LoadStream(string filePath)
+        public async UniTask LoadStream(string filePath, CancellationToken token)
         {
             if (filePath == null)
             {
@@ -47,7 +46,7 @@ namespace UnityGLTF.Loader
 
             filePath = GetWrappedUri(filePath);
 
-            yield return CreateHTTPRequest(_rootURI, filePath);
+            await CreateHTTPRequest(_rootURI, filePath, token);
         }
 
         public string GetWrappedUri(string uri)
@@ -63,12 +62,10 @@ namespace UnityGLTF.Loader
             return uri;
         }
 
-        public void LoadStreamSync(string jsonFilePath)
-        {
-            throw new NotImplementedException();
-        }
+        public void LoadStreamSync(string jsonFilePath) { throw new NotImplementedException(); }
 
-        private IEnumerator CreateHTTPRequest(string rootUri, string httpRequestPath)
+        private static int awaitCount = 0;
+        private async UniTask CreateHTTPRequest(string rootUri, string httpRequestPath, CancellationToken token)
         {
             string finalUrl = httpRequestPath;
 
@@ -76,28 +73,31 @@ namespace UnityGLTF.Loader
             {
                 finalUrl = Path.Combine(rootUri, httpRequestPath);
             }
+            
+            token.ThrowIfCancellationRequested();
 
             WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
                 url: finalUrl,
                 downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 5000,
-                disposeOnCompleted: false);
+                timeout: TIMEOUT_IN_SECONDS,
+                disposeOnCompleted: false,
+                requestAttemps: 3);
 
             Assert.IsNotNull(asyncOp, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
-
-            yield return asyncOp;
+            
+            token.ThrowIfCancellationRequested();
+            
+            await UniTask.WaitUntil( () => asyncOp.isDone || asyncOp.isDisposed || asyncOp.isSucceded, cancellationToken: token);
 
 #if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isApplicationQuitting.Get())
-                yield break;
+                return;
 #endif
+            
+            token.ThrowIfCancellationRequested();
             
             bool error = false;
             string errorMessage = null;
-
-            if (asyncOp == null)
-            {
-            }
 
             if (!asyncOp.isSucceded)
             {
