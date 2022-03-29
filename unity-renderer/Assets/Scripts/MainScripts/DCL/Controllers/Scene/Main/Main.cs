@@ -123,11 +123,9 @@ namespace DCL
 
             DataStore.i.common.isApplicationQuitting.Set(true);
 
-            pluginSystem?.Dispose();
-
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            pluginSystem?.Dispose();
+            
             kernelCommunication?.Dispose();
         }
 
