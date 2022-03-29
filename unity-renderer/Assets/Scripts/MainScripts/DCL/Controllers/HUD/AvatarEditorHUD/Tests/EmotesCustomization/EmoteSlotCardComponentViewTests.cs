@@ -154,6 +154,7 @@ public class EmoteSlotCardComponentViewTests : MonoBehaviour
 
         // Assert
         Assert.AreEqual(isSelected, emoteSlotCardComponent.model.isSelected, "The isSelected does not match in the model.");
+        SetSelectedVisualsForClickingAssert(isSelected);
     }
 
     [Test]
@@ -172,17 +173,82 @@ public class EmoteSlotCardComponentViewTests : MonoBehaviour
         Assert.AreEqual(Quaternion.Euler(0, 0, -testSlotNumber * EmoteSlotCardComponentView.SLOT_VIEWER_ROTATION_ANGLE), emoteSlotCardComponent.slotViewerImage.transform.rotation);
     }
 
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetSeparatorActiveCorrectly(bool isActive)
+    {
+        // Arrange
+        emoteSlotCardComponent.model.hasSeparator = !isActive;
+        emoteSlotCardComponent.separatorGO.SetActive(!isActive);
 
+        // Act
+        emoteSlotCardComponent.SetSeparatorActive(isActive);
 
+        // Assert
+        Assert.AreEqual(isActive, emoteSlotCardComponent.model.hasSeparator, "The hasSeparator does not match in the model.");
+        Assert.AreEqual(isActive, emoteSlotCardComponent.separatorGO.activeSelf);
+    }
 
+    [Test]
+    [TestCase("epic")]
+    [TestCase("non-exist-rarity")]
+    public void SetRarityCorrectly(string testRarity)
+    {
+        // Act
+        emoteSlotCardComponent.SetRarity(testRarity);
 
+        // Assert
+        Assert.AreEqual(testRarity, emoteSlotCardComponent.model.rarity, "The rarity does not match in the model.");
+        Assert.AreEqual(testRarity != "non-exist-rarity", emoteSlotCardComponent.rarityMark.gameObject.activeSelf);
+    }
 
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RaiseOnEmoteImageLoadedCorrectly(bool useNullSprite)
+    {
+        // Act
+        emoteSlotCardComponent.OnEmoteImageLoaded(useNullSprite ? null : testSprite);
 
+        // Assert
+        if (useNullSprite)
+            Assert.AreEqual(emoteSlotCardComponent.defaultEmotePicture, emoteSlotCardComponent.model.pictureSprite, "The pciture sprite does not match in the model.");
+        else
+            Assert.AreEqual(testSprite, emoteSlotCardComponent.model.pictureSprite, "The pciture sprite does not match in the model.");
+    }
 
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetSelectedVisualsForClickingCorrectly(bool isSelected)
+    {
+        // Arrange
+        emoteSlotCardComponent.defaultBackgroundImage.gameObject.SetActive(isSelected);
+        emoteSlotCardComponent.defaultBackgroundImage.color = Color.black;
+        emoteSlotCardComponent.selectedBackgroundImage.gameObject.SetActive(!isSelected);
+        emoteSlotCardComponent.selectedBackgroundImage.color = Color.black;
+        emoteSlotCardComponent.slotNumberText.color = Color.black;
+        emoteSlotCardComponent.emoteNameText.color = Color.black;
+        emoteSlotCardComponent.slotViewerImage.gameObject.SetActive(!isSelected);
 
+        // Act
+        emoteSlotCardComponent.SetSelectedVisualsForClicking(isSelected);
 
+        // Assert
+        SetSelectedVisualsForClickingAssert(isSelected);
+    }
 
-
+    private void SetSelectedVisualsForClickingAssert(bool isSelected)
+    {
+        Assert.AreEqual(!isSelected, emoteSlotCardComponent.defaultBackgroundImage.gameObject.activeSelf);
+        Assert.AreEqual(emoteSlotCardComponent.defaultBackgroundColor, emoteSlotCardComponent.defaultBackgroundImage.color);
+        Assert.AreEqual(isSelected, emoteSlotCardComponent.selectedBackgroundImage.gameObject.activeSelf);
+        Assert.AreEqual(emoteSlotCardComponent.selectedBackgroundColor, emoteSlotCardComponent.selectedBackgroundImage.color);
+        Assert.AreEqual(isSelected ? emoteSlotCardComponent.selectedSlotNumberColor : emoteSlotCardComponent.defaultSlotNumberColor, emoteSlotCardComponent.slotNumberText.color);
+        Assert.AreEqual(isSelected ? emoteSlotCardComponent.selectedEmoteNameColor : emoteSlotCardComponent.defaultEmoteNameColor, emoteSlotCardComponent.emoteNameText.color);
+        Assert.AreEqual(isSelected, emoteSlotCardComponent.slotViewerImage.gameObject.activeSelf);
+    }
 
     [Test]
     [TestCase(true)]
@@ -190,7 +256,6 @@ public class EmoteSlotCardComponentViewTests : MonoBehaviour
     public void SetSelectedVisualsForHoveringCorrectly(bool isSelected)
     {
         // Arrange
-        emoteSlotCardComponent.model.isSelected = false;
         emoteSlotCardComponent.defaultBackgroundImage.color = Color.black;
         emoteSlotCardComponent.slotNumberText.color = Color.black;
         emoteSlotCardComponent.emoteNameText.color = Color.black;
@@ -205,19 +270,9 @@ public class EmoteSlotCardComponentViewTests : MonoBehaviour
 
     private void SetSelectedVisualsForHoveringAssert(bool isSelected)
     {
-        if (isSelected)
-        {
-            Assert.AreEqual(emoteSlotCardComponent.selectedBackgroundColor, emoteSlotCardComponent.defaultBackgroundImage.color);
-            Assert.AreEqual(emoteSlotCardComponent.selectedSlotNumberColor, emoteSlotCardComponent.slotNumberText.color);
-            Assert.AreEqual(emoteSlotCardComponent.selectedEmoteNameColor, emoteSlotCardComponent.emoteNameText.color);
-        }
-        else
-        {
-            Assert.AreEqual(emoteSlotCardComponent.defaultBackgroundColor, emoteSlotCardComponent.defaultBackgroundImage.color);
-            Assert.AreEqual(emoteSlotCardComponent.defaultSlotNumberColor, emoteSlotCardComponent.slotNumberText.color);
-            Assert.AreEqual(emoteSlotCardComponent.defaultEmoteNameColor, emoteSlotCardComponent.emoteNameText.color);
-        }
-
+        Assert.AreEqual(isSelected ? emoteSlotCardComponent.selectedBackgroundColor : emoteSlotCardComponent.defaultBackgroundColor, emoteSlotCardComponent.defaultBackgroundImage.color);
+        Assert.AreEqual(isSelected ? emoteSlotCardComponent.selectedSlotNumberColor : emoteSlotCardComponent.defaultSlotNumberColor, emoteSlotCardComponent.slotNumberText.color);
+        Assert.AreEqual(isSelected ? emoteSlotCardComponent.selectedEmoteNameColor : emoteSlotCardComponent.defaultEmoteNameColor, emoteSlotCardComponent.emoteNameText.color);
         Assert.AreEqual(isSelected, emoteSlotCardComponent.slotViewerImage.gameObject.activeSelf);
     }
 }
