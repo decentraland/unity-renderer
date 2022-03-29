@@ -1302,13 +1302,13 @@ namespace UnityGLTF
             {
                 name = animation.Name ?? string.Format("animation:{0}", animationId)
             };
+            clip.legacy = true;
             _assetCache.AnimationCache[animationId].LoadedAnimationClip = clip;
 
             // Animation instance memory overhead
             animationsEstimatedSize += 20;
 
             // needed because Animator component is unavailable at runtime
-            clip.legacy = true;
 
             return clip;
         }
@@ -1375,14 +1375,8 @@ namespace UnityGLTF
                     
                     clip.wrapMode = WrapMode.Loop;
                     clip.legacy = false;
+                    overrideAnimator["toreplace"] = clip;
 
-                    animation.AddClip(clip, clip.name);
-
-                    if (i == 0)
-                    {
-                        animation.clip = clip;
-                        overrideAnimator["toreplace"] = clip;
-                    }
                 }
             }
         }
