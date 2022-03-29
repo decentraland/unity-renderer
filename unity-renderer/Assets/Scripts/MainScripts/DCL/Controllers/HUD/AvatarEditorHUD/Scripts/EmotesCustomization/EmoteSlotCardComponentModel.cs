@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace EmotesCustomization
+namespace DCL.EmotesCustomization
 {
     [Serializable]
     public class EmoteSlotCardComponentModel : BaseComponentModel
