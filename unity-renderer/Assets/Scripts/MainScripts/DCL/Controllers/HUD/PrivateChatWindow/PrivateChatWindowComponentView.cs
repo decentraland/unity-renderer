@@ -55,7 +55,8 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             faceSnapshotUrl = profile.face256SnapshotURL,
             userName = profile.userName,
             isUserOnline = isOnline,
-            isUserBlocked = isBlocked
+            isUserBlocked = isBlocked,
+            entries = new ChatEntryModel[0]
         };
         RefreshControl();
     }

@@ -67,8 +67,6 @@ public class PrivateChatWindowHUDController : IHUD
             chatController.OnAddMessage -= OnAddMessage;
             chatController.OnAddMessage += OnAddMessage;
         }
-
-        SetVisibility(false);
     }
 
     private void OnMinimizeView() => SetVisibility(false);

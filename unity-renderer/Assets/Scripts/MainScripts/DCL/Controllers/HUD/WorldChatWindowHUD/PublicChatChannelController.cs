@@ -4,7 +4,6 @@ using DCL.Helpers;
 using DCL.Interface;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 public class PublicChatChannelController : IHUD
@@ -12,6 +11,8 @@ public class PublicChatChannelController : IHUD
     private const string PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES = "LastReadWorldChatMessages";
 
     public IChannelChatWindowView view;
+    public event Action OnBack;
+    public event Action OnClosed;
 
     private readonly IChatController chatController;
     private readonly IMouseCatcher mouseCatcher;
@@ -24,9 +25,6 @@ public class PublicChatChannelController : IHUD
 
     private UserProfile ownProfile => UserProfile.GetOwnUserProfile();
     private bool isSocialBarV1Enabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("social_bar_v1");
-
-    public event UnityAction<string> OnPressPrivateMessage;
-    public event Action OnOpen;
 
     public PublicChatChannelController(IChatController chatController,
         IMouseCatcher mouseCatcher,
@@ -50,14 +48,13 @@ public class PublicChatChannelController : IHUD
         }
         
         this.view = view;
-        view.OnClose += OnViewClosed;
+        view.OnClose += HandleViewClosed;
+        view.OnBack += HandleViewBacked;
         view.OnMessageUpdated += OnMessageUpdated;
         view.OnSendMessage += SendChatMessage;
 
         chatHudController = new ChatHUDController(DataStore.i, ProfanityFilterSharedInstances.regexFilter);
         chatHudController.Initialize(view.ChatHUD);
-        chatHudController.OnPressPrivateMessage -= ChatHUDController_OnPressPrivateMessage;
-        chatHudController.OnPressPrivateMessage += ChatHUDController_OnPressPrivateMessage;
         LoadLatestReadWorldChatMessagesStatus();
 
         if (chatController != null)
@@ -80,14 +77,12 @@ public class PublicChatChannelController : IHUD
 
     public void Dispose()
     {
-        view.OnClose -= OnViewClosed;
+        view.OnClose -= HandleViewClosed;
+        view.OnBack -= HandleViewBacked;
         view.OnMessageUpdated -= OnMessageUpdated;
 
         if (chatController != null)
             chatController.OnAddMessage -= OnAddMessage;
-
-        if (chatHudController != null)
-            chatHudController.OnPressPrivateMessage -= ChatHUDController_OnPressPrivateMessage;
 
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock -= view.ActivatePreview;
@@ -139,8 +134,6 @@ public class PublicChatChannelController : IHUD
 
     public bool OnPressReturn()
     {
-        OnOpen?.Invoke();
-
         if (EventSystem.current != null &&
             EventSystem.current.currentSelectedGameObject != null &&
             EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null)
@@ -183,12 +176,9 @@ public class PublicChatChannelController : IHUD
         playerPrefs.Save();
     }
 
-    private void ChatHUDController_OnPressPrivateMessage(string friendUserId)
-    {
-        OnPressPrivateMessage?.Invoke(friendUserId);
-    }
-
-    private void OnViewClosed() => SetVisibility(false);
+    private void HandleViewClosed() => OnClosed?.Invoke();
+    
+    private void HandleViewBacked() => OnBack?.Invoke();
 
     private void OnMessageUpdated(string message)
     {

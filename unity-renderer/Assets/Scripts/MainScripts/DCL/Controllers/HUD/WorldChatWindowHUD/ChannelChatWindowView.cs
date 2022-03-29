@@ -19,6 +19,7 @@ public class ChannelChatWindowView : MonoBehaviour, IPointerClickHandler, IChann
     public event Action OnDeactivatePreview;
     public event Action OnActivatePreview;
     public event Action OnClose;
+    public event Action OnBack;
     public event Action<string> OnMessageUpdated;
     public event Action<ChatMessage> OnSendMessage;
 

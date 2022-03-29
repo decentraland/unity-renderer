@@ -232,10 +232,16 @@ public class TaskbarHUDController : IHUD
         button.toggleButton.onClick.Invoke();
     }
 
-    public void OpenPublicChannel(string channelId)
+    public void OpenPublicChatChannel(string channelId)
     {
+        worldChatWindowHud.SetVisibility(false);
         publicChatChannel.Setup(channelId);
         publicChatChannel.SetVisibility(true);
+    }
+    
+    public void OpenChatList()
+    {
+        worldChatWindowHud.SetVisibility(true);
     }
 
     public void AddPrivateChatWindow(PrivateChatWindowHUDController controller)

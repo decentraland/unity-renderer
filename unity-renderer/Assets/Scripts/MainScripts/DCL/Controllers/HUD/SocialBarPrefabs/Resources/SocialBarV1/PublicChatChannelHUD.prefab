@@ -186,6 +186,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6680e90124b188d41acd33263b5f0d91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  closeButton: {fileID: 480243386072958103}
+  backButton: {fileID: 7105410192847587965}
   nameLabel: {fileID: 8296143100839953432}
   descriptionLabel: {fileID: 5437248798963596615}
   chatView: {fileID: 8729223757020298212}

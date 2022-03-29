@@ -2,15 +2,19 @@
 using DCL.Interface;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWindowView
 {
+    [SerializeField] private Button closeButton;
+    [SerializeField] private Button backButton;
     [SerializeField] private TMP_Text nameLabel;
     [SerializeField] private TMP_Text descriptionLabel;
     [SerializeField] private ChatHUDView chatView;
     [SerializeField] private Model model;
     
     public event Action OnClose;
+    public event Action OnBack;
     public event Action<string> OnMessageUpdated;
     public event Action<ChatMessage> OnSendMessage;
     public event Action OnDeactivatePreview;
@@ -25,7 +29,14 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     {
         return Instantiate(Resources.Load<PublicChatChannelComponentView>("SocialBarV1/PublicChatChannelHUD"));
     }
-    
+
+    public override void Awake()
+    {
+        base.Awake();
+        backButton.onClick.AddListener(() => OnBack?.Invoke());
+        closeButton.onClick.AddListener(() => OnClose?.Invoke());
+    }
+
     public override void RefreshControl()
     {
         nameLabel.text = model.name;
@@ -42,7 +53,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
 
     public void Hide() => gameObject.SetActive(false);
 
-    public void Show() => gameObject.SetActive(false);
+    public void Show() => gameObject.SetActive(true);
     
     public void Setup(string channelId, string name, string description)
     {
