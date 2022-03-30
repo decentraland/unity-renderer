@@ -168,8 +168,6 @@ namespace DCL.ABConverter
         public static void DumpSingleWearablesCollection(string collectionId, ClientSettings settings = null)
         {
             EnsureEnvironment();
-            
-            // EnsureWearableCollections();
 
             log.Info("Starting wearables dumping for collection: " + collectionId);
 
@@ -178,7 +176,7 @@ namespace DCL.ABConverter
             settings.deleteDownloadPathAfterFinished = false;
             settings.clearDirectoriesOnStart = false;
             
-            var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
+            var abConverterCoreController = new ABConverter.Core(env, settings);
             
             DumpWearablesCollection(abConverterCoreController, collectionId, (x) =>
             {
@@ -234,7 +232,7 @@ namespace DCL.ABConverter
             DumpWearablesCollectionRange(abConverterCoreController, initialCollectionIndex, lastCollectionIndex);
         }
 
-        private static void DumpWearablesCollectionRange(ABConverter.Core abConverterCoreController, int currentCollectionIndex, int lastCollectionIndex)
+        private static void DumpWearablesCollectionRange(ABConverter.Core core, int currentCollectionIndex, int lastCollectionIndex)
         {
             if (currentCollectionIndex >= wearableCollections.Length)
                 return;
@@ -243,7 +241,7 @@ namespace DCL.ABConverter
             
             log.Info($"Dumping... current collection: {currentCollectionIndex}, last collection: {lastCollectionIndex}");
             
-            DumpWearablesCollection(abConverterCoreController, collectionId, (x) =>
+            DumpWearablesCollection(core, collectionId, (x) =>
             {
                 currentCollectionIndex++;
 
@@ -259,14 +257,15 @@ namespace DCL.ABConverter
                         t.Milliseconds);
                     
                     log.Info($"Finished all non-bodyshape wearables dumping, total time: {formattedTotalTime}");
+                    
                     return;
                 }
                 
-                DumpWearablesCollectionRange(abConverterCoreController, currentCollectionIndex, lastCollectionIndex);
-            });
+                DumpWearablesCollectionRange(core, currentCollectionIndex, lastCollectionIndex);
+            }, cleanAndExitOnFinish: currentCollectionIndex == lastCollectionIndex);
         }
 
-        private static void DumpWearablesCollection(ABConverter.Core abConverterCoreController, string collectionId, Action<Core.ErrorCodes> OnConversionFinish = null)
+        private static void DumpWearablesCollection(ABConverter.Core abConverterCoreController, string collectionId, Action<Core.ErrorCodes> OnConversionFinish = null, bool cleanAndExitOnFinish = true)
         {
             if (string.IsNullOrEmpty(collectionId))
                 return;
@@ -291,26 +290,31 @@ namespace DCL.ABConverter
             
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
 
-            DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnNonBodyWearableLoad, OnConversionFinish);
+            DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnNonBodyWearableLoad, OnConversionFinish, cleanAndExitOnFinish);
         }
 
         /// <summary>
         /// Given a list of WearableItems, each one is downloaded along with its dependencies and converted to ABs recursively
         /// (to avoid mixing same-name dependencies between wearables)
         /// </summary>
-        /// <param name="abConverterCoreController">an instance of the ABCore</param>
+        /// <param name="core">an instance of the ABCore</param>
         /// <param name="items">an already-populated list of WearableItems</param>
         /// <param name="OnWearableLoad">an action to be bind to the OnWearableLoad event on each wearable</param>
-        private static void DumpWearableQueue(ABConverter.Core abConverterCoreController, Queue<WearableItem> items, System.Action<UnityGLTF.GLTFSceneImporter> OnWearableLoad, Action<Core.ErrorCodes> OnConversionFinish = null)
+        private static void DumpWearableQueue(ABConverter.Core core, Queue<WearableItem> items, System.Action<UnityGLTF.GLTFSceneImporter> OnWearableLoad, Action<Core.ErrorCodes> OnConversionFinish = null, bool cleanAndExitOnFinish = true)
         {
             // We toggle the core's ABs generation off so that we execute that conversion here when there is no more items left.
-            abConverterCoreController.generateAssetBundles = false;
-            abConverterCoreController.exitApplicationWhenFinished = false;
+            core.generateAssetBundles = false;
+            core.cleanAndExitOnFinish = false;
 
             if (items.Count == 0)
             {
-                abConverterCoreController.exitApplicationWhenFinished = true; // with a collections range batch this may be a problem
-                abConverterCoreController.ConvertDumpedAssets(OnConversionFinish);
+                core.ConvertDumpedAssets((x) =>
+                {
+                    OnConversionFinish?.Invoke(x);
+                    
+                    if(cleanAndExitOnFinish)
+                        core.CleanAndExit(x);
+                });
 
                 return;
             }
@@ -321,13 +325,13 @@ namespace DCL.ABConverter
             
             log.Info($"will dump mapping pairs: {pairs.Count}");
             
-            abConverterCoreController.Convert(pairs.ToArray(),
+            core.Convert(pairs.ToArray(),
                 (err) =>
                 {
                     log.Info($"finished dumping a mapping pair...");
                     UnityGLTF.GLTFImporter.OnGLTFWillLoad -= OnWearableLoad;
-                    abConverterCoreController.CleanupWorkingFolders();
-                    DumpWearableQueue(abConverterCoreController, items, OnWearableLoad, OnConversionFinish);
+                    core.CleanupWorkingFolders();
+                    DumpWearableQueue(core, items, OnWearableLoad, OnConversionFinish, cleanAndExitOnFinish);
                 });
         }
 
