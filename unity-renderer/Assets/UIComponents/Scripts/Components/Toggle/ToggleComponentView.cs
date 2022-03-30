@@ -37,7 +37,7 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
 {
 
     [Header("Prefab References")]
-    [SerializeField] private Toggle toggle;
+    [SerializeField] internal Toggle toggle;
     [SerializeField] internal TMP_Text text;
 
     [Header("Configuration")]
