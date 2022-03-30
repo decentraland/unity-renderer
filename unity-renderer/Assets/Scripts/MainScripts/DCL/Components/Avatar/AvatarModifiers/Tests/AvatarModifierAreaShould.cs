@@ -2,10 +2,12 @@
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using UnityEngine;
 using NSubstitute;
+using NUnit.Framework;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
@@ -142,6 +144,25 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
         Object.Destroy(player4.gameObject);
         Object.Destroy(avatarModifierArea.gameObject);
     }
+    
+    [UnityTest]
+    public IEnumerator NotRemoveModifierOnWhenModelChange()
+    {
+        var model = (AvatarModifierArea.Model)avatarModifierArea.GetModel();
+
+        var fakeObject = PrepareGameObjectForModifierArea();
+        yield return null;
+        
+        mockAvatarModifier.Received().ApplyModifier(fakeObject);
+        mockAvatarModifier.ClearReceivedCalls();
+
+        model.area = new BoxTriggerArea { box = new Vector3(11, 11, 11) };
+        yield return TestUtils.EntityComponentUpdate(avatarModifierArea, model);
+        yield return null;
+        
+        mockAvatarModifier.Received(1).RemoveModifier(fakeObject);
+        mockAvatarModifier.Received().ApplyModifier(fakeObject);
+    }    
 
     private GameObject PrepareGameObjectForModifierArea()
     {
