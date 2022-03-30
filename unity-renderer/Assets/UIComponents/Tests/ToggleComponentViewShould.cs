@@ -15,7 +15,6 @@ public class ToggleComponentViewShould
     public void TearDown()
     {
         toggleComponent.Dispose();
-        GameObject.Destroy(toggleComponent.gameObject);
     }
 
     [Test]
@@ -25,7 +24,7 @@ public class ToggleComponentViewShould
     {
         // Arrange
         bool isOn = !setOn;
-        toggleComponent.onToggleChange.AddListener((_)=>isOn=_);
+        toggleComponent.onToggleChange.AddListener((isToggleOn) => isOn = isToggleOn);
 
         // Act
         toggleComponent.toggle.onValueChanged.Invoke(setOn);
@@ -90,5 +89,31 @@ public class ToggleComponentViewShould
         // Assert
         Assert.AreEqual(toggleComponent.text.gameObject.activeInHierarchy, !isTextActive, "The text active field does not match after the refresh.");
         Assert.AreEqual(toggleComponent.text.text, "Test2", "The text does not match after the refresh.");
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetTextActive(bool isTextActive) 
+    {
+        // Act
+        toggleComponent.SetTextActive(isTextActive);
+
+        // Assert
+        Assert.AreEqual(isTextActive, toggleComponent.model.isTextActive, "The text active does not match in the model.");
+        Assert.AreEqual(isTextActive, toggleComponent.text.gameObject.activeInHierarchy, "The text gameobject active does not match.");
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetInteractable(bool isInteractable)
+    {
+        // Act
+        toggleComponent.SetInteractable(isInteractable);
+
+        // Assert
+        Assert.AreEqual(isInteractable, toggleComponent.toggle.interactable, "The toggle interactable field does not match");
+        Assert.AreEqual(isInteractable, toggleComponent.IsInteractable(), "The toggle Is Interactable method does not match");
     }
 }

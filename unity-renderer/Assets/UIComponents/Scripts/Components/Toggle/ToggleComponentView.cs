@@ -64,7 +64,11 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
 
     public void SetInteractable(bool isActive) { toggle.interactable = isActive; }
 
-    public void SetTextActive(bool isActive) { text.gameObject.SetActive(isActive); }
+    public void SetTextActive(bool isActive) 
+    {
+        model.isTextActive = isActive;
+        text.gameObject.SetActive(isActive); 
+    }
 
     public void SetText(string newText)
     {
