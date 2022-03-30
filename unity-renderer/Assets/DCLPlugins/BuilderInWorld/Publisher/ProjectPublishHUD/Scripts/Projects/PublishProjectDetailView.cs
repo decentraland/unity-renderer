@@ -321,7 +321,7 @@ namespace DCL.Builder
             }
         }
 
-        private void RotateRight()
+        private void RotateLeft()
         {
             projectRotation--;
             if (projectRotation < 0)
@@ -329,7 +329,7 @@ namespace DCL.Builder
             SetRotation(projectRotation);
         }
 
-        private void RotateLeft()
+        private void RotateRight()
         {
             projectRotation++;
             if (projectRotation > PublishInfo.ProjectRotation.WEST)
@@ -346,13 +346,13 @@ namespace DCL.Builder
                     zRotation = 0;
                     break;
                 case PublishInfo.ProjectRotation.EAST:
-                    zRotation = 90;
+                    zRotation = 270;
                     break;
                 case PublishInfo.ProjectRotation.SOUTH:
                     zRotation = 180;
                     break;
                 case PublishInfo.ProjectRotation.WEST:
-                    zRotation = 270;
+                    zRotation = 90;
                     break;
             }
             sceneAerialScreenshotImage.rectTransform.rotation = Quaternion.Euler(0, 0, zRotation);
