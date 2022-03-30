@@ -19,13 +19,14 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
         dataStore.settings.profanityChatFilteringEnabled.Set(true);
         view = Substitute.For<IChatHUDComponentView>();
         controller = new ChatHUDController(dataStore, Substitute.For<IUserProfileBridge>(), profanityFilter);
-        controller.Initialize(view, OnSendMessage);
+        controller.OnSendMessage += OnSendMessage;
         Assert.IsTrue(view != null);
         yield break;
     }
 
     protected override IEnumerator TearDown()
     {
+        controller.OnSendMessage -= OnSendMessage;
         controller.Dispose();
         yield break;
     }

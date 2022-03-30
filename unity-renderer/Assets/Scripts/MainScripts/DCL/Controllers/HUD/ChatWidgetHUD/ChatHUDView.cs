@@ -73,6 +73,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         remove
         {
             if (value == null) return;
+            if (!inputFieldListeners.ContainsKey(value)) return;
             inputField.onSelect.RemoveListener(inputFieldListeners[value]);
             inputFieldListeners.Remove(value);
         }

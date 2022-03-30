@@ -26,19 +26,18 @@ public class ChatHUDController : IDisposable
         this.profanityFilter = profanityFilter;
     }
 
-    public void Initialize(IChatHUDComponentView view = null, Action<ChatMessage> onSendMessage = null)
+    public void Initialize(IChatHUDComponentView view = null)
     {
         this.view = view ?? ChatHUDView.Create();
-        view.OnSendMessage += onSendMessage;
 
         this.view.OnShowMenu -= ContextMenu_OnShowMenu;
         this.view.OnShowMenu += ContextMenu_OnShowMenu;
-        this.view.OnInputFieldSelected -= OnInputFieldSelected;
-        this.view.OnInputFieldSelected += OnInputFieldSelected;
-        this.view.OnSendMessage -= OnSendMessage;
-        this.view.OnSendMessage += OnSendMessage;
-        this.view.OnMessageUpdated -= OnMessageUpdated;
-        this.view.OnMessageUpdated += OnMessageUpdated;
+        this.view.OnInputFieldSelected -= HandleInputFieldSelection;
+        this.view.OnInputFieldSelected += HandleInputFieldSelection;
+        this.view.OnSendMessage -= HandleSendMessage;
+        this.view.OnSendMessage += HandleSendMessage;
+        this.view.OnMessageUpdated -= HandleMessageUpdated;
+        this.view.OnMessageUpdated += HandleMessageUpdated;
 
         closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
@@ -62,7 +61,7 @@ public class ChatHUDController : IDisposable
             if (!string.IsNullOrEmpty(chatEntryModel.recipientName))
                 chatEntryModel.recipientName = profanityFilter.Filter(chatEntryModel.recipientName);
         }
-        
+
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (view.EntryCount > MAX_CHAT_ENTRIES)
@@ -72,10 +71,13 @@ public class ChatHUDController : IDisposable
     public void Dispose()
     {
         view.OnShowMenu -= ContextMenu_OnShowMenu;
-        view.OnMessageUpdated -= OnMessageUpdated;
-        view.OnSendMessage -= OnSendMessage;
-        view.OnInputFieldSelected -= OnInputFieldSelected;
+        view.OnMessageUpdated -= HandleMessageUpdated;
+        view.OnSendMessage -= HandleSendMessage;
+        view.OnInputFieldSelected -= HandleInputFieldSelection;
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
+        OnSendMessage = null;
+        OnMessageUpdated = null;
+        OnInputFieldSelected = null;
         view.Dispose();
     }
 
@@ -122,22 +124,28 @@ public class ChatHUDController : IDisposable
 
         return model;
     }
-    
+
     public void ClearAllEntries() => view.ClearAllEntries();
 
     public void ResetInputField(bool loseFocus = false) => view.ResetInputField(loseFocus);
-    
+
     public void FocusInputField() => view.FocusInputField();
-    
+
     public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
 
     private void ContextMenu_OnShowMenu() => view.OnMessageCancelHover();
 
     private void OnCloseButtonPressed(DCLAction_Trigger action) => view.Hide();
-    
+
     private bool IsProfanityFilteringEnabled()
     {
         return dataStore.settings.profanityChatFilteringEnabled.Get()
-            && profanityFilter != null;
+               && profanityFilter != null;
     }
+
+    private void HandleMessageUpdated(string obj) => OnMessageUpdated?.Invoke(obj);
+
+    private void HandleSendMessage(ChatMessage obj) => OnSendMessage?.Invoke(obj);
+
+    private void HandleInputFieldSelection() => OnInputFieldSelected?.Invoke();
 }

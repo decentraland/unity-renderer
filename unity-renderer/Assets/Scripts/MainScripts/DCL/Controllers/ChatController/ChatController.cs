@@ -10,6 +10,7 @@ public interface IChatController
     List<ChatMessage> GetEntries();
 
     void AddMessageToChatWindow(string jsonMessage);
+    void Send(ChatMessage message);
 }
 
 public class ChatController : MonoBehaviour, IChatController
@@ -37,6 +38,8 @@ public class ChatController : MonoBehaviour, IChatController
         entries.Add(message);
         OnAddMessage?.Invoke(message);
     }
+
+    public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
 
     public List<ChatMessage> GetEntries() { return new List<ChatMessage>(entries); }
 

@@ -141,7 +141,7 @@ public class PublicChatChannelController : IHUD
             message.body = $"/w {message.recipient} {message.body}";
         }
 
-        WebInterface.SendChatMessage(message);
+        chatController.Send(message);
     }
 
     public void SetVisibility(bool visible)

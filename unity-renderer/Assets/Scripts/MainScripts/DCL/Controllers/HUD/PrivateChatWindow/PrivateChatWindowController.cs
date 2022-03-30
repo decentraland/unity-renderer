@@ -120,7 +120,7 @@ public class PrivateChatWindowController : IHUD
         // If Kernel allowed for private messages without the whisper param we could avoid this line
         message.body = $"/w {message.recipient} {message.body}";
 
-        WebInterface.SendChatMessage(message);
+        chatController.Send(message);
     }
 
     public void SetVisibility(bool visible)
