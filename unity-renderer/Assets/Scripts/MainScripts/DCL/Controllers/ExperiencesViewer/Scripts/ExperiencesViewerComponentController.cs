@@ -163,11 +163,12 @@ namespace DCL.ExperiencesViewer
             }
 
             GlobalScene newPortableExperienceScene = scene as GlobalScene;
-
+            DataStore.i.experiencesViewer.activeExperience.Get().Add(scene.sceneData.id);
+            
             if (pausedPEXScenesIds.Contains(scene.sceneData.id))
             {
                 pausedPEXScenesIds.Remove(scene.sceneData.id);
-
+                
                 if (experienceToUpdate != null)
                     experienceToUpdate.SetAsPlaying(true);
             }
@@ -194,6 +195,7 @@ namespace DCL.ExperiencesViewer
             if (!activePEXScenes.ContainsKey(id))
                 return;
 
+            DataStore.i.experiencesViewer.activeExperience.Get().Remove(id);
             if (pausedPEXScenesIds.Contains(id))
             {
                 ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(id);
