@@ -27,7 +27,7 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
     {
         var regex = new Regex(search, RegexOptions.IgnoreCase);
         Filter(entry => regex.IsMatch(entry.Model.userName)
-            || regex.IsMatch(entry.Model.lastMessage));
+            /*|| regex.IsMatch(entry.Model.lastMessage)*/);
     }
 
     public override PrivateChatEntry Remove(string key)

@@ -12,6 +12,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] private GameObject directChatsContainer;
     [SerializeField] private TMP_Text directChatsHeaderLabel;
     [SerializeField] private ScrollRect scroll;
+    [SerializeField] private SearchBarComponentView searchBar;
     [SerializeField] private Model model;
 
     public event Action OnClose;
@@ -32,6 +33,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         directChatList.OnOpenChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
         publicChannelList.OnOpenChat += entry => OnOpenPublicChannel?.Invoke(entry.Model.channelId);
+        searchBar.OnSearchText += Filter;
         UpdateDirectChatsHeader();
     }
 
@@ -79,6 +81,12 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         foreach (var entry in model.privateChats)
             directChatList.Set(entry.userId, entry);
         SetPrivateChatLoadingVisibility(model.isLoadingDirectChats);
+    }
+    
+    private void Filter(string text)
+    {
+        publicChannelList.Filter(text);
+        directChatList.Filter(text);
     }
 
     private void SetPrivateChatLoadingVisibility(bool visible)

@@ -1063,8 +1063,10 @@ MonoBehaviour:
   directChatsContainer: {fileID: 4109082457051070364}
   directChatsHeaderLabel: {fileID: 7026940238425206933}
   scroll: {fileID: 6778469524783603336}
+  searchBar: {fileID: 8498673460815628759}
   model:
-    entries: []
+    privateChats: []
+    publicChannels: []
     isLoadingDirectChats: 0
 --- !u!1 &6094055690743740254
 GameObject:
@@ -2233,6 +2235,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3351884956682182121}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8498673460815628759 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6590195516862157886, guid: db08434be6dadc943b7e258f41869504,
+    type: 3}
+  m_PrefabInstance: {fileID: 3351884956682182121}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae27d568eb9f4364ca12bdb6e11d0f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6064852553117820040
 PrefabInstance:
   m_ObjectHideFlags: 0
