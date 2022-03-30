@@ -4,6 +4,7 @@ using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using static HotScenesController;
 
 public class PlacesSubSectionComponentControllerTests
@@ -76,6 +77,7 @@ public class PlacesSubSectionComponentControllerTests
         // Arrange
         placesSubSectionComponentController.currentPlacesShowed = -1;
         placesSubSectionComponentController.reloadPlaces = true;
+        placesSubSectionComponentController.lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
 
         // Act

@@ -41,17 +41,17 @@ namespace AvatarSystem
 
         public void SetEquippedEmotes(string bodyShapeId, IEnumerable<WearableItem> emotes)
         {
-            this.bodyShapeId = bodyShapeId;
             foreach (string emoteId in this.emotes)
             {
-                dataStoreEmotes.emotesOnUse.DecreaseRefCount(emoteId);
+                dataStoreEmotes.emotesOnUse.DecreaseRefCount((this.bodyShapeId, emoteId));
             }
             this.emotes.Clear();
 
+            this.bodyShapeId = bodyShapeId;
             foreach (WearableItem emote in emotes)
             {
                 this.emotes.Add(emote.id);
-                dataStoreEmotes.emotesOnUse.IncreaseRefCount(emote.id);
+                dataStoreEmotes.emotesOnUse.IncreaseRefCount((bodyShapeId, emote.id));
 
                 //If the clip is not ready by the time we equip it
                 //we will receive it once its added to the collection in the DataStore
@@ -66,7 +66,7 @@ namespace AvatarSystem
             dataStoreEmotes.animations.OnRemoved -= OnAnimationRemoved;
             foreach (string emoteId in this.emotes)
             {
-                dataStoreEmotes.emotesOnUse.DecreaseRefCount(emoteId);
+                dataStoreEmotes.emotesOnUse.DecreaseRefCount((bodyShapeId, emoteId));
             }
             emotes.Clear();
         }

@@ -2381,6 +2381,11 @@ PrefabInstance:
       propertyPath: model.fillParent
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4618068140710309132, guid: 7c46860097fdafb4abd62085d2045ad9,
+        type: 3}
+      propertyPath: model.lastUriCached
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5317768593788952491, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
       propertyPath: m_Sprite
@@ -2514,12 +2519,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c46860097fdafb4abd62085d2045ad9, type: 3}
---- !u!224 &3832789837912161842 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 6044329464138306421, guid: 7c46860097fdafb4abd62085d2045ad9,
-    type: 3}
-  m_PrefabInstance: {fileID: 7408715589669039431}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2794385792905576523 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4618068140710309132, guid: 7c46860097fdafb4abd62085d2045ad9,
@@ -2532,3 +2531,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0aaf5a1daa0c8548ba499d4a0332eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &3832789837912161842 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6044329464138306421, guid: 7c46860097fdafb4abd62085d2045ad9,
+    type: 3}
+  m_PrefabInstance: {fileID: 7408715589669039431}
+  m_PrefabAsset: {fileID: 0}

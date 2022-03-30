@@ -18,6 +18,8 @@ namespace DCL
         const string MINIMAP_USER_ICONS_POOL_NAME = "MinimapUserIconsPool";
         const int MINIMAP_USER_ICONS_MAX_PREWARM = 30;
         private const int MAX_CURSOR_PARCEL_DISTANCE = 40;
+        private const int MAX_SCENE_CHARACTER_TITLE = 29;
+        private const string EMPTY_PARCEL_NAME = "Empty parcel";
         private int NAVMAP_CHUNK_LAYER;
 
         public static MapRenderer i { get; private set; }
@@ -44,6 +46,7 @@ namespace DCL
         public MapAtlas atlas;
         public TextMeshProUGUI highlightedParcelText;
         public Transform overlayContainer;
+        public Transform overlayContainerPlayers;
         public Transform globalUserMarkerContainer;
         public RectTransform playerPositionIcon;
 
@@ -141,7 +144,7 @@ namespace DCL
             {
                 usersInfoPool = PoolManager.i.AddPool(
                     MINIMAP_USER_ICONS_POOL_NAME,
-                    Instantiate(userIconPrefab.gameObject, overlayContainer.transform),
+                    Instantiate(userIconPrefab.gameObject, overlayContainerPlayers.transform),
                     maxPrewarmCount: MINIMAP_USER_ICONS_MAX_PREWARM,
                     isPersistent: true);
 
@@ -370,6 +373,9 @@ namespace DCL
             if (scenesOfInterest.Contains(sceneInfo))
                 return;
 
+            if (IsEmptyParcel(sceneInfo))
+                return;
+
             scenesOfInterest.Add(sceneInfo);
 
             GameObject go = Object.Instantiate(scenesOfInterestIconPrefab.gameObject, overlayContainer.transform);
@@ -382,13 +388,24 @@ namespace DCL
             }
 
             centerTile /= (float)sceneInfo.parcels.Count;
+            float distance = float.PositiveInfinity;
+            Vector2 centerParcel = Vector2.zero;
+            foreach (var parcel in sceneInfo.parcels)
+            {
+                if (Vector2.Distance(centerTile, parcel) < distance)
+                {
+                    distance = Vector2.Distance(centerParcel, parcel);
+                    centerParcel = parcel;
+                }
+                
+            }
 
-            (go.transform as RectTransform).anchoredPosition = MapUtils.GetTileToLocalPosition(centerTile.x, centerTile.y);
+            (go.transform as RectTransform).anchoredPosition = MapUtils.GetTileCenterToLocalPosition(centerParcel.x, centerParcel.y);
 
             MapSceneIcon icon = go.GetComponent<MapSceneIcon>();
 
             if (icon.title != null)
-                icon.title.text = sceneInfo.name;
+                icon.title.text = sceneInfo.name.Length > MAX_SCENE_CHARACTER_TITLE ? sceneInfo.name.Substring(0, MAX_SCENE_CHARACTER_TITLE - 1) : sceneInfo.name;
 
             scenesOfInterestMarkers.Add(sceneInfo, go);
         }
@@ -401,12 +418,17 @@ namespace DCL
             }
         }
 
+        private bool IsEmptyParcel(MinimapMetadata.MinimapSceneInfo sceneInfo)
+        {
+            return (sceneInfo.name != null && sceneInfo.name.Equals(EMPTY_PARCEL_NAME));
+        }
+
         private void OnOtherPlayersAdded(string userId, Player player)
         {
             var poolable = usersInfoPool.Get();
             var marker = poolable.gameObject.GetComponent<MapUserIcon>();
             marker.gameObject.name = $"UserIcon-{player.name}";
-            marker.gameObject.transform.SetParent(overlayContainer.transform, true);
+            marker.gameObject.transform.SetParent(overlayContainerPlayers.transform, true);
             marker.Populate(player);
             marker.gameObject.SetActive(otherPlayersIconsEnabled);
             usersInfoMarkers.Add(userId, poolable);

@@ -65,7 +65,8 @@ namespace DCL
             RemoveRendereable(self, sceneId, r);
         }
 
-        public static void AddMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId, Material material )
+        public static void AddMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId,
+            Material material)
         {
             var r = new Rendereable();
             r.materials.Add(material);
@@ -73,7 +74,8 @@ namespace DCL
             AddRendereable(self, sceneId, r);
         }
 
-        public static void RemoveMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId, Material material )
+        public static void RemoveMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId,
+            Material material)
         {
             var r = new Rendereable();
             r.materials.Add(material);
@@ -81,24 +83,51 @@ namespace DCL
             RemoveRendereable(self, sceneId, r);
         }
 
+        public static void AddAudioClip(this DataStore_WorldObjects self, string sceneId, AudioClip clip)
+        {
+            if (!self.sceneData.ContainsKey(sceneId))
+                return;
+
+            // NOTE(Brian): entityId is not used here, so audio clips do not work with the ignoreOwners
+            //              feature. This is done on purpose as ignoreOwners is only used by the smart item component
+            //              and should be deprecated. Also, supporting this would complicate the tracking logic and
+            //              has a high maintenance cost.
+
+            var sceneData = self.sceneData[sceneId];
+            sceneData.audioClips.Add(clip);
+        }
+
+        public static void RemoveAudioClip(this DataStore_WorldObjects self, string sceneId, AudioClip clip)
+        {
+            if (!self.sceneData.ContainsKey(sceneId))
+                return;
+
+            var sceneData = self.sceneData[sceneId];
+            sceneData.audioClips.Remove(clip);
+        }
+
 
         public static void AddRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
         {
+            if (!self.sceneData.ContainsKey(sceneId))
+                return;
+
             if (rendereable == null)
             {
                 logger.Log( $"Trying to add null rendereable! (id: {sceneId})");
                 return;
             }
 
-            if (string.IsNullOrEmpty(sceneId))
+            if (string.IsNullOrEmpty(sceneId) || !self.sceneData.ContainsKey(sceneId))
             {
-                logger.LogWarning($"AddRendereable", $"invalid sceneId! (id: {sceneId})");
+                logger.Log($"AddRendereable", $"invalid sceneId! (id: {sceneId})");
                 return;
             }
 
             if (string.IsNullOrEmpty(rendereable.ownerId))
             {
-                logger.LogError($"AddRendereable", $"invalid ownerId! Make sure to assign ownerId to the given rendereable (hint: it's the entityId)");
+                logger.Log($"AddRendereable",
+                    $"invalid ownerId! Make sure to assign ownerId to the given rendereable (hint: it's the entityId)");
                 return;
             }
 
@@ -112,11 +141,17 @@ namespace DCL
             sceneData.textures.AddRefCount(rendereable.textures);
             sceneData.renderers.Add(rendereable.renderers);
             sceneData.owners.Add(rendereable.ownerId);
+            sceneData.animationClips.AddRefCount(rendereable.animationClips);
             sceneData.triangles.Set( sceneData.triangles.Get() + rendereable.totalTriangleCount);
+            sceneData.animationClipSize.Set(sceneData.animationClipSize.Get() + rendereable.animationClipSize);
+            sceneData.meshDataSize.Set(sceneData.meshDataSize.Get() + rendereable.meshDataSize);
         }
 
         public static void RemoveRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
         {
+            if (!self.sceneData.ContainsKey(sceneId))
+                return;
+
             if ( rendereable == null )
             {
                 logger.Log( $"Trying to remove null rendereable! (id: {sceneId})");
@@ -125,13 +160,14 @@ namespace DCL
 
             if ( string.IsNullOrEmpty(sceneId) || !self.sceneData.ContainsKey(sceneId) )
             {
-                logger.LogWarning($"RemoveRendereable", $"invalid sceneId! (id: {sceneId})");
+                logger.Log($"RemoveRendereable", $"invalid sceneId! (id: {sceneId})");
                 return;
             }
 
             if (string.IsNullOrEmpty(rendereable.ownerId))
             {
-                logger.LogError($"AddRendereable", $"invalid ownerId! Make sure to assign ownerId to the given rendereable (hint: it's the entityId)");
+                logger.Log($"AddRendereable",
+                    $"invalid ownerId! Make sure to assign ownerId to the given rendereable (hint: it's the entityId)");
                 return;
             }
 
@@ -145,7 +181,10 @@ namespace DCL
             sceneData.textures.RemoveRefCount(rendereable.textures);
             sceneData.renderers.Remove(rendereable.renderers);
             sceneData.owners.Remove(rendereable.ownerId);
+            sceneData.animationClips.RemoveRefCount(rendereable.animationClips);
             sceneData.triangles.Set( sceneData.triangles.Get() - rendereable.totalTriangleCount);
+            sceneData.animationClipSize.Set(sceneData.animationClipSize.Get() - rendereable.animationClipSize);
+            sceneData.meshDataSize.Set(sceneData.meshDataSize.Get() - rendereable.meshDataSize);
         }
     }
 }

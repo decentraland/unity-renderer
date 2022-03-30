@@ -151,7 +151,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
                 else
                     coordinatesColor = COORDINATES_COLOR_PUBLIC;
 
-                body.text = body.text.Replace(textCoordinates[i], $"<link={textCoordinates[i]}><color={coordinatesColor}><u>{textCoordinates[i]}</u></color></link>");
+                body.text = body.text.Replace(textCoordinates[i], $"</noparse><link={textCoordinates[i]}><color={coordinatesColor}><u>{textCoordinates[i]}</u></color></link><noparse>");
             }
         }
 

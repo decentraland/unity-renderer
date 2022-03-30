@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Profiling;
 
 namespace DCL
 {
@@ -95,11 +96,20 @@ namespace DCL
             sceneData.materials.OnAdded += OnDataChanged;
             sceneData.materials.OnRemoved += OnDataChanged;
 
-            sceneData.textures.OnAdded += OnDataChanged;
-            sceneData.textures.OnRemoved += OnDataChanged;
+            sceneData.textures.OnAdded += OnTextureAdded;
+            sceneData.textures.OnRemoved += OnTextureRemoved;
 
-            sceneData.meshes.OnAdded += OnDataChanged;
-            sceneData.meshes.OnRemoved += OnDataChanged;
+            sceneData.meshes.OnAdded += OnMeshAdded;
+            sceneData.meshes.OnRemoved += OnMeshRemoved;
+
+            sceneData.animationClips.OnAdded += OnAnimationClipAdded;
+            sceneData.animationClips.OnRemoved += OnAnimationClipRemoved;
+
+            sceneData.animationClipSize.OnChange += OnAnimationClipSizeChange;
+            sceneData.meshDataSize.OnChange += OnMeshDataSizeChange;
+
+            sceneData.audioClips.OnAdded += OnAudioClipAdded;
+            sceneData.audioClips.OnRemoved += OnAudioClipRemoved;
 
             sceneData.renderers.OnAdded += OnDataChanged;
             sceneData.renderers.OnRemoved += OnDataChanged;
@@ -122,11 +132,20 @@ namespace DCL
             sceneData.materials.OnAdded -= OnDataChanged;
             sceneData.materials.OnRemoved -= OnDataChanged;
 
-            sceneData.textures.OnAdded -= OnDataChanged;
-            sceneData.textures.OnRemoved -= OnDataChanged;
+            sceneData.textures.OnAdded -= OnTextureAdded;
+            sceneData.textures.OnRemoved -= OnTextureRemoved;
 
-            sceneData.meshes.OnAdded -= OnDataChanged;
-            sceneData.meshes.OnRemoved -= OnDataChanged;
+            sceneData.meshes.OnAdded -= OnMeshAdded;
+            sceneData.meshes.OnRemoved -= OnMeshRemoved;
+
+            sceneData.animationClipSize.OnChange -= OnAnimationClipSizeChange;
+            sceneData.meshDataSize.OnChange -= OnMeshDataSizeChange;
+
+            sceneData.audioClips.OnAdded -= OnAudioClipAdded;
+            sceneData.audioClips.OnRemoved -= OnAudioClipRemoved;
+
+            sceneData.animationClips.OnAdded -= OnDataChanged;
+            sceneData.animationClips.OnRemoved -= OnDataChanged;
 
             sceneData.renderers.OnAdded -= OnDataChanged;
             sceneData.renderers.OnRemoved -= OnDataChanged;
@@ -201,6 +220,95 @@ namespace DCL
             Interface.WebInterface.ReportOnMetricsUpdate(sceneId, currentCountValue.ToMetricsModel(), maxCount.ToMetricsModel());
         }
 
+        void OnMeshAdded(Mesh mesh)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.meshMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(mesh);
+#endif
+            MarkDirty();
+        }
+
+        void OnMeshRemoved(Mesh mesh)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.meshMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(mesh);
+#endif
+            MarkDirty();
+        }
+
+        void OnAnimationClipAdded(AnimationClip animationClip)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.animationClipMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(animationClip);
+#endif
+            MarkDirty();
+        }
+
+        void OnAnimationClipRemoved(AnimationClip animationClip)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.animationClipMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(animationClip);
+#endif
+            MarkDirty();
+        }
+
+        void OnAudioClipAdded(AudioClip audioClip)
+        {
+            MarkDirty();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.audioClipMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(audioClip);
+#endif
+            currentCountValue.audioClipMemoryScore += MetricsScoreUtils.ComputeAudioClipScore(audioClip);
+        }
+
+        void OnAudioClipRemoved(AudioClip audioClip)
+        {
+            MarkDirty();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.audioClipMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(audioClip);
+#endif
+            currentCountValue.audioClipMemoryScore -= MetricsScoreUtils.ComputeAudioClipScore(audioClip);
+        }
+
+
+        private void OnMeshDataSizeChange(long current, long previous)
+        {
+            MarkDirty();
+            currentCountValue.meshMemoryScore = current;
+        }
+
+        void OnAnimationClipSizeChange(long animationClipSize, long previous)
+        {
+            MarkDirty();
+            currentCountValue.animationClipMemoryScore = animationClipSize;
+        }
+
+        void OnTextureAdded(Texture texture)
+        {
+            MarkDirty();
+
+            if (texture is Texture2D tex2D)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                currentCountValue.textureMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(tex2D);
+#endif
+                currentCountValue.textureMemoryScore += MetricsScoreUtils.ComputeTextureScore(tex2D);
+            }
+        }
+
+        void OnTextureRemoved(Texture texture)
+        {
+            MarkDirty();
+
+            if (texture is Texture2D tex2D)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                currentCountValue.textureMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(tex2D);
+#endif
+                currentCountValue.textureMemoryScore -= MetricsScoreUtils.ComputeTextureScore(tex2D);
+            }
+        }
+        
         void OnDataChanged<T>(T obj)
             where T : class
         {
@@ -216,17 +324,20 @@ namespace DCL
         {
             if (string.IsNullOrEmpty(sceneId) || data == null || !data.sceneData.ContainsKey(sceneId))
                 return;
-            
-            var sceneData = data?.sceneData[sceneId];
 
-            if ( sceneData != null )
+            if (data != null && data.sceneData.ContainsKey(sceneId))
             {
-                currentCountValue.materials = sceneData.materials.Count();
-                currentCountValue.textures = sceneData.textures.Count();
-                currentCountValue.meshes = sceneData.meshes.Count();
-                currentCountValue.entities = sceneData.owners.Count();
-                currentCountValue.bodies = sceneData.renderers.Count();
-                currentCountValue.triangles = sceneData.triangles.Get() / 3;
+                var sceneData = data.sceneData[sceneId];
+
+                if (sceneData != null)
+                {
+                    currentCountValue.materials = sceneData.materials.Count();
+                    currentCountValue.textures = sceneData.textures.Count();
+                    currentCountValue.meshes = sceneData.meshes.Count();
+                    currentCountValue.entities = sceneData.owners.Count();
+                    currentCountValue.bodies = sceneData.renderers.Count();
+                    currentCountValue.triangles = sceneData.triangles.Get() / 3;
+                }
             }
 
             logger.Verbose($"Current metrics: {currentCountValue}");

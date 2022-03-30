@@ -550,17 +550,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
                 SetVisibility(false);
                 exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
             }
-            else
-            {
-                if (Time.realtimeSinceStartup - controlsHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU &&
-                    Time.realtimeSinceStartup - emotesHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU &&
-                    Time.realtimeSinceStartup - playerInfoCardHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU &&
-                    Time.realtimeSinceStartup - chatInputHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU)
-                {
-                    SetVisibility(true);
-                    exploreV2Analytics.SendStartMenuVisibility(true, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
-                }
-            }
         }
     }
 

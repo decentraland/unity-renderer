@@ -232,6 +232,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (string.IsNullOrEmpty(expressionTriggerId))
             return;
 
+        if (animation.GetClip(expressionTriggerId) == null)
+            return;
+
         var mustTriggerAnimation = !string.IsNullOrEmpty(expressionTriggerId) && blackboard.expressionTriggerTimestamp != expressionTriggerTimestamp;
 
         blackboard.expressionTriggerId = expressionTriggerId;
@@ -316,7 +319,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     private void InitializeAvatarAudioAndParticleHandlers(Animation createdAnimation)
     {
         //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
-        AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventHandler>();
+        AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.GetOrCreateComponent<AvatarAnimationEventHandler>();
         AudioContainer audioContainer = transform.GetComponentInChildren<AudioContainer>();
         if (audioContainer != null)
         {

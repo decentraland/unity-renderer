@@ -1,0 +1,195 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccb663d8564b6ec4ea4eb55cc1ae1ad1, type: 3}
+  m_Name: EditorToolSize
+  m_EditorClassIdentifier: 
+  testStyle:
+    m_Name: 
+    m_Normal:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Hover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Active:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Focused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnNormal:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnHover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnActive:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnFocused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Margin:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Padding:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Overflow:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Font: {fileID: 0}
+    m_FontSize: 0
+    m_FontStyle: 0
+    m_Alignment: 0
+    m_WordWrap: 0
+    m_RichText: 1
+    m_TextClipping: 0
+    m_ImagePosition: 0
+    m_ContentOffset: {x: 0, y: 0}
+    m_FixedWidth: 0
+    m_FixedHeight: 0
+    m_StretchWidth: 1
+    m_StretchHeight: 0
+  topPanelTopStart: 5
+  topPanelLeftStart: 5
+  toolRightPadding: 5
+  topPanelHeight: 80
+  panelBGColor: {r: 0.09433961, g: 0.09433961, b: 0.09433961, a: 1}
+  panelsPadding: 3
+  leftPanelWidthPercentage: 0.288
+  leftPanelPadding:
+    serializedVersion: 2
+    x: 5
+    y: 5
+    width: 5
+    height: 5
+  leftPanelButtonSpace: 5
+  layerButtonWidth: 85
+  layerRenderWidth: 30.5
+  layerActiveCheckboxSize: 15
+  leftPanelHorizontal:
+    m_Name: toolbarbutton
+    m_Normal:
+      m_Background: {fileID: -6675728888473347081, guid: 0000000000000000d000000000000000,
+        type: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0.76862746, g: 0.76862746, b: 0.76862746, a: 1}
+    m_Hover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds:
+      - {fileID: 0}
+      m_TextColor: {r: 0.7411765, g: 0.7411765, b: 0.7411765, a: 1}
+    m_Active:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds:
+      - {fileID: -6559566165897956916, guid: 0000000000000000d000000000000000, type: 0}
+      m_TextColor: {r: 0.76862746, g: 0.76862746, b: 0.76862746, a: 1}
+    m_Focused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0.76862746, g: 0.76862746, b: 0.76862746, a: 1}
+    m_OnNormal:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds:
+      - {fileID: -4689374610832948062, guid: 0000000000000000d000000000000000, type: 0}
+      m_TextColor: {r: 0.76862746, g: 0.76862746, b: 0.76862746, a: 1}
+    m_OnHover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0.7411765, g: 0.7411765, b: 0.7411765, a: 1}
+    m_OnActive:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds:
+      - {fileID: -2590580295915515212, guid: 0000000000000000d000000000000000, type: 0}
+      m_TextColor: {r: 0.76862746, g: 0.76862746, b: 0.76862746, a: 1}
+    m_OnFocused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0.76862746, g: 0.76862746, b: 0.76862746, a: 1}
+    m_Border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Margin:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Padding:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Overflow:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Font: {fileID: 0}
+    m_FontSize: 12
+    m_FontStyle: 0
+    m_Alignment: 4
+    m_WordWrap: 0
+    m_RichText: 0
+    m_TextClipping: 0
+    m_ImagePosition: 0
+    m_ContentOffset: {x: 0, y: 0}
+    m_FixedWidth: 0
+    m_FixedHeight: 0
+    m_StretchWidth: 0
+    m_StretchHeight: 0
+  pinnedPanelHeight: 125
+  pinnedPanelBGOffset:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 0
+    height: 5
+  rightPanelPadding:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 0
+    height: 0
+  rightPanelHeadingState:
+    backgroundColor: {r: 0.09411766, g: 0.09411766, b: 0.09411766, a: 1}
+    textColor: {r: 0, g: 0, b: 0, a: 0}
+    backgroundTex: {fileID: 0}
+  rightPanelHeadingTextColor:
+    backgroundColor: {r: 0, g: 0, b: 0, a: 1}
+    textColor: {r: 0.23393148, g: 0.6226415, b: 0.12570308, a: 1}
+    backgroundTex: {fileID: 0}
+  transitioningVariableBG:
+    backgroundColor: {r: 0.38679248, g: 0.38679248, b: 0.38679248, a: 1}
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+    backgroundTex: {fileID: 0}
