@@ -1380,7 +1380,9 @@ namespace UnityGLTF
                     clip.wrapMode = WrapMode.Loop;
                     clip.legacy = false;
                     overrideAnimator["toreplace"] = clip;
+                    Debug.unityLogger.logEnabled = true;
                     Debug.Log($"{CreatedObject.transform.GetHierarchyPath()}: replacing with {clip.name}");
+                    Debug.unityLogger.logEnabled = false;
                 }
             }
         }
