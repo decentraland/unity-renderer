@@ -88,11 +88,13 @@ public class PrivateChatEntry : BaseComponentView
         public string userId;
         public string userName;
         public string lastMessage;
+        public ulong lastMessageTimestamp;
         public string pictureUrl;
         public bool isBlocked;
         public bool isOnline;
 
-        public PrivateChatEntryModel(string userId, string userName, string lastMessage, string pictureUrl, bool isBlocked, bool isOnline)
+        public PrivateChatEntryModel(string userId, string userName, string lastMessage, string pictureUrl, bool isBlocked, bool isOnline,
+            ulong lastMessageTimestamp)
         {
             this.userId = userId;
             this.userName = userName;
@@ -100,6 +102,7 @@ public class PrivateChatEntry : BaseComponentView
             this.pictureUrl = pictureUrl;
             this.isBlocked = isBlocked;
             this.isOnline = isOnline;
+            this.lastMessageTimestamp = lastMessageTimestamp;
         }
     }
 }
