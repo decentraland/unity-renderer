@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DCL.EmotesWheel
 {
-    public class EmotesHUDView : MonoBehaviour
+    public class EmotesWheelView : MonoBehaviour
     {
         public class EmoteSlotData
         {
@@ -21,7 +21,7 @@ namespace DCL.EmotesWheel
             public Color markColor;
         }
 
-        private const string PATH = "EmotesHUD";
+        private const string PATH = "EmotesWheelHUD";
         private const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
 
         public event Action<string> onEmoteClicked;
@@ -39,7 +39,7 @@ namespace DCL.EmotesWheel
 
         private bool isEmotesCustomizationFFEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG);
 
-        public static EmotesHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesHUDView>(); }
+        public static EmotesWheelView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesWheelView>(); }
 
         private void Awake()
         {
