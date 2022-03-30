@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-public class ToggleComponentViewShould
+public class ToggleComponentViewTests
 {
     private ToggleComponentView toggleComponent;
 
