@@ -28,7 +28,7 @@ namespace DCL
             pluginSystem.Register(() => new GotoPanelPlugin());
             pluginSystem.Register(() => new ExperiencesViewerFeature());
             pluginSystem.Register(() => new EmoteAnimationsPlugin());
-            pluginSystem.Register(() => new EquippedEmotesPlugin());
+            pluginSystem.Register(() => new EquippedEmotesInitializerPlugin());
             pluginSystem.Register(() => new EmotesWheelUIPlugin());
             pluginSystem.RegisterWithFlag(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag(() => new TutorialController(), "tutorial");
