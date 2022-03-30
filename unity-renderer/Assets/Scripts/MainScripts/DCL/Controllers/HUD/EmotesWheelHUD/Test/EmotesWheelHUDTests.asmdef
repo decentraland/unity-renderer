@@ -1,5 +1,5 @@
 {
-    "name": "EmotesHUDTests",
+    "name": "EmotesWheelHUDTests",
     "rootNamespace": "",
     "references": [
         "GUID:14c72dd51a4b0a142a598a173a48c4d2",

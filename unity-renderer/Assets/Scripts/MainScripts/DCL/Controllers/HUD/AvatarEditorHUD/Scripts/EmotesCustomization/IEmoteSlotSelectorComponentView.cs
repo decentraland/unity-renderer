@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using UnityEngine;
 
-namespace EmotesCustomization
+namespace DCL.EmotesCustomization
 {
     public interface IEmoteSlotSelectorComponentView
     {

@@ -1,20 +1,20 @@
 using DCL;
-using EmotesCustomization;
+using DCL.EmotesWheel;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
 
 namespace ExpressionsHUD_Test
 {
-    public class EmotesHUDControllerShould : IntegrationTestSuite_Legacy
+    public class EmotesWheelControllerShould : IntegrationTestSuite_Legacy
     {
-        private EmotesHUDController controller;
+        private EmotesWheelController controller;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new EmotesHUDController(null, null);
+            controller = new EmotesWheelController(null, null);
         }
 
         [UnityTearDown]
@@ -42,14 +42,14 @@ namespace ExpressionsHUD_Test
 
     public class ExpressionsHUDViewShould : IntegrationTestSuite_Legacy
     {
-        private EmotesHUDController controller;
-        private EmotesHUDView view;
+        private EmotesWheelController controller;
+        private EmotesWheelView view;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new EmotesHUDController(null, null);
+            controller = new EmotesWheelController(null, null);
             view = controller.view;
         }
 

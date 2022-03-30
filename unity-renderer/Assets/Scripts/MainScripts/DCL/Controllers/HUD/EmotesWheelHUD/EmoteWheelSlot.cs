@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace EmotesCustomization
+namespace DCL.EmotesWheel
 {
     public class EmoteWheelSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
