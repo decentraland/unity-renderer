@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DCL.EmotesWheel
 {
-    public class EmotesHUDView : MonoBehaviour
+    public class EmotesWheelView : MonoBehaviour
     {
         public class EmoteSlotData
         {
@@ -21,7 +21,8 @@ namespace DCL.EmotesWheel
             public Color markColor;
         }
 
-        private const string PATH = "EmotesHUD";
+        private const string PATH = "EmotesWheelHUD";
+        private const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
 
         public event Action<string> onEmoteClicked;
         public event Action OnClose;
@@ -36,9 +37,9 @@ namespace DCL.EmotesWheel
         [SerializeField] internal GameObject customizeTitle;
         [SerializeField] internal List<GameObject> gameObjectsToHideWhenCustomizeFFIsDeactivated;
 
-        private DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
+        private bool isEmotesCustomizationFFEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG);
 
-        public static EmotesHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesHUDView>(); }
+        public static EmotesWheelView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesWheelView>(); }
 
         private void Awake()
         {
@@ -49,7 +50,7 @@ namespace DCL.EmotesWheel
 
             openCustomizeButton.onClick.AddListener(() =>
             {
-                if (!emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get())
+                if (!isEmotesCustomizationFFEnabled)
                     return;
 
                 OnCustomizeClicked?.Invoke();
@@ -68,7 +69,7 @@ namespace DCL.EmotesWheel
             {
                 foreach (GameObject go in gameObjectsToHideWhenCustomizeFFIsDeactivated)
                 {
-                    go.SetActive(emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get());
+                    go.SetActive(isEmotesCustomizationFFEnabled);
                 }
 
                 AudioScriptableObjects.dialogOpen.Play(true);

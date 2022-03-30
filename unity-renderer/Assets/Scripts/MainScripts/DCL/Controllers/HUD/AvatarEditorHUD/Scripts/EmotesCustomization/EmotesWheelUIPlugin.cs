@@ -5,9 +5,9 @@ namespace DCL.EmotesWheel
     /// </summary>
     public class EmotesWheelUIPlugin : IPlugin
     {
-        public EmotesHUDController emotesHUDController;
+        public EmotesWheelController emotesWheelController;
 
-        public EmotesWheelUIPlugin() { emotesHUDController = new EmotesHUDController(UserProfile.GetOwnUserProfile(), CatalogController.wearableCatalog); }
+        public EmotesWheelUIPlugin() { emotesWheelController = new EmotesWheelController(UserProfile.GetOwnUserProfile(), CatalogController.wearableCatalog); }
 
         public void Dispose() { }
     }

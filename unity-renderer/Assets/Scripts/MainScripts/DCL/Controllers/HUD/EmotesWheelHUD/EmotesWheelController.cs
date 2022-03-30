@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace DCL.EmotesWheel
 {
-    public class EmotesHUDController : IHUD
+    public class EmotesWheelController : IHUD
     {
-        internal EmotesHUDView view;
+        internal EmotesWheelView view;
         private BaseVariable<bool> emotesVisible => DataStore.i.HUDs.emotesVisible;
         private BaseVariable<bool> isAvatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
         private BaseVariable<bool> isStartMenuOpen => DataStore.i.exploreV2.isOpen;
@@ -44,12 +44,12 @@ namespace DCL.EmotesWheel
         private bool ownedWearablesAlreadyRequested = false;
         private BaseDictionary<string, EmoteWheelSlot> slotsInLoadingState = new BaseDictionary<string, EmoteWheelSlot>();
 
-        public EmotesHUDController(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
+        public EmotesWheelController(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
         {
             closeWindow = Resources.Load<InputAction_Trigger>("CloseWindow");
             closeWindow.OnTriggered += OnCloseWindowPressed;
 
-            view = EmotesHUDView.Create();
+            view = EmotesWheelView.Create();
             view.OnClose += OnViewClosed;
             view.onEmoteClicked += PlayEmote;
             view.OnCustomizeClicked += OpenEmotesCustomizationSection;
@@ -94,7 +94,7 @@ namespace DCL.EmotesWheel
             if (catalog == null)
                 return;
 
-            List<EmotesHUDView.EmoteSlotData> emotesToSet = new List<EmotesHUDView.EmoteSlotData>();
+            List<EmotesWheelView.EmoteSlotData> emotesToSet = new List<EmotesWheelView.EmoteSlotData>();
             foreach (EquippedEmoteData equippedEmoteData in emotesCustomizationDataStore.equippedEmotes.Get())
             {
                 if (equippedEmoteData != null)
@@ -109,7 +109,7 @@ namespace DCL.EmotesWheel
                         }
                         else
                         {
-                            emotesToSet.Add(new EmotesHUDView.EmoteSlotData
+                            emotesToSet.Add(new EmotesWheelView.EmoteSlotData
                             {
                                 emoteItem = emoteItem,
                                 thumbnailSprite = emoteItem.thumbnailSprite != null ? emoteItem.thumbnailSprite : equippedEmoteData.cachedThumbnail

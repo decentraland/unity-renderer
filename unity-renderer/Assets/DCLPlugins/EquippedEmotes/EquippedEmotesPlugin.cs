@@ -1,34 +1,56 @@
 using DCL.Helpers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL.EquippedEmotes
 {
     /// <summary>
     /// Plugin feature that initialize the Equipped Emotes feature.
     /// </summary>
-    public class EquippedEmotesPlugin : IPlugin
+    public class EquippedEmotesInitializerPlugin : IPlugin
     {
+        internal const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
         internal const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedNFTEmotes";
 
         internal DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
+        internal DataStore_FeatureFlag featureFlagsDataStore => DataStore.i.featureFlags;
 
-        public EquippedEmotesPlugin()
+        public EquippedEmotesInitializerPlugin()
         {
             LoadDefaultEquippedEmotes();
 
-            emotesCustomizationDataStore.isEmotesCustomizationInitialized.OnChange += OnEmotesCustomizationInitialized;
-            OnEmotesCustomizationInitialized(emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get(), false);
+            featureFlagsDataStore.flags.OnChange += OnFeatureFlagsChanged;
+            OnFeatureFlagsChanged(featureFlagsDataStore.flags.Get(), null);
 
-            emotesCustomizationDataStore.equippedEmotes.OnSet += SaveEquippedEmotesInLocalStorage;
+            emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
+            emotesCustomizationDataStore.equippedEmotes.OnAdded += OnEquippedEmoteAddedOrRemoved;
+            emotesCustomizationDataStore.equippedEmotes.OnRemoved += OnEquippedEmoteAddedOrRemoved;
         }
 
-        private void OnEmotesCustomizationInitialized(bool current, bool previous)
+        internal List<string> GetDefaultEmotes()
         {
-            if (!current)
+            return new List<string>
+            {
+                "handsair",
+                "wave",
+                "fistpump",
+                "dance",
+                "raiseHand",
+                "clap",
+                "money",
+                "kiss",
+                "headexplode",
+                "shrug"
+            };
+        }
+
+        internal void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous)
+        {
+            if (!current.IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG))
                 return;
 
-            emotesCustomizationDataStore.isEmotesCustomizationInitialized.OnChange -= OnEmotesCustomizationInitialized;
+            featureFlagsDataStore.flags.OnChange -= OnFeatureFlagsChanged;
             LoadEquippedEmotesFromLocalStorage();
         }
 
@@ -53,11 +75,12 @@ namespace DCL.EquippedEmotes
             SetEquippedEmotes(storedEquippedEmotes);
         }
 
-        internal void SaveEquippedEmotesInLocalStorage(IEnumerable<EquippedEmoteData> equippedEmotes)
-        {
-            if (!emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get())
-                return;
+        internal void OnEquippedEmotesSet(IEnumerable<EquippedEmoteData> equippedEmotes) { SaveEquippedEmotesInLocalStorage(); }
 
+        internal void OnEquippedEmoteAddedOrRemoved(EquippedEmoteData equippedEmote) { SaveEquippedEmotesInLocalStorage(); }
+
+        internal void SaveEquippedEmotesInLocalStorage()
+        {
             List<string> emotesIdsToStore = new List<string>();
             foreach (EquippedEmoteData equippedEmoteData in emotesCustomizationDataStore.equippedEmotes.Get())
             {
@@ -67,23 +90,6 @@ namespace DCL.EquippedEmotes
             // TODO: We should avoid static calls and create injectable interfaces
             PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(emotesIdsToStore));
             PlayerPrefsUtils.Save();
-        }
-
-        internal List<string> GetDefaultEmotes()
-        {
-            return new List<string>
-            {
-                "handsair",
-                "wave",
-                "fistpump",
-                "dance",
-                "raiseHand",
-                "clap",
-                "money",
-                "kiss",
-                "headexplode",
-                "shrug"
-            };
         }
 
         internal void SetEquippedEmotes(List<string> storedEquippedEmotes)
@@ -99,8 +105,10 @@ namespace DCL.EquippedEmotes
 
         public void Dispose()
         {
-            emotesCustomizationDataStore.isEmotesCustomizationInitialized.OnChange -= OnEmotesCustomizationInitialized;
-            emotesCustomizationDataStore.equippedEmotes.OnSet -= SaveEquippedEmotesInLocalStorage;
+            featureFlagsDataStore.flags.OnChange -= OnFeatureFlagsChanged;
+            emotesCustomizationDataStore.equippedEmotes.OnSet -= OnEquippedEmotesSet;
+            emotesCustomizationDataStore.equippedEmotes.OnAdded -= OnEquippedEmoteAddedOrRemoved;
+            emotesCustomizationDataStore.equippedEmotes.OnRemoved -= OnEquippedEmoteAddedOrRemoved;
         }
     }
 }
