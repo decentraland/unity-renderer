@@ -81,9 +81,6 @@ namespace DCL.EquippedEmotes
 
         internal void SaveEquippedEmotesInLocalStorage()
         {
-            if (!featureFlagsDataStore.flags.Get().IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG))
-                return;
-
             List<string> emotesIdsToStore = new List<string>();
             foreach (EquippedEmoteData equippedEmoteData in emotesCustomizationDataStore.equippedEmotes.Get())
             {
