@@ -1,6 +1,7 @@
 using DCL.Helpers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL.EquippedEmotes
 {
@@ -9,26 +10,28 @@ namespace DCL.EquippedEmotes
     /// </summary>
     public class EquippedEmotesPlugin : IPlugin
     {
+        internal const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
         internal const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedNFTEmotes";
 
         internal DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
+        internal DataStore_FeatureFlag featureFlagsDataStore => DataStore.i.featureFlags;
 
         public EquippedEmotesPlugin()
         {
             LoadDefaultEquippedEmotes();
 
-            emotesCustomizationDataStore.isEmotesCustomizationInitialized.OnChange += OnEmotesCustomizationInitialized;
-            OnEmotesCustomizationInitialized(emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get(), false);
+            featureFlagsDataStore.flags.OnChange += OnFeatureFlagsChanged;
+            OnFeatureFlagsChanged(featureFlagsDataStore.flags.Get(), null);
 
             emotesCustomizationDataStore.equippedEmotes.OnSet += SaveEquippedEmotesInLocalStorage;
         }
 
-        private void OnEmotesCustomizationInitialized(bool current, bool previous)
+        internal void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous)
         {
-            if (!current)
+            if (!current.IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG))
                 return;
 
-            emotesCustomizationDataStore.isEmotesCustomizationInitialized.OnChange -= OnEmotesCustomizationInitialized;
+            featureFlagsDataStore.flags.OnChange -= OnFeatureFlagsChanged;
             LoadEquippedEmotesFromLocalStorage();
         }
 
@@ -55,7 +58,7 @@ namespace DCL.EquippedEmotes
 
         internal void SaveEquippedEmotesInLocalStorage(IEnumerable<EquippedEmoteData> equippedEmotes)
         {
-            if (!emotesCustomizationDataStore.isEmotesCustomizationInitialized.Get())
+            if (!featureFlagsDataStore.flags.Get().IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG))
                 return;
 
             List<string> emotesIdsToStore = new List<string>();
@@ -99,7 +102,7 @@ namespace DCL.EquippedEmotes
 
         public void Dispose()
         {
-            emotesCustomizationDataStore.isEmotesCustomizationInitialized.OnChange -= OnEmotesCustomizationInitialized;
+            featureFlagsDataStore.flags.OnChange -= OnFeatureFlagsChanged;
             emotesCustomizationDataStore.equippedEmotes.OnSet -= SaveEquippedEmotesInLocalStorage;
         }
     }

@@ -11,7 +11,6 @@ namespace DCL
 
     public class DataStore_EmotesCustomization
     {
-        public readonly BaseVariable<bool> isEmotesCustomizationInitialized = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> isWheelInitialized = new BaseVariable<bool>(false);
         public readonly BaseCollection<EquippedEmoteData> unsavedEquippedEmotes = new BaseCollection<EquippedEmoteData>(new List<EquippedEmoteData> { null, null, null, null, null, null, null, null, null, null });
         public readonly BaseCollection<EquippedEmoteData> equippedEmotes = new BaseCollection<EquippedEmoteData>(new List<EquippedEmoteData> { null, null, null, null, null, null, null, null, null, null });
