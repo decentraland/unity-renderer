@@ -29,5 +29,11 @@ namespace DCL.Builder
         /// </summary>
         /// <param name="scene"></param>
         void StartPublish(IBuilderScene scene);
+
+        /// <summary>
+        /// This will publish an empty scene in 
+        /// </summary>
+        /// <param name="scene"></param>
+        void Unpublish(Vector2Int coords, Vector2Int size);
     }
 }

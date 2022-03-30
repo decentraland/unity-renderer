@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Builder;
 using DCL.Configuration;
 using UnityEngine;
@@ -99,11 +100,8 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
 
     public void OnEndDrag()
     {
+        Environment.i.platform.physicsSyncController.MarkDirty();
         activeAxis?.SetColorDefault();
-        // Note: This is a unity bug where colliders are not updated when we move/scale/rotate the item
-        // We workaround it by disabling and reenabling the physics after selection / deselection
-        gameObject.SetActive(false);
-        gameObject.SetActive(true);
     }
 
     public virtual bool RaycastHit(Ray ray, out Vector3 hitPoint)
