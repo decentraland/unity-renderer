@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-public class ToggleComponentViewTests
+public class ToggleComponentViewShould
 {
     private ToggleComponentView toggleComponent;
 
@@ -21,7 +21,7 @@ public class ToggleComponentViewTests
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void SetOnChangedCorrectly(bool setOn)
+    public void SetOnChanged(bool setOn)
     {
         // Arrange
         bool isOn = !setOn;
@@ -37,7 +37,7 @@ public class ToggleComponentViewTests
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void ConfigureToggleCorrectly(bool isTextActive)
+    public void ConfigureToggle(bool isTextActive)
     {
         // Arrange
         ToggleComponentModel testModel = new ToggleComponentModel
@@ -55,7 +55,7 @@ public class ToggleComponentViewTests
     }
 
     [Test]
-    public void SetToggleTextCorrectly()
+    public void SetToggleText()
     {
         // Arrange
         string testText = "Test";
@@ -72,7 +72,7 @@ public class ToggleComponentViewTests
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void RefreshComponentCorrectly(bool isTextActive)
+    public void RefreshComponent(bool isTextActive)
     {
         // Arrange
         ToggleComponentModel testModel = new ToggleComponentModel
