@@ -57,12 +57,13 @@ namespace DCL.EmotesCustomization
 
         public override void Dispose()
         {
-            base.Dispose();
-
             CleanEmotes();
+
             emoteSlotSelector.onSlotSelected -= OnSlotSelected;
             emoteInfoPanel.closeButton.onClick.RemoveAllListeners();
             emoteInfoPanel.sellButton.onClick.RemoveAllListeners();
+
+            base.Dispose();
         }
 
         public void CleanEmotes()
