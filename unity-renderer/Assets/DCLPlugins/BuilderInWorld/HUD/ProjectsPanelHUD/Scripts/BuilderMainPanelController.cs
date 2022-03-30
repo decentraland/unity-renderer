@@ -530,13 +530,17 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         try
         {
-            ISceneData[] places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
+            ISceneData[] places = { };
+            
+            if(lands.Length > 0)
+                places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
                                        .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
                                        .Aggregate((i, j) => i.Concat(j))
                                        .ToArray();
-
+            
             if (sendPlayerOpenPanelEvent)
                 PanelOpenEvent(lands);
+            
             landsesController.SetLands(lands);
             scenesViewController.SetScenes(places);
         }

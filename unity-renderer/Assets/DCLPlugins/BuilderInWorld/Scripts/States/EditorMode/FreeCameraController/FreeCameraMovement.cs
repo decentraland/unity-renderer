@@ -113,6 +113,7 @@ namespace DCL.Camera
         private float lastMouseWheelTime;
         private float cameraPanAdvance;
         private float cameraLookAdvance;
+        private bool isCameraDragging = false;
 
         public bool invertMouseY = false;
 
@@ -180,7 +181,11 @@ namespace DCL.Camera
             }
 
             cameraPanStartDelegate = (action) => isPanCameraActive = true;
-            cameraPanFinishedDelegate = (action) => isPanCameraActive = false;
+            cameraPanFinishedDelegate = (action) =>
+            {
+                isPanCameraActive = false;
+                isCameraDragging = false;
+            };
 
             if (cameraPanInputAction != null)
             {
@@ -220,10 +225,10 @@ namespace DCL.Camera
 
         internal void OnInputMouseUp(int buttonId, Vector3 mousePosition)
         {
-            if (buttonId != 1)
-                return;
-
-            isMouseRightClickDown = false;
+            if (buttonId == 1)
+                isMouseRightClickDown = false;
+            else if (buttonId == 2)
+                isCameraDragging = false;
         }
 
         internal void OnInputMouseDown(int buttonId, Vector3 mousePosition)
@@ -411,7 +416,7 @@ namespace DCL.Camera
 
         internal void MouseWheel(float axis)
         {
-            if (!isCameraAbleToMove)
+            if (!isCameraAbleToMove || isCameraDragging)
                 return;
 
             if (smoothScrollCoroutine != null)
@@ -444,6 +449,7 @@ namespace DCL.Camera
             panAxisX += -axisX * Time.deltaTime * dragSpeed;
             panAxisY += -axisY * Time.deltaTime * dragSpeed;
             cameraPanAdvance = smoothCameraPanAceleration;
+            isCameraDragging = true;
         }
 
         private void CameraLook(float axisX, float axisY)
