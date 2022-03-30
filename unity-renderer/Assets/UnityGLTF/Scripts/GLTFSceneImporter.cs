@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using DCL;
+using DCL.Helpers;
 #if !WINDOWS_UWP
 using System.Threading;
 #endif
@@ -1361,6 +1362,9 @@ namespace UnityGLTF
                 Animator animator = CreatedObject.AddComponent<Animator>();
                 AnimatorOverrideController overrideAnimator = Object.Instantiate(Resources.Load<AnimatorOverrideController>("AnimatorOverride"));
                 animator.runtimeAnimatorController = overrideAnimator;
+                Debug.unityLogger.logEnabled = true;
+                Debug.Log($"{CreatedObject.transform.GetHierarchyPath()}: Creating animatorOverrideController");
+                Debug.unityLogger.logEnabled = false;
 
                 for (int i = 0; i < _gltfRoot.Animations.Count; ++i)
                 {
@@ -1372,11 +1376,11 @@ namespace UnityGLTF
                     AnimationClip clip = ConstructClip(i, out gltfAnimation, out animationCache);
 
                     ProcessCurves(CreatedObject.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache);
-                    
+
                     clip.wrapMode = WrapMode.Loop;
                     clip.legacy = false;
                     overrideAnimator["toreplace"] = clip;
-
+                    Debug.Log($"{CreatedObject.transform.GetHierarchyPath()}: replacing with {clip.name}");
                 }
             }
         }

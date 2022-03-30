@@ -115,6 +115,7 @@ namespace DCL.Components
             UpdateAnimationState();
         }
 
+        private AnimatorOverrideController animatorOverrideController;
         private void Initialize()
         {
             if (entity == null || animComponent != null)
@@ -122,9 +123,19 @@ namespace DCL.Components
 
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
             animComponent = transform.parent.GetComponentInChildren<Animation>(true);
+            animatorOverrideController = transform.parent.GetComponentInChildren<Animator>().runtimeAnimatorController as AnimatorOverrideController;
+
+            if (animatorOverrideController == null)
+            {
+                Debug.unityLogger.logEnabled = true;
+                Debug.Log($"Couldnt find AnimatorOverrideController for {gameObject.transform.GetHierarchyPath()}");
+                Debug.unityLogger.logEnabled = false;
+            }
 
             if (animComponent == null)
+            {
                 return;
+            }
 
             clipNameToClip.Clear();
             clipToState.Clear();
