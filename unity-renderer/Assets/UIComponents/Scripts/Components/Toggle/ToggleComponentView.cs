@@ -39,7 +39,6 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
     [Header("Prefab References")]
     [SerializeField] private Toggle toggle;
     [SerializeField] internal TMP_Text text;
-    [SerializeField] internal Image icon;
 
     [Header("Configuration")]
     [SerializeField] internal ToggleComponentModel model;
