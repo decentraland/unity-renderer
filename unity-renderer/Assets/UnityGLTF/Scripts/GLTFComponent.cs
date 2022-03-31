@@ -44,7 +44,7 @@ namespace UnityGLTF
         public int Timeout = 8;
         public Material LoadingTextureMaterial;
         public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
-        private GLTFThrottlingCounter throttlingCounter;
+        private static readonly IThrottlingCounter throttlingCounter = new GLTFThrottlingCounter();
 
         public bool InitialVisibility
         {
@@ -100,17 +100,12 @@ namespace UnityGLTF
         private Settings settings;
 
         private  CancellationTokenSource ctokenSource;
-        private bool isDestroyed;
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
         public Action<Exception> OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
 
-        public void Initialize(IWebRequestController webRequestController, GLTFThrottlingCounter throttlingCounter)
-        {
-            this.webRequestController = webRequestController;
-            this.throttlingCounter = throttlingCounter;
-        }
+        public void Initialize( IWebRequestController webRequestController) { this.webRequestController = webRequestController; }
 
         public void LoadAsset(string baseUrl, string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null, AssetIdConverter fileToHashConverter = null)
         {
@@ -223,7 +218,7 @@ namespace UnityGLTF
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
-            
+
             if (!string.IsNullOrEmpty(GLTFUri))
             {
                 if (VERBOSE)
@@ -275,7 +270,7 @@ namespace UnityGLTF
                     if (DataStore.i.common.isApplicationQuitting.Get())
                         return;
 #endif
-                    
+
                     Debug.LogException(e);
                 }
                 finally
@@ -296,22 +291,18 @@ namespace UnityGLTF
                             sceneImporter = null;
                         }
                     }
-                    
-                    if (!isDestroyed)
-                    {
-                        if (!token.IsCancellationRequested)
-                        {
-                            if ( state == State.COMPLETED)
-                                OnFinishedLoadingAsset?.Invoke();
-                            else
-                                OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
-                        }
 
-                        CleanUp();
-                        Destroy(loadingPlaceholder);
-                        Destroy(this);
-                        isDestroyed = true;
+                    if (!token.IsCancellationRequested)
+                    {
+                        if ( state == State.COMPLETED)
+                            OnFinishedLoadingAsset?.Invoke();
+                        else
+                            OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
                     }
+                    
+                    CleanUp();
+                    Destroy(loadingPlaceholder);
+                    Destroy(this);
                 }
             }
             else
@@ -376,15 +367,9 @@ namespace UnityGLTF
 
         private long animationsEstimatedSize;
         private long meshesEstimatedSize;
-        public long GetAnimationClipMemorySize()
-        {
-            return animationsEstimatedSize;
-        }
+        public long GetAnimationClipMemorySize() { return animationsEstimatedSize; }
 
-        public long GetMeshesMemorySize()
-        {
-            return meshesEstimatedSize;
-        }
+        public long GetMeshesMemorySize() { return meshesEstimatedSize; }
 
         private void OnDestroy()
         {
@@ -392,7 +377,6 @@ namespace UnityGLTF
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
-            isDestroyed = true;
             CleanUp();
             
             if (state != State.COMPLETED)
@@ -403,8 +387,6 @@ namespace UnityGLTF
         }
         private void CleanUp()
         {
-            sceneImporter?.Dispose();
-
             if (state == State.QUEUED)
             {
                 DequeueDownload();
@@ -419,6 +401,8 @@ namespace UnityGLTF
             {
                 OnFail_Internal(null);
             }
+
+            state = State.NONE;
         }
 
         bool IDownloadQueueElement.ShouldPrioritizeDownload() { return prioritizeDownload; }
@@ -433,8 +417,8 @@ namespace UnityGLTF
 
         float IDownloadQueueElement.GetSqrDistance()
         {
-            if (mainCamera == null)
-                return 0;
+            if (mainCamera == null || transform == null)
+                return float.MaxValue;
 
             Vector3 cameraPosition = mainCamera.transform.position;
             Vector3 gltfPosition = transform.position;

@@ -181,7 +181,7 @@ public class PlayerAvatarController : MonoBehaviour
         }
 
         IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-        anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), avatar.extents.y);
+        anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y);
 
         var player = new Player()
         {

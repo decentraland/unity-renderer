@@ -14,6 +14,7 @@ namespace DCL
             public readonly BaseHashSet<string> owners = new BaseHashSet<string>();
             public readonly BaseHashSet<Renderer> renderers = new BaseHashSet<Renderer>();
             public readonly BaseHashSet<AudioClip> audioClips = new BaseHashSet<AudioClip>();
+            public readonly BaseRefCounter<AnimationClip> animationClips = new BaseRefCounter<AnimationClip>();
 
             public readonly BaseVariable<int> triangles = new BaseVariable<int>();
             public readonly BaseVariable<long> animationClipSize = new BaseVariable<long>();

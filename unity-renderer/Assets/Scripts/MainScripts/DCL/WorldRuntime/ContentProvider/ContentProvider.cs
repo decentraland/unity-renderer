@@ -46,6 +46,7 @@ namespace DCL
             return contents.FirstOrDefault((x) => x.hash == hash);
         }
 
+        //todo: thread this
         public void BakeHashes()
         {
             if (contents == null)

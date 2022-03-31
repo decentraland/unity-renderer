@@ -1,6 +1,5 @@
 using DCL.Helpers;
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +14,7 @@ public interface IImageComponentView
     /// Set an image directly from a sprite.
     /// </summary>
     /// <param name="sprite">A sprite.</param>
-    void SetImage(Sprite sprite);
+    void SetImage(Sprite sprite, bool cleanLastLoadedUri = true);
 
     /// <summary>
     /// Set an image from a 2D texture,
@@ -28,6 +27,12 @@ public interface IImageComponentView
     /// </summary>
     /// <param name="uri">Url of the image.</param>
     void SetImage(string uri);
+
+    /// <summary>
+    /// Indicates if we want to cache the last uri request.
+    /// </summary>
+    /// <param name="isEnabled">True for caching the last uri request.</param>
+    void SetLastUriRequestCached(bool isEnabled);
 
     /// <summary>
     /// Resize the image size to fit into the parent.
@@ -56,6 +61,8 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     internal Sprite currentSprite;
     internal ILazyTextureObserver imageObserver = new LazyTextureObserver();
     internal Vector2 lastParentSize;
+    internal string currentUriLoading = null;
+    internal string lastLoadedUri = null;
 
     public override void Start() { imageObserver.AddListener(OnImageObserverUpdated); }
 
@@ -76,6 +83,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         if (model == null)
             return;
 
+        SetLastUriRequestCached(model.lastUriCached);
         if (model.sprite != null)
             SetImage(model.sprite);
         else if (model.texture != null)
@@ -90,11 +98,13 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     {
         base.Dispose();
 
+        currentUriLoading = null;
+        lastLoadedUri = null;
         imageObserver.RemoveListener(OnImageObserverUpdated);
         Destroy(currentSprite);
     }
 
-    public void SetImage(Sprite sprite)
+    public void SetImage(Sprite sprite, bool cleanLastLoadedUri = true)
     {
         model.sprite = sprite;
 
@@ -102,30 +112,35 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
             return;
 
         image.sprite = sprite;
+        
+        if (cleanLastLoadedUri)
+            lastLoadedUri = null;
+        
         SetFitParent(model.fitParent);
     }
 
     public void SetImage(Texture2D texture)
     {
-        if (model.texture != texture)
+        model.texture = texture;
+
+        if (!Application.isPlaying)
         {
-            model.texture = texture;
-
-            if (!Application.isPlaying)
-            {
-                OnImageObserverUpdated(texture);
-                return;
-            }
-
-            SetLoadingIndicatorVisible(true);
-            imageObserver.RefreshWithTexture(texture);
+            OnImageObserverUpdated(texture);
+            return;
         }
 
+        SetLoadingIndicatorVisible(true);
+        imageObserver.RefreshWithTexture(texture);
+
+        lastLoadedUri = null;
         SetFitParent(model.fitParent);
     }
 
     public void SetImage(string uri)
     {
+        if (model.lastUriCached && uri == lastLoadedUri)
+            return;
+
         model.uri = uri;
 
         if (!Application.isPlaying)
@@ -133,10 +148,18 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
 
         SetLoadingIndicatorVisible(true);
         if (!string.IsNullOrEmpty(uri))
+        {
+            currentUriLoading = uri;
             imageObserver.RefreshWithUri(uri);
+        }
         else
+        {
+            lastLoadedUri = null;
             OnImageObserverUpdated(null);
+        }
     }
+
+    public void SetLastUriRequestCached(bool isEnabled) { model.lastUriCached = isEnabled; }
 
     public void SetFitParent(bool fitParent)
     {
@@ -152,16 +175,18 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         loadingIndicator.SetActive(isVisible);
     }
 
-    internal void OnImageObserverUpdated(Texture texture)
+    internal void OnImageObserverUpdated(Texture2D texture)
     {
         if (Application.isPlaying)
             Destroy(currentSprite);
         else
             DestroyImmediate(currentSprite);
 
-        currentSprite = texture != null ? Sprite.Create((Texture2D)texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)) : null;
-        SetImage(currentSprite);
+        currentSprite = texture != null ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)) : null;
+        SetImage(currentSprite, false);
         SetLoadingIndicatorVisible(false);
+        lastLoadedUri = currentUriLoading;
+        currentUriLoading = null;
         OnLoaded?.Invoke(currentSprite);
     }
 
