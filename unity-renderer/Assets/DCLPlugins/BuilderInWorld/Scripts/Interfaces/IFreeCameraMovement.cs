@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,12 +9,16 @@ namespace DCL.Camera
         /// GameObject of the camera
         /// </summary>
         GameObject gameObject { get; }
-
+        
         /// <summary>
-        /// Delegate of the screenshot
+        /// This will get the position of the virtual camera
         /// </summary>
-        /// <param name="sceneSnapshot"></param>
-        delegate void OnSnapshotsReady(Texture2D sceneSnapshot);
+        Vector3 GetCameraPosition { get; }
+        
+        /// <summary>
+        /// This will get the forward vector of the virtual camera
+        /// </summary>
+        Vector3 GetCameraFoward { get; }
 
         /// <summary>
         /// It will focus the entities in the list and maintain them in the screen
@@ -87,17 +90,5 @@ namespace DCL.Camera
         /// Reset the camera to the initial state
         /// </summary>
         void ResetCameraPosition();
-
-        /// <summary>
-        /// Take screenshot 
-        /// </summary>
-        /// <param name="onSuccess"></param>
-        void TakeSceneScreenshot(OnSnapshotsReady onSuccess);
-
-        /// <summary>
-        /// Take screenshot from the initial position
-        /// </summary>
-        /// <param name="onSuccess"></param>
-        void TakeSceneScreenshotFromResetPosition(OnSnapshotsReady onSuccess);
     }
 }

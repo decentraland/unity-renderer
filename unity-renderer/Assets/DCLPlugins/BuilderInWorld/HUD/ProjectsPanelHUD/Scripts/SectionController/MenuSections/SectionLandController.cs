@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
@@ -13,7 +14,6 @@ namespace DCL.Builder
         public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionLandsView";
 
         private const string BUILDER_LAND_URL_FORMAT = "https://builder.decentraland.org/land/{0}";
-        private const string MARKETPLACE_URL = "https://market.decentraland.org/";
 
         public event Action<string> OnRequestOpenUrl;
         public event Action<Vector2Int> OnRequestGoToCoords;
@@ -63,7 +63,18 @@ namespace DCL.Builder
             view.Dispose();
         }
 
-        protected override void OnShow() { view.SetActive(true); }
+        protected override void OnShow()
+        {
+            view.SetActive(true);
+            if (landElementViews.Count == 0)
+            {
+                SetEmptyOrLoading();
+            }
+            else
+            {
+                OnNotEmptyContent?.Invoke();
+            }
+        }
 
         protected override void OnHide() { view.SetActive(false); }
 
@@ -133,10 +144,12 @@ namespace DCL.Builder
             else if (searchInfoLands.Count == 0)
             {
                 view.SetNoSearchResult();
+                OnNotEmptyContent?.Invoke();
             }
             else
             {
                 view.SetFilled();
+                OnNotEmptyContent?.Invoke();
             }
         }
 
@@ -177,10 +190,12 @@ namespace DCL.Builder
             if (isLoading)
             {
                 view.SetLoading();
+                OnNotEmptyContent?.Invoke();
             }
             else
             {
                 view.SetEmpty();
+                OnEmptyContent?.Invoke();
             }
         }
 
@@ -212,7 +227,7 @@ namespace DCL.Builder
 
         private void OnJumpInPressed(Vector2Int coords) { OnRequestGoToCoords?.Invoke(coords); }
 
-        private void OnOpenMarketplacePressed() { OnRequestOpenUrl?.Invoke(MARKETPLACE_URL); }
+        private void OnOpenMarketplacePressed() { OnRequestOpenUrl?.Invoke(BIWSettings.MARKETPLACE_URL); }
 
         private void OnEditPressed(Vector2Int coords) { OnRequestEditSceneAtCoords?.Invoke(coords); }
     }

@@ -6,7 +6,7 @@ namespace DCL.Controllers
 {
     public static class SceneUtils
     {
-        public static IDCLEntity DuplicateEntity(ParcelScene scene, IDCLEntity entity)
+        public static IDCLEntity DuplicateEntity(IParcelScene scene, IDCLEntity entity)
         {
             if (!scene.entities.ContainsKey(entity.entityId))
                 return null;

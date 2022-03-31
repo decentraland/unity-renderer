@@ -38,15 +38,16 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
             biwCreatorController
         );
 
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
         biwActionController.Initialize(context);
         entityHandler.Initialize(context);
         biwFloorHandler.Initialize(context);
         biwCreatorController.Initialize(context);
 
-        biwActionController.EnterEditMode(scene);
-        entityHandler.EnterEditMode(scene);
-        biwFloorHandler.EnterEditMode(scene);
-        biwCreatorController.EnterEditMode(scene);
+        biwActionController.EnterEditMode(builderScene);
+        entityHandler.EnterEditMode(builderScene);
+        biwFloorHandler.EnterEditMode(builderScene);
+        biwCreatorController.EnterEditMode(builderScene);
     }
 
     protected override IEnumerator TearDown()

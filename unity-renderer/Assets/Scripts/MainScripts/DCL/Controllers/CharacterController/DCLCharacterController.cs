@@ -117,6 +117,7 @@ public class DCLCharacterController : MonoBehaviour
         CommonScriptableObjects.playerUnityPosition.Set(Vector3.zero);
         CommonScriptableObjects.playerWorldPosition.Set(Vector3.zero);
         CommonScriptableObjects.playerCoords.Set(Vector2Int.zero);
+        DataStore.i.player.playerPosition.Set(Vector2Int.zero);
         CommonScriptableObjects.playerUnityEulerAngles.Set(Vector3.zero);
 
         characterPosition = new DCLCharacterPosition();
@@ -195,7 +196,9 @@ public class DCLCharacterController : MonoBehaviour
 
         CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
         CommonScriptableObjects.playerWorldPosition.Set(characterPosition.worldPosition);
-        CommonScriptableObjects.playerCoords.Set(Utils.WorldToGridPosition(characterPosition.worldPosition));
+        Vector2Int playerPosition = Utils.WorldToGridPosition(characterPosition.worldPosition);
+        CommonScriptableObjects.playerCoords.Set(playerPosition);
+        DataStore.i.player.playerPosition.Set(playerPosition);
 
         if (Moved(lastPosition))
         {
@@ -250,6 +253,9 @@ public class DCLCharacterController : MonoBehaviour
 
     internal void LateUpdate()
     {
+        if(!DataStore.i.player.canPlayerMove.Get())
+            return;
+
         if (transform.position.y < minimumYPosition)
         {
             SetPosition(characterPosition.worldPosition);

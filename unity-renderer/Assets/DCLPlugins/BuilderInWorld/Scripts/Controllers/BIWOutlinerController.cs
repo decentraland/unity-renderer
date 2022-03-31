@@ -27,7 +27,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         raycastController = context.editorContext.raycastController;
     }
 
-    public override void EnterEditMode(IParcelScene scene)
+    public override void EnterEditMode(IBuilderScene scene)
     {
         base.EnterEditMode(scene);
         ActivateBuilderInWorldCamera();

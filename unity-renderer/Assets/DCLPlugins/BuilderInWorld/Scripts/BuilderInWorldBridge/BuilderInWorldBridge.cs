@@ -7,34 +7,29 @@ using DCL.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 using static ProtocolV2;
-using Environment = DCL.Environment;
 
 /// <summary>
 /// This class will handle all the messages that will be sent to kernel.
 /// </summary>
 public class BuilderInWorldBridge : MonoBehaviour
 {
-    public BuilderProjectPayload builderProject { get => builderProjectPayload; }
 
     //Note Adrian: OnKernelUpdated in not called in the update of the transform, since it will give a lot of 
     //events and probably dont need to get called with that frecuency
     public event Action OnKernelUpdated;
     public event Action<bool, string> OnPublishEnd;
-    public event Action<string, string> OnBuilderProjectInfo;
     public event Action<RequestHeader> OnHeadersReceived;
 
     //This is done for optimization purposes, recreating new objects can increase garbage collection
     private TransformComponent entityTransformComponentModel = new TransformComponent();
 
-    private StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
-    private SaveSceneStateEvent saveSceneState = new SaveSceneStateEvent();
-    private SaveProjectInfoEvent saveProjectInfo = new SaveProjectInfoEvent();
+    private PublishPayload payload = new PublishPayload();
     private ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
     private EntityPayload entityPayload = new EntityPayload();
     private EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
-    internal BuilderProjectPayload builderProjectPayload = new BuilderProjectPayload();
 
     #region MessagesFromKernel
 
@@ -66,19 +61,13 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     public void RequestedHeaders(string payload) { OnHeadersReceived?.Invoke(JsonConvert.DeserializeObject<RequestHeader>(payload)); }
 
-    public void BuilderProjectInfo(string payload)
-    {
-        builderProjectPayload = JsonUtility.FromJson<BuilderProjectPayload>(payload);
-        OnBuilderProjectInfo?.Invoke(builderProjectPayload.title, builderProjectPayload.description);
-    }
-
     #endregion
 
     #region MessagesToKernel
 
     public void AskKernelForCatalogHeadersWithParams(string method, string url) { WebInterface.SendRequestHeadersForUrl(BIWSettings.BIW_HEADER_REQUEST_WITH_PARAM_EVENT_NAME, method, url); }
 
-    public void UpdateSmartItemComponent(BIWEntity entity, ParcelScene scene)
+    public void UpdateSmartItemComponent(BIWEntity entity, IParcelScene scene)
     {
         SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>();
         if (smartItemComponent == null)
@@ -92,22 +81,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         ChangeEntityComponent(entitySingleComponentPayload, scene);
     }
 
-    public void SaveSceneInfo(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
-    {
-        saveProjectInfo.payload.title = sceneName;
-        saveProjectInfo.payload.description = sceneDescription;
-        saveProjectInfo.payload.screenshot = sceneScreenshot;
-
-        WebInterface.SendSceneEvent(scene.sceneData.id, BIWSettings.STATE_EVENT_NAME, saveProjectInfo);
-    }
-
-    public void SaveSceneState(ParcelScene scene)
-    {
-        saveSceneState.payload = JsonUtility.ToJson(builderProjectPayload);
-        WebInterface.SendSceneEvent(scene.sceneData.id, BIWSettings.STATE_EVENT_NAME, saveSceneState);
-    }
-
-    public void ChangeEntityLockStatus(BIWEntity entity, ParcelScene scene)
+    public void ChangeEntityLockStatus(BIWEntity entity, IParcelScene scene)
     {
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID.LOCKED_ON_EDIT;
@@ -123,7 +97,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         ChangeEntityComponent(entitySingleComponentPayload, scene);
     }
 
-    public void ChangedEntityName(BIWEntity entity, ParcelScene scene)
+    public void ChangedEntityName(BIWEntity entity, IParcelScene scene)
     {
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID.NAME;
@@ -139,7 +113,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         ChangeEntityComponent(entitySingleComponentPayload, scene);
     }
 
-    void ChangeEntityComponent(EntitySingleComponentPayload payload, ParcelScene scene)
+    void ChangeEntityComponent(EntitySingleComponentPayload payload, IParcelScene scene)
     {
         modifyEntityComponentEvent.payload = payload;
 
@@ -158,7 +132,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         OnKernelUpdated?.Invoke();
     }
 
-    public void AddEntityOnKernel(IDCLEntity entity, ParcelScene scene)
+    public void AddEntityOnKernel(IDCLEntity entity, IParcelScene scene)
     {
         if (scene == null)
             return;
@@ -217,7 +191,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         SendNewEntityToKernel(scene.sceneData.id, entity.entityId, list.ToArray());
     }
 
-    public void EntityTransformReport(IDCLEntity entity, ParcelScene scene)
+    public void EntityTransformReport(IDCLEntity entity, IParcelScene scene)
     {
         entitySingleComponentPayload.entityId = entity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID_COMPONENT.TRANSFORM;
@@ -240,7 +214,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         WebInterface.BuilderInWorldMessage(BIWSettings.SCENE_EVENT_NAME, message);
     }
 
-    public void RemoveEntityOnKernel(string entityId, ParcelScene scene)
+    public void RemoveEntityOnKernel(string entityId, IParcelScene scene)
     {
         RemoveEntityEvent removeEntityEvent = new RemoveEntityEvent();
         RemoveEntityPayload removeEntityPayLoad = new RemoveEntityPayload();
@@ -251,17 +225,38 @@ public class BuilderInWorldBridge : MonoBehaviour
         OnKernelUpdated?.Invoke();
     }
 
-    public void StartKernelEditMode(IParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StartStatefulMode(scene.sceneData.id)); }
-
-    public void ExitKernelEditMode(IParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id)); }
-
-    public void PublishScene(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
+    public void StartIsolatedMode(ILand land)
     {
-        storeSceneState.payload.title = sceneName;
-        storeSceneState.payload.description = sceneDescription;
-        storeSceneState.payload.screenshot = sceneScreenshot;
+        IsolatedConfig config = new IsolatedConfig();
+        config.mode = IsolatedMode.BUILDER;
 
-        WebInterface.SendSceneEvent(scene.sceneData.id, BIWSettings.STATE_EVENT_NAME, storeSceneState);
+        IsolatedBuilderConfig builderConfig = new IsolatedBuilderConfig();
+
+        builderConfig.sceneId = land.sceneId;
+        builderConfig.recreateScene = true;
+        builderConfig.land = land;
+
+        config.payload = builderConfig;
+        WebInterface.StartIsolatedMode(config);
+    }
+
+    public void StopIsolatedMode()
+    {
+        IsolatedConfig config = new IsolatedConfig();
+        config.mode = IsolatedMode.BUILDER;
+        WebInterface.StopIsolatedMode(config);
+    }
+
+    public void PublishScene(Dictionary<string, object > filesToDecode, Dictionary<string, object > files, CatalystSceneEntityMetadata metadata, StatelessManifest statelessManifest, bool publishFromPanel )
+    {
+        payload.filesToDecode = filesToDecode;
+        payload.files = files;
+        payload.metadata = metadata;
+        payload.pointers = metadata.scene.parcels;
+        payload.statelessManifest = statelessManifest;
+        payload.reloadSingleScene = publishFromPanel;
+        
+        WebInterface.PublishStatefulScene(payload);
     }
 
     // ReSharper disable Unity.PerformanceAnalysis

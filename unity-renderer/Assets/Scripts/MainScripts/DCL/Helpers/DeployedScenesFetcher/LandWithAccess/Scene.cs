@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using DCL.Configuration;
 using UnityEngine;
 
 namespace DCL.Builder
@@ -24,7 +25,7 @@ namespace DCL.Builder
         public string projectId => metadata.source?.projectId;
         public bool isEmpty => metadata.source?.isEmpty ?? false;
         public long deployTimestamp => timestamp;
-        
+
         private CatalystSceneEntityMetadata metadata;
         internal Source deploymentSource;
         private Vector2Int baseCoord;
@@ -34,12 +35,13 @@ namespace DCL.Builder
 
         internal LandWithAccess sceneLand;
         internal long timestamp;
+        internal CatalystEntityContent[] contents;
 
         public Scene() { }
 
         public Scene(CatalystSceneEntityPayload pointerData, string contentUrl)
         {
-            const string builderInWorldStateJson = "scene-state-definition.json";
+
             const string builderSourceName = "builder";
             const string builderInWorldSourceName = "builder-in-world";
 
@@ -48,7 +50,7 @@ namespace DCL.Builder
 
             deploymentSource = Source.SDK;
 
-            if (pointerData.content != null && pointerData.content.Any(content => content.file == builderInWorldStateJson))
+            if (pointerData.content != null && pointerData.content.Any(content => content.file == BIWSettings.BUILDER_SCENE_STATE_DEFINITION_FILE_NAME))
             {
                 deploymentSource = Source.BUILDER_IN_WORLD;
             }
@@ -61,11 +63,38 @@ namespace DCL.Builder
                 deploymentSource = Source.BUILDER;
             }
 
+            if (pointerData.content != null)
+                contents = pointerData.content;
+
             baseCoord = StringToVector2Int(metadata.scene.@base);
             parcelsCoord = metadata.scene.parcels.Select(StringToVector2Int).ToArray();
             thumbnail = GetNavmapThumbnailUrl(pointerData, contentUrl);
 
             timestamp = pointerData.timestamp;
+        }
+
+        public bool HasContent(string name)
+        {
+            foreach (CatalystEntityContent content in contents)
+            {
+                if (content.file == name)
+                    return true;
+            }
+            return false;
+        }
+
+        public bool TryGetHashForContent(string name, out string hash)
+        {
+            hash = null;
+            foreach (CatalystEntityContent content in contents)
+            {
+                if (content.file == name)
+                {
+                    hash = content.hash;
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void SetScene(LandWithAccess land) { sceneLand = land; }

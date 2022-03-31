@@ -38,7 +38,8 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         scene = TestUtils.CreateTestScene();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
-        entityHandler.EnterEditMode(scene);
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
+        entityHandler.EnterEditMode(builderScene);
         entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
     }
 
