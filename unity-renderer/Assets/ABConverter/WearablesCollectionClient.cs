@@ -52,7 +52,6 @@ namespace DCL.ABConverter
         /// <summary>
         /// Wearables collection conversion batch-mode entry point
         /// </summary>
-        // TODO: Fix this CLI pipeline to finish converting the assets and return the correct exit code
         public static void ExportWearablesCollectionToAssetBundles()
         {
             //NOTE(Brian): This should make the logs cleaner
@@ -329,7 +328,6 @@ namespace DCL.ABConverter
                 (err) =>
                 {
                     log.Info($"finished dumping a mapping pair...");
-                    // UnityGLTF.GLTFImporter.OnGLTFWillLoad -= OnWearableLoad;
                     core.OnGLTFWillLoad -= OnWearableLoad;
                     core.CleanupWorkingFolders();
                     DumpWearableQueue(core, items, OnWearableLoad, OnConversionFinish, cleanAndExitOnFinish);
