@@ -1,9 +1,11 @@
 using AvatarSystem;
 using DCL.Emotes;
-using DCL.Tutorial;
-using DCL.Skybox;
-using EmotesCustomization;
+using DCL.EmotesCustomization;
+using DCL.EmotesWheel;
+using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
+using DCL.Skybox;
+using DCL.Tutorial;
 
 namespace DCL
 {
@@ -26,12 +28,12 @@ namespace DCL
             pluginSystem.Register<GotoPanelPlugin>(() => new GotoPanelPlugin());
             pluginSystem.Register<ExperiencesViewerFeature>(() => new ExperiencesViewerFeature());
             pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
+            pluginSystem.Register<EquippedEmotesInitializerPlugin>(() => new EquippedEmotesInitializerPlugin());
+            pluginSystem.Register<EmotesWheelUIPlugin>(() => new EmotesWheelUIPlugin());
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature(), "explorev2");
             pluginSystem.RegisterWithFlag<SkyboxController>(() => new SkyboxController(), "procedural_skybox");
-            pluginSystem.RegisterWithFlag<EmotesCustomizationFeature>(() => new EmotesCustomizationFeature(), "emotes_customization");
-            pluginSystem.Register<EmotesWheelFeature>(() => new EmotesWheelFeature());
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

@@ -11,7 +11,6 @@ using SignupHUD;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Environment = System.Environment;
-using EmotesCustomization;
 
 public class HUDController : IHUDController
 {
@@ -64,9 +63,6 @@ public class HUDController : IHUDController
         GetHUDElement(HUDElementID.AVATAR_EDITOR) as AvatarEditorHUDController;
 
     public SettingsPanelHUDController settingsPanelHud => GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
-
-    public EmotesHUDController emotesHUD =>
-        GetHUDElement(HUDElementID.EMOTES) as EmotesHUDController;
 
     public PlayerInfoCardHUDController playerInfoCardHud =>
         GetHUDElement(HUDElementID.PLAYER_INFO_CARD) as PlayerInfoCardHUDController;

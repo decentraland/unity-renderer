@@ -116,8 +116,19 @@ namespace DCL
         {
             performanceMetricsController?.Update();
         }
+        
+        [RuntimeInitializeOnLoadMethod]
+        static void RunOnStart()
+        {
+            Application.wantsToQuit += ApplicationWantsToQuit;
+        }
+        private static bool ApplicationWantsToQuit()
+        {
+            i.Dispose();
+            return true;
+        }
 
-        protected virtual void OnDestroy()
+        protected virtual void Dispose()
         {
             DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
 
@@ -127,10 +138,10 @@ namespace DCL
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            pluginSystem?.Dispose();
+            
             kernelCommunication?.Dispose();
         }
-
+        
         protected virtual void InitializeSceneDependencies()
         {
             gameObject.AddComponent<UserProfileController>();

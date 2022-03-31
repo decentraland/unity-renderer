@@ -1,13 +1,12 @@
-using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 
-namespace EmotesCustomization
+namespace DCL.EmotesWheel
 {
-    public class EmotesHUDView : MonoBehaviour
+    public class EmotesWheelView : MonoBehaviour
     {
         public class EmoteSlotData
         {
@@ -22,7 +21,8 @@ namespace EmotesCustomization
             public Color markColor;
         }
 
-        private const string PATH = "EmotesHUD";
+        private const string PATH = "EmotesWheelHUD";
+        private const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
 
         public event Action<string> onEmoteClicked;
         public event Action OnClose;
@@ -35,14 +35,11 @@ namespace EmotesCustomization
         [SerializeField] internal TMP_Text selectedEmoteName;
         [SerializeField] internal List<RarityColor> rarityColors;
         [SerializeField] internal GameObject customizeTitle;
-
-        // TODO (Santi): Remove it when we don't longer need keep the retrocompatibility.
         [SerializeField] internal List<GameObject> gameObjectsToHideWhenCustomizeFFIsDeactivated;
 
-        // TODO (Santi): Remove it when we don't longer need keep the retrocompatibility.
-        private bool isEmotesCustomizationFFEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("emotes_customization");
+        private bool isEmotesCustomizationFFEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG);
 
-        public static EmotesHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesHUDView>(); }
+        public static EmotesWheelView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesWheelView>(); }
 
         private void Awake()
         {
