@@ -20,6 +20,7 @@ namespace DCL.Builder
             cameraController = new CameraController();
             cameraController.Initialize(BIWTestUtils.CreateMockedContext());
             cameraController.freeCameraController = Substitute.For<IFreeCameraMovement>();
+            cameraController.screenshotCameraController = Substitute.For<IScreenshotCameraController>();
             dummyGameObject = new GameObject("CameraControllerBIW");
             cameraController.freeCameraController.Configure().gameObject.Returns(dummyGameObject);
         }
@@ -55,7 +56,31 @@ namespace DCL.Builder
             );
             
             //Assert
-            cameraController.freeCameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+            cameraController.screenshotCameraController.Received().TakeSceneScreenshot(Arg.Any<IScreenshotCameraController.OnSnapshotsReady>());
+        }
+        
+        [Test]
+        public void AskForAerialScreenshotCorrectly()
+        {
+            //Act
+            cameraController.TakeSceneAerialScreenshot(Substitute.For<IParcelScene>(),
+                (x) => { }
+            );
+            
+            //Assert
+            cameraController.screenshotCameraController.Received().TakeSceneAerialScreenshot(Arg.Any<IParcelScene>(),Arg.Any<IScreenshotCameraController.OnSnapshotsReady>());
+        }
+        
+        [Test]
+        public void AskForScreenshotWithParametersCorrectly()
+        {
+            //Act
+            cameraController.TakeSceneScreenshot(Vector3.back, Vector3.down, 50,50,
+                (x) => { }
+            );
+            
+            //Assert
+            cameraController.screenshotCameraController.Received().TakeSceneScreenshot(Arg.Any<Vector3>(),Arg.Any<Vector3>(),Arg.Any<int>(), Arg.Any<int>(),Arg.Any<IScreenshotCameraController.OnSnapshotsReady>());
         }
         
         [Test]
@@ -65,9 +90,9 @@ namespace DCL.Builder
             cameraController.TakeSceneScreenshotFromResetPosition(
                 (x) => { }
             );
-
+            
             //Assert
-            cameraController.freeCameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+            cameraController.screenshotCameraController.Received().TakeSceneScreenshot(Arg.Any<Vector3>(),Arg.Any<Vector3>(),Arg.Any<IScreenshotCameraController.OnSnapshotsReady>());
         }
     }
 

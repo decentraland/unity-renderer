@@ -38,13 +38,11 @@ namespace Tests
             Assert.IsTrue(cardView.editorButton.gameObject.activeSelf, "Editor button should be active");
 
             //should show coords instead of size
-            Assert.IsTrue(cardView.coordsContainer.activeSelf, "Coords should be displayed");
             Assert.IsFalse(cardView.sizeContainer.activeSelf, "Size should not be displayed");
 
             //should show role
             Assert.IsTrue(cardView.roleOwnerGO.activeSelf, "Owner role tag should be displayed");
             Assert.IsFalse(cardView.roleOperatorGO.activeSelf, "Operator role tag should not be displayed");
-            Assert.IsFalse(cardView.roleContributorGO.activeSelf, "Contributor role tag should not be displayed");
         }
 
         [Test]
@@ -66,11 +64,9 @@ namespace Tests
             Assert.IsTrue(cardView.editorButton.gameObject.activeSelf, "Editor button should be active");
 
             //should show size instead of coords
-            Assert.IsFalse(cardView.coordsContainer.activeSelf, "Coords should not be displayed");
             Assert.IsTrue(cardView.sizeContainer.activeSelf, "Size should be displayed");
 
             //should show role
-            Assert.IsTrue(cardView.roleContributorGO.activeSelf, "Contributor role tag should be displayed");
             Assert.IsFalse(cardView.roleOperatorGO.activeSelf, "Operator role tag should not be displayed");
             Assert.IsFalse(cardView.roleOwnerGO.activeSelf, "Owner role tag should not be displayed");
         }

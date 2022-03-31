@@ -51,6 +51,12 @@ namespace DCL.Builder
             nextButton.onClick.RemoveListener(NextPressed);
         }
 
+        public void ResetInputs()
+        {
+            titleInputField.SetText("");
+            descriptionInputField.SetText("");
+        }
+        
         internal void NextPressed()
         {
             if (!nextButton.IsInteractable())
@@ -64,7 +70,11 @@ namespace DCL.Builder
 
         internal void BackPressed() { OnBackPressed?.Invoke(); }
 
-        internal void EnableNextButton() { nextButton.SetInteractable(true); }
+        internal void EnableNextButton()
+        {
+            if(titleInputField.IsInputAvailable() && descriptionInputField.IsInputAvailable())
+                nextButton.SetInteractable(true);
+        }
 
         internal void DisableNextButton() { nextButton.SetInteractable(false); }
 

@@ -32,12 +32,13 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
             entityHandler,
             biwCreatorController
         );
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
 
         biwCreatorController.Initialize(context);
         entityHandler.Initialize(context);
 
-        entityHandler.EnterEditMode(scene);
-        biwCreatorController.EnterEditMode(scene);
+        entityHandler.EnterEditMode(builderScene);
+        biwCreatorController.EnterEditMode(builderScene);
     }
 
     [Test]

@@ -18,6 +18,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     private BIWEntityHandler entityHandler;
     private BIWOutlinerController outlinerController;
     private IContext context;
+    private IBuilderScene builderScene;
     private ParcelScene scene;
 
     protected override List<GameObject> SetUp_LegacySystems()
@@ -60,12 +61,13 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
             outlinerController,
             entityHandler
         );
+        builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
 
         outlinerController.Initialize(context);
         entityHandler.Initialize(context);
 
-        entityHandler.EnterEditMode(scene);
-        outlinerController.EnterEditMode(scene);
+        entityHandler.EnterEditMode(builderScene);
+        outlinerController.EnterEditMode(builderScene);
 
         entity = entityHandler.GetConvertedEntity(scene.entities[ENTITY_ID]);
     }
@@ -118,7 +120,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     public void CheckCameraComponentAdded()
     {
         //Act
-        outlinerController.EnterEditMode(scene);
+        outlinerController.EnterEditMode(builderScene);
 
         //Assert
         Assert.IsTrue(Camera.main.GetComponent<BIWOutline>().enabled);

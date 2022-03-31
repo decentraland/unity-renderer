@@ -10,13 +10,7 @@ public interface IBuilderInWorldLoadingController
     void Initialize();
     void Dispose();
     void Show();
-    
-    /// <summary>
-    /// This will change the way the builder is loaded, this should be called before show or hide to work properly
-    /// </summary>
-    /// <param name="sceneType"></param>
-    void SetLoadingType(ISceneManager.SceneType sceneType);
-    
+
     void Hide(bool forzeHidding = false, Action onHideAction = null);
     void SetPercentage(float newValue);
 }
@@ -28,8 +22,7 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
     internal IBuilderInWorldLoadingView initialLoadingView;
 
     private const string VIEW_PATH = "BuilderInWorldLoadingView";
-    private ISceneManager.SceneType sceneType = ISceneManager.SceneType.DEPLOYED;
-    
+
     public void Initialize() { AssignMainView(CreateView()); }
 
     public void Initialize(IBuilderInWorldLoadingView view) { AssignMainView(view); }
@@ -59,37 +52,9 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
         UnityEngine.Object.Destroy(initialLoadingView.gameObject);
     }
 
-    public void Show()
-    {
-        if(sceneType == ISceneManager.SceneType.PROJECT)
-            DataStore.i.HUDs.loadingHUD.visible.Set(true);
-        else
-            initialLoadingView.Show();
-    }
+    public void Show() { initialLoadingView.Show(); }
 
-    public void SetLoadingType(ISceneManager.SceneType sceneType)
-    {
-        this.sceneType = sceneType;
-    }
+    public void Hide(bool forzeHidding = false, Action onHideAction = null) { initialLoadingView.Hide(forzeHidding, onHideAction); }
 
-    public void Hide(bool forzeHidding = false, Action onHideAction = null)
-    {
-        if (sceneType == ISceneManager.SceneType.PROJECT)
-        {
-            DataStore.i.HUDs.loadingHUD.visible.Set(false);
-            onHideAction?.Invoke();
-        }
-        else
-        {
-            initialLoadingView.Hide(forzeHidding, onHideAction);
-        }
-    }
-
-    public void SetPercentage(float newValue)
-    {
-        if(sceneType == ISceneManager.SceneType.PROJECT)
-            DataStore.i.HUDs.loadingHUD.percentage.Set(newValue);
-        else
-            initialLoadingView.SetPercentage(newValue);
-    }
+    public void SetPercentage(float newValue) { initialLoadingView.SetPercentage(newValue); }
 }

@@ -26,6 +26,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     private IContext context;
     private GameObject mockedGameObject, entityGameObject;
     private List<BIWEntity> selectedEntities;
+    private IBuilderScene builderScene;
     private ParcelScene scene;
 
     protected override List<GameObject> SetUp_LegacySystems()
@@ -60,15 +61,16 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
             gizmosController,
             SceneReferences.i
         );
+        builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
 
         mockedGameObject = new GameObject("MockedGameObject");
         entityGameObject = new GameObject("EntityGameObject");
         modeController.Initialize(context);
         raycastController.Initialize(context);
         gizmosController.Initialize(context);
-        modeController.EnterEditMode(scene);
-        raycastController.EnterEditMode(scene);
-        gizmosController.EnterEditMode(scene);
+        modeController.EnterEditMode(builderScene);
+        raycastController.EnterEditMode(builderScene);
+        gizmosController.EnterEditMode(builderScene);
 
         godMode =  (BIWGodMode) modeController.GetCurrentMode();
         godMode.SetEditorReferences(mockedGameObject, mockedGameObject, mockedGameObject, mockedGameObject, selectedEntities);
@@ -334,7 +336,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var rotationToApply = new Vector3(0, 180, 0);
 
         //Act
-        godMode.EntitiesTransformByGizmos(rotationToApply);
+        godMode.EntitiesTransfromByGizmos(rotationToApply);
 
         //Assert
         Assert.AreEqual(entity.GetEulerRotation(), rotationToApply);
@@ -414,15 +416,15 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    [Explicit("This test fails because camera lerps to the expected target and is not positioned correctly")]
-    [Category("Explicit")]
     public void DragEditionGameObject()
     {
         //Arrange
         godMode.dragStartedPoint = Vector3.zero;
         var mousePosition = new Vector3(100, 100, 100);
         var initialGameObjectPosition = mockedGameObject.transform.position;
-
+        godMode.raycastController = Substitute.For<IBIWRaycastController>();
+        godMode.raycastController.Configure().GetFloorPointAtMouse(Arg.Any<Vector3>()).Returns(Vector3.one);
+        
         //Act
         godMode.DragEditionGameObject(mousePosition);
 

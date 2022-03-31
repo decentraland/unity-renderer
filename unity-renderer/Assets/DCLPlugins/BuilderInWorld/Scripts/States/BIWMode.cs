@@ -26,7 +26,7 @@ public class BIWMode : IBIWMode
     protected IBIWEntityHandler entityHandler;
     protected IBIWSaveController saveController;
     protected IBIWActionController actionController;
-    protected IBIWRaycastController raycastController;
+    internal IBIWRaycastController raycastController;
 
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
 

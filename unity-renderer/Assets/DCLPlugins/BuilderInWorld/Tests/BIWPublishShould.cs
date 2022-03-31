@@ -1,13 +1,10 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Builder;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Models;
 using Newtonsoft.Json;
-using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -35,14 +32,14 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
             biwPublishController,
             biwEntityHandler
         );
-
+        scene = TestUtils.CreateTestScene();
+        
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
         biwPublishController.Initialize(context);
         biwEntityHandler.Initialize(context);
 
-        scene = TestUtils.CreateTestScene();
-
-        biwPublishController.EnterEditMode(scene);
-        biwEntityHandler.EnterEditMode(scene);
+        biwPublishController.EnterEditMode(builderScene);
+        biwEntityHandler.EnterEditMode(builderScene);
     }
 
     [Test]

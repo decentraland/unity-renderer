@@ -36,6 +36,9 @@ public class PublishBtnController : IPublishBtnController
 
     public void Dispose()
     {
+        if (publishBtnView == null)
+            return;
+        
         publishBtnView.OnPublishButtonClick -= Click;
         publishBtnView.OnShowTooltip -= ShowTooltip;
         publishBtnView.OnHideTooltip -= HideTooltip;
