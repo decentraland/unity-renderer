@@ -18,7 +18,7 @@ public class MinimapHUDView : MonoBehaviour
 
     [Header("Options")] [SerializeField] private Button optionsButton;
     [SerializeField] private GameObject sceneOptionsPanel;
-    [SerializeField] private Button toggleSceneUI;
+    [SerializeField] private ToggleComponentView toggleSceneUI;
     [SerializeField] private Button addBookmarkButton;
     [SerializeField] private Button reportSceneButton;
     [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
@@ -35,10 +35,10 @@ public class MinimapHUDView : MonoBehaviour
     public void Initialize(MinimapHUDController controller)
     {
         gameObject.name = VIEW_OBJECT_NAME;
-        sceneOptionsPanel.SetActive(true);
+        sceneOptionsPanel.SetActive(false);
 
         optionsButton.onClick.AddListener(controller.ToggleOptions);
-        toggleSceneUI.onClick.AddListener(controller.ToggleSceneUI);
+        toggleSceneUI.onToggleChange.AddListener(controller.ToggleSceneUI);
         addBookmarkButton.onClick.AddListener(controller.AddBookmark);
         reportSceneButton.onClick.AddListener(controller.ReportScene);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);

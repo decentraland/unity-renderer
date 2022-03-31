@@ -84,7 +84,7 @@ public class MinimapHUDController : IHUD
 
     public void ToggleOptions() { view.ToggleOptions(); }
 
-    public void ToggleSceneUI() { DataStore.i.HUDs.isSceneUIEnabled.Set(!DataStore.i.HUDs.isSceneUIEnabled.Get()); }
+    public void ToggleSceneUI(bool isUIOn) { DataStore.i.HUDs.isSceneUIEnabled.Set(isUIOn); }
 
     public void AddBookmark()
     {
