@@ -10,6 +10,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DCL.Builder.Manifest;
 using DCL.Components;
+using DCL.Interface;
 using DCL.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -55,6 +56,7 @@ namespace DCL.Builder
         internal IBuilderInWorldLoadingController initialLoadingController;
         private float beginStartFlowTimeStamp = 0;
         internal bool catalogLoaded = false;
+        internal List<string> portableExperiencesToResume = new List<string>();
 
         public void Initialize(IContext context)
         {
@@ -561,6 +563,9 @@ namespace DCL.Builder
 
             DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
 
+            portableExperiencesToResume = DataStore.i.experiencesViewer.activeExperience.Get();
+            WebInterface.SetDisabledPortableExperiences(DataStore.i.experiencesViewer.activeExperience.Get().ToArray());
+            
             context.editor.EnterEditMode(sceneToEdit);
             DataStore.i.player.canPlayerMove.Set(false);
             BIWAnalytics.EnterEditor( Time.realtimeSinceStartup - beginStartFlowTimeStamp);
