@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Collections;
 using DCL;
 using NSubstitute;
+using UnityEngine;
 
 public class ChatHUDShould : IntegrationTestSuite_Legacy
 {
@@ -58,7 +59,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
 
         ChatHUDController.MAX_CHAT_ENTRIES = cacheMaxEntries;
         Assert.AreEqual(newMaxEntries, controller.view.entries.Count);
-        Assert.AreEqual("test5", controller.view.entries[0].model.bodyText);
+        Assert.AreEqual(ChatUtils.AddNoParse("test5"), controller.view.entries[0].model.bodyText);
     }
 
     [Test]
@@ -74,6 +75,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         controller.AddChatMessage(msg);
 
         Assert.AreEqual(1, controller.view.entries.Count);
+        msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(msg, controller.view.entries[0].model);
 
         controller.view.CleanAllEntries();
@@ -108,7 +110,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         };
 
         controller.AddChatMessage(msg);
-
+        expected = ChatUtils.AddNoParse(expected);
         Assert.AreEqual(expected, controller.view.entries[0].model.bodyText);
     }
     
@@ -124,7 +126,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         };
 
         controller.AddChatMessage(msg);
-
+        expected = ChatUtils.AddNoParse(expected);
         Assert.AreEqual(expected, controller.view.entries[0].model.bodyText);
     }
 
@@ -140,7 +142,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         };
 
         controller.AddChatMessage(msg);
-
+        msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(filteredName, controller.view.entries[0].model.senderName);
     }
     
@@ -157,7 +159,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         };
 
         controller.AddChatMessage(msg);
-
+        msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(filteredName, controller.view.entries[0].model.recipientName);
     }
 
@@ -174,7 +176,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         };
         
         controller.AddChatMessage(msg);
-        
+        msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
     }
 
@@ -189,7 +191,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         };
         
         controller.AddChatMessage(msg);
-        
+        msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
     }
     

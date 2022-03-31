@@ -10,9 +10,9 @@ public class ShortcutsController : IDisposable
     internal InputAction_Trigger toggleControls;
     internal InputAction_Trigger toggleAvatarEditor;
     internal InputAction_Trigger toggleStartMenu;
-    internal InputAction_Trigger toggleExpressionsHUD;
     internal InputAction_Trigger toggleNavMap;
     internal InputAction_Trigger togglePlacesAndEvents;
+    internal InputAction_Hold toggleExpressionsHUD;
 
     public ShortcutsController()
     {
@@ -21,9 +21,9 @@ public class ShortcutsController : IDisposable
         toggleControls = Resources.Load<InputAction_Trigger>("ToggleControlsHud");
         toggleAvatarEditor = Resources.Load<InputAction_Trigger>("ToggleAvatarEditorHud");
         toggleStartMenu = Resources.Load<InputAction_Trigger>("ToggleStartMenu");
-        toggleExpressionsHUD = Resources.Load<InputAction_Trigger>("OpenExpressions");
         toggleNavMap = Resources.Load<InputAction_Trigger>("ToggleNavMap");
         togglePlacesAndEvents = Resources.Load<InputAction_Trigger>("TogglePlacesAndEventsHud");
+        toggleExpressionsHUD = Resources.Load<InputAction_Hold>("OpenExpressions");
 
         Subscribe();
     }
@@ -36,9 +36,9 @@ public class ShortcutsController : IDisposable
         toggleAvatarNames.OnTriggered += ToggleAvatarNamesTriggered;
         toggleQuestsPanel.OnTriggered += ToggleQuestPanel;
         toggleStartMenu.OnTriggered += ToggleStartMenuTriggered;
-        toggleExpressionsHUD.OnTriggered += ToggleExpressionsTriggered;
         toggleNavMap.OnTriggered += ToggleNavMapTriggered;
         togglePlacesAndEvents.OnTriggered += TogglePlacesAndEventsTriggered;
+        toggleExpressionsHUD.OnFinished += ToggleExpressionsTriggered;
     }
 
     internal void Unsubscribe()
@@ -48,9 +48,9 @@ public class ShortcutsController : IDisposable
         toggleAvatarNames.OnTriggered -= ToggleAvatarNamesTriggered;
         toggleQuestsPanel.OnTriggered -= ToggleQuestPanel;
         toggleStartMenu.OnTriggered -= ToggleStartMenuTriggered;
-        toggleExpressionsHUD.OnTriggered -= ToggleExpressionsTriggered;
         toggleNavMap.OnTriggered -= ToggleNavMapTriggered;
         togglePlacesAndEvents.OnTriggered -= TogglePlacesAndEventsTriggered;
+        toggleExpressionsHUD.OnFinished -= ToggleExpressionsTriggered;
     }
 
     private void ToggleControlsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.controlsVisible.Set(!DataStore.i.HUDs.controlsVisible.Get()); }
@@ -91,8 +91,6 @@ public class ShortcutsController : IDisposable
         }
     }
 
-    private void ToggleExpressionsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.emotesVisible.Set(!DataStore.i.HUDs.emotesVisible.Get()); }
-    
     private void ToggleNavMapTriggered(DCLAction_Trigger action) 
     {
         if (!DataStore.i.HUDs.isNavMapInitialized.Get())
@@ -108,6 +106,8 @@ public class ShortcutsController : IDisposable
 
         DataStore.i.exploreV2.placesAndEventsVisible.Set(!DataStore.i.exploreV2.placesAndEventsVisible.Get());
     }
+
+    private void ToggleExpressionsTriggered(DCLAction_Hold action) { DataStore.i.HUDs.emotesVisible.Set(!DataStore.i.HUDs.emotesVisible.Get()); }
 
     public void Dispose() { Unsubscribe(); }
 

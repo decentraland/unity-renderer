@@ -36,7 +36,9 @@ namespace DCL.Components
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();
             model = new Model();
 
-            Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
+            if (Settings.i != null)
+                Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
+    
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
@@ -128,7 +130,7 @@ namespace DCL.Components
 
         private void UpdateAudioSourceVolume()
         {
-            AudioSettings audioSettingsData = Settings.i.audioSettings.Data;
+            AudioSettings audioSettingsData = Settings.i != null ? Settings.i.audioSettings.Data : new AudioSettings();
             float newVolume = ((Model)model).volume * Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettingsData.sceneSFXVolume * audioSettingsData.masterVolume);
 
             if (scene is GlobalScene globalScene && globalScene.isPortableExperience)
@@ -166,10 +168,12 @@ namespace DCL.Components
             isDestroyed = true;
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
 
-            //NOTE(Brian): Unsuscribe events.
+            //NOTE(Brian): Unsubscribe events.
             InitDCLAudioClip(null);
 
-            Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
+            if (Settings.i != null)
+                Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
+            
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
         }
 

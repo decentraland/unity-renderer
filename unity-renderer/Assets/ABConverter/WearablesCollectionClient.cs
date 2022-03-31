@@ -321,7 +321,7 @@ namespace DCL.ABConverter
 
             var pairs = ExtractMappingPairs(new List<WearableItem>() { items.Dequeue() });
             
-            UnityGLTF.GLTFImporter.OnGLTFWillLoad += OnWearableLoad;
+            core.OnGLTFWillLoad += OnWearableLoad;
             
             log.Info($"will dump mapping pairs: {pairs.Count}");
             
@@ -329,7 +329,8 @@ namespace DCL.ABConverter
                 (err) =>
                 {
                     log.Info($"finished dumping a mapping pair...");
-                    UnityGLTF.GLTFImporter.OnGLTFWillLoad -= OnWearableLoad;
+                    // UnityGLTF.GLTFImporter.OnGLTFWillLoad -= OnWearableLoad;
+                    core.OnGLTFWillLoad -= OnWearableLoad;
                     core.CleanupWorkingFolders();
                     DumpWearableQueue(core, items, OnWearableLoad, OnConversionFinish, cleanAndExitOnFinish);
                 });

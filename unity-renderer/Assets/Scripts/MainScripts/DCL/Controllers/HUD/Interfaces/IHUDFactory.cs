@@ -19,7 +19,10 @@ namespace DCL
         TERMS_OF_SERVICE = 9,
         WORLD_CHAT_WINDOW = 10,
         TASKBAR = 11,
+
+        [Obsolete("Deprecated behavior")]
         MESSAGE_OF_THE_DAY = 12,
+        
         FRIENDS = 13,
         OPEN_EXTERNAL_URL_PROMPT = 14,
         PRIVATE_CHAT_WINDOW = 15,
@@ -55,6 +58,7 @@ namespace DCL
         [Obsolete("Deprecated HUD Element")]
         AVATAR_NAMES = 31,
 
+        [Obsolete("Deprecated HUD Element, this feature is initialized from the Feature Flags system")]
         EMOTES = 32,
 
         COUNT = 33

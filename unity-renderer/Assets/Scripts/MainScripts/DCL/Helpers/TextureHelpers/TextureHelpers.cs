@@ -36,7 +36,7 @@ public static class TextureHelpers
     {
         newWidth = Mathf.Max(1, newWidth);
         newHeight = Mathf.Max(1, newHeight);
-
+        
         // RenderTexture default format is ARGB32
         Texture2D nTex = new Texture2D(newWidth, newHeight, TextureFormat.ARGB32, 1, linear);
         nTex.filterMode = source.filterMode;

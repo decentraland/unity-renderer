@@ -77,4 +77,5 @@ namespace VariableTests
         [NUnit.Framework.Test]
         public void VariableValueIsChangedProperly() { base.VariableValueIsChangedProperly(new Quaternion(0, 0, 0, 0), new Quaternion(1, 1, 1, 1)); }
     }
+
 }

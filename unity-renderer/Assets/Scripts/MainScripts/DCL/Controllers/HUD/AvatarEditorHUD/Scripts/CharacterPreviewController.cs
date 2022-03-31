@@ -14,19 +14,13 @@ public class CharacterPreviewController : MonoBehaviour
     private const int SNAPSHOT_BODY_WIDTH_RES = 256;
     private const int SNAPSHOT_BODY_HEIGHT_RES = 512;
 
-    private const int SNAPSHOT_FACE_WIDTH_RES = 512;
-    private const int SNAPSHOT_FACE_HEIGHT_RES = 512;
-
     private const int SNAPSHOT_FACE_256_WIDTH_RES = 256;
     private const int SNAPSHOT_FACE_256_HEIGHT_RES = 256;
-
-    private const int SNAPSHOT_FACE_128_WIDTH_RES = 128;
-    private const int SNAPSHOT_FACE_128_HEIGHT_RES = 128;
 
     private const int SUPERSAMPLING = 1;
     private const float CAMERA_TRANSITION_TIME = 0.5f;
 
-    public delegate void OnSnapshotsReady(Texture2D face, Texture2D face128, Texture2D face256, Texture2D body);
+    public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 
     public enum CameraFocus
     {
@@ -60,19 +54,27 @@ public class CharacterPreviewController : MonoBehaviour
             { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
             { CameraFocus.BodySnapshot, bodySnapshotTemplate },
         };
+        IAnimator animator = avatarContainer.gameObject.GetComponentInChildren<IAnimator>();
         avatar = new AvatarSystem.Avatar(
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-            avatarContainer.gameObject.GetComponentInChildren<IAnimator>(),
+            animator,
             new Visibility(),
             new NoLODs(),
             new SimpleGPUSkinning(),
-            new GPUSkinningThrottler()
+            new GPUSkinningThrottler(),
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes)
         );
     }
 
     public void UpdateModel(AvatarModel newModel, Action onDone)
     {
+        if (newModel.HaveSameWearablesAndColors(currentAvatarModel))
+        {
+            onDone?.Invoke();
+            return;
+        }
+
         loadingCts?.Cancel();
         loadingCts?.Dispose();
         loadingCts = new CancellationTokenSource();
@@ -89,12 +91,6 @@ public class CharacterPreviewController : MonoBehaviour
 
     private async UniTaskVoid UpdateModelRoutine(AvatarModel newModel, Action onDone, CancellationToken ct)
     {
-        if (newModel.HaveSameWearablesAndColors(currentAvatarModel))
-        {
-            onDone?.Invoke();
-            return;
-        }
-
         currentAvatarModel.CopyFrom(newModel);
         List<string> wearables = new List<string>(newModel.wearables);
         wearables.Add(newModel.bodyShape);
@@ -132,8 +128,6 @@ public class CharacterPreviewController : MonoBehaviour
         SetFocus(CameraFocus.FaceSnapshot, false);
         avatarAnimator.Reset();
         yield return null;
-        Texture2D face = Snapshot(SNAPSHOT_FACE_WIDTH_RES, SNAPSHOT_FACE_HEIGHT_RES);
-        Texture2D face128 = Snapshot(SNAPSHOT_FACE_128_WIDTH_RES, SNAPSHOT_FACE_128_HEIGHT_RES);
         Texture2D face256 = Snapshot(SNAPSHOT_FACE_256_WIDTH_RES, SNAPSHOT_FACE_256_HEIGHT_RES);
 
         SetFocus(CameraFocus.BodySnapshot, false);
@@ -146,7 +140,7 @@ public class CharacterPreviewController : MonoBehaviour
         camera.targetTexture = current;
 
         DCL.Environment.i.platform.cullingController.Start();
-        callback?.Invoke(face, face128, face256, body);
+        callback?.Invoke(face256, body);
     }
 
     private Texture2D Snapshot(int width, int height)
@@ -203,4 +197,8 @@ public class CharacterPreviewController : MonoBehaviour
     }
 
     public void Rotate(float rotationVelocity) { avatarContainer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up); }
+
+    public AvatarModel GetCurrentModel() { return currentAvatarModel; }
+
+    public void PlayEmote(string emoteId, long timestamp) { avatar.PlayEmote(emoteId, timestamp); }
 }

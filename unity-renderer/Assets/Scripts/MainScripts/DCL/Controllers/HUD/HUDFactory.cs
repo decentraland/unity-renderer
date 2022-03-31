@@ -1,10 +1,8 @@
-using System;
 using DCL;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.SettingsPanelHUD;
-using LoadingHUD;
 using SignupHUD;
 using UnityEngine;
 
@@ -32,10 +30,6 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.SETTINGS_PANEL:
                 hudElement = new SettingsPanelHUDController();
                 break;
-            case HUDElementID.EXPRESSIONS:
-            case HUDElementID.EMOTES:
-                hudElement = new EmotesHUDController();
-                break;
             case HUDElementID.PLAYER_INFO_CARD:
                 hudElement = new PlayerInfoCardHUDController(FriendsController.i,
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
@@ -61,9 +55,6 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();
-                break;
-            case HUDElementID.MESSAGE_OF_THE_DAY:
-                hudElement = new WelcomeHUDController();
                 break;
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 hudElement = new ExternalUrlPromptHUDController();
