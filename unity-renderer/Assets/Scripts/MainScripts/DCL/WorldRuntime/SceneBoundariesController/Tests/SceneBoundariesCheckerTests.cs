@@ -1,3 +1,4 @@
+using System;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
@@ -6,8 +7,12 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Helpers.NFT;
+using DCL.Helpers.NFT.Markets;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
 
 namespace SceneBoundariesCheckerTests
 {
@@ -21,6 +26,32 @@ namespace SceneBoundariesCheckerTests
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
+        }
+
+        protected override ServiceLocator InitializeServiceLocator()
+        {
+            ServiceLocator result = base.InitializeServiceLocator();
+
+            result.Register<IServiceProviders>(
+                () =>
+                {
+                    var openSea = Substitute.For<INFTMarket>();
+
+                    openSea.FetchNFTInfo(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<System.Action<NFTInfo>>(),
+                        Arg.Any<Action<string>>()).Returns((x) =>
+                    {
+                        x.Arg<System.Action<NFTInfo>>().Invoke(new NFTInfo());
+                        return null;
+                    });
+
+                    var mockedProviders = Substitute.For<IServiceProviders>();
+                    mockedProviders.theGraph.Returns(Substitute.For<ITheGraph>());
+                    mockedProviders.analytics.Returns(Substitute.For<IAnalytics>());
+                    mockedProviders.catalyst.Returns(Substitute.For<ICatalyst>());
+                    mockedProviders.openSea.Returns(openSea);
+                    return mockedProviders;
+                });
+            return result;
         }
 
         [UnityTest]
@@ -42,18 +73,12 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator PShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.NFTShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]

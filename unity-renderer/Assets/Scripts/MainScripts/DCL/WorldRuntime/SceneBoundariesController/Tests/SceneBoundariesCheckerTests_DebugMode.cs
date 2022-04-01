@@ -81,8 +81,6 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
@@ -92,16 +90,12 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator GLTFShapeIsInvalidatedWhenLeavingBoundsDebugMode() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBoundsDebugMode() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
         public IEnumerator PShapeIsResetWhenReenteringBoundsDebugMode() { yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsResetWhenReenteringBoundsDebugMode() { yield return SBC_Asserts.NFTShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]
