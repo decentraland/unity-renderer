@@ -93,25 +93,3 @@ public class SatelliteLayerBehavior : MonoBehaviour
     }
 
 }
-
-//// Displays circles of various thickness in the scene view
-//[CustomEditor(typeof(SatelliteLayerBehavior))]
-//public class ExampleEditor : Editor
-//{
-//    public void OnSceneGUI()
-//    {
-//        var t = target as SatelliteLayerBehavior;
-//        var tr = t.transform;
-//        var position = tr.position;
-//        Handles.color = Color.gray;
-//        Handles.DrawWireDisc(position, Vector3.up, t.radius, t.thickness);
-
-//        if (t.satelliteOrbit == null)
-//        {
-//            return;
-//        }
-//        // Draw wire disc of green color for orbit orthogonal to y = 1
-//        Handles.color = Color.green;
-//        Handles.DrawWireDisc(position, t.satelliteOrbit.transform.forward, t.radius, t.thickness);
-//    }
-//}
