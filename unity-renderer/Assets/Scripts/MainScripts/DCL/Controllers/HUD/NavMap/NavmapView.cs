@@ -202,7 +202,7 @@ namespace DCL
             zoomIn.OnStarted -= OnZoomPlusMinus;
             zoomOut.OnStarted -= OnZoomPlusMinus;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
-            navmapVisible.OnChange -= OnNavmapVisibleChanged;
+            DataStore.i.exploreV2.isOpen.OnChange -= OnExploreChange;
         }
 
         private void OnExploreChange(bool current, bool previous)
