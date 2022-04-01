@@ -130,16 +130,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(4, buttonList.Count, "Chat head is missing when receiving a private message?");
 
         Assert.IsFalse(view.chatButton.toggledOn);
-        Assert.IsTrue(buttonList[2] is ChatHeadButton);
 
-        ChatHeadButton headButton = buttonList[2] as ChatHeadButton;
-        Assert.IsFalse(headButton.toggledOn);
-        Assert.IsTrue(headButton.toggleButton.interactable);
-
-        //NOTE(Brian): Toggle chat head on and test it works as intended
-        headButton.toggleButton.onClick.Invoke();
-
-        Assert.IsTrue(headButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.chatButton.lineOnIndicator.isVisible);
         Assert.IsTrue(controller.privateChatWindow.view.IsActive);
@@ -148,7 +139,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view.friendsButton.toggleButton.onClick.Invoke();
 
         Assert.IsFalse(controller.privateChatWindow.view.IsActive);
-        Assert.IsFalse(headButton.lineOnIndicator.isVisible);
         Assert.IsTrue(view.friendsButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.chatButton.lineOnIndicator.isVisible);
 
@@ -156,7 +146,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view.friendsButton.toggleButton.onClick.Invoke();
 
         Assert.IsFalse(controller.privateChatWindow.view.IsActive);
-        Assert.IsFalse(headButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
 
         //NOTE(Brian): Toggle friends on, and then chat button on. Then check if world chat window is showing up.

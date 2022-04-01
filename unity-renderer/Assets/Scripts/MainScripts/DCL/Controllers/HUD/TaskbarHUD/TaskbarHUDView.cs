@@ -18,7 +18,6 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal VoiceChatButton voiceChatButton;
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
-    [SerializeField] internal ChatHeadGroupView chatHeadsGroup;
 
     [SerializeField] internal GameObject experiencesContainer;
     [SerializeField] internal TaskbarButton experiencesButton;
@@ -45,7 +44,6 @@ public class TaskbarHUDView : MonoBehaviour
         var taskbarButtonList = new List<TaskbarButton>();
         taskbarButtonList.Add(chatButton);
         taskbarButtonList.Add(friendsButton);
-        taskbarButtonList.AddRange(chatHeadsGroup.chatHeads);
         taskbarButtonList.Add(experiencesButton);
 
         return taskbarButtonList;
@@ -71,13 +69,9 @@ public class TaskbarHUDView : MonoBehaviour
         voiceChatButtonPlaceholder.SetActive(false);
         voiceChatButton.gameObject.SetActive(false);
 
-        chatHeadsGroup.Initialize(chatController, friendsController);
         chatButton.Initialize();
         friendsButton.Initialize();
         experiencesButton.Initialize();
-
-        chatHeadsGroup.OnHeadToggleOn += OnWindowToggleOn;
-        chatHeadsGroup.OnHeadToggleOff += OnWindowToggleOff;
 
         chatButton.OnToggleOn += OnWindowToggleOn;
         chatButton.OnToggleOff += OnWindowToggleOff;
@@ -171,12 +165,6 @@ public class TaskbarHUDView : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (chatHeadsGroup != null)
-        {
-            chatHeadsGroup.OnHeadToggleOn -= OnWindowToggleOn;
-            chatHeadsGroup.OnHeadToggleOff -= OnWindowToggleOff;
-        }
-
         if (chatButton != null)
         {
             chatButton.OnToggleOn -= OnWindowToggleOn;

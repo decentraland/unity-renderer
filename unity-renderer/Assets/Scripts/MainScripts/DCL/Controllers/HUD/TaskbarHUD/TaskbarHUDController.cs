@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using DCL;
 using DCL.Helpers;
 using TMPro;
@@ -60,9 +59,6 @@ public class TaskbarHUDController : IHUD
             mouseCatcher.OnMouseUnlock += MouseCatcher_OnMouseUnlock;
         }
 
-        view.chatHeadsGroup.OnHeadToggleOn += ChatHeadsGroup_OnHeadOpen;
-        view.chatHeadsGroup.OnHeadToggleOff += ChatHeadsGroup_OnHeadClose;
-
         view.leftWindowContainerLayout.enabled = false;
 
         view.OnChatToggleOff += View_OnChatToggleOff;
@@ -97,8 +93,6 @@ public class TaskbarHUDController : IHUD
         numOfLoadedExperiences.OnChange += NumOfLoadedExperiencesChanged;
         NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
     }
-
-    private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindow.SetVisibility(false); }
 
     private void View_OnFriendsToggleOn()
     {
@@ -139,16 +133,6 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.SetVisibility(false);
     }
 
-    private void ChatHeadsGroup_OnHeadOpen(TaskbarButton taskbarBtn)
-    {
-        ChatHeadButton head = taskbarBtn as ChatHeadButton;
-
-        if (taskbarBtn == null)
-            return;
-
-        OpenPrivateChatWindow(head.profile.userId);
-    }
-
     private void MouseCatcher_OnMouseUnlock() { view.leftWindowContainerAnimator.Show(); }
 
     private void MouseCatcher_OnMouseLock()
@@ -186,8 +170,6 @@ public class TaskbarHUDController : IHUD
 
     public void OpenPrivateChatTo(string userId)
     {
-        var button = view.chatHeadsGroup.AddChatHead(userId, (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-        button.toggleButton.onClick.Invoke();
         privateChatWindow.Configure(userId);
         worldChatWindowHud.SetVisibility(false);
         privateChatWindow.SetVisibility(true);
@@ -220,33 +202,6 @@ public class TaskbarHUDController : IHUD
         experiencesViewerTransform?.SetAsLastSibling();
 
         privateChatWindow = controller;
-
-        privateChatWindow.view.OnMinimize += () =>
-        {
-            ChatHeadButton btn = view.GetButtonList()
-                                     .FirstOrDefault(
-                                         (x) => x is ChatHeadButton &&
-                                                (x as ChatHeadButton).profile.userId == privateChatWindow.conversationUserId) as
-                ChatHeadButton;
-
-            if (btn != null)
-                btn.SetToggleState(false, false);
-        };
-
-        privateChatWindow.view.OnClose += () =>
-        {
-            ChatHeadButton btn = view.GetButtonList()
-                                     .FirstOrDefault(
-                                         (x) => x is ChatHeadButton &&
-                                                (x as ChatHeadButton).profile.userId == privateChatWindow.conversationUserId) as
-                ChatHeadButton;
-
-            if (btn != null)
-            {
-                btn.SetToggleState(false, false);
-                view.chatHeadsGroup.RemoveChatHead(btn);
-            }
-        };
     }
 
     public void AddPublicChatChannel(PublicChatChannelController controller)
@@ -285,8 +240,6 @@ public class TaskbarHUDController : IHUD
         {
             view.friendsButton.SetToggleState(false, false);
         };
-
-        friendsHud.view.OnDeleteConfirmation += (userIdToRemove) => { view.chatHeadsGroup.RemoveChatHead(userIdToRemove); };
     }
 
     internal void InitializeExperiencesViewer(Transform currentViewTransform, Transform previousViewTransform)
@@ -322,24 +275,12 @@ public class TaskbarHUDController : IHUD
     public void DisableFriendsWindow()
     {
         view.friendsButton.transform.parent.gameObject.SetActive(false);
-        view.chatHeadsGroup.ClearChatHeads();
-    }
-
-    private void OpenPrivateChatWindow(string userId)
-    {
-        privateChatWindow.Configure(userId);
-        privateChatWindow.SetVisibility(true);
-        privateChatWindow.ForceFocus();
-        OnAnyTaskbarButtonClicked?.Invoke();
     }
 
     public void Dispose()
     {
         if (view != null)
         {
-            view.chatHeadsGroup.OnHeadToggleOn -= ChatHeadsGroup_OnHeadOpen;
-            view.chatHeadsGroup.OnHeadToggleOff -= ChatHeadsGroup_OnHeadClose;
-
             view.OnChatToggleOff -= View_OnChatToggleOff;
             view.OnChatToggleOn -= View_OnChatToggleOn;
             view.OnFriendsToggleOff -= View_OnFriendsToggleOff;
