@@ -717,9 +717,9 @@ public class AvatarEditorHUDController : IHUD
         if (isOn)
         {
             // TODO (Santi): Use CatalogController.RequestThirdPartyWearablesByCollection(...) when the endpoint is available by platform!
-            //CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
             view.BlockCollectionsDropdown(true);
-            WearablesFetchingHelper.GetThirdPartyWearablesByCollection(collectionId)
+            // WearablesFetchingHelper.GetThirdPartyWearablesByCollection(collectionId)
+            CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
                 .Then((wearables) =>
                 {
                     foreach (WearableItem wearable in wearables)

@@ -17,8 +17,8 @@ namespace DCL.Helpers
         // public const string COLLECTIONS_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections"; 
         public const string COLLECTIONS_FETCH_URL = "https://nft-api.decentraland.org/v1/collections?sortBy=newest&first=1000"; 
         private static Collection[] collections;
-
-        public const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "https://nft-api.decentraland.org/v1/collections?sortBy=newest&first=30";
+        
+        public const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "third-party-integrations";
         public const string THIRD_PARTY_WEARABLES_FETCH_URL = "collections/wearables?";
 
         private static IEnumerator EnsureCollectionsData()
@@ -117,9 +117,10 @@ namespace DCL.Helpers
         public static Promise<Collection[]> GetThirdPartyCollections()
         {
             Promise<Collection[]> promiseResult = new Promise<Collection[]>();
-
+            
+            // Until the TPCs fetching lambda is present in all catalysts, we have to test the client with '&CATALYST=peer.decentraland.zone'
             Environment.i.platform.webRequest.Get(
-                url: THIRD_PARTY_COLLECTIONS_FETCH_URL,
+                url: $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{THIRD_PARTY_COLLECTIONS_FETCH_URL}",
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 5000,
                 OnFail: (webRequest) =>
