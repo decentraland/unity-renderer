@@ -72,6 +72,7 @@ namespace DCL
             MapRenderer.OnParcelClicked += TriggerToast;
             MapRenderer.OnCursorFarFromParcel += CloseToast;
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
+            DataStore.i.exploreV2.isOpen.OnChange += OnExploreChange;
             navmapVisible.OnChange += OnNavmapVisibleChanged;
 
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
@@ -201,6 +202,15 @@ namespace DCL
             zoomIn.OnStarted -= OnZoomPlusMinus;
             zoomOut.OnStarted -= OnZoomPlusMinus;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
+            DataStore.i.exploreV2.isOpen.OnChange -= OnExploreChange;
+        }
+
+        private void OnExploreChange(bool current, bool previous)
+        {
+            if (current)
+                return;
+
+            SetVisible(false);
         }
 
         internal void SetVisible(bool visible)
@@ -229,7 +239,6 @@ namespace DCL
 
         private void IsFullscreenHUDOpen_OnChange(bool current, bool previous)
         {
-
             if (!current)
                 return;
 
