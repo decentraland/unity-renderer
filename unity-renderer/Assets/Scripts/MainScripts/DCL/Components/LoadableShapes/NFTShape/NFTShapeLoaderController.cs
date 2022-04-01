@@ -25,7 +25,6 @@ public class NFTShapeLoaderController : MonoBehaviour
         None
     }
 
-    public NFTShapeConfig config;
     public MeshRenderer meshRenderer;
     public new BoxCollider collider;
     public Color backgroundColor;
@@ -69,9 +68,18 @@ public class NFTShapeLoaderController : MonoBehaviour
         meshRenderer.transform.localScale = new Vector3(0.5f, 0.5f, 1);
 
         InitializeMaterials();
-        
-        nftInfoLoadHelper = new NFTInfoLoadHelper();
-        nftAssetLoadHelper = new NFTAssetLoadHelper();
+    }
+
+    public void Initialize(INFTInfoLoadHelper nftInfoLoadHelper = null, INFTAssetLoadHelper nftAssetLoadHelper = null)
+    {
+        if (nftInfoLoadHelper == null)
+            nftInfoLoadHelper = new NFTInfoLoadHelper();
+
+        if (nftAssetLoadHelper == null)
+            nftAssetLoadHelper = new NFTAssetLoadHelper();
+
+        this.nftInfoLoadHelper = nftInfoLoadHelper;
+        this.nftAssetLoadHelper = nftAssetLoadHelper;
     }
 
     private void OnEnable()
@@ -169,7 +177,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         var hqImageHandlerConfig = new NFTShapeHQImageConfig()
         {
             controller = this,
-            nftShapeConfig = config,
+            //nftShapeConfig = config,
             name = nftName,
             imageUrl = nftImageUrl,
             asset = nftAsset
@@ -181,6 +189,7 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     internal IEnumerator LoadNFTAssetCoroutine(NFTInfo nftInfo)
     {
+        var config = DataStore.i.Get<DataStore_NFTShape>();
         yield return new DCL.WaitUntil(() => (CommonScriptableObjects.playerUnityPosition - transform.position).sqrMagnitude < (config.loadingMinDistance * config.loadingMinDistance));
 
         // We download the "preview" 256px image

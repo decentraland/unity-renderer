@@ -28,6 +28,14 @@ namespace DCL
             poolableComponentFactory.PrewarmPools();
         }
 
+        public void RegisterComponentBuilder(int id, Func<IComponent> builder)
+        {
+            if (builders.ContainsKey(id))
+                builders[id] = (id) => builder();
+            else
+                builders.Add(id, (id) => builder());
+        }
+
         public RuntimeComponentFactory(IPoolableComponentFactory poolableComponentFactory = null)
         {
             this.poolableComponentFactory = poolableComponentFactory ?? PoolableComponentFactory.Create();
