@@ -138,6 +138,7 @@ public class PrivateChatWindowController : IHUD
             }
 
             view.Show();
+            chatHudController.FocusInputField();
             // The messages from 'conversationUserId' are marked as read once the private chat is opened
             MarkUserChatMessagesAsRead(conversationUserId);
         }

@@ -5,9 +5,12 @@ using DCL.Interface;
 
 public class WorldChatWindowController : IHUD
 {
+    private const string GENERAL_CHANNEL_ID = "general";
+    
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
     private readonly IChatController chatController;
+    
     private Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private IWorldChatWindowView view;
@@ -43,7 +46,7 @@ public class WorldChatWindowController : IHUD
         // TODO: this data should come from the chat service when channels are implemented
         view.SetPublicChannel(new PublicChatChannelModel
         {
-            channelId = "general",
+            channelId = GENERAL_CHANNEL_ID,
             name = "General"
         });
         var privateChatsByRecipient = GetLastPrivateChatByRecipient(chatController.GetEntries());
@@ -56,8 +59,6 @@ public class WorldChatWindowController : IHUD
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
     }
-
-    private void HandleFriendsControllerInitialization() => view.HidePrivateChatsLoading();
 
     public void Dispose()
     {
@@ -76,6 +77,27 @@ public class WorldChatWindowController : IHUD
         else
             view.Hide();
     }
+
+    public void OpenLastActiveChat()
+    {
+        if (lastPrivateMessages.Count == 0)
+        {
+            OpenPublicChannel(GENERAL_CHANNEL_ID);
+            return;
+        }
+
+        var mostRecentMessagePair = lastPrivateMessages.OrderByDescending(pair => pair.Value.timestamp)
+            .First();
+        var userId = mostRecentMessagePair.Key;
+        var message = mostRecentMessagePair.Value;
+        var date = message.timestamp.ToDateTimeFromUnixTimestamp();
+        if ((DateTime.UtcNow - date).TotalSeconds <= 60.0)
+            OpenPrivateChat(userId);
+        else
+            OpenPublicChannel(GENERAL_CHANNEL_ID);
+    }
+
+    private void HandleFriendsControllerInitialization() => view.HidePrivateChatsLoading();
 
     private void OpenPrivateChat(string userId) => OnOpenPrivateChat?.Invoke(userId);
 
@@ -118,8 +140,8 @@ public class WorldChatWindowController : IHUD
     {
         if (message.messageType != ChatMessage.Type.PRIVATE) return;
         var profile = ExtractRecipient(message);
-        if (recipientsFromPrivateChats.ContainsKey(profile.userId)) return;
-        recipientsFromPrivateChats.Add(profile.userId, profile);
+        lastPrivateMessages[profile.userId] = message;
+        recipientsFromPrivateChats[profile.userId] = profile;
         view.SetPrivateChat(new PrivateChatModel
         {
             user = profile,
@@ -148,9 +170,4 @@ public class WorldChatWindowController : IHUD
 
     private UserProfile ExtractRecipient(ChatMessage message) =>
         userProfileBridge.Get(message.sender != ownUserProfile.userId ? message.sender : message.recipient);
-
-    public void OpenLastActiveChat()
-    {
-        throw new NotImplementedException();
-    }
 }

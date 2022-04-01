@@ -149,7 +149,11 @@ public class PublicChatChannelController : IHUD
         if (!visible)
             view.Hide();
         else
+        {
             view.Show();
+            chatHudController.FocusInputField();
+        }
+            
     }
 
     public bool OnPressReturn()
