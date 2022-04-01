@@ -1,11 +1,11 @@
-using DCL;
-using DCL.HelpAndSupportHUD;
-using DCL.Helpers;
-using DCL.Interface;
 using System;
 using System.Linq;
+using DCL;
+using DCL.Helpers;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Object = UnityEngine.Object;
 
 public class TaskbarHUDController : IHUD
 {
@@ -31,7 +31,7 @@ public class TaskbarHUDController : IHUD
     private InputAction_Trigger toggleWorldChatTrigger;
     private Transform experiencesViewerTransform;
 
-    public event System.Action OnAnyTaskbarButtonClicked;
+    public event Action OnAnyTaskbarButtonClicked;
 
     public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
 
@@ -179,8 +179,6 @@ public class TaskbarHUDController : IHUD
 
         view.OnAddChatWindow();
         worldChatWindowHud.View.OnClose += () => { view.friendsButton.SetToggleState(false, false); };
-
-        view.chatButton.SetToggleState(true);
         view.chatButton.SetToggleState(false);
     }
 
@@ -349,7 +347,7 @@ public class TaskbarHUDController : IHUD
             view.OnExperiencesToggleOff -= View_OnExperiencesToggleOff;
             view.OnExperiencesToggleOn -= View_OnExperiencesToggleOn;
 
-            UnityEngine.Object.Destroy(view.gameObject);
+            Object.Destroy(view.gameObject);
         }
 
         if (mouseCatcher != null)
@@ -381,7 +379,7 @@ public class TaskbarHUDController : IHUD
     {
         bool anyInputFieldIsSelected = EventSystem.current != null &&
                                        EventSystem.current.currentSelectedGameObject != null &&
-                                       EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null;
+                                       EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
 
         if (anyInputFieldIsSelected) return;
         
@@ -407,7 +405,7 @@ public class TaskbarHUDController : IHUD
     {
         bool anyInputFieldIsSelected = EventSystem.current != null &&
                                        EventSystem.current.currentSelectedGameObject != null &&
-                                       EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
+                                       EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null &&
                                        (!worldChatWindowHud.IsInputFieldFocused || !worldChatWindowHud.IsPreview);
 
         if (anyInputFieldIsSelected)
