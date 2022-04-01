@@ -15,6 +15,7 @@ internal class PreviewMenuController : IDisposable
     internal readonly PreviewMenuVisibilityToggleView showFps;
     internal readonly PreviewMenuVisibilityToggleView showBoundingBox;
     internal readonly PreviewMenuPositionView positionView;
+    internal readonly PreviewMenuVisibilityToggleView spawnPoints;
 
     public PreviewMenuController()
     {
@@ -30,12 +31,16 @@ internal class PreviewMenuController : IDisposable
         showBoundingBox = Object.Instantiate(visibilityToggleViewResource);
         showBoundingBox.SetUp("BOUNDING BOXES", IsBoundingBoxOn, OnBoundingBoxToggle);
 
+        spawnPoints = Object.Instantiate(visibilityToggleViewResource);
+        spawnPoints.SetUp("SPAWN POINTS", IsSpawnPointsOn, OnSpawnPointsToggle);
+
         var positionViewResource = Resources.Load<PreviewMenuPositionView>(POSITION_VIEW_RES_PATH);
         positionView = Object.Instantiate(positionViewResource);
 
         menuView.AddMenuItem(positionView.transform);
         menuView.AddMenuItem(showFps.transform);
         menuView.AddMenuItem(showBoundingBox.transform);
+        menuView.AddMenuItem(spawnPoints.transform);
     }
 
     public void Dispose()
@@ -44,6 +49,7 @@ internal class PreviewMenuController : IDisposable
         showBoundingBox.Dispose();
         showFps.Dispose();
         menuView.Dispose();
+        spawnPoints.Dispose();
     }
 
     private static bool IsFPSPanelOn()
@@ -71,6 +77,26 @@ internal class PreviewMenuController : IDisposable
         foreach (var sceneId in sceneIds)
         {
             DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(sceneId, isOn);
+        }
+    }
+
+    private static bool IsSpawnPointsOn()
+    {
+        return DataStore.i.debugConfig.showSceneSpawnPoints.Get()
+                        .Any(pair => pair.Value.enabled.HasValue && pair.Value.enabled.Value);
+    }
+
+    private static void OnSpawnPointsToggle(bool isOn)
+    {
+        var sceneIds = DataStore.i.debugConfig.showSceneSpawnPoints.Get()
+                                .Select(pair => pair.Key)
+                                .ToArray();
+
+        foreach (var sceneId in sceneIds)
+        {
+            var data = DataStore.i.debugConfig.showSceneSpawnPoints.Get(sceneId);
+            data.enabled = isOn;
+            DataStore.i.debugConfig.showSceneSpawnPoints.AddOrSet(sceneId, data);
         }
     }
 }
