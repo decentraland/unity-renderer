@@ -103,12 +103,12 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     [Space]
     [SerializeField] private RawImageFillParent thumbnail;
+    [SerializeField] private GameObject thumbnailGameObject;
+    [SerializeField] private GameObject thumbnailLoading;
 
     [SerializeField] private TextMeshProUGUI sceneName;
 
     [Space]
-    [SerializeField] internal GameObject coordsContainer;
-
     [SerializeField] private TextMeshProUGUI coordsText;
 
     [Space]
@@ -127,7 +127,6 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     [SerializeField] internal GameObject roleOwnerGO;
 
     [SerializeField] internal GameObject roleOperatorGO;
-    [SerializeField] internal GameObject roleContributorGO;
 
     [Space]
     [SerializeField] internal GameObject editorLockedGO;
@@ -154,7 +153,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
         jumpInButton.onClick.AddListener( JumpInButtonPressed );
         editorButton.onClick.AddListener( EditorButtonPressed );
         contextMenuButton.onClick.AddListener(() => OnContextMenuPressed?.Invoke(sceneData, this));
-        settingsButton.onClick.AddListener(() => OnSettingsPressed?.Invoke(sceneData));
+        settingsButton?.onClick.AddListener(() => OnSettingsPressed?.Invoke(sceneData));
 
         editorLockedGO.SetActive(false);
         editorLockedTooltipGO.SetActive(false);
@@ -172,7 +171,11 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
         BIWAnalytics.PlayerJumpOrEdit("Scene", "Editor", sceneData.coords, "Scene Owner");
     }
 
-    private void OnEnable() { loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail); }
+    private void OnEnable()
+    {
+        if(loadingAnimator != null)
+            loadingAnimator?.SetBool(isLoadingAnimation, isLoadingThumbnail);
+    }
 
     void ISceneCardView.Setup(ISceneData sceneData)
     {
@@ -184,7 +187,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
             sceneThumbnailUrl = MapUtils.GetMarketPlaceThumbnailUrl(sceneData.parcels,
                 THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR);
         }
-
+        
         ISceneCardView thisView = this;
         thisView.SetThumbnail(sceneThumbnailUrl);
         thisView.SetName(sceneData.name);
@@ -221,6 +224,8 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     void ISceneCardView.SetSize(Vector2Int size)
     {
+        if(sizeText == null)
+            return;
         sizeText.text = $"{size.x},{size.y}m";
         ((ISceneCardView)this).searchInfo.SetSize(size.x * size.y);
     }
@@ -233,7 +238,9 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
         this.thumbnailUrl = thumbnailUrl;
 
         isLoadingThumbnail = true;
-        loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail);
+        thumbnailLoading.SetActive(true);
+        if(loadingAnimator != null)
+            loadingAnimator?.SetBool(isLoadingAnimation, isLoadingThumbnail);
 
         if (thumbnailPromise != null)
         {
@@ -259,13 +266,17 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     {
         thumbnail.texture = thumbnailTexture ?? defaultThumbnail;
         isLoadingThumbnail = false;
-        loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail);
+        thumbnail.enabled = true;
+        thumbnailGameObject.SetActive(true);
+        thumbnailLoading.SetActive(false);
+        if(loadingAnimator != null)
+            loadingAnimator?.SetBool(isLoadingAnimation, isLoadingThumbnail);
     }
 
     void ISceneCardView.SetDeployed(bool deployed)
     {
-        coordsContainer.SetActive(deployed);
-        sizeContainer.SetActive(!deployed);
+        if(sizeContainer != null)
+            sizeContainer.SetActive(!deployed);
         jumpInButton.gameObject.SetActive(deployed);
     }
 
@@ -273,7 +284,6 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     {
         roleOwnerGO.SetActive(false);
         roleOperatorGO.SetActive(false);
-        roleContributorGO.SetActive(false);
         ((ISceneCardView)this).searchInfo.SetRole(isOwner);
 
         if (isOwner)
@@ -283,10 +293,6 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
         else if (isOperator)
         {
             roleOperatorGO.SetActive(true);
-        }
-        else if (isContributor)
-        {
-            roleContributorGO.SetActive(true);
         }
     }
 

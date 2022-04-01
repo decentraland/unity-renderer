@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Builder;
+using DCL.Components;
 using UnityEngine;
 
 public class BIWFloorHandler : BIWController, IBIWFloorHandler
@@ -40,6 +41,21 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
         floorPrefab = context.projectReferencesAsset.floorPlaceHolderPrefab;
 
         entityHandler.OnEntityDeleted += OnFloorEntityDeleted;
+    }
+
+    public override void EnterEditMode(IBuilderScene scene)
+    {
+        base.EnterEditMode(scene);
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        {
+            if(!entity.isFloor)
+                continue;
+
+            if (!entity.isLoaded)
+                entity.rootEntity.OnShapeLoaded += OnFloorLoaded;
+            else
+                OnFloorLoaded(entity.rootEntity);
+        }
     }
 
     public override void Dispose()
@@ -94,7 +110,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
     public void CreateDefaultFloor()
     {
-        CatalogItem floorSceneObject = BIWUtils.CreateFloorSceneObject();
+        CatalogItem floorSceneObject = BIWUtils.CreateFloorCatalogItem();
         CreateFloor(floorSceneObject);
     }
 
@@ -141,7 +157,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
     private void OnFloorLoaded(IDCLEntity entity)
     {
-        entity.OnShapeUpdated -= OnFloorLoaded;
+        entity.OnShapeLoaded -= OnFloorLoaded;
         loadedFloorEntities.Add(entity.entityId);
         RemovePlaceHolder(entity.entityId);
 
@@ -174,6 +190,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     {
         base.ExitEditMode();
 
+        numberOfParcelsLoaded = 0;
         RemoveAllPlaceHolders();
     }
 }

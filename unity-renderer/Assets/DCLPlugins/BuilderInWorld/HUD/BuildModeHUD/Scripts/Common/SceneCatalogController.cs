@@ -100,38 +100,49 @@ public class SceneCatalogController : ISceneCatalogController
 
     public void Dispose()
     {
-        sceneCatalogView.OnHideCatalogClicked -= HideCatalogClicked;
-
-        if (sceneCatalogView.catalogAssetPackList != null)
-            sceneCatalogView.catalogAssetPackList.OnCatalogPackClick -= OnCatalogItemPackSelected;
-
-        if (sceneCatalogView.catalogGroupList != null)
+        if (sceneCatalogView != null)
         {
-            sceneCatalogView.catalogGroupList.OnCatalogItemClicked -= CatalogItemSelected;
-            sceneCatalogView.catalogGroupList.OnCatalogItemStarDragging -= AdapterStartDrag;
-            sceneCatalogView.catalogGroupList.OnPointerEnterInAdapter -= OnPointerEnter;
-            sceneCatalogView.catalogGroupList.OnPointerExitInAdapter -= OnPointerExit;
+            sceneCatalogView.OnHideCatalogClicked -= HideCatalogClicked;
+
+            if (sceneCatalogView.catalogAssetPackList != null)
+                sceneCatalogView.catalogAssetPackList.OnCatalogPackClick -= OnCatalogItemPackSelected;
+
+            if (sceneCatalogView.catalogGroupList != null)
+            {
+                sceneCatalogView.catalogGroupList.OnCatalogItemClicked -= CatalogItemSelected;
+                sceneCatalogView.catalogGroupList.OnCatalogItemStarDragging -= AdapterStartDrag;
+                sceneCatalogView.catalogGroupList.OnPointerEnterInAdapter -= OnPointerEnter;
+                sceneCatalogView.catalogGroupList.OnPointerExitInAdapter -= OnPointerExit;
+            }
+
+            if (sceneCatalogView.category != null)
+                sceneCatalogView.category.onValueChanged.RemoveListener(CategoryFilter);
+
+            if (sceneCatalogView.favorites != null)
+                sceneCatalogView.favorites.onValueChanged.RemoveListener(FavoritesFilter);
+
+            if (sceneCatalogView.assetPack != null)
+                sceneCatalogView.assetPack.onValueChanged.RemoveListener(AssetsPackFilter);
+
+            sceneCatalogView.OnSceneCatalogBack -= SceneCatalogBack;
         }
 
-        if (sceneCatalogView.category != null)
-            sceneCatalogView.category.onValueChanged.RemoveListener(CategoryFilter);
+        if (quickBarController != null)
+        {
+            quickBarController.OnQuickBarShortcutSelected -= QuickBarInput;
+            quickBarController.OnCatalogItemSelected -= CatalogItemSelected;
+        }
 
-        if (sceneCatalogView.favorites != null)
-            sceneCatalogView.favorites.onValueChanged.RemoveListener(FavoritesFilter);
+        if (biwSearchBarController != null)
+        {
+            biwSearchBarController.OnFilterChange -= AssetsFiltered;
+            biwSearchBarController.OnFilterRemove -= FilterRemoved;
+            
+            biwSearchBarController.Dispose();
+        }
 
-        if (sceneCatalogView.assetPack != null)
-            sceneCatalogView.assetPack.onValueChanged.RemoveListener(AssetsPackFilter);
-
-        sceneCatalogView.OnSceneCatalogBack -= SceneCatalogBack;
-
-        quickBarController.OnQuickBarShortcutSelected -= QuickBarInput;
-        quickBarController.OnCatalogItemSelected -= CatalogItemSelected;
-
-        biwSearchBarController.OnFilterChange -= AssetsFiltered;
-        biwSearchBarController.OnFilterRemove -= FilterRemoved;
-
-        favoritesController.Dispose();
-        biwSearchBarController.Dispose();
+        if(favoritesController != null)
+            favoritesController.Dispose();
     }
 
     public BuildModeCatalogSection GetCurrentSection() { return currentSection; }

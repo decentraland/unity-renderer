@@ -17,7 +17,8 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playerPositionText;
 
     [Header("Options")] [SerializeField] private Button optionsButton;
-    [SerializeField] private GameObject optionsPanel;
+    [SerializeField] private GameObject sceneOptionsPanel;
+    [SerializeField] private ToggleComponentView toggleSceneUI;
     [SerializeField] private Button addBookmarkButton;
     [SerializeField] private Button reportSceneButton;
     [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
@@ -34,9 +35,10 @@ public class MinimapHUDView : MonoBehaviour
     public void Initialize(MinimapHUDController controller)
     {
         gameObject.name = VIEW_OBJECT_NAME;
-        optionsPanel.SetActive(false);
+        sceneOptionsPanel.SetActive(false);
 
         optionsButton.onClick.AddListener(controller.ToggleOptions);
+        toggleSceneUI.onToggleChange.AddListener(controller.ToggleSceneUI);
         addBookmarkButton.onClick.AddListener(controller.AddBookmark);
         reportSceneButton.onClick.AddListener(controller.ReportScene);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
@@ -65,7 +67,7 @@ public class MinimapHUDView : MonoBehaviour
         playerPositionText.text = model.playerPosition;
     }
 
-    public void ToggleOptions() { optionsPanel.SetActive(!optionsPanel.activeSelf); }
+    public void ToggleOptions() { sceneOptionsPanel.SetActive(!sceneOptionsPanel.activeSelf); }
 
     public void SetVisibility(bool visible)
     {

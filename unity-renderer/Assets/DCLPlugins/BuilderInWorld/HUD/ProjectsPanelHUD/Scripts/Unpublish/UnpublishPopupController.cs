@@ -15,11 +15,14 @@ internal class UnpublishPopupController : IDisposable
 
     private IUnpublishPopupView view;
     private Vector2Int coordinates;
+    private Vector2Int size;
     private Scene.Source source;
     private Coroutine fakeProgressRoutine = null;
+    private IContext context;
 
-    public UnpublishPopupController(IUnpublishPopupView view)
+    public UnpublishPopupController(IContext context,IUnpublishPopupView view)
     {
+        this.context = context;
         this.view = view;
         view.OnCancelPressed += OnCancel;
         view.OnConfirmPressed += OnConfirmUnpublish;
@@ -38,18 +41,19 @@ internal class UnpublishPopupController : IDisposable
         }
     }
 
-    public void Show(Vector2Int coordinates, Scene.Source source = Scene.Source.BUILDER_IN_WORLD)
+    public void Show(Vector2Int coordinates, Vector2Int sceneSize, Scene.Source source = Scene.Source.BUILDER_IN_WORLD)
     {
         this.coordinates = coordinates;
         this.source = source;
+        this.size = sceneSize;
         view.Show(TITLE, DESCRIPTION);
     }
 
     void OnConfirmUnpublish()
     {
+        context.publisher.Unpublish(coordinates,size);
         BIWAnalytics.PlayerUnpublishScene(source.ToString(), coordinates);
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
-        WebInterface.UnpublishScene(coordinates);
         fakeProgressRoutine = CoroutineStarter.Start(ProgressRoutine());
     }
 

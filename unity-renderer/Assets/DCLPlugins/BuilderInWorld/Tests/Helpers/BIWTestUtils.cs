@@ -20,6 +20,13 @@ using Object = UnityEngine.Object;
 
 public static class BIWTestUtils
 {
+    public static IBuilderScene CreateBuilderSceneFromParcelScene(ParcelScene scene)
+    {
+        IBuilderScene builderScene = Substitute.For<IBuilderScene>();
+        builderScene.Configure().scene.Returns(scene);
+        return builderScene;
+    }
+    
     public static ISceneReferences CreateMockedInitialSceneReference()
     {
         ISceneReferences sceneReferences = SceneReferences.i;
@@ -43,7 +50,7 @@ public static class BIWTestUtils
             sceneReferences.Configure().mainCamera.Returns(Camera.main);
 
             sceneReferences.When( x => x.Dispose())
-                .Do( x => Object.Destroy(gameObjectToDestroy));
+                           .Do( x => Object.Destroy(gameObjectToDestroy));
         }
 
         return sceneReferences;
@@ -58,6 +65,7 @@ public static class BIWTestUtils
             Substitute.For<ISceneManager>(),
             Substitute.For<ICameraController>(),
             Substitute.For<IPublisher>(),
+            Substitute.For<ICommonHUD>(),
             Substitute.For<IBuilderEditorHUDController>(),
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
@@ -85,6 +93,7 @@ public static class BIWTestUtils
             Substitute.For<ISceneManager>(),
             Substitute.For<ICameraController>(),
             Substitute.For<IPublisher>(),
+            Substitute.For<ICommonHUD>(),
             Substitute.For<IBuilderEditorHUDController>(),
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
@@ -112,6 +121,7 @@ public static class BIWTestUtils
         ISceneManager sceneManager = Substitute.For<ISceneManager>();
         ICameraController cameraController = Substitute.For<ICameraController>();
         IPublisher publisher =  Substitute.For<IPublisher>();
+        ICommonHUD commonHUD =  Substitute.For<ICommonHUD>();
 
         IBIWOutlinerController outliner = Substitute.For<IBIWOutlinerController>();
         IBIWInputHandler inputHandler = Substitute.For<IBIWInputHandler>();
@@ -148,6 +158,9 @@ public static class BIWTestUtils
                     break;
                 case IPublisher ip:
                     publisher = ip;
+                    break;
+                case ICommonHUD cHUD:
+                    commonHUD = cHUD;
                     break;
                 case IBuilderEditorHUDController ehc:
                     editorHUD = ehc;
@@ -200,6 +213,7 @@ public static class BIWTestUtils
             sceneManager,
             cameraController,
             publisher,
+            commonHUD,
             editorHUD,
             outliner,
             inputHandler,
