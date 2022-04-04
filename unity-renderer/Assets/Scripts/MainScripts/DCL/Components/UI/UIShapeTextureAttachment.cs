@@ -7,6 +7,7 @@ namespace DCL.Components
     {
         UIShape shape;
 
+        public ISharedComponent component => shape;
         public event Action<ITextureAttachment> OnUpdate;
         public event Action<ITextureAttachment> OnDetach;
         public event Action<ITextureAttachment> OnAttach;

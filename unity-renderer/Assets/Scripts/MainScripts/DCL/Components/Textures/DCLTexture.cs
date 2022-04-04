@@ -6,6 +6,7 @@ using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DCL
 {
@@ -30,6 +31,9 @@ namespace DCL
         }
 
         AssetPromise_Texture texturePromise = null;
+
+        private Dictionary<ITextureAttachment, HashSet<string>> attachedComponents =
+            new Dictionary<ITextureAttachment, HashSet<string>>();
 
         public TextureWrapMode unityWrap;
         public FilterMode unitySamplingMode;
@@ -149,27 +153,57 @@ namespace DCL
 
         public virtual void AttachTo(ITextureAttachment attachment = null)
         {
-            AddRefCount();
+            AddReference(attachment);
         }
 
         public virtual void DetachFrom(ITextureAttachment attachment = null)
         {
-            RemoveRefCount();
+            RemoveReference(attachment);
         }
 
         protected int refCount;
 
-        public void AddRefCount() { refCount++; }
+        public void AddReference(ITextureAttachment attachment)
+        {
+            refCount++;
 
-        public void RemoveRefCount()
+            if (attachedComponents.ContainsKey(attachment))
+                return;
+
+            attachedComponents.Add(attachment, new HashSet<string>());
+
+            foreach (var entity in attachment.component.GetAttachedEntities())
+            {
+                attachedComponents[attachment].Add(entity.entityId);
+                DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, entity.entityId, texture);
+            }
+        }
+
+        public void RemoveReference(ITextureAttachment attachment)
         {
             if (refCount == 0)
                 Dispose();
+
+            if (!attachedComponents.ContainsKey(attachment))
+                return;
+
+            foreach (var entityId in attachedComponents[attachment])
+            {
+                DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, entityId, texture);
+            }
+
+            attachedComponents.Remove(attachment);
         }
 
         public override void Dispose()
         {
             isDisposed = true;
+
+            while (attachedComponents.Count > 0)
+            {
+                RemoveReference(attachedComponents.First().Key);
+            }
+
             if (texturePromise != null)
             {
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);

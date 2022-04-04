@@ -6,7 +6,9 @@ namespace DCL.Components
 {
     public class ComponentTextureAttachment : ITextureAttachment
     {
-        BaseDisposable component;
+        public ISharedComponent component => disposableComponent;
+
+        private BaseDisposable disposableComponent;
 
         private Action<ITextureAttachment> OnUpdateEvent;
 
@@ -39,8 +41,8 @@ namespace DCL.Components
             {
                 if ( OnDetachEvent == null || OnDetachEvent.GetInvocationList().Length == 0 )
                 {
-                    component.OnDetach -= OnComponentDetach;
-                    component.OnDetach += OnComponentDetach;
+                    disposableComponent.OnDetach -= OnComponentDetach;
+                    disposableComponent.OnDetach += OnComponentDetach;
                 }
 
                 OnDetachEvent += value;
@@ -51,7 +53,7 @@ namespace DCL.Components
 
                 if ( OnDetachEvent != null && OnDetachEvent.GetInvocationList().Length == 0 )
                 {
-                    component.OnDetach -= OnComponentDetach;
+                    disposableComponent.OnDetach -= OnComponentDetach;
                 }
             }
         }
@@ -64,8 +66,8 @@ namespace DCL.Components
             {
                 if ( OnAttachEvent == null || OnAttachEvent.GetInvocationList().Length == 0 )
                 {
-                    component.OnAttach -= OnComponentAttach;
-                    component.OnAttach += OnComponentAttach;
+                    disposableComponent.OnAttach -= OnComponentAttach;
+                    disposableComponent.OnAttach += OnComponentAttach;
                 }
 
                 OnAttachEvent += value;
@@ -76,29 +78,30 @@ namespace DCL.Components
 
                 if ( OnAttachEvent != null && OnAttachEvent.GetInvocationList().Length == 0 )
                 {
-                    component.OnAttach -= OnComponentAttach;
+                    disposableComponent.OnAttach -= OnComponentAttach;
                 }
             }
         }
 
         public ComponentTextureAttachment(BaseDisposable component)
         {
-            this.component = component;
+            this.disposableComponent = component;
         }
 
         public void Dispose()
         {
-            component.OnAttach -= OnComponentAttach;
-            component.OnDetach -= OnComponentDetach;
+            disposableComponent.OnAttach -= OnComponentAttach;
+            disposableComponent.OnDetach -= OnComponentDetach;
             UnsubscribeToEntityUpdates();
         }
 
         float ITextureAttachment.GetClosestDistanceSqr(Vector3 fromPosition)
         {
             float dist = int.MaxValue;
-            if (component.attachedEntities.Count > 0)
+
+            if (disposableComponent.attachedEntities.Count > 0)
             {
-                using (var iterator = component.attachedEntities.GetEnumerator())
+                using (var iterator = disposableComponent.attachedEntities.GetEnumerator())
                 {
                     while (iterator.MoveNext())
                     {
@@ -118,9 +121,9 @@ namespace DCL.Components
 
         bool ITextureAttachment.IsVisible()
         {
-            if (component.attachedEntities.Count > 0)
+            if (disposableComponent.attachedEntities.Count > 0)
             {
-                using (var iterator = component.attachedEntities.GetEnumerator())
+                using (var iterator = disposableComponent.attachedEntities.GetEnumerator())
                 {
                     while (iterator.MoveNext())
                     {
@@ -137,7 +140,7 @@ namespace DCL.Components
 
         public string GetId()
         {
-            return component.id;
+            return disposableComponent.id;
         }
 
         bool IsEntityVisible(IDCLEntity entity)
@@ -166,9 +169,9 @@ namespace DCL.Components
 
         private void UnsubscribeToEntityUpdates()
         {
-            if (component.attachedEntities.Count > 0)
+            if (disposableComponent.attachedEntities.Count > 0)
             {
-                using (var iterator = component.attachedEntities.GetEnumerator())
+                using (var iterator = disposableComponent.attachedEntities.GetEnumerator())
                 {
                     while (iterator.MoveNext())
                     {
@@ -181,9 +184,9 @@ namespace DCL.Components
 
         private void SubscribeToEntityUpdates()
         {
-            if (component.attachedEntities.Count > 0)
+            if (disposableComponent.attachedEntities.Count > 0)
             {
-                using (var iterator = component.attachedEntities.GetEnumerator())
+                using (var iterator = disposableComponent.attachedEntities.GetEnumerator())
                 {
                     while (iterator.MoveNext())
                     {

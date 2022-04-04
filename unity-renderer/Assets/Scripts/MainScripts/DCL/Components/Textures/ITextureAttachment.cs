@@ -5,6 +5,7 @@ namespace DCL.Components
 {
     public interface ITextureAttachment : IDisposable
     {
+        ISharedComponent component { get; }
         event System.Action<ITextureAttachment> OnUpdate;
         event System.Action<ITextureAttachment> OnDetach;
         event System.Action<ITextureAttachment> OnAttach;

@@ -10,6 +10,8 @@ namespace DCL.Components
     public abstract class BaseDisposable : IDelayedComponent, ISharedComponent
     {
         public virtual string componentName => GetType().Name;
+        public event Action<IDCLEntity> OnAttach;
+        public event Action<IDCLEntity> OnDetach;
         public string id { get; private set; }
         public IParcelScene scene { get; private set; }
 
@@ -26,8 +28,6 @@ namespace DCL.Components
         public Coroutine routine => updateHandler.routine;
         public bool isRoutineRunning => updateHandler.isRoutineRunning;
 
-        public event System.Action<IDCLEntity> OnAttach;
-        public event System.Action<IDCLEntity> OnDetach;
         public event System.Action<BaseDisposable> OnDispose;
         public event Action<BaseDisposable> OnAppliedChanges;
 
