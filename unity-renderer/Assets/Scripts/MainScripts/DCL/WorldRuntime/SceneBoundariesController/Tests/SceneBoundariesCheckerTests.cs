@@ -9,6 +9,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Helpers.NFT;
 using DCL.Helpers.NFT.Markets;
+using NFTShape_Internal;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -26,8 +27,9 @@ namespace SceneBoundariesCheckerTests
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
+            TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
         }
-
+        
         protected override ServiceLocator InitializeServiceLocator()
         {
             ServiceLocator result = base.InitializeServiceLocator();
@@ -35,20 +37,11 @@ namespace SceneBoundariesCheckerTests
             result.Register<IServiceProviders>(
                 () =>
                 {
-                    var openSea = Substitute.For<INFTMarket>();
-
-                    openSea.FetchNFTInfo(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<System.Action<NFTInfo>>(),
-                        Arg.Any<Action<string>>()).Returns((x) =>
-                    {
-                        x.Arg<System.Action<NFTInfo>>().Invoke(new NFTInfo());
-                        return null;
-                    });
-
                     var mockedProviders = Substitute.For<IServiceProviders>();
                     mockedProviders.theGraph.Returns(Substitute.For<ITheGraph>());
                     mockedProviders.analytics.Returns(Substitute.For<IAnalytics>());
                     mockedProviders.catalyst.Returns(Substitute.For<ICatalyst>());
-                    mockedProviders.openSea.Returns(openSea);
+                    mockedProviders.openSea.Returns(Substitute.For<INFTMarket>());
                     return mockedProviders;
                 });
             return result;

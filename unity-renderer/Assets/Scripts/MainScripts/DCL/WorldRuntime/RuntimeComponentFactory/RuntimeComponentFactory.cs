@@ -28,12 +28,20 @@ namespace DCL
             poolableComponentFactory.PrewarmPools();
         }
 
-        public void RegisterComponentBuilder(int id, Func<IComponent> builder)
+        public void RegisterBuilder(int classId, Func<IComponent> builder)
         {
-            if (builders.ContainsKey(id))
-                builders[id] = (id) => builder();
+            if (builders.ContainsKey(classId))
+                builders[classId] = (id) => builder();
             else
-                builders.Add(id, (id) => builder());
+                builders.Add(classId, (id) => builder());
+        }
+
+        public void UnregisterBuilder(int classId)
+        {
+            if (!builders.ContainsKey(classId))
+                return;
+
+            builders.Remove(classId);
         }
 
         public RuntimeComponentFactory(IPoolableComponentFactory poolableComponentFactory = null)
@@ -51,7 +59,6 @@ namespace DCL
             builders.Add((int) CLASS_ID.CONE_SHAPE, BuildComponent<ConeShape>);
             builders.Add((int) CLASS_ID.PLANE_SHAPE, BuildComponent<PlaneShape>);
             builders.Add((int) CLASS_ID.GLTF_SHAPE, BuildComponent<GLTFShape>);
-            builders.Add((int) CLASS_ID.NFT_SHAPE, BuildComponent<NFTShape>);
             builders.Add((int) CLASS_ID.OBJ_SHAPE, BuildComponent<OBJShape>);
             builders.Add((int) CLASS_ID_COMPONENT.TEXT_SHAPE, BuildPoolableComponent);
 

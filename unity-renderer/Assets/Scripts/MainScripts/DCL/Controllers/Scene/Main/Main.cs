@@ -124,7 +124,9 @@ namespace DCL
         }
         private static bool ApplicationWantsToQuit()
         {
-            i.Dispose();
+            if (i != null)
+                i.Dispose();
+    
             return true;
         }
 

@@ -7,6 +7,8 @@ namespace DCL
     {
         IComponent CreateComponent(int classId);
 
-        void RegisterComponentBuilder(int classId, Func<IComponent> builder);
+        void RegisterBuilder(int classId, Func<IComponent> builder);
+
+        void UnregisterBuilder(int classId);
     }
 }
