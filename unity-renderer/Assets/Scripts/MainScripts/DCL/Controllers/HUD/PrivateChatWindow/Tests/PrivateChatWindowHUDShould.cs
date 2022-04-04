@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
 using NSubstitute;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
@@ -179,7 +180,8 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IUserProfileBridge>(),
             chatController,
             Substitute.For<IFriendsController>(),
-            Substitute.For<IPlayerPrefs>());
+            Substitute.For<IPlayerPrefs>(),
+            ScriptableObject.CreateInstance<InputAction_Trigger>());
         controller.Initialize(view);
         controller.Configure(testProfileModel.userId);
         controller.SetVisibility(true);

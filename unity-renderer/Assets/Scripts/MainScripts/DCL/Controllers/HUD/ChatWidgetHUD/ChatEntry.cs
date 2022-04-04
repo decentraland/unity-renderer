@@ -128,14 +128,12 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         {
             if (username != null)
                 username.text = userString;
-
             body.text = $"{userString} {chatEntryModel.bodyText}";
         }
         else
         {
             if (username != null)
                 username.text = "";
-
             body.text = $"{chatEntryModel.bodyText}";
         }
 
@@ -352,7 +350,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         }
     }
 
-    string RemoveTabs(string text)
+    private string RemoveTabs(string text)
     {
         if (string.IsNullOrEmpty(text))
             return "";

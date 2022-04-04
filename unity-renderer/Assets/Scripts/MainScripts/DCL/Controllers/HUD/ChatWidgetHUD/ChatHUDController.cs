@@ -1,7 +1,7 @@
 using System;
+using System.Text.RegularExpressions;
 using DCL;
 using DCL.Interface;
-using UnityEngine;
 
 public class ChatHUDController : IDisposable
 {
@@ -13,16 +13,19 @@ public class ChatHUDController : IDisposable
 
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
+    private readonly bool detectWhisper;
     private readonly RegexProfanityFilter profanityFilter;
-    private InputAction_Trigger closeWindowTrigger;
+    private readonly Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private IChatHUDComponentView view;
 
     public ChatHUDController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
+        bool detectWhisper,
         RegexProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
+        this.detectWhisper = detectWhisper;
         this.profanityFilter = profanityFilter;
     }
 
@@ -38,10 +41,6 @@ public class ChatHUDController : IDisposable
         this.view.OnSendMessage += HandleSendMessage;
         this.view.OnMessageUpdated -= HandleMessageUpdated;
         this.view.OnMessageUpdated += HandleMessageUpdated;
-
-        closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
-        closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
-        closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
     }
 
     public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false)
@@ -74,18 +73,24 @@ public class ChatHUDController : IDisposable
         view.OnMessageUpdated -= HandleMessageUpdated;
         view.OnSendMessage -= HandleSendMessage;
         view.OnInputFieldSelected -= HandleInputFieldSelection;
-        closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
         OnSendMessage = null;
         OnMessageUpdated = null;
         OnInputFieldSelected = null;
         view.Dispose();
     }
 
-    public ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)
-    {
-        ChatEntry.Model model = new ChatEntry.Model();
+    public void ClearAllEntries() => view.ClearAllEntries();
 
-        var ownProfile = UserProfile.GetOwnUserProfile();
+    public void ResetInputField(bool loseFocus = false) => view.ResetInputField(loseFocus);
+
+    public void FocusInputField() => view.FocusInputField();
+
+    public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
+
+    private ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)
+    {
+        var model = new ChatEntry.Model();
+        var ownProfile = userProfileBridge.GetOwn();
 
         model.messageType = message.messageType;
         model.bodyText = message.body;
@@ -125,17 +130,7 @@ public class ChatHUDController : IDisposable
         return model;
     }
 
-    public void ClearAllEntries() => view.ClearAllEntries();
-
-    public void ResetInputField(bool loseFocus = false) => view.ResetInputField(loseFocus);
-
-    public void FocusInputField() => view.FocusInputField();
-
-    public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
-
     private void ContextMenu_OnShowMenu() => view.OnMessageCancelHover();
-
-    private void OnCloseButtonPressed(DCLAction_Trigger action) => view.Hide();
 
     private bool IsProfanityFilteringEnabled()
     {
@@ -145,7 +140,25 @@ public class ChatHUDController : IDisposable
 
     private void HandleMessageUpdated(string obj) => OnMessageUpdated?.Invoke(obj);
 
-    private void HandleSendMessage(ChatMessage obj) => OnSendMessage?.Invoke(obj);
+    private void HandleSendMessage(ChatMessage message)
+    {
+        ApplyWhisperAttributes(message);
+        OnSendMessage?.Invoke(message);
+    }
+
+    private void ApplyWhisperAttributes(ChatMessage message)
+    {
+        if (!detectWhisper) return;
+        var body = message.body;
+        if (string.IsNullOrWhiteSpace(body)) return;
+        
+        var match = whisperRegex.Match(body);
+        if (!match.Success) return;
+        
+        message.messageType = ChatMessage.Type.PRIVATE;
+        message.recipient = match.Groups[2].Value;
+        message.body = match.Groups[4].Value;
+    }
 
     private void HandleInputFieldSelection() => OnInputFieldSelected?.Invoke();
 }

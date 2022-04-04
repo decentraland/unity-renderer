@@ -35,14 +35,12 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     [NonSerialized] protected List<DateSeparatorEntry> dateSeparators = new List<DateSeparatorEntry>();
 
     private readonly ChatMessage currentMessage = new ChatMessage();
-    private readonly Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private readonly List<ChatEntry.Model> lastMessages = new List<ChatEntry.Model>();
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
 
     private readonly Dictionary<Action, UnityAction<string>> inputFieldListeners =
         new Dictionary<Action, UnityAction<string>>();
 
-    private Match whisperRegexMatch;
     private bool enableFadeoutMode;
 
     public event Action<string> OnMessageUpdated;
@@ -103,18 +101,6 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         currentMessage.sender = UserProfile.GetOwnUserProfile().userId;
         currentMessage.messageType = ChatMessage.Type.NONE;
         currentMessage.recipient = string.Empty;
-
-        if (detectWhisper && !string.IsNullOrWhiteSpace(message))
-        {
-            whisperRegexMatch = whisperRegex.Match(message);
-
-            if (whisperRegexMatch.Success)
-            {
-                currentMessage.messageType = ChatMessage.Type.PRIVATE;
-                currentMessage.recipient = whisperRegexMatch.Groups[2].Value;
-                currentMessage.body = whisperRegexMatch.Groups[4].Value;
-            }
-        }
 
         // A TMP_InputField is automatically marked as 'wasCanceled' when the ESC key is pressed
         if (inputField.wasCanceled)

@@ -45,7 +45,8 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
         controller = new PublicChatChannelController(chatController, mouseCatcher,
             Substitute.For<IPlayerPrefs>(),
             ScriptableObject.CreateInstance<LongVariable>(),
-            Substitute.For<IUserProfileBridge>());
+            Substitute.For<IUserProfileBridge>(),
+            ScriptableObject.CreateInstance<InputAction_Trigger>());
         chatController = new ChatController_Mock();
         mouseCatcher = new MouseCatcher_Mock();
 
@@ -166,7 +167,7 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
 
         yield return null;
 
-        Assert.AreEqual(controller.lastPrivateMessageReceivedSender, model.name);
+        Assert.AreEqual(controller.lastPrivateMessageRecipient, model.name);
 
         internalChatView.OnMessageUpdated += Raise.Event<Action<string>>("/r ");
 

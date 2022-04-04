@@ -3,13 +3,10 @@ using System.Linq;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
-using TMPro;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class PublicChatChannelController : IHUD
 {
-    private const string PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES = "LastReadWorldChatMessages";
+    private const string LAST_READ_MESSAGES_PREFS_KEY = "LastReadWorldChatMessages";
 
     public IChannelChatWindowView view;
     public event Action OnBack;
@@ -20,48 +17,46 @@ public class PublicChatChannelController : IHUD
     private readonly IPlayerPrefs playerPrefs;
     private readonly LongVariable lastReadWorldChatMessages;
     private readonly IUserProfileBridge userProfileBridge;
+    private readonly InputAction_Trigger closeWindowTrigger;
     private ChatHUDController chatHudController;
-    private int invalidSubmitLastFrame;
-    private ChatMessage lastWhisperMessageSent;
 
-    internal string lastPrivateMessageReceivedSender = string.Empty;
+    internal string lastPrivateMessageRecipient = string.Empty;
+    private double initTimeInSeconds;
 
     private UserProfile ownProfile => UserProfile.GetOwnUserProfile();
-    private bool isSocialBarV1Enabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("social_bar_v1");
 
     public PublicChatChannelController(IChatController chatController,
         IMouseCatcher mouseCatcher,
         IPlayerPrefs playerPrefs,
         LongVariable lastReadWorldChatMessages,
-        IUserProfileBridge userProfileBridge)
+        IUserProfileBridge userProfileBridge,
+        InputAction_Trigger closeWindowTrigger)
     {
         this.chatController = chatController;
         this.mouseCatcher = mouseCatcher;
         this.playerPrefs = playerPrefs;
         this.lastReadWorldChatMessages = lastReadWorldChatMessages;
         this.userProfileBridge = userProfileBridge;
+        this.closeWindowTrigger = closeWindowTrigger;
     }
 
     public void Initialize(IChannelChatWindowView view = null)
     {
-        if (view == null)
-        {
-            if (isSocialBarV1Enabled)
-                view = PublicChatChannelComponentView.Create();
-            else
-                view = ChannelChatWindowView.Create();
-        }
-        
+        view ??= PublicChatChannelComponentView.Create();
         this.view = view;
         view.OnClose += HandleViewClosed;
         view.OnBack += HandleViewBacked;
+        closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
+        closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
 
         chatHudController = new ChatHUDController(DataStore.i,
             new UserProfileWebInterfaceBridge(),
+            true,
             ProfanityFilterSharedInstances.regexFilter);
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnSendMessage += SendChatMessage;
-        chatHudController.OnMessageUpdated += OnMessageUpdated;
+        chatHudController.OnMessageUpdated += HandleMessageInputUpdated;
+        chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
         LoadLatestReadWorldChatMessagesStatus();
 
         if (chatController != null)
@@ -74,6 +69,8 @@ public class PublicChatChannelController : IHUD
         {
             mouseCatcher.OnMouseLock += view.ActivatePreview;
         }
+        
+        initTimeInSeconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
     }
 
     public void Setup(string channelId)
@@ -100,7 +97,7 @@ public class PublicChatChannelController : IHUD
             mouseCatcher.OnMouseLock -= view.ActivatePreview;
 
         chatHudController.OnSendMessage -= SendChatMessage;
-        chatHudController.OnMessageUpdated -= OnMessageUpdated;
+        chatHudController.OnMessageUpdated -= HandleMessageInputUpdated;
 
         view?.Dispose();
     }
@@ -110,14 +107,10 @@ public class PublicChatChannelController : IHUD
         bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
         bool isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
         
-        if (isPrivateMessage && !string.IsNullOrEmpty(message.body))
-            lastWhisperMessageSent = message;
+        if (isPrivateMessage && isValidMessage)
+            lastPrivateMessageRecipient = message.recipient;
         else
-            lastWhisperMessageSent = null;
-
-        chatHudController.SetInputFieldText(lastWhisperMessageSent != null
-            ? $"/w {lastWhisperMessageSent.recipient} "
-            : string.Empty);
+            lastPrivateMessageRecipient = null;
 
         if (!isValidMessage)
         {
@@ -126,8 +119,7 @@ public class PublicChatChannelController : IHUD
             if (!isPrivateMessage && !view.IsPreview)
             {
                 view.ActivatePreview();
-                SceneReferences.i.mouseCatcher.LockCursor();
-                invalidSubmitLastFrame = Time.frameCount;
+                mouseCatcher.LockCursor();
             }
 
             return;
@@ -137,9 +129,7 @@ public class PublicChatChannelController : IHUD
         chatHudController.FocusInputField();
 
         if (isPrivateMessage)
-        {
             message.body = $"/w {message.recipient} {message.body}";
-        }
 
         chatController.Send(message);
     }
@@ -151,26 +141,12 @@ public class PublicChatChannelController : IHUD
         else
         {
             view.Show();
+            MarkChatMessagesAsRead();
             chatHudController.FocusInputField();
         }
-            
     }
 
-    public bool OnPressReturn()
-    {
-        if (EventSystem.current != null &&
-            EventSystem.current.currentSelectedGameObject != null &&
-            EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null)
-            return false;
-
-        if (Time.frameCount - invalidSubmitLastFrame < 2)
-            return false;
-
-        ForceFocus();
-        return true;
-    }
-    
-    public void MarkChatMessagesAsRead(long timestamp = 0)
+    private void MarkChatMessagesAsRead(long timestamp = 0)
     {
         long timeMark = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         if (timestamp != 0 && timestamp > timeMark)
@@ -182,45 +158,36 @@ public class PublicChatChannelController : IHUD
 
     public void ResetInputField() => chatHudController.ResetInputField();
 
-    private void ForceFocus(string setInputText = null)
-    {
-        SetVisibility(true);
-        chatHudController.FocusInputField();
-        view.DeactivatePreview();
-        SceneReferences.i?.mouseCatcher.UnlockCursor();
-
-        if (!string.IsNullOrEmpty(setInputText))
-            chatHudController.SetInputFieldText(setInputText);
-    }
+    private void HandleCloseInputTriggered(DCLAction_Trigger action) => HandleViewClosed();
 
     private void SaveLatestReadWorldChatMessagesStatus()
     {
-        playerPrefs.Set(PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES,
+        playerPrefs.Set(LAST_READ_MESSAGES_PREFS_KEY,
             lastReadWorldChatMessages.Get().ToString());
         playerPrefs.Save();
     }
 
     private void HandleViewClosed() => OnClosed?.Invoke();
-    
+
     private void HandleViewBacked() => OnBack?.Invoke();
 
-    private void OnMessageUpdated(string message)
+    private void HandleMessageInputUpdated(string message)
     {
-        if (!string.IsNullOrEmpty(lastPrivateMessageReceivedSender) && message == "/r ")
-            chatHudController.SetInputFieldText($"/w {lastPrivateMessageReceivedSender} ");
+        if (!string.IsNullOrEmpty(lastPrivateMessageRecipient) && message == "/r ")
+            chatHudController.SetInputFieldText($"/w {lastPrivateMessageRecipient} ");
+    }
+    
+    private void HandleInputFieldSelected()
+    {
+        if (string.IsNullOrEmpty(lastPrivateMessageRecipient)) return;
+        chatHudController.SetInputFieldText($"/w {lastPrivateMessageRecipient} ");
     }
 
     private bool IsOldPrivateMessage(ChatMessage message)
     {
-        if (message.messageType != ChatMessage.Type.PRIVATE)
-            return false;
-
-        double timestampAsSeconds = message.timestamp / 1000.0f;
-
-        if (timestampAsSeconds < chatController.initTime)
-            return true;
-
-        return false;
+        if (message.messageType != ChatMessage.Type.PRIVATE) return false;
+        var timestampInSeconds = message.timestamp / 1000.0;
+        return timestampInSeconds < initTimeInSeconds;
     }
 
     private void HandleMessageReceived(ChatMessage message)
@@ -230,14 +197,14 @@ public class PublicChatChannelController : IHUD
         chatHudController.AddChatMessage(message, view.IsPreview);
 
         if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
-            lastPrivateMessageReceivedSender = userProfileBridge.Get(message.sender).userName;
+            lastPrivateMessageRecipient = userProfileBridge.Get(message.sender).userName;
     }
 
     private void LoadLatestReadWorldChatMessagesStatus()
     {
         CommonScriptableObjects.lastReadWorldChatMessages.Set(0);
         string storedLastReadWorldChatMessagesString =
-            PlayerPrefsUtils.GetString(PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES);
+            PlayerPrefsUtils.GetString(LAST_READ_MESSAGES_PREFS_KEY);
         CommonScriptableObjects.lastReadWorldChatMessages.Set(Convert.ToInt64(
             string.IsNullOrEmpty(storedLastReadWorldChatMessagesString)
                 ? 0

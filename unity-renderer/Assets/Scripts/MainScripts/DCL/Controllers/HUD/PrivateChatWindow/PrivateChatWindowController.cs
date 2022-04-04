@@ -19,6 +19,7 @@ public class PrivateChatWindowController : IHUD
     private readonly IChatController chatController;
     private readonly IFriendsController friendsController;
     private readonly IPlayerPrefs playerPrefs;
+    private readonly InputAction_Trigger closeWindowTrigger;
     private string conversationUserName = string.Empty;
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
@@ -31,13 +32,15 @@ public class PrivateChatWindowController : IHUD
         IUserProfileBridge userProfileBridge,
         IChatController chatController,
         IFriendsController friendsController,
-        IPlayerPrefs playerPrefs)
+        IPlayerPrefs playerPrefs,
+        InputAction_Trigger closeWindowTrigger)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
         this.chatController = chatController;
         this.friendsController = friendsController;
         this.playerPrefs = playerPrefs;
+        this.closeWindowTrigger = closeWindowTrigger;
     }
 
     public void Initialize(IPrivateChatComponentView view = null)
@@ -56,8 +59,10 @@ public class PrivateChatWindowController : IHUD
         view.OnClose -= OnCloseView;
         view.OnClose += OnCloseView;
         view.OnMinimize += OnMinimizeView;
+        closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
+        closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
 
-        chatHudController = new ChatHUDController(DataStore.i, userProfileBridge);
+        chatHudController = new ChatHUDController(DataStore.i, userProfileBridge, false);
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnInputFieldSelected -= HandleInputFieldSelection;
         chatHudController.OnInputFieldSelected += HandleInputFieldSelection;
@@ -71,8 +76,6 @@ public class PrivateChatWindowController : IHUD
             chatController.OnAddMessage += HandleMessageReceived;
         }
     }
-
-    private void OnMinimizeView() => SetVisibility(false);
 
     public void Configure(string newConversationUserId)
     {
@@ -166,6 +169,10 @@ public class PrivateChatWindowController : IHUD
         SetVisibility(true);
         chatHudController.FocusInputField();
     }
+
+    private void HandleCloseInputTriggered(DCLAction_Trigger action) => OnCloseView();
+
+    private void OnMinimizeView() => SetVisibility(false);
 
     private void HandleMessageReceived(ChatMessage message)
     {

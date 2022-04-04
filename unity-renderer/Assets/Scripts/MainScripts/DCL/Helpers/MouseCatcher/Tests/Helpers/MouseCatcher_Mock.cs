@@ -10,4 +10,6 @@ public class MouseCatcher_Mock : IMouseCatcher
 
     public void RaiseMouseUnlock() { OnMouseUnlock?.Invoke(); }
     public void RaiseMouseLock() { OnMouseLock?.Invoke(); }
+
+    public void LockCursor() => RaiseMouseLock();
 }
