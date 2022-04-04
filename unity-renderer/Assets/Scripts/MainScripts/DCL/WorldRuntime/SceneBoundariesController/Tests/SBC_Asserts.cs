@@ -8,7 +8,9 @@ using NUnit.Framework;
 using System.Collections;
 using System.IO;
 using System.Linq;
+using DCL;
 using DCL.Helpers.NFT;
+using NFTShape_Internal;
 using NSubstitute;
 using UnityEngine;
 using UnityGLTF.Loader;
@@ -66,7 +68,7 @@ namespace SceneBoundariesCheckerTests
 
             AssertMeshIsInvalid(entity.meshesInfo);
         }
-
+        
         public static IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
         {
             var entity = TestUtils.CreateSceneEntity(scene);
@@ -83,7 +85,7 @@ namespace SceneBoundariesCheckerTests
 
             TestUtils.SharedComponentAttach(component, entity);
 
-            LoadWrapper shapeLoader = NFTShape.GetLoaderForEntity(entity);
+            LoadWrapper shapeLoader = LoadableShape.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
 
             yield return null;
