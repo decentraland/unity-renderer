@@ -22,7 +22,6 @@ public static class TestUtils_NFT
             .When((x) => { x.FetchNFTInfo(Arg.Any<string>(), Arg.Any<string>()); })
             .Do((x) =>
             {
-                Debug.Log("FetchNFTInfo OnSuccess");
                 infoLoadHelper.OnFetchInfoSuccess += Raise.Event<Action<NFTInfo>>(mockedNftInfo);
             });
 
@@ -30,14 +29,12 @@ public static class TestUtils_NFT
             Arg.Any<Action<INFTAsset>>(),
             Arg.Any<Action<Exception>>()).Returns(x =>
         {
-            Debug.Log("LoadNftAsset OnSuccess");
             x.Arg<Action<INFTAsset>>().Invoke(mockedNftAsset);
             return null;
         });
 
         factory.RegisterBuilder((int) CLASS_ID.NFT_SHAPE, () =>
         {
-            Debug.Log("Creating mocked nft shape...");
             return new NFTShape(infoLoadHelper, assetLoadHelper);
         });
     }

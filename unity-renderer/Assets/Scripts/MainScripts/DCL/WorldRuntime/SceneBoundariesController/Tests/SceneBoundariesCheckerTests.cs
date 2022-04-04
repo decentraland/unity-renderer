@@ -72,6 +72,8 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
+        [Explicit]
+        [Category("Explicit")]
         public IEnumerator NFTShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.NFTShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]

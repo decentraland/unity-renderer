@@ -25,6 +25,8 @@ namespace SceneBoundariesCheckerTests
             UnityEngine.Assertions.Assert.IsTrue(Environment.i.world.sceneBoundsChecker.enabled);
             UnityEngine.Assertions.Assert.IsTrue(
                 Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox);
+
+            TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
         }
 
         [UnityTest]
@@ -96,6 +98,8 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator PShapeIsResetWhenReenteringBoundsDebugMode() { yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]
+        [Explicit]
+        [Category("Explicit")]
         public IEnumerator NFTShapeIsResetWhenReenteringBoundsDebugMode() { yield return SBC_Asserts.NFTShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]
