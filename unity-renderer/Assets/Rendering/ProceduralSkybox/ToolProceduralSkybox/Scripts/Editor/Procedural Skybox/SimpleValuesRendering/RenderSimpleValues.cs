@@ -92,5 +92,14 @@ namespace DCL.Skybox
             GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
+
+        public static void RenderPrefabInput(string label, ref GameObject obj)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            obj = (GameObject)EditorGUILayout.ObjectField(obj, typeof(GameObject), false, GUILayout.Width(200));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
     }
 }

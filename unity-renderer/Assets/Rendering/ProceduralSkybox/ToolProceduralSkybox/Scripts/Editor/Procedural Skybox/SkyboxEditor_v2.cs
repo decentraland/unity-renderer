@@ -347,6 +347,13 @@ namespace DCL.Skybox
 
             RenderLeftPanelBaseSkybox();
 
+            EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
+
+            if (GUILayout.Button(SkyboxEditorLiterals.satelliteLayer, EditorStyles.toolbarButton))
+            {
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Satellite_Layer, name = SkyboxEditorLiterals.satelliteLayer });
+            }
+
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndScrollView();
         }
@@ -446,7 +453,7 @@ namespace DCL.Skybox
                 selectedConfiguration.layers.Add(new TextureLayer("Tex Layer " + (selectedConfiguration.layers.Count + 1)));
             }
             EditorGUILayout.EndHorizontal();
-
+            EditorGUILayout.Space(25);
         }
 
         #endregion
@@ -481,6 +488,9 @@ namespace DCL.Skybox
                     break;
                 case SkyboxEditorToolsParts.Base_Skybox:
                     RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration.layers[obj.baseSkyboxSelectedIndex]);
+                    break;
+                case SkyboxEditorToolsParts.Satellite_Layer:
+                    RenderSatellite3DLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration);
                     break;
                 default:
                     break;

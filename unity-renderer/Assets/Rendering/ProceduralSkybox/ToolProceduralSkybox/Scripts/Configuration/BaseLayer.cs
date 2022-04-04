@@ -125,6 +125,13 @@ namespace DCL.Skybox
         PointBased
     }
 
+    public enum RotationType
+    {
+        Fixed,
+        Rotate,
+        LookAtOrbit
+    }
+
     [System.Serializable]
     public class TimelineTagsDuration
     {

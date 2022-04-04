@@ -66,6 +66,9 @@ namespace DCL.Skybox
         // Timeline Tags
         public List<TimelineTagsDuration> timelineTags = new List<TimelineTagsDuration>();
 
+        // 3D Satellite layer
+        public Satellite3DLayer satelliteLayer;
+
         private float cycleTime = 24;
 
         public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, Light directionalLightGO = null, float cycleTime = 24)

@@ -12,7 +12,8 @@ namespace DCL.Skybox
         Avatar_Layer,
         Fog_Layer,
         Directional_Light_Layer,
-        Base_Skybox
+        Base_Skybox,
+        Satellite_Layer
     }
 
     public class RightPanelPins
