@@ -1479,7 +1479,9 @@ namespace DCL.Interface
             requestWearablesPayload.filters = new WearablesRequestFiltersPayload
             {
                 ownedByUser = ownedByUser,
-                thirdPartyId = thirdPartyCollectionId
+                thirdPartyId = thirdPartyCollectionId,
+                collectionIds = null,
+                wearableIds = null
             };
 
             requestWearablesPayload.context = context;
