@@ -25,7 +25,12 @@ public class DCLWebSocketService : WebSocketBehavior
 
         if (ConnectionState == WebSocketState.Open)
         {
-            Send(Newtonsoft.Json.JsonConvert.SerializeObject(x));
+            var serializeObject = Newtonsoft.Json.JsonConvert.SerializeObject(x);
+            // TODO: remove this hack
+            if (type == "RequestWearables")
+                Debug.Log($"WebSocket - Requesting wearables: {serializeObject}");
+            
+            Send(serializeObject);
         
             if (VERBOSE)
             {

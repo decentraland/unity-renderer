@@ -1503,7 +1503,8 @@ namespace DCL.Interface
             {
                 ownedByUser = ownedByUser,
                 wearableIds = wearableIds,
-                collectionIds = collectionIds
+                collectionIds = collectionIds,
+                thirdPartyId = null
             };
 
             requestWearablesPayload.context = context;
