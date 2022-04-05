@@ -474,8 +474,7 @@ public class AvatarEditorHUDController : IHUD
 
     private void AddWearable(string id, WearableItem wearable)
     {
-        if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0 && 
-            String.IsNullOrEmpty(wearable.collection)) // TODO (Santi): Temporally allowing wearables with collection not empty to be able to mock the Third Party Wearables logic. Remove it in the future!
+        if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)
         {
             return;
         }
@@ -716,10 +715,8 @@ public class AvatarEditorHUDController : IHUD
     {
         if (isOn)
         {
-            // TODO (Santi): Use CatalogController.RequestThirdPartyWearablesByCollection(...) when the endpoint is available by platform!
-            //CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
             view.BlockCollectionsDropdown(true);
-            WearablesFetchingHelper.GetThirdPartyWearablesByCollection(collectionId)
+            CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
                 .Then((wearables) =>
                 {
                     foreach (WearableItem wearable in wearables)

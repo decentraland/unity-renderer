@@ -11,15 +11,13 @@ namespace DCL.Helpers
     {
         public const string WEARABLES_FETCH_URL = "collections/wearables?";
         public const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
+        public const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "third-party-integrations";
 
         // TODO: change fetching logic to allow for auto-pagination
         // The https://nft-api.decentraland.org/v1/ endpoint doesn't fetch L1 wearables right now, if those need to be re-converted we should use that old endpoint again and change the WearablesAPIData structure again for that response.
         // public const string COLLECTIONS_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections"; 
         public const string COLLECTIONS_FETCH_URL = "https://nft-api.decentraland.org/v1/collections?sortBy=newest&first=1000"; 
         private static Collection[] collections;
-
-        public const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "https://nft-api.decentraland.org/v1/collections?sortBy=newest&first=30";
-        public const string THIRD_PARTY_WEARABLES_FETCH_URL = "collections/wearables?";
 
         private static IEnumerator EnsureCollectionsData()
         {
@@ -113,13 +111,12 @@ namespace DCL.Helpers
             }
         }
 
-        // TODO (Santi): Use the correct url when the endpoint is available by platform!
         public static Promise<Collection[]> GetThirdPartyCollections()
         {
             Promise<Collection[]> promiseResult = new Promise<Collection[]>();
 
             Environment.i.platform.webRequest.Get(
-                url: THIRD_PARTY_COLLECTIONS_FETCH_URL,
+                url: $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{THIRD_PARTY_COLLECTIONS_FETCH_URL}",
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 5000,
                 OnFail: (webRequest) =>
@@ -130,36 +127,6 @@ namespace DCL.Helpers
                 {
                     var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(webRequest.webRequest.downloadHandler.text);
                     promiseResult.Resolve(collectionsApiData.data);
-                });
-
-            return promiseResult;
-        }
-
-        // TODO (Santi): Stop using it when the endpoint is available by platform!
-        public static Promise<WearableItem[]> GetThirdPartyWearablesByCollection(string collectionId)
-        {
-            Promise<WearableItem[]> promiseResult = new Promise<WearableItem[]>();
-
-            Environment.i.platform.webRequest.Get(
-                url: $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{THIRD_PARTY_WEARABLES_FETCH_URL}&collectionId={collectionId}",
-                downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 5000,
-                OnFail: (webRequest) =>
-                {
-                    promiseResult.Reject($"Request error! third party wearables couldn't be fetched! -- {webRequest.webRequest.error}");
-                },
-                OnSuccess: (webRequest) =>
-                {
-                    var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(webRequest.webRequest.downloadHandler.text);
-                    var wearablesItems = wearablesApiData.GetWearableItems();
-                    
-                    List<WearableItem> result;
-                    if (wearablesItems != null)
-                        result = wearablesItems;
-                    else
-                        result = new List<WearableItem>();
-
-                    promiseResult.Resolve(result.ToArray());
                 });
 
             return promiseResult;

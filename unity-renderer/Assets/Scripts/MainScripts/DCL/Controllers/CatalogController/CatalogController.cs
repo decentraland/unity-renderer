@@ -252,7 +252,6 @@ public class CatalogController : MonoBehaviour
         return promiseResult;
     }
 
-    // TODO (Santi): Use it when the TPW endpoints are available by platform!
     public static Promise<WearableItem[]> RequestThirdPartyWearablesByCollection(string userId, string collectionId)
     {
         Promise<WearableItem[]> promiseResult;
