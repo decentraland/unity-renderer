@@ -1,11 +1,6 @@
-using System;
-using DCL.Interface;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Threading;
 using DCL;
-using UnityEditor;
+using DCL.Interface;
+using Newtonsoft.Json;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -25,10 +20,7 @@ public class DCLWebSocketService : WebSocketBehavior
 
         if (ConnectionState == WebSocketState.Open)
         {
-            var serializeObject = Newtonsoft.Json.JsonConvert.SerializeObject(x);
-            // TODO: remove this hack
-            if (type == "RequestWearables")
-                Debug.Log($"WebSocket - Requesting wearables: {serializeObject}");
+            var serializeObject = JsonConvert.SerializeObject(x);
             
             Send(serializeObject);
         

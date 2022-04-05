@@ -762,10 +762,6 @@ namespace DCL.Interface
         public static void SendMessage<T>(string type, T message)
         {
             string messageJson = JsonUtility.ToJson(message);
-            
-            // TODO: remove this hack
-            if (type == "RequestWearables")
-                Debug.Log($"Requesting wearables: {messageJson}");
 
             if (VERBOSE)
             {
