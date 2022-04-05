@@ -124,7 +124,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         Vector3 rayOffset = Vector3.up * RAY_OFFSET_LENGTH;
         //NOTE(Brian): isGrounded?
-        blackboard.isGrounded = Physics.Raycast(target.transform.position + rayOffset,
+        blackboard.isGrounded = (isOwnPlayer && DCLCharacterController.i.isGrounded) || Physics.Raycast(target.transform.position + rayOffset,
             Vector3.down,
             RAY_OFFSET_LENGTH - ELEVATION_OFFSET,
             DCLCharacterController.i.groundLayers);
