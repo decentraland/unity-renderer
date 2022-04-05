@@ -145,6 +145,12 @@ public class CatalogController : MonoBehaviour
             wearablesInUseCounters.Remove(itemIDs[i]);
         }
     }
+    
+    public void Remove(string wearableId)
+    {
+        wearableCatalog.Remove(wearableId);
+        wearablesInUseCounters.Remove(wearableId);
+    }
 
     public void RemoveWearablesFromCatalogByCollection(string collectionId)
     {

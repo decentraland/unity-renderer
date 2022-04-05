@@ -113,6 +113,14 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         inventory = inventoryIds.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
     }
 
+    public void AddToInventory(string wearableId)
+    {
+        if (inventory.ContainsKey(wearableId))
+            inventory[wearableId]++;
+        else
+            inventory.Add(wearableId, 1);
+    }
+
     public string[] GetInventoryItemsIds() { return inventory.Keys.ToArray(); }
 
     internal static UserProfile ownUserProfile;
