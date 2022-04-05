@@ -265,11 +265,10 @@ public class CatalogController : MonoBehaviour
             if (!pendingWearablesByContextRequestedTimes.ContainsKey($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}"))
                 pendingWearablesByContextRequestedTimes.Add($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", Time.realtimeSinceStartup);
 
-            WebInterface.RequestWearables(
-                ownedByUser: userId,
-                wearableIds: null,
-                collectionIds: new string[] { collectionId },
-                context: $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}"
+            WebInterface.RequestThirdPartyWearables(
+                userId,
+                collectionId,
+                $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}"
             );
         }
         else
