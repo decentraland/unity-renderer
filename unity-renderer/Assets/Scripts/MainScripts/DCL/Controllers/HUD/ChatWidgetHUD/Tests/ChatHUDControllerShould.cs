@@ -18,7 +18,7 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
         dataStore = new DataStore();
         dataStore.settings.profanityChatFilteringEnabled.Set(true);
         view = Substitute.For<IChatHUDComponentView>();
-        controller = new ChatHUDController(dataStore, Substitute.For<IUserProfileBridge>(), profanityFilter);
+        controller = new ChatHUDController(dataStore, Substitute.For<IUserProfileBridge>(), true, profanityFilter);
         controller.OnSendMessage += OnSendMessage;
         Assert.IsTrue(view != null);
         yield break;

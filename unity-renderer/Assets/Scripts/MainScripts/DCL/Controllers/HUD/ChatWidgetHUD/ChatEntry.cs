@@ -1,14 +1,13 @@
+using System;
+using System.Collections.Generic;
+using DCL;
 using DCL.Helpers;
 using DCL.Interface;
-using System;
 using DCL.SettingsCommon;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using DCL;
 
 public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
@@ -76,8 +75,6 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     public event Action<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
     public event Action OnCancelHover;
     public event Action OnCancelGotoHover;
-
-    private List<string> textCoords = new List<string>();
 
     public void Populate(Model chatEntryModel)
     {
@@ -371,7 +368,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     DateTime UnixTimeStampToLocalDateTime(ulong unixTimeStampMilliseconds)
     {
         // TODO see if we can simplify with 'DateTimeOffset.FromUnixTimeMilliseconds'
-        System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+        DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
 
         return dtDateTime;

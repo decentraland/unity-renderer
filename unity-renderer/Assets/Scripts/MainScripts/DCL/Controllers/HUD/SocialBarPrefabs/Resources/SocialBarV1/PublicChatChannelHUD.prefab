@@ -190,7 +190,7 @@ MonoBehaviour:
   backButton: {fileID: 7105410192847587965}
   nameLabel: {fileID: 8296143100839953432}
   descriptionLabel: {fileID: 5437248798963596615}
-  chatView: {fileID: 8729223757020298212}
+  chatView: {fileID: 1839742955218428433}
   model:
     name: 
     description: 
@@ -2386,7 +2386,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -0.000024681574}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: -480}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &3576947966385598995
 MonoBehaviour:
@@ -4233,7 +4233,7 @@ GameObject:
   - component: {fileID: 8018125211640195353}
   - component: {fileID: 2077096893774829914}
   - component: {fileID: 6570281835122404080}
-  - component: {fileID: 8729223757020298212}
+  - component: {fileID: 1839742955218428433}
   m_Layer: 5
   m_Name: Chat
   m_TagString: Untagged
@@ -4287,7 +4287,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8439943899111070801}
   m_CullTransparentMesh: 0
---- !u!114 &8729223757020298212
+--- !u!114 &1839742955218428433
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4296,10 +4296,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8439943899111070801}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db8c9fd76b808492eb82aee984751be4, type: 3}
+  m_Script: {fileID: 11500000, guid: c3b34a804476c5243872ffafcab770d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectWhisper: 0
+  detectWhisper: 1
   inputField: {fileID: 1115469253820911357}
   chatEntriesContainer: {fileID: 8953925092199699313}
   scrollRect: {fileID: 7808591501641491551}
