@@ -713,6 +713,7 @@ namespace DCL.ABConverter
             loader.maximumLod = 300; // todo: fix this later
             loader.forceGPUOnlyMesh = false;
             loader.forceGPUOnlyTex = false;
+            loader.forceSyncCoroutines = true;
 
             OnGLTFWillLoad?.Invoke(loader);
 

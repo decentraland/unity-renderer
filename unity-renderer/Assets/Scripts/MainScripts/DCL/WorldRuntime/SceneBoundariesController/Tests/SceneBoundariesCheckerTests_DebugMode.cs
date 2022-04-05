@@ -25,6 +25,8 @@ namespace SceneBoundariesCheckerTests
             UnityEngine.Assertions.Assert.IsTrue(Environment.i.world.sceneBoundsChecker.enabled);
             UnityEngine.Assertions.Assert.IsTrue(
                 Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox);
+
+            TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
         }
 
         [UnityTest]
@@ -81,8 +83,6 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
@@ -92,8 +92,6 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator GLTFShapeIsInvalidatedWhenLeavingBoundsDebugMode() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBoundsDebugMode() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]

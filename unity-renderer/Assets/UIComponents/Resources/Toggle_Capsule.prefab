@@ -551,6 +551,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toggle: {fileID: 7625753975028379600}
   text: {fileID: 1996526906130022640}
+  activeOn: {fileID: 8806659310530846726}
+  activeOff: {fileID: 9008524825783389075}
   model:
     text: 
     isTextActive: 0
@@ -741,7 +743,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2224212902183062667
 RectTransform:
   m_ObjectHideFlags: 0
