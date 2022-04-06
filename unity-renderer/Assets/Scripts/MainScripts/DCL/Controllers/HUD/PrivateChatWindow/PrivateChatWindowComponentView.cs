@@ -13,6 +13,8 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] private TMP_Text userNameLabel;
     [SerializeField] private PrivateChatHUDView chatView;
     [SerializeField] private GameObject jumpInButtonContainer;
+    [SerializeField] private UserContextMenu userContextMenu;
+    [SerializeField] private Button optionsButton;
     [SerializeField] private Model model;
 
     public event Action OnPressBack;
@@ -33,6 +35,15 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         base.Awake();
         backButton.onClick.AddListener(() => OnPressBack?.Invoke());
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
+        optionsButton.onClick.AddListener(ShowOptions);
+        userContextMenu.OnBlock += HandleBlockFromContextMenu;
+    }
+
+    public override void Dispose()
+    {
+        if (userContextMenu != null)
+            userContextMenu.OnBlock -= HandleBlockFromContextMenu;
+        base.Dispose();
     }
 
     public override void RefreshControl()
@@ -51,6 +62,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     {
         model = new Model
         {
+            userId = profile.userId,
             faceSnapshotUrl = profile.face256SnapshotURL,
             userName = profile.userName,
             isUserOnline = isOnline,
@@ -63,9 +75,23 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
 
     public void Hide() => gameObject.SetActive(false);
 
+    private void ShowOptions()
+    {
+        userContextMenu.transform.position = optionsButton.transform.position;
+        userContextMenu.Show(model.userId);
+    }
+
+    private void HandleBlockFromContextMenu(string userId, bool isBlocked)
+    {
+        if (userId != model.userId) return;
+        model.isUserBlocked = isBlocked;
+        RefreshControl();
+    }
+
     [Serializable]
     private struct Model
     {
+        public string userId;
         public string userName;
         public string faceSnapshotUrl;
         public bool isUserBlocked;
