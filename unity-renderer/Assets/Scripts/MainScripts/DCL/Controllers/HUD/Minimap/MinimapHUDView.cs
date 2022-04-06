@@ -86,4 +86,9 @@ public class MinimapHUDView : MonoBehaviour
         else if (!visible && mainShowHideAnimator.isVisible)
             mainShowHideAnimator.Hide();
     }
+
+    private void OnDestroy()
+    {
+        mouseCatcher.OnMouseLock -= OnMouseLocked;
+    }
 }
