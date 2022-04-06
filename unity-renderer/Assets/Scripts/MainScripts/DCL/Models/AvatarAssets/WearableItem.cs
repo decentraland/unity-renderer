@@ -6,6 +6,8 @@ using DCL;
 [Serializable]
 public class WearableItem
 {
+    private const string THIRD_PARTY_COLLECTIONS_PATH = "collections-thirdparty";
+
     [Serializable]
     public class MappingPair
     {
@@ -41,7 +43,22 @@ public class WearableItem
 
     public i18n[] i18n;
     public string thumbnail;
-    public string collection;
+    
+    private string thirdPartyCollectionId;
+    public string ThirdPartyCollectionId
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(thirdPartyCollectionId)) return thirdPartyCollectionId;
+            if (!id.Contains(THIRD_PARTY_COLLECTIONS_PATH)) return "";
+            var paths = id.Split(':');
+            var thirdPartyIndex = Array.IndexOf(paths, THIRD_PARTY_COLLECTIONS_PATH);
+            thirdPartyCollectionId = string.Join(":", paths, 0, thirdPartyIndex + 2);
+            return thirdPartyCollectionId;
+        }
+    }
+
+    public bool IsFromThirdPartyCollection => !string.IsNullOrEmpty(ThirdPartyCollectionId);
 
     //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
     public string rarity;

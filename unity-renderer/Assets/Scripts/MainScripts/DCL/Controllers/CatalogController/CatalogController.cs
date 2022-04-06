@@ -27,6 +27,8 @@ public class CatalogController : MonoBehaviour
     private static Dictionary<string, float> pendingWearablesByContextRequestedTimes = new Dictionary<string, float>();
     private static List<string> pendingRequestsToSend = new List<string>();
     private float timeSinceLastUnusedWearablesCheck = 0f;
+    
+    public BaseDictionary<string, WearableItem> Wearables => DataStore.i.common.wearables;
 
     public void Awake() { i = this; }
 
@@ -143,25 +145,6 @@ public class CatalogController : MonoBehaviour
         {
             wearableCatalog.Remove(itemIDs[i]);
             wearablesInUseCounters.Remove(itemIDs[i]);
-        }
-    }
-    
-    public void Remove(string wearableId)
-    {
-        wearableCatalog.Remove(wearableId);
-        wearablesInUseCounters.Remove(wearableId);
-    }
-
-    public void RemoveWearablesFromCatalogByCollection(string collectionId)
-    {
-        List<string> wearablesToRemove = wearableCatalog
-            .Where(x => x.Value.collection == collectionId)
-            .Select(x => x.Key)
-            .ToList();
-
-        foreach (string wearableId in wearablesToRemove)
-        {
-            wearableCatalog.Remove(wearableId);
         }
     }
 
@@ -412,5 +395,11 @@ public class CatalogController : MonoBehaviour
                 wearablesInUseCounters.Remove(wearableToDestroy);
             }
         }
+    }
+
+    public void Remove(IEnumerable<string> wearableIds)
+    {
+        foreach (var wearableId in wearableIds)
+            wearableCatalog.Remove(wearableId);
     }
 }

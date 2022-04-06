@@ -120,6 +120,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         else
             inventory.Add(wearableId, 1);
     }
+    
+    public bool ContainsInInventory(string wearableId) => inventory.ContainsKey(wearableId);
 
     public string[] GetInventoryItemsIds() { return inventory.Keys.ToArray(); }
 
@@ -152,6 +154,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         blocked.Remove(userId);
     }
+    
+    public bool HasEquipped(string wearableId) => avatar.wearables.Contains(wearableId);
 
 #if UNITY_EDITOR
     private void OnEnable()

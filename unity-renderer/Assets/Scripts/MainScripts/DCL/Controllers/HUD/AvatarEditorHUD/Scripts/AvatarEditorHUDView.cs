@@ -331,7 +331,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         selectorsByCategory[wearableItem.data.category].AddItemToggle(wearableItem, amount,
             hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);
-        if (wearableItem.IsCollectible())
+        if (wearableItem.IsCollectible() || wearableItem.IsFromThirdPartyCollection)
         {
             collectiblesItemSelector.AddItemToggle(wearableItem, amount,
                 hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);

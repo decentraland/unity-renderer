@@ -714,31 +714,36 @@ public class AvatarEditorHUDController : IHUD
     public void ToggleCollection(bool isOn, string collectionId)
     {
         if (isOn)
-        {
-            view.BlockCollectionsDropdown(true);
-            CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
-                .Then(wearables =>
-                {
-                    foreach (WearableItem wearable in wearables)
-                    {
-                        // at this point the wearable is already added to the catalog since kernel requests it
-                        // the information is inconsistent because its missing the collectionId and is not available in the inventory yet
-                        // we remove it so it triggers the addition at the end of the block and the flow restarts for that specific wearable
-                        CatalogController.i.Remove(wearable.id);
-                        wearable.collection = collectionId;
-                        userProfile.AddToInventory(wearable.id);
-                    }
-                    CatalogController.i.AddWearablesToCatalog(wearables);
-                    view.BlockCollectionsDropdown(false);
-                })
-                .Catch((error) => Debug.LogError(error));
-        }
+            FetchAndShowThirdPartyCollection(collectionId);
         else
-        {
-            CatalogController.i.RemoveWearablesFromCatalogByCollection(collectionId);
-        }
+            RemoveThirdPartyCollection(collectionId);
     }
-    
+
+    private void RemoveThirdPartyCollection(string collectionId)
+    {
+        var wearablesToRemove = CatalogController.i.Wearables.GetValues()
+            .Where(wearable => !userProfile.HasEquipped(wearable.id)
+                               && wearable.ThirdPartyCollectionId == collectionId)
+            .Select(item => item.id)
+            .ToList();
+        CatalogController.i.Remove(wearablesToRemove);
+    }
+
+    private void FetchAndShowThirdPartyCollection(string collectionId)
+    {
+        view.BlockCollectionsDropdown(true);
+        CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
+            .Then(wearables =>
+            {
+                foreach (var wearable in wearables)
+                    if (!userProfile.ContainsInInventory(wearable.id))
+                        userProfile.AddToInventory(wearable.id);
+                view.BlockCollectionsDropdown(false);
+                LoadUserProfile(userProfile, true);
+            })
+            .Catch(Debug.LogError);
+    }
+
     private bool ShouldShowHideOtherWearablesToast(WearableItem wearable)
     {
         var isWearingSkinAlready = model.wearables.Any(item => item.IsSkin());
