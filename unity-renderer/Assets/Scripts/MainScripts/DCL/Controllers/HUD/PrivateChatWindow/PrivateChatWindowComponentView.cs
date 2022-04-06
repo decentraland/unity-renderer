@@ -12,6 +12,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] private UserThumbnailComponentView userThumbnail;
     [SerializeField] private TMP_Text userNameLabel;
     [SerializeField] private PrivateChatHUDView chatView;
+    [SerializeField] private GameObject jumpInButtonContainer;
     [SerializeField] private Model model;
 
     public event Action OnPressBack;
@@ -43,6 +44,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             isOnline = model.isUserOnline
         });
         userNameLabel.SetText(model.userName);
+        jumpInButtonContainer.SetActive(model.isUserOnline);
     }
 
     public void Setup(UserProfile profile, bool isOnline, bool isBlocked)
