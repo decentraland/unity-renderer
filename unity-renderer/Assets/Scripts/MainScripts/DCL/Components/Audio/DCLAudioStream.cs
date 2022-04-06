@@ -23,7 +23,7 @@ namespace DCL.Components
 
         private void Awake() { model = new Model(); }
 
-        private bool isPlaying = false;
+        public bool isPlaying { get; private set; } = false;
         private float settingsVolume = 0;
         private bool isDestroyed = false;
         private Model prevModel = new Model();
@@ -73,8 +73,9 @@ namespace DCL.Components
                 return;
             }
 
-            bool canPlayStream = scene.sceneData.id == CommonScriptableObjects.sceneID.Get() && CommonScriptableObjects.rendererState;
-
+            bool canPlayStream = scene.isPersistent || scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
+            canPlayStream &= CommonScriptableObjects.rendererState;
+            
             Model model = (Model) this.model;
             bool shouldStopStream = (isPlaying && !model.playing) || (isPlaying && !canPlayStream);
             bool shouldStartStream = !isPlaying && canPlayStream && model.playing;
@@ -138,12 +139,12 @@ namespace DCL.Components
             Interface.WebInterface.SendAudioStreamEvent(model.url, true, model.volume * settingsVolume);
         }
 
-        public void UpdateOutOfBoundariesState(bool enable)
+        public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
         {
             if (!isPlaying)
                 return;
 
-            if (enable)
+            if (isInsideBoundaries)
             {
                 StartStreaming();
             }

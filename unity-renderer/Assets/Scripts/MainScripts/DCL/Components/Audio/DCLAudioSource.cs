@@ -174,9 +174,9 @@ namespace DCL.Components
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
         }
 
-        public void UpdateOutOfBoundariesState(bool isEnabled)
+        public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
         {
-            isOutOfBoundaries = !isEnabled;
+            isOutOfBoundaries = !isInsideBoundaries;
             UpdateAudioSourceVolume();
         }
 
