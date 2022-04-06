@@ -20709,7 +20709,12 @@ PrefabInstance:
     - target: {fileID: 1502875326902354433, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_text
-      value: Collections
+      value: Linked wearables
+      objectReference: {fileID: 0}
+    - target: {fileID: 1502875326902354433, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 14.85
       objectReference: {fileID: 0}
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -20849,7 +20854,22 @@ PrefabInstance:
     - target: {fileID: 5233365928742558889, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_text
-      value: Search collection
+      value: Search linked wearables
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233365928742558889, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 16.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233365928742558889, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: m_fontSizeMin
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 5233365928742558889, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5538628011398402728, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -20864,7 +20884,7 @@ PrefabInstance:
     - target: {fileID: 8992885240976846846, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: model.title
-      value: Collections
+      value: Linked wearables
       objectReference: {fileID: 0}
     - target: {fileID: 8992885240976846846, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -20874,7 +20894,7 @@ PrefabInstance:
     - target: {fileID: 8992885240976846846, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: model.searchPlaceHolderText
-      value: Search collection
+      value: Search linked wearables
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a3187d731887694b8a4a6274fd63814, type: 3}
