@@ -18,7 +18,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     private IContext context;
     private ParcelScene scene;
 
-    private const string entityId = "E1";
+    private const long entityId = 1;
 
     protected override IEnumerator SetUp()
     {

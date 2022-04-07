@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class AvatarReporterController : IAvatarReporterController
 {
-    private string entityId;
+    private long entityId;
     private string avatarId;
     private string lastSceneId;
     private Vector2Int lastCoords;
@@ -22,7 +22,7 @@ public class AvatarReporterController : IAvatarReporterController
         this.worldState = worldState;
     }
 
-    void IAvatarReporterController.SetUp(string sceneId, string entityId, string avatarId)
+    void IAvatarReporterController.SetUp(string sceneId, long entityId, string avatarId)
     {
         // NOTE: do not report avatars that doesn't belong to the global scene
         if (sceneId != EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID)
@@ -75,8 +75,7 @@ public class AvatarReporterController : IAvatarReporterController
             return;
 
         ((IAvatarReporterController)this).reporter.ReportAvatarRemoved(entityId, avatarId);
-
-        entityId = null;
+        
         avatarId = null;
         lastSceneId = null;
         isInitialReport = true;
@@ -84,7 +83,7 @@ public class AvatarReporterController : IAvatarReporterController
 
     private bool CanReport()
     {
-        return !string.IsNullOrEmpty(entityId) && !string.IsNullOrEmpty(avatarId);
+        return !string.IsNullOrEmpty(avatarId);
     }
 
     private bool HasMoved(Vector3 currentPosition)

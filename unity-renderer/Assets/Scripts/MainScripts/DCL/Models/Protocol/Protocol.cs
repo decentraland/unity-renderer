@@ -82,55 +82,55 @@ namespace DCL.Models
         [System.Serializable]
         public struct CreateEntity
         {
-            public string entityId;
+            public long entityId;
 
-            public static CreateEntity FromPB(PB_CreateEntity pbPayload) { return new CreateEntity() { entityId = pbPayload.Id }; }
+            public static CreateEntity FromPB(PB_CreateEntity pbPayload) { return new CreateEntity() { entityId = pbPayload.Id.GetHashCode() }; }
         }
 
         [System.Serializable]
         public struct RemoveEntity
         {
-            public string entityId;
+            public long entityId;
 
-            public static RemoveEntity FromPB(PB_RemoveEntity pbPayload) { return new RemoveEntity() { entityId = pbPayload.Id }; }
+            public static RemoveEntity FromPB(PB_RemoveEntity pbPayload) { return new RemoveEntity() { entityId = pbPayload.Id.GetHashCode() }; }
         }
 
         [System.Serializable]
         public struct SetEntityParent
         {
-            public string entityId;
-            public string parentId;
+            public long entityId;
+            public long parentId;
 
-            public static SetEntityParent FromPB(PB_SetEntityParent pbPayload) { return new SetEntityParent() { entityId = pbPayload.EntityId, parentId = pbPayload.ParentId }; }
+            public static SetEntityParent FromPB(PB_SetEntityParent pbPayload) { return new SetEntityParent() { entityId = pbPayload.EntityId.GetHashCode(), parentId = pbPayload.ParentId.GetHashCode() }; }
         }
 
         [System.Serializable]
         public struct EntityComponentCreateOrUpdate
         {
-            public string entityId;
+            public long entityId;
             public int classId;
             public string json;
 
-            public static EntityComponentCreateOrUpdate FromPB(PB_UpdateEntityComponent pbPayload) { return new EntityComponentCreateOrUpdate() { entityId = pbPayload.EntityId, classId = pbPayload.ClassId, json = pbPayload.Data }; }
+            public static EntityComponentCreateOrUpdate FromPB(PB_UpdateEntityComponent pbPayload) { return new EntityComponentCreateOrUpdate() { entityId = pbPayload.EntityId.GetHashCode(), classId = pbPayload.ClassId, json = pbPayload.Data }; }
         }
 
         [System.Serializable]
         public struct EntityComponentDestroy
         {
-            public string entityId;
+            public long entityId;
             public string name;
 
-            public static EntityComponentDestroy FromPB(PB_ComponentRemoved pbPayload) { return new EntityComponentDestroy() { entityId = pbPayload.EntityId, name = pbPayload.Name }; }
+            public static EntityComponentDestroy FromPB(PB_ComponentRemoved pbPayload) { return new EntityComponentDestroy() { entityId = pbPayload.EntityId.GetHashCode(), name = pbPayload.Name }; }
         }
 
         [System.Serializable]
         public struct SharedComponentAttach
         {
-            public string entityId;
+            public long entityId;
             public string id;
             public string name;
 
-            public static SharedComponentAttach FromPB(PB_AttachEntityComponent pbPayload) { return new SharedComponentAttach() { entityId = pbPayload.EntityId, id = pbPayload.Id, name = pbPayload.Name }; }
+            public static SharedComponentAttach FromPB(PB_AttachEntityComponent pbPayload) { return new SharedComponentAttach() { entityId = pbPayload.EntityId.GetHashCode(), id = pbPayload.Id, name = pbPayload.Name }; }
         }
 
         [System.Serializable]

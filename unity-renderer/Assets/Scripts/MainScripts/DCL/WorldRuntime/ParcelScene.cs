@@ -13,7 +13,7 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene, ISceneMessageProcessor
     {
-        public Dictionary<string, IDCLEntity> entities { get; private set; } = new Dictionary<string, IDCLEntity>();
+        public Dictionary<long, IDCLEntity> entities { get; private set; } = new Dictionary<long, IDCLEntity>();
         public Dictionary<string, ISharedComponent> disposableComponents { get; private set; } = new Dictionary<string, ISharedComponent>();
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
 
@@ -251,7 +251,7 @@ namespace DCL.Controllers
 
         public Transform GetSceneTransform() { return transform; }
 
-        public IDCLEntity CreateEntity(string id)
+        public IDCLEntity CreateEntity(long id)
         {
             if (entities.ContainsKey(id))
             {
@@ -290,7 +290,7 @@ namespace DCL.Controllers
             return newEntity;
         }
 
-        public void RemoveEntity(string id, bool removeImmediatelyFromEntitiesList = true)
+        public void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true)
         {
             if (entities.ContainsKey(id))
             {
@@ -388,7 +388,7 @@ namespace DCL.Controllers
 
         private void RemoveAllEntitiesImmediate() { RemoveAllEntities(instant: true); }
 
-        public void SetEntityParent(string entityId, string parentId)
+        public void SetEntityParent(long entityId, long parentId)
         {
             if (entityId == parentId)
             {
@@ -405,7 +405,7 @@ namespace DCL.Controllers
 
             if ( DCLCharacterController.i != null )
             {
-                if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+                if (parentId == "FirstPersonCameraEntityReference".GetHashCode() || parentId == "PlayerEntityReference".GetHashCode()) // PlayerEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will attached to the first person camera
                     // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
@@ -414,7 +414,7 @@ namespace DCL.Controllers
                     return;
                 }
 
-                if (parentId == "AvatarEntityReference" || parentId == "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+                if (parentId == "AvatarEntityReference".GetHashCode() || parentId == "AvatarPositionEntityReference".GetHashCode()) // AvatarPositionEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will be attached to the avatar
                     // It will simply rotate with the avatar, regardless of where the camera is pointing
@@ -429,7 +429,7 @@ namespace DCL.Controllers
                 }
             }
 
-            if (parentId == "0")
+            if (parentId == "0".GetHashCode())
             {
                 // The entity will be child of the scene directly
                 me.SetParent(null);
@@ -449,7 +449,7 @@ namespace DCL.Controllers
         /**
           * This method is called when we need to attach a disposable component to the entity
           */
-        public void SharedComponentAttach(string entityId, string componentId)
+        public void SharedComponentAttach(long entityId, string componentId)
         {
             IDCLEntity entity = GetEntityForUpdate(entityId);
 
@@ -462,7 +462,7 @@ namespace DCL.Controllers
             }
         }
 
-        public IEntityComponent EntityComponentCreateOrUpdateWithModel(string entityId, CLASS_ID_COMPONENT classId, object data)
+        public IEntityComponent EntityComponentCreateOrUpdateWithModel(long entityId, CLASS_ID_COMPONENT classId, object data)
         {
             IDCLEntity entity = GetEntityForUpdate(entityId);
 
@@ -524,7 +524,7 @@ namespace DCL.Controllers
             return newComponent;
         }
 
-        public IEntityComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, string data) { return EntityComponentCreateOrUpdateWithModel(entityId, classId, data); }
+        public IEntityComponent EntityComponentCreateOrUpdate(long entityId, CLASS_ID_COMPONENT classId, string data) { return EntityComponentCreateOrUpdateWithModel(entityId, classId, data); }
 
         // The EntityComponentUpdate() parameters differ from other similar methods because there is no EntityComponentUpdate protocol message yet.
         public IEntityComponent EntityComponentUpdate(IDCLEntity entity, CLASS_ID_COMPONENT classId,
@@ -583,7 +583,7 @@ namespace DCL.Controllers
             }
         }
 
-        public void EntityComponentRemove(string entityId, string name)
+        public void EntityComponentRemove(long entityId, string name)
         {
             IDCLEntity decentralandEntity = GetEntityForUpdate(entityId);
 
@@ -743,14 +743,8 @@ namespace DCL.Controllers
             return result;
         }
 
-        private IDCLEntity GetEntityForUpdate(string entityId)
+        private IDCLEntity GetEntityForUpdate(long entityId)
         {
-            if (string.IsNullOrEmpty(entityId))
-            {
-                Debug.LogError("Null or empty entityId");
-                return null;
-            }
-
             if (!entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return null;

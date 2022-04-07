@@ -51,8 +51,8 @@ public class NativeBridgeCommunicationShould
     [Test]
     public void QueueEntityMessagesCorrectly()
     {
-        const string entityId_1 = "1";
-        const string entityId_2 = "2";
+        const long entityId_1 = 1;
+        const long entityId_2 = 2;
 
         NativeBridgeCommunication.SetEntityId(entityId_1);
         NativeBridgeCommunication.CreateEntity();
@@ -89,7 +89,7 @@ public class NativeBridgeCommunicationShould
     [Test]
     public void QueueSharedComponentMessagesCorrectly()
     {
-        const string entityId = "1";
+        const long entityId = 1;
         const string componentId = "component-1";
         const int componentClass = 1;
 
@@ -124,7 +124,7 @@ public class NativeBridgeCommunicationShould
     [Test]
     public void QueueEntityComponentCorrectly()
     {
-        const string entityId = "1";
+        const long entityId = 1;
         const string componentId = "component-1";
         const int componentClass = 1;
 

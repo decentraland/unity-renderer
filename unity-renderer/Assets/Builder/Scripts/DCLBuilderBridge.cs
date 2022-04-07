@@ -48,7 +48,7 @@ namespace Builder
         private Vector3 defaultCharacterPosition;
 
         private bool isPreviewMode = false;
-        private List<string> outOfBoundariesEntitiesId = new List<string>();
+        private List<long> outOfBoundariesEntitiesId = new List<long>();
         private int lastEntitiesOutOfBoundariesCount = 0;
         private List<EditableEntity> selectedEntities;
         private bool entitiesMoved = false;
@@ -625,7 +625,7 @@ namespace Builder
 
         private void ProcessEntityBoundaries(DCLBuilderEntity entity)
         {
-            string entityId = entity.rootEntity.entityId;
+            long entityId = entity.rootEntity.entityId;
             int entityIndexInList = outOfBoundariesEntitiesId.IndexOf(entityId);
 
             bool wasInsideSceneBoundaries = entityIndexInList == -1;

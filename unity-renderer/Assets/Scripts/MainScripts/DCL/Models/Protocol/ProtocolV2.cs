@@ -88,7 +88,7 @@ public class ProtocolV2
     [System.Serializable]
     public class EntityPayload
     {
-        public string entityId;
+        public long entityId;
         public ComponentPayload[] components;
     }
 
@@ -102,7 +102,7 @@ public class ProtocolV2
     [System.Serializable]
     public class EntitySingleComponentPayload
     {
-        public string entityId;
+        public long entityId;
         public int componentId;
         public object data;
     }
@@ -110,13 +110,13 @@ public class ProtocolV2
     [System.Serializable]
     public class RemoveEntityPayload
     {
-        public string entityId;
+        public long entityId;
     }
 
     [System.Serializable]
     public class RemoveEntityComponentsPayload
     {
-        public string entityId;
+        public long entityId;
         public string componentId;
     }
 

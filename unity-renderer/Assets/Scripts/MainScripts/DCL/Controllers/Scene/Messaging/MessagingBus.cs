@@ -85,7 +85,7 @@ namespace DCL
                 if (message is QueuedSceneMessage_Scene queuedSceneMessage && queuedSceneMessage.payload is Protocol.RemoveEntity removeEntityPayload)
                 {
                     unreliableMessages = unreliableMessages
-                                         .Where(kvp => !kvp.Key.Contains(removeEntityPayload.entityId))
+                                         .Where(kvp => !kvp.Key.Contains(removeEntityPayload.entityId.ToString()))
                                          .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 }
 

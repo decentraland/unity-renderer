@@ -455,7 +455,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         return entities;
     }
 
-    public BIWEntity GetConvertedEntity(string entityId)
+    public BIWEntity GetConvertedEntity(long entityId)
     {
         if (convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entityId)))
             return convertedEntities[GetConvertedUniqueKeyForEntity(entityId)];
@@ -567,7 +567,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public BIWEntity CreateEmptyEntity(IParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true)
     {
-        IDCLEntity newEntity = parcelScene.CreateEntity(Guid.NewGuid().ToString());
+        IDCLEntity newEntity = parcelScene.CreateEntity(Guid.NewGuid().ToString().GetHashCode());
         DCLTransform.Model transformModel = new DCLTransform.Model();
         transformModel.position = WorldStateUtils.ConvertUnityToScenePosition(entryPoint, parcelScene);
 
@@ -715,7 +715,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         saveController.TryToSave();
     }
 
-    public void DeleteEntity(string entityId)
+    public void DeleteEntity(long entityId)
     {
         BIWEntity entity = convertedEntities[GetConvertedUniqueKeyForEntity(entityId)];
         DeleteEntity(entity, true);
@@ -742,7 +742,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         RemoveConvertedEntity(entityToDelete.rootEntity);
         entityToDelete.rootEntity.OnRemoved -= RemoveConvertedEntity;
         entityToDelete.Delete();
-        string idToRemove = entityToDelete.rootEntity.entityId;
+        long idToRemove = entityToDelete.rootEntity.entityId;
         OnEntityDeleted?.Invoke(entityToDelete);
         creatorController.RemoveLoadingObjectInmediate(entityToDelete.rootEntity.entityId);
         if (sceneToEdit.entities.ContainsKey(idToRemove))
@@ -868,7 +868,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             bridge.ChangeEntityLockStatus(entityToApply, sceneToEdit);
     }
 
-    private string GetConvertedUniqueKeyForEntity(string entityID) { return sceneToEdit.sceneData.id + entityID; }
+    private string GetConvertedUniqueKeyForEntity(long entityId) { return sceneToEdit.sceneData.id + entityId; }
 
     private string GetConvertedUniqueKeyForEntity(IDCLEntity entity) { return entity.scene.sceneData.id + entity.entityId; }
 

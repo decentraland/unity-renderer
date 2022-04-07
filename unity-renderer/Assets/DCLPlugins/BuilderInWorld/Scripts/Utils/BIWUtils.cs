@@ -308,7 +308,7 @@ public static partial class BIWUtils
             {
                 // We create the entity for the ground
                 BuilderEntity entity = new BuilderEntity();
-                entity.id = Guid.NewGuid().ToString();
+                entity.id = Guid.NewGuid().ToString().GetHashCode();
                 entity.disableGizmos = true;
                 entity.name = "entity"+x+y;
         
@@ -342,7 +342,7 @@ public static partial class BIWUtils
                     components.Add(gltfShapeComponent.id,gltfShapeComponent);
 
                 // Finally, we add the entity to the list
-                entities.Add(entity.id,entity);
+                entities.Add(entity.id.ToString(),entity);
             }
         }
 

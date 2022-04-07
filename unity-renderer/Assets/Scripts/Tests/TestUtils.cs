@@ -129,12 +129,12 @@ namespace DCL.Helpers
 
             entityCounter++;
             string id = $"{entityCounter}";
-            return scene.CreateEntity(id);
+            return scene.CreateEntity(id.GetHashCode());
         }
 
-        public static IDCLEntity CreateSceneEntity(ParcelScene scene, string id) { return scene.CreateEntity(id); }
+        public static IDCLEntity CreateSceneEntity(ParcelScene scene, long id) { return scene.CreateEntity(id); }
 
-        public static void RemoveSceneEntity(ParcelScene scene, string id) { scene.RemoveEntity(id); }
+        public static void RemoveSceneEntity(ParcelScene scene, long id) { scene.RemoveEntity(id); }
 
         public static void RemoveSceneEntity(ParcelScene scene, IDCLEntity entity) { scene.RemoveEntity(entity.entityId); }
 
@@ -192,7 +192,7 @@ namespace DCL.Helpers
 
         public static void SetEntityParent(ParcelScene scene, IDCLEntity child, IDCLEntity parent) { scene.SetEntityParent(child.entityId, parent.entityId); }
 
-        public static void SetEntityParent(ParcelScene scene, string childEntityId, string parentEntityId) { scene.SetEntityParent(childEntityId, parentEntityId); }
+        public static void SetEntityParent(ParcelScene scene, long childEntityId, long parentEntityId) { scene.SetEntityParent(childEntityId, parentEntityId); }
 
         public static DCLTexture CreateDCLTexture(ParcelScene scene,
             string url,
@@ -250,7 +250,7 @@ namespace DCL.Helpers
 
             disposableIdCounter++;
 
-            string uniqueId = GetComponentUniqueId(scene, "material", (int) id, "-shared-" + disposableIdCounter);
+            string uniqueId = GetComponentUniqueId(scene, "material", (int) id, ("-shared-" + disposableIdCounter).GetHashCode());
 
             T result = scene.SharedComponentCreate(uniqueId, (int) id) as T;
 
@@ -479,7 +479,7 @@ namespace DCL.Helpers
             return shape;
         }
 
-        public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, DCL.Models.CLASS_ID classId,
+        public static void InstantiateEntityWithShape(ParcelScene scene, long entityId, DCL.Models.CLASS_ID classId,
             Vector3 position, string remoteSrc = "")
         {
             CreateSceneEntity(scene, entityId);
@@ -499,7 +499,7 @@ namespace DCL.Helpers
             SetEntityTransform(scene, scene.entities[entityId], position, Quaternion.identity, Vector3.one);
         }
 
-        public static void DetachSharedComponent(ParcelScene scene, string fromEntityId, string sharedComponentId)
+        public static void DetachSharedComponent(ParcelScene scene, long fromEntityId, string sharedComponentId)
         {
             if (!scene.entities.TryGetValue(fromEntityId, out IDCLEntity entity))
             {
@@ -509,7 +509,7 @@ namespace DCL.Helpers
             scene.GetSharedComponent(sharedComponentId).DetachFrom(entity);
         }
 
-        public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position,
+        public static void InstantiateEntityWithMaterial(ParcelScene scene, long entityId, Vector3 position,
             BasicMaterial.Model basicMaterial, string materialComponentID = "a-material")
         {
             InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
@@ -529,7 +529,7 @@ namespace DCL.Helpers
             );
         }
 
-        public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position,
+        public static void InstantiateEntityWithMaterial(ParcelScene scene, long entityId, Vector3 position,
             PBRMaterial.Model pbrMaterial, string materialComponentID = "a-material")
         {
             InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
@@ -549,7 +549,7 @@ namespace DCL.Helpers
             );
         }
 
-        public static IEnumerator CreateAudioSource(ParcelScene scene, string entityId, string audioClipId, bool playing, bool loop = true)
+        public static IEnumerator CreateAudioSource(ParcelScene scene, long entityId, string audioClipId, bool playing, bool loop = true)
         {
             var audioSourceModel = new DCLAudioSource.Model()
             {
@@ -616,7 +616,7 @@ namespace DCL.Helpers
                 playing: true);
         }
 
-        public static string GetComponentUniqueId(ParcelScene scene, string salt, int classId, string entityId)
+        public static string GetComponentUniqueId(ParcelScene scene, string salt, int classId, long entityId)
         {
             string baseId = salt + "-" + (int) classId + "-" + entityId;
             string finalId = baseId;
@@ -629,7 +629,7 @@ namespace DCL.Helpers
             return finalId;
         }
 
-        public static string CreateAndSetShape(ParcelScene scene, string entityId, CLASS_ID classId, string model)
+        public static string CreateAndSetShape(ParcelScene scene, long entityId, CLASS_ID classId, string model)
         {
             string componentId = GetComponentUniqueId(scene, "shape", (int) classId, entityId);
 

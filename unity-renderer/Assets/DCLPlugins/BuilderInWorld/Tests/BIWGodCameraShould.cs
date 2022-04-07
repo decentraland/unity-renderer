@@ -34,7 +34,7 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
         freeCameraMovement.gameObject.SetActive(true);
         Vector3 currentPosition = gameObject.transform.position;
 
-        string entityId = "Test";
+        long entityId = 2;
 
         BIWEntity newEntity = new BIWEntity();
         newEntity.Initialize(TestUtils.CreateSceneEntity(scene, entityId), null);

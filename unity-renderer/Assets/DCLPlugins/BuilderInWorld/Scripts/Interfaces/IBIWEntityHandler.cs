@@ -14,10 +14,10 @@ public interface IBIWEntityHandler : IBIWController
     event Action OnEntitySelected;
     event Action<List<BIWEntity>> OnDeleteSelectedEntities;
     event Action<BIWEntity> OnEntityDeleted;
-    BIWEntity GetConvertedEntity(string entityId);
+    BIWEntity GetConvertedEntity(long entityId);
     BIWEntity GetConvertedEntity(IDCLEntity entity);
     void DeleteEntity(BIWEntity entityToDelete);
-    void DeleteEntity(string entityId);
+    void DeleteEntity(long entityId);
     void DeleteFloorEntities();
     void DeleteSelectedEntities();
     IDCLEntity CreateEntityFromJSON(string entityJson);

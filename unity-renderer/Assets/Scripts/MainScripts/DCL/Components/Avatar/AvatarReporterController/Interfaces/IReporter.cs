@@ -1,5 +1,5 @@
 internal interface IReporter
 {
-    void ReportAvatarSceneChange(string entityId, string avatarId, string sceneId);
-    void ReportAvatarRemoved(string entityId, string avatarId);
+    void ReportAvatarSceneChange(long entityId, string avatarId, string sceneId);
+    void ReportAvatarRemoved(long entityId, string avatarId);
 }

@@ -15,7 +15,7 @@ namespace DCL.Builder
     [Serializable]
     public class Entity
     {
-        public string id;
+        public long id;
         public List<Component> components = new List<Component>();
     }
 

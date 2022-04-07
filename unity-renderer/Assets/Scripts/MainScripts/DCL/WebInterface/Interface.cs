@@ -195,7 +195,7 @@ namespace DCL.Interface
         [System.Serializable]
         public class RemoveEntityComponentsPayLoad
         {
-            public string entityId;
+            public long entityId;
             public string componentId;
         };
 
@@ -218,7 +218,7 @@ namespace DCL.Interface
                 public Vector3 normal;
                 public Vector3 worldNormal;
                 public string meshName;
-                public string entityId;
+                public long entityId;
             }
 
             public ACTION_BUTTON buttonId;
@@ -359,7 +359,7 @@ namespace DCL.Interface
         [System.Serializable]
         public class HitEntityInfo
         {
-            public string entityId;
+            public long entityId;
             public string meshName;
         }
 
@@ -632,7 +632,7 @@ namespace DCL.Interface
         public class AvatarStateBase
         {
             public string type;
-            public string entityId;
+            public long entityId;
             public string avatarShapeId;
         }
 
@@ -893,7 +893,7 @@ namespace DCL.Interface
 
         public static void ReportRaycastHitAllResult(string sceneId, string queryId, RaycastType raycastType, RaycastHitEntities payload) { ReportRaycastResult<RaycastHitAllResponse, RaycastHitEntities>(sceneId, queryId, Protocol.RaycastTypeToLiteral(raycastType), payload); }
 
-        private static OnPointerEventPayload.Hit CreateHitObject(string entityId, string meshName, Vector3 point, Vector3 normal, float distance)
+        private static OnPointerEventPayload.Hit CreateHitObject(long entityId, string meshName, Vector3 point, Vector3 normal, float distance)
         {
             OnPointerEventPayload.Hit hit = new OnPointerEventPayload.Hit();
 
@@ -907,7 +907,7 @@ namespace DCL.Interface
             return hit;
         }
 
-        private static void SetPointerEventPayload(OnPointerEventPayload pointerEventPayload, ACTION_BUTTON buttonId, string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance, bool isHitInfoValid)
+        private static void SetPointerEventPayload(OnPointerEventPayload pointerEventPayload, ACTION_BUTTON buttonId, long entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance, bool isHitInfoValid)
         {
             pointerEventPayload.origin = ray.origin;
             pointerEventPayload.direction = ray.direction;
@@ -919,7 +919,7 @@ namespace DCL.Interface
                 pointerEventPayload.hit = null;
         }
 
-        public static void ReportGlobalPointerDownEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
+        public static void ReportGlobalPointerDownEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, long entityId = 0, string meshName = null, bool isHitInfoValid = false)
         {
             SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
@@ -929,7 +929,9 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
         }
 
-        public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
+        //TODO(entity): We should take care of this
+        // public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, long entityId = null, string meshName = null, bool isHitInfoValid = false)
+        public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, long entityId = 0, string meshName = null, bool isHitInfoValid = false)
         {
             SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.UP;
@@ -939,7 +941,7 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
         }
 
-        public static void ReportOnPointerDownEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
+        public static void ReportOnPointerDownEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, long entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
         {
             if (string.IsNullOrEmpty(uuid))
             {
@@ -953,7 +955,7 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "uuidEvent", onPointerDownEvent);
         }
 
-        public static void ReportOnPointerUpEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
+        public static void ReportOnPointerUpEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, long entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
         {
             if (string.IsNullOrEmpty(uuid))
             {
@@ -1451,7 +1453,7 @@ namespace DCL.Interface
             SendMessage("VideoProgressEvent", progressEvent);
         }
 
-        public static void ReportAvatarRemoved(string entityId, string avatarId)
+        public static void ReportAvatarRemoved(long entityId, string avatarId)
         {
             avatarStatePayload.type = "Removed";
             avatarStatePayload.entityId = entityId;
@@ -1459,7 +1461,7 @@ namespace DCL.Interface
             SendMessage("ReportAvatarState", avatarStatePayload);
         }
 
-        public static void ReportAvatarSceneChanged(string entityId, string avatarId, string sceneId)
+        public static void ReportAvatarSceneChanged(long entityId, string avatarId, string sceneId)
         {
             avatarSceneChangedPayload.type = "SceneChanged";
             avatarSceneChangedPayload.entityId = entityId;

@@ -193,9 +193,9 @@ namespace Builder
 
         private void OnEntityAdded(DCLBuilderEntity entity)
         {
-            if (!entities.ContainsKey(entity.rootEntity.entityId))
+            if (!entities.ContainsKey(entity.rootEntity.entityId.ToString()))
             {
-                entities.Add(entity.rootEntity.entityId, entity);
+                entities.Add(entity.rootEntity.entityId.ToString(), entity);
             }
         }
 
@@ -206,9 +206,9 @@ namespace Builder
                 Deselect(entity);
             }
 
-            if (entities.ContainsKey(entity.rootEntity.entityId))
+            if (entities.ContainsKey(entity.rootEntity.entityId.ToString()))
             {
-                entities.Remove(entity.rootEntity.entityId);
+                entities.Remove(entity.rootEntity.entityId.ToString());
             }
         }
 

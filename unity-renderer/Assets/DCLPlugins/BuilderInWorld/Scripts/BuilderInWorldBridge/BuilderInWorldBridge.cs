@@ -214,7 +214,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         WebInterface.BuilderInWorldMessage(BIWSettings.SCENE_EVENT_NAME, message);
     }
 
-    public void RemoveEntityOnKernel(string entityId, IParcelScene scene)
+    public void RemoveEntityOnKernel(long entityId, IParcelScene scene)
     {
         RemoveEntityEvent removeEntityEvent = new RemoveEntityEvent();
         RemoveEntityPayload removeEntityPayLoad = new RemoveEntityPayload();
@@ -260,7 +260,7 @@ public class BuilderInWorldBridge : MonoBehaviour
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
-    void SendNewEntityToKernel(string sceneId, string entityId, ComponentPayload[] componentsPayload)
+    void SendNewEntityToKernel(string sceneId, long entityId, ComponentPayload[] componentsPayload)
     {
         AddEntityEvent addEntityEvent = new AddEntityEvent();
         entityPayload.entityId = entityId;

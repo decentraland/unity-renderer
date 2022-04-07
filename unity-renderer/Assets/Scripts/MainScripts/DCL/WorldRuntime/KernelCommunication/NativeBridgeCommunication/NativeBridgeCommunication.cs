@@ -8,7 +8,7 @@ using Ray = DCL.Models.Ray;
 
 public class NativeBridgeCommunication : IKernelCommunication
 {
-    private static string currentEntityId;
+    private static long currentEntityId;
     private static string currentSceneId;
     private static string currentTag;
 
@@ -232,7 +232,7 @@ public class NativeBridgeCommunication : IKernelCommunication
     }
 
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
-    internal static void SetEntityParent(string parentId)
+    internal static void SetEntityParent(long parentId)
     {
         QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
@@ -250,7 +250,7 @@ public class NativeBridgeCommunication : IKernelCommunication
     }
 
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
-    internal static void SetEntityId(string id) { currentEntityId = id; }
+    internal static void SetEntityId(long id) { currentEntityId = id; }
 
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
     internal static void SetSceneId(string id) { currentSceneId = id; }

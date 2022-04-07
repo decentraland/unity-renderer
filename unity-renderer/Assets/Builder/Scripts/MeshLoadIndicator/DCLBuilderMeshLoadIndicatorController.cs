@@ -87,7 +87,7 @@ namespace Builder.MeshLoadIndicator
             }
         }
 
-        public DCLBuilderMeshLoadIndicator ShowIndicator(Vector3 position, string entityId)
+        public DCLBuilderMeshLoadIndicator ShowIndicator(Vector3 position, long entityId)
         {
             DCLBuilderMeshLoadIndicator ret;
 
@@ -104,20 +104,20 @@ namespace Builder.MeshLoadIndicator
                 ret = Object.Instantiate(baseIndicator, position, Quaternion.identity, transform);
             }
 
-            ret.loadingEntityId = entityId;
+            ret.loadingEntityId = entityId.ToString();
             ret.gameObject.SetActive(true);
             indicatorsInUse.Add(ret);
             return ret;
         }
 
-        public void HideIndicator(string entityId)
+        public void HideIndicator(long entityId)
         {
             if (indicatorsInUse == null)
                 return;
 
             for (int i = 0; i < indicatorsInUse.Count; i++)
             {
-                if (indicatorsInUse[i].loadingEntityId == entityId)
+                if (indicatorsInUse[i].loadingEntityId == entityId.ToString())
                 {
                     indicatorsInUse[i].gameObject.SetActive(false);
                     indicatorsAvailable.Enqueue(indicatorsInUse[i]);

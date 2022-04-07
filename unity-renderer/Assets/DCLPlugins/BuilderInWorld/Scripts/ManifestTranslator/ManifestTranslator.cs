@@ -44,7 +44,7 @@ namespace DCL.Builder
             {
                 BuilderEntity builderEntity = new BuilderEntity();
                 builderEntity.id = entity.id;
-                string entityName = builderEntity.id;
+                string entityName = builderEntity.id.ToString();
 
                 // Iterate the entity components to transform them to the builder format
                 foreach (Component entityComponent in entity.components)
@@ -92,8 +92,8 @@ namespace DCL.Builder
                 // Also, since the name of the entity will be used in the code, we need to ensure that the it doesn't have special characters or spaces
                 builderEntity.name = GetCleanUniqueName(namesList, entityName);
 
-                if (!builderScene.entities.ContainsKey(builderEntity.id))
-                    builderScene.entities.Add(builderEntity.id, builderEntity);
+                if (!builderScene.entities.ContainsKey(builderEntity.id.ToString()))
+                    builderScene.entities.Add(builderEntity.id.ToString(), builderEntity);
             }
 
             //We add the limits to the scene, the current metrics are calculated in the builder
@@ -327,8 +327,8 @@ namespace DCL.Builder
                 // Also, since the name of the entity will be used in the code, we need to ensure that the it doesn't have special characters or spaces
                 builderEntity.name = GetCleanUniqueName(namesList, entityName);
 
-                if (!builderScene.entities.ContainsKey(builderEntity.id))
-                    builderScene.entities.Add(builderEntity.id, builderEntity);
+                if (!builderScene.entities.ContainsKey(builderEntity.id.ToString()))
+                    builderScene.entities.Add(builderEntity.id.ToString(), builderEntity);
             }
             
             //We add the limits to the scene, the current metrics are calculated in the builder

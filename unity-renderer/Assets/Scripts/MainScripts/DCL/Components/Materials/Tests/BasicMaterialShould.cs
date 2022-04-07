@@ -107,7 +107,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator BeDetachedCorrectly()
     {
-        string entityId = "1";
+        long entityId = 1;
         string materialID = "a-material";
 
         TestUtils.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
@@ -139,8 +139,8 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator BeDetachedOnDispose()
     {
-        string firstEntityId = "1";
-        string secondEntityId = "2";
+        long firstEntityId = 1;
+        long secondEntityId = 2;
         string materialID = "a-material";
 
         // Instantiate entity with material
@@ -186,7 +186,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator EntityBasicMaterialUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         string materialID = "a-material";
 
         Assert.IsFalse(scene.disposableComponents.ContainsKey(materialID));

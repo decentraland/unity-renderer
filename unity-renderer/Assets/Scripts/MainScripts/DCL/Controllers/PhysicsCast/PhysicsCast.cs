@@ -54,7 +54,9 @@ namespace DCL
                     ray = rayInfo,
                     entity = new WebInterface.HitEntityInfo()
                     {
-                        entityId = colliderInfo.entity != null ? colliderInfo.entity.entityId : null,
+                        //TODO: We should take care of this
+                        // entityId = colliderInfo.entity != null ? colliderInfo.entity.entityId : null,
+                        entityId = colliderInfo.entity != null ? colliderInfo.entity.entityId : 0,
                         meshName = colliderInfo.meshName
                     }
                 };
@@ -100,7 +102,9 @@ namespace DCL
                         hitEntity.hitPoint = hitInfo.hit.point;
                         hitEntity.hitNormal = hitInfo.hit.normal;
                         hitEntity.entity = new WebInterface.HitEntityInfo();
-                        hitEntity.entity.entityId = colliderInfo.entity != null ? colliderInfo.entity.entityId : null;
+                        //TODO(entity): We should take care of this
+                        // hitEntity.entity.entityId = colliderInfo.entity != null ? colliderInfo.entity.entityId : null;
+                        hitEntity.entity.entityId = colliderInfo.entity != null ? colliderInfo.entity.entityId : 0;
                         hitEntity.entity.meshName = colliderInfo.meshName;
                         hitEntityInfoList.Add(hitEntity);
                     }

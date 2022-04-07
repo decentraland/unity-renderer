@@ -36,7 +36,7 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
         biwSaveController.ResetSaveTime();
 
         //Act
-        biwBridge.RemoveEntityOnKernel("test", scene);
+        biwBridge.RemoveEntityOnKernel(2, scene);
 
         //Assert
         Assert.IsFalse(biwSaveController.CanSave());

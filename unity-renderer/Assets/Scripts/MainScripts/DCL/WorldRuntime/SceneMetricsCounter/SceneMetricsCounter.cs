@@ -319,6 +319,11 @@ namespace DCL
         {
             MarkDirty();
         }
+        
+        void OnDataChanged(long obj1)
+        {
+            MarkDirty();
+        }
 
         private void UpdateMetrics()
         {

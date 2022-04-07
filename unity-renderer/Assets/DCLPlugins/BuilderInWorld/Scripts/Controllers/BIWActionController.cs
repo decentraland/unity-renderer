@@ -192,7 +192,7 @@ public class BIWActionController : BIWController, IBIWActionController
         lastActionTimeStamp = Time.unscaledTime;
     }
 
-    void ApplyAction(string entityIdToApply, object value, IBIWCompleteAction.ActionType actionType, bool isUndo)
+    void ApplyAction(long entityIdToApply, object value, IBIWCompleteAction.ActionType actionType, bool isUndo)
     {
         switch (actionType)
         {
@@ -217,7 +217,7 @@ public class BIWActionController : BIWController, IBIWActionController
             case IBIWCompleteAction.ActionType.CREATE:
                 string entityString = (string) value;
                 if (isUndo)
-                    entityHandler.DeleteEntity(entityString);
+                    entityHandler.DeleteEntity(entityString.GetHashCode());
                 else
                     entityHandler.CreateEntityFromJSON(entityString);
 
@@ -229,7 +229,7 @@ public class BIWActionController : BIWController, IBIWActionController
                 if (isUndo)
                     entityHandler.CreateEntityFromJSON(deletedEntityString);
                 else
-                    entityHandler.DeleteEntity(deletedEntityString);
+                    entityHandler.DeleteEntity(deletedEntityString.GetHashCode());
 
                 break;
             case IBIWCompleteAction.ActionType.CHANGE_FLOOR:

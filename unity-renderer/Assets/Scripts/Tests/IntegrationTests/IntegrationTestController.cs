@@ -11,7 +11,7 @@ using UnityEngine.Assertions;
 
 public class IntegrationTestController : MonoBehaviour
 {
-    string entityId = "a5f571bd-bce1-4cf8-a158-b8f3e92e4fb0";
+    long entityId = "a5f571bd-bce1-4cf8-a158-b8f3e92e4fb0".GetHashCode();
     string sceneName = "the-loaded-scene";
 
     public IEnumerator Initialize()
@@ -50,7 +50,7 @@ public class IntegrationTestController : MonoBehaviour
         sceneController.SendSceneMessage(
             TestUtils.CreateSceneMessage(
                 sceneName,
-                entityId,
+                entityId.ToString(),
                 "CreateEntity",
                 JsonConvert.SerializeObject(
                     new Protocol.CreateEntity()
@@ -63,7 +63,7 @@ public class IntegrationTestController : MonoBehaviour
         sceneController.SendSceneMessage(
             TestUtils.CreateSceneMessage(
                 sceneName,
-                entityId,
+                entityId.ToString(),
                 "SetEntityParent",
                 JsonConvert.SerializeObject(
                     new

@@ -210,12 +210,12 @@ namespace DCL.Bots
         /// <param name="position">The world position of the randomized bot</param>
         void InstantiateBot(Vector3 position)
         {
-            string entityId = "BOT-" + instantiatedBots.Count;
+            long entityId = ("BOT-" + instantiatedBots.Count).GetHashCode();
 
             AvatarModel avatarModel = new AvatarModel()
             {
-                id = entityId,
-                name = entityId,
+                id = entityId.ToString(),
+                name = entityId.ToString(),
                 hairColor = Random.ColorHSV(0, 1, 0, 1, 0.25f, 0.9f),
                 eyeColor = Random.ColorHSV(0, 1, 0, 1, 0f, 0.2f),
                 skinColor = Random.ColorHSV(0, 1, 0.3f, 1, 0.4f, 0.9f),
@@ -227,7 +227,7 @@ namespace DCL.Bots
             globalScene.EntityComponentCreateOrUpdateWithModel(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
             UpdateEntityTransform(globalScene, entityId, position, Quaternion.identity, Vector3.one);
 
-            instantiatedBots.Add(entityId);
+            instantiatedBots.Add(entityId.ToString());
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace DCL.Bots
             if (!instantiatedBots.Contains(targetEntityId))
                 return;
 
-            globalScene.RemoveEntity(targetEntityId);
+            globalScene.RemoveEntity(targetEntityId.GetHashCode());
             instantiatedBots.Remove(targetEntityId);
         }
 
@@ -403,7 +403,7 @@ namespace DCL.Bots
                             position.y, Random.Range(position.z, position.z + config.areaDepth));
 
 
-                        UpdateEntityTransform(globalScene, instantiatedBots[targetBotIndex], randomizedAreaPosition, Quaternion.identity, Vector3.one);
+                        UpdateEntityTransform(globalScene, instantiatedBots[targetBotIndex].GetHashCode(), randomizedAreaPosition, Quaternion.identity, Vector3.one);
                     }
                 }
 
@@ -411,7 +411,7 @@ namespace DCL.Bots
             }
         }
 
-        void UpdateEntityTransform(ISceneMessageProcessor scene, string entityId, Vector3 position, Quaternion rotation, Vector3 scale)
+        void UpdateEntityTransform(ISceneMessageProcessor scene, long entityId, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
             scene.EntityComponentCreateOrUpdate(

@@ -25,7 +25,7 @@ namespace DCL.Builder
 
         private CatalogItem lastCatalogItemCreated;
 
-        private readonly Dictionary<string, BIWLoadingPlaceHolder> loadingGameObjects = new Dictionary<string, BIWLoadingPlaceHolder>();
+        private readonly Dictionary<long, BIWLoadingPlaceHolder> loadingGameObjects = new Dictionary<long, BIWLoadingPlaceHolder>();
         private readonly Dictionary<BIWEntity, GameObject> errorGameObjects = new Dictionary<BIWEntity, GameObject>();
 
         private readonly List<KeyValuePair<CatalogItem, string>> itemsToSendAnalytics = new List<KeyValuePair<CatalogItem, string>>();
@@ -227,7 +227,7 @@ namespace DCL.Builder
 
         #region LoadingObjects
 
-        public bool ExistsLoadingGameObjectForEntity(string entityId) { return loadingGameObjects.ContainsKey(entityId); }
+        public bool ExistsLoadingGameObjectForEntity(long entityId) { return loadingGameObjects.ContainsKey(entityId); }
 
         public void CreateLoadingObject(BIWEntity entity)
         {
@@ -245,7 +245,7 @@ namespace DCL.Builder
             RemoveLoadingObject(entity.rootEntity.entityId);
         }
 
-        public void RemoveLoadingObject(string entityId)
+        public void RemoveLoadingObject(long entityId)
         {
             if (!loadingGameObjects.ContainsKey(entityId))
                 return;
@@ -254,7 +254,7 @@ namespace DCL.Builder
             loadingPlaceHolder.DestroyAfterAnimation();
         }
 
-        public void RemoveLoadingObjectInmediate(string entityId)
+        public void RemoveLoadingObjectInmediate(long entityId)
         {
             if (!loadingGameObjects.ContainsKey(entityId))
                 return;

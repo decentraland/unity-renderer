@@ -20,7 +20,7 @@ namespace Tests
         private ISceneController sceneController;
 
         private Dictionary<string, IParcelScene> loadedScenes = new Dictionary<string, IParcelScene>();
-        private Dictionary<string, Dictionary<string, IDCLEntity>> entities = new Dictionary<string, Dictionary<string, IDCLEntity>>();
+        private Dictionary<string, Dictionary<long, IDCLEntity>> entities = new Dictionary<string, Dictionary<long, IDCLEntity>>();
 
         private BaseDictionary<string, bool> isBoundingBoxEnabledVariable = new BaseDictionary<string, bool>();
 
@@ -279,7 +279,7 @@ namespace Tests
             scene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene() { id = id });
 
             loadedScenes.Add(id, scene);
-            entities[id] = new Dictionary<string, IDCLEntity>();
+            entities[id] = new Dictionary<long, IDCLEntity>();
 
             scene.entities.Returns(entities[id]);
 
@@ -300,7 +300,7 @@ namespace Tests
         private IDCLEntity CreateEntityWithoutShape(string id)
         {
             IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns(id);
+            entity.entityId.Returns(id.GetHashCode());
 
             var gameObject = new GameObject(id);
             entity.gameObject.Returns(gameObject);

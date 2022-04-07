@@ -36,7 +36,7 @@ public class NFTShape_Tests : IntegrationTestSuite
     [UnityTest]
     public IEnumerator ShapeUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         var entity = scene.entities[entityId];
@@ -83,7 +83,7 @@ public class NFTShape_Tests : IntegrationTestSuite
     [Category("Explicit")]
     public IEnumerator CollisionProperty()
     {
-        string entityId = "entityId";
+        long entityId = 2;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;
@@ -108,7 +108,7 @@ public class NFTShape_Tests : IntegrationTestSuite
     [Category("Explicit")]
     public IEnumerator VisibleProperty()
     {
-        string entityId = "entityId";
+        long entityId = 2;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;

@@ -11,7 +11,7 @@ using WaitUntil = UnityEngine.WaitUntil;
 
 public class BIWActionsShould : IntegrationTestSuite_Legacy
 {
-    private const string ENTITY_ID = "1";
+    private const long ENTITY_ID = 1;
     private IContext context;
     private ParcelScene scene;
     private AssetCatalogBridge assetCatalogBridge;

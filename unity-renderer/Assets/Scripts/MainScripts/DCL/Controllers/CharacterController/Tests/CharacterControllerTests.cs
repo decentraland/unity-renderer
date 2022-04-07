@@ -100,8 +100,8 @@ namespace Tests
         public IEnumerator CharacterIsNotParentedOnWorldReposition()
         {
             // We use a shape that represents a static ground and has collisions
-            TestUtils.InstantiateEntityWithShape(scene, "groundShape", DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
-            var shapeEntity = scene.entities["groundShape"];
+            TestUtils.InstantiateEntityWithShape(scene, 2, DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
+            var shapeEntity = scene.entities[2];
 
             // Reposition ground shape to be on the world-reposition-limit
             TestUtils.SetEntityTransform(scene, shapeEntity,
@@ -179,7 +179,7 @@ namespace Tests
 
             yield return InitCharacterPosition(originalCharacterPosition);
 
-            string platformEntityId = "movingPlatform";
+            long platformEntityId = "movingPlatform".GetHashCode();
             TestUtils.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(2f, 1f, 8f));
 
             Transform platformTransform = scene.entities[platformEntityId].gameObject.transform;
@@ -245,7 +245,7 @@ namespace Tests
 
             yield return InitCharacterPosition(originalCharacterPosition);
 
-            string platformEntityId = "rotatingPlatform";
+            long platformEntityId = "rotatingPlatform".GetHashCode();
             TestUtils.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8f, 1f, 8f));
 
             Transform platformTransform = scene.entities[platformEntityId].gameObject.transform;
@@ -314,7 +314,7 @@ namespace Tests
             yield return CharacterSupportsMovingPlatforms();
 
             // remove platform and check character parent
-            string platformEntityId = "movingPlatform";
+            long platformEntityId = "movingPlatform".GetHashCode();
             TestUtils.RemoveSceneEntity(scene, platformEntityId);
             yield return null;
             yield return null;
@@ -331,7 +331,7 @@ namespace Tests
             yield return CharacterSupportsMovingPlatforms();
 
             // Disable shape colliders
-            string platformEntityId = "movingPlatform";
+            long platformEntityId = "movingPlatform".GetHashCode();
             var shapeComponent = scene.entities[platformEntityId].GetSharedComponent(typeof(BaseShape));
             yield return TestUtils.SharedComponentUpdate(shapeComponent, new BaseShape.Model()
             {
@@ -352,7 +352,7 @@ namespace Tests
             yield return CharacterSupportsMovingPlatforms();
 
             // remove shape component
-            string platformEntityId = "movingPlatform";
+            long platformEntityId = "movingPlatform".GetHashCode();
             var shapeComponent = scene.entities[platformEntityId].GetSharedComponent(typeof(BaseShape));
             TestUtils.DetachSharedComponent(scene, platformEntityId, shapeComponent.id);
 

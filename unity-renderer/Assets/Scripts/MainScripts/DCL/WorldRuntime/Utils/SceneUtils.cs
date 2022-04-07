@@ -11,7 +11,7 @@ namespace DCL.Controllers
             if (!scene.entities.ContainsKey(entity.entityId))
                 return null;
 
-            IDCLEntity newEntity = scene.CreateEntity(System.Guid.NewGuid().ToString());
+            IDCLEntity newEntity = scene.CreateEntity(System.Guid.NewGuid().ToString().GetHashCode());
 
             if (entity.children.Count > 0)
             {

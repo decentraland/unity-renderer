@@ -460,7 +460,7 @@ namespace DCL
                     raycastGlobalLayerHitInfo.hit.normal,
                     raycastGlobalLayerHitInfo.hit.distance,
                     sceneId,
-                    colliderInfo.entity != null ? colliderInfo.entity.entityId : null,
+                    colliderInfo.entity != null ? colliderInfo.entity.entityId : 0,
                     colliderInfo.meshName,
                     isHitInfoValid: true);
             }
@@ -488,7 +488,7 @@ namespace DCL
                     raycastGlobalLayerHitInfo.hit.normal,
                     raycastGlobalLayerHitInfo.hit.distance,
                     sceneId,
-                    colliderInfo.entity != null ? colliderInfo.entity.entityId : null,
+                    colliderInfo.entity != null ? colliderInfo.entity.entityId : 0,
                     colliderInfo.meshName,
                     isHitInfoValid: true);
             }

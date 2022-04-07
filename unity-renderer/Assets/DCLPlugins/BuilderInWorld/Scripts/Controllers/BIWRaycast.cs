@@ -53,11 +53,11 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
 
         if (Physics.Raycast(ray, out hit, distanceToSelect, BIWSettings.COLLIDER_SELECTION_LAYER))
         {
-            string entityID = hit.collider.gameObject.name;
+            long entityId = long.Parse(hit.collider.gameObject.name);
 
-            if (sceneToEdit.entities.ContainsKey(entityID))
+            if (sceneToEdit.entities.ContainsKey(entityId))
             {
-                return entityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
+                return entityHandler.GetConvertedEntity(sceneToEdit.entities[entityId]);
             }
         }
 
@@ -106,11 +106,11 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
 
         foreach (RaycastHit hit in hits)
         {
-            string entityID = hit.collider.gameObject.name;
+            long entityId = long.Parse(hit.collider.gameObject.name);
 
-            if (sceneToEdit.entities.ContainsKey(entityID))
+            if (sceneToEdit.entities.ContainsKey(entityId))
             {
-                BIWEntity entityToCheck = entityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
+                BIWEntity entityToCheck = entityHandler.GetConvertedEntity(sceneToEdit.entities[entityId]);
 
                 if (entityToCheck == null)
                     continue;
