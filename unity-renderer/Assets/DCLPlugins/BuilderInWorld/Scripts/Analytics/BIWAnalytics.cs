@@ -59,6 +59,47 @@ public static class BIWAnalytics
         SendEvent("player_unpublish_scene", events);
     }
 
+    /// <summary>
+    /// When the user has created a new project
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="description"></param>
+    /// <param name="size"></param>
+    public static void CreatedNewProject(string name, string description, Vector2Int size)
+    {
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("name", name);
+        events.Add("description", description);
+        events.Add("size", size.ToString());
+        SendEvent("created_new_project", events);
+    }
+
+    /// <summary>
+    /// When a project is deleted
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="size"></param>
+    public static void ProjectDeleted(string id, Vector2Int size)
+    {
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("id", id);
+        events.Add("size", size.ToString());
+        SendEvent("deleted_project", events);
+    }
+    
+    /// <summary>
+    /// When a project has been duplicated
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="size"></param>
+    public static void ProjectDuplicated(string id, Vector2Int size)
+    {
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("id", id);
+        events.Add("size", size.ToString());
+        SendEvent("duplicate_project", events);
+    }
+
     #endregion
 
     #region BuilderEditor
