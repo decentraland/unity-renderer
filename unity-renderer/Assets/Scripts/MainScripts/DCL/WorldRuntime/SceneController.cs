@@ -228,14 +228,14 @@ namespace DCL
                     case MessagingTypes.ENTITY_CREATE:
                         {
                             if (msgPayload is Protocol.CreateEntity payload)
-                                scene.CreateEntity(payload.entityId.GetHashCode());
+                                scene.CreateEntity(payload.entityId);
 
                             break;
                         }
                     case MessagingTypes.ENTITY_REPARENT:
                         {
                             if (msgPayload is Protocol.SetEntityParent payload)
-                                scene.SetEntityParent(payload.entityId.GetHashCode(), payload.parentId.GetHashCode());
+                                scene.SetEntityParent(payload.entityId, payload.parentId);
 
                             break;
                         }
@@ -244,7 +244,7 @@ namespace DCL
                         {
                             if (msgPayload is Protocol.EntityComponentCreateOrUpdate payload)
                             {
-                                delayedComponent = scene.EntityComponentCreateOrUpdate(payload.entityId.GetHashCode(),
+                                delayedComponent = scene.EntityComponentCreateOrUpdate(payload.entityId,
                                     (CLASS_ID_COMPONENT) payload.classId, payload.json) as IDelayedComponent;
                             }
 
@@ -254,7 +254,7 @@ namespace DCL
                     case MessagingTypes.ENTITY_COMPONENT_DESTROY:
                         {
                             if (msgPayload is Protocol.EntityComponentDestroy payload)
-                                scene.EntityComponentRemove(payload.entityId.GetHashCode(), payload.name);
+                                scene.EntityComponentRemove(payload.entityId, payload.name);
 
                             break;
                         }
@@ -262,7 +262,7 @@ namespace DCL
                     case MessagingTypes.SHARED_COMPONENT_ATTACH:
                         {
                             if (msgPayload is Protocol.SharedComponentAttach payload)
-                                scene.SharedComponentAttach(payload.entityId.GetHashCode(), payload.id);
+                                scene.SharedComponentAttach(payload.entityId, payload.id);
 
                             break;
                         }
@@ -294,7 +294,7 @@ namespace DCL
                     case MessagingTypes.ENTITY_DESTROY:
                         {
                             if (msgPayload is Protocol.RemoveEntity payload)
-                                scene.RemoveEntity(payload.entityId.GetHashCode());
+                                scene.RemoveEntity(payload.entityId);
 
                             break;
                         }
