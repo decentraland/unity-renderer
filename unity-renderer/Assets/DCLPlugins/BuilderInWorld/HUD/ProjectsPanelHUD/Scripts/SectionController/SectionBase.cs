@@ -5,6 +5,9 @@ namespace DCL.Builder
 {
     internal abstract class SectionBase : IDisposable
     {
+        public Action OnEmptyContent;
+        public Action OnNotEmptyContent;
+        
         public bool isVisible { get; private set; } = false;
         public virtual ISectionSearchHandler searchHandler { get; protected set; } = null;
         public virtual SearchBarConfig searchBarConfig { get; protected set; } = new SearchBarConfig()

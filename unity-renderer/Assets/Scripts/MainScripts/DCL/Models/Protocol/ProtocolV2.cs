@@ -1,6 +1,7 @@
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 
 public class ProtocolV2
@@ -147,34 +148,14 @@ public class ProtocolV2
         public RemoveEntityComponentsPayload payload;
     }
 
-    [System.Serializable]
-    public class StoreSceneStateEvent
+    public class PublishPayload
     {
-        public string type = "PublishSceneState";
-        public BuilderProjectPayload payload = new BuilderProjectPayload();
-    }
-
-    [System.Serializable]
-    public class SaveSceneStateEvent
-    {
-        public string type = "SaveSceneState";
-        public string payload = "";
-    }
-
-    [System.Serializable]
-    public class SaveProjectInfoEvent
-    {
-        public string type = "SaveProjectInfo";
-        public BuilderProjectPayload payload = new BuilderProjectPayload();
-    }
-
-    [System.Serializable]
-    public class BuilderProjectPayload
-    {
-        public string title = "";
-        public string description = "";
-        public string screenshot = "";
-        public bool isNewEmptyProject = false;
+        public Dictionary<string, object > files;
+        public Dictionary<string, object > filesToDecode;
+        public CatalystSceneEntityMetadata metadata;
+        public string[] pointers;
+        public StatelessManifest statelessManifest;
+        public bool reloadSingleScene = false;
     }
 
     #endregion

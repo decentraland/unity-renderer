@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using UnityEngine;
@@ -34,6 +35,25 @@ public class Catalyst : ICatalyst
     {
         DataStore.i.realm.playerRealm.OnChange -= PlayerRealmOnOnChange;
         deployedScenesCache.Dispose();
+    }
+
+    public async UniTask<string> GetContent(string hash)
+    {
+        string callResult = "";
+        string url = $"{realmContentServerUrl}/contents/" + hash;
+
+        var callPromise = Get(url);
+        callPromise.Then( result =>
+        {
+            callResult = result;
+        });
+
+        callPromise.Catch( error =>
+        {
+            callResult = error;
+        });
+        await callPromise;
+        return callResult;
     }
 
     public Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels) { return GetDeployedScenes(parcels, DEFAULT_CACHE_TIME); }

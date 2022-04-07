@@ -89,7 +89,7 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         TestUtils.ConfigureMockedRequestController(jsonData, mockedRequestController, 2);
 
         //Act
-        var promise = apiController.GetAllManifests();
+        var promise = apiController.GetAllProjectsData();
         promise.Then( data =>
         {
             result = data;

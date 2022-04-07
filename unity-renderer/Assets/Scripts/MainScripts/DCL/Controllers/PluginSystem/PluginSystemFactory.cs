@@ -30,6 +30,8 @@ namespace DCL
             pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
             pluginSystem.Register<EquippedEmotesInitializerPlugin>(() => new EquippedEmotesInitializerPlugin());
             pluginSystem.Register<EmotesWheelUIPlugin>(() => new EmotesWheelUIPlugin());
+            pluginSystem.Register<NFTShapePlugin>(() => new NFTShapePlugin());
+            pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature(), "explorev2");

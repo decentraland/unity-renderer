@@ -39,11 +39,27 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
     [Header("Prefab References")]
     [SerializeField] internal Toggle toggle;
     [SerializeField] internal TMP_Text text;
+    [SerializeField] GameObject activeOn = null;
+    [SerializeField] GameObject activeOff = null;
 
     [Header("Configuration")]
     [SerializeField] internal ToggleComponentModel model;
 
     public Toggle.ToggleEvent onToggleChange => toggle?.onValueChanged;
+
+    override public void Awake()
+    {
+        base.Awake();
+        toggle.onValueChanged.AddListener(ToggleChanged);
+    }
+
+    private void ToggleChanged(bool isOn) 
+    {
+        if (activeOn)
+            activeOn.gameObject.SetActive(isOn);
+        if (activeOff)
+            activeOff.gameObject.SetActive(!isOn);
+    }
 
     public void Configure(BaseComponentModel newModel)
     {

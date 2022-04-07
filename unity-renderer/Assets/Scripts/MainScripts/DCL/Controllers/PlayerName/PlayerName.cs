@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DCL;
 using TMPro;
 using UnityEngine;
@@ -30,6 +31,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal float targetAlpha;
     internal bool forceShow = false;
     internal Color backgroundOriginalColor;
+    internal List<string> hideConstraints = new List<string>();
 
     private void Awake()
     {
@@ -56,6 +58,12 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     internal void Update(float deltaTime)
     {
+        if (hideConstraints.Count > 0)
+        {
+            UpdateVisuals(0);
+            return;
+        }
+        
         float finalTargetAlpha = forceShow ? TARGET_ALPHA_SHOW : targetAlpha;
 
         if (!Mathf.Approximately(alpha, finalTargetAlpha))
@@ -111,6 +119,12 @@ public class PlayerName : MonoBehaviour, IPlayerName
             gameObject.SetActive(false);
         }
     }
+
+    // Note: Ideally we should separate the LODController logic from this one so we don't have to add constraints
+    public void AddVisibilityConstaint(string constraint) { hideConstraints.Add(constraint); }
+    
+    public void RemoveVisibilityConstaint(string constraint) { hideConstraints.Remove(constraint); }
+
     public void SetForceShow(bool forceShow)
     {
         canvas.enabled = forceShow || namesVisible.Get();

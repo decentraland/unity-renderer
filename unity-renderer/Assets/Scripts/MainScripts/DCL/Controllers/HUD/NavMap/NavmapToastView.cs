@@ -85,7 +85,7 @@ namespace DCL
 
                 if (currentImageUrl == sceneInfo.previewImageUrl)
                 {
-                    DisplayThumbnail(texturePromise.asset.texture);
+                    DisplayThumbnail(texturePromise?.asset?.texture);
                     return;
                 }
 
@@ -133,7 +133,7 @@ namespace DCL
                 return;
 
             // position the toast over the parcel parcelHighlightImage so that we can easily check with LOCAL pos info where it is on the screen
-            toastContainer.position = MapRenderer.i.parcelHighlightImage.transform.position;
+            toastContainer.position = MapRenderer.i.GetParcelHighlightTransform();
 
             bool useBottom = toastContainer.localPosition.y > 0;
 
@@ -145,7 +145,7 @@ namespace DCL
 
             // By setting the pivot accordingly BEFORE we position the toast, we can have it always visible in an easier way
             toastContainer.pivot = new Vector2(shouldOffsetHorizontally ? (useLeft ? 1 : 0) : 0.5f, useBottom ? 1 : 0);
-            toastContainer.position = MapRenderer.i.parcelHighlightImage.transform.position;
+            toastContainer.position = MapRenderer.i.GetParcelHighlightTransform();
 
         }
 

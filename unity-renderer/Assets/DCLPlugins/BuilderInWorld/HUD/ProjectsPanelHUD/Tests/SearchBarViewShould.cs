@@ -154,9 +154,6 @@ namespace Tests
             string[] sortTypes = new[] { "Type1" };
             view.SetSortTypes(sortTypes);
             Assert.IsFalse(view.sortDropdown.gameObject.activeSelf);
-
-            view.sortButton.onClick.Invoke();
-            Assert.IsFalse(view.sortDropdown.gameObject.activeSelf);
         }
 
         [Test]

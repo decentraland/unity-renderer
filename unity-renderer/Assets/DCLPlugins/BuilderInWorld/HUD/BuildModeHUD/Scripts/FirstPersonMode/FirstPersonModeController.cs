@@ -31,6 +31,9 @@ public class FirstPersonModeController : IFirstPersonModeController
 
     public void Dispose()
     {
+        if (firstPersonModeView == null)
+            return;
+        
         firstPersonModeView.OnFirstPersonModeClick -= Click;
         firstPersonModeView.OnShowTooltip -= ShowTooltip;
         firstPersonModeView.OnHideTooltip -= HideTooltip;

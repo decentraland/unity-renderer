@@ -144,7 +144,8 @@ namespace Tests
                 new Land()
                 {
                     id = id,
-                    parcels = new List<Parcel>()
+                    parcels = new List<Parcel>(),
+                    name = id
                 }
             );
         }

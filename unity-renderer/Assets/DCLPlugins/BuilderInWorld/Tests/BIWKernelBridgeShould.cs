@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
@@ -26,7 +27,9 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
 
         entityHandler = new BIWEntityHandler();
         entityHandler.Initialize(BIWTestUtils.CreateMockedContextForTestScene());
-        entityHandler.EnterEditMode(scene);
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
+
+        entityHandler.EnterEditMode(builderScene);
 
         biwBridge = MainSceneFactory.CreateBuilderInWorldBridge();
 
@@ -43,8 +46,13 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     [Test]
     public void TestKernelPublishScene()
     {
+        //Arrange
+        var sceneJson = new CatalystSceneEntityMetadata();
+        sceneJson.scene = new CatalystSceneEntityMetadata.Scene();
+        sceneJson.scene.parcels = new [] { "0,0"};
+        
         //Act
-        biwBridge.PublishScene(scene, "Test title", "Test description", "test_screenshot");
+        biwBridge.PublishScene(new Dictionary<string, object>(),new Dictionary<string, object>(), sceneJson,new StatelessManifest(),false);
 
         //Assert
         CheckMessageReceived();
@@ -133,8 +141,12 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     [Test]
     public void TestStartStatefullScene()
     {
+        //Arrange
+        ILand land = new ILand();
+        land.sceneId = "ds";
+
         //Act
-        biwBridge.StartKernelEditMode(scene);
+        biwBridge.StartIsolatedMode(land);
 
         //Assert
         CheckMessageReceived();
@@ -144,7 +156,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestEndStatefullScene()
     {
         //Act
-        biwBridge.ExitKernelEditMode(scene);
+        biwBridge.StopIsolatedMode();
 
         //Assert
         CheckMessageReceived();

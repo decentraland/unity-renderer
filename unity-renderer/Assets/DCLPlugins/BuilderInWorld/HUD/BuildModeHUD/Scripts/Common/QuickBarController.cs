@@ -51,12 +51,16 @@ public class QuickBarController : IQuickBarController
 
     public void Dispose()
     {
-        quickBarView.OnQuickBarObjectSelected -= OnQuickBarObjectSelected;
-        quickBarView.OnSetIndexToDrop -= SetIndexToDrop;
-        quickBarView.OnSceneObjectDroppedFromQuickBar -= SceneObjectDroppedFromQuickBar;
-        quickBarView.OnSceneObjectDroppedFromCatalog -= SceneObjectDroppedFromCatalog;
-        quickBarView.OnQuickBarInputTriggered -= QuickBarInput;
-        dragAndDropController.OnStopInput -= CancelDragging;
+        if (quickBarView != null)
+        {
+            quickBarView.OnQuickBarObjectSelected -= OnQuickBarObjectSelected;
+            quickBarView.OnSetIndexToDrop -= SetIndexToDrop;
+            quickBarView.OnSceneObjectDroppedFromQuickBar -= SceneObjectDroppedFromQuickBar;
+            quickBarView.OnSceneObjectDroppedFromCatalog -= SceneObjectDroppedFromCatalog;
+            quickBarView.OnQuickBarInputTriggered -= QuickBarInput;
+        }
+        if(dragAndDropController != null)
+            dragAndDropController.OnStopInput -= CancelDragging;
 
         foreach (AssetPromise_Texture loadedThumbnailPromise in quickBarShortcutsThumbnailPromises)
         {
