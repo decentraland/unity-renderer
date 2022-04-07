@@ -20,7 +20,7 @@ namespace DCL
     public class PluginSystem : IDisposable
     {
         private static ILogger logger = new Logger(Debug.unityLogger);
-        private PluginGroup allPlugins = new PluginGroup();
+        internal PluginGroup allPlugins = new PluginGroup();
         private Dictionary<string, PluginGroup> pluginGroupByFlag = new Dictionary<string, PluginGroup>();
         private BaseVariable<FeatureFlag> featureFlagsDataSource;
 
@@ -62,10 +62,15 @@ namespace DCL
             Assert.IsNotNull(pluginBuilder);
 
             PluginInfo pluginInfo = new PluginInfo() { builder = pluginBuilder };
+
+            if (allPlugins.ContainsKey(type))
+            {
+                Unregister<T>();
+            }
+
             allPlugins.Add(type, pluginInfo);
 
-            if (enable)
-                pluginInfo.Enable();
+            pluginInfo.enableOnInit = enable;
         }
 
         /// <summary>
@@ -85,6 +90,19 @@ namespace DCL
 
             allPlugins.Remove(type);
             pluginGroupByFlag[flag].Remove(type);
+        }
+        
+        /// <summary>
+        /// Initialize all enabled and registered plugin.
+        /// </summary>
+        public void Initialize()
+        {
+            foreach ( var kvp in allPlugins.plugins )
+            {
+                PluginInfo info = kvp.Value;
+                if (info.enableOnInit)
+                    info.Enable();
+            }
         }
 
         /// <summary>

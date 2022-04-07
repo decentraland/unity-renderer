@@ -67,6 +67,7 @@ public class PluginSystemShould
         PluginBuilder pluginBuilder = () => Substitute.For<Plugin1>();
 
         pluginSystem.Register<Plugin1>(pluginBuilder);
+        pluginSystem.Initialize();
         Assert.That(pluginSystem.IsEnabled<Plugin1>(), Is.True);
         pluginSystem.Dispose();
     }
@@ -94,6 +95,7 @@ public class PluginSystemShould
         pluginSystem.RegisterWithFlag<Plugin4>(pluginBuilder4, "test-flag-2");
         pluginSystem.RegisterWithFlag<Plugin5>(pluginBuilder5, "test-flag-2");
         pluginSystem.RegisterWithFlag<Plugin6>(pluginBuilder6, "test-flag-2");
+        pluginSystem.Initialize();
 
         pluginSystem.SetFeatureFlagsData(flagData);
 
@@ -138,6 +140,25 @@ public class PluginSystemShould
     public void BeDisposedProperly()
     {
         var pluginSystem = new PluginSystem();
+        pluginSystem.Dispose();
+    }
+
+    [Test]
+    public void OverrideRegister()
+    {
+        var pluginSystem = new PluginSystem();
+
+        PluginBuilder pluginBuilder1 = () => Substitute.For<Plugin1>();
+        PluginBuilder pluginBuilder2 = () => Substitute.For<Plugin2>();
+
+        pluginSystem.Register<Plugin1>(pluginBuilder1);
+        pluginSystem.Register<Plugin1>(pluginBuilder2);
+        pluginSystem.Initialize();
+        
+        PluginInfo pluginInfo;
+        Assert.That(pluginSystem.allPlugins.plugins.TryGetValue(typeof(Plugin1), out pluginInfo), Is.True);
+        Assert.That(pluginInfo != null, Is.True);
+        Assert.That(pluginInfo.builder == pluginBuilder2, Is.True);
         pluginSystem.Dispose();
     }
 }

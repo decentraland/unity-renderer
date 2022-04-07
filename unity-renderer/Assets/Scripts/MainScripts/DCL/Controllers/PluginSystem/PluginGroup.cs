@@ -24,5 +24,10 @@ namespace DCL
             plugins.Remove(type);
             return true;
         }
+
+        public bool ContainsKey(Type type)
+        {
+            return plugins.ContainsKey(type);
+        }
     }
 }
