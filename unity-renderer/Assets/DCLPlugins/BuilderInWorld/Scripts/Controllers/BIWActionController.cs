@@ -215,23 +215,31 @@ public class BIWActionController : BIWController, IBIWActionController
                 break;
 
             case IBIWCompleteAction.ActionType.CREATE:
-                string entityString = (string) value;
                 if (isUndo)
-                    entityHandler.DeleteEntity(entityString.GetHashCode());
+                {
+                    long entityId = (long) value;
+                    entityHandler.DeleteEntity(entityId);
+                }
                 else
+                {
+                    string entityString = (string) value;
                     entityHandler.CreateEntityFromJSON(entityString);
-
+                }
                 break;
 
             case IBIWCompleteAction.ActionType.DELETE:
-                string deletedEntityString = (string) value;
-
                 if (isUndo)
+                {
+                    string deletedEntityString = (string) value;
                     entityHandler.CreateEntityFromJSON(deletedEntityString);
+                }
                 else
-                    entityHandler.DeleteEntity(deletedEntityString.GetHashCode());
-
+                {
+                    long entityId = (long) value;
+                    entityHandler.DeleteEntity(entityId);
+                }
                 break;
+            
             case IBIWCompleteAction.ActionType.CHANGE_FLOOR:
                 string catalogItemToApply = (string) value;
 

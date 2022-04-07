@@ -72,7 +72,7 @@ namespace Tests
                 "parent is set to parentId"
             );
 
-            TestUtils.SetEntityParent(scene, entityId, 0);
+            TestUtils.SetEntityParent(scene, entityId, "0".GetHashCode());
 
             Assert.IsTrue(
                 scene.entities[entityId].gameObject.transform.parent == scene.gameObject.transform,
