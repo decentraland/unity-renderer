@@ -66,23 +66,23 @@ public class NativeBridgeCommunicationShould
         NativeBridgeCommunication.RemoveEntity();
 
         string json1 = JsonConvert.SerializeObject(queueHandler.messagesList[0]);
-        string json1base = @"{""method"":""CreateEntity"",""payload"":{""entityId"":""1""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
+        string json1base = @"{""method"":""CreateEntity"",""payload"":{""entityId"":1},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
         Assert.AreEqual(json1base, json1);
 
         string json2 = JsonConvert.SerializeObject(queueHandler.messagesList[1]);
-        string json2base = @"{""method"":""CreateEntity"",""payload"":{""entityId"":""2""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
+        string json2base = @"{""method"":""CreateEntity"",""payload"":{""entityId"":2},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
         Assert.AreEqual(json2base, json2);
 
         string json3 = JsonConvert.SerializeObject(queueHandler.messagesList[2]);
-        string json3base = @"{""method"":""SetEntityParent"",""payload"":{""entityId"":""2"",""parentId"":""1""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
+        string json3base = @"{""method"":""SetEntityParent"",""payload"":{""entityId"":2,""parentId"":1},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
         Assert.AreEqual(json3base, json3);
 
         string json4 = JsonConvert.SerializeObject(queueHandler.messagesList[3]);
-        string json4base = @"{""method"":""RemoveEntity"",""payload"":{""entityId"":""1""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
+        string json4base = @"{""method"":""RemoveEntity"",""payload"":{""entityId"":1},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
         Assert.AreEqual(json4base, json4);
 
         string json5 = JsonConvert.SerializeObject(queueHandler.messagesList[4]);
-        string json5base = @"{""method"":""RemoveEntity"",""payload"":{""entityId"":""2""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
+        string json5base = @"{""method"":""RemoveEntity"",""payload"":{""entityId"":2},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
         Assert.AreEqual(json5base, json5);
     }
 
@@ -101,7 +101,7 @@ public class NativeBridgeCommunicationShould
         NativeBridgeCommunication.SharedComponentDispose(componentId);
 
         string json1 = JsonConvert.SerializeObject(queueHandler.messagesList[0]);
-        string json1base = @"{""method"":""CreateEntity"",""payload"":{""entityId"":""1""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
+        string json1base = @"{""method"":""CreateEntity"",""payload"":{""entityId"":1},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
         Assert.AreEqual(json1base, json1);
 
         string json2 = JsonConvert.SerializeObject(queueHandler.messagesList[1]);
@@ -109,7 +109,7 @@ public class NativeBridgeCommunicationShould
         Assert.AreEqual(json2base, json2);
 
         string json3 = JsonConvert.SerializeObject(queueHandler.messagesList[2]);
-        string json3base = @"{""method"":""AttachEntityComponent"",""payload"":{""entityId"":""1"",""id"":""component-1"",""name"":null},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
+        string json3base = @"{""method"":""AttachEntityComponent"",""payload"":{""entityId"":1,""id"":""component-1"",""name"":null},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
         Assert.AreEqual(json3base, json3);
 
         string json4 = JsonConvert.SerializeObject(queueHandler.messagesList[3]);
@@ -135,9 +135,9 @@ public class NativeBridgeCommunicationShould
 
         Assert.AreEqual(3, queueHandler.messagesList.Count);
 
-        string json1base = @"{""method"":""CreateEntity"",""payload"":{""entityId"":""1""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
-        string json2base = @"{""method"":""UpdateEntityComponent"",""payload"":{""entityId"":""1"",""classId"":1,""json"":""component-1""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
-        string json3base = @"{""method"":""ComponentRemoved"",""payload"":{""entityId"":""1"",""name"":""component-1""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
+        string json1base = @"{""method"":""CreateEntity"",""payload"":{""entityId"":1},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
+        string json2base = @"{""method"":""UpdateEntityComponent"",""payload"":{""entityId"":1,""classId"":1,""json"":""component-1""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
+        string json3base = @"{""method"":""ComponentRemoved"",""payload"":{""entityId"":1,""name"":""component-1""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
 
         string json1 = JsonConvert.SerializeObject(queueHandler.messagesList[0]);
         string json2 = JsonConvert.SerializeObject(queueHandler.messagesList[1]);

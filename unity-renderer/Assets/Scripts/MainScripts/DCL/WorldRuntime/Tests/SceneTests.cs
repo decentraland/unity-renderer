@@ -299,7 +299,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Remove all parents
-        TestUtils.SetEntityParent(scene, entityId, 0);
+        TestUtils.SetEntityParent(scene, entityId, "0".GetHashCode());
         Assert.IsNull(entity.parent);
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
     }
