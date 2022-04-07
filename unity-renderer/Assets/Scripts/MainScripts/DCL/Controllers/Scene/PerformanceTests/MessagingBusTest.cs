@@ -52,7 +52,7 @@ namespace MessagingBusTest
             {
                 payload = new Protocol.CreateEntity { entityId = entityId },
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
-                tag = "entity_1"
+                tag = "2"
             }, QueueMode.Lossy);
 
             bus.Enqueue(new QueuedSceneMessage_Scene
@@ -67,7 +67,7 @@ namespace MessagingBusTest
             {
                 payload = new Protocol.CreateEntity { entityId = entityId },
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
-                tag = "entity_1"
+                tag = "2"
             }, QueueMode.Lossy);
 
             Assert.AreEqual(0, bus.unreliableMessagesReplaced);
