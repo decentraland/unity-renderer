@@ -350,7 +350,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         }
 
         selectorsByCategory[wearableItem.data.category].RemoveItemToggle(wearableItem.id);
-        if (wearableItem.IsCollectible())
+        if (wearableItem.IsCollectible() || wearableItem.IsFromThirdPartyCollection)
             collectiblesItemSelector.RemoveItemToggle(wearableItem.id);
     }
 
