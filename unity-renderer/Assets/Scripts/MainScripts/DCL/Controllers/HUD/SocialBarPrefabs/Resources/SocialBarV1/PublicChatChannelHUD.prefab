@@ -882,7 +882,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 21, y: 0}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: 25, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7435662993187013951
 CanvasRenderer:
@@ -998,7 +998,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30b4ce08e6854094b8461fdea1282aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetRectTransform: {fileID: 855196963230310083}
+  targetRectTransform: {fileID: 1461693182861468859}
   hoverScale: 1.05
   normalScale: 1
 --- !u!114 &9043411955312514768
@@ -2345,7 +2345,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 6.5215, y: 10.4308}
+  m_SizeDelta: {x: 9.4505, y: 15.1156}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7322135682472660242
 CanvasRenderer:
