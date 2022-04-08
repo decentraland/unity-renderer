@@ -162,8 +162,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator RemoveAllWireframesCorrectlyWhenFeatureIsDisabled()
         {
-            var scene = CreateAndAddScene("entityId");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            var scene = CreateAndAddScene("entityId25");
+            isBoundingBoxEnabledVariable.AddOrSet("entityId25", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
@@ -187,7 +187,7 @@ namespace Tests
             Assert.AreEqual(sceneEntities.Length + 1, allWireframes);
 
             // Disable feature for scene
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", false);
+            isBoundingBoxEnabledVariable.AddOrSet("entityId25", false);
 
             // wait a frame for Object.Destroy
             yield return null;
@@ -201,8 +201,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator RemoveAllWireframesCorrectlyWhenSceneIsDestroyed()
         {
-            var scene = CreateAndAddScene("entityId");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            var scene = CreateAndAddScene("entityId3");
+            isBoundingBoxEnabledVariable.AddOrSet("entityId3", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
@@ -240,8 +240,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator RemoveAllWireframesCorrectlyOnControllerDisposed()
         {
-            var scene = CreateAndAddScene("1");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            var scene = CreateAndAddScene("2");
+            isBoundingBoxEnabledVariable.AddOrSet("2", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
