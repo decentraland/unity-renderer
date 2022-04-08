@@ -55,7 +55,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     
     public void Setup(string channelId, string name, string description)
     {
-        model.name = name;
+        model.name = $"#{name}";
         model.description = description;
         RefreshControl();
     }
