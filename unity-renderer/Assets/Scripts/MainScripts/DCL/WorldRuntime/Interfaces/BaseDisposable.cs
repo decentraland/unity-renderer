@@ -28,7 +28,7 @@ namespace DCL.Components
         public Coroutine routine => updateHandler.routine;
         public bool isRoutineRunning => updateHandler.isRoutineRunning;
 
-        public event System.Action<BaseDisposable> OnDispose;
+        public event Action<BaseDisposable> OnDispose;
         public event Action<BaseDisposable> OnAppliedChanges;
 
         public HashSet<IDCLEntity> attachedEntities = new HashSet<IDCLEntity>();

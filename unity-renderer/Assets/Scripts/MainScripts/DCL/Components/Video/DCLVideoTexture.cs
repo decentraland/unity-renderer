@@ -48,7 +48,7 @@ namespace DCL.Components
         private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS;
         private float lastVideoProgressReportTime;
 
-        internal Dictionary<string, ITextureAttachment> attachedMaterials = new Dictionary<string, ITextureAttachment>();
+        internal Dictionary<string, ISharedComponent> attachedMaterials = new Dictionary<string, ISharedComponent>();
         private string lastVideoClipID;
         private VideoState previousVideoState;
 
@@ -255,10 +255,11 @@ namespace DCL.Components
                     while (iterator.MoveNext())
                     {
                         var materialInfo = iterator.Current;
-                        if (materialInfo.Value.IsVisible())
+                        if (ComponentUtils.IsComponentVisible(materialInfo.Value))
                         {
                             isVisible = true;
-                            var entityDist = materialInfo.Value.GetClosestDistanceSqr(DCLCharacterController.i.transform.position);
+                            var entityDist = ComponentUtils.GetClosestDistanceSqr(materialInfo.Value,
+                                DCLCharacterController.i.transform.position);
                             if (entityDist < minDistance)
                                 minDistance = entityDist;
                             // NOTE: if current minDistance is enough for full volume then there is no need to keep iterating to check distances
@@ -319,39 +320,43 @@ namespace DCL.Components
 
         private void OnSceneIDChanged(string current, string previous) { isPlayerInScene = IsPlayerInSameSceneAsComponent(current); }
 
-        public override void AttachTo(ITextureAttachment attachment)
+        public override void AttachTo(ISharedComponent component)
         {
-            Assert.IsTrue( attachment != null, "Attachment must not be null!");
+            Assert.IsTrue(component != null, "Attachment must not be null!");
 
-            if (attachedMaterials.ContainsKey(attachment.GetId()))
+            if (attachedMaterials.ContainsKey(component.id))
                 return;
 
-            AddReference(attachment);
+            AddReference(component);
             isPlayStateDirty = true;
-            attachedMaterials.Add(attachment.GetId(), attachment);
-            attachment.OnAttach += OnAttachmentAttach;
-            attachment.OnDetach += OnAttachmentDetach;
-            attachment.OnUpdate += OnAttachmentUpdate;
+            attachedMaterials.Add(component.id, component);
+            // attachment.OnAttach += OnAttachmentAttach;
+            //component.OnDetach += OnAttachmentDetach;
+            //ComponentTextureAttachment.SubscribeToEntityUpdates(attachment.component, OnAttachmentUpdate);
         }
 
-        public override void DetachFrom(ITextureAttachment attachment)
+        public override void DetachFrom(ISharedComponent component)
         {
-            Assert.IsTrue( attachment != null, "Attachment must not be null!");
+            Assert.IsTrue(component != null, "Attachment must not be null!");
 
             // When detaching, we only use the ID because we want to reuse the original attachment instance.
-            string attachmentId = attachment.GetId();
+            string attachmentId = component.id;
 
             if (!attachedMaterials.ContainsKey(attachmentId))
                 return;
 
-            ITextureAttachment cachedAttachment = attachedMaterials[attachmentId];
+            if (texturePlayer != null)
+                texturePlayer.Pause();
+
+            ISharedComponent cachedAttachment = attachedMaterials[attachmentId];
 
             attachedMaterials.Remove(attachmentId);
-            cachedAttachment.OnAttach -= OnAttachmentAttach;
-            cachedAttachment.OnDetach -= OnAttachmentDetach;
-            cachedAttachment.OnUpdate -= OnAttachmentUpdate;
+            // cachedAttachment.OnAttach -= OnAttachmentAttach;
+            //component.OnDetach -= OnAttachmentDetach;
+            //ComponentTextureAttachment.UnsubscribeToEntityShapeUpdate(attachment.component, OnAttachmentUpdate);
+
             cachedAttachment.Dispose();
-            RemoveReference(attachment);
+            RemoveReference(component);
             isPlayStateDirty = true;
         }
 
@@ -384,20 +389,20 @@ namespace DCL.Components
             base.Dispose();
         }
 
-        private void OnAttachmentAttach(ITextureAttachment attachment)
-        {
-            attachment.OnUpdate -= OnAttachmentUpdate;
-            attachment.OnUpdate += OnAttachmentUpdate;
-        }
+        // private void OnAttachmentAttach(ITextureAttachment attachment)
+        // {
+        //     // attachment.OnUpdate -= OnAttachmentUpdate;
+        //     // attachment.OnUpdate += OnAttachmentUpdate;
+        // }
 
-        private void OnAttachmentDetach(ITextureAttachment attachment)
-        {
-            if (texturePlayer != null)
-                texturePlayer.Pause();
+        // private void OnAttachmentDetach(IDCLEntity entity)
+        // {
+        //     if (texturePlayer != null)
+        //         texturePlayer.Pause();
+        //
+        //     // attachment.OnUpdate -= OnAttachmentUpdate;
+        // }
 
-            attachment.OnUpdate -= OnAttachmentUpdate;
-        }
-
-        private void OnAttachmentUpdate(ITextureAttachment attachment) { isPlayStateDirty = true; }
+        // private void OnAttachmentUpdate(IDCLEntity entity) { isPlayStateDirty = true; }
     }
 }

@@ -63,9 +63,9 @@ namespace DCL.Components
                     {
                         referencesContainer.image.texture = downloadedTexture.texture;
                         fetchRoutine = null;
-                        dclTexture?.DetachFrom(new UIShapeTextureAttachment(this));
+                        dclTexture?.DetachFrom(this);
                         dclTexture = downloadedTexture;
-                        dclTexture.AttachTo(new UIShapeTextureAttachment(this));
+                        dclTexture.AttachTo(this);
 
                         ConfigureUVRect(parentRecTransform);
                     });
@@ -76,7 +76,7 @@ namespace DCL.Components
             else
             {
                 referencesContainer.image.texture = null;
-                dclTexture?.DetachFrom(new UIShapeTextureAttachment(this));
+                dclTexture?.DetachFrom(this);
                 dclTexture = null;
             }
 
@@ -125,7 +125,7 @@ namespace DCL.Components
                 fetchRoutine = null;
             }
 
-            dclTexture?.DetachFrom(new ComponentTextureAttachment(this));
+            dclTexture?.DetachFrom(this);
 
             if (referencesContainer != null)
                 Utils.SafeDestroy(referencesContainer.gameObject);

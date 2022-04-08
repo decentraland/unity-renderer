@@ -83,12 +83,12 @@ namespace DCL.Components
                         {
                             if ( dclTexture != null )
                             {
-                                dclTexture.DetachFrom(new ComponentTextureAttachment(this));
+                                dclTexture.DetachFrom(this);
                             }
 
                             material.SetTexture(_BaseMap, downloadedTexture.texture);
                             dclTexture = downloadedTexture;
-                            dclTexture.AttachTo(new ComponentTextureAttachment(this));
+                            dclTexture.AttachTo(this);
                         }
                     );
                 }
@@ -99,7 +99,7 @@ namespace DCL.Components
 
                 if ( dclTexture != null )
                 {
-                    dclTexture.DetachFrom(new ComponentTextureAttachment(this));
+                    dclTexture.DetachFrom(this);
                     dclTexture = null;
                 }
             }
@@ -190,7 +190,7 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            dclTexture?.DetachFrom(new ComponentTextureAttachment(this));
+            dclTexture?.DetachFrom(this);
 
             while ( attachedEntities.Count > 0 )
             {

@@ -32,8 +32,8 @@ namespace DCL
 
         AssetPromise_Texture texturePromise = null;
 
-        private Dictionary<ITextureAttachment, HashSet<string>> attachedComponents =
-            new Dictionary<ITextureAttachment, HashSet<string>>();
+        private Dictionary<ISharedComponent, HashSet<string>> attachedComponents =
+            new Dictionary<ISharedComponent, HashSet<string>>();
 
         public TextureWrapMode unityWrap;
         public FilterMode unitySamplingMode;
@@ -151,48 +151,50 @@ namespace DCL
             }
         }
 
-        public virtual void AttachTo(ITextureAttachment attachment = null)
+        public virtual void AttachTo(ISharedComponent component)
         {
-            AddReference(attachment);
+            AddReference(component);
         }
 
-        public virtual void DetachFrom(ITextureAttachment attachment = null)
+        public virtual void DetachFrom(ISharedComponent component)
         {
-            RemoveReference(attachment);
+            RemoveReference(component);
         }
 
         protected int refCount;
 
-        public void AddReference(ITextureAttachment attachment)
+        public void AddReference(ISharedComponent component)
         {
             refCount++;
 
-            if (attachedComponents.ContainsKey(attachment))
+            if (attachedComponents.ContainsKey(component))
                 return;
 
-            attachedComponents.Add(attachment, new HashSet<string>());
+            attachedComponents.Add(component, new HashSet<string>());
 
-            foreach (var entity in attachment.component.GetAttachedEntities())
+            foreach (var entity in component.GetAttachedEntities())
             {
-                attachedComponents[attachment].Add(entity.entityId);
+                attachedComponents[component].Add(entity.entityId);
                 DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, entity.entityId, texture);
             }
         }
 
-        public void RemoveReference(ITextureAttachment attachment)
+        public void RemoveReference(ISharedComponent component)
         {
+            refCount--;
+            
             if (refCount == 0)
                 Dispose();
 
-            if (!attachedComponents.ContainsKey(attachment))
+            if (!attachedComponents.ContainsKey(component))
                 return;
 
-            foreach (var entityId in attachedComponents[attachment])
+            foreach (var entityId in attachedComponents[component])
             {
                 DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, entityId, texture);
             }
 
-            attachedComponents.Remove(attachment);
+            attachedComponents.Remove(component);
         }
 
         public override void Dispose()
