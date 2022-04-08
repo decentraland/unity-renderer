@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -8,6 +9,7 @@ namespace DCL.Skybox
 
     public class SatelliteLayerBehavior : MonoBehaviour
     {
+        public Transform followTarget;
         public GameObject satelliteOrbit;
         public GameObject satellite;
         public float satelliteSize = 1;
@@ -21,7 +23,7 @@ namespace DCL.Skybox
         public float inclination = 0;
 
         public bool startMovement;
-        public float speed;
+        public float movementSpeed;
 
         [Header("Satellite Properties")]
         public RotationType satelliteRotation;
@@ -30,6 +32,7 @@ namespace DCL.Skybox
         public float rotateSpeed;
 
         float currentAngle;
+        float timeOfTheDay;
 
         private void Update()
         {
@@ -39,42 +42,13 @@ namespace DCL.Skybox
             UpdateMovement();
         }
 
-        private void OnValidate()
-        {
-            if (satellite == null || satelliteOrbit == null)
-            {
-                return;
-            }
-            radius = Mathf.Clamp(radius, 0, radius);
-
-            // Shift satellite to radius distance in the y direction of the orbit
-            if (!startMovement)
-            {
-                currentAngle = initialAngle;
-                satellite.transform.localPosition = GetSatellitePosition(radius, initialAngle);
-            }
-
-            //  Rotate orbit plane along horizon line
-            Vector3 rot = satelliteOrbit.transform.localRotation.eulerAngles;
-            rot.z = 0;
-            rot.y = horizonPlaneRotation;
-            //  Rotate orbit plane along inclination line
-            rot.x = inclination;
-            satelliteOrbit.transform.localRotation = Quaternion.Euler(rot);
-
-            // change satellite size
-            satellite.transform.localScale = Vector3.one * satelliteSize;
-
-            UpdateRotation();
-        }
-
-        private void UpdateMovement()
+        public void UpdateMovement()
         {
             if (!startMovement)
             {
                 return;
             }
-            currentAngle += speed * Time.deltaTime;
+            currentAngle += movementSpeed * Time.deltaTime;
 
             if (currentAngle > 360)
             {
@@ -84,7 +58,7 @@ namespace DCL.Skybox
             satellite.transform.localPosition = GetSatellitePosition(radius, currentAngle);
         }
 
-        private void UpdateRotation()
+        public void UpdateRotation()
         {
             if (satellite == null)
             {
@@ -111,9 +85,80 @@ namespace DCL.Skybox
             }
         }
 
+        internal void AssignValues(float satelliteSize, float radius, float initialAngle, float horizonPlaneRotation, float inclination, float movementSpeed, RotationType satelliteRotation, Vector3 fixedRotation, Vector3 rotateAroundAxis, float rotateSpeed, float timeOfTheDay)
+        {
+            this.satelliteSize = satelliteSize;
+            this.radius = radius;
+            radius = Mathf.Clamp(radius, 0, Mathf.Infinity);
+            this.initialAngle = initialAngle;
+            this.horizonPlaneRotation = horizonPlaneRotation;
+            this.inclination = inclination;
+            this.movementSpeed = movementSpeed;
+            this.satelliteRotation = satelliteRotation;
+            this.fixedRotation = fixedRotation;
+            this.rotateAroundAxis = rotateAroundAxis;
+            this.rotateSpeed = rotateSpeed;
+            this.timeOfTheDay = timeOfTheDay;
+
+            // Change satellite size
+            UpdateSatelliteSize();
+            // Update orbit rotation
+            UpdateOrbitRotation();
+            // Update SatellitePosition
+            UpdateSatellitePos();
+        }
+
+        private void UpdateSatellitePos()
+        {
+            //float percentage = timeOfTheDay - (int)timeOfTheDay;
+            //percentage /= movementSpeed;
+            //currentAngle = 360 * percentage;
+            //currentAngle += initialAngle;
+            //float diff = 0;
+            //if (currentAngle > 360)
+            //{
+            //    diff = currentAngle - 360;
+            //    currentAngle = diff;
+            //}
+
+            currentAngle = initialAngle;
+
+            if (currentAngle > 360)
+            {
+                currentAngle = 0;
+            }
+            satellite.transform.localPosition = GetSatellitePosition(radius, currentAngle);
+        }
+
+        private void UpdateSatelliteSize()
+        {
+            if (satellite == null)
+            {
+                return;
+            }
+            // change satellite size
+            satellite.transform.localScale = Vector3.one * satelliteSize;
+        }
+
+        private void UpdateOrbitRotation()
+        {
+            if (satelliteOrbit == null)
+            {
+                Debug.LogError("Satellite Orbit not assigned");
+                return;
+            }
+
+            //  Rotate orbit plane along horizon line
+            Vector3 rot = satelliteOrbit.transform.localRotation.eulerAngles;
+            rot.z = 0;
+            rot.y = horizonPlaneRotation;
+            //  Rotate orbit plane along inclination line
+            rot.x = inclination;
+            satelliteOrbit.transform.localRotation = Quaternion.Euler(rot);
+        }
+
         Vector3 GetSatellitePosition(float radius, float angle)
         {
-
             angle = Mathf.Clamp(angle, 0, 360);
             float angleEdited = (90 - angle) * Mathf.Deg2Rad;
             float x = radius * Mathf.Cos(angleEdited);
@@ -135,7 +180,6 @@ namespace DCL.Skybox
             // Draw wire disc of green color for orbit orthogonal to y = 1
             Handles.color = Color.green;
             Handles.DrawWireDisc(position, satelliteOrbit.transform.forward, radius, thickness);
-            //Handles.DrawWireArc(position, -satelliteOrbit.transform.forward, -transform.right, initialAngle, radius);
         }
 
     }

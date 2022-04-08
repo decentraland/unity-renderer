@@ -101,5 +101,15 @@ namespace DCL.Skybox
             GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
+
+        public static void RenderEnumPopup<T>(string label, ref T enumVar) where T : System.Enum
+        {
+            // Layer Type
+            EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.layerType, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            enumVar = (T)EditorGUILayout.EnumPopup(enumVar, GUILayout.Width(200));
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
     }
 }

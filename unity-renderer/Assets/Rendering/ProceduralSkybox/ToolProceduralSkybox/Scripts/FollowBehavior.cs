@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class FollowBehavior : MonoBehaviour
 {
-    public GameObject targetCamera;
+    public GameObject target;
     public bool followRot;
     public bool followPos;
 
     private void LateUpdate()
     {
-        if (targetCamera == null)
+        if (target == null)
         {
             return;
         }
         if (followRot)
-            this.transform.rotation = targetCamera.transform.rotation;
+            this.transform.rotation = target.transform.rotation;
         if (followPos)
-            this.transform.position = targetCamera.transform.position;
+            this.transform.position = target.transform.position;
     }
 }

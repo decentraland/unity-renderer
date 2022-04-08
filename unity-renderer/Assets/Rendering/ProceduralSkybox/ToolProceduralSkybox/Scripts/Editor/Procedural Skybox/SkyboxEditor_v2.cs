@@ -27,6 +27,7 @@ namespace DCL.Skybox
         private bool creatingNewConfig;
         private string newConfigName;
         private bool overridingController;
+        private SkyboxGameobjectsPool skyboxObjects;
 
         private MaterialReferenceContainer.Mat_Layer matLayer = null;
 
@@ -569,6 +570,13 @@ namespace DCL.Skybox
                 directionalLight = temp.AddComponent<Light>();
                 directionalLight.type = LightType.Directional;
             }
+
+            //Init3DSetup();
+            if (skyboxObjects == null)
+            {
+                skyboxObjects = new SkyboxGameobjectsPool();
+                skyboxObjects.Initialize3DObjects(selectedConfiguration);
+            }
         }
 
         void TakeControlAtRuntime()
@@ -660,6 +668,7 @@ namespace DCL.Skybox
         {
             EnsureDependencies();
             selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, SkyboxEditorUtils.GetNormalizedDayTime(timeOfTheDay), matLayer.numberOfSlots, directionalLight);
+            selectedConfiguration.ApplyOnSatelliteLayer(timeOfTheDay, skyboxObjects.GetSatelliteObject(selectedConfiguration));
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)

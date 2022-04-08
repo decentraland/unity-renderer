@@ -372,7 +372,7 @@ MonoBehaviour:
     - percentage: 50
       value: {x: 0.65027386, y: 0.26341134, z: -0.27774805, w: 0.65621215}
     - percentage: 50
-      value: {x: 0.650266, y: 0.26339623, z: -0.2777664, w: 0.6562183}
+      value: {x: 0.65026563, y: 0.2633952, z: -0.27776712, w: 0.6562187}
     - percentage: 82.5
       value: {x: 0.30581713, y: -0.2345742, z: -0.6375546, w: 0.66706437}
     - percentage: 100
@@ -977,6 +977,80 @@ MonoBehaviour:
     movementTypeCubemap: 0
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
+  - slotID: 0
+    renderType: 1
+    layerType: 0
+    enabled: 1
+    nameInEditor: Tex Layer 8
+    expandedInEditor: 0
+    timeSpan_start: 0
+    timeSpan_End: 0
+    fadingInTime: 1
+    fadingOutTime: 1
+    tintPercentage: 0
+    renderDistance: []
+    texture: {fileID: 0}
+    textureNormal: {fileID: 0}
+    cubemap: {fileID: 0}
+    color:
+      serializedVersion: 2
+      key0: {r: 1, g: 1, b: 1, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 65535
+      atime2: 0
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 2
+    tiling: {x: 1, y: 1}
+    flipbookRowsAndColumns: {x: 1, y: 1}
+    flipbookAnimSpeed: 1
+    offset: []
+    satelliteWidthHeight: []
+    rotations_float: []
+    rotations_Vector3: []
+    speed_Vector3: {x: 0, y: 0, z: 0}
+    speed_Vector2: {x: 0, y: 0}
+    speed_float: 0
+    normalIntensity: 0
+    particleExpanded: 0
+    particleTiling: {x: 1, y: 1}
+    particlesOffset: {x: 0, y: 0}
+    particleRotation: []
+    particlesAmount: 1
+    particleMinSize: 1
+    particleMaxSize: 1
+    particlesHorizontalSpread: 1
+    particlesVerticalSpread: 1
+    particleMinFade: 1
+    particleMaxFade: 1
+    distortionExpanded: 0
+    distortIntensity: []
+    distortSize: []
+    distortSpeed: []
+    distortSharpness: []
+    movementTypeCubemap: 0
+    movementTypePlanar_Radial: 0
+    movementTypeSatellite: 0
   timelineTags:
   - tag: Day
     startTime: 8
@@ -991,15 +1065,15 @@ MonoBehaviour:
     endTime: 8
     isTrigger: 0
   satelliteLayer:
-    satellite: {fileID: 4439248927752480192, guid: 5f5004268f6d78642a2482b1decdb547,
+    satellite: {fileID: 6438672508873746031, guid: 0c8c9997b5c986d45b555c1da35e5c4d,
       type: 3}
-    satelliteSize: 1
+    satelliteSize: 5
     radius: 10
-    initialAngle: 0
-    horizonPlaneRotation: 0
+    initialAngle: 102
+    horizonPlaneRotation: 90
     inclination: 0
     movementSpeed: 0
-    satelliteRotation: 0
+    satelliteRotation: 1
     fixedRotation: {x: 0, y: 0, z: 0}
     rotateAroundAxis: {x: 0, y: 0, z: 0}
-    rotateSpeed: 0
+    rotateSpeed: 50

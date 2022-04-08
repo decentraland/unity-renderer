@@ -36,13 +36,16 @@ namespace DCL.Skybox
 
         // Reflection probe//
         private ReflectionProbe skyboxProbe;
-        private bool probeParented = false;
+        private bool cameraDependency = false;
         private float reflectionUpdateTime = 1;                                 // In Mins
         private ReflectionProbeRuntime runtimeReflectionObj;
 
         // Timer sync
         private int syncCounter = 0;
         private int syncAfterCount = 10;
+
+        // 3D Skybox elements
+        SkyboxGameobjectsPool skybox3DElements;
 
         // Report to kernel
         private ITimeReporter timeReporter { get; set; } = new TimeReporter();
@@ -185,12 +188,10 @@ namespace DCL.Skybox
                 return;
             }
 
-            // make probe a child of main camera
             if (Camera.main != null)
             {
                 GameObject mainCam = Camera.main.gameObject;
                 runtimeReflectionObj.followTransform = mainCam.transform;
-                probeParented = true;
             }
         }
 
@@ -409,17 +410,45 @@ namespace DCL.Skybox
             // Update loaded config
             loadedConfig = configToLoad;
 
+            // TODO:: Init 3D elements if configuration changes
+            if (skybox3DElements == null)
+            {
+                skybox3DElements = new SkyboxGameobjectsPool();
+            }
+            skybox3DElements.Initialize3DObjects(configuration);
             return tempConfigLoaded;
         }
 
         private void Configuration_OnTimelineEvent(string tag, bool enable, bool trigger) { OnTimelineEvent?.Invoke(tag, enable, trigger); }
 
+        private void AssignCamInstanceToSkyboxElements()
+        {
+            if (skybox3DElements == null)
+            {
+                return;
+            }
+
+            skybox3DElements.ResolveCameraDependency();
+        }
+
+        private void ResolveCameraDependency()
+        {
+            if (!DataStore.i.skyboxConfig.disableReflection.Get() && skyboxProbe != null)
+            {
+                AssignCameraInstancetoProbe();
+            }
+
+            AssignCamInstanceToSkyboxElements();
+
+            cameraDependency = true;
+        }
+
         // Update is called once per frame
         public void Update()
         {
-            if (!DataStore.i.skyboxConfig.disableReflection.Get() && skyboxProbe != null && !probeParented)
+            if (!cameraDependency && Camera.main != null)
             {
-                AssignCameraInstancetoProbe();
+                ResolveCameraDependency();
             }
 
             if (configuration == null || isPaused)
@@ -450,6 +479,8 @@ namespace DCL.Skybox
             float normalizedDayTime = GetNormalizedDayTime();
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, cycleTime);
             ApplyAvatarColor(normalizedDayTime);
+            // Update satellites
+            configuration.ApplyOnSatelliteLayer(timeOfTheDay, skybox3DElements.GetSatelliteObject(configuration));
 
             // Cycle resets
             if (timeOfTheDay >= cycleTime)
@@ -520,7 +551,7 @@ namespace DCL.Skybox
             return overrideByEditor;
         }
 
-        // Whenever Skybox editor closed at runtime control returns back to controller with the values in the editor
+        // Whenever Skybox editor closed at runtime, control returns back to controller with the values in the editor.
         public bool GetControlBackFromEditor(string currentConfig, float timeOfTheday, float lifecycleDuration, bool isPaused)
         {
             overrideByEditor = false;

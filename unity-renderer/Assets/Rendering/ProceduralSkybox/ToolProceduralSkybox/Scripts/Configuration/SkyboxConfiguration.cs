@@ -67,9 +67,19 @@ namespace DCL.Skybox
         public List<TimelineTagsDuration> timelineTags = new List<TimelineTagsDuration>();
 
         // 3D Satellite layer
-        public Satellite3DLayer satelliteLayer;
+        public Satellite3DLayer satelliteLayer = new Satellite3DLayer();
 
         private float cycleTime = 24;
+
+        public void ApplyOnSatelliteLayer(float dayTime, SatelliteReferences satelliteRef)
+        {
+            if (satelliteRef == null)
+            {
+                return;
+            }
+
+            satelliteRef.satelliteBehavior.AssignValues(satelliteLayer.satelliteSize, satelliteLayer.radius, satelliteLayer.initialAngle, satelliteLayer.horizonPlaneRotation, satelliteLayer.inclination, satelliteLayer.movementSpeed, satelliteLayer.satelliteRotation, satelliteLayer.fixedRotation, satelliteLayer.rotateAroundAxis, satelliteLayer.rotateSpeed, dayTime);
+        }
 
         public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, Light directionalLightGO = null, float cycleTime = 24)
         {
