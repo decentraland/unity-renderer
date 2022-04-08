@@ -37,6 +37,7 @@ public class AvatarEditorHUDController : IHUD
     BaseVariable<bool> exploreV2IsOpen => DataStore.i.exploreV2.isOpen;
     private bool isSkinsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_skins");
     
+    private readonly DataStore_FeatureFlag featureFlags;
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
     protected readonly AvatarEditorHUDModel model = new AvatarEditorHUDModel();
 
@@ -54,12 +55,17 @@ public class AvatarEditorHUDController : IHUD
     private float prevRenderScale = 1.0f;
     private Camera mainCamera;
 
+    private bool isThirdPartyCollectionsEnabled => featureFlags.flags.Get().IsFeatureEnabled("third_party_collections");
+
     public AvatarEditorHUDView view;
 
     public event Action OnOpen;
     public event Action OnClose;
 
-    public AvatarEditorHUDController() { }
+    public AvatarEditorHUDController(DataStore_FeatureFlag featureFlags)
+    {
+        this.featureFlags = featureFlags;
+    }
 
     public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog, bool bypassUpdateAvatarPreview = false)
     {
@@ -88,6 +94,8 @@ public class AvatarEditorHUDController : IHUD
         this.userProfile.OnUpdate += LoadUserProfile;
 
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
+
+        view.SetThirdPartyCollectionsVisibility(isThirdPartyCollectionsEnabled);
     }
 
     public void SetCatalog(BaseDictionary<string, WearableItem> catalog)
@@ -711,7 +719,7 @@ public class AvatarEditorHUDController : IHUD
             .Catch((error) => Debug.LogError(error));
     }
 
-    public void ToggleCollection(bool isOn, string collectionId)
+    public void ToggleThirdPartyCollection(bool isOn, string collectionId)
     {
         if (isOn)
             FetchAndShowThirdPartyCollection(collectionId);

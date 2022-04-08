@@ -145,8 +145,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         characterPreviewController.camera.enabled = false;
 
-        collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleCollection;
-        collectionsDropdown.OnOptionSelectionChanged += controller.ToggleCollection;
+        collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
+        collectionsDropdown.OnOptionSelectionChanged += controller.ToggleThirdPartyCollection;
     }
 
     public void SetIsWeb3(bool isWeb3User)
@@ -448,7 +448,7 @@ public class AvatarEditorHUDView : MonoBehaviour
             characterPreviewController = null;
         }
 
-        collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleCollection;
+        collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
         collectionsDropdown.Dispose();
     }
 
@@ -500,4 +500,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         skinsEmptyListContainer.SetActive(!show);
         skinsConnectWalletButtonContainer.SetActive(show);
     }
+
+    public void SetThirdPartyCollectionsVisibility(bool visible) =>
+        collectionsDropdown.gameObject.SetActive(visible);
 }

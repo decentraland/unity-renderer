@@ -11,6 +11,10 @@ namespace AvatarEditorHUD_Tests
 {
     public class AvatarEditorHUDController_Mock : AvatarEditorHUDController
     {
+        public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags) : base(featureFlags)
+        {
+        }
+
         public AvatarEditorHUDModel myModel => model;
         public AvatarEditorHUDView myView => view;
         public string[] myCategoriesThatMustHaveSelection => categoriesThatMustHaveSelection;
@@ -44,7 +48,7 @@ namespace AvatarEditorHUD_Tests
 
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock();
+            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags);
             controller.collectionsAlreadyLoaded = true;
             controller.Initialize(userProfile, catalog);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
