@@ -37,7 +37,7 @@ namespace DCL
         public Texture2D texture;
         protected bool isDisposed;
 
-        public Dictionary<ISharedComponent, HashSet<string>> attachedComponents = new Dictionary<ISharedComponent, HashSet<string>>();
+        public Dictionary<ISharedComponent, HashSet<long>> attachedComponents = new Dictionary<ISharedComponent, HashSet<long>>();
 
         public override int GetClassId() { return (int) CLASS_ID.TEXTURE; }
 
@@ -166,7 +166,7 @@ namespace DCL
             if (attachedComponents.ContainsKey(component))
                 return;
 
-            attachedComponents.Add(component, new HashSet<string>());
+            attachedComponents.Add(component, new HashSet<long>());
 
             foreach ( var entity in component.GetAttachedEntities() )
             {

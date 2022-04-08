@@ -20,7 +20,7 @@ public class PlaneShapeShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator BeUpdatedCorrectly()
     {
-        string entityId = "3";
+        long entityId =3;
         TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;

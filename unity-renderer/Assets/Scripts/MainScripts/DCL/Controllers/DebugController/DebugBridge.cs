@@ -158,7 +158,7 @@ namespace DCL
         public void InstantiateBotsAtCoords(string configJson) { debugController.InstantiateBotsAtCoords(configJson); }
         public void StartBotsRandomizedMovement(string configJson) { debugController.StartBotsRandomizedMovement(configJson); }
         public void StopBotsMovement() { debugController.StopBotsMovement(); }
-        public void RemoveBot(string targetEntityId) { debugController.RemoveBot(targetEntityId); }
+        public void RemoveBot(long targetEntityId) { debugController.RemoveBot(targetEntityId); }
         public void ClearBots() { debugController.ClearBots(); }
 
         public void ToggleSceneBoundingBoxes(string payload)

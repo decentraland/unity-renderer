@@ -14,7 +14,7 @@ namespace Builder
         private class EntityLoadingPayload
         {
             public string type;
-            public string entityId;
+            public long entityId;
         };
 
         [System.Serializable]
@@ -23,7 +23,7 @@ namespace Builder
         [System.Serializable]
         private class EntitiesOutOfBoundariesEventPayload
         {
-            public string[] entities;
+            public long[] entities;
         };
 
         [System.Serializable]
@@ -65,7 +65,7 @@ namespace Builder
 
         public void SendEntityStartLoad(IDCLEntity entity)
         {
-            onGetLoadingEntity.uuid = entity.entityId;
+            onGetLoadingEntity.uuid = entity.entityId.ToString();
             onGetLoadingEntity.payload.entityId = entity.entityId;
             onGetLoadingEntity.payload.type = "onEntityLoading";
             if (LOG_MESSAGES)
@@ -75,7 +75,7 @@ namespace Builder
 
         public void SendEntityFinishLoad(IDCLEntity entity)
         {
-            onGetLoadingEntity.uuid = entity.entityId;
+            onGetLoadingEntity.uuid = entity.entityId.ToString();
             onGetLoadingEntity.payload.entityId = entity.entityId;
             onGetLoadingEntity.payload.type = "onEntityFinishLoading";
             if (LOG_MESSAGES)
@@ -83,7 +83,7 @@ namespace Builder
             WebInterface.SendSceneEvent(entity.scene.sceneData.id, "uuidEvent", onGetLoadingEntity);
         }
 
-        public void SendEntitiesOutOfBoundaries(string[] entitiesId, string sceneId)
+        public void SendEntitiesOutOfBoundaries(long[] entitiesId, string sceneId)
         {
             outOfBoundariesEventPayload.entities = entitiesId;
             if (LOG_MESSAGES)
@@ -110,7 +110,7 @@ namespace Builder
         public void SendEntitySelected(EditableEntity entity, string gizmoType, string sceneId)
         {
             onGizmoEventPayload.type = "gizmoSelected";
-            onGizmoEventPayload.entities = entity ? new string[] { entity.rootEntity.entityId } : null;
+            onGizmoEventPayload.entities = entity ? new string[] { entity.rootEntity.entityId.ToString() } : null;
             onGizmoEventPayload.gizmoType = gizmoType != null ? gizmoType : DCLGizmos.Gizmo.NONE;
             onGizmoEventPayload.transforms = null;
 
@@ -130,7 +130,7 @@ namespace Builder
             {
                 onGizmoEventPayload.transforms[i] = new GizmosEventPayload.TransformPayload()
                 {
-                    entityId = entities[i].rootEntity.entityId,
+                    entityId = entities[i].rootEntity.entityId.ToString(),
                     position = entities[i].transform.position,
                     rotation = entities[i].transform.rotation,
                     scale = entities[i].transform.lossyScale

@@ -15,15 +15,15 @@ public class SceneMetricsCounterShould
         sceneMetricsCounter.Enable();
 
         Rendereable rendereable1 = new Rendereable();
-        rendereable1.ownerId = "A";
+        rendereable1.ownerId = 0;
         rendereable1.animationClipSize = 256;
 
         Rendereable rendereable2 = new Rendereable();
-        rendereable2.ownerId = "B";
+        rendereable2.ownerId = 0;
         rendereable2.animationClipSize = 512;
 
         Rendereable rendereable3 = new Rendereable();
-        rendereable3.ownerId = "C";
+        rendereable3.ownerId = 0;
         rendereable3.animationClipSize = 1024;
 
         dataStore.AddRendereable("1", rendereable1);
@@ -89,15 +89,15 @@ public class SceneMetricsCounterShould
         sceneMetricsCounter.Enable();
 
         Rendereable rendereable1 = new Rendereable();
-        rendereable1.ownerId = "A";
+        rendereable1.ownerId =0;
         rendereable1.meshDataSize = 1024;
 
         Rendereable rendereable2 = new Rendereable();
-        rendereable2.ownerId = "B";
+        rendereable2.ownerId =0;
         rendereable2.meshDataSize = 1024;
 
         Rendereable rendereable3 = new Rendereable();
-        rendereable3.ownerId = "C";
+        rendereable3.ownerId =0;
         rendereable3.meshDataSize = 1024;
 
         dataStore.AddRendereable("1", rendereable1);
@@ -133,16 +133,16 @@ public class SceneMetricsCounterShould
         Texture2D tex4 = new Texture2D(16, 16);
 
         Rendereable rendereable1 = new Rendereable();
-        rendereable1.ownerId = "A";
+        rendereable1.ownerId =0;
         rendereable1.textures.Add(tex1);
         rendereable1.textures.Add(tex2);
 
         Rendereable rendereable2 = new Rendereable();
-        rendereable2.ownerId = "B";
+        rendereable2.ownerId =0;
         rendereable2.textures.Add(tex3);
 
         Rendereable rendereable3 = new Rendereable();
-        rendereable3.ownerId = "C";
+        rendereable3.ownerId =0;
         rendereable3.textures.Add(tex4);
 
         dataStore.AddRendereable("1", rendereable1);
@@ -178,23 +178,23 @@ public class SceneMetricsCounterShould
 
         var sceneData = dataStore.sceneData["A"];
 
-        sceneData.owners.Add("1");
+        sceneData.owners.Add(1);
 
         Assert.That( sceneMetricsCounter.currentCount.entities, Is.EqualTo(1));
 
-        sceneData.owners.Add("2");
-        sceneData.owners.Add("3");
-        sceneData.owners.Add("4");
-        sceneData.owners.Add("5");
-        sceneData.owners.Add("6");
-        sceneData.owners.Add("7");
-        sceneData.owners.Add("8");
-        sceneData.owners.Add("9");
-        sceneData.owners.Add("10");
+        sceneData.owners.Add(2);
+        sceneData.owners.Add(3);
+        sceneData.owners.Add(4);
+        sceneData.owners.Add(5);
+        sceneData.owners.Add(6);
+        sceneData.owners.Add(7);
+        sceneData.owners.Add(8);
+        sceneData.owners.Add(9);
+        sceneData.owners.Add(10);
 
         Assert.That( sceneMetricsCounter.currentCount.entities, Is.EqualTo(10));
 
-        sceneData.owners.Remove("9");
+        sceneData.owners.Remove(9);
 
         Assert.That( sceneMetricsCounter.currentCount.entities, Is.EqualTo(9));
 
@@ -217,16 +217,16 @@ public class SceneMetricsCounterShould
         Mesh mesh4 = new Mesh();
 
         Rendereable rendereable1 = new Rendereable();
-        rendereable1.ownerId = "A";
+        rendereable1.ownerId =0;
         rendereable1.meshes.Add(mesh1);
         rendereable1.meshes.Add(mesh2);
 
         Rendereable rendereable2 = new Rendereable();
-        rendereable2.ownerId = "B";
+        rendereable2.ownerId =0;
         rendereable2.meshes.Add(mesh3);
 
         Rendereable rendereable3 = new Rendereable();
-        rendereable3.ownerId = "C";
+        rendereable3.ownerId =0;
         rendereable3.meshes.Add(mesh4);
 
         dataStore.AddRendereable("1", rendereable1);
@@ -267,16 +267,16 @@ public class SceneMetricsCounterShould
         Material mat4 = new Material(Shader.Find("Standard"));
 
         Rendereable rendereable1 = new Rendereable();
-        rendereable1.ownerId = "A";
+        rendereable1.ownerId =0;
         rendereable1.materials.Add(mat1);
         rendereable1.materials.Add(mat2);
 
         Rendereable rendereable2 = new Rendereable();
-        rendereable2.ownerId = "B";
+        rendereable2.ownerId =0;
         rendereable2.materials.Add(mat3);
 
         Rendereable rendereable3 = new Rendereable();
-        rendereable3.ownerId = "C";
+        rendereable3.ownerId =0;
         rendereable3.materials.Add(mat4);
 
         dataStore.AddRendereable("1", rendereable1);
@@ -317,16 +317,16 @@ public class SceneMetricsCounterShould
         Texture2D tex4 = new Texture2D(1, 1);
 
         Rendereable rendereable1 = new Rendereable();
-        rendereable1.ownerId = "A";
+        rendereable1.ownerId =0;
         rendereable1.textures.Add(tex1);
         rendereable1.textures.Add(tex2);
 
         Rendereable rendereable2 = new Rendereable();
-        rendereable2.ownerId = "B";
+        rendereable2.ownerId =0;
         rendereable2.textures.Add(tex3);
 
         Rendereable rendereable3 = new Rendereable();
-        rendereable3.ownerId = "C";
+        rendereable3.ownerId =0;
         rendereable3.textures.Add(tex4);
 
         dataStore.AddRendereable("1", rendereable1);
@@ -362,11 +362,11 @@ public class SceneMetricsCounterShould
         sceneMetricsCounter.Enable();
 
         Rendereable rendereable1 = new Rendereable();
-        rendereable1.ownerId = "A";
+        rendereable1.ownerId =0;
         rendereable1.totalTriangleCount = 30;
 
         Rendereable rendereable2 = new Rendereable();
-        rendereable2.ownerId = "B";
+        rendereable2.ownerId =0;
         rendereable2.totalTriangleCount = 60;
 
         dataStore.AddRendereable("1", rendereable1);
@@ -397,16 +397,16 @@ public class SceneMetricsCounterShould
         Renderer rend4 = new GameObject("Test").AddComponent<MeshRenderer>();
 
         Rendereable rendereable1 = new Rendereable();
-        rendereable1.ownerId = "A";
+        rendereable1.ownerId =0;
         rendereable1.renderers.Add(rend1);
         rendereable1.renderers.Add(rend2);
 
         Rendereable rendereable2 = new Rendereable();
-        rendereable2.ownerId = "B";
+        rendereable2.ownerId =0;
         rendereable2.renderers.Add(rend3);
 
         Rendereable rendereable3 = new Rendereable();
-        rendereable3.ownerId = "C";
+        rendereable3.ownerId =0;
         rendereable3.renderers.Add(rend4);
 
         dataStore.AddRendereable("1", rendereable1);

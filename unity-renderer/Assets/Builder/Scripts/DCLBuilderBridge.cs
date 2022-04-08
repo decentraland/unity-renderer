@@ -39,7 +39,7 @@ namespace Builder
         public static System.Action<KeyCode> OnSetKeyDown;
         public static event SetGridResolutionDelegate OnSetGridResolution;
         public static System.Action<ParcelScene> OnSceneChanged;
-        public static System.Action<string[]> OnBuilderSelectEntity;
+        public static System.Action<long[]> OnBuilderSelectEntity;
 
         private MouseCatcher mouseCatcher;
         private ParcelScene currentScene;
@@ -48,7 +48,7 @@ namespace Builder
         private Vector3 defaultCharacterPosition;
 
         private bool isPreviewMode = false;
-        private List<string> outOfBoundariesEntitiesId = new List<string>();
+        private List<long> outOfBoundariesEntitiesId = new List<long>();
         private int lastEntitiesOutOfBoundariesCount = 0;
         private List<EditableEntity> selectedEntities;
         private bool entitiesMoved = false;
@@ -78,7 +78,7 @@ namespace Builder
         [System.Serializable]
         private class SelectedEntitiesPayload
         {
-            public string[] entities = null;
+            public long[] entities = null;
         };
 
         #region "Messages from Explorer"
@@ -625,7 +625,7 @@ namespace Builder
 
         private void ProcessEntityBoundaries(DCLBuilderEntity entity)
         {
-            string entityId = entity.rootEntity.entityId;
+            long entityId = entity.rootEntity.entityId;
             int entityIndexInList = outOfBoundariesEntitiesId.IndexOf(entityId);
 
             bool wasInsideSceneBoundaries = entityIndexInList == -1;

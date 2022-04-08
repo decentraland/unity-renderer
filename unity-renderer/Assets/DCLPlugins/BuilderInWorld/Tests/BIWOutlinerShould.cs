@@ -13,7 +13,7 @@ using UnityEngine;
 
 public class BIWOutlinerShould : IntegrationTestSuite_Legacy
 {
-    private const string ENTITY_ID = "1";
+    private const long ENTITY_ID = 1;
     private BIWEntity entity;
     private BIWEntityHandler entityHandler;
     private BIWOutlinerController outlinerController;

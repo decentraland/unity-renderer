@@ -11,7 +11,7 @@ namespace Tests
     public class BillboardTests : IntegrationTestSuite_Legacy
     {
         Billboard billboard;
-        string entityId = "e1";
+        long entityId = 1;
         private ParcelScene scene;
 
         protected override IEnumerator SetUp()

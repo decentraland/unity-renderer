@@ -644,7 +644,7 @@ public class BIWEntity
         {
             if (meshInfo.renderers[i] == null)
                 continue;
-            GameObject entityColliderChildren = new GameObject(entity.entityId);
+            GameObject entityColliderChildren = new GameObject(entity.entityId.ToString());
             entityColliderChildren.layer = BIWSettings.COLLIDER_SELECTION_LAYER_INDEX;
 
             Transform t = entityColliderChildren.transform;

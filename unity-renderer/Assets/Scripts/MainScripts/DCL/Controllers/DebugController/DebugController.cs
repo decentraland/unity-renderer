@@ -140,7 +140,7 @@ namespace DCL
 
         public void StopBotsMovement() { botsController.StopRandomMovement(); }
 
-        public void RemoveBot(string targetEntityId) { botsController.RemoveBot(targetEntityId); }
+        public void RemoveBot(long targetEntityId) { botsController.RemoveBot(targetEntityId); }
 
         public void ClearBots() { botsController.ClearBots(); }
 

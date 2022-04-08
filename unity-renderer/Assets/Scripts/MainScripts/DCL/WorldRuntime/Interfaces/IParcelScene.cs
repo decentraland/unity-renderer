@@ -11,14 +11,14 @@ namespace DCL.Controllers
         event System.Action<IDCLEntity> OnEntityAdded;
         event System.Action<IDCLEntity> OnEntityRemoved;
 
-        IDCLEntity CreateEntity(string id);
+        IDCLEntity CreateEntity(long id);
         Transform GetSceneTransform();
-        Dictionary<string, IDCLEntity> entities { get; }
+        Dictionary<long, IDCLEntity> entities { get; }
         Dictionary<string, ISharedComponent> disposableComponents { get; }
         T GetSharedComponent<T>() where T : class;
         ISharedComponent GetSharedComponent(string id);
         ISharedComponent SharedComponentCreate(string id, int classId);
-        void SharedComponentAttach(string entityId, string id);
+        void SharedComponentAttach(long entityId, string id);
         LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
         ContentProvider contentProvider { get; }
         bool isPersistent { get; }
@@ -31,8 +31,8 @@ namespace DCL.Controllers
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);
         void CalculateSceneLoadingState();
         void GetWaitingComponentsDebugInfo();
-        void SetEntityParent(string entityId, string parentId);
-        void RemoveEntity(string id, bool removeImmediatelyFromEntitiesList = true);
-        IEntityComponent EntityComponentCreateOrUpdateWithModel(string entityId, CLASS_ID_COMPONENT classId, object data);
+        void SetEntityParent(long entityId, long parentId);
+        void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true);
+        IEntityComponent EntityComponentCreateOrUpdateWithModel(long entityId, CLASS_ID_COMPONENT classId, object data);
     }
 }
