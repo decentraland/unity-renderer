@@ -163,7 +163,7 @@ namespace Tests
         public IEnumerator RemoveAllWireframesCorrectlyWhenFeatureIsDisabled()
         {
             var scene = CreateAndAddScene("entityId25");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId25", true);
+            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
@@ -202,7 +202,7 @@ namespace Tests
         public IEnumerator RemoveAllWireframesCorrectlyWhenSceneIsDestroyed()
         {
             var scene = CreateAndAddScene("entityId3");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId3", true);
+            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
@@ -241,7 +241,7 @@ namespace Tests
         public IEnumerator RemoveAllWireframesCorrectlyOnControllerDisposed()
         {
             var scene = CreateAndAddScene("2");
-            isBoundingBoxEnabledVariable.AddOrSet("2", true);
+            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
@@ -282,7 +282,7 @@ namespace Tests
             loadedScenes.Add(id, scene);
             entities[id] = new Dictionary<long, IDCLEntity>();
 
-            scene.entities.Returns(entities["entityId"]);
+            scene.entities.Returns(entities[id]);
 
             sceneController.OnNewSceneAdded += Raise.Event<Action<IParcelScene>>(scene);
 
