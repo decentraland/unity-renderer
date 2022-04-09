@@ -11,7 +11,7 @@ public class DCLCharacterController : MonoBehaviour
     [Header("Movement")]
     public float minimumYPosition = 1f;
 
-    public float groundCheckExtraDistance = 0.25f;
+    public float groundCheckExtraDistance = 0.1f;
     public float gravity = -55f;
     public float jumpForce = 12f;
     public float movementSpeed = 8f;
