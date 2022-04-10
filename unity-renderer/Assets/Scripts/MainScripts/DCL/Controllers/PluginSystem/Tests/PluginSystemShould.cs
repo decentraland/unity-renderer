@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
@@ -154,9 +155,11 @@ public class PluginSystemShould
         pluginSystem.Register<Plugin1>(pluginBuilder1);
         pluginSystem.Register<Plugin1>(pluginBuilder2);
         pluginSystem.Initialize();
-        
+
+        Type type = typeof(Plugin1);
         PluginInfo pluginInfo;
-        Assert.That(pluginSystem.allPlugins.plugins.TryGetValue(typeof(Plugin1), out pluginInfo), Is.True);
+        bool hasValue = pluginSystem.allPlugins.plugins.TryGetValue(type, out pluginInfo);
+        Assert.That(hasValue, Is.True);
         Assert.That(pluginInfo != null, Is.True);
         Assert.That(pluginInfo.builder == pluginBuilder2, Is.True);
         pluginSystem.Dispose();
