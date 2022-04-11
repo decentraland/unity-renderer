@@ -225,6 +225,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         {
             BIWUtils.ShowGenericNotification(DUPLICATE_PROJECT_ERROR + errorString);
         });
+
     }
     
     private async void DuplicateProject(ProjectData data, Manifest manifest)
@@ -262,6 +263,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         // We need to wait a bit before refreshing the projects so the server is able to process the data 
         CoroutineStarter.Start(WaitASecondAndRefreshProjects());
+        
+        BIWAnalytics.ProjectDuplicated(data.id, new Vector2Int(data.rows,data.cols));
     }
 
     private async void PublishProject(ProjectData data)
@@ -314,6 +317,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
                    {
                        BIWUtils.ShowGenericNotification(DELETE_PROJECT_ERROR + errorString);
                    });
+                   
+                   BIWAnalytics.ProjectDeleted(data.id, new Vector2Int(data.rows,data.cols));
                }, null);
     }
 
@@ -340,6 +345,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             context.sceneManager.HideBuilderLoading();
             BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR + errorString);
         });
+        
+        BIWAnalytics.CreatedNewProject(project.title, project.description, new Vector2Int(project.rows,project.cols));
     }
 
     private void OpenEditorFromNewProject(ProjectData projectData)
