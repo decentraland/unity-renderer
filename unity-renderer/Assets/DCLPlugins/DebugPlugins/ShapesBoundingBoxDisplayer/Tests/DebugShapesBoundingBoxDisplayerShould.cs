@@ -16,7 +16,6 @@ namespace Tests
 {
     public class DebugShapesBoundingBoxDisplayerShould
     {
-        private const long entityId = 1;
         private IWorldState worldState;
         private ISceneController sceneController;
 
@@ -52,8 +51,8 @@ namespace Tests
         [Test]
         public void StartWatchingSceneOnInstantiation()
         {
-            CreateAndAddScene("entityId");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             Assert.AreEqual(1, controller.scenesWatcher.Count);
@@ -64,13 +63,13 @@ namespace Tests
         [Test]
         public void WaitTargetWatchSceneToBeLoaded()
         {
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             Assert.AreEqual(1, controller.pendingScenesId.Count);
             Assert.AreEqual(0, controller.scenesWatcher.Count);
 
-            CreateAndAddScene("entityId");
+            CreateAndAddScene("temptation");
             Assert.AreEqual(0, controller.pendingScenesId.Count);
             Assert.AreEqual(1, controller.scenesWatcher.Count);
 
@@ -80,13 +79,13 @@ namespace Tests
         [Test]
         public void StopWatchingSceneCorrectly()
         {
-            CreateAndAddScene("entityId");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             Assert.AreEqual(1, controller.scenesWatcher.Count);
 
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", false);
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", false);
             Assert.AreEqual(0, controller.scenesWatcher.Count);
 
             controller.Dispose();
@@ -95,8 +94,8 @@ namespace Tests
         [Test]
         public void AddWireframeCorrectly()
         {
-            var scene = CreateAndAddScene("entityId");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var entity = CreateEntityWithShape("temptationEntity");
@@ -110,8 +109,8 @@ namespace Tests
         [Test]
         public void AddWireframeCorrectlyWhenShapeAdded()
         {
-            var scene = CreateAndAddScene("entityId");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var entity = CreateEntityWithoutShape("temptationEntity");
@@ -128,8 +127,8 @@ namespace Tests
         [Test]
         public void RemoveWireframeCorrectlyWhenShapeRemoved()
         {
-            var scene = CreateAndAddScene("entityId");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var entity = CreateEntityWithShape("temptationEntity");
@@ -145,8 +144,8 @@ namespace Tests
         [Test]
         public void RemoveWireframeCorrectlyWhenEntityRemoved()
         {
-            var scene = CreateAndAddScene("entityId");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var entity = CreateEntityWithShape("temptationEntity");
@@ -162,8 +161,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator RemoveAllWireframesCorrectlyWhenFeatureIsDisabled()
         {
-            var scene = CreateAndAddScene("entityId25");
-            isBoundingBoxEnabledVariable.AddOrSet("2", true);
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
@@ -187,7 +186,7 @@ namespace Tests
             Assert.AreEqual(sceneEntities.Length + 1, allWireframes);
 
             // Disable feature for scene
-            isBoundingBoxEnabledVariable.AddOrSet("2", false);
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", false);
 
             // wait a frame for Object.Destroy
             yield return null;
@@ -201,8 +200,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator RemoveAllWireframesCorrectlyWhenSceneIsDestroyed()
         {
-            var scene = CreateAndAddScene("entityId3");
-            isBoundingBoxEnabledVariable.AddOrSet("2", true);
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
@@ -240,8 +239,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator RemoveAllWireframesCorrectlyOnControllerDisposed()
         {
-            var scene = CreateAndAddScene("2");
-            isBoundingBoxEnabledVariable.AddOrSet("2", true);
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
