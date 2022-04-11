@@ -1,0 +1,17 @@
+{
+    "name": "DCL.ECSRuntime.Components.Deserializers.Transform",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8435ec6bca2234d40a410317d1b3fbe4",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
