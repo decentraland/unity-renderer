@@ -24,7 +24,7 @@ public class ToggleComponentViewTests
     {
         // Arrange
         bool isOn = !setOn;
-        toggleComponent.onToggleChange.AddListener((isToggleOn) => isOn = isToggleOn);
+        toggleComponent.OnSelectedChanged += (isToggleOn, id) => isOn = isToggleOn;
 
         // Act
         toggleComponent.toggle.onValueChanged.Invoke(setOn);
