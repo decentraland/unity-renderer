@@ -19,8 +19,8 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         public enum SubType
         {
             NONE,
-            PRIVATE_FROM,
-            PRIVATE_TO
+            RECEIVED,
+            SENT
         }
 
         public ChatMessage.Type messageType;
@@ -36,25 +36,11 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     [SerializeField] internal float timeToFade = 10f;
     [SerializeField] internal float fadeDuration = 5f;
-
     [SerializeField] internal TextMeshProUGUI username;
     [SerializeField] internal TextMeshProUGUI body;
-
-    [SerializeField] internal Color worldMessageColor = Color.white;
-
-    [FormerlySerializedAs("privateMessageColor")]
-    [SerializeField] internal Color privateToMessageColor = Color.white;
-
-    [FormerlySerializedAs("privateMessageColor")]
-    [SerializeField] internal Color privateFromMessageColor = Color.white;
-
-    [SerializeField] internal Color systemColor = Color.white;
-    [SerializeField] internal Color playerNameColor = Color.yellow;
-    [SerializeField] internal Color nonPlayerNameColor = Color.white;
     [SerializeField] CanvasGroup group;
     [SerializeField] internal float timeToHoverPanel = 1f;
     [SerializeField] internal float timeToHoverGotoPanel = 1f;
-
     [NonSerialized] public string messageLocalDateTime;
 
     bool fadeEnabled = false;
@@ -78,45 +64,17 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     public void Populate(Model chatEntryModel)
     {
-        this.model = chatEntryModel;
+        model = chatEntryModel;
 
         string userString = GetDefaultSenderString(chatEntryModel.senderName);
 
-        if (chatEntryModel.subType == Model.SubType.PRIVATE_FROM)
+        if (chatEntryModel.subType == Model.SubType.RECEIVED)
         {
             userString = $"<b>From {chatEntryModel.senderName}:</b>";
         }
-        else if (chatEntryModel.subType == Model.SubType.PRIVATE_TO)
+        else if (chatEntryModel.subType == Model.SubType.SENT)
         {
             userString = $"<b>To {chatEntryModel.recipientName}:</b>";
-        }
-
-        switch (chatEntryModel.messageType)
-        {
-            case ChatMessage.Type.PUBLIC:
-                body.color = worldMessageColor;
-
-                if (username != null)
-                    username.color = chatEntryModel.senderName == UserProfile.GetOwnUserProfile().userName ? playerNameColor : nonPlayerNameColor;
-                break;
-            case ChatMessage.Type.PRIVATE:
-                body.color = worldMessageColor;
-
-                if (username != null)
-                {
-                    if (model.subType == Model.SubType.PRIVATE_TO)
-                        username.color = privateToMessageColor;
-                    else
-                        username.color = privateFromMessageColor;
-                }
-
-                break;
-            case ChatMessage.Type.SYSTEM:
-                body.color = systemColor;
-
-                if (username != null)
-                    username.color = systemColor;
-                break;
         }
 
         chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
@@ -134,7 +92,8 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             body.text = $"{chatEntryModel.bodyText}";
         }
 
-        if (CoordinateUtils.HasValidTextCoordinates(body.text)) {
+        if (CoordinateUtils.HasValidTextCoordinates(body.text))
+        {
             List<string> textCoordinates = CoordinateUtils.GetTextCoordinates(body.text);
             for (int i = 0; i < textCoordinates.Count; i++)
             {
@@ -145,7 +104,8 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
                 else
                     coordinatesColor = COORDINATES_COLOR_PUBLIC;
 
-                body.text = body.text.Replace(textCoordinates[i], $"</noparse><link={textCoordinates[i]}><color={coordinatesColor}><u>{textCoordinates[i]}</u></color></link><noparse>");
+                body.text = body.text.Replace(textCoordinates[i],
+                    $"</noparse><link={textCoordinates[i]}><color={coordinatesColor}><u>{textCoordinates[i]}</u></color></link><noparse>");
             }
         }
 
@@ -159,7 +119,8 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         if (HUDAudioHandler.i != null)
         {
             // Check whether or not this message is new, and chat sounds are enabled in settings
-            if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp && Settings.i.audioSettings.Data.chatSFXEnabled)
+            if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp &&
+                Settings.i.audioSettings.Data.chatSFXEnabled)
             {
                 switch (chatEntryModel.messageType)
                 {
@@ -173,15 +134,16 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
                     case ChatMessage.Type.PRIVATE:
                         switch (chatEntryModel.subType)
                         {
-                            case Model.SubType.PRIVATE_FROM:
+                            case Model.SubType.RECEIVED:
                                 AudioScriptableObjects.chatReceivePrivate.Play(true);
                                 break;
-                            case Model.SubType.PRIVATE_TO:
+                            case Model.SubType.SENT:
                                 AudioScriptableObjects.chatSend.Play(true);
                                 break;
                             default:
                                 break;
                         }
+
                         break;
                     case ChatMessage.Type.SYSTEM:
                         AudioScriptableObjects.chatReceiveGlobal.Play(true);
@@ -210,7 +172,8 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             {
                 DataStore.i.HUDs.gotoPanelVisible.Set(true);
                 TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
-                ParcelCoordinates parcelCoordinate = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
+                ParcelCoordinates parcelCoordinate =
+                    CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
                 DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
             }
 
@@ -229,7 +192,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         }
     }
 
-    public void OnPointerEnter(PointerEventData pointerEventData) 
+    public void OnPointerEnter(PointerEventData pointerEventData)
     {
         if (pointerEventData == null)
             return;
@@ -250,10 +213,14 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             hoverGotoPanelTimer = 0;
             OnCancelGotoHover?.Invoke();
         }
+
         OnCancelHover?.Invoke();
     }
 
-    void OnDisable() { OnPointerExit(null); }
+    void OnDisable()
+    {
+        OnPointerExit(null);
+    }
 
     public void SetFadeout(bool enabled)
     {
@@ -303,7 +270,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             return;
 
         //NOTE(Brian): Small offset using normalized Y so we keep the cascade effect
-        double yOffset = (transform as RectTransform).anchoredPosition.y / (double)Screen.height * 2.0;
+        double yOffset = (transform as RectTransform).anchoredPosition.y / (double) Screen.height * 2.0;
 
         double fadeTime = Math.Max(model.timestamp / 1000.0, fadeoutStartTime) + timeToFade - yOffset;
         double currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
@@ -311,7 +278,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         if (currentTime > fadeTime)
         {
             double timeSinceFadeTime = currentTime - fadeTime;
-            group.alpha = Mathf.Clamp01(1 - (float)(timeSinceFadeTime / fadeDuration));
+            group.alpha = Mathf.Clamp01(1 - (float) (timeSinceFadeTime / fadeDuration));
         }
         else
         {

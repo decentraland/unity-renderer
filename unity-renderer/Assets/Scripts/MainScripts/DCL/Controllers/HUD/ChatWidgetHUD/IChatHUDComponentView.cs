@@ -10,8 +10,10 @@ public interface IChatHUDComponentView
     
     int EntryCount { get; }
 
+    IChatEntryFactory ChatEntryFactory { get; set; }
+
     void OnMessageCancelHover();
-    void AddEntry(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false);
+    void AddEntry(ChatEntry.Model model, bool setScrollPositionToBottom = false);
     void Dispose();
     void RemoveFirstEntry();
     void Hide();

@@ -37,26 +37,23 @@ public class ChatEntryShould : IntegrationTestSuite_Legacy
 
         entry.Populate(message);
 
-        Assert.AreEqual(entry.worldMessageColor, entry.body.color);
         Assert.AreEqual("<b>user-test:</b>", entry.username.text);
         Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
 
         message.messageType = ChatMessage.Type.PRIVATE;
-        message.subType = ChatEntry.Model.SubType.PRIVATE_TO;
+        message.subType = ChatEntry.Model.SubType.SENT;
 
         entry.Populate(message);
-        Assert.AreEqual(entry.privateToMessageColor, entry.username.color);
         Assert.AreEqual("<b>To receiver-test:</b>", entry.username.text);
         Assert.AreEqual("<b>To receiver-test:</b> test message", entry.body.text);
 
-        message.subType = ChatEntry.Model.SubType.PRIVATE_FROM;
+        message.subType = ChatEntry.Model.SubType.RECEIVED;
         entry.Populate(message);
-        Assert.AreEqual(entry.privateFromMessageColor, entry.username.color);
         Assert.AreEqual("<b>From user-test:</b>", entry.username.text);
         Assert.AreEqual("<b>From user-test:</b> test message", entry.body.text);
 
         message.messageType = ChatMessage.Type.SYSTEM;
         entry.Populate(message);
-        Assert.AreEqual(entry.systemColor, entry.body.color);
+        Assert.AreEqual("test message", entry.body.text);
     }
 }

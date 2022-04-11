@@ -1046,7 +1046,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db8c9fd76b808492eb82aee984751be4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectWhisper: 0
   inputField: {fileID: 3076944175797663715}
   chatEntriesContainer: {fileID: 6452473416983833199}
   scrollRect: {fileID: 5302075511252737345}
@@ -1056,6 +1055,8 @@ MonoBehaviour:
   messageHoverGotoText: {fileID: 0}
   contextMenu: {fileID: 0}
   confirmationDialog: {fileID: 0}
+  defaultChatEntryFactory: {fileID: 0}
+  separatorEntryPrefab: {fileID: 0}
 --- !u!1 &5971340815546429105
 GameObject:
   m_ObjectHideFlags: 0

@@ -29,10 +29,9 @@ public class ChatHUDController : IDisposable
         this.profanityFilter = profanityFilter;
     }
 
-    public void Initialize(IChatHUDComponentView view = null)
+    public void Initialize(IChatHUDComponentView view)
     {
-        this.view = view ?? ChatHUDView.Create();
-
+        this.view = view;
         this.view.OnShowMenu -= ContextMenu_OnShowMenu;
         this.view.OnShowMenu += ContextMenu_OnShowMenu;
         this.view.OnInputFieldSelected -= HandleInputFieldSelection;
@@ -109,22 +108,28 @@ public class ChatHUDController : IDisposable
             model.senderId = message.sender;
         }
 
-        if (model.messageType == ChatMessage.Type.PRIVATE)
+        if (message.messageType == ChatMessage.Type.PRIVATE)
         {
             if (message.recipient == ownProfile.userId)
             {
-                model.subType = ChatEntry.Model.SubType.PRIVATE_FROM;
+                model.subType = ChatEntry.Model.SubType.RECEIVED;
                 model.otherUserId = message.sender;
             }
             else if (message.sender == ownProfile.userId)
             {
-                model.subType = ChatEntry.Model.SubType.PRIVATE_TO;
+                model.subType = ChatEntry.Model.SubType.SENT;
                 model.otherUserId = message.recipient;
             }
             else
             {
                 model.subType = ChatEntry.Model.SubType.NONE;
             }
+        }
+        else if (message.messageType == ChatMessage.Type.PUBLIC)
+        {
+            model.subType = message.sender == ownProfile.userId
+                ? ChatEntry.Model.SubType.SENT
+                : ChatEntry.Model.SubType.RECEIVED;
         }
 
         return model;
@@ -151,10 +156,10 @@ public class ChatHUDController : IDisposable
         if (!detectWhisper) return;
         var body = message.body;
         if (string.IsNullOrWhiteSpace(body)) return;
-        
+
         var match = whisperRegex.Match(body);
         if (!match.Success) return;
-        
+
         message.messageType = ChatMessage.Type.PRIVATE;
         message.recipient = match.Groups[2].Value;
         message.body = match.Groups[4].Value;
