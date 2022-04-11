@@ -52,6 +52,11 @@ namespace DCL.Skybox
             return configActive;
         }
 
-        public void DeepCopy(Config3DDome config3DDome) { layers.DeepCopy(config3DDome.layers); }
+        public Config3DDome DeepCopy()
+        {
+            Config3DDome dome = (Config3DDome)this.MemberwiseClone();
+            dome.layers = layers.DeepCopy();
+            return dome;
+        }
     }
 }

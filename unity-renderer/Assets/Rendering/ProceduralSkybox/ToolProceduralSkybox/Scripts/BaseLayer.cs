@@ -103,40 +103,24 @@ namespace DCL.Skybox
         }
 
         // Copy details of present layer on the passed layer
-        public void DeepCopy(TextureLayer layer)
+        public TextureLayer DeepCopy()
         {
-            layer.slotID = this.slotID;
-            layer.renderType = this.renderType;
-            layer.layerType = this.layerType;
-            layer.enabled = this.enabled;
-            layer.nameInEditor = this.nameInEditor;
-            layer.expandedInEditor = this.expandedInEditor;
-            layer.timeSpan_start = this.timeSpan_start;
-            layer.timeSpan_End = this.timeSpan_End;
-            layer.fadingInTime = this.fadingInTime;
-            layer.fadingOutTime = this.fadingOutTime;
+            TextureLayer layer = (TextureLayer)this.MemberwiseClone();
 
-            layer.tintPercentage = this.tintPercentage;
+            layer.color = this.color.GetCopy();
+
             layer.renderDistance = new List<TransitioningFloat>();
             for (int i = 0; i < this.renderDistance.Count; i++)
             {
                 layer.renderDistance.Add(this.renderDistance[i].GetCopy());
             }
 
-            layer.texture = this.texture;
-            layer.textureNormal = this.textureNormal;
-            layer.cubemap = this.cubemap;
-            layer.color = this.color.GetCopy();
-            layer.tiling = new Vector2(this.tiling.x, this.tiling.y);
-
-            layer.flipbookRowsAndColumns = new Vector2(this.flipbookRowsAndColumns.x, this.flipbookRowsAndColumns.y);
-            layer.flipbookAnimSpeed = this.flipbookAnimSpeed;
-
             layer.offset = new List<TransitioningVector2>();
             for (int i = 0; i < this.offset.Count; i++)
             {
                 layer.offset.Add(this.offset[i].GetCopy());
             }
+
             layer.satelliteWidthHeight = new List<TransitioningVector2>(this.satelliteWidthHeight);
             for (int i = 0; i < this.satelliteWidthHeight.Count; i++)
             {
@@ -148,56 +132,44 @@ namespace DCL.Skybox
             {
                 layer.rotations_float.Add(this.rotations_float[i].GetCopy());
             }
+
             layer.rotations_Vector3 = new List<TransitioningVector3>();
             for (int i = 0; i < this.rotations_Vector3.Count; i++)
             {
                 layer.rotations_Vector3.Add(this.rotations_Vector3[i].GetCopy());
             }
 
-            layer.speed_Vector3 = new Vector3(this.speed_Vector3.x, this.speed_Vector3.y, this.speed_Vector3.z);
-            layer.speed_Vector2 = new Vector2(this.speed_Vector2.x, this.speed_Vector2.y);
-
-            layer.particleExpanded = this.particleExpanded;
-            layer.particleTiling = new Vector2(this.particleTiling.x, this.particleTiling.y);
-            layer.particlesOffset = new Vector2(this.particlesOffset.x, this.particlesOffset.y);
             layer.particleRotation = new List<TransitioningVector3>();
             for (int i = 0; i < this.particleRotation.Count; i++)
             {
                 layer.particleRotation.Add(this.particleRotation[i].GetCopy());
             }
-            layer.particlesAmount = this.particlesAmount;
-            layer.particleMinSize = this.particleMinSize;
-            layer.particleMaxSize = this.particleMaxSize;
-            layer.particlesHorizontalSpread = this.particlesHorizontalSpread;
-            layer.particlesVerticalSpread = this.particlesVerticalSpread;
-            layer.particleMinFade = this.particleMinFade;
-            layer.particleMaxFade = this.particleMaxFade;
 
-            layer.distortionExpanded = this.distortionExpanded;
             layer.distortIntensity = new List<TransitioningFloat>();
             for (int i = 0; i < this.distortIntensity.Count; i++)
             {
                 layer.distortIntensity.Add(this.distortIntensity[i].GetCopy());
             }
+
             layer.distortSize = new List<TransitioningFloat>();
             for (int i = 0; i < this.distortSize.Count; i++)
             {
                 layer.distortSize.Add(this.distortSize[i].GetCopy());
             }
+
             layer.distortSpeed = new List<TransitioningVector2>();
             for (int i = 0; i < this.distortSpeed.Count; i++)
             {
                 layer.distortSpeed.Add(this.distortSpeed[i].GetCopy());
             }
+
             layer.distortSharpness = new List<TransitioningVector2>();
             for (int i = 0; i < this.distortSharpness.Count; i++)
             {
                 layer.distortSharpness.Add(this.distortSharpness[i].GetCopy());
             }
 
-            layer.movementTypeCubemap = this.movementTypeCubemap;
-            layer.movementTypePlanar_Radial = this.movementTypePlanar_Radial;
-            layer.movementTypeSatellite = this.movementTypeSatellite;
+            return layer;
         }
 
     }
@@ -211,13 +183,13 @@ namespace DCL.Skybox
             GradientColorKey[] colorKeys = new GradientColorKey[gradient.colorKeys.Length];
             for (int i = 0; i < gradient.colorKeys.Length; i++)
             {
-                colorKeys[i] = new GradientColorKey(gradient.colorKeys[i].color, gradient.colorKeys[i].time);
+                colorKeys[i] = gradient.colorKeys[i];
             }
 
             GradientAlphaKey[] alphaKeys = new GradientAlphaKey[gradient.alphaKeys.Length];
             for (int i = 0; i < gradient.alphaKeys.Length; i++)
             {
-                alphaKeys[i] = new GradientAlphaKey(gradient.alphaKeys[i].alpha, gradient.alphaKeys[i].time);
+                alphaKeys[i] = gradient.alphaKeys[i];
             }
             obj.SetKeys(colorKeys, alphaKeys);
             return obj;
@@ -277,7 +249,7 @@ namespace DCL.Skybox
             this.value = value;
         }
 
-        internal TransitioningFloat GetCopy() { return new TransitioningFloat(this.percentage, this.value); }
+        internal TransitioningFloat GetCopy() { return (TransitioningFloat)this.MemberwiseClone(); }
     }
 
     [System.Serializable]
@@ -292,7 +264,7 @@ namespace DCL.Skybox
             this.value = value;
         }
 
-        internal TransitioningVector3 GetCopy() { return new TransitioningVector3(this.percentage, this.value); }
+        internal TransitioningVector3 GetCopy() { return (TransitioningVector3)this.MemberwiseClone(); }
     }
 
     [System.Serializable]
@@ -307,7 +279,7 @@ namespace DCL.Skybox
             this.value = value;
         }
 
-        internal TransitioningVector2 GetCopy() { return new TransitioningVector2(this.percentage, this.value); }
+        internal TransitioningVector2 GetCopy() { return (TransitioningVector2)this.MemberwiseClone(); }
     }
 
     [System.Serializable]

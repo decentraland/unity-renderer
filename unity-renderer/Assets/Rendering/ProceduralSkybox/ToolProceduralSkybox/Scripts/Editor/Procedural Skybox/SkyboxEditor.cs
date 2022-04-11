@@ -431,7 +431,7 @@ namespace DCL.Skybox
                         ArrayList list = obj as ArrayList;
                         List<Config3DDome> domeList = list[0] as List<Config3DDome>;
                         int index = (int)list[1];
-                        copiedLayer.DeepCopy(domeList[index].layers);
+                        domeList[index].layers = copiedLayer.DeepCopy();
                         Repaint();
                     };
                     ShowDomeContextMenu(deleteBtnClicked, addBtnClicked, pasteBtnClicked, list);
@@ -1022,7 +1022,7 @@ namespace DCL.Skybox
                 return;
             }
             TextureLayer layer = obj as TextureLayer;
-            copiedLayer.DeepCopy(layer);
+            layer = copiedLayer.DeepCopy();
             if (contextMenuOnDomeLayer)
             {
                 layer.slotID = 0;

@@ -128,7 +128,7 @@ namespace DCL.Skybox
                         ArrayList list = obj as ArrayList;
                         List<TextureLayer> layerList = list[0] as List<TextureLayer>;
                         int index = (int)list[1];
-                        copyPasteObj.GetCopiedTextureLayer().DeepCopy(layerList[index]);
+                        layerList[index] = copyPasteObj.GetCopiedTextureLayer().DeepCopy();
                     };
                     ShowBaseLayersContextMenu(copyPasteObj, deleteBtnClicked, addBtnClicked, copyBtnClicked, pasteBtnClicked, list);
                 }

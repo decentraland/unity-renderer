@@ -127,7 +127,7 @@ namespace DCL.Skybox
                         ArrayList list = obj as ArrayList;
                         List<Config3DDome> layerList = list[0] as List<Config3DDome>;
                         int index = (int)list[1];
-                        copyPasteObj.GetCopiedDome().DeepCopy(layerList[index]);
+                        layerList[index] = copyPasteObj.GetCopiedDome().DeepCopy();
                     };
                     ShowDomeContextMenu(copyPasteObj, deleteBtnClicked, addBtnClicked, copyBtnClicked, pasteBtnClicked, list);
                 }
