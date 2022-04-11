@@ -65,6 +65,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     Vector3 lastPosition;
     bool isOwnPlayer = false;
     private AvatarAnimationEventHandler animEventHandler;
+    
+    private float lastOnAirTime = 0;
+    private const float FORCE_GROUND_TIME = 0.25f;
 
     public void Start() { OnPoolGet(); }
 
@@ -113,6 +116,12 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         //NOTE(Brian): Vertical speed
         float verticalVelocity = flattenedVelocity.y;
+
+        if (Mathf.Abs(verticalVelocity) > float.Epsilon)
+        {
+            lastOnAirTime = Time.time;
+        }
+        
         blackboard.verticalSpeed = verticalVelocity;
 
         flattenedVelocity.y = 0;
@@ -124,10 +133,14 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         Vector3 rayOffset = Vector3.up * RAY_OFFSET_LENGTH;
         //NOTE(Brian): isGrounded?
-        blackboard.isGrounded = (isOwnPlayer && DCLCharacterController.i.isGrounded) || Physics.Raycast(target.transform.position + rayOffset,
+        bool isGroundedByCharacterController = isOwnPlayer && DCLCharacterController.i.isGrounded;
+        bool isGroundedByVelocity = !isOwnPlayer && Time.time - lastOnAirTime > FORCE_GROUND_TIME;
+        bool isGroundedByRaycast = Physics.Raycast(target.transform.position + rayOffset,
             Vector3.down,
             RAY_OFFSET_LENGTH - ELEVATION_OFFSET,
             DCLCharacterController.i.groundLayers);
+
+        blackboard.isGrounded = isGroundedByCharacterController || isGroundedByVelocity || isGroundedByRaycast;
 
 #if UNITY_EDITOR
         Debug.DrawRay(target.transform.position + rayOffset, Vector3.down * (RAY_OFFSET_LENGTH - ELEVATION_OFFSET), blackboard.isGrounded ? Color.green : Color.red);
