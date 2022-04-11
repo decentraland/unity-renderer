@@ -1,0 +1,26 @@
+{
+    "name": "EmoteAnimationsPlugin",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
+        "GUID:a1e1473c53889c2489c0822a9dd5fa33",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:b24824f3bc2a60641a01e2083614f802",
+        "GUID:8af21c3a612af2645a9953d4b9b3f6d5",
+        "GUID:24ec3d5b95972d44394d682772ea3db1",
+        "GUID:49176a91bbf7f8a4aaf35f6df0643d1a",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

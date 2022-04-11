@@ -244,13 +244,13 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         float itemHeight = model.recommendedHeightForFlexibleItems;
 
         if (itemWidth * amountsOfHorizontalItemsPerRow + extraSpaceToRemoveX >= width)
-            itemWidth = width / amountsOfHorizontalItemsPerRow - extraSpaceToRemoveX;
+            itemWidth = (width - extraSpaceToRemoveX) / amountsOfHorizontalItemsPerRow;
 
         if (itemWidth < model.minWidthForFlexibleItems)
             itemWidth = model.minWidthForFlexibleItems;
 
         if (itemHeight * amountsOfVerticalItemsPerColumn + extraSpaceToRemoveY >= height)
-            itemHeight = height / amountsOfVerticalItemsPerColumn - extraSpaceToRemoveY;
+            itemHeight = (height - extraSpaceToRemoveY) / amountsOfVerticalItemsPerColumn;
 
         if (itemHeight < model.minHeightForFlexibleItems)
             itemHeight = model.minHeightForFlexibleItems;
@@ -395,10 +395,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         List<BaseComponentView> extractedItems = new List<BaseComponentView>();
         foreach (BaseComponentView item in instantiatedItems)
         {
-            if (item == null)
-                continue;
+            if (item != null)
+                item.transform.SetParent(null);
 
-            item.transform.SetParent(null);
             extractedItems.Add(item);
         }
 
@@ -414,7 +413,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         List<BaseComponentView> itemsToDestroy = ExtractItems();
         foreach (BaseComponentView itemToDestroy in itemsToDestroy)
         {
-            DestroyImmediate(itemToDestroy.gameObject);
+            if (itemToDestroy != null)
+                DestroyImmediate(itemToDestroy.gameObject);
         }
         itemsToDestroy.Clear();
 

@@ -4,6 +4,9 @@ using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Configuration;
+using DCL.Emotes;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class CatalogController : MonoBehaviour
@@ -62,6 +65,16 @@ public class CatalogController : MonoBehaviour
         pendingRequestsToSend.Clear();
     }
 
+    //This temporary until the emotes are in the content server 
+    public void EmbedWearables(IEnumerable<WearableItem> wearables)
+    {
+        foreach (WearableItem wearableItem in wearables)
+        {
+            wearableCatalog[wearableItem.id] = wearableItem;
+            wearablesInUseCounters[wearableItem.id] = 10000; //A high value to ensure they are not removed
+        }
+    }
+
     public void AddWearablesToCatalog(string payload)
     {
         if (VERBOSE)
@@ -71,7 +84,10 @@ public class CatalogController : MonoBehaviour
 
         try
         {
-            request = JsonUtility.FromJson<WearablesRequestResponse>(payload);
+            // The new wearables paradigm is based on composing with optional field
+            // i.e. the emotes will have an emotev0Data property with some values.
+            // JsonUtility.FromJson doesn't allow null properties so we have to use Newtonsoft instead
+            request = JsonConvert.DeserializeObject<WearablesRequestResponse>(payload);
         }
         catch (Exception e)
         {
@@ -115,8 +131,8 @@ public class CatalogController : MonoBehaviour
         WearablesRequestFailed requestFailedResponse = JsonUtility.FromJson<WearablesRequestFailed>(payload);
 
         if (requestFailedResponse.context == BASE_WEARABLES_CONTEXT ||
-            requestFailedResponse.context == OWNED_WEARABLES_CONTEXT ||
-            requestFailedResponse.context.Contains(THIRD_PARTY_WEARABLES_CONTEXT))
+            requestFailedResponse.context.Contains(THIRD_PARTY_WEARABLES_CONTEXT) ||
+            requestFailedResponse.context.Contains(OWNED_WEARABLES_CONTEXT))
         {
             ResolvePendingWearablesByContextPromise(
                 requestFailedResponse.context,
@@ -190,25 +206,25 @@ public class CatalogController : MonoBehaviour
     {
         Promise<WearableItem[]> promiseResult;
 
-        if (!awaitingWearablesByContextPromises.ContainsKey(OWNED_WEARABLES_CONTEXT))
+        if (!awaitingWearablesByContextPromises.ContainsKey($"{OWNED_WEARABLES_CONTEXT}{userId}"))
         {
             promiseResult = new Promise<WearableItem[]>();
 
-            awaitingWearablesByContextPromises.Add(OWNED_WEARABLES_CONTEXT, promiseResult);
+            awaitingWearablesByContextPromises.Add($"{OWNED_WEARABLES_CONTEXT}{userId}", promiseResult);
 
-            if (!pendingWearablesByContextRequestedTimes.ContainsKey(OWNED_WEARABLES_CONTEXT))
-                pendingWearablesByContextRequestedTimes.Add(OWNED_WEARABLES_CONTEXT, Time.realtimeSinceStartup);
+            if (!pendingWearablesByContextRequestedTimes.ContainsKey($"{OWNED_WEARABLES_CONTEXT}{userId}"))
+                pendingWearablesByContextRequestedTimes.Add($"{OWNED_WEARABLES_CONTEXT}{userId}", Time.realtimeSinceStartup);
 
             WebInterface.RequestWearables(
                 ownedByUser: userId,
                 wearableIds: null,
                 collectionIds: null,
-                context: OWNED_WEARABLES_CONTEXT
+                context: $"{OWNED_WEARABLES_CONTEXT}{userId}"
             );
         }
         else
         {
-            awaitingWearablesByContextPromises.TryGetValue(OWNED_WEARABLES_CONTEXT, out promiseResult);
+            awaitingWearablesByContextPromises.TryGetValue($"{OWNED_WEARABLES_CONTEXT}{userId}", out promiseResult);
         }
 
         return promiseResult;

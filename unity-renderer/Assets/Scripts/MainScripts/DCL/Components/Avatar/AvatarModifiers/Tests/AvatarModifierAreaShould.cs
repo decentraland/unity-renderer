@@ -2,9 +2,12 @@
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
+using DCL;
 using DCL.Controllers;
 using UnityEngine;
 using NSubstitute;
+using NUnit.Framework;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
@@ -88,6 +91,78 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
         yield return null;
         mockAvatarModifier.Received().RemoveModifier(fakeObject);
     }
+    
+    [UnityTest]
+    public IEnumerator ApplyExcludedListCorrectly()
+    {
+        var player1 = MockPlayer("player1");
+        var player2 = MockPlayer("player2");
+        var player3 = MockPlayer("player3");
+        
+        DataStore.i.player.ownPlayer.Set(player1.player);
+        DataStore.i.player.otherPlayers.AddOrSet(player2.player.id, player2.player);
+        DataStore.i.player.otherPlayers.AddOrSet(player3.player.id, player3.player);
+
+        var model = (AvatarModifierArea.Model)avatarModifierArea.GetModel();
+        model.excludeIds = new[] { player1.player.id };
+
+        yield return TestUtils.EntityComponentUpdate(avatarModifierArea, model);
+        yield return null;
+
+        mockAvatarModifier.DidNotReceive().ApplyModifier(player1.gameObject);
+        mockAvatarModifier.Received().ApplyModifier(player2.gameObject);
+        mockAvatarModifier.Received().ApplyModifier(player3.gameObject);
+        
+        model.excludeIds = new[] { player2.player.id };
+
+        yield return TestUtils.EntityComponentUpdate(avatarModifierArea, model);
+        yield return null;
+
+        mockAvatarModifier.Received().ApplyModifier(player1.gameObject);
+        mockAvatarModifier.Received().RemoveModifier(player2.gameObject);
+
+        model.excludeIds =  new[] { player2.player.id, "notLoadedAvatar" };
+
+        yield return TestUtils.EntityComponentUpdate(avatarModifierArea, model);
+        yield return null;
+        
+        var player4 = MockPlayer("notLoadedAvatar");
+        DataStore.i.player.otherPlayers.AddOrSet(player4.player.id, player4.player);
+        yield return null;
+        
+        mockAvatarModifier.DidNotReceive().ApplyModifier(player4.gameObject);
+
+        model.excludeIds =  new string[0];
+        yield return TestUtils.EntityComponentUpdate(avatarModifierArea, model);
+        yield return null;
+        
+        mockAvatarModifier.Received().ApplyModifier(player2.gameObject);
+
+        Object.Destroy(player1.gameObject);
+        Object.Destroy(player2.gameObject);
+        Object.Destroy(player3.gameObject);
+        Object.Destroy(player4.gameObject);
+        Object.Destroy(avatarModifierArea.gameObject);
+    }
+    
+    [UnityTest]
+    public IEnumerator NotRemoveModifierOnWhenModelChange()
+    {
+        var model = (AvatarModifierArea.Model)avatarModifierArea.GetModel();
+
+        var fakeObject = PrepareGameObjectForModifierArea();
+        yield return null;
+        
+        mockAvatarModifier.Received().ApplyModifier(fakeObject);
+        mockAvatarModifier.ClearReceivedCalls();
+
+        model.area = new BoxTriggerArea { box = new Vector3(11, 11, 11) };
+        yield return TestUtils.EntityComponentUpdate(avatarModifierArea, model);
+        yield return null;
+        
+        mockAvatarModifier.Received(1).RemoveModifier(fakeObject);
+        mockAvatarModifier.Received().ApplyModifier(fakeObject);
+    }    
 
     private GameObject PrepareGameObjectForModifierArea()
     {
@@ -103,5 +178,16 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
         fakeObject.transform.position = avatarModifierArea.transform.position;
 
         return fakeParent;
+    }
+
+    private (Player player, GameObject gameObject) MockPlayer(string playerId)
+    {
+        GameObject gameObject = PrepareGameObjectForModifierArea();
+        Player player = new Player()
+        {
+            id = playerId,
+            collider = gameObject.GetComponentInChildren<Collider>()
+        };
+        return (player, gameObject);
     }
 }

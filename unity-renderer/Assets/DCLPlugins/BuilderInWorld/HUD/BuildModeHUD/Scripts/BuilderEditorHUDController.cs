@@ -11,6 +11,7 @@ using UnityEngine.EventSystems;
 
 public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 {
+    public event Action<string, string> OnProjectNameAndDescriptionChanged;
     public event Action OnChangeModeAction;
     public event Action OnTranslateSelectedAction;
     public event Action OnRotateSelectedAction;
@@ -26,7 +27,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
     public event Action OnResumeInput;
     public event Action OnTutorialAction;
     public event Action OnPublishAction;
-    public event Action<string, string, string> OnSaveSceneInfoAction;
     public event Action<string, string, string> OnConfirmPublishAction;
     public event Action OnStartExitAction;
     public event Action OnLogoutAction;
@@ -54,10 +54,9 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     internal BuildModeHUDInitializationModel controllers;
 
-    private Coroutine publishProgressCoroutine = null;
     private float timeFromLastClickOnExtraButtons = 0f;
     internal IContext context;
-    
+
     public void Initialize(IContext context)
     {
         this.context = context;
@@ -74,12 +73,11 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
         ConfigureInspectorController();
         ConfigureTopActionsButtonsController();
         ConfigureSaveHUDController();
-        ConfigureNewProjectDetailsController();
-        ConfigurePublicationDetailsController();
         ConfigureQuickBarController();
+        ConfigureNewProjectController();
     }
 
-    public void Initialize(BuildModeHUDInitializationModel controllers,IContext context)
+    public void Initialize(BuildModeHUDInitializationModel controllers, IContext context)
     {
         this.context = context;
         this.controllers = controllers;
@@ -98,7 +96,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
             entityInformationController = new EntityInformationController(),
             firstPersonModeController = new FirstPersonModeController(),
             shortcutsController = new ShortcutsController(),
-            publishPopupController = new PublishPopupController(),
             dragAndDropSceneObjectController = new DragAndDropSceneObjectController(),
             publishBtnController = new PublishBtnController(),
             inspectorBtnController = new InspectorBtnController(),
@@ -107,8 +104,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
             buildModeConfirmationModalController = new BuildModeConfirmationModalController(),
             topActionsButtonsController = new TopActionsButtonsController(),
             saveHUDController = new SaveHUDController(),
-            newProjectDetailsController = new PublicationDetailsController(),
-            publicationDetailsController = new PublicationDetailsController()
+            newProjectDetailsController = new NewLandProjectDetailController(),
         };
     }
 
@@ -194,71 +190,17 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     private void ConfigureSaveHUDController() { OnLogoutAction += controllers.saveHUDController.StopAnimation; }
 
-    private void ConfigureNewProjectDetailsController()
-    {
-        controllers.newProjectDetailsController.OnCancel += CancelNewProjectDetails;
-        controllers.newProjectDetailsController.OnConfirm += SaveSceneInfo;
-    }
-
-    private void ConfigurePublicationDetailsController()
-    {
-        controllers.publicationDetailsController.OnCancel += CancelPublicationDetails;
-        controllers.publicationDetailsController.OnConfirm += ConfirmPublicationDetails;
-    }
-
     private void ConfigureQuickBarController() { controllers.quickBarController.OnCatalogItemAssigned += QuickBarCatalogItemAssigned; }
-
+    private void ConfigureNewProjectController() { controllers.newProjectDetailsController.OnNameAndDescriptionSet += NameAndDescriptionOfNewProjectSet; }
     private void QuickBarCatalogItemAssigned(CatalogItem item) { BIWAnalytics.QuickAccessAssigned(item, GetCatalogSectionSelected().ToString()); }
+
+    private void NameAndDescriptionOfNewProjectSet(string name, string description) => OnProjectNameAndDescriptionChanged?.Invoke(name, description); 
 
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 
-    public void SetBuilderProjectInfo(string projectName, string projectDescription)
-    {
-        if (!string.IsNullOrEmpty(projectName))
-        {
-            controllers.newProjectDetailsController.SetCustomPublicationInfo(projectName, projectDescription);
-            controllers.publicationDetailsController.SetCustomPublicationInfo(projectName, projectDescription);
-        }
-        else
-        {
-            controllers.newProjectDetailsController.SetDefaultPublicationInfo();
-            controllers.publicationDetailsController.SetDefaultPublicationInfo();
-        }
-    }
-
-    public void NewProjectStart(Texture2D screenshot)
-    {
-        controllers.newProjectDetailsController.SetPublicationScreenshot(screenshot);
-
-        // TODO: This is temporal until we add the Welcome panel where the user will be able to edit the project info
-        //controllers.newProjectDetailsController.SetActive(true); 
-        SaveSceneInfo();
-    }
-
-    public void SaveSceneInfo()
-    {
-        Texture2D newSceneScreenshotTexture = context.cameraController.GetLastScreenshot();
-        string newSceneName = controllers.newProjectDetailsController.GetSceneName();
-        string newSceneDescription = controllers.newProjectDetailsController.GetSceneDescription();
-
-        controllers.publicationDetailsController.SetCustomPublicationInfo(newSceneName, newSceneDescription);
-        controllers.newProjectDetailsController.SetActive(false);
-
-        OnSaveSceneInfoAction?.Invoke(
-            newSceneName,
-            newSceneDescription,
-            newSceneScreenshotTexture != null ? Convert.ToBase64String(newSceneScreenshotTexture.EncodeToJPG(90)) : "");
-    }
+    public void NewSceneForLand(IBuilderScene sceneWithSceenshot) { controllers.newProjectDetailsController.SetActive(true); }
 
     internal void CancelNewProjectDetails() { controllers.newProjectDetailsController.SetActive(false); }
-
-    public void SetBuilderProjectScreenshot(Texture2D screenshot)
-    {
-        controllers.publicationDetailsController.SetPublicationScreenshot(screenshot);
-        controllers.newProjectDetailsController.SetPublicationScreenshot(screenshot);
-    }
-
-    public void PublishStart() { controllers.publicationDetailsController.SetActive(true); }
 
     public void ConfigureConfirmationModal(string title, string subTitle, string cancelButtonText, string confirmButtonText)
     {
@@ -269,76 +211,13 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
             confirmButtonText);
     }
 
-    internal void ConfirmPublicationDetails()
+    public void UnsuscribeFromEvents()
     {
         UnsubscribeConfirmationModal();
 
-        controllers.buildModeConfirmationModalController.OnCancelExit += CancelPublishModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit += ConfirmPublishModal;
-
-        ConfigureConfirmationModal(
-            BIWSettings.PUBLISH_MODAL_TITLE,
-            BIWSettings.PUBLISH_MODAL_SUBTITLE,
-            BIWSettings.PUBLISH_MODAL_CANCEL_BUTTON,
-            BIWSettings.PUBLISH_MODAL_CONFIRM_BUTTON);
-
-        controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.PUBLISH);
-        controllers.publicationDetailsController.SetActive(false);
-    }
-
-    internal void CancelPublicationDetails() { controllers.publicationDetailsController.SetActive(false); }
-
-    internal void CancelPublishModal(BuildModeModalType modalType)
-    {
-        if (modalType != BuildModeModalType.PUBLISH)
-            return;
-
-        controllers.buildModeConfirmationModalController.SetActive(false, BuildModeModalType.PUBLISH);
-        controllers.publicationDetailsController.SetActive(true);
-
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
-    }
-
-    internal void ConfirmPublishModal(BuildModeModalType modalType)
-    {
-        if (modalType != BuildModeModalType.PUBLISH)
-            return;
-
-        controllers.publishPopupController.PublishStart();
-
-        Texture2D sceneScreenshotTexture = controllers.publicationDetailsController.GetSceneScreenshotTexture();
-        string sceneName = controllers.publicationDetailsController.GetSceneName();
-        string sceneDescription = controllers.publicationDetailsController.GetSceneDescription();
-
-        OnConfirmPublishAction?.Invoke(
-            sceneName,
-            sceneDescription,
-            sceneScreenshotTexture != null ? Convert.ToBase64String(sceneScreenshotTexture.EncodeToJPG(90)) : "");
-
-        controllers.newProjectDetailsController.SetCustomPublicationInfo(sceneName, sceneDescription);
-
-        // NOTE (Santi): This is temporal until we implement the way of return the publish progress from the kernel side.
-        //               Meanwhile we will display a fake progress.
-        publishProgressCoroutine = CoroutineStarter.Start(FakePublishProgress());
-
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
-    }
-
-    private IEnumerator FakePublishProgress()
-    {
-        while (true)
-        {
-            float newPercentage = Mathf.Clamp(
-                controllers.publishPopupController.currentProgress + UnityEngine.Random.Range(10f, 30f),
-                controllers.publishPopupController.currentProgress,
-                99f);
-
-            controllers.publishPopupController.SetPercentage(newPercentage);
-
-            yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 0.5f));
-        }
+        controllers.newProjectDetailsController.OnNameAndDescriptionSet -= NameAndDescriptionOfNewProjectSet;
+        controllers.quickBarController.OnCatalogItemAssigned -= QuickBarCatalogItemAssigned;
+        OnLogoutAction -= controllers.saveHUDController.StopAnimation;
     }
 
     public void ExitStart()
@@ -362,8 +241,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
         controllers.buildModeConfirmationModalController.SetActive(false, BuildModeModalType.EXIT);
 
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
+        UnsubscribeConfirmationModal();
     }
 
     internal void ConfirmExitModal(BuildModeModalType modalType)
@@ -373,29 +251,13 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
         OnLogoutAction?.Invoke();
 
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
-
-        controllers.publicationDetailsController.SetDefaultPublicationInfo();
+        UnsubscribeConfirmationModal();
     }
 
     private void UnsubscribeConfirmationModal()
     {
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
         controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
-    }
-
-    public void PublishEnd(bool isOk, string message)
-    {
-        if (publishProgressCoroutine != null)
-        {
-            CoroutineStarter.Stop(publishProgressCoroutine);
-            publishProgressCoroutine = null;
-        }
-
-        controllers.publishPopupController.PublishEnd(isOk, message);
     }
 
     public void SetGizmosActive(string gizmos) { controllers.topActionsButtonsController.SetGizmosActive(gizmos); }
@@ -610,6 +472,9 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     public void Dispose()
     {
+        UnsuscribeFromEvents();
+        controllers.Dispose();
+
         if (view == null)
             return;
         else if (view.viewGO != null)

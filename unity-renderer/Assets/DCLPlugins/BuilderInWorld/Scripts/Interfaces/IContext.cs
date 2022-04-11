@@ -16,6 +16,7 @@ namespace DCL.Builder
         ISceneManager sceneManager  { get; }
         ICameraController cameraController { get; }
         IPublisher publisher { get; }
+        ICommonHUD commonHUD { get; }
 
         IEditorContext editorContext { get; }
 

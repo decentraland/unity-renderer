@@ -25,13 +25,32 @@ public interface IToggleComponentView
     /// </summary>
     /// <param name="newText">New text.</param>
     void SetText(string newText);
+
+    /// <summary>
+    /// Set toggle text active
+    /// </summary>
+    /// <param name="isActive">Is active</param>
+    void SetTextActive(bool isActive);
+
+    /// <summary>
+    /// Set the toggle clickable or not.
+    /// </summary>
+    /// <param name="isInteractable">Clickable or not</param>
+    void SetInteractable(bool isInteractable);
+
+    /// <summary>
+    /// Return if the toggle is Interactable or not
+    /// </summary>
+    bool IsInteractable();
 }
 
 public class ToggleComponentView : BaseComponentView, IToggleComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal Toggle toggle;
-    [SerializeField] internal TMP_Text toggleText;
+    [SerializeField] internal TMP_Text text;
+    [SerializeField] GameObject activeOn = null;
+    [SerializeField] GameObject activeOff = null;
 
     [Header("Configuration")]
     [SerializeField] internal ToggleComponentModel model;
@@ -62,7 +81,17 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
     {
         base.Awake();
 
-        toggle.onValueChanged.AddListener((isOn) => OnSelectedChanged?.Invoke(isOn, model.id));
+        toggle.onValueChanged.AddListener(ToggleChanged);
+    }
+
+    private void ToggleChanged(bool isOn) 
+    {
+        if (activeOn)
+            activeOn.gameObject.SetActive(isOn);
+        if (activeOff)
+            activeOff.gameObject.SetActive(!isOn);
+
+        OnSelectedChanged?.Invoke(isOn, model.id);
     }
 
     public void Configure(BaseComponentModel newModel)
@@ -79,6 +108,7 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
         id = model.id;
         isOn = model.isOn;
         SetText(model.text);
+        SetTextActive(model.isTextActive);
     }
 
     public void SetText(string newText)
@@ -96,5 +126,15 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
         base.Dispose();
 
         toggle.onValueChanged.RemoveAllListeners();
+    }
+
+    public bool IsInteractable() { return toggle.interactable; }
+
+    public void SetInteractable(bool isActive) { toggle.interactable = isActive; }
+
+    public void SetTextActive(bool isActive) 
+    {
+        model.isTextActive = isActive;
+        text.gameObject.SetActive(isActive); 
     }
 }

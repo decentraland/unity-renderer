@@ -172,6 +172,9 @@ GameObject:
   - component: {fileID: 2301796810483174894}
   - component: {fileID: 6401620611052284271}
   - component: {fileID: 1213314560233150275}
+  - component: {fileID: 6451314991274840061}
+  - component: {fileID: -106581607681190576}
+  - component: {fileID: -566327302672007162}
   m_Layer: 5
   m_Name: LoadingHUD
   m_TagString: Untagged
@@ -289,6 +292,7 @@ MonoBehaviour:
   loadingBar: {fileID: 7498085587953386697}
   tipsContainer: {fileID: 4568201519902229243}
   noTipsContainer: {fileID: 8568958695297546250}
+  showHideAnimator: {fileID: -106581607681190576}
 --- !u!114 &1213314560233150275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -319,6 +323,53 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!95 &6451314991274840061
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5243769655597236792}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &-106581607681190576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5243769655597236792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hideOnEnable: 0
+  animSpeedFactor: 0.5
+  disableAfterFadeOut: 0
+  visibleParam: visible
+--- !u!225 &-566327302672007162
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5243769655597236792}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5416458486735604532
 GameObject:
   m_ObjectHideFlags: 0

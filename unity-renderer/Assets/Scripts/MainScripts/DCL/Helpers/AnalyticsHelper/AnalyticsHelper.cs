@@ -11,7 +11,7 @@ public static class AnalyticsHelper
         string sceneId = Environment.i.world.state.currentSceneId;
         if (!string.IsNullOrEmpty(sceneId))
         {
-            analyticDict.Add("parcel", Environment.i.world.state.loadedScenes[sceneId].sceneData.basePosition.x + "," + Environment.i.world.state.loadedScenes[sceneId].sceneData.basePosition.y );
+            analyticDict.Add("base_parcel_position", Environment.i.world.state.loadedScenes[sceneId].sceneData.basePosition.x + "," + Environment.i.world.state.loadedScenes[sceneId].sceneData.basePosition.y );
             analyticDict.Add("scene", sceneId);
         }
     }

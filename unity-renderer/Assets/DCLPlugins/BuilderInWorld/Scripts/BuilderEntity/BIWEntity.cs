@@ -76,6 +76,8 @@ public class BIWEntity
         }
     }
 
+    public bool isLoaded { get; internal set; } = false;
+    
     public bool isVoxel { get; set; } = false;
 
     private CatalogItem associatedCatalogItem;
@@ -123,8 +125,12 @@ public class BIWEntity
         if (rootEntity.gameObject != null)
             isVisible = rootEntity.gameObject.activeSelf;
 
+        isLoaded = false;
         isShapeComponentSet = false;
         InitRotation();
+        
+        isFloor = IsEntityAFloor();
+        isNFT = IsEntityNFT();
 
         if (rootEntity.meshRootGameObject && rootEntity.meshesInfo.renderers.Length > 0)
         {
@@ -191,11 +197,11 @@ public class BIWEntity
         if (isInsideBoundariesError)
             isCurrentlyWithError = true;
 
-        bool hasErrorPreviously = hasError;
-        hasError = isCurrentlyWithError;
-
-        if (isCurrentlyWithError != hasErrorPreviously)
+        if (isCurrentlyWithError != hasError)
+        {
+            hasError = isCurrentlyWithError;
             OnErrorStatusChange?.Invoke(this);
+        }
     }
 
     public void SetEntityBoundariesError(bool isInsideBoundaries)
@@ -280,7 +286,7 @@ public class BIWEntity
     {
         foreach (List<GameObject> entityColliderGameObject in collidersGameObjectDictionary.Values)
         {
-            for (int i = entityColliderGameObject.Count - 1; i > 0; i--)
+            for (int i = 0; i < entityColliderGameObject.Count; i++)
             {
                 GameObject.Destroy(entityColliderGameObject[i]);
             }
@@ -409,9 +415,6 @@ public class BIWEntity
     {
         isShapeComponentSet = true;
 
-        isFloor = IsEntityAFloor();
-        isNFT = IsEntityNFT();
-
         CreateCollidersForEntity(rootEntity);
 
         if (isFloor)
@@ -438,6 +441,8 @@ public class BIWEntity
 
         DCL.Environment.i.world.sceneBoundsChecker.AddPersistent(rootEntity);
         SetEntityBoundariesError(DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(rootEntity));
+
+        isLoaded = true;
     }
 
     private void HandleAnimation()
@@ -680,6 +685,9 @@ public class BIWEntity
 
     public bool IsEntityNFT()
     {
+        if (rootEntity.sharedComponents == null)
+            return false;
+        
         foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in rootEntity.sharedComponents)
         {
             if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
@@ -689,9 +697,9 @@ public class BIWEntity
         return false;
     }
 
-    bool IsEntityAFloor() { return GetCatalogItemAssociated()?.category == BIWSettings.FLOOR_CATEGORY; }
+    private bool IsEntityAFloor() { return GetCatalogItemAssociated()?.category == BIWSettings.FLOOR_CATEGORY; }
 
-    bool IsEntityAVoxel()
+    private bool IsEntityAVoxel()
     {
         if (rootEntity.meshesInfo?.currentShape == null)
             return false;

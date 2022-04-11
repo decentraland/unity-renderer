@@ -1,91 +1,119 @@
 using NUnit.Framework;
+using UnityEngine;
 
 public class ToggleComponentViewTests
 {
-    private ToggleComponentView togggleComponent;
+    private ToggleComponentView toggleComponent;
 
     [SetUp]
     public void SetUp()
     {
-        togggleComponent = BaseComponentView.Create<ToggleComponentView>("Toggle_Checkbox");
+        toggleComponent = BaseComponentView.Create<ToggleComponentView>("Toggle_Capsule");
     }
 
     [TearDown]
     public void TearDown()
     {
-        togggleComponent.Dispose();
-    }
-
-    [Test]
-    public void ConfigureToggleCorrectly()
-    {
-        // Arrange
-        ToggleComponentModel testModel = new ToggleComponentModel
-        {
-            id = "1",
-            text = "Test",
-            isOn = true
-        };
-
-        // Act
-        togggleComponent.Configure(testModel);
-
-        // Assert
-        Assert.AreEqual(testModel, togggleComponent.model, "The model does not match after configuring the toggle.");
-    }
-
-    [Test]
-    public void SetToggleTextCorrectly()
-    {
-        // Arrange
-        string testText = "Test";
-
-        // Act
-        togggleComponent.SetText(testText);
-
-        // Assert
-        Assert.AreEqual(testText, togggleComponent.model.text, "The text does not match in the model.");
-        Assert.AreEqual(testText, togggleComponent.toggleText.text, "The toggle text does not match.");
+        toggleComponent.Dispose();
     }
 
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void SetToggleOnOffCorrectly(bool isOn)
+    public void SetOnChanged(bool setOn)
     {
         // Arrange
-        string testId = "Test";
-        togggleComponent.isOn = !isOn;
-        togggleComponent.id = testId;
-
-        bool isOnConfirmation = !isOn;
-        string changedId = "";
-        togggleComponent.OnSelectedChanged += (isOn, id) =>
-        {
-            isOnConfirmation = isOn;
-            changedId = id;
-        };
+        bool isOn = !setOn;
+        toggleComponent.onToggleChange.AddListener((isToggleOn) => isOn = isToggleOn);
 
         // Act
-        togggleComponent.isOn = isOn;
+        toggleComponent.toggle.onValueChanged.Invoke(setOn);
 
         // Assert
-        Assert.AreEqual(isOn, togggleComponent.model.isOn, "The isOn property does not match in the model.");
-        Assert.AreEqual(isOn, togggleComponent.toggle.isOn, "The toggle isOn status does not match.");
-        Assert.AreEqual(isOn, isOnConfirmation);
-        Assert.AreEqual(testId, changedId);
+        Assert.AreEqual(isOn, setOn, "The toggle has not responded to the onToggleChange action.");
     }
 
     [Test]
-    public void SetToggleIdCorrectly()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ConfigureToggle(bool isTextActive)
     {
         // Arrange
-        string testId = "123";
+        ToggleComponentModel testModel = new ToggleComponentModel
+        {
+            text = "Test",
+            isTextActive = isTextActive
+        };
 
         // Act
-        togggleComponent.id = testId;
+        toggleComponent.Configure(testModel);
 
         // Assert
-        Assert.AreEqual(testId, togggleComponent.model.id, "The id property does not match in the model.");
+        Assert.AreEqual(toggleComponent.text.gameObject.activeInHierarchy, isTextActive);
+        Assert.AreEqual(testModel, toggleComponent.model, "The model does not match after configuring the toggle.");
+    }
+
+    [Test]
+    public void SetToggleText()
+    {
+        // Arrange
+        string testText = "Test";
+
+        // Act
+        toggleComponent.SetText(testText);
+
+        // Assert
+        Assert.AreEqual(testText, toggleComponent.model.text, "The text does not match in the model.");
+        Assert.AreEqual(testText, toggleComponent.text.text, "The toggle text does not match.");
+    }
+
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RefreshComponent(bool isTextActive)
+    {
+        // Arrange
+        ToggleComponentModel testModel = new ToggleComponentModel
+        {
+            text = "Test",
+            isTextActive = isTextActive
+        };
+
+        // Act
+        toggleComponent.Configure(testModel);
+        toggleComponent.model.text = "Test2";
+        toggleComponent.model.isTextActive = !toggleComponent.model.isTextActive;
+        toggleComponent.RefreshControl();
+
+        // Assert
+        Assert.AreEqual(toggleComponent.text.gameObject.activeInHierarchy, !isTextActive, "The text active field does not match after the refresh.");
+        Assert.AreEqual(toggleComponent.text.text, "Test2", "The text does not match after the refresh.");
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetTextActive(bool isTextActive) 
+    {
+        // Act
+        toggleComponent.SetTextActive(isTextActive);
+
+        // Assert
+        Assert.AreEqual(isTextActive, toggleComponent.model.isTextActive, "The text active does not match in the model.");
+        Assert.AreEqual(isTextActive, toggleComponent.text.gameObject.activeInHierarchy, "The text gameobject active does not match.");
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetInteractable(bool isInteractable)
+    {
+        // Act
+        toggleComponent.SetInteractable(isInteractable);
+
+        // Assert
+        Assert.AreEqual(isInteractable, toggleComponent.toggle.interactable, "The toggle interactable field does not match");
+        Assert.AreEqual(isInteractable, toggleComponent.IsInteractable(), "The toggle Is Interactable method does not match");
     }
 }

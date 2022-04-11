@@ -83,7 +83,7 @@ namespace DCL
                 gltfComponent.Initialize(webRequestController, AssetPromiseKeeper_GLTF.i.throttlingCounter);
                 gltfComponent.RegisterCallbacks(MeshCreated, RendererCreated);
 
-                GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
+                GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings
                 {
                     useVisualFeedback = settings.visibleFlags ==
                                         AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION,
@@ -107,6 +107,10 @@ namespace DCL
                             MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
                         asset.materials = MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers);
                         asset.textures = MeshesInfoUtils.ExtractUniqueTextures(asset.materials);
+                        asset.animationClipSize = gltfComponent.GetAnimationClipMemorySize();
+                        asset.meshDataSize = gltfComponent.GetMeshesMemorySize();
+                        var animations = MeshesInfoUtils.ExtractUniqueAnimations(asset.container);
+                        asset.animationClips = MeshesInfoUtils.ExtractUniqueAnimationClips(animations);
                     }
 
                     OnSuccess.Invoke();
