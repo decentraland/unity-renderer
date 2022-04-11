@@ -39,10 +39,10 @@ namespace DCL.Controllers
                 {
                     while (iterator.MoveNext())
                     {
-                        if (IsEntityVisible(iterator.Current))
-                        {
+                        bool isEntityVisible = IsEntityVisible(iterator.Current);
+
+                        if (isEntityVisible)
                             return true;
-                        }
                     }
                 }
             }
