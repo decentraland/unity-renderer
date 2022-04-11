@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL;
 using UnityEngine;
 
 namespace NFTShape_Internal
@@ -7,7 +8,6 @@ namespace NFTShape_Internal
     {
         public string name;
         public string imageUrl;
-        public NFTShapeConfig nftShapeConfig;
         public NFTShapeLoaderController controller;
         public INFTAsset asset;
     }
@@ -49,10 +49,12 @@ namespace NFTShape_Internal
             if (!isPlayerNear)
                 return;
 
+            var config = DataStore.i.Get<DataStore_NFTShape>();
+
             isCameraInFront = camera == null ||
                               Vector3.Dot(nftControllerT.forward,
                                   nftControllerT.position - camera.transform.position)
-                              > hqImageConfig.nftShapeConfig.hqImgInFrontDotProdMinValue;
+                              > config.hqImgInFrontDotProdMinValue;
 
             if (VERBOSE)
             {
@@ -67,7 +69,7 @@ namespace NFTShape_Internal
 
             isPlayerLooking = camera == null ||
                               Vector3.Dot(nftControllerT.forward, camera.transform.forward) >=
-                              hqImageConfig.nftShapeConfig.hqImgFacingDotProdMinValue;
+                              config.hqImgFacingDotProdMinValue;
 
             if (VERBOSE)
             {
@@ -103,9 +105,11 @@ namespace NFTShape_Internal
             if (hqImageConfig.controller == null || hqImageConfig.controller.collider == null)
                 return;
 
+            var config = DataStore.i.Get<DataStore_NFTShape>();
+
             isPlayerNear = ((current - hqImageConfig.controller.collider.ClosestPoint(current)).sqrMagnitude
-                            <= (hqImageConfig.nftShapeConfig.hqImgMinDistance *
-                                hqImageConfig.nftShapeConfig.hqImgMinDistance));
+                            <= (config.hqImgMinDistance *
+                                config.hqImgMinDistance));
 
             if (!isPlayerNear)
             {

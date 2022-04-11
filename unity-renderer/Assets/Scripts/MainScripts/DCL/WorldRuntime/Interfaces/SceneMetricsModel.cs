@@ -1,7 +1,10 @@
-﻿namespace DCL
+﻿using System;
+using UnityEngine;
+
+namespace DCL
 {
     [System.Serializable]
-    public class SceneMetricsModel
+    public class SceneMetricsModel: IEquatable<SceneMetricsModel>
     {
         public int meshes;
         public int bodies;
@@ -11,12 +14,32 @@
         public int entities;
         public float sceneHeight;
 
-        public long textureMemory;
-        public long meshMemory;
-        public long audioClipMemory;
-        public long animationClipMemory;
+        public long textureMemoryScore;
+        public long meshMemoryScore;
+        public long audioClipMemoryScore;
+        public long animationClipMemoryScore;
+
+        public long textureMemoryProfiler;
+        public long meshMemoryProfiler;
+        public long audioClipMemoryProfiler;
+        public long animationClipMemoryProfiler;
+
+        public long totalMemoryScore =>
+            textureMemoryScore + meshMemoryScore + audioClipMemoryScore + animationClipMemoryScore;
+
+        public long totalMemoryProfiler =>
+            textureMemoryProfiler + meshMemoryProfiler + audioClipMemoryProfiler + animationClipMemoryProfiler;
 
         public SceneMetricsModel Clone() { return (SceneMetricsModel) MemberwiseClone(); }
+
+        public bool Equals(SceneMetricsModel obj)
+        {
+            if (obj == null)
+                return false;
+
+            return obj.meshes == meshes && obj.bodies == bodies && obj.materials == materials &&
+                   obj.textures == textures && obj.triangles == triangles && obj.entities == entities && Mathf.Abs(obj.sceneHeight - sceneHeight) < 0.001f;
+        }
 
         public static bool operator >(SceneMetricsModel lhs, SceneMetricsModel rhs)
         {
@@ -43,6 +66,14 @@
             result.textures -= rhs.textures;
             result.meshes -= rhs.meshes;
             result.triangles -= rhs.triangles;
+            result.meshMemoryScore -= rhs.meshMemoryScore;
+            result.textureMemoryScore -= rhs.textureMemoryScore;
+            result.animationClipMemoryScore -= rhs.animationClipMemoryScore;
+            result.audioClipMemoryScore -= rhs.audioClipMemoryScore;
+            result.meshMemoryProfiler -= rhs.meshMemoryProfiler;
+            result.textureMemoryProfiler -= rhs.textureMemoryProfiler;
+            result.animationClipMemoryProfiler -= rhs.animationClipMemoryProfiler;
+            result.audioClipMemoryProfiler -= rhs.audioClipMemoryProfiler;
             return result;
         }
 
@@ -55,6 +86,14 @@
             result.textures += rhs.textures;
             result.meshes += rhs.meshes;
             result.triangles += rhs.triangles;
+            result.meshMemoryScore += rhs.meshMemoryScore;
+            result.textureMemoryScore += rhs.textureMemoryScore;
+            result.animationClipMemoryScore += rhs.animationClipMemoryScore;
+            result.audioClipMemoryScore += rhs.audioClipMemoryScore;
+            result.meshMemoryProfiler += rhs.meshMemoryProfiler;
+            result.textureMemoryProfiler += rhs.textureMemoryProfiler;
+            result.animationClipMemoryProfiler += rhs.animationClipMemoryProfiler;
+            result.audioClipMemoryProfiler += rhs.audioClipMemoryProfiler;
             return result;
         }
 
@@ -63,16 +102,16 @@
             string result = "";
 
             result += $"Textures: {textures}";
-            result += $"- Texture Memory: {textureMemory}";
             result += $"- Triangles: {triangles}";
-            result += $"- Mesh Memory: {meshMemory}";
-            result += $"- Materials: {materials}";
             result += $"- Meshes: {meshes}";
-            result += $"- Bodies: {bodies}";
+            result += $"- Materials: {materials}";
             result += $"- Entities: {entities}";
+            result += $"- Bodies: {bodies}";
             result += $"- Scene Height: {sceneHeight}";
-            result += $"- Audio Memory: {audioClipMemory}";
-            result += $"- Animation Memory: {animationClipMemory}";
+            result += $"- Mesh Memory: {meshMemoryScore}";
+            result += $"- Texture Memory: {textureMemoryScore}";
+            result += $"- Audio Memory: {audioClipMemoryScore}";
+            result += $"- Animation Memory: {animationClipMemoryScore}";
 
             return result;
         }

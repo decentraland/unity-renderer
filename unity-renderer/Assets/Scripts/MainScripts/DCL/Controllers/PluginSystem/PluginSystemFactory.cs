@@ -1,7 +1,11 @@
+using AvatarSystem;
 using DCL.Emotes;
-using DCL.Tutorial;
-using DCL.Skybox;
+using DCL.EmotesCustomization;
+using DCL.EmotesWheel;
+using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
+using DCL.Skybox;
+using DCL.Tutorial;
 
 namespace DCL
 {
@@ -10,6 +14,9 @@ namespace DCL
         public static PluginSystem Create()
         {
             var pluginSystem = new PluginSystem();
+
+            // Ideally the Plugin class itself should be a really small entry point with a parameterless constructor
+            // the heavy lifting should be done by another class (following the Humble Object Pattern)
 
             pluginSystem.Register(() => new DebugPluginFeature());
             pluginSystem.Register(() => new ShortcutsFeature());
@@ -20,7 +27,11 @@ namespace DCL
             pluginSystem.Register(() => new SkyboxController());
             pluginSystem.Register(() => new GotoPanelPlugin());
             pluginSystem.Register(() => new ExperiencesViewerFeature());
-            pluginSystem.Register(() => new EmoteAnimationsPlugin(DataStore.i.emotes));
+            pluginSystem.Register(() => new EmoteAnimationsPlugin());
+            pluginSystem.Register(() => new EquippedEmotesInitializerPlugin());
+            pluginSystem.Register(() => new EmotesWheelUIPlugin());
+            pluginSystem.Register(() => new NFTShapePlugin());
+            pluginSystem.Register(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.RegisterWithFlag(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag(() => new PlacesAndEventsFeature(), "explorev2");

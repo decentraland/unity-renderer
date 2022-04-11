@@ -6,7 +6,8 @@ using UnityEngine;
 
 public abstract class BIWController : IBIWController
 {
-    internal ParcelScene sceneToEdit;
+    internal IParcelScene sceneToEdit;
+    internal IBuilderScene builderScene;
 
     protected bool isEditModeActive = false;
     protected IContext context;
@@ -16,9 +17,10 @@ public abstract class BIWController : IBIWController
         isEditModeActive = false;
     }
 
-    public virtual void EnterEditMode(IParcelScene scene)
+    public virtual void EnterEditMode(IBuilderScene scene)
     {
-        this.sceneToEdit = (ParcelScene)scene;
+        builderScene = scene;
+        sceneToEdit = builderScene.scene;
         isEditModeActive = true;
     }
 

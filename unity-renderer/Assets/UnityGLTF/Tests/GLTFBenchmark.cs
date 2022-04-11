@@ -46,7 +46,7 @@ public class GLTFBenchmark : MonoBehaviour
         GameObject gameObject = new GameObject("Test");
         lastGameObjectCreated = gameObject;
         GLTFComponent gltfComponent = gameObject.AddComponent<GLTFComponent>();
-        gltfComponent.Initialize(DCL.Environment.i.platform.webRequest);
+        gltfComponent.Initialize(DCL.Environment.i.platform.webRequest, gltfThrottlingCounter);
         GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
         {
             useVisualFeedback = false,

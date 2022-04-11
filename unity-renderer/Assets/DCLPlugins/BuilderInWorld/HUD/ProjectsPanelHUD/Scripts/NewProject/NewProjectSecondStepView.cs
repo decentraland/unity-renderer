@@ -40,7 +40,10 @@ namespace DCL.Builder
             base.Start();
 
             rowsInputField.OnInputChange += RowsChanged;
+            rowsInputField.OnInputLostFocus += RowsInputLostFocus;
+            
             columsInputField.OnInputChange += ColumnsChanged;
+            columsInputField.OnInputLostFocus += ColumnsInputLostFocus;
 
             backButton.onClick.AddListener(BackPressed);
             nextButton.onClick.AddListener(NextPressed);
@@ -49,34 +52,72 @@ namespace DCL.Builder
 
         public override void RefreshControl() {  }
 
+        internal void RowsInputLostFocus()
+        {
+            if (!string.IsNullOrEmpty(rowsInputField.GetValue()))
+                return;
+            
+            rows = 1;
+            rowsInputField.SetText(rows.ToString());
+            ValueChanged(rowsInputField);
+        }   
+        
+        internal void ColumnsInputLostFocus()
+        {
+            if (!string.IsNullOrEmpty(columsInputField.GetValue()))
+                return;
+            
+            colums = 1;
+            columsInputField.SetText(colums.ToString());
+            ValueChanged(columsInputField);
+        }
+
         internal void RowsChanged(string value)
         {
             //We ensure that the minimum size of the row is 1
             if (string.IsNullOrEmpty(value) || value == "0")
+            {
+                if(rowsInputField.HasFocus())
+                    return;
                 rows = 1;
+                rowsInputField.SetText(rows.ToString());
+            }
             else
+            {
                 rows = Mathf.Abs(Int32.Parse(value));
-            ValueChanged();
+            }
+            ValueChanged(rowsInputField);
         }
 
         internal void ColumnsChanged(string value)
         {
             //We ensure that the minimum size of the column is 1
             if (string.IsNullOrEmpty(value) || value == "0")
+            {
+                if(columsInputField.HasFocus())
+                    return;
                 colums = 1;
+                columsInputField.SetText(colums.ToString());
+            }
             else
+            {
                 colums = Mathf.Abs(Int32.Parse(value));
-            ValueChanged();
+            }
+            ValueChanged(columsInputField);
         }
 
-        private void ValueChanged()
+        private void ValueChanged(LimitInputField origin)
         {
             if (rows * colums > MAX_PARCELS)
             {
                 ShowError();
+                origin.SetError();
             }
             else
             {
+                columsInputField.InputAvailable();
+                rowsInputField.InputAvailable();
+                
                 gridModel.constraintCount = rows;
                 gridView.SetItems(parcelImagePrefab, rows * colums);
                 gridView.Configure(gridModel);
@@ -86,6 +127,7 @@ namespace DCL.Builder
 
         internal void ShowError()
         {
+            nextButton.SetInteractable(false);
             errorGameObject.SetActive(true);
             gridGameObject.SetActive(false);
 
@@ -96,6 +138,7 @@ namespace DCL.Builder
 
         internal void ShowGrid()
         {
+            nextButton.SetInteractable(true);
             errorGameObject.SetActive(false);
             gridGameObject.SetActive(true);
 

@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Builder;
 using DCL.Configuration;
 using UnityEngine;
@@ -97,7 +98,11 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
         return 0;
     }
 
-    public void OnEndDrag() { activeAxis?.SetColorDefault(); }
+    public void OnEndDrag()
+    {
+        Environment.i.platform.physicsSyncController.MarkDirty();
+        activeAxis?.SetColorDefault();
+    }
 
     public virtual bool RaycastHit(Ray ray, out Vector3 hitPoint)
     {

@@ -17,7 +17,7 @@ namespace DCL.Builder
         private readonly SectionPlacesView view;
 
         private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
-        private Dictionary<string, ISceneCardView> scenesViews;
+        private Dictionary<string, ISceneCardView> scenesViews = new Dictionary<string, ISceneCardView>();
 
         public SectionScenesController() : this(
             Object.Instantiate(Resources.Load<SectionPlacesView>(VIEW_PREFAB_PATH))
@@ -39,7 +39,27 @@ namespace DCL.Builder
             view.Dispose();
         }
 
-        protected override void OnShow() { view.SetActive(true); }
+        protected override void OnShow()
+        {
+            view.SetActive(true);
+            if (scenesViews != null && scenesViews.Count == 0)
+            {
+                if (isLoading)
+                {
+                    view.SetLoading();
+                    OnNotEmptyContent?.Invoke();
+                }
+                else
+                {
+                    view.SetEmpty();
+                    OnEmptyContent?.Invoke();
+                }
+            }
+            else
+            {
+                OnNotEmptyContent?.Invoke();
+            }
+        }
 
         protected override void OnHide() { view.SetActive(false); }
 
@@ -63,7 +83,7 @@ namespace DCL.Builder
 
         private void OnSearchResult(List<ISearchInfo> searchInfoScenes)
         {
-            if (scenesViews == null)
+            if (scenesViews == null || searchInfoScenes == null)
                 return;
 
             using (var iterator = scenesViews.GetEnumerator())
@@ -89,19 +109,23 @@ namespace DCL.Builder
                 if (isLoading)
                 {
                     view.SetLoading();
+                    OnNotEmptyContent?.Invoke();
                 }
                 else
                 {
                     view.SetEmpty();
+                    OnEmptyContent?.Invoke();
                 }
             }
             else if (searchInfoScenes.Count == 0)
             {
                 view.SetNoSearchResult();
+                OnNotEmptyContent?.Invoke();
             }
             else
             {
                 view.SetFilled();
+                OnNotEmptyContent?.Invoke();
             }
         }
     }

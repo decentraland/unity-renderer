@@ -192,7 +192,7 @@ namespace DCL.Builder
             if (!isFloor)
                 CreateLoadingObject(entity);
 
-            entity.rootEntity.OnShapeUpdated += (entity) => onFloorLoadedAction?.Invoke(entity);
+            entity.rootEntity.OnShapeLoaded += (entity) => onFloorLoadedAction?.Invoke(entity);
 
             AddShape(catalogItem, entity);
             AddEntityNameComponent(catalogItem, entity);

@@ -44,7 +44,8 @@ public class WebSocketCommunication : IKernelCommunication
                         ServerCertificate = CertificateUtils.CreateSelfSignedCert(),
                         ClientCertificateRequired = false,
                         CheckCertificateRevocation = false,
-                        ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                        ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
+                        EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 
                     },
                     KeepClean = false
                 };
@@ -144,6 +145,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["ClearBots"] = "Main";
         messageTypeToBridgeName["ToggleSceneBoundingBoxes"] = "Main";
         messageTypeToBridgeName["TogglePreviewMenu"] = "Main";
+        messageTypeToBridgeName["ToggleSceneSpawnPoints"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 

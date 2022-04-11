@@ -95,6 +95,9 @@ public class TopActionsButtonsController : ITopActionsButtonsController
 
     public void Dispose()
     {
+        if(topActionsButtonsView == null)
+            return;
+        
         topActionsButtonsView.OnChangeModeClicked -= ChangeModeClicked;
         topActionsButtonsView.OnExtraClicked -= ExtraClicked;
         topActionsButtonsView.OnTranslateClicked -= TranslateClicked;

@@ -10,7 +10,7 @@ namespace DCL.Builder
     {
         public string id;
         public List<string> components = new List<string>();
-        public bool disableGizmos;
+        public bool disableGizmos = false;
         public string name;
     }
 }

@@ -12,12 +12,12 @@ public class WithAudioClip_SceneMetricsCounterShould : IntegrationTestSuite_Scen
         var entity = CreateEntityWithTransform();
         yield return TestUtils.CreateAudioSourceWithClipForEntity(entity);
 
-        Assert.That(scene.metricsCounter.currentCount.audioClipMemory, Is.EqualTo(5117752));
+        Assert.That(scene.metricsCounter.currentCount.audioClipMemoryScore, Is.EqualTo(2560376));
 
         var audioClip = scene.GetSharedComponent("audioClipTest");
         audioClip.Dispose();
 
-        Assert.That(scene.metricsCounter.currentCount.audioClipMemory, Is.EqualTo(0));
+        Assert.That(scene.metricsCounter.currentCount.audioClipMemoryScore, Is.EqualTo(0));
 
         yield return null;
     }

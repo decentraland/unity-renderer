@@ -31,6 +31,8 @@ namespace DCL.Controllers
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);
         void CalculateSceneLoadingState();
         void GetWaitingComponentsDebugInfo();
+        void SetEntityParent(string entityId, string parentId);
+        void RemoveEntity(string id, bool removeImmediatelyFromEntitiesList = true);
         IEntityComponent EntityComponentCreateOrUpdateWithModel(string entityId, CLASS_ID_COMPONENT classId, object data);
     }
 }

@@ -61,5 +61,27 @@ namespace DCL
                 yield return coroutine;
             }
         }
+
+        /// <summary>
+        /// There are some cases when we need to run a coroutine syncronously for some editor scripts so we use this
+        /// </summary>
+        /// <param name="coroutine"></param>
+        public static void RunCoroutineSync(IEnumerator coroutine)
+        {
+            var stack = new Stack<IEnumerator>();
+            stack.Push(coroutine);
+            while (stack.Count > 0)
+            {
+                var enumerator = stack.Pop();
+                if (enumerator.MoveNext())
+                {
+                    stack.Push(enumerator);
+                    if (enumerator.Current is IEnumerator subEnumerator)
+                    {
+                        stack.Push(subEnumerator);
+                    }
+                }
+            }
+        }
     }
 }
