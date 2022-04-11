@@ -852,7 +852,11 @@ public class AvatarEditorHUDController : IHUD
                 view.BlockCollectionsDropdown(false);
                 LoadUserProfile(userProfile, true);
             })
-            .Catch(Debug.LogError);
+            .Catch((error) =>
+            {
+                view.BlockCollectionsDropdown(false);
+                Debug.LogError(error);
+            });
     }
 
     private bool ShouldShowHideOtherWearablesToast(WearableItem wearable)

@@ -115,10 +115,10 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
     {
         model.text = newText;
 
-        if (toggleText == null)
+        if (text == null)
             return;
 
-        toggleText.text = newText;
+        text.text = newText;
     }
 
     public override void Dispose()

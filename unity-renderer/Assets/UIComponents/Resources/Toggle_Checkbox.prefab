@@ -146,17 +146,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 525420787284409780}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1c26ddaadeb1114eb631e39dd7911f8, type: 3}
+  m_Script: {fileID: 11500000, guid: 49868df02d62a428c8aa5b2dd1a1ce20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 8448182982039922279}
-  toggleText: {fileID: 3005862737368832046}
-  selectedMark: {fileID: 5911642011196046217}
+  text: {fileID: 3005862737368832046}
+  activeOn: {fileID: 0}
+  activeOff: {fileID: 0}
   model:
     isOn: 1
     text: Text
     id: 
-    showSelectedMark: 1
+    isTextActive: 1
 --- !u!1 &582205753242044301
 GameObject:
   m_ObjectHideFlags: 0
