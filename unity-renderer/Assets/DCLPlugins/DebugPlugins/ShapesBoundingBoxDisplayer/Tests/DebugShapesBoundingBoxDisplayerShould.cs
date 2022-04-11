@@ -163,7 +163,7 @@ namespace Tests
         public IEnumerator RemoveAllWireframesCorrectlyWhenFeatureIsDisabled()
         {
             var scene = CreateAndAddScene("entityId25");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            isBoundingBoxEnabledVariable.AddOrSet("2", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
@@ -187,7 +187,7 @@ namespace Tests
             Assert.AreEqual(sceneEntities.Length + 1, allWireframes);
 
             // Disable feature for scene
-            isBoundingBoxEnabledVariable.AddOrSet("entityId25", false);
+            isBoundingBoxEnabledVariable.AddOrSet("2", false);
 
             // wait a frame for Object.Destroy
             yield return null;
@@ -202,7 +202,7 @@ namespace Tests
         public IEnumerator RemoveAllWireframesCorrectlyWhenSceneIsDestroyed()
         {
             var scene = CreateAndAddScene("entityId3");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            isBoundingBoxEnabledVariable.AddOrSet("2", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
@@ -241,7 +241,7 @@ namespace Tests
         public IEnumerator RemoveAllWireframesCorrectlyOnControllerDisposed()
         {
             var scene = CreateAndAddScene("2");
-            isBoundingBoxEnabledVariable.AddOrSet("entityId", true);
+            isBoundingBoxEnabledVariable.AddOrSet("2", true);
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
@@ -301,7 +301,7 @@ namespace Tests
         private IDCLEntity CreateEntityWithoutShape(string id)
         {
             IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns(entityId);
+            entity.entityId.Returns(id.GetHashCode());
 
             var gameObject = new GameObject(id);
             entity.gameObject.Returns(gameObject);
