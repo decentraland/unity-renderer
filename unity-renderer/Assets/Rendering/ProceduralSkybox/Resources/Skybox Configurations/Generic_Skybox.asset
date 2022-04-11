@@ -484,7 +484,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 0
-    renderType: 1
+    renderType: 0
     layerType: 1
     enabled: 1
     nameInEditor: Stars
@@ -564,7 +564,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 1
-    renderType: 0
+    renderType: 1
     layerType: 2
     enabled: 1
     nameInEditor: Big Sun
@@ -734,7 +734,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 1
-    renderType: 1
+    renderType: 0
     layerType: 2
     enabled: 1
     nameInEditor: Moon
@@ -1067,12 +1067,12 @@ MonoBehaviour:
   satelliteLayer:
     satellite: {fileID: 6438672508873746031, guid: 0c8c9997b5c986d45b555c1da35e5c4d,
       type: 3}
-    satelliteSize: 5
+    satelliteSize: 10
     radius: 10
-    initialAngle: 102
-    horizonPlaneRotation: 90
-    inclination: 0
-    movementSpeed: 0
+    initialAngle: 267
+    horizonPlaneRotation: 98
+    inclination: 25
+    movementSpeed: 20
     satelliteRotation: 1
     fixedRotation: {x: 0, y: 0, z: 0}
     rotateAroundAxis: {x: 0, y: 0, z: 0}

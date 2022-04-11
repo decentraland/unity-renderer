@@ -545,6 +545,8 @@ namespace DCL.Skybox
 
         public float GetCurrentTimeOfTheDay() { return (float)timeOfTheDay; }
 
+        public SkyboxGameobjectsPool GetSkybox3DElements() { return skybox3DElements; }
+
         public bool SetOverrideController(bool editorOveride)
         {
             overrideByEditor = editorOveride;

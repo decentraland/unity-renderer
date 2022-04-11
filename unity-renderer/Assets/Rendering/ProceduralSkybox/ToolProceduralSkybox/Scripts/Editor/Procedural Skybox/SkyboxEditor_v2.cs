@@ -588,6 +588,7 @@ namespace DCL.Skybox
                 selectedConfiguration = SkyboxController.i.GetCurrentConfiguration();
                 overridingController = SkyboxController.i.SetOverrideController(true);
                 timeOfTheDay = SkyboxController.i.GetCurrentTimeOfTheDay();
+                skyboxObjects = SkyboxController.i.GetSkybox3DElements();
                 UpdateConfigurationsList();
             }
         }
@@ -674,6 +675,21 @@ namespace DCL.Skybox
             if (Application.isPlaying && SkyboxController.i != null)
             {
                 SkyboxController.i.ApplyAvatarColor(SkyboxEditorUtils.GetNormalizedDayTime(timeOfTheDay));
+            }
+        }
+
+        private void OnDestroy()
+        {
+            // If in play mode and editor is closed
+            // Transfer control back to skybox controller with the new values in the editor
+            if (SkyboxController.i == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying && SkyboxController.i != null)
+            {
+                overridingController = SkyboxController.i.GetControlBackFromEditor(selectedConfiguration.name, timeOfTheDay, lifecycleDuration, isPaused);
             }
         }
     }
