@@ -734,7 +734,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 1
-    renderType: 0
+    renderType: 1
     layerType: 2
     enabled: 1
     nameInEditor: Moon
@@ -1065,15 +1065,18 @@ MonoBehaviour:
     endTime: 8
     isTrigger: 0
   satelliteLayer:
+    nameInEditor: Satellite
+    timeSpan_start: 0
+    timeSpan_End: 24
     satellite: {fileID: 6438672508873746031, guid: 0c8c9997b5c986d45b555c1da35e5c4d,
       type: 3}
-    satelliteSize: 10
+    satelliteSize: 5
     radius: 10
-    initialAngle: 267
+    initialAngle: 0
     horizonPlaneRotation: 98
-    inclination: 25
-    movementSpeed: 20
-    satelliteRotation: 1
-    fixedRotation: {x: 0, y: 0, z: 0}
-    rotateAroundAxis: {x: 0, y: 0, z: 0}
+    inclination: 0
+    movementSpeed: 60
+    satelliteRotation: 0
+    fixedRotation: {x: 0, y: 90, z: 0}
+    rotateAroundAxis: {x: 1, y: 1, z: 0}
     rotateSpeed: 50

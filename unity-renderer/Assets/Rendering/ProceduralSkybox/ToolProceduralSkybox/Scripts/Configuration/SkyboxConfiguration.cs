@@ -78,7 +78,7 @@ namespace DCL.Skybox
                 return;
             }
 
-            satelliteRef.satelliteBehavior.AssignValues(satelliteLayer.satelliteSize, satelliteLayer.radius, satelliteLayer.initialAngle, satelliteLayer.horizonPlaneRotation, satelliteLayer.inclination, satelliteLayer.movementSpeed, satelliteLayer.satelliteRotation, satelliteLayer.fixedRotation, satelliteLayer.rotateAroundAxis, satelliteLayer.rotateSpeed, dayTime);
+            satelliteRef.satelliteBehavior.AssignValues(satelliteLayer.timeSpan_start, satelliteLayer.timeSpan_End, satelliteLayer.satelliteSize, satelliteLayer.radius, satelliteLayer.initialAngle, satelliteLayer.horizonPlaneRotation, satelliteLayer.inclination, satelliteLayer.movementSpeed, satelliteLayer.satelliteRotation, satelliteLayer.fixedRotation, satelliteLayer.rotateAroundAxis, satelliteLayer.rotateSpeed, dayTime, cycleTime);
         }
 
         public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, Light directionalLightGO = null, float cycleTime = 24)

@@ -7,6 +7,10 @@ namespace DCL.Skybox
     [System.Serializable]
     public class Satellite3DLayer
     {
+        public string nameInEditor;
+        public float timeSpan_start;
+        public float timeSpan_End;
+
         // Satellite orbit properties
         public GameObject satellite;
         public float satelliteSize = 25;
@@ -24,5 +28,12 @@ namespace DCL.Skybox
         public Vector3 fixedRotation = Vector3.zero;
         public Vector3 rotateAroundAxis = Vector3.zero;
         public float rotateSpeed = 25;
+
+        public Satellite3DLayer(string name = "Noname")
+        {
+            nameInEditor = name;
+            timeSpan_start = 0;
+            timeSpan_End = 24;
+        }
     }
 }

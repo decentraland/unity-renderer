@@ -9,6 +9,8 @@ namespace DCL.Skybox
 
     public class SatelliteLayerBehavior : MonoBehaviour
     {
+        public float timeSpan_start = 0;
+        public float timeSpan_end = 24;
         public Transform followTarget;
         public GameObject satelliteOrbit;
         public GameObject satellite;
@@ -23,7 +25,7 @@ namespace DCL.Skybox
         public float inclination = 0;
 
         public bool startMovement;
-        public float movementSpeed;
+        public float movementSpeed;             // speed in degree/hr (virtual hour)
 
         [Header("Satellite Properties")]
         public RotationType satelliteRotation;
@@ -31,32 +33,8 @@ namespace DCL.Skybox
         public Vector3 rotateAroundAxis;
         public float rotateSpeed;
 
-        float currentAngle;
-        float timeOfTheDay;
-
-        private void Update()
-        {
-            UpdateRotation();
-
-            // Start rotating
-            UpdateMovement();
-        }
-
-        public void UpdateMovement()
-        {
-            if (!startMovement)
-            {
-                return;
-            }
-            currentAngle += movementSpeed * Time.deltaTime;
-
-            if (currentAngle > 360)
-            {
-                currentAngle = 0;
-            }
-            initialAngle = currentAngle;
-            satellite.transform.localPosition = GetSatellitePosition(radius, currentAngle);
-        }
+        private float currentAngle;
+        private float cycleTime = 24;
 
         public void UpdateRotation()
         {
@@ -85,8 +63,10 @@ namespace DCL.Skybox
             }
         }
 
-        internal void AssignValues(float satelliteSize, float radius, float initialAngle, float horizonPlaneRotation, float inclination, float movementSpeed, RotationType satelliteRotation, Vector3 fixedRotation, Vector3 rotateAroundAxis, float rotateSpeed, float timeOfTheDay)
+        internal void AssignValues(float inTime, float outTime, float satelliteSize, float radius, float initialAngle, float horizonPlaneRotation, float inclination, float movementSpeed, RotationType satelliteRotation, Vector3 fixedRotation, Vector3 rotateAroundAxis, float rotateSpeed, float timeOfTheDay, float cycleTime)
         {
+            this.timeSpan_start = inTime;
+            this.timeSpan_end = outTime;
             this.satelliteSize = satelliteSize;
             this.radius = radius;
             radius = Mathf.Clamp(radius, 0, Mathf.Infinity);
@@ -98,35 +78,38 @@ namespace DCL.Skybox
             this.fixedRotation = fixedRotation;
             this.rotateAroundAxis = rotateAroundAxis;
             this.rotateSpeed = rotateSpeed;
-            this.timeOfTheDay = timeOfTheDay;
+            this.cycleTime = cycleTime;
 
-            // Change satellite size
-            UpdateSatelliteSize();
             // Update orbit rotation
             UpdateOrbitRotation();
+            // Change satellite size
+            UpdateSatelliteSize();
+
+            if (!CheckIfSatelliteInTimeBounds(timeOfTheDay))
+            {
+                satellite.gameObject.SetActive(false);
+                return;
+            }
+            satellite.gameObject.SetActive(true);
+
             // Update SatellitePosition
-            UpdateSatellitePos();
+            UpdateSatellitePos(timeOfTheDay);
+
+            UpdateRotation();
         }
 
-        private void UpdateSatellitePos()
+        private void UpdateSatellitePos(float timeOfTheDay)
         {
-            //float percentage = timeOfTheDay - (int)timeOfTheDay;
-            //percentage /= movementSpeed;
-            //currentAngle = 360 * percentage;
-            //currentAngle += initialAngle;
-            //float diff = 0;
-            //if (currentAngle > 360)
-            //{
-            //    diff = currentAngle - 360;
-            //    currentAngle = diff;
-            //}
+            float timeOfDayEdited = timeOfTheDay;
 
-            currentAngle = initialAngle;
-
-            if (currentAngle > 360)
+            if (timeOfTheDay < timeSpan_start)
             {
-                currentAngle = 0;
+                timeOfDayEdited += cycleTime;
             }
+
+            float diff = timeOfDayEdited - timeSpan_start;
+            currentAngle = initialAngle + (diff * movementSpeed);
+
             satellite.transform.localPosition = GetSatellitePosition(radius, currentAngle);
         }
 
@@ -159,11 +142,37 @@ namespace DCL.Skybox
 
         Vector3 GetSatellitePosition(float radius, float angle)
         {
-            angle = Mathf.Clamp(angle, 0, 360);
+            angle = angle % 360;
             float angleEdited = (90 - angle) * Mathf.Deg2Rad;
             float x = radius * Mathf.Cos(angleEdited);
             float y = radius * Mathf.Sin(angleEdited);
             return new Vector3(x, y, 0);
+        }
+
+        private bool CheckIfSatelliteInTimeBounds(float timeOfTheDay)
+        {
+            // Calculate edited time for the case of out time less than in time (over the day scenario)
+            float outTimeEdited = timeSpan_end;
+            float timeOfTheDayEdited = timeOfTheDay;
+
+            if (timeSpan_end < timeSpan_start)
+            {
+                outTimeEdited += cycleTime;
+            }
+
+            if (timeOfTheDay < timeSpan_start)
+            {
+                timeOfTheDayEdited += cycleTime;
+            }
+
+            if (timeOfTheDayEdited >= timeSpan_start && timeOfTheDayEdited <= outTimeEdited)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private void OnDrawGizmos()
