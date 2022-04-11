@@ -6,5 +6,12 @@ public class SkyboxCameraBehavior : MonoBehaviour
 {
     public GameObject targetCamera;
 
-    private void LateUpdate() { this.transform.rotation = targetCamera.transform.rotation; }
+    private void LateUpdate()
+    {
+        if (targetCamera == null)
+        {
+            return;
+        }
+        this.transform.rotation = targetCamera.transform.rotation;
+    }
 }
