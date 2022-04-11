@@ -44,7 +44,7 @@ namespace UnityGLTF
         public int Timeout = 8;
         public Material LoadingTextureMaterial;
         public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
-        private static readonly IThrottlingCounter throttlingCounter = new GLTFThrottlingCounter();
+        private IThrottlingCounter throttlingCounter;
 
         public bool InitialVisibility
         {
@@ -105,7 +105,11 @@ namespace UnityGLTF
 
         public Action<Exception> OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
 
-        public void Initialize( IWebRequestController webRequestController) { this.webRequestController = webRequestController; }
+        public void Initialize( IWebRequestController webRequestController, IThrottlingCounter throttlingCounter)
+        {
+            this.webRequestController = webRequestController;
+            this.throttlingCounter = throttlingCounter;
+        }
 
         public void LoadAsset(string baseUrl, string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null, AssetIdConverter fileToHashConverter = null)
         {

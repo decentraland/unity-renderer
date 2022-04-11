@@ -336,7 +336,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minimumYPosition: 0
-  groundCheckExtraDistance: 0.25
+  groundCheckExtraDistance: 0.1
   gravity: -55
   jumpForce: 12
   movementSpeed: 11

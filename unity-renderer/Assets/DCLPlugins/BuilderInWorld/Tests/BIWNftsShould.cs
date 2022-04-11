@@ -31,6 +31,7 @@ public class BIWNftsShould : IntegrationTestSuite
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
+        TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
         BIWCatalogManager.Init();
         BIWTestUtils.CreateNFT();
     }

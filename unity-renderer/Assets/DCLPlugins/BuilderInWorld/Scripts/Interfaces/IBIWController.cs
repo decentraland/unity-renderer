@@ -7,7 +7,7 @@ using UnityEngine;
 public interface IBIWController
 {
     void Initialize(IContext context);
-    void EnterEditMode(IParcelScene scene);
+    void EnterEditMode(IBuilderScene scene);
     void ExitEditMode();
     void OnGUI();
 

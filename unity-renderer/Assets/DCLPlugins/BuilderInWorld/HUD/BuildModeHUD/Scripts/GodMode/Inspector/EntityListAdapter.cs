@@ -182,7 +182,7 @@ public class EntityListAdapter : MonoBehaviour
     {
         if (entity != currentEntity)
             return;
-
+        
         CheckEntityNameColor(entity);
     }
 

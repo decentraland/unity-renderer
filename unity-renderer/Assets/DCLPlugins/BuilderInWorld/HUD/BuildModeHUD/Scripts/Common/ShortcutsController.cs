@@ -21,7 +21,13 @@ public class ShortcutsController : IShortcutsController
         publishPopupView.OnCloseButtonClick += CloseButtonClicked;
     }
 
-    public void Dispose() { publishPopupView.OnCloseButtonClick -= CloseButtonClicked; }
+    public void Dispose()
+    {
+        if (publishPopupView == null)
+            return;
+        
+        publishPopupView.OnCloseButtonClick -= CloseButtonClicked;
+    }
 
     public void SetActive(bool isActive) { publishPopupView.SetActive(isActive); }
 

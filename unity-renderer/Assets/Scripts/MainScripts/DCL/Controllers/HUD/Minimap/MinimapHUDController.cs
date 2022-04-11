@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Interface;
 using UnityEngine;
 
@@ -82,6 +83,8 @@ public class MinimapHUDController : IHUD
     public void AddZoomDelta(float delta) { minimapZoom.Set(Mathf.Clamp01(minimapZoom.Get() + delta)); }
 
     public void ToggleOptions() { view.ToggleOptions(); }
+
+    public void ToggleSceneUI(bool isUIOn) { DataStore.i.HUDs.isSceneUIEnabled.Set(isUIOn); }
 
     public void AddBookmark()
     {
