@@ -42,6 +42,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Smoothness: 0.538
+    - Vector1_17fda4b359134c17be687dc3c4716394: 0
     - _Metallic: 0
     - _Opacity: 1
     m_Colors:
