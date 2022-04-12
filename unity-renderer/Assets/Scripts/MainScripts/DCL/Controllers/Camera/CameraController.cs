@@ -184,6 +184,7 @@ namespace DCL.Camera
             cameraForward.Set(cameraTransform.forward);
             cameraRight.Set(cameraTransform.right);
             DataStore.i.camera.rotation.Set(cameraTransform.rotation);
+            DataStore.i.camera.transform.Set(cameraTransform);
             cameraPosition.Set(cameraTransform.position);
             cameraIsBlending.Set(cameraBrain.IsBlending);
 
