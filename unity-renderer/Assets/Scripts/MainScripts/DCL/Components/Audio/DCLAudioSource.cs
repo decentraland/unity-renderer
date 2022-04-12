@@ -130,17 +130,21 @@ namespace DCL.Components
 
         private void UpdateAudioSourceVolume()
         {
-            AudioSettings audioSettingsData = Settings.i != null ? Settings.i.audioSettings.Data : new AudioSettings();
-            float newVolume = ((Model)model).volume * Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettingsData.sceneSFXVolume * audioSettingsData.masterVolume);
-
+            float newVolume = 0;
+            
             // isOutOfBoundaries will always be false for global scenes.
-            if (isOutOfBoundaries)
+            if (!isOutOfBoundaries)
             {
-                audioSource.volume = 0;
-                return;
+                AudioSettings audioSettingsData =
+                    Settings.i != null ? Settings.i.audioSettings.Data : new AudioSettings();
+                newVolume = ((Model) model).volume * Utils.ToVolumeCurve(
+                    DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettingsData.sceneSFXVolume *
+                    audioSettingsData.masterVolume);
             }
 
-            audioSource.volume = scene.sceneData.id == CommonScriptableObjects.sceneID.Get() ? newVolume : 0f;
+            bool isCurrentScene = scene.isPersistent || scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
+
+            audioSource.volume = isCurrentScene ? newVolume : 0f;
         }
 
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
@@ -151,8 +155,7 @@ namespace DCL.Components
             Model model = (Model) this.model;
             float volume = 0;
 
-            // Note that OnCurrentSceneChange never gets called for global scenes. This only applies for local scenes.
-            if (scene.sceneData.id == currentSceneId)
+            if (scene.isPersistent || scene.sceneData.id == currentSceneId)
             {
                 volume = model.volume;
             }
@@ -176,6 +179,9 @@ namespace DCL.Components
 
         public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
         {
+            if (scene.isPersistent)
+                isInsideBoundaries = true;
+
             isOutOfBoundaries = !isInsideBoundaries;
             UpdateAudioSourceVolume();
         }
