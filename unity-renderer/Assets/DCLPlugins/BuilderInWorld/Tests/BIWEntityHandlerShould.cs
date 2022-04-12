@@ -41,6 +41,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
         entityHandler.EnterEditMode(builderScene);
         entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
+        TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
     }
 
     [Test]

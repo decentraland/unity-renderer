@@ -127,7 +127,7 @@ public class CatalogController : MonoBehaviour
         WearablesRequestFailed requestFailedResponse = JsonUtility.FromJson<WearablesRequestFailed>(payload);
 
         if (requestFailedResponse.context == BASE_WEARABLES_CONTEXT ||
-            requestFailedResponse.context == OWNED_WEARABLES_CONTEXT)
+            requestFailedResponse.context.Contains(OWNED_WEARABLES_CONTEXT))
         {
             ResolvePendingWearablesByContextPromise(
                 requestFailedResponse.context,
@@ -201,25 +201,25 @@ public class CatalogController : MonoBehaviour
     {
         Promise<WearableItem[]> promiseResult;
 
-        if (!awaitingWearablesByContextPromises.ContainsKey(OWNED_WEARABLES_CONTEXT))
+        if (!awaitingWearablesByContextPromises.ContainsKey($"{OWNED_WEARABLES_CONTEXT}{userId}"))
         {
             promiseResult = new Promise<WearableItem[]>();
 
-            awaitingWearablesByContextPromises.Add(OWNED_WEARABLES_CONTEXT, promiseResult);
+            awaitingWearablesByContextPromises.Add($"{OWNED_WEARABLES_CONTEXT}{userId}", promiseResult);
 
-            if (!pendingWearablesByContextRequestedTimes.ContainsKey(OWNED_WEARABLES_CONTEXT))
-                pendingWearablesByContextRequestedTimes.Add(OWNED_WEARABLES_CONTEXT, Time.realtimeSinceStartup);
+            if (!pendingWearablesByContextRequestedTimes.ContainsKey($"{OWNED_WEARABLES_CONTEXT}{userId}"))
+                pendingWearablesByContextRequestedTimes.Add($"{OWNED_WEARABLES_CONTEXT}{userId}", Time.realtimeSinceStartup);
 
             WebInterface.RequestWearables(
                 ownedByUser: userId,
                 wearableIds: null,
                 collectionIds: null,
-                context: OWNED_WEARABLES_CONTEXT
+                context: $"{OWNED_WEARABLES_CONTEXT}{userId}"
             );
         }
         else
         {
-            awaitingWearablesByContextPromises.TryGetValue(OWNED_WEARABLES_CONTEXT, out promiseResult);
+            awaitingWearablesByContextPromises.TryGetValue($"{OWNED_WEARABLES_CONTEXT}{userId}", out promiseResult);
         }
 
         return promiseResult;
