@@ -162,6 +162,7 @@ namespace Tests
         {
             // We disable SceneController monobehaviour to avoid its current scene id update
             sceneController.enabled = false;
+            scene.isPersistent = false;
 
             // Set current scene as a different one
             CommonScriptableObjects.sceneID.Set("unexistent-scene");
@@ -208,6 +209,7 @@ namespace Tests
         {
             // We disable SceneController monobehaviour to avoid its current scene id update
             sceneController.enabled = false;
+            scene.isPersistent = false;
 
             // Set current scene with this scene's id
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
@@ -253,6 +255,33 @@ namespace Tests
 
             // Check the volume
             Assert.AreEqual(unityAudioSource.volume, dclAudioSource.volume);
+        }
+
+        [UnityTest]
+        public IEnumerator VolumeIsNotMutedForPersistentScenes()
+        {
+            // We disable SceneController monobehaviour to avoid its current scene id update
+            sceneController.enabled = false;
+            scene.isPersistent = true;
+
+            // Set current scene with this scene's id
+            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+
+            var entity = TestUtils.CreateSceneEntity(scene);
+            yield return null;
+
+            yield return TestUtils.CreateAudioSourceWithClipForEntity(entity);
+
+            DCLAudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<DCLAudioSource>();
+            yield return dclAudioSource.routine;
+
+            AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
+
+            // Set current scene as a different one
+            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+
+            // Check the volume
+            Assert.AreNotEqual(unityAudioSource.volume, 0);
         }
 
         [UnityTest]
