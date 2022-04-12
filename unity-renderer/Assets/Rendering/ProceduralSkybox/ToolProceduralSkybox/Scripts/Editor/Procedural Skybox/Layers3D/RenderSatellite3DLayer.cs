@@ -34,6 +34,7 @@ namespace DCL.Skybox
 
             RenderSimpleValues.RenderPrefabInput("Prefab", ref config.satelliteLayer.satellite);
             RenderSimpleValues.RenderFloatField("Size", ref config.satelliteLayer.satelliteSize);
+            RenderSimpleValues.RenderFloatField("Radius", ref config.satelliteLayer.radius);
             RenderSimpleValues.RenderFloatFieldAsSlider("Initial Pos", ref config.satelliteLayer.initialAngle, 0, 360);
             RenderSimpleValues.RenderFloatFieldAsSlider("Horizon Plane", ref config.satelliteLayer.horizonPlaneRotation, 0, 180);
             RenderSimpleValues.RenderFloatFieldAsSlider("Inclination", ref config.satelliteLayer.inclination, 0, 180);
