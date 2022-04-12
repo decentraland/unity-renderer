@@ -69,15 +69,15 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
             });
         InitializeChatWindowController(chatController);
 
-        internalChatView.Received(3).AddEntry(Arg.Is<ChatEntry.Model>(model =>
+        internalChatView.Received(3).AddEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == ChatMessage.Type.PRIVATE
             && model.senderId == testProfileModel.userId));
 
         Received.InOrder(() =>
         {
-            internalChatView.AddEntry(Arg.Is<ChatEntry.Model>(model => model.bodyText == "message1"));
-            internalChatView.AddEntry(Arg.Is<ChatEntry.Model>(model => model.bodyText == "message2"));
-            internalChatView.AddEntry(Arg.Is<ChatEntry.Model>(model => model.bodyText == "message3"));
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "message1"));
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "message2"));
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "message3"));
         });
     }
 
@@ -95,15 +95,15 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage2);
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage3);
 
-        internalChatView.Received(3).AddEntry(Arg.Is<ChatEntry.Model>(model =>
+        internalChatView.Received(3).AddEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == ChatMessage.Type.PRIVATE
             && model.senderId == testProfileModel.userId));
 
         Received.InOrder(() =>
         {
-            internalChatView.AddEntry(Arg.Is<ChatEntry.Model>(model => model.bodyText == "message1"));
-            internalChatView.AddEntry(Arg.Is<ChatEntry.Model>(model => model.bodyText == "message2"));
-            internalChatView.AddEntry(Arg.Is<ChatEntry.Model>(model => model.bodyText == "message3"));
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "message1"));
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "message2"));
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "message3"));
         });
     }
 

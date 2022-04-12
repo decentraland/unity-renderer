@@ -5,25 +5,24 @@ using UnityEngine;
 /// <summary>
 /// Special type of entry to be used as date separator in chat conversations.
 /// </summary>
-public class DateSeparatorEntry : MonoBehaviour
+public class DateSeparatorEntry : ChatEntry
 {
-    public struct Model
-    {
-        public DateTime date;
-    }
-
-    public Model model { get; private set; }
+    private DateTime timestamp;
+    private ChatEntryModel chatEntryModel;
 
     [SerializeField] internal TextMeshProUGUI title;
 
-    /// <summary>
-    /// Configures the separator entry with the date information.
-    /// </summary>
-    /// <param name="dateSeparatorModel">DateSeparatorEntry.Model</param>
-    public void Populate(Model dateSeparatorModel)
+    public override ChatEntryModel Model => chatEntryModel;
+
+    public override void Populate(ChatEntryModel model)
     {
-        model = dateSeparatorModel;
-        title.text = GetDateFormat(dateSeparatorModel.date);
+        chatEntryModel = model;
+        title.text = GetDateFormat(GetDateTimeFromUnixTimestampMilliseconds(model.timestamp));
+    }
+
+    public override void SetFadeout(bool enabled)
+    {
+        
     }
 
     private string GetDateFormat(DateTime date)
@@ -42,5 +41,11 @@ public class DateSeparatorEntry : MonoBehaviour
         }
 
         return result;
+    }
+    
+    private DateTime GetDateTimeFromUnixTimestampMilliseconds(ulong milliseconds)
+    {
+        DateTime result = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        return result.AddMilliseconds(milliseconds);
     }
 }

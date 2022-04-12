@@ -47,7 +47,7 @@ public class ChatHUDController : IDisposable
         AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom);
     }
 
-    public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
+    public void AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false)
     {
         chatEntryModel.bodyText = ChatUtils.AddNoParse(chatEntryModel.bodyText);
 
@@ -86,9 +86,9 @@ public class ChatHUDController : IDisposable
 
     public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
 
-    private ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)
+    private ChatEntryModel ChatMessageToChatEntry(ChatMessage message)
     {
-        var model = new ChatEntry.Model();
+        var model = new ChatEntryModel();
         var ownProfile = userProfileBridge.GetOwn();
 
         model.messageType = message.messageType;
@@ -112,24 +112,24 @@ public class ChatHUDController : IDisposable
         {
             if (message.recipient == ownProfile.userId)
             {
-                model.subType = ChatEntry.Model.SubType.RECEIVED;
+                model.subType = ChatEntryModel.SubType.RECEIVED;
                 model.otherUserId = message.sender;
             }
             else if (message.sender == ownProfile.userId)
             {
-                model.subType = ChatEntry.Model.SubType.SENT;
+                model.subType = ChatEntryModel.SubType.SENT;
                 model.otherUserId = message.recipient;
             }
             else
             {
-                model.subType = ChatEntry.Model.SubType.NONE;
+                model.subType = ChatEntryModel.SubType.NONE;
             }
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {
             model.subType = message.sender == ownProfile.userId
-                ? ChatEntry.Model.SubType.SENT
-                : ChatEntry.Model.SubType.RECEIVED;
+                ? ChatEntryModel.SubType.SENT
+                : ChatEntryModel.SubType.RECEIVED;
         }
 
         return model;

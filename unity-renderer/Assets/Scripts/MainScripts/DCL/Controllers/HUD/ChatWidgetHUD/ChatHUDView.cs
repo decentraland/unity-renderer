@@ -29,12 +29,10 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     [SerializeField] private DefaultChatEntryFactory defaultChatEntryFactory;
     
     [NonSerialized] protected List<ChatEntry> entries = new List<ChatEntry>();
-    [NonSerialized] protected List<DateSeparatorEntry> dateSeparators = new List<DateSeparatorEntry>();
 
     private readonly ChatMessage currentMessage = new ChatMessage();
-    private readonly List<ChatEntry.Model> lastMessages = new List<ChatEntry.Model>();
+    private readonly List<ChatEntryModel> lastMessages = new List<ChatEntryModel>();
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
-
     private readonly Dictionary<Action, UnityAction<string>> inputFieldListeners =
         new Dictionary<Action, UnityAction<string>>();
 
@@ -156,7 +154,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 
         for (int i = 0; i < entries.Count; i++)
         {
-            ChatEntry entry = entries[i];
+            var entry = entries[i];
 
             if (enabled)
             {
@@ -174,7 +172,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         }
     }
 
-    public virtual void AddEntry(ChatEntry.Model model, bool setScrollPositionToBottom = false)
+    public virtual void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
     {
         if (IsSpamming(model.senderName)) return;
 
@@ -201,14 +199,34 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 
         SortEntries();
 
-        Utils.ForceUpdateLayout(chatEntry.transform as RectTransform, delayed: false);
+        Utils.ForceUpdateLayout(chatEntriesContainer, delayed: false);
 
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
 
-        if (string.IsNullOrEmpty(model.senderId))
-            return;
+        if (string.IsNullOrEmpty(model.senderId)) return;
 
+        UpdateSpam(model);
+    }
+
+    public void Dispose() => Destroy(gameObject);
+
+    public void RemoveFirstEntry()
+    {
+        if (entries.Count <= 0) return;
+        Destroy(entries[0].gameObject);
+        entries.Remove(entries[0]);
+    }
+
+    public void Hide()
+    {
+        if (contextMenu == null) return;
+        contextMenu.Hide();
+        confirmationDialog.Hide();
+    }
+
+    private void UpdateSpam(ChatEntryModel model)
+    {
         if (lastMessages.Count == 0)
         {
             lastMessages.Add(model);
@@ -236,27 +254,10 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         }
     }
 
-    public void Dispose() => Destroy(gameObject);
-
-    public void RemoveFirstEntry()
-    {
-        if (entries.Count <= 0) return;
-        Destroy(entries[0].gameObject);
-        entries.Remove(entries[0]);
-    }
-
-    public void Hide()
-    {
-        if (contextMenu == null) return;
-        contextMenu.Hide();
-        confirmationDialog.Hide();
-    }
-
-    bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
+    private bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
     {
         DateTime oldDateTime = CreateBaseDateTime().AddMilliseconds(oldMessageTimeStamp).ToLocalTime();
         DateTime newDateTime = CreateBaseDateTime().AddMilliseconds(newMessageTimeStamp).ToLocalTime();
-
         return (newDateTime - oldDateTime).TotalMilliseconds < MIN_MILLISECONDS_BETWEEN_MESSAGES;
     }
 
@@ -285,14 +286,14 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
     }
 
-    private void OnOpenContextMenu(ChatEntry chatEntry)
+    private void OnOpenContextMenu(DefaultChatEntry chatEntry)
     {
         contextMenu.transform.position = chatEntry.contextMenuPositionReference.position;
-        contextMenu.transform.parent = this.transform;
-        contextMenu.Show(chatEntry.model.senderId);
+        contextMenu.transform.parent = transform;
+        contextMenu.Show(chatEntry.Model.senderId);
     }
 
-    protected virtual void OnMessageTriggerHover(ChatEntry chatEntry)
+    protected virtual void OnMessageTriggerHover(DefaultChatEntry chatEntry)
     {
         if (contextMenu == null || contextMenu.isVisible)
             return;
@@ -302,12 +303,13 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         messageHoverPanel.SetActive(true);
     }
 
-    protected virtual void OnMessageCoordinatesTriggerHover(ChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
+    protected virtual void OnMessageCoordinatesTriggerHover(DefaultChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
     {
-        messageHoverGotoText.text = $"{parcelCoordinates.ToString()} INFO";
+        messageHoverGotoText.text = $"{parcelCoordinates} INFO";
+        var hoverGoToPanelPosition = chatEntry.hoverPanelPositionReference.transform.position;
         messageHoverGotoPanel.transform.position = new Vector3(Input.mousePosition.x,
-            chatEntry.hoverPanelPositionReference.transform.position.y,
-            chatEntry.hoverPanelPositionReference.transform.position.z);
+            hoverGoToPanelPosition.y,
+            hoverGoToPanelPosition.z);
         messageHoverGotoPanel.SetActive(true);
     }
 
@@ -325,7 +327,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 
     private void SortEntries()
     {
-        entries = entries.OrderBy(x => x.model.timestamp).ToList();
+        entries = entries.OrderBy(x => x.Model.timestamp).ToList();
 
         int count = entries.Count;
         for (int i = 0; i < count; i++)
@@ -333,26 +335,16 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
             if (entries[i].transform.GetSiblingIndex() != i)
             {
                 entries[i].transform.SetSiblingIndex(i);
-                Utils.ForceUpdateLayout(entries[i].transform as RectTransform, delayed: false);
+                // Utils.ForceUpdateLayout(entries[i].transform as RectTransform, delayed: false);
             }
         }
     }
 
-    public void ClearAllEntries()
+    public virtual void ClearAllEntries()
     {
         foreach (var entry in entries)
-        {
             Destroy(entry.gameObject);
-        }
-
         entries.Clear();
-
-        foreach (DateSeparatorEntry separator in dateSeparators)
-        {
-            Destroy(separator.gameObject);
-        }
-
-        dateSeparators.Clear();
     }
 
     public void SetGotoPanelStatus(bool isActive)

@@ -13,7 +13,7 @@ public interface IChatHUDComponentView
     IChatEntryFactory ChatEntryFactory { get; set; }
 
     void OnMessageCancelHover();
-    void AddEntry(ChatEntry.Model model, bool setScrollPositionToBottom = false);
+    void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false);
     void Dispose();
     void RemoveFirstEntry();
     void Hide();

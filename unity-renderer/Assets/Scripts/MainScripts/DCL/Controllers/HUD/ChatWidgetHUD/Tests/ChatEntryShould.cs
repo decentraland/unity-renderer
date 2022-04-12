@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ChatEntryShould : IntegrationTestSuite_Legacy
 {
-    ChatEntry entry;
+    DefaultChatEntry entry;
     Canvas canvas;
     protected override IEnumerator SetUp()
     {
@@ -13,7 +13,7 @@ public class ChatEntryShould : IntegrationTestSuite_Legacy
         canvas = canvasgo.AddComponent<Canvas>();
         (canvas.transform as RectTransform).sizeDelta = new Vector2(500, 500);
         var go = Object.Instantiate(Resources.Load("Chat Entry"), canvas.transform, false) as GameObject;
-        entry = go.GetComponent<ChatEntry>();
+        entry = go.GetComponent<DefaultChatEntry>();
         yield break;
     }
 
@@ -27,7 +27,7 @@ public class ChatEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void BePopulatedCorrectly()
     {
-        var message = new ChatEntry.Model
+        var message = new ChatEntryModel
         {
             messageType = ChatMessage.Type.PUBLIC,
             senderName = "user-test",
@@ -41,13 +41,13 @@ public class ChatEntryShould : IntegrationTestSuite_Legacy
         Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
 
         message.messageType = ChatMessage.Type.PRIVATE;
-        message.subType = ChatEntry.Model.SubType.SENT;
+        message.subType = ChatEntryModel.SubType.SENT;
 
         entry.Populate(message);
         Assert.AreEqual("<b>To receiver-test:</b>", entry.username.text);
         Assert.AreEqual("<b>To receiver-test:</b> test message", entry.body.text);
 
-        message.subType = ChatEntry.Model.SubType.RECEIVED;
+        message.subType = ChatEntryModel.SubType.RECEIVED;
         entry.Populate(message);
         Assert.AreEqual("<b>From user-test:</b>", entry.username.text);
         Assert.AreEqual("<b>From user-test:</b> test message", entry.body.text);

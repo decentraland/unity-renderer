@@ -1,4 +1,4 @@
 ﻿public interface IChatEntryFactory
 {
-    ChatEntry Create(ChatEntry.Model model);
+    DefaultChatEntry Create(ChatEntryModel model);
 }

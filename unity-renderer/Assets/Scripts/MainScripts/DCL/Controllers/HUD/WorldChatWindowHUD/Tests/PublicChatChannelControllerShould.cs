@@ -79,7 +79,7 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
 
         chatController.RaiseAddMessage(sentPM);
 
-        internalChatView.Received(1).AddEntry(Arg.Is<ChatEntry.Model>(model =>
+        internalChatView.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == sentPM.messageType
             && model.bodyText == sentPM.body
             && model.senderId == sentPM.sender
@@ -98,7 +98,7 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
 
         chatController.RaiseAddMessage(chatMessage);
 
-        internalChatView.Received(1).AddEntry(Arg.Is<ChatEntry.Model>(model =>
+        internalChatView.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == chatMessage.messageType
             && model.bodyText == chatMessage.body
             && model.senderId == chatMessage.sender));
