@@ -475,8 +475,10 @@ public class DCLCharacterController : MonoBehaviour
 
     public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo)
     {
-        bool raycastSucceded = CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo);
-        return IsLastCollisionGround() || raycastSucceded;
+        if (CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo))
+            return true;
+
+        return IsLastCollisionGround();
     }
 
     public bool CastGroundCheckingRay(float extraDistance, out RaycastHit hitInfo)
