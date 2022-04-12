@@ -7,14 +7,15 @@ namespace DCL.Skybox
     [System.Serializable]
     public class Satellite3DLayer
     {
+        public bool enabled;
         public string nameInEditor;
         public float timeSpan_start;
         public float timeSpan_End;
 
         // Satellite orbit properties
         public GameObject satellite;
-        public float satelliteSize = 25;
-        public float radius = 57;
+        public float satelliteSize = 50;
+        public float radius = 300;
         [Range(0, 360)]
         public float initialAngle = 0;
         [Range(0, 180)]
@@ -28,6 +29,7 @@ namespace DCL.Skybox
         public Vector3 fixedRotation = Vector3.zero;
         public Vector3 rotateAroundAxis = Vector3.zero;
         public float rotateSpeed = 25;
+        public LayerRenderType renderType;
 
         public Satellite3DLayer(string name = "Noname")
         {

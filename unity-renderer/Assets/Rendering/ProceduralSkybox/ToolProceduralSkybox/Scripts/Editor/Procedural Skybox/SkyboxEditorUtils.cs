@@ -21,6 +21,7 @@ namespace DCL.Skybox
         public string name;
         public SkyboxEditorToolsParts part;
         public int baseSkyboxSelectedIndex;
+        public int satelliteLayerIndex;
         public bool pinned;
         public Vector2 scroll;
     }

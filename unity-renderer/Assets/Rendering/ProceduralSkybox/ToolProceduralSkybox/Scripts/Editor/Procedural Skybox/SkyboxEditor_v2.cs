@@ -350,10 +350,12 @@ namespace DCL.Skybox
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
 
-            if (GUILayout.Button(SkyboxEditorLiterals.satelliteLayer, EditorStyles.toolbarButton))
-            {
-                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Satellite_Layer, name = SkyboxEditorLiterals.satelliteLayer });
-            }
+            // Render 3D Layers
+            RenderLeftPanel3DLayers.Render(selectedConfiguration, toolSize, AddToRightPanel);
+            //if (GUILayout.Button(SkyboxEditorLiterals.satelliteLayer, EditorStyles.toolbarButton))
+            //{
+            //    AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Satellite_Layer, name = SkyboxEditorLiterals.satelliteLayer });
+            //}
 
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndScrollView();
@@ -491,7 +493,7 @@ namespace DCL.Skybox
                     RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration.layers[obj.baseSkyboxSelectedIndex]);
                     break;
                 case SkyboxEditorToolsParts.Satellite_Layer:
-                    RenderSatellite3DLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration);
+                    RenderSatellite3DLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration.satelliteLayers[obj.satelliteLayerIndex]);
                     break;
                 default:
                     break;
@@ -669,7 +671,9 @@ namespace DCL.Skybox
         {
             EnsureDependencies();
             selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, SkyboxEditorUtils.GetNormalizedDayTime(timeOfTheDay), matLayer.numberOfSlots, directionalLight);
-            selectedConfiguration.ApplyOnSatelliteLayer(timeOfTheDay, skyboxObjects.GetSatelliteObject(selectedConfiguration));
+
+            skyboxObjects.ResetObjects();
+            selectedConfiguration.ApplyOnSatelliteLayer(timeOfTheDay, skyboxObjects.GetSatelliteAllActiveSatelliteRefs(selectedConfiguration.satelliteLayers));
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)

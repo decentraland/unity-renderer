@@ -7,6 +7,7 @@ public class FollowBehavior : MonoBehaviour
     public GameObject target;
     public bool followRot;
     public bool followPos;
+    public bool ignoreYAxis = true;
 
     private void LateUpdate()
     {
@@ -16,7 +17,15 @@ public class FollowBehavior : MonoBehaviour
         }
         if (followRot)
             this.transform.rotation = target.transform.rotation;
+
         if (followPos)
-            this.transform.position = target.transform.position;
+        {
+            Vector3 pos = target.transform.position;
+            if (ignoreYAxis)
+            {
+                pos.y = 0;
+            }
+            this.transform.position = pos;
+        }
     }
 }

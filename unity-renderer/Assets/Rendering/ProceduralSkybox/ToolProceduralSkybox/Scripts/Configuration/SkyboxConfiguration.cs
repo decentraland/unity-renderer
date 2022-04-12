@@ -67,18 +67,35 @@ namespace DCL.Skybox
         public List<TimelineTagsDuration> timelineTags = new List<TimelineTagsDuration>();
 
         // 3D Satellite layer
-        public Satellite3DLayer satelliteLayer = new Satellite3DLayer();
+        //public Satellite3DLayer satelliteLayer = new Satellite3DLayer();
+        public List<Satellite3DLayer> satelliteLayers = new List<Satellite3DLayer>();
 
         private float cycleTime = 24;
 
-        public void ApplyOnSatelliteLayer(float dayTime, SatelliteReferences satelliteRef)
+        public void ApplyOnSatelliteLayer(float dayTime, List<SatelliteReferences> satelliteRefs)
         {
-            if (satelliteRef == null)
+            if (satelliteRefs == null)
             {
                 return;
             }
 
-            satelliteRef.satelliteBehavior.AssignValues(satelliteLayer.timeSpan_start, satelliteLayer.timeSpan_End, satelliteLayer.satelliteSize, satelliteLayer.radius, satelliteLayer.initialAngle, satelliteLayer.horizonPlaneRotation, satelliteLayer.inclination, satelliteLayer.movementSpeed, satelliteLayer.satelliteRotation, satelliteLayer.fixedRotation, satelliteLayer.rotateAroundAxis, satelliteLayer.rotateSpeed, dayTime, cycleTime);
+            if (satelliteRefs.Count != satelliteLayers.Count)
+            {
+                Debug.LogError("Satellite not working!, cause of difference of count in config and 3D pool");
+                return;
+            }
+
+            for (int i = 0; i < satelliteRefs.Count; i++)
+            {
+                // If satellite is disabled, disable the 3D object too.
+                if (!satelliteLayers[i].enabled)
+                {
+                    satelliteRefs[i].satelliteParent.SetActive(false);
+                    continue;
+                }
+
+                satelliteRefs[i].satelliteBehavior.AssignValues(satelliteLayers[i].timeSpan_start, satelliteLayers[i].timeSpan_End, satelliteLayers[i].satelliteSize, satelliteLayers[i].radius, satelliteLayers[i].initialAngle, satelliteLayers[i].horizonPlaneRotation, satelliteLayers[i].inclination, satelliteLayers[i].movementSpeed, satelliteLayers[i].satelliteRotation, satelliteLayers[i].fixedRotation, satelliteLayers[i].rotateAroundAxis, satelliteLayers[i].rotateSpeed, dayTime, cycleTime);
+            }
         }
 
         public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, Light directionalLightGO = null, float cycleTime = 24)

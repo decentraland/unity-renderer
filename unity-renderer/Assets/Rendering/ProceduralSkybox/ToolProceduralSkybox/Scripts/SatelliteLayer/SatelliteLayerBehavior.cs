@@ -180,7 +180,7 @@ namespace DCL.Skybox
             var tr = transform;
             var position = tr.position;
             Handles.color = Color.gray;
-            Handles.DrawWireDisc(position, Vector3.up, radius, thickness);
+            Handles.DrawWireDisc(position, Vector3.up, 1000, thickness);
 
             if (satelliteOrbit == null)
             {

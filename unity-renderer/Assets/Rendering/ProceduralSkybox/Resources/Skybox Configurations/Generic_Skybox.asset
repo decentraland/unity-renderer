@@ -484,7 +484,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 0
-    renderType: 0
+    renderType: 1
     layerType: 1
     enabled: 1
     nameInEditor: Stars
@@ -564,7 +564,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 1
-    renderType: 1
+    renderType: 0
     layerType: 2
     enabled: 1
     nameInEditor: Big Sun
@@ -1064,19 +1064,38 @@ MonoBehaviour:
     startTime: 20.7
     endTime: 8
     isTrigger: 0
-  satelliteLayer:
-    nameInEditor: Satellite
+  satelliteLayers:
+  - enabled: 1
+    nameInEditor: dfgdf
     timeSpan_start: 0
     timeSpan_End: 24
     satellite: {fileID: 6438672508873746031, guid: 0c8c9997b5c986d45b555c1da35e5c4d,
       type: 3}
-    satelliteSize: 5
-    radius: 10
-    initialAngle: 0
-    horizonPlaneRotation: 98
-    inclination: 0
-    movementSpeed: 60
-    satelliteRotation: 0
-    fixedRotation: {x: 0, y: 90, z: 0}
-    rotateAroundAxis: {x: 1, y: 1, z: 0}
+    satelliteSize: 50
+    radius: 300
+    initialAngle: 104
+    horizonPlaneRotation: 112
+    inclination: 69
+    movementSpeed: 50
+    satelliteRotation: 1
+    fixedRotation: {x: 0, y: 0, z: 0}
+    rotateAroundAxis: {x: 0, y: 1, z: 0}
     rotateSpeed: 50
+    renderType: 0
+  - enabled: 1
+    nameInEditor: Tex Layer 2
+    timeSpan_start: 0
+    timeSpan_End: 24
+    satellite: {fileID: 6438672508873746031, guid: 0c8c9997b5c986d45b555c1da35e5c4d,
+      type: 3}
+    satelliteSize: 50
+    radius: 300
+    initialAngle: 0
+    horizonPlaneRotation: 92
+    inclination: 0
+    movementSpeed: 50
+    satelliteRotation: 0
+    fixedRotation: {x: 0, y: 0, z: 0}
+    rotateAroundAxis: {x: 0, y: 0, z: 0}
+    rotateSpeed: 25
+    renderType: 0

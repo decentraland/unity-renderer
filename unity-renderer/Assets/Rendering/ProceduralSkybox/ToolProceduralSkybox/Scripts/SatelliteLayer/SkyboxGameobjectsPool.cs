@@ -30,7 +30,8 @@ namespace DCL.Skybox
         private GameObject satelliteElements;
         private GameObject satelliteParentPrefab;
 
-        SatelliteReferences satelliteReference;
+        Dictionary<GameObject, Queue<SatelliteReferences>> satelliteReferences = new Dictionary<GameObject, Queue<SatelliteReferences>>();
+        List<SatelliteReferences> usedSatellites = new List<SatelliteReferences>();
 
         public void Initialize3DObjects(SkyboxConfiguration configuration)
         {
@@ -59,37 +60,64 @@ namespace DCL.Skybox
 
         public void ResetObjects()
         {
-            if (satelliteReference != null)
+            if (usedSatellites != null)
             {
-                satelliteReference.satelliteParent.SetActive(false);
+                for (int i = 0; i < usedSatellites.Count; i++)
+                {
+                    SatelliteReferences sat = usedSatellites[i];
+                    sat.satelliteParent.SetActive(false);
+                    satelliteReferences[sat.satellitePrefab].Enqueue(sat);
+                }
+                usedSatellites.Clear();
             }
         }
 
         #region Satellite
 
-        public SatelliteReferences GetSatelliteObject(SkyboxConfiguration config)
+        public List<SatelliteReferences> GetSatelliteAllActiveSatelliteRefs(List<Satellite3DLayer> satelliteLayers)
         {
-            ResetObjects();
-
-            if (config.satelliteLayer.satellite == null)
+            for (int i = 0; i < satelliteLayers.Count; i++)
             {
-                if (satelliteReference != null)
-                {
-                    satelliteReference.satelliteParent.SetActive(false);
-                }
-                return null;
+                GetSatelliteObject(satelliteLayers[i]);
             }
-
-            if (satelliteReference == null)
-            {
-                satelliteReference = InstantiateNewSatelliteReference(config);
-            }
-            satelliteReference.satelliteParent.SetActive(true);
-
-            return satelliteReference;
+            return usedSatellites;
         }
 
-        SatelliteReferences InstantiateNewSatelliteReference(SkyboxConfiguration config)
+        public SatelliteReferences GetSatelliteObject(Satellite3DLayer config)
+        {
+            SatelliteReferences tempSatellite = null;
+
+            if (config.satellite == null)
+            {
+                return tempSatellite;
+            }
+
+            // Check if GO for this prefab is already in scene, else create new
+            if (satelliteReferences.ContainsKey(config.satellite))
+            {
+                // Check if there is any unused GO for the given prefab
+                if (satelliteReferences[config.satellite].Count > 0)
+                {
+                    tempSatellite = satelliteReferences[config.satellite].Dequeue();
+                }
+                else
+                {
+                    tempSatellite = InstantiateNewSatelliteReference(config);
+                }
+            }
+            else
+            {
+                satelliteReferences.Add(config.satellite, new Queue<SatelliteReferences>());
+                tempSatellite = InstantiateNewSatelliteReference(config);
+            }
+
+            usedSatellites.Add(tempSatellite);
+            tempSatellite.satelliteParent.SetActive(true);
+
+            return tempSatellite;
+        }
+
+        SatelliteReferences InstantiateNewSatelliteReference(Satellite3DLayer config)
         {
             if (satelliteParentPrefab == null)
             {
@@ -103,7 +131,7 @@ namespace DCL.Skybox
             obj.transform.localPosition = Vector3.zero;
 
             GameObject orbit = obj.transform.GetChild(0).gameObject;
-            GameObject satelliteObj = GameObject.Instantiate(config.satelliteLayer.satellite);
+            GameObject satelliteObj = GameObject.Instantiate(config.satellite);
             satelliteObj.transform.parent = orbit.transform;
 
             // Get satellite behavior and assign satellite 
@@ -114,7 +142,7 @@ namespace DCL.Skybox
             satellite.satelliteParent = obj;
             satellite.orbitGO = orbit;
             satellite.satelliteGO = satelliteObj;
-            satellite.satellitePrefab = config.satelliteLayer.satellite;
+            satellite.satellitePrefab = config.satellite;
             satellite.satelliteBehavior = satelliteBehavior;
 
             return satellite;

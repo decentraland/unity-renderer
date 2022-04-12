@@ -479,8 +479,11 @@ namespace DCL.Skybox
             float normalizedDayTime = GetNormalizedDayTime();
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, cycleTime);
             ApplyAvatarColor(normalizedDayTime);
+
             // Update satellites
-            configuration.ApplyOnSatelliteLayer(timeOfTheDay, skybox3DElements.GetSatelliteObject(configuration));
+            skybox3DElements.ResetObjects();
+            configuration.ApplyOnSatelliteLayer(timeOfTheDay, skybox3DElements.GetSatelliteAllActiveSatelliteRefs(configuration.satelliteLayers));
+
 
             // Cycle resets
             if (timeOfTheDay >= cycleTime)
