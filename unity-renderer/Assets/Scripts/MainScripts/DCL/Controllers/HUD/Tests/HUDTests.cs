@@ -1,6 +1,7 @@
 using System.Collections;
 using DCL;
 using DCL.Helpers;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -27,6 +28,13 @@ namespace Tests
             Object.Destroy(friendsController.gameObject);
             hudController.Dispose();
             yield return base.TearDown();
+        }
+
+        protected override ServiceLocator InitializeServiceLocator()
+        {
+            var serviceLocator = base.InitializeServiceLocator();
+            serviceLocator.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+            return serviceLocator;
         }
 
         [UnityTest]
