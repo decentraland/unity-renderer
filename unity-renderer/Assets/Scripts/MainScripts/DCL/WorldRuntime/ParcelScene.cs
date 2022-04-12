@@ -46,8 +46,20 @@ namespace DCL.Controllers
 
         public bool isReleased { get; private set; }
 
+        private long firstPersonCameraEntityParent;
+        private long thirdPersonCameraEntityParent;
+        private long avatarEntityParent;
+        private long avatarPositionEntityParent;
+        private long rootEntityParent;
+
         public void Awake()
         {
+            firstPersonCameraEntityParent = "FirstPersonCameraEntityReference".GetHashCode();
+            thirdPersonCameraEntityParent = "PlayerEntityReference".GetHashCode();
+            avatarEntityParent = "AvatarEntityReference".GetHashCode();
+            avatarPositionEntityParent = "AvatarPositionEntityReference".GetHashCode();
+            rootEntityParent = "0".GetHashCode();
+            
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
             metricsCounter = new SceneMetricsCounter(DataStore.i.sceneWorldObjects);
@@ -405,7 +417,7 @@ namespace DCL.Controllers
 
             if ( DCLCharacterController.i != null )
             {
-                if (parentId == "FirstPersonCameraEntityReference".GetHashCode() || parentId == "PlayerEntityReference".GetHashCode()) // PlayerEntityReference is for compatibility purposes
+                if (parentId == firstPersonCameraEntityParent || parentId == thirdPersonCameraEntityParent) // PlayerEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will attached to the first person camera
                     // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
@@ -414,7 +426,7 @@ namespace DCL.Controllers
                     return;
                 }
 
-                if (parentId == "AvatarEntityReference".GetHashCode() || parentId == "AvatarPositionEntityReference".GetHashCode()) // AvatarPositionEntityReference is for compatibility purposes
+                if (parentId == avatarEntityParent || parentId == avatarPositionEntityParent) // AvatarPositionEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will be attached to the avatar
                     // It will simply rotate with the avatar, regardless of where the camera is pointing
@@ -429,7 +441,7 @@ namespace DCL.Controllers
                 }
             }
 
-            if (parentId == "0".GetHashCode())
+            if (parentId == rootEntityParent)
             {
                 // The entity will be child of the scene directly
                 me.SetParent(null);

@@ -138,11 +138,11 @@ public class SceneMetricsCounterShould
         rendereable1.textures.Add(tex2);
 
         Rendereable rendereable2 = new Rendereable();
-        rendereable2.ownerId =0;
+        rendereable2.ownerId =1;
         rendereable2.textures.Add(tex3);
 
         Rendereable rendereable3 = new Rendereable();
-        rendereable3.ownerId =0;
+        rendereable3.ownerId =2;
         rendereable3.textures.Add(tex4);
 
         dataStore.AddRendereable("1", rendereable1);
