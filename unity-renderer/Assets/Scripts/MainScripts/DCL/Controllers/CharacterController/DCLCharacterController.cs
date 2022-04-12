@@ -8,6 +8,8 @@ public class DCLCharacterController : MonoBehaviour
 {
     public static DCLCharacterController i { get; private set; }
 
+    private const float CONTROLLER_DRIFT_OFFSET = 0.15f;
+
     [Header("Movement")]
     public float minimumYPosition = 1f;
 
@@ -299,14 +301,14 @@ public class DCLCharacterController : MonoBehaviour
 
                 Vector3 forwardTarget = Vector3.zero;
 
-                if (characterYAxis.GetValue() > 0)
+                if (characterYAxis.GetValue() > CONTROLLER_DRIFT_OFFSET)
                     forwardTarget += xzPlaneForward;
-                if (characterYAxis.GetValue() < 0)
+                if (characterYAxis.GetValue() < -CONTROLLER_DRIFT_OFFSET)
                     forwardTarget -= xzPlaneForward;
 
-                if (characterXAxis.GetValue() > 0)
+                if (characterXAxis.GetValue() > CONTROLLER_DRIFT_OFFSET)
                     forwardTarget += xzPlaneRight;
-                if (characterXAxis.GetValue() < 0)
+                if (characterXAxis.GetValue() < -CONTROLLER_DRIFT_OFFSET)
                     forwardTarget -= xzPlaneRight;
 
 
