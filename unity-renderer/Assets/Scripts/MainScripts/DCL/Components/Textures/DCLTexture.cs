@@ -32,7 +32,7 @@ namespace DCL
 
         AssetPromise_Texture texturePromise = null;
 
-        private Dictionary<ISharedComponent, HashSet<string>> attachedComponents =
+        private Dictionary<ISharedComponent, HashSet<string>> attachedEntitiesByComponent =
             new Dictionary<ISharedComponent, HashSet<string>>();
 
         public TextureWrapMode unityWrap;
@@ -161,49 +161,43 @@ namespace DCL
             RemoveReference(component);
         }
 
-        protected int refCount;
-
         public void AddReference(ISharedComponent component)
         {
-            refCount++;
-
-            if (attachedComponents.ContainsKey(component))
+            if (attachedEntitiesByComponent.ContainsKey(component))
                 return;
 
-            attachedComponents.Add(component, new HashSet<string>());
+            attachedEntitiesByComponent.Add(component, new HashSet<string>());
 
             foreach (var entity in component.GetAttachedEntities())
             {
-                attachedComponents[component].Add(entity.entityId);
+                attachedEntitiesByComponent[component].Add(entity.entityId);
                 DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, entity.entityId, texture);
             }
         }
 
         public void RemoveReference(ISharedComponent component)
         {
-            refCount--;
-            
-            if (refCount == 0)
-                Dispose();
-
-            if (!attachedComponents.ContainsKey(component))
+            if (!attachedEntitiesByComponent.ContainsKey(component))
                 return;
 
-            foreach (var entityId in attachedComponents[component])
+            foreach (var entityId in attachedEntitiesByComponent[component])
             {
                 DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, entityId, texture);
             }
 
-            attachedComponents.Remove(component);
+            attachedEntitiesByComponent.Remove(component);
         }
 
         public override void Dispose()
         {
+            if (isDisposed)
+                return;
+            
             isDisposed = true;
 
-            while (attachedComponents.Count > 0)
+            while (attachedEntitiesByComponent.Count > 0)
             {
-                RemoveReference(attachedComponents.First().Key);
+                RemoveReference(attachedEntitiesByComponent.First().Key);
             }
 
             if (texturePromise != null)

@@ -328,7 +328,6 @@ namespace DCL.Components
             AddReference(component);
 
             SetPlayStateDirty();
-            isPlayStateDirty = true;
             attachedMaterials.Add(component.id, component);
 
             component.OnAttach += SetPlayStateDirty;
@@ -352,7 +351,6 @@ namespace DCL.Components
             component.OnDetach -= SetPlayStateDirty;
             ComponentUtils.UnsubscribeToEntityShapeUpdate(component, SetPlayStateDirty);
 
-            component.Dispose();
             RemoveReference(component);
             SetPlayStateDirty();
         }
