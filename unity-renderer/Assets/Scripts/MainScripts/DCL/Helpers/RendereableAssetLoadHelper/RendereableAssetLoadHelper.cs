@@ -128,6 +128,9 @@ namespace DCL.Components
             }
         }
 
+        private const string AB_GO_NAME_PREFIX = "AB:";
+        private const string GLTF_GO_NAME_PREFIX = "GLTF:";
+
         void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail)
         {
             if (abPromise != null)
@@ -156,6 +159,9 @@ namespace DCL.Components
 
             abPromise.OnSuccessEvent += (x) =>
             {
+#if UNITY_EDITOR
+                x.container.name = AB_GO_NAME_PREFIX + x.container.name; 
+#endif
                 var r = new Rendereable()
                 {
                     container = x.container,
@@ -199,6 +205,9 @@ namespace DCL.Components
 
             gltfPromise.OnSuccessEvent += (Asset_GLTF x) =>
             {
+#if UNITY_EDITOR
+                x.container.name = GLTF_GO_NAME_PREFIX + x.container.name;
+#endif
                 var r = new Rendereable
                 {
                     container = x.container,
