@@ -52,7 +52,6 @@ public class IntegrationTestSuite_Legacy
         result.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
         result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
         result.Register<ICullingController>(() => Substitute.For<ICullingController>());
-        result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
 
         result.Register<IServiceProviders>(
             () =>
