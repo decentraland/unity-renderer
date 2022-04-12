@@ -89,6 +89,7 @@ public class MinimapHUDView : MonoBehaviour
 
     private void OnDestroy()
     {
-        mouseCatcher?.OnMouseLock -= OnMouseLocked;
+        if(mouseCatcher != null)
+            mouseCatcher.OnMouseLock -= OnMouseLocked;
     }
 }
