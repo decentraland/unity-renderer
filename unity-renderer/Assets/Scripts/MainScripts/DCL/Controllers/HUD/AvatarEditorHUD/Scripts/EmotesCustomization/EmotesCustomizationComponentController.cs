@@ -153,7 +153,9 @@ namespace DCL.EmotesCustomization
             emotesCustomizationDataStore.currentLoadedEmotes.Add(id);
             EmoteCardComponentModel emoteToAdd = ParseWearableItemIntoEmoteCardModel(wearable);
             EmoteCardComponentView newEmote = view.AddEmote(emoteToAdd);
-            newEmote.SetAsLoading(true);
+
+            if (newEmote != null)
+                newEmote.SetAsLoading(true);
 
             if (!emotesInLoadingState.ContainsKey(id))
                 emotesInLoadingState.Add(id, newEmote);
@@ -255,14 +257,18 @@ namespace DCL.EmotesCustomization
         internal void StoreEquippedEmotes()
         {
             List<EquippedEmoteData> newEquippedEmotesList = new List<EquippedEmoteData> { null, null, null, null, null, null, null, null, null, null };
-            foreach (EmoteSlotCardComponentView slot in view.currentSlots)
+
+            if (view.currentSlots != null)
             {
-                if (!string.IsNullOrEmpty(slot.model.emoteId))
-                    newEquippedEmotesList[slot.model.slotNumber] = new EquippedEmoteData
-                    {
-                        id = slot.model.emoteId,
-                        cachedThumbnail = slot.model.pictureSprite
-                    };
+                foreach (EmoteSlotCardComponentView slot in view.currentSlots)
+                {
+                    if (!string.IsNullOrEmpty(slot.model.emoteId))
+                        newEquippedEmotesList[slot.model.slotNumber] = new EquippedEmoteData
+                        {
+                            id = slot.model.emoteId,
+                            cachedThumbnail = slot.model.pictureSprite
+                        };
+                }
             }
 
             emotesCustomizationDataStore.unsavedEquippedEmotes.Set(newEquippedEmotesList);
