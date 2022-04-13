@@ -243,29 +243,6 @@ namespace DCL.Controllers
                 || entity.meshesInfo.meshRootGameObject == null 
                 || entity.meshesInfo.mergedBounds == null)
                 return false;
-            
-            /*entity.meshesInfo.RecalculateBounds();
-            var meshSize = entity.meshesInfo.mergedBounds.size.magnitude;
-            // if (entity.meshesInfo.meshFilters != null)
-            // {
-            //     Bounds meshesLocalBounds = new Bounds();
-            //     foreach (MeshFilter meshFilter in entity.meshesInfo.meshFilters)
-            //     {
-            //         Vector3 originalBoundsSize = meshFilter.mesh.bounds.size;
-            //         Vector3 objectLossyScale = meshFilter.transform.lossyScale;
-            //         Bounds scaledBounds = new Bounds(Vector3.zero, new Vector3(
-            //             originalBoundsSize.x * objectLossyScale.x,
-            //             originalBoundsSize.y * objectLossyScale.y,
-            //             originalBoundsSize.z * objectLossyScale.z
-            //         ));
-            //         meshesLocalBounds.Encapsulate(scaledBounds);
-            //     }
-            //     meshSize = meshesLocalBounds.size.magnitude;
-            // }
-            
-            // if (meshSize > MAX_MESH_SIZE)
-            if (meshSize > MAX_MESH_SIZE || meshSize == 0f)
-                return false;*/
 
             // 1st check (full mesh AABB)
             bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.mergedBounds);

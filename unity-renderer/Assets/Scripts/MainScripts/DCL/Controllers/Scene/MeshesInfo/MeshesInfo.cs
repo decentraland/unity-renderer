@@ -63,7 +63,6 @@ namespace DCL.Models
             set { mergedBoundsValue = value; }
         }
 
-        // public void UpdateRenderersCollection(bool recalculateBounds = true)
         public void UpdateRenderersCollection()
         {
             if (meshRootGameObjectValue == null)
@@ -79,18 +78,13 @@ namespace DCL.Models
                 meshFilters = meshFilters.Union(tmpros.Select(x => x.meshFilter)).ToArray();
             }
 
-            // if(recalculateBounds)
-                RecalculateBounds();
-            
+            RecalculateBounds();
             OnAnyUpdated?.Invoke();
             OnUpdated?.Invoke();
         }
 
         public void RecalculateBounds()
-        {
-            // if (renderers == null || renderers.Length == 0)
-            //     UpdateRenderersCollection(false);
-            
+        {   
             if (renderers == null || renderers.Length == 0)
             {
                 mergedBoundsValue = new Bounds();
