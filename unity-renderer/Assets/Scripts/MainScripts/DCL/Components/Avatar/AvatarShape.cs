@@ -250,7 +250,7 @@ namespace DCL
                 avatarReporterController.ReportAvatarRemoved();
             }
 
-            avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
+            avatarReporterController.SetUp(entity.scene.sceneData.id, player.id);
 
             float height = AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y;
 

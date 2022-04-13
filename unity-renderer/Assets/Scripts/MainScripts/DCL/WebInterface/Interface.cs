@@ -632,7 +632,6 @@ namespace DCL.Interface
         public class AvatarStateBase
         {
             public string type;
-            public long entityId;
             public string avatarShapeId;
         }
 
@@ -1451,18 +1450,16 @@ namespace DCL.Interface
             SendMessage("VideoProgressEvent", progressEvent);
         }
 
-        public static void ReportAvatarRemoved(long entityId, string avatarId)
+        public static void ReportAvatarRemoved(string avatarId)
         {
             avatarStatePayload.type = "Removed";
-            avatarStatePayload.entityId = entityId;
             avatarStatePayload.avatarShapeId = avatarId;
             SendMessage("ReportAvatarState", avatarStatePayload);
         }
 
-        public static void ReportAvatarSceneChanged(long entityId, string avatarId, string sceneId)
+        public static void ReportAvatarSceneChanged(string avatarId, string sceneId)
         {
             avatarSceneChangedPayload.type = "SceneChanged";
-            avatarSceneChangedPayload.entityId = entityId;
             avatarSceneChangedPayload.avatarShapeId = avatarId;
             avatarSceneChangedPayload.sceneId = sceneId;
             SendMessage("ReportAvatarState", avatarSceneChangedPayload);
