@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2700259136045117502}
   - component: {fileID: 601301297874170717}
   m_Layer: 5
-  m_Name: PublicChatChannelHUD
+  m_Name: GeneralChatChannelHUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
