@@ -40,7 +40,7 @@ namespace DCL.Components
             return result;
         }
 
-        public static T GetOrAddLoaderForEntity<T>(IDCLEntity entity)
+        protected static T GetOrAddLoaderForEntity<T>(IDCLEntity entity)
             where T : LoadWrapper, new()
         {
             if (!attachedLoaders.TryGetValue(entity.meshRootGameObject, out LoadWrapper result))
@@ -52,12 +52,12 @@ namespace DCL.Components
             return result as T;
         }
 
-        public static void RemoveLoaderForEntity(IDCLEntity entity)
+        protected static void RemoveLoaderForEntity(IDCLEntity entity)
         {
             attachedLoaders.Remove(entity.meshRootGameObject);
         }
 
-        public LoadableShape() { model = new Model(); }
+        protected LoadableShape() { model = new Model(); }
 
         public override int GetClassId() { return -1; }
 
