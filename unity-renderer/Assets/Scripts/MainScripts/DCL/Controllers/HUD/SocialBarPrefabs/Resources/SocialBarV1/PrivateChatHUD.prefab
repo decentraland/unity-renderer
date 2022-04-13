@@ -102,6 +102,11 @@ MonoBehaviour:
   confirmationDialog: {fileID: 1379511485321851930}
   defaultChatEntryFactory: {fileID: 11400000, guid: de537b45ff89f45489136467b5b292aa,
     type: 2}
+  model:
+    isInputFieldFocused: 0
+    inputFieldText: 
+    enableFadeoutMode: 0
+    entries: []
   separatorEntryPrefab: {fileID: 717124712886577979, guid: 66a008a71d1e6d043a1066b0e45db3ca,
     type: 3}
 --- !u!1 &1333016673004952145

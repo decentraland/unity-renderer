@@ -12,6 +12,11 @@ PrefabInstance:
       propertyPath: username
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: -808164953336239873, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: showUserName
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2387707094095225561, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: m_Name

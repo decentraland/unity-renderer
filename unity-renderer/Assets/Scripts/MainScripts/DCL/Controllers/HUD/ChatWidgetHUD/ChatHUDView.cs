@@ -10,7 +10,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
+public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 {
     private const string VIEW_PATH = "SocialBarV1/Chat";
     private const int MAX_CONTINUOUS_MESSAGES = 6;
@@ -27,6 +27,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     public UserContextMenu contextMenu;
     public UserContextConfirmationDialog confirmationDialog;
     [SerializeField] private DefaultChatEntryFactory defaultChatEntryFactory;
+    [SerializeField] private Model model;
     
     [NonSerialized] protected List<ChatEntry> entries = new List<ChatEntry>();
 
@@ -35,8 +36,6 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
     private readonly Dictionary<Action, UnityAction<string>> inputFieldListeners =
         new Dictionary<Action, UnityAction<string>>();
-
-    private bool enableFadeoutMode;
 
     public event Action<string> OnMessageUpdated;
 
@@ -83,37 +82,20 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         return view;
     }
 
-    private void Awake()
+    public override void Awake()
     {
+        base.Awake();
         inputField.onSubmit.AddListener(OnInputFieldSubmit);
         inputField.onSelect.AddListener(OnInputFieldSelect);
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
         inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str));
         ChatEntryFactory ??= defaultChatEntryFactory;
     }
-
-    private void OnInputFieldSubmit(string message)
+    
+    public override void OnEnable()
     {
-        currentMessage.body = message;
-        currentMessage.sender = UserProfile.GetOwnUserProfile().userId;
-        currentMessage.messageType = ChatMessage.Type.NONE;
-        currentMessage.recipient = string.Empty;
-
-        // A TMP_InputField is automatically marked as 'wasCanceled' when the ESC key is pressed
-        if (inputField.wasCanceled)
-            currentMessage.body = string.Empty;
-
-        OnSendMessage?.Invoke(currentMessage);
-    }
-
-    private void OnInputFieldSelect(string message)
-    {
-        AudioScriptableObjects.inputFieldFocus.Play(true);
-    }
-
-    private void OnInputFieldDeselect(string message)
-    {
-        AudioScriptableObjects.inputFieldUnfocus.Play(true);
+        base.OnEnable();
+        Utils.ForceUpdateLayout(transform as RectTransform);
     }
 
     public void ResetInputField(bool loseFocus = false)
@@ -124,9 +106,15 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
             EventSystem.current.SetSelectedGameObject(null);
     }
 
-    void OnEnable()
+    public override void RefreshControl()
     {
-        Utils.ForceUpdateLayout(transform as RectTransform);
+        if (model.isInputFieldFocused)
+            FocusInputField();
+        SetInputFieldText(model.inputFieldText);
+        SetFadeoutMode(model.enableFadeoutMode);
+        ClearAllEntries();
+        foreach (var entry in model.entries)
+            AddEntry(entry);
     }
 
     public void FocusInputField()
@@ -137,20 +125,14 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 
     public void SetInputFieldText(string text)
     {
+        model.inputFieldText = text;
         inputField.text = text;
         inputField.MoveTextEnd(false);
     }
 
-    bool EntryIsVisible(ChatEntry entry)
-    {
-        int visibleCorners =
-            (entry.transform as RectTransform).CountCornersVisibleFrom(scrollRect.viewport.transform as RectTransform);
-        return visibleCorners > 0;
-    }
-
     public void SetFadeoutMode(bool enabled)
     {
-        enableFadeoutMode = enabled;
+        model.enableFadeoutMode = enabled;
 
         for (int i = 0; i < entries.Count; i++)
         {
@@ -158,7 +140,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
 
             if (enabled)
             {
-                entry.SetFadeout(EntryIsVisible(entry));
+                entry.SetFadeout(IsEntryVisible(entry));
             }
             else
             {
@@ -179,7 +161,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         var chatEntry = ChatEntryFactory.Create(model);
         chatEntry.transform.SetParent(chatEntriesContainer, false);
 
-        if (enableFadeoutMode && EntryIsVisible(chatEntry))
+        if (this.model.enableFadeoutMode && IsEntryVisible(chatEntry))
             chatEntry.SetFadeout(true);
         else
             chatEntry.SetFadeout(false);
@@ -209,8 +191,6 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         UpdateSpam(model);
     }
 
-    public void Dispose() => Destroy(gameObject);
-
     public void RemoveFirstEntry()
     {
         if (entries.Count <= 0) return;
@@ -223,6 +203,55 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         if (contextMenu == null) return;
         contextMenu.Hide();
         confirmationDialog.Hide();
+    }
+
+    public void OnMessageCancelHover()
+    {
+        messageHoverPanel.SetActive(false);
+        messageHoverText.text = string.Empty;
+    }
+
+    public virtual void ClearAllEntries()
+    {
+        foreach (var entry in entries)
+            Destroy(entry.gameObject);
+        entries.Clear();
+    }
+
+    public void SetGotoPanelStatus(bool isActive)
+    {
+        DataStore.i.HUDs.gotoPanelVisible.Set(isActive);
+    }
+
+    private bool IsEntryVisible(ChatEntry entry)
+    {
+        int visibleCorners =
+            (entry.transform as RectTransform).CountCornersVisibleFrom(scrollRect.viewport.transform as RectTransform);
+        return visibleCorners > 0;
+    }
+
+    private void OnInputFieldSubmit(string message)
+    {
+        currentMessage.body = message;
+        currentMessage.sender = string.Empty;
+        currentMessage.messageType = ChatMessage.Type.NONE;
+        currentMessage.recipient = string.Empty;
+
+        // A TMP_InputField is automatically marked as 'wasCanceled' when the ESC key is pressed
+        if (inputField.wasCanceled)
+            currentMessage.body = string.Empty;
+
+        OnSendMessage?.Invoke(currentMessage);
+    }
+
+    private void OnInputFieldSelect(string message)
+    {
+        AudioScriptableObjects.inputFieldFocus.Play(true);
+    }
+
+    private void OnInputFieldDeselect(string message)
+    {
+        AudioScriptableObjects.inputFieldUnfocus.Play(true);
     }
 
     private void UpdateSpam(ChatEntryModel model)
@@ -313,13 +342,7 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
         messageHoverGotoPanel.SetActive(true);
     }
 
-    public void OnMessageCancelHover()
-    {
-        messageHoverPanel.SetActive(false);
-        messageHoverText.text = string.Empty;
-    }
-
-    public void OnMessageCancelGotoHover()
+    private void OnMessageCancelGotoHover()
     {
         messageHoverGotoPanel.SetActive(false);
         messageHoverGotoText.text = string.Empty;
@@ -335,20 +358,16 @@ public class ChatHUDView : MonoBehaviour, IChatHUDComponentView
             if (entries[i].transform.GetSiblingIndex() != i)
             {
                 entries[i].transform.SetSiblingIndex(i);
-                // Utils.ForceUpdateLayout(entries[i].transform as RectTransform, delayed: false);
             }
         }
     }
 
-    public virtual void ClearAllEntries()
+    [Serializable]
+    private struct Model
     {
-        foreach (var entry in entries)
-            Destroy(entry.gameObject);
-        entries.Clear();
-    }
-
-    public void SetGotoPanelStatus(bool isActive)
-    {
-        DataStore.i.HUDs.gotoPanelVisible.Set(isActive);
+        public bool isInputFieldFocused;
+        public string inputFieldText;
+        public bool enableFadeoutMode;
+        public ChatEntryModel[] entries;
     }
 }

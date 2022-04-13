@@ -15,11 +15,11 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     [SerializeField] internal float timeToFade = 10f;
     [SerializeField] internal float fadeDuration = 5f;
-    [SerializeField] internal TextMeshProUGUI username;
     [SerializeField] internal TextMeshProUGUI body;
     [SerializeField] CanvasGroup group;
     [SerializeField] internal float timeToHoverPanel = 1f;
     [SerializeField] internal float timeToHoverGotoPanel = 1f;
+    [SerializeField] private bool showUserName = true;
     [NonSerialized] public string messageLocalDateTime;
 
     private bool fadeEnabled;
@@ -48,28 +48,27 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         string userString = GetDefaultSenderString(chatEntryModel.senderName);
 
-        if (chatEntryModel.subType == ChatEntryModel.SubType.RECEIVED)
+        if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
         {
-            userString = $"<b>From {chatEntryModel.senderName}:</b>";
-        }
-        else if (chatEntryModel.subType == ChatEntryModel.SubType.SENT)
-        {
-            userString = $"<b>To {chatEntryModel.recipientName}:</b>";
+            if (chatEntryModel.subType == ChatEntryModel.SubType.RECEIVED)
+            {
+                userString = $"<b>From {chatEntryModel.senderName}:</b>";
+            }
+            else if (chatEntryModel.subType == ChatEntryModel.SubType.SENT)
+            {
+                userString = $"<b>To {chatEntryModel.recipientName}:</b>";
+            }
         }
 
         chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
 
-        if (username != null && !string.IsNullOrEmpty(userString))
+        if (!string.IsNullOrEmpty(userString) && showUserName)
         {
-            if (username != null)
-                username.text = userString;
             body.text = $"{userString} {chatEntryModel.bodyText}";
         }
         else
         {
-            if (username != null)
-                username.text = "";
-            body.text = $"{chatEntryModel.bodyText}";
+            body.text = chatEntryModel.bodyText;
         }
 
         if (CoordinateUtils.HasValidTextCoordinates(body.text))

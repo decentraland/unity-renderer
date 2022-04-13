@@ -10,12 +10,37 @@ PrefabInstance:
     - target: {fileID: 826062948616953639, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: m_ChildAlignment
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2387707094095225561, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: m_Name
       value: PublicChatEntrySentWhisper
+      objectReference: {fileID: 0}
+    - target: {fileID: 2617920264231014947, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2617920264231014947, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2617920264231014947, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2617920264231014947, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2617920264231014947, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4315294092968244398, guid: c419563788ffdbc44a53495651162084,
         type: 3}
@@ -35,6 +60,11 @@ PrefabInstance:
     - target: {fileID: 4315294092968244398, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4315294092968244398, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4315294092968244398, guid: c419563788ffdbc44a53495651162084,
@@ -213,6 +243,21 @@ PrefabInstance:
       value: 0.9882353
       objectReference: {fileID: 0}
     - target: {fileID: 7437960684281325092, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.92156863
+      objectReference: {fileID: 0}
+    - target: {fileID: 7731296027798307080, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.8901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 7731296027798307080, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 7731296027798307080, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: m_Color.r
       value: 0.92156863

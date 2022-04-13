@@ -147,6 +147,7 @@ public class ChatHUDController : IDisposable
 
     private void HandleSendMessage(ChatMessage message)
     {
+        message.sender = userProfileBridge.GetOwn().userId;
         ApplyWhisperAttributes(message);
         OnSendMessage?.Invoke(message);
     }

@@ -1672,6 +1672,11 @@ MonoBehaviour:
   confirmationDialog: {fileID: 7303840854963470765}
   defaultChatEntryFactory: {fileID: 11400000, guid: de537b45ff89f45489136467b5b292aa,
     type: 2}
+  model:
+    isInputFieldFocused: 0
+    inputFieldText: 
+    enableFadeoutMode: 0
+    entries: []
 --- !u!1 &8436547724699914239
 GameObject:
   m_ObjectHideFlags: 0

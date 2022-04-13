@@ -1205,6 +1205,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4540070755932127706}
     m_Modifications:
+    - target: {fileID: 2216557797817228083, guid: bac007ac4ef98284c8cf05867a35ee0f,
+        type: 3}
+      propertyPath: defaultChatEntryFactory
+      value: 
+      objectReference: {fileID: 11400000, guid: fdc2d8fd7d3ea824c9100c6190a00f58,
+        type: 2}
     - target: {fileID: 4755746969343816562, guid: bac007ac4ef98284c8cf05867a35ee0f,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -1324,6 +1330,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Chat
+      objectReference: {fileID: 0}
+    - target: {fileID: 8865446388248603219, guid: bac007ac4ef98284c8cf05867a35ee0f,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bac007ac4ef98284c8cf05867a35ee0f, type: 3}

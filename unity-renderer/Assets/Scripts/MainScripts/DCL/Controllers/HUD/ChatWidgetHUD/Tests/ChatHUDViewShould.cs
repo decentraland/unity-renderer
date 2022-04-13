@@ -2,7 +2,6 @@
 using DCL.Interface;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 public class ChatHUDViewShould : IntegrationTestSuite_Legacy
 {

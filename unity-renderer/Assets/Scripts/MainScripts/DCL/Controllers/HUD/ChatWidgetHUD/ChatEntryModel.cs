@@ -1,5 +1,7 @@
-﻿using DCL.Interface;
+﻿using System;
+using DCL.Interface;
 
+[Serializable]
 public struct ChatEntryModel
 {
     public enum SubType
@@ -16,6 +18,5 @@ public struct ChatEntryModel
     public string recipientName;
     public string otherUserId;
     public ulong timestamp;
-
     public SubType subType;
 }
