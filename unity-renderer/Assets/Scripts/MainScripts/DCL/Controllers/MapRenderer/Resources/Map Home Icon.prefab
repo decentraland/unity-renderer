@@ -122,7 +122,6 @@ GameObject:
   - component: {fileID: 8098144934014490349}
   - component: {fileID: 2495922858077533457}
   - component: {fileID: 7918298036817045043}
-  - component: {fileID: 3915973121112947369}
   m_Layer: 5
   m_Name: Map Home Icon
   m_TagString: Untagged
@@ -190,16 +189,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
---- !u!114 &3915973121112947369
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9031851020175058759}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d8371267a9a13b45b64248feca59b7b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  title: {fileID: 0}
