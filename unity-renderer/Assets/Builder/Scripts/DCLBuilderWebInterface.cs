@@ -46,13 +46,13 @@ namespace Builder
             [System.Serializable]
             public class TransformPayload
             {
-                public string entityId = string.Empty;
+                public long entityId;
                 public Vector3 position = Vector3.zero;
                 public Quaternion rotation = Quaternion.identity;
                 public Vector3 scale = Vector3.one;
             }
 
-            public string[] entities = null;
+            public long[] entities = null;
             public TransformPayload[] transforms = null;
             public string gizmoType = DCLGizmos.Gizmo.NONE;
             public string type = string.Empty;
@@ -110,7 +110,7 @@ namespace Builder
         public void SendEntitySelected(EditableEntity entity, string gizmoType, string sceneId)
         {
             onGizmoEventPayload.type = "gizmoSelected";
-            onGizmoEventPayload.entities = entity ? new string[] { entity.rootEntity.entityId.ToString() } : null;
+            onGizmoEventPayload.entities = entity ? new long[] { entity.rootEntity.entityId } : null;
             onGizmoEventPayload.gizmoType = gizmoType != null ? gizmoType : DCLGizmos.Gizmo.NONE;
             onGizmoEventPayload.transforms = null;
 
@@ -130,7 +130,7 @@ namespace Builder
             {
                 onGizmoEventPayload.transforms[i] = new GizmosEventPayload.TransformPayload()
                 {
-                    entityId = entities[i].rootEntity.entityId.ToString(),
+                    entityId = entities[i].rootEntity.entityId,
                     position = entities[i].transform.position,
                     rotation = entities[i].transform.rotation,
                     scale = entities[i].transform.lossyScale
