@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class HomeSceneHandler : MonoBehaviour
 {
-    const string PLAYER_PREFS_HOME_SCENE = "HomeScene";
 
     [SerializeField] public TextMeshProUGUI coordinatesText;
     [SerializeField] public Button saveCoordinatesButton;
@@ -35,10 +34,13 @@ public class HomeSceneHandler : MonoBehaviour
         SaveCoordinates();
     }
 
+    public ParcelCoordinates GetHomeCoordinates()
+    {
+        return currentHomeCoordinates;
+    }
+
     private void SaveCoordinates()
     {
-        PlayerPrefsUtils.SetString(PLAYER_PREFS_HOME_SCENE, currentHomeCoordinates.ToString());
-        PlayerPrefsUtils.Save();
     }
 
     private void OnDestroy() 

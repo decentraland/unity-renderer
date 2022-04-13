@@ -115,6 +115,8 @@ MonoBehaviour:
     type: 3}
   userIconPrefab: {fileID: 9031851020175058759, guid: de55552ad87874a44aefe9d124170fe8,
     type: 3}
+  userHomeIconPrefab: {fileID: 9031851020175058759, guid: b45f81179c1da4d03855c75a80f3ea59,
+    type: 3}
   globalUserMarkerPrefab: {fileID: 5313837265398941890, guid: 6b6245a77381540da8f58d770d619b05,
     type: 3}
 --- !u!1 &3611584312677935203

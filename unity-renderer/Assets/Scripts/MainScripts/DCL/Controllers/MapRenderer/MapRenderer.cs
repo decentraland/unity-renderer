@@ -60,6 +60,7 @@ namespace DCL
 
         public MapSceneIcon scenesOfInterestIconPrefab;
         public GameObject userIconPrefab;
+        public GameObject userHomeIconPrefab;
         public UserMarkerObject globalUserMarkerPrefab;
 
         public MapGlobalUsersPositionMarkerController usersPositionMarkerController { private set; get; }
@@ -134,6 +135,13 @@ namespace DCL
             usersPositionMarkerController.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);
 
             KernelConfig.i.OnChange += OnKernelConfigChanged;
+            SetUserHomeIcon(new ParcelCoordinates(0,0));
+        }
+
+        public void SetUserHomeIcon(ParcelCoordinates coords)
+        {
+            GameObject go = Object.Instantiate(userHomeIconPrefab, overlayContainer.transform);
+            (go.transform as RectTransform).anchoredPosition = MapUtils.GetTileCenterToLocalPosition(coords.x, coords.y);
         }
 
         private void EnsurePools()
