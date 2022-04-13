@@ -46,8 +46,8 @@ namespace DCL.Controllers
 
         public bool isReleased { get; private set; }
 
-        public IDCLEntity avatarReference;
-        public IDCLEntity firstPersonCameraReference;
+        public Transform avatarTransform;
+        public Transform firstPersonCameraTransform;
 
         public void Awake()
         {
@@ -406,14 +406,16 @@ namespace DCL.Controllers
             Environment.i.platform.cullingController.MarkDirty();
             Environment.i.platform.physicsSyncController.MarkDirty();
 
-            if (firstPersonCameraReference != null && avatarReference != null)
+            if (firstPersonCameraTransform != null && avatarTransform != null)
             {
                 if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will attached to the first person camera
                     // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
-                    me.SetParent(firstPersonCameraReference);
+                    me.SetParent(null);
+                    me.gameObject.transform.SetParent(firstPersonCameraTransform);
                     Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                    Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
                     return;
                 }
 
@@ -421,14 +423,11 @@ namespace DCL.Controllers
                 {
                     // In this case, the entity will be attached to the avatar
                     // It will simply rotate with the avatar, regardless of where the camera is pointing
-                    me.SetParent(avatarReference);
+                    me.SetParent(null);
+                    me.gameObject.transform.SetParent(avatarTransform);
                     Environment.i.world.sceneBoundsChecker.AddPersistent(me);
-                    return;
-                }
-
-                if (me.parent == firstPersonCameraReference || me.parent == avatarReference)
-                {
                     Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
+                    return;
                 }
             }
 

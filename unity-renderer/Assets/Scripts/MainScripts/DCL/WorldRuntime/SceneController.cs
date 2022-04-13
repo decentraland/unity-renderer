@@ -31,8 +31,8 @@ namespace DCL
         private CancellationTokenSource tokenSource;
         private IMessagingControllersManager messagingControllersManager => Environment.i.messaging.manager;
 
-        private IDCLEntity avatarReference;
-        private IDCLEntity firstPersonCameraReference;
+        public Transform avatarTransform { get; set; }
+        public Transform firstPersonCameraTransform { get; set; }
 
         public void Initialize()
         {
@@ -60,10 +60,6 @@ namespace DCL
 
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
-
-            avatarReference = new DecentralandEntity() {gameObject = DCLCharacterController.i.avatarGameObject};
-            firstPersonCameraReference = new DecentralandEntity()
-                {gameObject = DCLCharacterController.i.firstPersonCameraGameObject};
         }
         private void SetupDeferredRunners()
         {
@@ -669,8 +665,8 @@ namespace DCL
                 var newGameObject = new GameObject("New Scene");
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
-                newScene.avatarReference = avatarReference;
-                newScene.firstPersonCameraReference = firstPersonCameraReference;
+                newScene.avatarTransform = avatarTransform;
+                newScene.firstPersonCameraTransform = firstPersonCameraTransform;
                 newScene.SetData(sceneToLoad);
 
                 if (debugConfig.isDebugMode.Get())

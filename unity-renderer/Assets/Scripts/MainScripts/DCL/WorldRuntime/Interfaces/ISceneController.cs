@@ -1,11 +1,14 @@
 ﻿using System;
 using DCL.Controllers;
 using DCL.Models;
+using UnityEngine;
 
 namespace DCL
 {
     public interface ISceneController : IMessageProcessHandler, IMessageQueueHandler, IService
     {
+        public Transform avatarTransform { get; set; }
+        public Transform firstPersonCameraTransform { get; set; }
         bool enabled { get; set; }
         bool deferredMessagesDecoding { get; set; }
         bool prewarmSceneMessagesPool { get; set; }

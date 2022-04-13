@@ -165,10 +165,8 @@ namespace DCL
 
             if (DCLCharacterController.i != null)
             {
-                newScene.avatarReference = new DecentralandEntity()
-                    {gameObject = DCLCharacterController.i.avatarGameObject};
-                newScene.firstPersonCameraReference = new DecentralandEntity()
-                    {gameObject = DCLCharacterController.i.firstPersonCameraGameObject};
+                newScene.avatarTransform = DCLCharacterController.i.avatarGameObject.transform;
+                newScene.firstPersonCameraTransform = DCLCharacterController.i.firstPersonCameraGameObject.transform;
                 newScene.InitializeDebugPlane();
             }
 

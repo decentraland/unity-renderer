@@ -37,9 +37,6 @@ namespace DCL
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
-            if (!disableSceneDependencies)
-                InitializeSceneDependencies();
-
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
                 performanceMetricsController = new PerformanceMetricsController();
@@ -53,8 +50,10 @@ namespace DCL
 #endif
 
             SetupPlugins();
-
             InitializeCommunication();
+
+            if (!disableSceneDependencies)
+                InitializeSceneDependencies();
 
             // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
             // We should re-enable this later as produces a performance regression.
@@ -64,7 +63,6 @@ namespace DCL
 
         protected virtual void InitializeCommunication()
         {
-
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
             Debug.unityLogger.logEnabled = false;

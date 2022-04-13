@@ -133,6 +133,12 @@ public class DCLCharacterController : MonoBehaviour
         {
             throw new System.Exception("Both the avatar and first person camera game objects must be set.");
         }
+
+        if (Environment.i.world.sceneController != null)
+        {
+            Environment.i.world.sceneController.avatarTransform = avatarGameObject.transform;
+            Environment.i.world.sceneController.firstPersonCameraTransform = firstPersonCameraGameObject.transform;
+        }
     }
 
     private void SubscribeToInput()
