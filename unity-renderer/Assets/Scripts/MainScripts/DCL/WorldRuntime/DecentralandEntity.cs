@@ -51,6 +51,14 @@ namespace DCL.Models
 
         public Dictionary<System.Type, ISharedComponent> GetSharedComponents() { return sharedComponents; }
 
+        public bool IsDebug()
+        {
+            return meshesInfo != null
+                   && meshesInfo.meshRootGameObject != null
+                   && meshesInfo.meshRootGameObject.transform.childCount > 0
+                   && meshesInfo.meshRootGameObject.transform.GetChild(0).name.ToLower().Contains("bafkreid7fth6hdt5fate5jruog75g4tr2uz3jfq2inyhbp2th5gnmbrk6e");
+        }
+        
         public void AddChild(IDCLEntity entity)
         {
             if (!children.ContainsKey(entity.entityId))

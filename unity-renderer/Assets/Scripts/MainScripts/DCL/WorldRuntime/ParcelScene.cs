@@ -13,6 +13,11 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene, ISceneMessageProcessor
     {
+        private const string FIRST_PERSON_CAM_ENTITY_REFERENCE_ID = "FirstPersonCameraEntityReference";
+        private const string PLAYER_ENTITY_REFERENCE_ID = "PlayerEntityReference";
+        private const string AVATAR_ENTITY_REFERENCE_ID = "AvatarEntityReference";
+        private const string AVSTAR_POSITION_ENTITY_REFERENCE_ID = "AvatarPositionEntityReference";
+        
         public Dictionary<string, IDCLEntity> entities { get; private set; } = new Dictionary<string, IDCLEntity>();
         public Dictionary<string, ISharedComponent> disposableComponents { get; private set; } = new Dictionary<string, ISharedComponent>();
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
@@ -387,7 +392,7 @@ namespace DCL.Controllers
         }
 
         private void RemoveAllEntitiesImmediate() { RemoveAllEntities(instant: true); }
-
+        
         public void SetEntityParent(string entityId, string parentId)
         {
             if (entityId == parentId)
@@ -405,7 +410,7 @@ namespace DCL.Controllers
 
             if ( DCLCharacterController.i != null )
             {
-                if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+                if (parentId == FIRST_PERSON_CAM_ENTITY_REFERENCE_ID || parentId == PLAYER_ENTITY_REFERENCE_ID) // PlayerEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will attached to the first person camera
                     // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
@@ -414,7 +419,7 @@ namespace DCL.Controllers
                     return;
                 }
 
-                if (parentId == "AvatarEntityReference" || parentId == "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+                if (parentId == AVATAR_ENTITY_REFERENCE_ID || parentId == AVSTAR_POSITION_ENTITY_REFERENCE_ID) // AvatarPositionEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will be attached to the avatar
                     // It will simply rotate with the avatar, regardless of where the camera is pointing
@@ -425,6 +430,7 @@ namespace DCL.Controllers
 
                 if (me.parent == DCLCharacterController.i.firstPersonCameraReference || me.parent == DCLCharacterController.i.avatarReference)
                 {
+                    // Remove from persistent entities list
                     Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
                 }
             }
@@ -444,6 +450,9 @@ namespace DCL.Controllers
                     me.SetParent(myParent);
                 }
             }
+            
+            // After reparenting the Entity may end up outside the scene boundaries
+            DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(me);
         }
 
         /**
@@ -515,7 +524,7 @@ namespace DCL.Controllers
                 newComponent = EntityComponentUpdate(entity, classId, data as string);
             }
 
-            if (newComponent != null && newComponent is IOutOfSceneBoundariesHandler)
+            // if (newComponent != null && newComponent is IOutOfSceneBoundariesHandler)
                 Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
 
             OnChanged?.Invoke();

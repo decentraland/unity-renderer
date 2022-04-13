@@ -27,6 +27,8 @@ namespace DCL.Models
         /// <summary>
         /// This get the renderer bounds with a check to ensure the renderer is at a safe position.
         /// If the renderer is too far away from 0,0,0, wasm target ensures a crash.
+        /// NOTE: If returning a mocked bounds object becomes problematic (e.g. for getting real bounds size),
+        /// we should find a solution using meshFilter.mesh.bounds instead as those bounds are local.
         /// </summary>
         /// <param name="renderer"></param>
         /// <returns>The bounds value if the value is correct, or a mocked bounds object with clamped values if its too far away.</returns>

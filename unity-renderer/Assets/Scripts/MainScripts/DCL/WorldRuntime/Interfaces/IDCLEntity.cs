@@ -21,6 +21,8 @@ namespace DCL.Models
         void AddSharedComponent(System.Type componentType, ISharedComponent component);
         void RemoveSharedComponent(System.Type targetType, bool triggerDetaching = true);
 
+        bool IsDebug();
+
         /// <summary>
         /// This function is designed to get interfaces implemented by diverse components.
         ///

@@ -190,7 +190,14 @@ namespace DCL.Controllers
                 }
             }
 
-            if (entity.meshRootGameObject == null || entity.meshesInfo.renderers == null || entity.meshesInfo.renderers.Length == 0)
+            // if (!IsEntityValidForBoundaryChecks(entity))
+            // {
+            //     SetMeshesAndComponentsInsideBoundariesState(entity, false);
+            //     
+            //     return;
+            // }
+
+            if (!HasMesh(entity))
             {
                 UpdateComponents(entity, entity.scene.IsInsideSceneBoundaries(entity.gameObject.transform.position + CommonScriptableObjects.worldOffset.Get()));
                 return;
@@ -198,9 +205,7 @@ namespace DCL.Controllers
 
             // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
             if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
-            {
                 return;
-            }
 
             var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
@@ -209,10 +214,58 @@ namespace DCL.Controllers
             EvaluateMeshBounds(entity);
         }
 
+        private bool HasMesh(IDCLEntity entity)
+        {
+            return entity.meshRootGameObject != null && entity.meshesInfo.renderers != null && entity.meshesInfo.renderers.Length > 0;
+        }
+
+        const float POSITION_OVERFLOW_LIMIT = 10000;
+        const float POSITION_OVERFLOW_LIMIT_SQR = POSITION_OVERFLOW_LIMIT * POSITION_OVERFLOW_LIMIT;
+        const float MAX_MESH_SIZE = 1000f;
+        const float MAX_MESH_SIZE_SQR = MAX_MESH_SIZE * MAX_MESH_SIZE;
+        private bool IsEntityValidForBoundaryChecks(IDCLEntity entity)
+        {
+            if (entity.gameObject.transform.position.sqrMagnitude >= POSITION_OVERFLOW_LIMIT_SQR)
+                return false;
+
+            if (!HasMesh(entity))
+                return true;
+            
+            // if(entity.meshesInfo.mergedBounds.size.sqrMagnitude == 0)
+                entity.meshesInfo.RecalculateBounds();
+
+            return entity.meshesInfo.mergedBounds.size.sqrMagnitude < MAX_MESH_SIZE_SQR;
+        }
+
         public bool IsEntityInsideSceneBoundaries(IDCLEntity entity)
         {
-            if (entity.meshesInfo == null || entity.meshesInfo.meshRootGameObject == null || entity.meshesInfo.mergedBounds == null)
+            if (entity.meshesInfo == null 
+                || entity.meshesInfo.meshRootGameObject == null 
+                || entity.meshesInfo.mergedBounds == null)
                 return false;
+            
+            /*entity.meshesInfo.RecalculateBounds();
+            var meshSize = entity.meshesInfo.mergedBounds.size.magnitude;
+            // if (entity.meshesInfo.meshFilters != null)
+            // {
+            //     Bounds meshesLocalBounds = new Bounds();
+            //     foreach (MeshFilter meshFilter in entity.meshesInfo.meshFilters)
+            //     {
+            //         Vector3 originalBoundsSize = meshFilter.mesh.bounds.size;
+            //         Vector3 objectLossyScale = meshFilter.transform.lossyScale;
+            //         Bounds scaledBounds = new Bounds(Vector3.zero, new Vector3(
+            //             originalBoundsSize.x * objectLossyScale.x,
+            //             originalBoundsSize.y * objectLossyScale.y,
+            //             originalBoundsSize.z * objectLossyScale.z
+            //         ));
+            //         meshesLocalBounds.Encapsulate(scaledBounds);
+            //     }
+            //     meshSize = meshesLocalBounds.size.magnitude;
+            // }
+            
+            // if (meshSize > MAX_MESH_SIZE)
+            if (meshSize > MAX_MESH_SIZE || meshSize == 0f)
+                return false;*/
 
             // 1st check (full mesh AABB)
             bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.mergedBounds);
@@ -229,6 +282,11 @@ namespace DCL.Controllers
         void EvaluateMeshBounds(IDCLEntity entity)
         {
             bool isInsideBoundaries = IsEntityInsideSceneBoundaries(entity);
+            SetMeshesAndComponentsInsideBoundariesState(entity, isInsideBoundaries);
+        }
+
+        void SetMeshesAndComponentsInsideBoundariesState(IDCLEntity entity, bool isInsideBoundaries)
+        {
             if (entity.isInsideBoundaries != isInsideBoundaries)
             {
                 entity.isInsideBoundaries = isInsideBoundaries;
@@ -291,6 +349,15 @@ namespace DCL.Controllers
 
         protected void OnAddEntity(IDCLEntity entity)
         {
+            // If we evaluate entities at this point, the gigantic meshes of genesis plaza are filtered (except plane shapes)
+            // TODO: Find a way of lighter entity evaluation (EvaluateMeshBounds(entity) is not good enough), maybe just checking
+            // position being beyond the world limits and maybe the mesh bounds size as well (IsEntityValidForBoundaryChecks() does that)
+            EvaluateEntityPosition(entity);
+            // if (!IsEntityValidForBoundaryChecks(entity))
+            // {
+            //     SetMeshesAndComponentsInsideBoundariesState(entity, false);
+            // }
+            
             AddEntityBasedOnPriority(entity);
         }
 
