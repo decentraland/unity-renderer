@@ -164,11 +164,16 @@ namespace DCL
             newScene.SetData(data);
 
             if (DCLCharacterController.i != null)
+            {
+                newScene.avatarReference = new DecentralandEntity()
+                    {gameObject = DCLCharacterController.i.avatarGameObject};
+                newScene.firstPersonCameraReference = new DecentralandEntity()
+                    {gameObject = DCLCharacterController.i.firstPersonCameraGameObject};
                 newScene.InitializeDebugPlane();
+            }
 
             Environment.i.world.state.scenesSortedByDistance?.Add(newScene);
             Environment.i.world.state.loadedScenes?.Add(data.id, newScene);
-
 
             return newScene;
         }

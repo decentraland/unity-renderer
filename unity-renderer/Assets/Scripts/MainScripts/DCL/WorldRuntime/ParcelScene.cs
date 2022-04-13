@@ -46,6 +46,9 @@ namespace DCL.Controllers
 
         public bool isReleased { get; private set; }
 
+        public IDCLEntity avatarReference;
+        public IDCLEntity firstPersonCameraReference;
+
         public void Awake()
         {
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
@@ -403,13 +406,13 @@ namespace DCL.Controllers
             Environment.i.platform.cullingController.MarkDirty();
             Environment.i.platform.physicsSyncController.MarkDirty();
 
-            if ( DCLCharacterController.i != null )
+            if (firstPersonCameraReference != null && avatarReference != null)
             {
                 if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will attached to the first person camera
                     // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
-                    me.SetParent(DCLCharacterController.i.firstPersonCameraReference);
+                    me.SetParent(firstPersonCameraReference);
                     Environment.i.world.sceneBoundsChecker.AddPersistent(me);
                     return;
                 }
@@ -418,12 +421,12 @@ namespace DCL.Controllers
                 {
                     // In this case, the entity will be attached to the avatar
                     // It will simply rotate with the avatar, regardless of where the camera is pointing
-                    me.SetParent(DCLCharacterController.i.avatarReference);
+                    me.SetParent(avatarReference);
                     Environment.i.world.sceneBoundsChecker.AddPersistent(me);
                     return;
                 }
 
-                if (me.parent == DCLCharacterController.i.firstPersonCameraReference || me.parent == DCLCharacterController.i.avatarReference)
+                if (me.parent == firstPersonCameraReference || me.parent == avatarReference)
                 {
                     Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
                 }

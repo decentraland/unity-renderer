@@ -290,12 +290,12 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         // Set player reference as parent
         TestUtils.SetEntityParent(scene, entityId, "FirstPersonCameraEntityReference");
-        Assert.AreEqual(entity.parent, DCLCharacterController.i.firstPersonCameraReference);
+        Assert.AreEqual(entity.parent.gameObject, DCLCharacterController.i.firstPersonCameraGameObject);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set avatar position reference as parent
         TestUtils.SetEntityParent(scene, entityId, "AvatarEntityReference");
-        Assert.AreEqual(entity.parent, DCLCharacterController.i.avatarReference);
+        Assert.AreEqual(entity.parent.gameObject, DCLCharacterController.i.avatarGameObject);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Remove all parents
