@@ -235,7 +235,7 @@ namespace DCL
                     case MessagingTypes.ENTITY_REPARENT:
                         {
                             if (msgPayload is Protocol.SetEntityParent payload)
-                                scene.SetEntityParent(payload.entityId.GetHashCode(), payload.parentId.GetHashCode());
+                                scene.SetEntityParent(payload.entityId, payload.parentId);
 
                             break;
                         }

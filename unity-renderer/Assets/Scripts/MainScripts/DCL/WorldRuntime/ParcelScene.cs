@@ -13,6 +13,12 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene, ISceneMessageProcessor
     {
+        private const long CONST_SCENE_ROOT_ENTITY = 0;
+        private const long CONST_AVATAR_ENTITY_REFERENCE = 1;
+        private const long CONST_AVATAR_POSITION_REFERENCE = 2;
+        private const long CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 3;
+        private const long CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 4;
+        
         public Dictionary<long, IDCLEntity> entities { get; private set; } = new Dictionary<long, IDCLEntity>();
         public Dictionary<string, ISharedComponent> disposableComponents { get; private set; } = new Dictionary<string, ISharedComponent>();
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
@@ -46,20 +52,8 @@ namespace DCL.Controllers
 
         public bool isReleased { get; private set; }
 
-        private long firstPersonCameraEntityParent;
-        private long thirdPersonCameraEntityParent;
-        private long avatarEntityParent;
-        private long avatarPositionEntityParent;
-        private long rootEntityParent;
-
         public void Awake()
         {
-            firstPersonCameraEntityParent = "FirstPersonCameraEntityReference".GetHashCode();
-            thirdPersonCameraEntityParent = "PlayerEntityReference".GetHashCode();
-            avatarEntityParent = "AvatarEntityReference".GetHashCode();
-            avatarPositionEntityParent = "AvatarPositionEntityReference".GetHashCode();
-            rootEntityParent = "0".GetHashCode();
-            
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
             metricsCounter = new SceneMetricsCounter(DataStore.i.sceneWorldObjects);
@@ -111,6 +105,25 @@ namespace DCL.Controllers
             metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
+        }
+        
+        private long EntityFromLegacyEntityString(string entityId)
+        {
+            switch (entityId)
+            {
+                case "0":
+                    return CONST_SCENE_ROOT_ENTITY;
+                case "FirstPersonCameraEntityReference":
+                    return CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE;
+                case "AvatarEntityReference":
+                    return CONST_AVATAR_ENTITY_REFERENCE;
+                case "AvatarPositionEntityReference":
+                    return CONST_AVATAR_POSITION_REFERENCE;
+                case "PlayerEntityReference":
+                    return CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE;
+            }
+
+            return entityId.GetHashCode();
         }
 
         void OnWorldReposition(Vector3 current, Vector3 previous)
@@ -400,6 +413,11 @@ namespace DCL.Controllers
 
         private void RemoveAllEntitiesImmediate() { RemoveAllEntities(instant: true); }
 
+        public void SetEntityParent(string entityId, string parentId)
+        {
+            SetEntityParent(EntityFromLegacyEntityString(entityId), EntityFromLegacyEntityString(parentId));
+        }
+        
         public void SetEntityParent(long entityId, long parentId)
         {
             if (entityId == parentId)
@@ -417,7 +435,7 @@ namespace DCL.Controllers
 
             if ( DCLCharacterController.i != null )
             {
-                if (parentId == firstPersonCameraEntityParent || parentId == thirdPersonCameraEntityParent) // PlayerEntityReference is for compatibility purposes
+                if (parentId == CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE || parentId == CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE) // PlayerEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will attached to the first person camera
                     // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
@@ -426,7 +444,7 @@ namespace DCL.Controllers
                     return;
                 }
 
-                if (parentId == avatarEntityParent || parentId == avatarPositionEntityParent) // AvatarPositionEntityReference is for compatibility purposes
+                if (parentId == CONST_AVATAR_ENTITY_REFERENCE || parentId == CONST_AVATAR_POSITION_REFERENCE) // AvatarPositionEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will be attached to the avatar
                     // It will simply rotate with the avatar, regardless of where the camera is pointing
@@ -441,7 +459,7 @@ namespace DCL.Controllers
                 }
             }
 
-            if (parentId == rootEntityParent)
+            if (parentId == CONST_SCENE_ROOT_ENTITY)
             {
                 // The entity will be child of the scene directly
                 me.SetParent(null);
