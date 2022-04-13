@@ -1,14 +1,23 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
 using NSubstitute;
+using NSubstitute.Core;
 using NUnit.Framework;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
 {
     private const string USER_ID = "userId";
+    private const string USER_ID_1 = "userId1";
+    private const string USER_ID_2 = "userId2";
+    private const string USER_ID_3 = "userId3";
+    private const string USER_ID_4 = "userId4";
+    private const string USER_ID_5 = "userId5";
     private const string BLOCKED_USER_ID = "blockedUserId";
 
     private PlayerInfoCardHUDController controller;
@@ -33,6 +42,11 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         userProfileBridge.GetOwn().Returns(GivenMyOwnUserProfile());
         userProfileBridge.Get(USER_ID).Returns(viewingUserProfile);
+        userProfileBridge.Get(USER_ID_1).Returns(viewingUserProfile);
+        userProfileBridge.Get(USER_ID_2).Returns(viewingUserProfile);
+        userProfileBridge.Get(USER_ID_3).Returns(viewingUserProfile);
+        userProfileBridge.Get(USER_ID_4).Returns(viewingUserProfile);
+        userProfileBridge.Get(USER_ID_5).Returns(viewingUserProfile);
 
         GivenWearableCatalog();
 
@@ -182,23 +196,51 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(description, controller.view.description.text);
     }
 
+    [Test]
+    public void SendAnalyticsWhenOpened()
+    {
+        Environment.i.platform.serviceProviders.analytics.ClearReceivedCalls();
+
+        controller.currentPlayerId.Set(USER_ID_1);
+        controller.currentPlayerId.Set(USER_ID_2);
+        controller.currentPlayerId.Set(null);
+        controller.currentPlayerId.Set(USER_ID_3);
+        controller.currentPlayerId.Set(null);
+        controller.currentPlayerId.Set(USER_ID_4);
+        controller.currentPlayerId.Set(USER_ID_5);
+
+        Environment.i.platform.serviceProviders.analytics.Received(5).SendAnalytic(PlayerInfoCardHUDController.PASSPORT_OPENED_EVENT, Arg.Any<Dictionary<string, string>>());
+    }
+
     private void WhenViewingUserUpdates()
     {
-        viewingUserProfile.UpdateData(new UserProfileModel
+        var wearables = new[]
         {
-            userId = USER_ID,
-            name = "username",
-            description = "description",
-            email = "email",
-            inventory = new[]
-            {
-                WearableLiterals.ItemRarity.EPIC,
-                WearableLiterals.ItemRarity.LEGENDARY,
-                WearableLiterals.ItemRarity.MYTHIC,
-                WearableLiterals.ItemRarity.RARE,
-                WearableLiterals.ItemRarity.UNIQUE
-            }
-        });
+            WearableLiterals.ItemRarity.EPIC,
+            WearableLiterals.ItemRarity.LEGENDARY,
+            WearableLiterals.ItemRarity.MYTHIC,
+            WearableLiterals.ItemRarity.RARE,
+            WearableLiterals.ItemRarity.UNIQUE
+        };
+
+        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID, "username", "description", "email", wearables));
+        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID_1, "username", "description", "email", wearables));
+        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID_2, "username", "description", "email", wearables));
+        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID_3, "username", "description", "email", wearables));
+        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID_4, "username", "description", "email", wearables));
+        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID_5, "username", "description", "email", wearables));
+    }
+
+    private UserProfileModel GetUserProfileModel(string id, string name, string description, string email, string[] inventory)
+    {
+        return new UserProfileModel()
+        {
+            userId = id,
+            name = name,
+            description = description,
+            email = email,
+            inventory = inventory
+        };
     }
 
     private void GivenFriendshipStatus(FriendshipStatus status)
@@ -242,13 +284,18 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
 
         wearableCatalogBridge = Substitute.For<IWearableCatalogBridge>();
         wearableCatalogBridge.IsValidWearable(Arg.Any<string>()).Returns(true);
-        wearableCatalogBridge.RequestOwnedWearables(USER_ID)
-            .Returns(info =>
-            {
-                var promise = new Promise<WearableItem[]>();
-                promise.Resolve(wearables);
-                return promise;
-            });
+        Func<CallInfo, Promise<WearableItem[]>> requestOwnedWearables = info =>
+        {
+            var promise = new Promise<WearableItem[]>();
+            promise.Resolve(wearables);
+            return promise;
+        };
+        wearableCatalogBridge.RequestOwnedWearables(USER_ID).Returns(requestOwnedWearables);
+        wearableCatalogBridge.RequestOwnedWearables(USER_ID_1).Returns(requestOwnedWearables);
+        wearableCatalogBridge.RequestOwnedWearables(USER_ID_2).Returns(requestOwnedWearables);
+        wearableCatalogBridge.RequestOwnedWearables(USER_ID_3).Returns(requestOwnedWearables);
+        wearableCatalogBridge.RequestOwnedWearables(USER_ID_4).Returns(requestOwnedWearables);
+        wearableCatalogBridge.RequestOwnedWearables(USER_ID_5).Returns(requestOwnedWearables);
         wearableCatalogBridge.RequestOwnedWearables(BLOCKED_USER_ID)
             .Returns(info =>
             {
