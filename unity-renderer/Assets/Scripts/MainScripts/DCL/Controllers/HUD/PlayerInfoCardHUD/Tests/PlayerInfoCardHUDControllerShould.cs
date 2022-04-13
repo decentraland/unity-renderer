@@ -12,41 +12,29 @@ using Environment = DCL.Environment;
 
 public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
 {
-    private const string USER_ID = "userId";
-    private const string USER_ID_1 = "userId1";
-    private const string USER_ID_2 = "userId2";
-    private const string USER_ID_3 = "userId3";
-    private const string USER_ID_4 = "userId4";
-    private const string USER_ID_5 = "userId5";
-    private const string BLOCKED_USER_ID = "blockedUserId";
+    private static readonly string[] IDS = new [] { "userId", "userId1", "userId2", "userId3", "userId4", "userId5", "blockedUserId" };
 
     private PlayerInfoCardHUDController controller;
-    private UserProfile viewingUserProfile;
+    private Dictionary<string, UserProfile> userProfiles;
     private DataStore dataStore;
     private IWearableCatalogBridge wearableCatalogBridge;
     private WearableItem[] wearables;
     private FriendsController_Mock friendsController;
     private IUserProfileBridge userProfileBridge;
     private RegexProfanityFilter profanityFilter;
+    private StringVariable currentPlayerIdData;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
-        viewingUserProfile = ScriptableObject.CreateInstance<UserProfile>();
-        WhenViewingUserUpdates();
-
-        var currentPlayerIdData = ScriptableObject.CreateInstance<StringVariable>();
-        currentPlayerIdData.Set(USER_ID);
-
+        PrepareUsers();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         userProfileBridge.GetOwn().Returns(GivenMyOwnUserProfile());
-        userProfileBridge.Get(USER_ID).Returns(viewingUserProfile);
-        userProfileBridge.Get(USER_ID_1).Returns(viewingUserProfile);
-        userProfileBridge.Get(USER_ID_2).Returns(viewingUserProfile);
-        userProfileBridge.Get(USER_ID_3).Returns(viewingUserProfile);
-        userProfileBridge.Get(USER_ID_4).Returns(viewingUserProfile);
-        userProfileBridge.Get(USER_ID_5).Returns(viewingUserProfile);
+        userProfileBridge.Get(Arg.Any<string>()).Returns(x => userProfiles[x.ArgAt<string>(0)]);
+
+        currentPlayerIdData = ScriptableObject.CreateInstance<StringVariable>();
+        currentPlayerIdData.Set(null);
 
         GivenWearableCatalog();
 
@@ -80,28 +68,31 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [Test]
     public void CurrentPlayerNameIsFound()
     {
+        currentPlayerIdData.Set(IDS[0]);
         Assert.IsNotNull(controller.currentPlayerId);
-        Assert.AreEqual(USER_ID, controller.currentPlayerId);
+        Assert.AreEqual(IDS[0], controller.currentPlayerId);
     }
 
     [Test]
     public void ReactToCurrentPlayerNameChanges()
     {
-        controller.currentPlayerId.Set(USER_ID);
-        Assert.AreEqual(controller.currentUserProfile, viewingUserProfile);
+        currentPlayerIdData.Set(IDS[0]);
+        Assert.AreEqual(controller.currentUserProfile, userProfiles[IDS[0]]);
     }
 
     [Test]
     public void UpdateNameAndDescription()
     {
-        Assert.AreEqual(viewingUserProfile.userName, controller.view.name.text);
-        Assert.AreEqual(viewingUserProfile.description, controller.view.description.text);
+        currentPlayerIdData.Set(IDS[0]);
+        Assert.AreEqual(controller.view.name.text, userProfiles[IDS[0]].userName);
+        Assert.AreEqual(controller.view.description.text, userProfiles[IDS[0]].description);
     }
 
     [Test]
     public void BlockUser()
     {
-        viewingUserProfile.UpdateData(new UserProfileModel {userId = BLOCKED_USER_ID, name = "blockeduser"});
+        currentPlayerIdData.Set(IDS[1]);
+        userProfiles[IDS[1]].UpdateData(new UserProfileModel { userId = IDS[1], name = "blockeduser" });
         Assert.IsFalse(controller.view.unblockPlayerButton.gameObject.activeSelf);
         Assert.IsFalse(controller.view.blockedAvatarOverlay.gameObject.activeSelf);
     }
@@ -109,7 +100,8 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [Test]
     public void ShowWearables()
     {
-        Assert.AreEqual(viewingUserProfile.inventory.Count, controller.view.playerInfoCollectibles.Count);
+        currentPlayerIdData.Set(IDS[0]);
+        Assert.AreEqual(userProfiles[IDS[0]].inventory.Count, controller.view.playerInfoCollectibles.Count);
         Assert.IsTrue(wearables.All(wearable =>
             controller.view.playerInfoCollectibles.Any(item => item.collectible == wearable)));
     }
@@ -117,10 +109,9 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [Test]
     public void ShowNoFriendshipStatus()
     {
-        GivenFriendshipStatus(FriendshipStatus.NOT_FRIEND);
+        GivenFriendshipStatus(IDS[0], FriendshipStatus.NOT_FRIEND);
+        currentPlayerIdData.Set(IDS[0]);
 
-        WhenViewingUserUpdates();
-        
         Assert.IsTrue(controller.view.friendStatusContainer.activeSelf);
         Assert.IsTrue(controller.view.addFriendButton.gameObject.activeSelf);
     }
@@ -128,10 +119,9 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [Test]
     public void ShowFriendAddedStatus()
     {
-        GivenFriendshipStatus(FriendshipStatus.FRIEND);
+        GivenFriendshipStatus(IDS[0], FriendshipStatus.FRIEND);
+        currentPlayerIdData.Set(IDS[0]);
 
-        WhenViewingUserUpdates();
-        
         Assert.IsTrue(controller.view.friendStatusContainer.activeSelf);
         Assert.IsTrue(controller.view.alreadyFriendsContainer.gameObject.activeSelf);
     }
@@ -139,10 +129,9 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [Test]
     public void ShowFriendRequestedToStatus()
     {
-        GivenFriendshipStatus(FriendshipStatus.REQUESTED_TO);
+        GivenFriendshipStatus(IDS[0], FriendshipStatus.REQUESTED_TO);
+        currentPlayerIdData.Set(IDS[0]);
 
-        WhenViewingUserUpdates();
-        
         Assert.IsTrue(controller.view.friendStatusContainer.activeSelf);
         Assert.IsTrue(controller.view.requestSentButton.gameObject.activeSelf);
     }
@@ -150,10 +139,9 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [Test]
     public void ShowFriendRequestedFromStatus()
     {
-        GivenFriendshipStatus(FriendshipStatus.REQUESTED_FROM);
+        GivenFriendshipStatus(IDS[0], FriendshipStatus.REQUESTED_FROM);
+        currentPlayerIdData.Set(IDS[0]);
 
-        WhenViewingUserUpdates();
-        
         Assert.IsTrue(controller.view.friendStatusContainer.activeSelf);
         Assert.IsTrue(controller.view.requestReceivedContainer.gameObject.activeSelf);
     }
@@ -162,7 +150,8 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [TestCase("holyshit", "holy****")]
     public void FilterProfanityName(string originalName, string filteredName)
     {
-        GivenUserName(originalName);
+        currentPlayerIdData.Set(IDS[0]);
+        GivenUserName(IDS[0], originalName);
 
         Assert.AreEqual(filteredName, controller.view.name.text);
     }
@@ -171,7 +160,8 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [TestCase("shit bro thats some nonsense", "**** bro thats some nonsense")]
     public void FilterProfanityDescription(string originalDescription, string filteredDescription)
     {
-        GivenUserDescription(originalDescription);
+        currentPlayerIdData.Set(IDS[0]);
+        GivenUserDescription(IDS[0], originalDescription);
 
         Assert.AreEqual(filteredDescription, controller.view.description.text);
     }
@@ -180,8 +170,9 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [TestCase("holyshit")]
     public void DoNotFilterProfanityNameWhenFeatureIsDisabled(string originalName)
     {
+        currentPlayerIdData.Set(IDS[0]);
         GivenProfanityFilteringAvailability(false);
-        GivenUserName(originalName);
+        GivenUserName(IDS[0], originalName);
 
         Assert.AreEqual(originalName, controller.view.name.text);
     }
@@ -190,8 +181,9 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [TestCase("shit bro thats some nonsense")]
     public void DoNotFilterProfanityDescriptionWhenFeatureIsDisabled(string description)
     {
+        currentPlayerIdData.Set(IDS[0]);
         GivenProfanityFilteringAvailability(false);
-        GivenUserDescription(description);
+        GivenUserDescription(IDS[0], description);
 
         Assert.AreEqual(description, controller.view.description.text);
     }
@@ -201,18 +193,19 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     {
         Environment.i.platform.serviceProviders.analytics.ClearReceivedCalls();
 
-        controller.currentPlayerId.Set(USER_ID_1);
-        controller.currentPlayerId.Set(USER_ID_2);
+        controller.currentPlayerId.Set(IDS[0]);
         controller.currentPlayerId.Set(null);
-        controller.currentPlayerId.Set(USER_ID_3);
+        controller.currentPlayerId.Set(IDS[1]);
         controller.currentPlayerId.Set(null);
-        controller.currentPlayerId.Set(USER_ID_4);
-        controller.currentPlayerId.Set(USER_ID_5);
+        controller.currentPlayerId.Set(IDS[2]);
+        controller.currentPlayerId.Set(IDS[3]);
+        controller.currentPlayerId.Set(null);
+        controller.currentPlayerId.Set(IDS[4]);
 
         Environment.i.platform.serviceProviders.analytics.Received(5).SendAnalytic(PlayerInfoCardHUDController.PASSPORT_OPENED_EVENT, Arg.Any<Dictionary<string, string>>());
     }
 
-    private void WhenViewingUserUpdates()
+    private void PrepareUsers()
     {
         var wearables = new[]
         {
@@ -223,41 +216,40 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
             WearableLiterals.ItemRarity.UNIQUE
         };
 
-        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID, "username", "description", "email", wearables));
-        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID_1, "username", "description", "email", wearables));
-        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID_2, "username", "description", "email", wearables));
-        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID_3, "username", "description", "email", wearables));
-        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID_4, "username", "description", "email", wearables));
-        viewingUserProfile.UpdateData(GetUserProfileModel(USER_ID_5, "username", "description", "email", wearables));
+        userProfiles = IDS.ToDictionary(x => x, x => GetUserProfile(x, wearables));
     }
 
-    private UserProfileModel GetUserProfileModel(string id, string name, string description, string email, string[] inventory)
+    private UserProfile GetUserProfile(string id, string[] inventory)
     {
-        return new UserProfileModel()
-        {
-            userId = id,
-            name = name,
-            description = description,
-            email = email,
-            inventory = inventory
-        };
+        UserProfile userProfile =  ScriptableObject.CreateInstance<UserProfile>();
+        userProfile.UpdateData(
+            new UserProfileModel()
+            {
+                userId = id,
+                name = $"name_{id}",
+                description = $"description_{id}",
+                email = $"email_{id}",
+                inventory = inventory
+            });
+        return userProfile;
     }
 
-    private void GivenFriendshipStatus(FriendshipStatus status)
+    private void GivenFriendshipStatus(string userId, FriendshipStatus status)
     {
         var friendStatus = new FriendsController.UserStatus
         {
-            userId = USER_ID,
+            userId = userId,
             friendshipStatus = status
         };
         friendsController.AddFriend(friendStatus);
     }
 
-    private void GivenUserName(string name)
+    private void GivenUserName(string userId, string name)
     {
-        viewingUserProfile.UpdateData(new UserProfileModel
+        userProfiles[userId]
+            .UpdateData(new UserProfileModel
         {
-            userId = USER_ID,
+            userId = userId,
             name = name,
             description = null
         });
@@ -266,8 +258,8 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     private void GivenProfanityFiltering()
     {
         var profanityWordProvider = Substitute.For<IProfanityWordProvider>();
-        profanityWordProvider.GetNonExplicitWords().Returns(new[] {"fuck", "shit"});
-        profanityWordProvider.GetExplicitWords().Returns(new[] {"ass"});
+        profanityWordProvider.GetNonExplicitWords().Returns(new[] { "fuck", "shit" });
+        profanityWordProvider.GetExplicitWords().Returns(new[] { "ass" });
         profanityFilter = new RegexProfanityFilter(profanityWordProvider);
     }
 
@@ -275,11 +267,11 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     {
         wearables = new[]
         {
-            new WearableItem {id = "epic", rarity = WearableLiterals.ItemRarity.EPIC},
-            new WearableItem {id = "legendary", rarity = WearableLiterals.ItemRarity.LEGENDARY},
-            new WearableItem {id = "mythic", rarity = WearableLiterals.ItemRarity.MYTHIC},
-            new WearableItem {id = "rare", rarity = WearableLiterals.ItemRarity.RARE},
-            new WearableItem {id = "unique", rarity = WearableLiterals.ItemRarity.UNIQUE}
+            new WearableItem { id = "epic", rarity = WearableLiterals.ItemRarity.EPIC },
+            new WearableItem { id = "legendary", rarity = WearableLiterals.ItemRarity.LEGENDARY },
+            new WearableItem { id = "mythic", rarity = WearableLiterals.ItemRarity.MYTHIC },
+            new WearableItem { id = "rare", rarity = WearableLiterals.ItemRarity.RARE },
+            new WearableItem { id = "unique", rarity = WearableLiterals.ItemRarity.UNIQUE }
         };
 
         wearableCatalogBridge = Substitute.For<IWearableCatalogBridge>();
@@ -290,41 +282,30 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
             promise.Resolve(wearables);
             return promise;
         };
-        wearableCatalogBridge.RequestOwnedWearables(USER_ID).Returns(requestOwnedWearables);
-        wearableCatalogBridge.RequestOwnedWearables(USER_ID_1).Returns(requestOwnedWearables);
-        wearableCatalogBridge.RequestOwnedWearables(USER_ID_2).Returns(requestOwnedWearables);
-        wearableCatalogBridge.RequestOwnedWearables(USER_ID_3).Returns(requestOwnedWearables);
-        wearableCatalogBridge.RequestOwnedWearables(USER_ID_4).Returns(requestOwnedWearables);
-        wearableCatalogBridge.RequestOwnedWearables(USER_ID_5).Returns(requestOwnedWearables);
-        wearableCatalogBridge.RequestOwnedWearables(BLOCKED_USER_ID)
-            .Returns(info =>
-            {
-                var promise = new Promise<WearableItem[]>();
-                promise.Resolve(new WearableItem[0]);
-                return promise;
-            });
+        foreach (string id in IDS)
+        {
+            wearableCatalogBridge.RequestOwnedWearables(id).Returns(requestOwnedWearables);
+        }
     }
 
     private UserProfile GivenMyOwnUserProfile()
     {
         var myUserProfile = ScriptableObject.CreateInstance<UserProfile>();
-        myUserProfile.UpdateData(new UserProfileModel {userId = "myUserId"});
-        myUserProfile.Block(BLOCKED_USER_ID);
+        myUserProfile.UpdateData(new UserProfileModel { userId = "myUserId" });
+        myUserProfile.Block("blockedUserId");
         return myUserProfile;
     }
 
-    private void GivenUserDescription(string originalDescription)
+    private void GivenUserDescription(string userId, string originalDescription)
     {
-        viewingUserProfile.UpdateData(new UserProfileModel
+        userProfiles[userId]
+            .UpdateData(new UserProfileModel
         {
-            userId = USER_ID,
+            userId = userId,
             name = "test",
             description = originalDescription
         });
     }
 
-    private void GivenProfanityFilteringAvailability(bool enabled)
-    {
-        dataStore.settings.profanityChatFilteringEnabled.Set(enabled);
-    }
+    private void GivenProfanityFilteringAvailability(bool enabled) { dataStore.settings.profanityChatFilteringEnabled.Set(enabled); }
 }
