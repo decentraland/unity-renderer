@@ -62,7 +62,7 @@ namespace DCL.Components
 
                 for (var i = 0; i < materialTransitionControllers.Length; i++)
                 {
-                    GameObject.Destroy(materialTransitionControllers[i]);
+                    Object.Destroy(materialTransitionControllers[i]);
                 }
             }
 
