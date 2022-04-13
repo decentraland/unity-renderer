@@ -26,7 +26,7 @@ namespace DCL.Components
 
         protected Model previousModel = new Model();
 
-        protected static Dictionary<GameObject, LoadWrapper> attachedLoaders = new Dictionary<GameObject, LoadWrapper>();
+        private static readonly Dictionary<GameObject, LoadWrapper> attachedLoaders = new Dictionary<GameObject, LoadWrapper>();
 
         public static LoadWrapper GetLoaderForEntity(IDCLEntity entity)
         {
@@ -50,6 +50,11 @@ namespace DCL.Components
             }
 
             return result as T;
+        }
+
+        public static void RemoveLoaderForEntity(IDCLEntity entity)
+        {
+            attachedLoaders.Remove(entity.meshRootGameObject);
         }
 
         public LoadableShape() { model = new Model(); }
@@ -279,9 +284,8 @@ namespace DCL.Components
                 return;
 
             LoadWrapper loadWrapper = GetLoaderForEntity(entity);
-
             loadWrapper?.Unload();
-
+            RemoveLoaderForEntity(entity);
             entity.meshesInfo.CleanReferences();
         }
 
