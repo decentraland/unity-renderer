@@ -25,7 +25,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
 
     public static PublicChatChannelComponentView Create()
     {
-        return Instantiate(Resources.Load<PublicChatChannelComponentView>("SocialBarV1/PublicChatChannelHUD"));
+        return Instantiate(Resources.Load<PublicChatChannelComponentView>("SocialBarV1/GeneralChatChannelHUD"));
     }
 
     public override void Awake()

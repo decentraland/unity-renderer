@@ -17,6 +17,21 @@ PrefabInstance:
       propertyPath: showUserName
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 650554326901945825, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 650554326901945825, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 650554326901945825, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 826062948616953639, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: m_ChildAlignment
@@ -80,7 +95,7 @@ PrefabInstance:
     - target: {fileID: 4919932192753732469, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 847
+      value: 1107
       objectReference: {fileID: 0}
     - target: {fileID: 4919932192753732469, guid: c419563788ffdbc44a53495651162084,
         type: 3}
@@ -266,6 +281,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: 'The worlds '
+      objectReference: {fileID: 0}
+    - target: {fileID: 8068759164719752186, guid: c419563788ffdbc44a53495651162084,
+        type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c419563788ffdbc44a53495651162084, type: 3}
