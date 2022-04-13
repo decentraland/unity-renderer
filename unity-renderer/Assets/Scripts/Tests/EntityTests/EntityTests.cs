@@ -52,8 +52,8 @@ namespace Tests
         [Test]
         public void EntityParenting()
         {
-            long entityId = 2;
-            long parentEntityId = 3;
+            long entityId = 20;
+            long parentEntityId = 30;
 
             TestUtils.CreateSceneEntity(scene, entityId);
             TestUtils.CreateSceneEntity(scene, parentEntityId);
@@ -72,7 +72,7 @@ namespace Tests
                 "parent is set to parentId"
             );
 
-            TestUtils.SetEntityParent(scene, entityId, "0".GetHashCode());
+            TestUtils.SetEntityParent(scene, entityId, 0);
 
             Assert.IsTrue(
                 scene.entities[entityId].gameObject.transform.parent == scene.gameObject.transform,

@@ -186,14 +186,14 @@ namespace SceneBoundariesCheckerTests
 
         public static IEnumerator ChildShapeIsEvaluated(ParcelScene scene)
         {
-            long entityId = 1;
+            long entityId = 11;
             TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
             yield return null;
 
             AssertMeshIsValid(scene.entities[entityId].meshesInfo);
 
             // Attach child
-            long childEntityId = 2;
+            long childEntityId = 20;
             TestUtils.InstantiateEntityWithShape(scene, childEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
             yield return null;
 
@@ -214,7 +214,7 @@ namespace SceneBoundariesCheckerTests
         public static IEnumerator ChildShapeIsEvaluatedOnShapelessParent(ParcelScene scene)
         {
             // create shapeless parent entity
-            long entityId = 1;
+            long entityId = 11;
             TestUtils.CreateSceneEntity(scene, entityId);
             TestUtils.SetEntityTransform(scene, scene.entities[entityId], new Vector3(18, 1, 18), Quaternion.identity, Vector3.one);
             yield return null;
@@ -222,7 +222,7 @@ namespace SceneBoundariesCheckerTests
             AssertMeshIsValid(scene.entities[entityId].meshesInfo);
 
             // Attach child
-            long childEntityId = 2;
+            long childEntityId = 20;
             TestUtils.InstantiateEntityWithShape(scene, childEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(0, 0, 0));
             yield return null;
 

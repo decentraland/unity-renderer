@@ -13,11 +13,11 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene, ISceneMessageProcessor
     {
-        private const long CONST_SCENE_ROOT_ENTITY = 0;
-        private const long CONST_AVATAR_ENTITY_REFERENCE = 1;
-        private const long CONST_AVATAR_POSITION_REFERENCE = 2;
-        private const long CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 3;
-        private const long CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 4;
+        public const long CONST_SCENE_ROOT_ENTITY = 0;
+        public const long CONST_AVATAR_ENTITY_REFERENCE = 1;
+        public const long CONST_AVATAR_POSITION_REFERENCE = 2;
+        public const long CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 3;
+        public const long CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 4;
         
         public Dictionary<long, IDCLEntity> entities { get; private set; } = new Dictionary<long, IDCLEntity>();
         public Dictionary<string, ISharedComponent> disposableComponents { get; private set; } = new Dictionary<string, ISharedComponent>();
