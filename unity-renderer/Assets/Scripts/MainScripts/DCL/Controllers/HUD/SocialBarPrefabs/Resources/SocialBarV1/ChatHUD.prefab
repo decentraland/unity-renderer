@@ -1063,7 +1063,7 @@ MonoBehaviour:
     m_Top: 10
     m_Bottom: 8
   m_ChildAlignment: 0
-  m_Spacing: 5
+  m_Spacing: 3
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
