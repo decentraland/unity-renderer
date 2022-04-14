@@ -23,6 +23,10 @@ namespace DCL.ABConverter
             return env;
         }
         
+        /// <summary>
+        /// Fetch the newest 1000 collections (max amount that can be fetched)
+        /// </summary>
+        /// <returns>A list of the fetched wearable collections</returns>
         public static WearableCollectionsAPIData.Collection[] EnsureWearableCollections()
         {
             if (wearableCollections != null && wearableCollections.Length > 0)
@@ -52,7 +56,6 @@ namespace DCL.ABConverter
         /// <summary>
         /// Wearables collection conversion batch-mode entry point
         /// </summary>
-        // TODO: Fix this CLI pipeline to finish converting the assets and return the correct exit code
         public static void ExportWearablesCollectionToAssetBundles()
         {
             //NOTE(Brian): This should make the logs cleaner
@@ -87,22 +90,46 @@ namespace DCL.ABConverter
                 if (Utils.ParseOption(commandLineArgs, Config.CLI_VERBOSE, 0, out _))
                     settings.verbose = true;
 
-                if (Utils.ParseOption(commandLineArgs, Config.CLI_ALWAYS_BUILD_SYNTAX, 0, out _))
-                    settings.skipAlreadyBuiltBundles = false;
-
-                if (Utils.ParseOption(commandLineArgs, Config.CLI_KEEP_BUNDLES_SYNTAX, 0, out _))
-                    settings.deleteDownloadPathAfterFinished = false;
-
                 if (Utils.ParseOption(commandLineArgs, Config.CLI_BUILD_WEARABLES_COLLECTION_SYNTAX, 1, out string[] collectionId))
                 {
                     if (collectionId == null || string.IsNullOrEmpty(collectionId[0]))
                     {
                         throw new ArgumentException("Invalid wearablesCollectionUrnId argument! Please use -wearablesCollectionUrnId <id> to establish the desired collection id to process.");
                     }
+                    
+                    log.Info("found 'wearablesCollectionUrnId' param, will try to convert collection with id: " + collectionId[0]);
 
                     DumpSingleWearablesCollection(collectionId[0], settings);
 
                     return;
+                }
+                
+                if (Utils.ParseOption(commandLineArgs, Config.CLI_BUILD_WEARABLES_COLLECTION_RANGE_START_SYNTAX, 1, out string[] firstCollectionIndex))
+                {
+                    if (firstCollectionIndex == null || string.IsNullOrEmpty(firstCollectionIndex[0]))
+                    {
+                        throw new ArgumentException("Invalid firstCollectionIndex argument! Please use -firstCollectionIndex <index> to define the first collection to convert in the batch");
+                    }
+                    int firstCollectionIndexInt = Int32.Parse(firstCollectionIndex[0]);
+
+                    if (Utils.ParseOption(commandLineArgs, Config.CLI_BUILD_WEARABLES_COLLECTION_RANGE_END_SYNTAX, 1, out string[] lastCollectionIndex))
+                    {
+                        if (lastCollectionIndex == null || string.IsNullOrEmpty(lastCollectionIndex[0]))
+                        {
+                            throw new ArgumentException("Invalid wearablesLastCollectionIndex argument! Please use -wearablesLastCollectionIndex <index> to define the last collection to convert in the batch");
+                        }
+
+                        int lastCollectionIndexInt = Int32.Parse(lastCollectionIndex[0]);
+
+                        if (lastCollectionIndexInt < firstCollectionIndexInt)
+                        {
+                            throw new ArgumentException("Invalid wearablesLastCollectionIndex argument! Please use a wearablesLastCollectionIndex that's equal or higher than the first collection index");
+                        }
+                        
+                        DumpWearablesCollectionRange(firstCollectionIndexInt, lastCollectionIndexInt, settings);
+
+                        return;
+                    }
                 }
 
                 throw new ArgumentException("Invalid arguments! You must pass -wearablesCollectionUrnId for dump to work!");
@@ -126,9 +153,7 @@ namespace DCL.ABConverter
 
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
             var settings = new ClientSettings();
-            settings.skipAlreadyBuiltBundles = false;
-            settings.deleteDownloadPathAfterFinished = false;
-            settings.clearDirectoriesOnStart = false;
+            SetupClientSettingsForWearablesConversion(settings);
             var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
 
             abConverterCoreController.InitializeDirectoryPaths(true, true);
@@ -138,27 +163,49 @@ namespace DCL.ABConverter
         public static void DumpSingleWearablesCollection(string collectionId, ClientSettings settings = null)
         {
             EnsureEnvironment();
-            
-            EnsureWearableCollections();
 
-            log.Info("Starting wearables dumping for collection: " + collectionId.Length);
+            log.Info("Starting wearables dumping for collection: " + collectionId);
 
-            if (settings == null)
-            {
-                settings = new ClientSettings();
-                settings.skipAlreadyBuiltBundles = false;
-                settings.deleteDownloadPathAfterFinished = false;
-                settings.clearDirectoriesOnStart = false;
-            }
+            settings ??= new ClientSettings();
+            SetupClientSettingsForWearablesConversion(settings);
             
-            var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
+            var abConverterCoreController = new ABConverter.Core(env, settings);
             
             DumpWearablesCollection(abConverterCoreController, collectionId, (x) =>
             {
                 log.Info($"Finished single wearables collection dumping");
             });
         }
+        
+        public static void DumpWearablesCollectionRange(int firstCollectionIndex, int lastCollectionIndex, ClientSettings settings = null)
+        {
+            wearablesCollectionDumpStartTime = EditorApplication.timeSinceStartup;
+            
+            EnsureEnvironment();
+            
+            EnsureWearableCollections();
 
+            log.Info($"Starting wearables collections range dumping, total collections in range: {(1 + lastCollectionIndex - firstCollectionIndex)}");
+
+            settings ??= new ClientSettings();
+            SetupClientSettingsForWearablesConversion(settings);
+            
+            var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
+            
+            DumpWearablesCollectionRange(abConverterCoreController, firstCollectionIndex, lastCollectionIndex);
+        }
+
+        private static void SetupClientSettingsForWearablesConversion(ClientSettings settings)
+        {
+            settings.skipAlreadyBuiltBundles = false;
+            settings.deleteDownloadPathAfterFinished = false;
+            settings.clearDirectoriesOnStart = false;
+        }
+
+        // By manipulating these variables we control which collections are converted to batch manually
+        private const int INITIAL_COLLECTION_INDEX = 0;
+        private const int LAST_COLLECTION_INDEX = 10; 
+        
         /// <summary>
         /// Dump all non-bodyshape wearables, optimized to remove the skeleton for the wearables ABs since that is
         /// only needed for the body shapes (and the WearablesController sets it up for non-bodyshapes in runtime).
@@ -181,13 +228,10 @@ namespace DCL.ABConverter
             settings.clearDirectoriesOnStart = false;
             var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
             
-            // By manipulating these variables we control which collections are converted to batch manually
-            int initialCollectionIndex = 0;
-            int lastCollectionIndex = 50;
-            DumpWearablesCollectionRange(abConverterCoreController, initialCollectionIndex, lastCollectionIndex);
+            DumpWearablesCollectionRange(abConverterCoreController, INITIAL_COLLECTION_INDEX, LAST_COLLECTION_INDEX);
         }
 
-        private static void DumpWearablesCollectionRange(ABConverter.Core abConverterCoreController, int currentCollectionIndex, int lastCollectionIndex)
+        private static void DumpWearablesCollectionRange(ABConverter.Core core, int currentCollectionIndex, int lastCollectionIndex)
         {
             if (currentCollectionIndex >= wearableCollections.Length)
                 return;
@@ -196,7 +240,7 @@ namespace DCL.ABConverter
             
             log.Info($"Dumping... current collection: {currentCollectionIndex}, last collection: {lastCollectionIndex}");
             
-            DumpWearablesCollection(abConverterCoreController, collectionId, (x) =>
+            DumpWearablesCollection(core, collectionId, (x) =>
             {
                 currentCollectionIndex++;
 
@@ -212,14 +256,15 @@ namespace DCL.ABConverter
                         t.Milliseconds);
                     
                     log.Info($"Finished all non-bodyshape wearables dumping, total time: {formattedTotalTime}");
+                    
                     return;
                 }
                 
-                DumpWearablesCollectionRange(abConverterCoreController, currentCollectionIndex, lastCollectionIndex);
-            });
+                DumpWearablesCollectionRange(core, currentCollectionIndex, lastCollectionIndex);
+            }, cleanAndExitOnFinish: currentCollectionIndex == lastCollectionIndex);
         }
 
-        private static void DumpWearablesCollection(ABConverter.Core abConverterCoreController, string collectionId, Action<Core.ErrorCodes> OnConversionFinish = null)
+        private static void DumpWearablesCollection(ABConverter.Core abConverterCoreController, string collectionId, Action<Core.ErrorCodes> OnConversionFinish = null, bool cleanAndExitOnFinish = true)
         {
             if (string.IsNullOrEmpty(collectionId))
                 return;
@@ -240,40 +285,52 @@ namespace DCL.ABConverter
                 return;
             }
             
+            log.Info($"found wearable items: {avatarItemList.Count}");
+            
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
 
-            DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnNonBodyWearableLoad, OnConversionFinish);
+            DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnNonBodyWearableLoad, OnConversionFinish, cleanAndExitOnFinish);
         }
 
         /// <summary>
         /// Given a list of WearableItems, each one is downloaded along with its dependencies and converted to ABs recursively
         /// (to avoid mixing same-name dependencies between wearables)
         /// </summary>
-        /// <param name="abConverterCoreController">an instance of the ABCore</param>
+        /// <param name="core">an instance of the ABCore</param>
         /// <param name="items">an already-populated list of WearableItems</param>
         /// <param name="OnWearableLoad">an action to be bind to the OnWearableLoad event on each wearable</param>
-        private static void DumpWearableQueue(ABConverter.Core abConverterCoreController, Queue<WearableItem> items, System.Action<UnityGLTF.GLTFSceneImporter> OnWearableLoad, Action<Core.ErrorCodes> OnConversionFinish = null)
+        private static void DumpWearableQueue(ABConverter.Core core, Queue<WearableItem> items, System.Action<UnityGLTF.GLTFSceneImporter> OnWearableLoad, Action<Core.ErrorCodes> OnConversionFinish = null, bool cleanAndExitOnFinish = true)
         {
             // We toggle the core's ABs generation off so that we execute that conversion here when there is no more items left.
-            abConverterCoreController.generateAssetBundles = false;
+            core.generateAssetBundles = false;
+            core.cleanAndExitOnFinish = false;
 
             if (items.Count == 0)
             {
-                abConverterCoreController.ConvertDumpedAssets(OnConversionFinish);
+                core.ConvertDumpedAssets((x) =>
+                {
+                    OnConversionFinish?.Invoke(x);
+                    
+                    if(cleanAndExitOnFinish)
+                        core.CleanAndExit(x);
+                });
 
                 return;
             }
 
             var pairs = ExtractMappingPairs(new List<WearableItem>() { items.Dequeue() });
             
-            abConverterCoreController.OnGLTFWillLoad += OnWearableLoad;
+            core.OnGLTFWillLoad += OnWearableLoad;
             
-            abConverterCoreController.Convert(pairs.ToArray(),
+            log.Info($"will dump mapping pairs: {pairs.Count}");
+            
+            core.Convert(pairs.ToArray(),
                 (err) =>
                 {
-                    abConverterCoreController.OnGLTFWillLoad -= OnWearableLoad;
-                    abConverterCoreController.CleanupWorkingFolders();
-                    DumpWearableQueue(abConverterCoreController, items, OnWearableLoad, OnConversionFinish);
+                    log.Info($"finished dumping a mapping pair...");
+                    core.OnGLTFWillLoad -= OnWearableLoad;
+                    core.CleanupWorkingFolders();
+                    DumpWearableQueue(core, items, OnWearableLoad, OnConversionFinish, cleanAndExitOnFinish);
                 });
         }
 
