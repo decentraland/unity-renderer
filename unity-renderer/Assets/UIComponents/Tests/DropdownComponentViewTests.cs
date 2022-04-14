@@ -316,14 +316,14 @@ public class DropdownComponentViewTests
 
         bool isOptionSelected = false;
         string selectedIdConfirmation = "";
-        dropdownComponent.OnOptionSelectionChanged += (isOn, id) =>
+        dropdownComponent.OnOptionSelectionChanged += (isOn, id, name) =>
         {
             isOptionSelected = true;
             selectedIdConfirmation = id;
         };
 
         // Act
-        dropdownComponent.OnOptionSelected(true, selectedId);
+        dropdownComponent.OnOptionSelected(true, selectedId, "TestName");
 
         // Assert
         Assert.IsTrue(isOptionSelected);

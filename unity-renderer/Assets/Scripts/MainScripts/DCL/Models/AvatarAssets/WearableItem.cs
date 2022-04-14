@@ -46,6 +46,8 @@ public class WearableItem
 
     public i18n[] i18n;
     public string thumbnail;
+
+    public string collectionPrettyName;
     
     private string thirdPartyCollectionId;
     public string ThirdPartyCollectionId

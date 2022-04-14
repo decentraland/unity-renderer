@@ -18,9 +18,9 @@ public class AvatarEditorHUDView : MonoBehaviour
     private const string VIEW_PATH = "AvatarEditorHUD";
     private const string VIEW_OBJECT_NAME = "_AvatarEditorHUD";
     internal const int AVATAR_SECTION_INDEX = 0;
-    internal const string AVATAR_SECTION_TITLE = "<b>Avatar</b>";
+    internal const string AVATAR_SECTION_TITLE = "Avatar";
     internal const int EMOTES_SECTION_INDEX = 1;
-    internal const string EMOTES_SECTION_TITLE = "<b>Emotes</b>";
+    internal const string EMOTES_SECTION_TITLE = "Emotes";
     private const string RESET_PREVIEW_ANIMATION = "Idle";
     private const float TIME_TO_RESET_PREVIEW_ANIMATION = 0.2f;
 
