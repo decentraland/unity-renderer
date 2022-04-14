@@ -8,7 +8,7 @@ public interface IToggleComponentView
     /// <summary>
     /// Event that will be triggered when the toggle changes.
     /// </summary>
-    event Action<bool, string> OnSelectedChanged;
+    event Action<bool, string, string> OnSelectedChanged;
 
     /// <summary>
     /// Id asociated to the toogle.
@@ -55,7 +55,7 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
     [Header("Configuration")]
     [SerializeField] internal ToggleComponentModel model;
 
-    public event Action<bool, string> OnSelectedChanged;
+    public event Action<bool, string, string> OnSelectedChanged;
 
     public string id
     {
@@ -91,7 +91,7 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
         if (activeOff)
             activeOff.gameObject.SetActive(!isOn);
 
-        OnSelectedChanged?.Invoke(isOn, model.id);
+        OnSelectedChanged?.Invoke(isOn, model.id, model.text);
     }
 
     public void Configure(BaseComponentModel newModel)

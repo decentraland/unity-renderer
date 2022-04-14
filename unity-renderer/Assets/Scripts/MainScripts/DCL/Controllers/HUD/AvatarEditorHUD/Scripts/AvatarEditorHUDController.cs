@@ -145,7 +145,7 @@ public class AvatarEditorHUDController : IHUD
     {
         // If there is more than 1 minute that we have checked the owned wearables, we try it again
         // This is done in order to retrieved the wearables after you has claimed them
-        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 60 &&
+        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 0 &&
              (ownedWearablesAlreadyLoaded ||
               ownedWearablesRemainingRequests <= 0)) ||
             string.IsNullOrEmpty(userProfile.userId))
@@ -819,10 +819,10 @@ public class AvatarEditorHUDController : IHUD
             .Catch((error) => Debug.LogError(error));
     }
 
-    public void ToggleThirdPartyCollection(bool isOn, string collectionId)
+    public void ToggleThirdPartyCollection(bool isOn, string collectionId, string collectionName)
     {
         if (isOn)
-            FetchAndShowThirdPartyCollection(collectionId);
+            FetchAndShowThirdPartyCollection(collectionId, collectionName);
         else
             RemoveThirdPartyCollection(collectionId);
     }
@@ -843,7 +843,7 @@ public class AvatarEditorHUDController : IHUD
         }
     }
 
-    private void FetchAndShowThirdPartyCollection(string collectionId)
+    private void FetchAndShowThirdPartyCollection(string collectionId, string collectionName)
     {
         view.BlockCollectionsDropdown(true);
         CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
@@ -851,6 +851,7 @@ public class AvatarEditorHUDController : IHUD
             {
                 foreach (var wearable in wearables)
                 {
+                    wearable.collectionPrettyName = collectionName;
                     if (!userProfile.ContainsInInventory(wearable.id))
                     {
                         userProfile.AddToInventory(wearable.id);

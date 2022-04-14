@@ -11,7 +11,7 @@ public interface IDropdownComponentView
     /// <summary>
     /// Event that will be triggered when the selection of any option changes.
     /// </summary>
-    event Action<bool, string> OnOptionSelectionChanged;
+    event Action<bool, string, string> OnOptionSelectionChanged;
 
     /// <summary>
     /// Set the dropdown as multiselect or not.
@@ -102,7 +102,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     [Header("Configuration")]
     [SerializeField] internal DropdownComponentModel model;
 
-    public event Action<bool, string> OnOptionSelectionChanged;
+    public event Action<bool, string, string> OnOptionSelectionChanged;
 
     internal ToggleComponentView selectAllOptionComponent;
 
@@ -322,11 +322,11 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         newGO.OnSelectedChanged += OnOptionSelected;
     }
 
-    internal void OnOptionSelected(bool isOn, string optionId)
+    internal void OnOptionSelected(bool isOn, string optionId, string optionName)
     {
         if (optionId != SELECT_ALL_OPTION_ID)
         {
-            OnOptionSelectionChanged?.Invoke(isOn, optionId);
+            OnOptionSelectionChanged?.Invoke(isOn, optionId, optionName);
 
             if (isOn && !isMultiselect)
             {
