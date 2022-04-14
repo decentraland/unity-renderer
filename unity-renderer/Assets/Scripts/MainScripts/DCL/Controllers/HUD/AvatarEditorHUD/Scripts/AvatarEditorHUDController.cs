@@ -145,7 +145,7 @@ public class AvatarEditorHUDController : IHUD
     {
         // If there is more than 1 minute that we have checked the owned wearables, we try it again
         // This is done in order to retrieved the wearables after you has claimed them
-        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 0 &&
+        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 60 &&
              (ownedWearablesAlreadyLoaded ||
               ownedWearablesRemainingRequests <= 0)) ||
             string.IsNullOrEmpty(userProfile.userId))
