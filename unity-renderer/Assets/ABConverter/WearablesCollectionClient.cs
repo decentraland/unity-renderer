@@ -23,6 +23,10 @@ namespace DCL.ABConverter
             return env;
         }
         
+        /// <summary>
+        /// Fetch the newest 1000 collections (max amount that can be fetched)
+        /// </summary>
+        /// <returns>A list of the fetched wearable collections</returns>
         public static WearableCollectionsAPIData.Collection[] EnsureWearableCollections()
         {
             if (wearableCollections != null && wearableCollections.Length > 0)
@@ -85,12 +89,6 @@ namespace DCL.ABConverter
 
                 if (Utils.ParseOption(commandLineArgs, Config.CLI_VERBOSE, 0, out _))
                     settings.verbose = true;
-
-                // if (Utils.ParseOption(commandLineArgs, Config.CLI_ALWAYS_BUILD_SYNTAX, 0, out _))
-                    settings.skipAlreadyBuiltBundles = false;
-
-                // if (Utils.ParseOption(commandLineArgs, Config.CLI_KEEP_BUNDLES_SYNTAX, 0, out _))
-                    settings.deleteDownloadPathAfterFinished = false;
 
                 if (Utils.ParseOption(commandLineArgs, Config.CLI_BUILD_WEARABLES_COLLECTION_SYNTAX, 1, out string[] collectionId))
                 {
@@ -155,9 +153,7 @@ namespace DCL.ABConverter
 
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
             var settings = new ClientSettings();
-            settings.skipAlreadyBuiltBundles = false;
-            settings.deleteDownloadPathAfterFinished = false;
-            settings.clearDirectoriesOnStart = false;
+            SetupClientSettingsForWearablesConversion(settings);
             var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
 
             abConverterCoreController.InitializeDirectoryPaths(true, true);
@@ -171,9 +167,7 @@ namespace DCL.ABConverter
             log.Info("Starting wearables dumping for collection: " + collectionId);
 
             settings ??= new ClientSettings();
-            settings.skipAlreadyBuiltBundles = false;
-            settings.deleteDownloadPathAfterFinished = false;
-            settings.clearDirectoriesOnStart = false;
+            SetupClientSettingsForWearablesConversion(settings);
             
             var abConverterCoreController = new ABConverter.Core(env, settings);
             
@@ -194,15 +188,24 @@ namespace DCL.ABConverter
             log.Info($"Starting wearables collections range dumping, total collections in range: {(1 + lastCollectionIndex - firstCollectionIndex)}");
 
             settings ??= new ClientSettings();
-            settings.skipAlreadyBuiltBundles = false;
-            settings.deleteDownloadPathAfterFinished = false;
-            settings.clearDirectoriesOnStart = false;
+            SetupClientSettingsForWearablesConversion(settings);
             
             var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
             
             DumpWearablesCollectionRange(abConverterCoreController, firstCollectionIndex, lastCollectionIndex);
         }
 
+        private static void SetupClientSettingsForWearablesConversion(ClientSettings settings)
+        {
+            settings.skipAlreadyBuiltBundles = false;
+            settings.deleteDownloadPathAfterFinished = false;
+            settings.clearDirectoriesOnStart = false;
+        }
+
+        // By manipulating these variables we control which collections are converted to batch manually
+        private const int INITIAL_COLLECTION_INDEX = 0;
+        private const int LAST_COLLECTION_INDEX = 10; 
+        
         /// <summary>
         /// Dump all non-bodyshape wearables, optimized to remove the skeleton for the wearables ABs since that is
         /// only needed for the body shapes (and the WearablesController sets it up for non-bodyshapes in runtime).
@@ -225,10 +228,7 @@ namespace DCL.ABConverter
             settings.clearDirectoriesOnStart = false;
             var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
             
-            // By manipulating these variables we control which collections are converted to batch manually
-            int initialCollectionIndex = 66;
-            int lastCollectionIndex = 66;
-            DumpWearablesCollectionRange(abConverterCoreController, initialCollectionIndex, lastCollectionIndex);
+            DumpWearablesCollectionRange(abConverterCoreController, INITIAL_COLLECTION_INDEX, LAST_COLLECTION_INDEX);
         }
 
         private static void DumpWearablesCollectionRange(ABConverter.Core core, int currentCollectionIndex, int lastCollectionIndex)
