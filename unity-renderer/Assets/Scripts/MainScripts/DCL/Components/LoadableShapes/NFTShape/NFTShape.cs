@@ -18,7 +18,15 @@ namespace DCL.Components
 
         public override string componentName => "NFT Shape";
 
-        public NFTShape() { model = new Model(); }
+        private INFTInfoLoadHelper infoLoadHelper;
+        private INFTAssetLoadHelper assetLoadHelper;
+
+        public NFTShape(INFTInfoLoadHelper infoLoadHelper, INFTAssetLoadHelper assetLoadHelper)
+        {
+            model = new Model();
+            this.infoLoadHelper = infoLoadHelper;
+            this.assetLoadHelper = assetLoadHelper;
+        }
 
         public override int GetClassId() { return (int) CLASS_ID.NFT_SHAPE; }
 
@@ -39,6 +47,11 @@ namespace DCL.Components
             entity.meshRootGameObject.transform.SetParent(entity.gameObject.transform);
             entity.meshRootGameObject.transform.ResetLocalTRS();
 
+            var loaderController = entity.meshRootGameObject.GetComponent<NFTShapeLoaderController>();
+
+            if (loaderController)
+                loaderController.Initialize(infoLoadHelper, assetLoadHelper);    
+            
             entity.OnShapeUpdated += UpdateBackgroundColor;
 
             var loadableShape = GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
@@ -58,6 +71,7 @@ namespace DCL.Components
                 return;
 
             entity.OnShapeUpdated -= UpdateBackgroundColor;
+            RemoveLoaderForEntity(entity);
 
             base.DetachShape(entity);
         }

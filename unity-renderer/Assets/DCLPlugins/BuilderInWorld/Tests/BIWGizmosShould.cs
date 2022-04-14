@@ -34,9 +34,11 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
         gizmosAxis.SetGizmo(gizmo);
 
         var referencesController = BIWTestUtils.CreateContextWithGenericMocks(SceneReferences.i);
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
+
         gizmosController = new BIWGizmosController();
         gizmosController.Initialize(referencesController);
-        gizmosController.EnterEditMode(scene);
+        gizmosController.EnterEditMode(builderScene);
     }
 
     [Test]

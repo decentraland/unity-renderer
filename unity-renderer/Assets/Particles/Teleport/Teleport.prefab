@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2414215512049403532}
   - component: {fileID: 2414215512049403535}
   - component: {fileID: 2414215512049403534}
-  m_Layer: 0
+  m_Layer: 24
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4894,7 +4894,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2777564588068734905}
   - component: {fileID: 1904810581808977119}
-  m_Layer: 0
+  m_Layer: 24
   m_Name: Teleport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5416,6 +5416,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Stars
+      objectReference: {fileID: 0}
+    - target: {fileID: 392967788518781725, guid: ff904f025e8fe41d08eaf0bb2327eb1d,
+        type: 3}
+      propertyPath: m_Layer
+      value: 24
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff904f025e8fe41d08eaf0bb2327eb1d, type: 3}

@@ -1,15 +1,18 @@
 ﻿using System;
 
-public interface IUpdateEventHandler : IDisposable
+namespace DCL
 {
-    public enum EventType
+    public interface IUpdateEventHandler : IService
     {
-        Update,
-        LateUpdate,
-        FixedUpdate,
-        OnGui
-    }
+        public enum EventType
+        {
+            Update,
+            LateUpdate,
+            FixedUpdate,
+            OnGui
+        }
 
-    public void AddListener( EventType eventType, Action action );
-    public void RemoveListener( EventType eventType, Action action );
+        void AddListener( EventType eventType, Action action );
+        void RemoveListener( EventType eventType, Action action );
+    }
 }

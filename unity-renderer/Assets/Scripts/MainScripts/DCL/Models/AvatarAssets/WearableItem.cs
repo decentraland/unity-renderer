@@ -1,9 +1,11 @@
-using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
+using DCL.Emotes;
+using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class WearableItem
 {
     [Serializable]
@@ -34,6 +36,7 @@ public class WearableItem
     }
 
     public Data data;
+    public EmoteDataV0 emoteDataV0;
     public string id;
 
     public string baseUrl;
@@ -41,6 +44,7 @@ public class WearableItem
 
     public i18n[] i18n;
     public string thumbnail;
+    public Sprite thumbnailSprite;
 
     //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
     public string rarity;
@@ -48,6 +52,27 @@ public class WearableItem
     public int issuedId;
 
     private readonly Dictionary<string, string> cachedI18n = new Dictionary<string, string>();
+    private readonly Dictionary<string, ContentProvider> cachedContentProviers =
+        new Dictionary<string, ContentProvider>();
+
+    private readonly string[] skinImplicitCategories =
+    {
+        WearableLiterals.Categories.EYES,
+        WearableLiterals.Categories.MOUTH,
+        WearableLiterals.Categories.EYEBROWS,
+        WearableLiterals.Categories.HAIR,
+        WearableLiterals.Categories.UPPER_BODY,
+        WearableLiterals.Categories.LOWER_BODY,
+        WearableLiterals.Categories.FEET,
+        WearableLiterals.Misc.HEAD,
+        WearableLiterals.Categories.FACIAL_HAIR
+    };
+
+    public bool TryGetRepresentation(string bodyshapeId, out Representation representation)
+    {
+        representation = GetRepresentation(bodyshapeId);
+        return representation != null;
+    }
 
     public Representation GetRepresentation(string bodyShapeType)
     {
@@ -64,8 +89,6 @@ public class WearableItem
 
         return null;
     }
-
-    private readonly Dictionary<string, ContentProvider> cachedContentProviers = new Dictionary<string, ContentProvider>();
 
     public ContentProvider GetContentProvider(string bodyShapeType)
     {
@@ -89,7 +112,9 @@ public class WearableItem
         return new ContentProvider
         {
             baseUrl = baseUrl,
-            contents = contents.Select(mapping => new ContentServerUtils.MappingPair() { file = mapping.key, hash = mapping.hash }).ToList()
+            contents = contents.Select(mapping => new ContentServerUtils.MappingPair()
+                                   { file = mapping.key, hash = mapping.hash })
+                               .ToList()
         };
     }
 
@@ -123,25 +148,40 @@ public class WearableItem
     {
         var representation = GetRepresentation(bodyShapeType);
 
-        if (representation?.overrideHides == null || representation.overrideHides.Length == 0)
-            return data.hides;
+        string[] hides;
 
-        return representation.overrideHides;
+        if (representation?.overrideHides == null || representation.overrideHides.Length == 0)
+            hides = data.hides;
+        else
+            hides = representation.overrideHides;
+
+        if (IsSkin())
+        {
+            hides = hides == null
+                ? skinImplicitCategories
+                : hides.Concat(skinImplicitCategories).Distinct().ToArray();
+        }
+
+        return hides;
     }
 
+    public bool DoesHide(string category, string bodyShape) => GetHidesList(bodyShape).Any(s => s == category);
+
     public bool IsCollectible() { return !string.IsNullOrEmpty(rarity); }
+
+    public bool IsSkin() => data.category == WearableLiterals.Categories.SKIN;
 
     public bool IsSmart()
     {
         if (data?.representations == null) return false;
-        
+
         for (var i = 0; i < data.representations.Length; i++)
         {
             var representation = data.representations[i];
             var containsGameJs = representation.contents?.Any(pair => pair.key.EndsWith("game.js")) ?? false;
             if (containsGameJs) return true;
         }
-        
+
         return false;
     }
 
@@ -176,18 +216,17 @@ public class WearableItem
 
     public string ComposeThumbnailUrl() { return baseUrl + thumbnail; }
 
-    public static HashSet<string> CompoundHidesList(string bodyShapeId, List<WearableItem> wearables)
+    public static HashSet<string> ComposeHiddenCategories(string bodyShapeId, List<WearableItem> wearables)
     {
         HashSet<string> result = new HashSet<string>();
         //Last wearable added has priority over the rest
-        for (int i = wearables.Count - 1; i >= 0; i--)
+        for (int index = 0; index < wearables.Count; index++)
         {
-            var wearableItem = wearables[i];
-
+            WearableItem wearableItem = wearables[index];
             if (result.Contains(wearableItem.data.category)) //Skip hidden elements to avoid two elements hiding each other
                 continue;
 
-            var wearableHidesList = wearableItem.GetHidesList(bodyShapeId);
+            string[] wearableHidesList = wearableItem.GetHidesList(bodyShapeId);
             if (wearableHidesList != null)
             {
                 result.UnionWith(wearableHidesList);
@@ -206,30 +245,32 @@ public class WearableItem
             return true;
         return false;
     }
+
+    public bool IsEmote() { return emoteDataV0 != null; }
 }
 
-[System.Serializable]
+[Serializable]
 public class WearablesRequestResponse
 {
     public WearableItem[] wearables;
     public string context;
 }
 
-[System.Serializable]
+[Serializable]
 public class WearablesRequestFailed
 {
     public string error;
     public string context;
 }
 
-[System.Serializable]
+[Serializable]
 public class WearableContent
 {
     public string file;
     public string hash;
 }
 
-[System.Serializable]
+[Serializable]
 public class i18n
 {
     public string code;

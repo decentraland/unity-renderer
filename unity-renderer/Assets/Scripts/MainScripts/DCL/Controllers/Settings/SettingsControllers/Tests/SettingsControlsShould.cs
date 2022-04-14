@@ -8,6 +8,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using DCL.Camera;
 
 namespace DCL.SettingsCommon.SettingsControllers.Tests
 {
@@ -17,6 +18,8 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
 
         private CinemachineFreeLook freeLookCamera;
         private CinemachineVirtualCamera firstPersonCamera;
+        private CinemachineFreeLook thirdPersonCamera;
+        private CameraController cameraController;
         private CinemachinePOV povCamera;
         private Light environmentLight;
         private Volume postProcessVolume;
@@ -82,6 +85,14 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             firstPersonCamera = sceneReferences.firstPersonCamera;
             Assert.IsNotNull(firstPersonCamera, "QualitySettingsController: firstPersonCamera reference missing");
             Assert.IsNotNull(sceneReferences.thirdPersonCamera, "QualitySettingsController: thirdPersonCamera reference missing");
+
+            thirdPersonCamera = sceneReferences.thirdPersonCamera;
+            Assert.IsNotNull(thirdPersonCamera, "Third person camera reference is missing");
+            Assert.IsNotNull(sceneReferences.thirdPersonCamera, "Scene reference third person camera reference is missing");
+
+            cameraController = sceneReferences.cameraController;
+            Assert.IsNotNull(cameraController, "Camera controller reference is missing");
+            Assert.IsNotNull(sceneReferences.cameraController, "Scene camera controller reference is missing");
         }
 
         [Test]
@@ -204,6 +215,38 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             Assert.AreEqual(firstPersonCamera.m_Lens.FarClipPlane, newValue, "1st person camera FarClipPlane value mismatch");
             Assert.AreEqual(RenderSettings.fogEndDistance, newValue, "fogEndDistance value mismatch");
             Assert.AreEqual(RenderSettings.fogStartDistance, newValue * 0.8f, "fogStartDistance value mismatch");
+        }
+
+        [Test]
+        public void ChangeCameraFOVCorrectly()
+        {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<FOVControlController>();
+            settingController.Initialize();
+
+            // Act
+            float newValue = 90f;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "Camera FOV stored value mismatch");
+            Assert.AreEqual(firstPersonCamera.m_Lens.FieldOfView, newValue, "1st person camera FOV value mismatch");
+        }
+
+        [Test]
+        public void ChangeInvertYMouseCorrectly()
+        {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<InvertYAxisControlController>();
+            settingController.Initialize();
+
+            // Act
+            bool newValue = true;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "Invert input Y axis stored value mismatch");
+            Assert.AreEqual(thirdPersonCamera.m_YAxis.m_InvertInput, !newValue, "Third person camera invert Y axis mismatch");
         }
 
         [Test]
@@ -435,21 +478,6 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
 
             // Assert
             Assert.AreEqual(newValue, settingController.GetStoredValue(), "UI SFX Volume stored value mismatch");
-        }
-
-        [Test]
-        public void ChangeNightModeCorrectly()
-        {
-            // Arrange
-            settingController = ScriptableObject.CreateInstance<NightModeControlController>();
-            settingController.Initialize();
-
-            // Act
-            bool newValue = true;
-            settingController.UpdateSetting(newValue);
-
-            // Assert
-            Assert.AreEqual(newValue, settingController.GetStoredValue(), "nightMode stored value mismatch");
         }
 
         [Test]

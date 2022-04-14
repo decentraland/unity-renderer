@@ -8,7 +8,7 @@ namespace DCL
     /// <summary>
     /// This class manage all our custom WebRequests types.
     /// </summary>
-    public interface IWebRequestController
+    public interface IWebRequestController : IService
     {
         /// <summary>
         /// Initialize the controller with all the request types injected.
@@ -96,7 +96,8 @@ namespace DCL
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
-            bool isReadable = true);
+            bool isReadable = true,
+            Dictionary<string, string> headers = null);
 
         /// <summary>
         /// Download an audio clip from a url.
@@ -116,10 +117,5 @@ namespace DCL
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true);
-
-        /// <summary>
-        /// Abort and clean all the ongoing web requests.
-        /// </summary>
-        void Dispose();
     }
 }

@@ -28,7 +28,7 @@ namespace DCL.Builder
             sectionsController.OnOpenSectionId -= OnOpenSectionId;
             LeftMenuButtonToggleView.OnToggleOn -= OnToggleOn;
         }
-
+        
         public void SetToPreviousMainPanel()
         {
             if (isMainPanel)

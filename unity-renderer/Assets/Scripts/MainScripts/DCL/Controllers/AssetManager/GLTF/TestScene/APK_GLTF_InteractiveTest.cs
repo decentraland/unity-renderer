@@ -11,6 +11,10 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
     List<AssetPromise_GLTF> promiseList = new List<AssetPromise_GLTF>();
 
     private int counter = 0;
+    private bool automatedMode = false;
+    private bool create = true;
+    private float lastTime = 0;
+    private float timeToAct = 0;
 
     private string[] urls = new string[]
     {
@@ -25,7 +29,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         CommonScriptableObjects.rendererState.Set(true);
         webRequestController = WebRequestController.Create();
         keeper = new AssetPromiseKeeper_GLTF();
-        keeper.throttlingCounter.budgetPerFrameInMilliseconds = 1;
+        keeper.throttlingCounter.enabled = false;
     }
 
     void Generate(string url)
@@ -45,20 +49,48 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Z))
         {
-            counter++;
-            counter %= urls.Length;
-            string finalUrl = TestAssetsUtils.GetPath() + urls[counter];
-            Generate(finalUrl);
+            Create();
         }
         else if (Input.GetKeyUp(KeyCode.X))
         {
-            if (promiseList.Count > 0)
-            {
-                var promiseToRemove = promiseList[Random.Range(0, promiseList.Count)];
-                keeper.Forget(promiseToRemove);
-                promiseList.Remove(promiseToRemove);
-                PoolManager.i.Cleanup(true);
-            }
+            Destroy();
         }
+        else if (Input.GetKeyUp(KeyCode.C))
+        {
+            automatedMode = !automatedMode;
+        }
+
+        if (automatedMode && (Time.time - lastTime) > timeToAct)
+        {
+            if (create)
+            {
+                Create();
+            }
+            else
+            {
+                Destroy();
+            }
+
+            create = !create;
+            lastTime = Time.time;
+            timeToAct = Random.Range(0.05f, 0.15f);
+        }
+    }
+    private void Destroy()
+    {
+        if (promiseList.Count > 0)
+        {
+            var promiseToRemove = promiseList[Random.Range(0, promiseList.Count)];
+            keeper.Forget(promiseToRemove);
+            promiseList.Remove(promiseToRemove);
+            PoolManager.i.Cleanup(true);
+        }
+    }
+    private void Create()
+    {
+        counter++;
+        counter %= urls.Length;
+        string finalUrl = TestAssetsUtils.GetPath() + urls[counter];
+        Generate(finalUrl);
     }
 }

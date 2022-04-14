@@ -52,7 +52,7 @@ namespace SettingsSectionTests
             widgetsToCreate.Add(newWidgetConfig);
 
             // Act
-            sectionView.Initialize(sectionController, widgetsToCreate);
+            sectionView.Initialize(sectionController, widgetsToCreate, "test");
             yield return null;
 
             // Assert

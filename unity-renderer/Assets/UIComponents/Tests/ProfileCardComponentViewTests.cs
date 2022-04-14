@@ -1,6 +1,7 @@
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
+using TMPro;
 using UnityEngine;
 
 public class ProfileCardComponentViewTests
@@ -100,9 +101,10 @@ public class ProfileCardComponentViewTests
     }
 
     [Test]
-    [TestCase("TestName")]
-    [TestCase(null)]
-    public void SetProfileNameCorrectly(string name)
+    [TestCase("TestName", true)]
+    [TestCase("TestName#1234", false)]
+    [TestCase(null, false)]
+    public void SetProfileNameCorrectly(string name, bool isClaimedName)
     {
         // Act
         profileCardComponent.SetProfileName(name);
@@ -110,7 +112,12 @@ public class ProfileCardComponentViewTests
         // Assert
         Assert.AreEqual(name, profileCardComponent.model.profileName, "The profile name does not match in the model.");
         if (!string.IsNullOrEmpty(name))
-            Assert.AreEqual(name, profileCardComponent.profileName.text, "The profile name text does not match.");
+        {
+            if (isClaimedName)
+                Assert.AreEqual(name, profileCardComponent.profileName.text, "The profile name text does not match.");
+            else
+                Assert.AreEqual(name.Split('#')[0], profileCardComponent.profileName.text, "The profile name text does not match.");
+        }
         else
             Assert.AreEqual(string.Empty, profileCardComponent.profileName.text, "The profile name text does not match.");
     }
@@ -137,6 +144,20 @@ public class ProfileCardComponentViewTests
         {
             Assert.AreEqual(string.Empty, profileCardComponent.profileAddress.text, "The profile address text does not match.");
         }
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetIsClaimedNameCorrectly(bool isClaimedName)
+    {
+        // Act
+        profileCardComponent.SetIsClaimedName(isClaimedName);
+
+        // Assert
+        Assert.AreEqual(isClaimedName, profileCardComponent.model.isClaimedName, "The profile isClaimedName property does not match in the model.");
+        Assert.AreEqual(isClaimedName ? TextAlignmentOptions.Center : TextAlignmentOptions.Right, profileCardComponent.profileName.alignment);
+        Assert.AreEqual(!isClaimedName, profileCardComponent.profileAddress.gameObject.activeSelf);
     }
 
     [Test]

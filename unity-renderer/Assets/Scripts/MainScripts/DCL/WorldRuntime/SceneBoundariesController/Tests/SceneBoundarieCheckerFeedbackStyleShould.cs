@@ -12,39 +12,20 @@ using UnityEngine.TestTools;
 
 public class SceneBoundarieCheckerFeedbackStyleShould : IntegrationTestSuite
 {
-    protected override PlatformContext CreatePlatformContext()
+    protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        WebRequestController webRequestController = new WebRequestController();
-        webRequestController.Initialize(
-            genericWebRequest: new WebRequest(),
-            assetBundleWebRequest: new WebRequestAssetBundle(),
-            textureWebRequest: new WebRequestTexture(),
-            null);
-
-        var context = DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
-        (
-            webRequestController
-        );
-
-        return context;
-    }
-
-    protected override WorldRuntimeContext CreateRuntimeContext()
-    {
-        return DCL.Tests.WorldRuntimeContextFactory.CreateWithCustomMocks
-        (
-            sceneController: new SceneController(),
-            state: new WorldState(),
-            componentFactory: new RuntimeComponentFactory(),
-            sceneBoundsChecker: new SceneBoundsChecker(new SceneBoundsFeedbackStyle_Simple())
-        );
+        serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
+        serviceLocator.Register<ISceneController>(() => new SceneController());
+        serviceLocator.Register<IWorldState>(() => new WorldState());
+        serviceLocator.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker(new SceneBoundsFeedbackStyle_Simple()));
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
     }
 
     [Test]
     public void ChangeFeedbackStyleChange()
     {
         //Arrange
-        var redFlickerStyle = new SceneBoundsFeedbackStyle_RedFlicker();
+        var redFlickerStyle = new SceneBoundsFeedbackStyle_RedBox();
 
         //Act
         Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(redFlickerStyle);

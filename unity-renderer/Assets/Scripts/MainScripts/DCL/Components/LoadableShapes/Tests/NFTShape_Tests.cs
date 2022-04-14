@@ -13,20 +13,12 @@ public class NFTShape_Tests : IntegrationTestSuite
 {
     private ParcelScene scene;
 
-    protected override WorldRuntimeContext CreateRuntimeContext()
+    protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
-        (
-            new SceneController(),
-            new WorldState(),
-            new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory)
-        );
-    }
-
-    protected override PlatformContext CreatePlatformContext()
-    {
-        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
-            WebRequestController.Create());
+        serviceLocator.Register<ISceneController>(() => new SceneController());
+        serviceLocator.Register<IWorldState>(() => new WorldState());
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory));
+        serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
     }
 
     [UnitySetUp]
@@ -38,6 +30,7 @@ public class NFTShape_Tests : IntegrationTestSuite
         scene.contentProvider = new ContentProvider_Dummy();
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         CommonScriptableObjects.rendererState.Set(true);
+        TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
     }
 
     [UnityTest]

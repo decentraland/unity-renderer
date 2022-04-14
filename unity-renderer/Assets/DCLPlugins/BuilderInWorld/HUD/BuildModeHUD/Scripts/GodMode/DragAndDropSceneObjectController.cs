@@ -40,8 +40,12 @@ public class DragAndDropSceneObjectController : IDragAndDropSceneObjectControlle
 
     public void Dispose()
     {
-        sceneCatalogController.OnCatalogItemStartDrag -= AdapterStartDragging;
-        dragAndDropSceneObjectView.OnDrop -= Drop;
+        if(sceneCatalogController != null)
+            sceneCatalogController.OnCatalogItemStartDrag -= AdapterStartDragging;
+        
+        if(dragAndDropSceneObjectView != null)
+            dragAndDropSceneObjectView.OnDrop -= Drop;
+        
         if (catalogItemCopy != null && catalogItemCopy.gameObject != null )
             GameObject.Destroy(catalogItemCopy.gameObject);
     }

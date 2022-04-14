@@ -2,9 +2,18 @@ using System;
 using DCL.Components;
 using DCL.Interface;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using AvatarSystem;
 using DCL.Configuration;
+using DCL.Emotes;
+using DCL.Helpers;
 using DCL.Models;
+using GPUSkinning;
 using UnityEngine;
+using Avatar = AvatarSystem.Avatar;
+using LOD = AvatarSystem.LOD;
 
 namespace DCL
 {
@@ -16,9 +25,10 @@ namespace DCL
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
-        public AvatarRenderer avatarRenderer;
+        public GameObject avatarContainer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
+        [SerializeField] private GameObject onloadParticlePrefab;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
         internal IPlayerName playerName;
@@ -26,23 +36,36 @@ namespace DCL
 
         private StringVariable currentPlayerInfoCardId;
 
-        private AvatarModel oldModel = new AvatarModel();
-
         public bool everythingIsLoaded;
 
-        private Vector3? lastAvatarPosition = null;
         bool initializedPosition = false;
 
         private Player player = null;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
         private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
+        private IAvatar avatar;
+        private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
+        private CancellationTokenSource loadingCts;
+        private ILazyTextureObserver currentLazyObserver;
+        private bool isGlobalSceneAvatar = true;
 
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-            avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
+            Visibility visibility = new Visibility();
+            LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
+            AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+            avatar = new Avatar(
+                new AvatarCurator(new WearableItemResolver()),
+                new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
+                animator,
+                visibility,
+                avatarLOD,
+                new SimpleGPUSkinning(),
+                new GPUSkinningThrottler(),
+                new EmoteAnimationEquipper(animator, DataStore.i.emotes));
 
             if (avatarReporterController == null)
             {
@@ -69,15 +92,21 @@ namespace DCL
 
             if (poolableObject != null && poolableObject.isInsidePool)
                 poolableObject.RemoveFromPool();
-
-            avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
+            isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
+
             DisablePassport();
 
             var model = (AvatarModel) newModel;
+
+            bool needsLoading = !model.HaveSameWearablesAndColors(currentAvatar);
+            currentAvatar.CopyFrom(model);
+
+            if (string.IsNullOrEmpty(model.bodyShape) || model.wearables.Count == 0)
+                yield break;
 #if UNITY_EDITOR
             gameObject.name = $"Avatar Shape {model.name}";
 #endif
@@ -92,23 +121,51 @@ namespace DCL
             if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
             {
                 initializedPosition = true;
-
-                float characterHeight = DCLCharacterController.i != null ? DCLCharacterController.i.characterController.height : 0.8f;
-
-                avatarMovementController.MoveTo(
-                    entity.gameObject.transform.localPosition - Vector3.up * characterHeight / 2,
+                OnEntityTransformChanged(entity.gameObject.transform.localPosition,
                     entity.gameObject.transform.localRotation, true);
             }
-
-            avatarRenderer.ApplyModel(model, () => avatarDone = true, () => avatarFailed = true);
-
-            yield return new WaitUntil(() => avatarDone || avatarFailed);
-
-            entity.OnTransformChange -= avatarMovementController.OnTransformChanged;
-            entity.OnTransformChange += avatarMovementController.OnTransformChanged;
-
+            
+            // NOTE: we subscribe here to transform changes since we might "lose" the message
+            // if we subscribe after a any yield
             entity.OnTransformChange -= OnEntityTransformChanged;
             entity.OnTransformChange += OnEntityTransformChanged;
+
+            var wearableItems = model.wearables.ToList();
+            wearableItems.Add(model.bodyShape);
+
+            //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
+            var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+            wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+
+            if (avatar.status != IAvatar.Status.Loaded || needsLoading)
+            {
+                //TODO Add Collider to the AvatarSystem
+                //TODO Without this the collider could get triggered disabling the avatar container,
+                // this would stop the loading process due to the underlying coroutines of the AssetLoader not starting
+                avatarCollider.gameObject.SetActive(false);
+
+                SetImpostor(model.id);
+                loadingCts?.Cancel();
+                loadingCts?.Dispose();
+                loadingCts = new CancellationTokenSource();
+
+                avatar.Load(wearableItems, new AvatarSettings
+                {
+                    playerName = model.name,
+                    bodyshapeId = model.bodyShape,
+                    eyesColor = model.eyeColor,
+                    skinColor = model.skinColor,
+                    hairColor = model.hairColor,
+                }, loadingCts.Token);
+
+                // Yielding a UniTask doesn't do anything, we manually wait until the avatar is ready
+                yield return new WaitUntil(() => avatar.status == IAvatar.Status.Loaded);
+
+                if (avatar.lodLevel <= 1)
+                    AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, onloadParticlePrefab);
+            }
+
+            avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerDownReport += PlayerClicked;
@@ -136,16 +193,22 @@ namespace DCL
 
             EnablePassport();
 
-            bool isAvatarGlobalScene = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
-            onPointerDown.SetColliderEnabled(isAvatarGlobalScene);
-            onPointerDown.SetOnClickReportEnabled(isAvatarGlobalScene);
+            onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
+            onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
+        }
 
-            KernelConfig.i.EnsureConfigInitialized()
-                .Then(config =>
-                {
-                    if (config.features.enableAvatarLODs)
-                        avatarRenderer.InitializeImpostor();
-                });
+        public void SetImpostor(string userId)
+        {
+            currentLazyObserver?.RemoveListener(avatar.SetImpostorTexture);
+            if (string.IsNullOrEmpty(userId))
+                return;
+
+            UserProfile userProfile = UserProfileController.GetProfileByUserId(userId);
+            if (userProfile == null)
+                return;
+
+            currentLazyObserver = userProfile.bodySnapshotObserver;
+            currentLazyObserver.AddListener(avatar.SetImpostorTexture);
         }
 
         private void PlayerPointerExit() { playerName?.SetForceShow(false); }
@@ -157,22 +220,22 @@ namespace DCL
             if (player != null && (player.id != model.id || player.name != model.name))
                 otherPlayers.Remove(player.id);
 
-            if (string.IsNullOrEmpty(model?.id))
+            if (isGlobalSceneAvatar && string.IsNullOrEmpty(model?.id))
                 return;
 
-            bool isNew = false;
-            if (player == null)
+            bool isNew = player == null;
+            if (isNew)
             {
                 player = new Player();
-                isNew = true;
             }
 
             player.id = model.id;
             player.name = model.name;
             player.isTalking = model.talking;
             player.worldPosition = entity.gameObject.transform.position;
-            player.renderer = avatarRenderer;
+            player.avatar = avatar;
             player.onPointerDownCollider = onPointerDown;
+            player.collider = avatarCollider;
 
             if (isNew)
             {
@@ -180,15 +243,21 @@ namespace DCL
                 player.playerName.SetName(player.name);
                 player.playerName.Show();
                 player.anchorPoints = anchorPoints;
-                otherPlayers.Add(player.id, player);
+                if (isGlobalSceneAvatar)
+                {
+                    otherPlayers.Add(player.id, player);
+                }
                 avatarReporterController.ReportAvatarRemoved();
             }
 
             avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
-            anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
+
+            float height = AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y;
+
+            anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), height);
 
             player.playerName.SetIsTalking(model.talking);
-            player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, avatarRenderer.maxY));
+            player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));
         }
 
         private void Update()
@@ -220,7 +289,21 @@ namespace DCL
         private void OnEntityTransformChanged(object newModel)
         {
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
-            lastAvatarPosition = newTransformModel.position;
+            OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation, !initializedPosition);
+        }
+        
+        private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
+        {
+            if (isGlobalSceneAvatar)
+            {
+                avatarMovementController.OnTransformChanged(position, rotation, inmediate);
+            }
+            else
+            {
+                var scenePosition = Utils.GridToWorldPosition(entity.scene.sceneData.basePosition.x, entity.scene.sceneData.basePosition.y);
+                avatarMovementController.OnTransformChanged(scenePosition + position, rotation, inmediate);
+            }
+            initializedPosition = true;
         }
 
         public override void OnPoolGet()
@@ -229,13 +312,9 @@ namespace DCL
 
             everythingIsLoaded = false;
             initializedPosition = false;
-            oldModel = new AvatarModel();
             model = new AvatarModel();
-            lastAvatarPosition = null;
             player = null;
         }
-
-        void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
 
         public override void Cleanup()
         {
@@ -248,7 +327,11 @@ namespace DCL
                 player = null;
             }
 
-            avatarRenderer.CleanupAvatar();
+            loadingCts?.Cancel();
+            loadingCts?.Dispose();
+            loadingCts = null;
+            currentLazyObserver?.RemoveListener(avatar.SetImpostorTexture);
+            avatar.Dispose();
 
             if (poolableObject != null)
             {
@@ -269,5 +352,8 @@ namespace DCL
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }
+
+        [ContextMenu("Print current profile")]
+        private void PrintCurrentProfile() { Debug.Log(JsonUtility.ToJson(model)); }
     }
 }

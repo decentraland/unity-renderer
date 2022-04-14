@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Builder;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using Environment = System.Environment;
 
 namespace Tests
 {
@@ -16,15 +18,17 @@ namespace Tests
         {
             var prefab = Resources.Load<SectionLandView>(SectionLandController.VIEW_PREFAB_PATH);
             view = Object.Instantiate(prefab);
-            WebRequestController.Create();
+
+            var serviceLocator = new ServiceLocator();
+            serviceLocator.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+            DCL.Environment.Setup(serviceLocator);
         }
 
         [TearDown]
         public void TearDown()
         {
             Object.Destroy(view.gameObject);
-            if (DCL.Environment.i.platform != null)
-                DCL.Environment.i.platform.webRequest.Dispose();
+            DCL.Environment.Dispose();
         }
 
         [Test]
@@ -140,7 +144,8 @@ namespace Tests
                 new Land()
                 {
                     id = id,
-                    parcels = new List<Parcel>()
+                    parcels = new List<Parcel>(),
+                    name = id
                 }
             );
         }

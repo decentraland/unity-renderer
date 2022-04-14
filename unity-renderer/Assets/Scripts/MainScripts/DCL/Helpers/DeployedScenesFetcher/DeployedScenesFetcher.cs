@@ -3,6 +3,7 @@ using System.Linq;
 using DCL;
 using DCL.Builder;
 using DCL.Helpers;
+using UnityEngine;
 
 public static class DeployedScenesFetcher
 {
@@ -13,11 +14,11 @@ public static class DeployedScenesFetcher
     {
         Promise<Scene[]> promise = new Promise<Scene[]>();
         catalyst.GetDeployedScenes(parcels, cacheMaxAgeSeconds)
-                .Then(result =>
-                {
-                    promise.Resolve(result.Select(deployment => new Scene(deployment, catalyst.contentUrl)).ToArray());
-                })
-                .Catch(err => promise.Reject(err));
+            .Then(result =>
+            {
+                promise.Resolve(result.Select(deployment => new Scene(deployment, catalyst.contentUrl)).ToArray());
+            })
+            .Catch(err => promise.Reject(err));
         return promise;
     }
 
@@ -30,8 +31,12 @@ public static class DeployedScenesFetcher
 
         Promise<string[]> getOwnedParcelsPromise = new Promise<string[]>();
         Promise<Scene[]> getDeployedScenesPromise = new Promise<Scene[]>();
-        theGraph.QueryLands(network, ethAddress, cacheMaxAgeSecondsLand)
-                .Then(landsReceived =>
+
+        var queryLandsPromise = theGraph.QueryLands(network, ethAddress, cacheMaxAgeSecondsLand);
+
+        if ( queryLandsPromise != null )
+        {
+            queryLandsPromise.Then(landsReceived =>
                 {
                     lands = landsReceived;
 
@@ -47,27 +52,28 @@ public static class DeployedScenesFetcher
                     getOwnedParcelsPromise.Resolve(parcels.ToArray());
                 })
                 .Catch(err => getOwnedParcelsPromise.Reject(err));
+        }
 
         getOwnedParcelsPromise.Then(parcels =>
-                              {
-                                  if (parcels.Length > 0)
-                                  {
-                                      FetchScenes(catalyst, parcels, cacheMaxAgeSecondsScenes)
-                                          .Then(scenes => getDeployedScenesPromise.Resolve(scenes))
-                                          .Catch(err => getDeployedScenesPromise.Reject(err));
-                                  }
-                                  else
-                                  {
-                                      getDeployedScenesPromise.Resolve(new Scene[] { });
-                                  }
-                              })
-                              .Catch(err => getDeployedScenesPromise.Reject(err));
+            {
+                if (parcels.Length > 0)
+                {
+                    FetchScenes(catalyst, parcels, cacheMaxAgeSecondsScenes)
+                        .Then(scenes => getDeployedScenesPromise.Resolve(scenes))
+                        .Catch(err => getDeployedScenesPromise.Reject(err));
+                }
+                else
+                {
+                    getDeployedScenesPromise.Resolve(new Scene[] { });
+                }
+            })
+            .Catch(err => getDeployedScenesPromise.Reject(err));
 
         getDeployedScenesPromise.Then(scenes =>
-                                {
-                                    resultPromise.Resolve(GetLands(lands, scenes));
-                                })
-                                .Catch(err => resultPromise.Reject(err));
+            {
+                resultPromise.Resolve(GetLands(lands, scenes));
+            })
+            .Catch(err => resultPromise.Reject(err));
 
         return resultPromise;
     }

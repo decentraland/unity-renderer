@@ -21,7 +21,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController = Substitute.ForPartsOf<ExploreV2MenuComponentController>();
         exploreV2MenuController.Configure().CreateView().Returns(info => exploreV2MenuView);
         exploreV2MenuController.Configure().CreateAnalyticsController().Returns(info => exploreV2Analytics);
-        exploreV2MenuController.Initialize_Internal(true, false);
+        exploreV2MenuController.Initialize();
     }
 
     [TearDown]
@@ -393,9 +393,10 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.UpdateProfileInfo(testUserProfile);
 
         //Assert
+        exploreV2MenuView.currentProfileCard.Received().SetIsClaimedName(testUserProfile.hasClaimedName);
         exploreV2MenuView.currentProfileCard.Received().SetProfileName(testUserProfile.userName);
         exploreV2MenuView.currentProfileCard.Received().SetProfileAddress(testUserProfile.ethAddress);
-        exploreV2MenuView.currentProfileCard.Received().SetProfilePicture(testUserProfile.face128SnapshotURL);
+        exploreV2MenuView.currentProfileCard.Received().SetProfilePicture(testUserProfile.face256SnapshotURL);
     }
 
     [Test]
@@ -405,6 +406,7 @@ public class ExploreV2MenuComponentControllerTests
     {
         // Arrange
         exploreV2MenuController.isOpen.Set(true);
+        DataStore.i.exploreV2.isSomeModalOpen.Set(false);
 
         // Act
         exploreV2MenuController.OnCloseButtonPressed(fromShortcut);

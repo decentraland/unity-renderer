@@ -18,10 +18,14 @@ namespace DCL.Components
         public GraphicRaycaster graphicRaycaster;
 
         private CanvasGroup canvasGroup;
+        private bool isInsideSceneBounds;
+        private BaseVariable<bool> isUIEnabled => DataStore.i.HUDs.isSceneUIEnabled;
 
         public UIScreenSpace()
         {
             CommonScriptableObjects.playerWorldPosition.OnChange += OnPlayerWorldPositionChanged;
+            DataStore.i.HUDs.isSceneUIEnabled.OnChange += OnChangeSceneUI;
+            OnChangeSceneUI(isUIEnabled.Get(), true);
             model = new Model();
         }
 
@@ -56,13 +60,18 @@ namespace DCL.Components
         public override void Dispose()
         {
             CommonScriptableObjects.playerWorldPosition.OnChange -= OnPlayerWorldPositionChanged;
-            //DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
+            DataStore.i.HUDs.isSceneUIEnabled.OnChange -= OnChangeSceneUI;
             CommonScriptableObjects.allUIHidden.OnChange -= AllUIHidden_OnChange;
 
             if (childHookRectTransform != null)
             {
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
             }
+        }
+
+        void OnChangeSceneUI(bool current, bool previous)
+        {
+            UpdateCanvasVisibility();
         }
 
         void OnPlayerWorldPositionChanged(Vector3 current, Vector3 previous)
@@ -87,8 +96,8 @@ namespace DCL.Components
 
             var model = (Model) this.model;
 
-            bool isInsideSceneBounds = scene.IsInsideSceneBoundaries(Utils.WorldToGridPosition(CommonScriptableObjects.playerWorldPosition));
-            bool shouldBeVisible = scene.isPersistent || (model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get());
+            isInsideSceneBounds = scene.IsInsideSceneBoundaries(Utils.WorldToGridPosition(CommonScriptableObjects.playerWorldPosition));
+            bool shouldBeVisible = scene.isPersistent || (model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get() && isUIEnabled.Get());
 
             canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
             canvasGroup.blocksRaycasts = shouldBeVisible;
@@ -120,7 +129,7 @@ namespace DCL.Components
             graphicRaycaster = canvasGameObject.AddComponent<GraphicRaycaster>();
 
             canvas.sortingOrder = -1;
-            
+
             if (scene.isPersistent && scene.sceneData.id != EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID)
             {
                 canvas.sortingOrder -= 1;

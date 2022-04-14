@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Components;
 using DCL.Models;
 using UnityEngine;
@@ -117,13 +118,11 @@ namespace DCL.Controllers
                 //NOTE(Brian): Here, we have to split the iterations. If not, we will get repeated calls of
                 //             SetSceneReady(), as the disposableNotReady count is 1 and gets to 0
                 //             in each OnDisposableReady() call.
-
-                using (var iterator = owner.disposableComponents.GetEnumerator())
+                //NOTE(Adrian): We 
+                List<ISharedComponent> disposableComponentts = owner.disposableComponents.Values.ToList();
+                for (int i = 0; i < disposableComponentts.Count; i++)
                 {
-                    while (iterator.MoveNext())
-                    {
-                        owner.disposableComponents[iterator.Current.Value.id].CallWhenReady(OnDisposableReady);
-                    }
+                    disposableComponentts[i].CallWhenReady(OnDisposableReady);
                 }
             }
             else
@@ -134,6 +133,11 @@ namespace DCL.Controllers
 
         private void SetSceneReady()
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
+            if (DataStore.i.common.isApplicationQuitting.Get())
+                return;
+#endif
+            
             if (state == State.READY)
                 return;
 

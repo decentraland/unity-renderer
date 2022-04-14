@@ -64,7 +64,7 @@ public class SceneLimitsController : ISceneLimitsController
         if (currentParcelScene == null)
             return;
 
-        if (IsParcelSceneSquare(currentParcelScene))
+        if (BIWUtils.IsParcelSceneSquare( currentParcelScene.sceneData.parcels))
         {
             int size = (int)Math.Sqrt(currentParcelScene.sceneData.parcels.Length);
             int meters = size * 16;
@@ -75,8 +75,8 @@ public class SceneLimitsController : ISceneLimitsController
             sceneLimitsView.SetTitleText(BIWSettings.CUSTOM_LAND);
         }
 
-        SceneMetricsModel limits = currentParcelScene.metricsCounter.GetLimits();
-        SceneMetricsModel usage = currentParcelScene.metricsCounter.GetModel();
+        SceneMetricsModel limits = currentParcelScene.metricsCounter.maxCount;
+        SceneMetricsModel usage = currentParcelScene.metricsCounter.currentCount;
 
         string leftDesc = AppendUsageAndLimit("ENTITIES", usage.entities, limits.entities);
         leftDesc += "\n" + AppendUsageAndLimit("BODIES", usage.bodies, limits.bodies);
@@ -124,8 +124,8 @@ public class SceneLimitsController : ISceneLimitsController
 
     internal float GetHigherLimitPercentInfo()
     {
-        SceneMetricsModel limits = currentParcelScene.metricsCounter.GetLimits();
-        SceneMetricsModel usage = currentParcelScene.metricsCounter.GetModel();
+        SceneMetricsModel limits = currentParcelScene.metricsCounter.maxCount;
+        SceneMetricsModel usage = currentParcelScene.metricsCounter.currentCount;
 
         float percentEntities = usage.entities * 100 / limits.entities;
         float percentBodies = usage.bodies * 100 / limits.bodies;
@@ -147,36 +147,5 @@ public class SceneLimitsController : ISceneLimitsController
             result = percentMeshes;
 
         return result;
-    }
-
-    internal bool IsParcelSceneSquare(IParcelScene scene)
-    {
-        Vector2Int[] parcelsPoints = scene.sceneData.parcels;
-        int minX = int.MaxValue;
-        int minY = int.MaxValue;
-        int maxX = int.MinValue;
-        int maxY = int.MinValue;
-
-        foreach (Vector2Int vector in parcelsPoints)
-        {
-            if (vector.x < minX)
-                minX = vector.x;
-            if (vector.y < minY)
-                minY = vector.y;
-            if (vector.x > maxX)
-                maxX = vector.x;
-            if (vector.y > maxY)
-                maxY = vector.y;
-        }
-
-        if (maxX - minX != maxY - minY)
-            return false;
-
-        int lateralLengh = Math.Abs((maxX - minX) + 1);
-
-        if (parcelsPoints.Length != lateralLengh * lateralLengh)
-            return false;
-
-        return true;
     }
 }

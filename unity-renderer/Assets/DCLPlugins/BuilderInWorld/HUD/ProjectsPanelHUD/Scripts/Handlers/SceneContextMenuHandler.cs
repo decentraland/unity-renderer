@@ -11,6 +11,7 @@ internal class SceneContextMenuHandler : IDisposable
     private readonly UnpublishPopupController unpublishPopupController;
 
     private Vector2Int sceneCoords;
+    private Vector2Int sceneSize;
     private Scene.Source sceneSource;
 
     public SceneContextMenuHandler(SceneCardViewContextMenu contextMenu, ISectionsController sectionsController,
@@ -56,6 +57,17 @@ internal class SceneContextMenuHandler : IDisposable
             sceneData.isOwner || sceneData.isOperator, sceneData.isContributor);
         sceneCoords = sceneData.coords;
         sceneSource = sceneData.source;
+        sceneSize = sceneData.size;
+    }
+
+    public void OnContextMenuOpen(IProjectSceneCardView sceneCard)
+    {
+        contextMenu.transform.position = sceneCard.contextMenuButtonPosition;
+        contextMenu.Show( sceneCard.scene.id, true,
+            sceneCard.scene.land?.role == LandRole.OWNER || sceneCard.scene.land?.role == LandRole.OPERATOR, false);
+        sceneCoords = sceneCard.scene.@base;
+        sceneSource = sceneCard.scene.source;
+        sceneSize =  BIWUtils.GetSceneSize(sceneCard.scene.parcels);
     }
 
     void OnRequestContextMenuHide() { contextMenu.Hide(); }
@@ -68,7 +80,7 @@ internal class SceneContextMenuHandler : IDisposable
 
     void OnContextMenuSharePressed(string id) { }
 
-    void OnContextMenuUnpublishPressed(string id) { unpublishPopupController.Show(sceneCoords, sceneSource); }
+    void OnContextMenuUnpublishPressed(string id) { unpublishPopupController.Show(sceneCoords,sceneSize, sceneSource); }
 
     void OnContextMenuDeletePressed(string id) { }
 

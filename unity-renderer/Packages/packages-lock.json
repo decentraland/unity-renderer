@@ -7,6 +7,13 @@
       "dependencies": {},
       "hash": "bda77ab0395282b9a2c417c6affa21c1d004321b"
     },
+    "com.cysharp.unitask": {
+      "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "50a67d8f419b6cea0398eff6c19cf0bbe11ed609"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
@@ -80,7 +87,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.memoryprofiler": {
-      "version": "0.2.4-preview.1",
+      "version": "0.6.0-preview.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -232,6 +239,13 @@
       "source": "git",
       "dependencies": {},
       "hash": "cdd11bb74398afae73e71b6fe01114f597a6ce08"
+    },
+    "ru.threedisevenzeror.unitygifdecoder": {
+      "version": "https://github.com/3DI70R/Unity-GifDecoder.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "90ffa399087521817ab03ce9213ec33b38e4492f"
     },
     "com.unity.modules.androidjni": {
       "version": "1.0.0",

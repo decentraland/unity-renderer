@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -22,8 +23,8 @@ namespace DCL
         private PerformanceMetricsController performanceMetricsController;
         protected IKernelCommunication kernelCommunication;
 
-        private PluginSystem pluginSystem;
-
+        protected PluginSystem pluginSystem;
+        
         protected virtual void Awake()
         {
             if (i != null)
@@ -33,7 +34,7 @@ namespace DCL
             }
 
             i = this;
-            
+
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
             if (!disableSceneDependencies)
@@ -42,13 +43,27 @@ namespace DCL
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
                 performanceMetricsController = new PerformanceMetricsController();
-                RenderProfileManifest.i.Initialize();
-                SetupEnvironment();
-                
+                SetupServices();
+
                 DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
+            
+#if UNITY_STANDALONE || UNITY_EDITOR
+            Application.quitting += () => DataStore.i.common.isApplicationQuitting.Set(true);
+#endif
 
             SetupPlugins();
+
+            InitializeCommunication();
+
+            // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
+            // We should re-enable this later as produces a performance regression.
+            if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
+                Environment.i.platform.cullingController.SetAnimationCulling(false);
+        }
+
+        protected virtual void InitializeCommunication()
+        {
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
@@ -60,18 +75,9 @@ namespace DCL
             //              IntegrationTestSuite_Legacy base class.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
-#if UNITY_STANDALONE && !UNITY_EDITOR
-                kernelCommunication = new WebSocketCommunication(true);
-#else
                 kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
-#endif
             }
 #endif
-
-            // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
-            // We should re-enable this later as produces a performance regression.
-            if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
-                Environment.i.platform.cullingController.SetAnimationCulling(false);
         }
 
         void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
@@ -89,22 +95,10 @@ namespace DCL
             pluginSystem = PluginSystemFactory.Create();
         }
 
-        protected virtual void SetupEnvironment()
+        protected virtual void SetupServices()
         {
-            Environment.SetupWithBuilders(
-                messagingBuilder: MessagingContextBuilder,
-                platformBuilder: PlatformContextBuilder,
-                worldRuntimeBuilder: WorldRuntimeContextBuilder,
-                hudBuilder: HUDContextBuilder);
+            Environment.Setup(ServiceLocatorFactory.CreateDefault());
         }
-
-        protected virtual MessagingContext MessagingContextBuilder() { return MessagingContextFactory.CreateDefault(); }
-
-        protected virtual PlatformContext PlatformContextBuilder() { return PlatformContextFactory.CreateDefault(); }
-
-        protected virtual WorldRuntimeContext WorldRuntimeContextBuilder() { return WorldRuntimeContextFactory.CreateDefault(componentFactory); }
-
-        protected virtual HUDContext HUDContextBuilder() { return HUDContextFactory.CreateDefault(); }
 
         protected virtual void Start()
         {
@@ -116,22 +110,32 @@ namespace DCL
 
             // We trigger the Decentraland logic once everything is initialized.
             DCL.Interface.WebInterface.StartDecentraland();
-
-            Environment.i.world.sceneController.Start();
         }
 
         protected virtual void Update()
         {
-            Environment.i.platform.Update();
             performanceMetricsController?.Update();
         }
+        
+        [RuntimeInitializeOnLoadMethod]
+        static void RunOnStart()
+        {
+            Application.wantsToQuit += ApplicationWantsToQuit;
+        }
+        private static bool ApplicationWantsToQuit()
+        {
+            if (i != null)
+                i.Dispose();
+    
+            return true;
+        }
 
-        protected virtual void OnDestroy()
+        protected virtual void Dispose()
         {
             DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
-            
-            DataStore.i.common.isWorldBeingDestroyed.Set(true);
-            
+
+            DataStore.i.common.isApplicationQuitting.Set(true);
+
             pluginSystem?.Dispose();
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
@@ -139,7 +143,7 @@ namespace DCL
             
             kernelCommunication?.Dispose();
         }
-
+        
         protected virtual void InitializeSceneDependencies()
         {
             gameObject.AddComponent<UserProfileController>();
@@ -148,7 +152,6 @@ namespace DCL
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<ChatController>();
             gameObject.AddComponent<FriendsController>();
-            gameObject.AddComponent<LoadingFeedbackController>();
             gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();
             gameObject.AddComponent<RenderProfileBridge>();

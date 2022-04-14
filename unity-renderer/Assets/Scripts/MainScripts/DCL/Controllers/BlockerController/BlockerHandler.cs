@@ -19,7 +19,6 @@ namespace DCL.Controllers
     public class BlockerInstanceHandler : IBlockerInstanceHandler
     {
         static GameObject blockerPrefab;
-        private bool blockerPrefabDirty;
 
         const string PARCEL_BLOCKER_POOL_NAME = "ParcelBlocker";
 
@@ -29,38 +28,20 @@ namespace DCL.Controllers
         Dictionary<Vector2Int, IPoolableObject> blockers = new Dictionary<Vector2Int, IPoolableObject>();
 
         private IBlockerAnimationHandler animationHandler;
-        private ICullingController cullingController;
         private Transform parent;
 
-        public void Initialize(IBlockerAnimationHandler animationHandler, ICullingController cullingController)
+        public BlockerInstanceHandler(IBlockerAnimationHandler animationHandler)
         {
-            this.cullingController = cullingController;
             this.animationHandler = animationHandler;
+            blockerPrefab = Resources.Load<GameObject>("LoadingBlocker_Green");
+            EnsureBlockerPool();
+            //TODO We lost the purple blockers when implementing the procedural skybox
+            // We could set a color in their shader dynamically,
+            // similar to how we set toon shader material in the Editor to disable the skybox
         }
 
-        public BlockerInstanceHandler()
-        {
-            RenderProfileManifest.i.OnChangeProfile += OnChangeProfile;
-            OnChangeProfile(RenderProfileManifest.i.currentProfile);
-        }
-
-        private void OnChangeProfile(RenderProfileWorld profile)
-        {
-            if (profile == null)
-                return;
-
-            blockerPrefabDirty = true;
-            blockerPrefab = profile.loadingBlockerPrefab;
-        }
-
-        public void ShowBlocker(Vector2Int pos, bool instant = false)
-        {
-            if (blockerPrefabDirty)
-            {
-                blockerPrefabDirty = false;
-                EnsureBlockerPool();
-            }
-
+        public void ShowBlocker(Vector2Int pos, bool instant = false, bool colliderEnabled = true)
+        {            
             float centerOffset = ParcelSettings.PARCEL_SIZE / 2;
             PoolableObject blockerPoolable = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
             GameObject blockerGo = blockerPoolable.gameObject;
@@ -79,6 +60,7 @@ namespace DCL.Controllers
 
             blockerCollider.size = Vector3.one + (Vector3.up * auxScaleVec.y);
             blockerCollider.center = Vector3.up * ((auxScaleVec.y / 2) - 0.5f);
+            blockerCollider.enabled = colliderEnabled;
 
 #if UNITY_EDITOR
             blockerGo.name = "BLOCKER " + pos;
@@ -89,7 +71,7 @@ namespace DCL.Controllers
             if (!instant)
                 animationHandler.FadeIn(blockerGo);
 
-            cullingController?.MarkDirty();
+            DCL.Environment.i.platform.cullingController?.MarkDirty();
         }
 
         private void EnsureBlockerPool()
@@ -133,6 +115,14 @@ namespace DCL.Controllers
 
         public Dictionary<Vector2Int, IPoolableObject> GetBlockers() { return new Dictionary<Vector2Int, IPoolableObject>(blockers); }
 
+        public void SetCollision(bool newState)
+        {
+            foreach (var keyValuePair in blockers)
+            {
+                keyValuePair.Value.gameObject.GetComponent<Collider>().enabled = newState;
+            }
+        }
+        
         public void DestroyAllBlockers()
         {
             var keys = blockers.Keys.ToArray();

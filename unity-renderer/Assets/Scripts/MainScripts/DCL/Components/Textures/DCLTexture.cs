@@ -6,6 +6,7 @@ using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DCL
 {
@@ -30,6 +31,9 @@ namespace DCL
         }
 
         AssetPromise_Texture texturePromise = null;
+
+        private Dictionary<ISharedComponent, HashSet<string>> attachedEntitiesByComponent =
+            new Dictionary<ISharedComponent, HashSet<string>>();
 
         public TextureWrapMode unityWrap;
         public FilterMode unitySamplingMode;
@@ -147,31 +151,55 @@ namespace DCL
             }
         }
 
-        protected int refCount;
-
-        public virtual void AttachTo(PBRMaterial material) { AddRefCount(); }
-
-        public virtual void AttachTo(BasicMaterial material) { AddRefCount(); }
-
-        public virtual void AttachTo(UIImage image) { AddRefCount(); }
-
-        public virtual void DetachFrom(PBRMaterial material) { RemoveRefCount(); }
-
-        public virtual void DetachFrom(BasicMaterial material) { RemoveRefCount(); }
-
-        public virtual void DetachFrom(UIImage image) { RemoveRefCount(); }
-
-        public void AddRefCount() { refCount++; }
-
-        public void RemoveRefCount()
+        public virtual void AttachTo(ISharedComponent component)
         {
-            if (refCount == 0)
-                Dispose();
+            AddReference(component);
+        }
+
+        public virtual void DetachFrom(ISharedComponent component)
+        {
+            RemoveReference(component);
+        }
+
+        public void AddReference(ISharedComponent component)
+        {
+            if (attachedEntitiesByComponent.ContainsKey(component))
+                return;
+
+            attachedEntitiesByComponent.Add(component, new HashSet<string>());
+
+            foreach (var entity in component.GetAttachedEntities())
+            {
+                attachedEntitiesByComponent[component].Add(entity.entityId);
+                DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, entity.entityId, texture);
+            }
+        }
+
+        public void RemoveReference(ISharedComponent component)
+        {
+            if (!attachedEntitiesByComponent.ContainsKey(component))
+                return;
+
+            foreach (var entityId in attachedEntitiesByComponent[component])
+            {
+                DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, entityId, texture);
+            }
+
+            attachedEntitiesByComponent.Remove(component);
         }
 
         public override void Dispose()
         {
+            if (isDisposed)
+                return;
+            
             isDisposed = true;
+
+            while (attachedEntitiesByComponent.Count > 0)
+            {
+                RemoveReference(attachedEntitiesByComponent.First().Key);
+            }
+
             if (texturePromise != null)
             {
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);

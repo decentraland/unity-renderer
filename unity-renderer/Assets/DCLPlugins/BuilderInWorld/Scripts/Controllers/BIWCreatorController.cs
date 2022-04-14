@@ -103,8 +103,8 @@ namespace DCL.Builder
             if ( context.editorContext.editorHUD == null)
                 return false;
 
-            SceneMetricsModel limits = sceneToEdit.metricsCounter.GetLimits();
-            SceneMetricsModel usage = sceneToEdit.metricsCounter.GetModel();
+            SceneMetricsModel limits = sceneToEdit.metricsCounter.maxCount;
+            SceneMetricsModel usage = sceneToEdit.metricsCounter.currentCount;
 
             if (limits.bodies < usage.bodies + sceneObject.metrics.bodies)
             {
@@ -179,10 +179,10 @@ namespace DCL.Builder
                 return null;
 
             IsInsideTheLimits(catalogItem);
-            
+
             BIWUtils.AddSceneMappings(catalogItem.contents, BIWUrlUtils.GetUrlSceneObjectContent(), sceneToEdit.sceneData);
             DCL.Environment.i.world.sceneController.UpdateParcelScenesExecute(sceneToEdit.sceneData);
-            
+
             Vector3 editionPosition = modeController.GetCurrentEditionPosition();
 
             BIWEntity entity = entityHandler.CreateEmptyEntity(sceneToEdit, startPosition, editionPosition, false);
@@ -192,7 +192,7 @@ namespace DCL.Builder
             if (!isFloor)
                 CreateLoadingObject(entity);
 
-            entity.rootEntity.OnShapeUpdated += (entity) => onFloorLoadedAction?.Invoke(entity);
+            entity.rootEntity.OnShapeLoaded += (entity) => onFloorLoadedAction?.Invoke(entity);
 
             AddShape(catalogItem, entity);
             AddEntityNameComponent(catalogItem, entity);
@@ -291,7 +291,7 @@ namespace DCL.Builder
         {
             DCLLockedOnEdit.Model model = new DCLLockedOnEdit.Model();
             model.isLocked = entity.isFloor;
-            
+
             EntityComponentsUtils.AddLockedOnEditComponent(sceneToEdit, entity.rootEntity, model, Guid.NewGuid().ToString());
         }
 
@@ -303,7 +303,7 @@ namespace DCL.Builder
                 model.color = new Color(0.6404918f, 0.611472f, 0.8584906f);
                 model.src = catalogItem.model;
                 model.assetId = catalogItem.id;
-                
+
                 NFTShape nftShape = EntityComponentsUtils.AddNFTShapeComponent(sceneToEdit, entity.rootEntity, model, catalogItem.id);
                 nftShape.CallWhenReady(entity.ShapeLoadFinish);
             }
@@ -312,7 +312,7 @@ namespace DCL.Builder
                 LoadableShape.Model model = new LoadableShape.Model();
                 model.src = catalogItem.model;
                 model.assetId = catalogItem.id;
-                
+
                 GLTFShape gltfComponent = EntityComponentsUtils.AddGLTFComponent(sceneToEdit, entity.rootEntity, model, catalogItem.id);
                 gltfComponent.CallWhenReady(entity.ShapeLoadFinish);
             }

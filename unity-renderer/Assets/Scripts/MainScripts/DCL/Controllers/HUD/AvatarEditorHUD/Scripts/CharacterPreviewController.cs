@@ -1,7 +1,12 @@
-using DCL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using AvatarSystem;
+using Cysharp.Threading.Tasks;
+using DCL;
+using GPUSkinning;
 using UnityEngine;
 
 public class CharacterPreviewController : MonoBehaviour
@@ -9,19 +14,13 @@ public class CharacterPreviewController : MonoBehaviour
     private const int SNAPSHOT_BODY_WIDTH_RES = 256;
     private const int SNAPSHOT_BODY_HEIGHT_RES = 512;
 
-    private const int SNAPSHOT_FACE_WIDTH_RES = 512;
-    private const int SNAPSHOT_FACE_HEIGHT_RES = 512;
-
     private const int SNAPSHOT_FACE_256_WIDTH_RES = 256;
     private const int SNAPSHOT_FACE_256_HEIGHT_RES = 256;
-
-    private const int SNAPSHOT_FACE_128_WIDTH_RES = 128;
-    private const int SNAPSHOT_FACE_128_HEIGHT_RES = 128;
 
     private const int SUPERSAMPLING = 1;
     private const float CAMERA_TRANSITION_TIME = 0.5f;
 
-    public delegate void OnSnapshotsReady(Texture2D face, Texture2D face128, Texture2D face256, Texture2D body);
+    public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 
     public enum CameraFocus
     {
@@ -34,7 +33,6 @@ public class CharacterPreviewController : MonoBehaviour
     private System.Collections.Generic.Dictionary<CameraFocus, Transform> cameraFocusLookUp;
 
     public new Camera camera;
-    public AvatarRenderer avatarRenderer;
 
     public Transform defaultEditingTemplate;
     public Transform faceEditingTemplate;
@@ -42,9 +40,10 @@ public class CharacterPreviewController : MonoBehaviour
     public Transform faceSnapshotTemplate;
     public Transform bodySnapshotTemplate;
 
-    private Coroutine updateModelRoutine;
-
-    private bool avatarLoadFailed = false;
+    [SerializeField] private GameObject avatarContainer;
+    private IAvatar avatar;
+    private readonly AvatarModel currentAvatarModel = new AvatarModel { wearables = new List<string>() };
+    private CancellationTokenSource loadingCts = new CancellationTokenSource();
 
     private void Awake()
     {
@@ -55,26 +54,61 @@ public class CharacterPreviewController : MonoBehaviour
             { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
             { CameraFocus.BodySnapshot, bodySnapshotTemplate },
         };
+        IAnimator animator = avatarContainer.gameObject.GetComponentInChildren<IAnimator>();
+        avatar = new AvatarSystem.Avatar(
+            new AvatarCurator(new WearableItemResolver()),
+            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
+            animator,
+            new Visibility(),
+            new NoLODs(),
+            new SimpleGPUSkinning(),
+            new GPUSkinningThrottler(),
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes)
+        );
     }
 
-    public void UpdateModel(AvatarModel newModel, Action onDone) { updateModelRoutine = CoroutineStarter.Start(UpdateModelRoutine(newModel, onDone)); }
-
-    private void OnDestroy() { CoroutineStarter.Stop(updateModelRoutine); }
-
-    private IEnumerator UpdateModelRoutine(AvatarModel newModel, Action onDone)
+    public void UpdateModel(AvatarModel newModel, Action onDone)
     {
-        bool avatarDone = false;
-        avatarLoadFailed = false;
+        if (newModel.HaveSameWearablesAndColors(currentAvatarModel))
+        {
+            onDone?.Invoke();
+            return;
+        }
 
-        avatarRenderer.ApplyModel(newModel, () => avatarDone = true, () => avatarLoadFailed = true);
+        loadingCts?.Cancel();
+        loadingCts?.Dispose();
+        loadingCts = new CancellationTokenSource();
+        UpdateModelRoutine(newModel, onDone, loadingCts.Token);
+    }
 
-        yield return new DCL.WaitUntil(() => avatarDone || avatarLoadFailed);
+    private void OnDestroy()
+    {
+        loadingCts?.Cancel();
+        loadingCts?.Dispose();
+        loadingCts = null;
+        avatar?.Dispose();
+    }
+
+    private async UniTaskVoid UpdateModelRoutine(AvatarModel newModel, Action onDone, CancellationToken ct)
+    {
+        currentAvatarModel.CopyFrom(newModel);
+        List<string> wearables = new List<string>(newModel.wearables);
+        wearables.Add(newModel.bodyShape);
+        await avatar.Load(wearables, new AvatarSettings
+        {
+            bodyshapeId = newModel.bodyShape,
+            eyesColor = newModel.eyeColor,
+            hairColor = newModel.hairColor,
+            skinColor = newModel.skinColor
+
+        }, ct);
+
         onDone?.Invoke();
     }
 
     public void TakeSnapshots(OnSnapshotsReady onSuccess, Action onFailed)
     {
-        if (avatarLoadFailed)
+        if (avatar.status != IAvatar.Status.Loaded)
         {
             onFailed?.Invoke();
             return;
@@ -89,13 +123,11 @@ public class CharacterPreviewController : MonoBehaviour
 
         var current = camera.targetTexture;
         camera.targetTexture = null;
-        var avatarAnimator = avatarRenderer.gameObject.GetComponent<AvatarAnimatorLegacy>();
+        var avatarAnimator = avatarContainer.gameObject.GetComponentInChildren<AvatarAnimatorLegacy>();
 
         SetFocus(CameraFocus.FaceSnapshot, false);
         avatarAnimator.Reset();
         yield return null;
-        Texture2D face = Snapshot(SNAPSHOT_FACE_WIDTH_RES, SNAPSHOT_FACE_HEIGHT_RES);
-        Texture2D face128 = Snapshot(SNAPSHOT_FACE_128_WIDTH_RES, SNAPSHOT_FACE_128_HEIGHT_RES);
         Texture2D face256 = Snapshot(SNAPSHOT_FACE_256_WIDTH_RES, SNAPSHOT_FACE_256_HEIGHT_RES);
 
         SetFocus(CameraFocus.BodySnapshot, false);
@@ -108,7 +140,7 @@ public class CharacterPreviewController : MonoBehaviour
         camera.targetTexture = current;
 
         DCL.Environment.i.platform.cullingController.Start();
-        callback?.Invoke(face, face128, face256, body);
+        callback?.Invoke(face256, body);
     }
 
     private Texture2D Snapshot(int width, int height)
@@ -164,5 +196,9 @@ public class CharacterPreviewController : MonoBehaviour
         cameraTransitionCoroutine = null;
     }
 
-    public void Rotate(float rotationVelocity) { avatarRenderer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up); }
+    public void Rotate(float rotationVelocity) { avatarContainer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up); }
+
+    public AvatarModel GetCurrentModel() { return currentAvatarModel; }
+
+    public void PlayEmote(string emoteId, long timestamp) { avatar.PlayEmote(emoteId, timestamp); }
 }

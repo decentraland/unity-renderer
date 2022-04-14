@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -15,16 +16,25 @@ namespace Tests
         {
             var prefab = Resources.Load<UnpublishPopupView>("UnpublishPopup/UnpublishPopupView");
             view = UnityEngine.Object.Instantiate(prefab);
-            controller = new UnpublishPopupController(view);
+            controller = new UnpublishPopupController(BIWTestUtils.CreateMockedContext(), view);
+
+            // This is needed because BuilderMainPanelController uses the Analytics utils, which in turn use
+            // Environment.i.serviceProviders.analytics
+            ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+            Environment.Setup(serviceLocator);
         }
 
         [TearDown]
-        public void TearDown() { controller.Dispose(); }
+        public void TearDown()
+        {
+            Environment.Dispose();
+            controller.Dispose();
+        }
 
         [Test]
         public void ShowConfirmationPopupCorrectly()
         {
-            controller.Show(Vector2Int.zero);
+            controller.Show(Vector2Int.zero,Vector2Int.zero);
             Assert.IsTrue(view.gameObject.activeSelf);
 
             Assert.IsTrue(view.cancelButton.gameObject.activeSelf);
@@ -93,7 +103,7 @@ namespace Tests
         [Test]
         public void ControllerSuccessFlowCorrectly()
         {
-            controller.Show(Vector2Int.zero);
+            controller.Show(Vector2Int.zero,Vector2Int.zero);
             Assert.AreEqual(UnpublishPopupView.State.CONFIRM_UNPUBLISH, view.state);
 
             view.unpublishButton.onClick.Invoke();
@@ -106,7 +116,7 @@ namespace Tests
         [Test]
         public void ControllerErrorFlowCorrectly()
         {
-            controller.Show(Vector2Int.zero);
+            controller.Show(Vector2Int.zero, Vector2Int.zero);
             Assert.AreEqual(UnpublishPopupView.State.CONFIRM_UNPUBLISH, view.state);
 
             view.unpublishButton.onClick.Invoke();

@@ -43,6 +43,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal int currentPlacesShowed = 0;
     internal bool reloadPlaces = false;
     internal IExploreV2Analytics exploreV2Analytics;
+    internal float lastTimeAPIChecked = 0;
 
     public PlacesSubSectionComponentController(
         IPlacesSubSectionComponentView view,
@@ -70,6 +71,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal void FirstLoading()
     {
         reloadPlaces = true;
+        lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         RequestAllPlaces();
 
         view.OnPlacesSubSectionEnable += RequestAllPlaces;
@@ -89,11 +91,17 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         if (!reloadPlaces)
             return;
 
-        currentPlacesShowed = view.currentPlacesPerRow * INITIAL_NUMBER_OF_ROWS;
         view.RestartScrollViewPosition();
+
+        if (Time.realtimeSinceStartup < lastTimeAPIChecked + PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
+            return;
+
+        currentPlacesShowed = view.currentPlacesPerRow * INITIAL_NUMBER_OF_ROWS;
         view.SetPlacesAsLoading(true);
         view.SetShowMorePlacesButtonActive(false);
+        
         reloadPlaces = false;
+        lastTimeAPIChecked = Time.realtimeSinceStartup;
 
         if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
             RequestAllPlacesFromAPI();

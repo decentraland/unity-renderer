@@ -1,8 +1,9 @@
+using DCL;
+using DCL.EmotesCustomization;
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +21,7 @@ public class NFTItemInfo : MonoBehaviour
     {
         public string name;
         public string thumbnail;
+        public Sprite thumbnailSprite;
         public List<string> iconIds;
         public string description;
         public int issuedId;
@@ -30,6 +32,7 @@ public class NFTItemInfo : MonoBehaviour
         {
             return name == other.name
                    && thumbnail == other.thumbnail
+                   && thumbnailSprite == other.thumbnailSprite
                    && iconIds.SequenceEqual(other.iconIds)
                    && description == other.description
                    && issuedId == other.issuedId
@@ -45,11 +48,27 @@ public class NFTItemInfo : MonoBehaviour
             {
                 name = wearable.GetName(),
                 thumbnail = wearable.baseUrl + wearable.thumbnail,
+                thumbnailSprite = wearable.thumbnailSprite,
                 iconIds = iconsIds,
                 description = wearable.description,
                 issuedId = wearable.issuedId,
                 issuedTotal = wearable.GetIssuedCountFromRarity(wearable.rarity),
                 isInL2 = wearable.IsInL2()
+            };
+        }
+
+        public static Model FromEmoteItem(EmoteCardComponentModel emote)
+        {
+            return new Model
+            {
+                name = emote.name,
+                thumbnail = emote.pictureUri,
+                thumbnailSprite = emote.pictureSprite,
+                iconIds = new List<string>(),
+                description = emote.description,
+                issuedId = 1,
+                issuedTotal = int.MaxValue,
+                isInL2 = emote.isInL2
             };
         }
     }
@@ -61,6 +80,10 @@ public class NFTItemInfo : MonoBehaviour
     [SerializeField] internal TextMeshProUGUI minted;
     [SerializeField] internal GameObject ethNetwork;
     [SerializeField] internal GameObject l2Network;
+    [SerializeField] internal Image backgroundImage;
+    [SerializeField] internal TextMeshProUGUI rarityName;
+    [SerializeField] internal Button sellButton;
+    [SerializeField] internal Button closeButton;
 
     private Model currentModel;
     private AssetPromise_Texture thumbnailPromise;
@@ -105,6 +128,22 @@ public class NFTItemInfo : MonoBehaviour
 
     public void SetActive(bool active) { gameObject.SetActive(active); }
 
+    public void SetBackgroundColor(Color color)
+    {
+        if (backgroundImage == null)
+            return;
+
+        backgroundImage.color = color;
+    }
+
+    public void SetRarityName(string name)
+    {
+        if (rarityName == null)
+            return;
+
+        rarityName.text = name;
+    }
+
     private void UpdateItemThumbnail(Asset_Texture texture)
     {
         if (thumbnail.sprite != null)
@@ -113,12 +152,19 @@ public class NFTItemInfo : MonoBehaviour
         }
 
         thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
+        thumbnail.preserveAspect = true;
     }
 
     private void GetThumbnail()
     {
         if (currentModel == null)
             return;
+
+        if (currentModel.thumbnailSprite != null)
+        {
+            thumbnail.sprite = currentModel.thumbnailSprite;
+            return;
+        }
 
         //NOTE(Brian): Get before forget to prevent referenceCount == 0 and asset unload
         var newThumbnailPromise = ThumbnailsManager.GetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);

@@ -60,9 +60,14 @@ namespace DCL
 
         public static GameObject CreateBridges()
         {
-            var bridges = LoadAndInstantiate("Bridges");
-            SceneReferences.i.bridgeGameObject = bridges;
-            return bridges;
+            if (SceneReferences.i.bridgeGameObject == null)
+            {
+                var bridges = LoadAndInstantiate("Bridges");
+                SceneReferences.i.bridgeGameObject = bridges;
+                return bridges;
+            }
+
+            return SceneReferences.i.bridgeGameObject;
         }
 
         public static GameObject CreateEventSystem() => LoadAndInstantiate("EventSystem");

@@ -163,7 +163,7 @@ public class BIWModeController : BIWController, IBIWModeController
         firstPersonMode.LateUpdate();
     }
 
-    public override void EnterEditMode(IParcelScene scene)
+    public override void EnterEditMode(IBuilderScene scene)
     {
         base.EnterEditMode(scene);
         if (currentActiveMode == null)

@@ -44,9 +44,11 @@ public class WebSocketCommunication : IKernelCommunication
                         ServerCertificate = CertificateUtils.CreateSelfSignedCert(),
                         ClientCertificateRequired = false,
                         CheckCertificateRevocation = false,
-                        ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
-                    }
-                };                
+                        ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
+                        EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 
+                    },
+                    KeepClean = false
+                };
             }
             else
             {
@@ -75,13 +77,13 @@ public class WebSocketCommunication : IKernelCommunication
         return wssUrl;
     }
 
-    public WebSocketCommunication(bool withSSL = false)
+    public WebSocketCommunication(bool withSSL = false, int startPort = 5000, int endPort = 5100)
     {
         InitMessageTypeToBridgeName();
 
         DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
-        string url = StartServer(5000, 5100, withSSL);
+        string url = StartServer(startPort, endPort, withSSL);
 
         Debug.Log("WebSocket Server URL: " + url);
 
@@ -142,6 +144,8 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["RemoveBot"] = "Main";
         messageTypeToBridgeName["ClearBots"] = "Main";
         messageTypeToBridgeName["ToggleSceneBoundingBoxes"] = "Main";
+        messageTypeToBridgeName["TogglePreviewMenu"] = "Main";
+        messageTypeToBridgeName["ToggleSceneSpawnPoints"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 

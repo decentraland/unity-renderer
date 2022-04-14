@@ -8,7 +8,9 @@ using NUnit.Framework;
 using System.Collections;
 using System.IO;
 using System.Linq;
+using DCL;
 using DCL.Helpers.NFT;
+using NFTShape_Internal;
 using NSubstitute;
 using UnityEngine;
 using UnityGLTF.Loader;
@@ -66,7 +68,7 @@ namespace SceneBoundariesCheckerTests
 
             AssertMeshIsInvalid(entity.meshesInfo);
         }
-
+        
         public static IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
         {
             var entity = TestUtils.CreateSceneEntity(scene);
@@ -83,7 +85,7 @@ namespace SceneBoundariesCheckerTests
 
             TestUtils.SharedComponentAttach(component, entity);
 
-            LoadWrapper shapeLoader = NFTShape.GetLoaderForEntity(entity);
+            LoadWrapper shapeLoader = LoadableShape.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
 
             yield return null;
@@ -253,6 +255,7 @@ namespace SceneBoundariesCheckerTests
             TestUtils.SetEntityTransform(scene, entity, transformModel);
 
             yield return null;
+            yield return null;
 
             AssertMeshIsValid(entity.meshesInfo);
         }
@@ -316,13 +319,17 @@ namespace SceneBoundariesCheckerTests
         {
             Assert.IsTrue(meshesInfo.meshRootGameObject != null, "MeshRootGameObject is null. The object is valid when it shouldn't.");
 
-            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedFlicker)
+            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox)
             {
-                for (int i = 0; i < meshesInfo.renderers.Length; i++)
+                bool hasWireframe = false;
+
+                foreach (Transform t in meshesInfo.innerGameObject.transform)
                 {
-                    string matName = meshesInfo.renderers[i].sharedMaterial.name;
-                    Assert.IsTrue(matName.Contains("Invalid"), $"Material should be Invalid. Material is: {matName}");
+                    if (t.name.Contains("Wireframe"))
+                        hasWireframe = true;
                 }
+
+                Assert.That(hasWireframe, Is.True); 
             }
             else
             {
@@ -343,13 +350,17 @@ namespace SceneBoundariesCheckerTests
             if (meshesInfo.meshRootGameObject == null)
                 return; // It's valid if there's no mesh
 
-            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedFlicker)
+            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox)
             {
-                for (int i = 0; i < meshesInfo.renderers.Length; i++)
+                bool hasWireframe = false;
+
+                foreach (Transform t in meshesInfo.innerGameObject.transform)
                 {
-                    string matName = meshesInfo.renderers[i].sharedMaterial.name;
-                    Assert.IsFalse(matName.Contains("Invalid"), $"Material shouldn't be invalid. Material is: {matName}");
+                    if (t.name.Contains("Wireframe"))
+                        hasWireframe = true;
                 }
+
+                Assert.That(hasWireframe, Is.False); 
             }
             else
             {

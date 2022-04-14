@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
@@ -143,6 +144,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal InputAction_Trigger closeAction;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
+    [SerializeField] internal ButtonComponentView jumpinButtonForNotLive;
     [SerializeField] internal ButtonComponentView subscribeEventButton;
     [SerializeField] internal ButtonComponentView unsubscribeEventButton;
     [SerializeField] internal GameObject imageContainer;
@@ -159,15 +161,13 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal EventCardComponentModel model;
 
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
+    public Button.ButtonClickedEvent onJumpInForNotLiveClick => jumpinButtonForNotLive?.onClick;
     public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
     public Button.ButtonClickedEvent onSubscribeClick => subscribeEventButton?.onClick;
     public Button.ButtonClickedEvent onUnsubscribeClick => unsubscribeEventButton?.onClick;
 
     public override void Start()
     {
-        if (eventImage != null)
-            eventImage.OnLoaded += OnEventImageLoaded;
-
         if (closeCardButton != null)
             closeCardButton.onClick.AddListener(CloseModal);
 
@@ -229,15 +229,26 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
     }
 
+    public override void Show(bool instant = false)
+    {
+        base.Show(instant);
+
+        DataStore.i.exploreV2.isSomeModalOpen.Set(true);
+    }
+
+    public override void Hide(bool instant = false)
+    {
+        base.Hide(instant);
+
+        DataStore.i.exploreV2.isSomeModalOpen.Set(false);
+    }
+
     public override void Dispose()
     {
         base.Dispose();
 
         if (eventImage != null)
-        {
-            eventImage.OnLoaded -= OnEventImageLoaded;
             eventImage.Dispose();
-        }
 
         if (closeCardButton != null)
             closeCardButton.onClick.RemoveAllListeners();
@@ -311,7 +322,10 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             eventDateText.gameObject.SetActive(!isLive);
 
         if (jumpinButton != null)
-            jumpinButton.gameObject.SetActive(isLive);
+            jumpinButton.gameObject.SetActive(isEventCardModal || isLive);
+
+        if (jumpinButtonForNotLive)
+            jumpinButtonForNotLive.gameObject.SetActive(!isEventCardModal && !isLive);
 
         if (subscribeEventButton != null)
             subscribeEventButton.gameObject.SetActive(!isLive && !model.isSubscribed);
@@ -448,8 +462,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         eventInfoContainer.SetActive(!isVisible);
         loadingSpinner.SetActive(isVisible);
     }
-
-    internal void OnEventImageLoaded(Sprite sprite) { SetEventPicture(sprite); }
 
     internal void RebuildCardLayouts()
     {

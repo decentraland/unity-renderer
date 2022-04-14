@@ -9,7 +9,11 @@ namespace Tests.LoadingHUD
         private LoadingHUDView hudView;
 
         [SetUp]
-        public void SetUp() { hudView = Object.Instantiate(Resources.Load<GameObject>("LoadingHUD")).GetComponent<LoadingHUDView>(); }
+        public void SetUp() 
+        { 
+            hudView = Object.Instantiate(Resources.Load<GameObject>("LoadingHUD")).GetComponent<LoadingHUDView>(); 
+            hudView.Initialize(); 
+        }
 
         [Test]
         public void AwakeProperly()
@@ -23,8 +27,8 @@ namespace Tests.LoadingHUD
         [TestCase(false)]
         public void SetVisibilityProperly(bool visible)
         {
-            hudView.SetVisible(visible);
-            Assert.AreEqual(visible, hudView.gameObject.activeSelf);
+            hudView.SetVisible(visible, true);
+            Assert.AreEqual(visible, hudView.showHideAnimator.isVisible);
         }
 
         [Test]

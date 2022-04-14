@@ -109,7 +109,7 @@ internal class ScenesViewController : IScenesViewController
         }
 
         // notify scenes set if needed
-        if (scenesRefreshHelper.isOldDeployedScenesEmpty)
+        if (scenesRefreshHelper.isOldDeployedScenesEmpty || scenesData.Length == 0)
         {
             OnScenesSet?.Invoke(scenes);
         }

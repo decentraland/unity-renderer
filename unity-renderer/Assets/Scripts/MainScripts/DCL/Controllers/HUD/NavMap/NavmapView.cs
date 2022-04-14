@@ -1,8 +1,11 @@
 using UnityEngine;
+using System.Collections;
 using UnityEngine.UI;
 using DCL.Interface;
 using DCL.Helpers;
 using TMPro;
+using System;
+using UnityEngine.EventSystems;
 
 namespace DCL
 {
@@ -10,12 +13,19 @@ namespace DCL
     {
         [Header("References")]
         [SerializeField] Button closeButton;
-        [SerializeField] InputAction_Trigger closeAction;
         [SerializeField] internal ScrollRect scrollRect;
         [SerializeField] Transform scrollRectContentTransform;
         [SerializeField] internal TextMeshProUGUI currentSceneNameText;
         [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
         [SerializeField] internal NavmapToastView toastView;
+        [SerializeField] internal InputAction_Measurable mouseWheelAction;
+        [SerializeField] internal InputAction_Hold zoomIn;
+        [SerializeField] internal InputAction_Hold zoomOut;
+        [SerializeField] internal Button zoomInButton;
+        [SerializeField] internal Button zoomOutButton;
+        [SerializeField] internal Image zoomInPlus;
+        [SerializeField] internal Image zoomOutMinus;
+        [SerializeField] internal AnimationCurve zoomCurve;
 
         InputAction_Trigger.Triggered selectParcelDelegate;
         RectTransform minimapViewport;
@@ -28,10 +38,21 @@ namespace DCL
 
         public BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
         public static event System.Action<bool> OnToggle;
+        private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
+        private const float MAP_ZOOM_LEVELS = 4;
+        private RectTransform containerRectTransform;
+        private int currentZoomLevel;
+        private float scale = 1f;
+
+        private bool isScaling = false;
+        private float scaleDuration = 0.2f;
+        private Color normalColor = new Color(0f,0f,0f,1f);
+        private Color disabledColor = new Color(0f,0f,0f,0.5f);
 
         void Start()
         {
             mapMetadata = MinimapMetadata.GetMetadata();
+            containerRectTransform = scrollRectContentTransform.GetComponent<RectTransform>();
 
             closeButton.onClick.AddListener(() =>
             {
@@ -43,24 +64,124 @@ namespace DCL
                     return;
 
                 MapRenderer.i.atlas.UpdateCulling();
-                toastView.OnCloseClick();
+                CloseToast();
             });
 
             toastView.OnGotoClicked += () => navmapVisible.Set(false);
 
             MapRenderer.OnParcelClicked += TriggerToast;
-            MapRenderer.OnParcelHold += TriggerToast;
-            MapRenderer.OnParcelHoldCancel += () => { toastView.OnCloseClick(); };
+            MapRenderer.OnCursorFarFromParcel += CloseToast;
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
-            closeAction.OnTriggered += OnCloseAction;
+            DataStore.i.exploreV2.isOpen.OnChange += OnExploreChange;
             navmapVisible.OnChange += OnNavmapVisibleChanged;
 
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
-
+            mouseWheelAction.OnValueChanged += OnMouseWheelChangeValue;
+            zoomIn.OnStarted += OnZoomPlusMinus;
+            zoomOut.OnStarted += OnZoomPlusMinus;
+            zoomInButton.onClick.AddListener(() => {
+                OnZoomPlusMinus(DCLAction_Hold.ZoomIn);
+            });
+            zoomOutButton.onClick.AddListener(() => {
+                OnZoomPlusMinus(DCLAction_Hold.ZoomOut);
+            });
+            ResetCameraZoom();
             Initialize();
         }
 
+        private void ResetCameraZoom()
+        {
+            currentZoomLevel = Mathf.FloorToInt(MAP_ZOOM_LEVELS / 2);
+            scale = zoomCurve.Evaluate(currentZoomLevel);
+            containerRectTransform.localScale = new Vector3(scale, scale, scale);
+            HandleZoomButtonsAspect();
+        }
+
+        private void OnZoomPlusMinus(DCLAction_Hold action)
+        {
+            if (!navmapVisible.Get()) return;
+
+            if (action.Equals(DCLAction_Hold.ZoomIn))
+            {
+                CalculateZoomLevelAndDirection(1);
+            }
+            else if (action.Equals(DCLAction_Hold.ZoomOut)) 
+            {
+                CalculateZoomLevelAndDirection(-1);
+            }
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+
+        private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
+        {
+            if (value > -MOUSE_WHEEL_THRESHOLD && value < MOUSE_WHEEL_THRESHOLD) return;
+            CalculateZoomLevelAndDirection(value);
+        }
+
+        Vector3 previousScaleSize;
+
+        private void CalculateZoomLevelAndDirection(float value)
+        {
+            if (!navmapVisible.Get()) return;
+            if (isScaling) return;
+            previousScaleSize = new Vector3(scale, scale, scale);
+            if (value > 0 && currentZoomLevel < MAP_ZOOM_LEVELS)
+            {
+                currentZoomLevel++;
+                StartCoroutine(ScaleOverTime(previousScaleSize));
+            }
+            if (value < 0 && currentZoomLevel >= 1)
+            {
+                currentZoomLevel--;
+                StartCoroutine(ScaleOverTime(previousScaleSize));
+            }
+            HandleZoomButtonsAspect();
+        }
+
+        private void HandleZoomButtonsAspect() {
+            if (currentZoomLevel < MAP_ZOOM_LEVELS)
+            {
+                zoomInButton.interactable = true;
+                zoomInPlus.color = normalColor;
+            }
+            else
+            {
+                zoomInButton.interactable = false;
+                zoomInPlus.color = disabledColor;
+            }
+
+            if (currentZoomLevel >= 1)
+            {
+                zoomOutButton.interactable = true;
+                zoomOutMinus.color = normalColor;
+            }
+            else
+            {
+                zoomOutButton.interactable = false;
+                zoomOutMinus.color = disabledColor;
+            }
+        }
+
+        private IEnumerator ScaleOverTime(Vector3 startScaleSize)
+        {
+            isScaling = true;
+            scale = zoomCurve.Evaluate(currentZoomLevel);
+            MapRenderer.i.scaleFactor = scale;
+            Vector3 targetScale = new Vector3(scale, scale, scale);
+            
+            float counter = 0;
+
+            while (counter < scaleDuration)
+            {
+                counter += Time.deltaTime;
+                containerRectTransform.localScale = Vector3.Lerp(startScaleSize, targetScale, counter / scaleDuration);
+                yield return null;
+            }
+
+            isScaling = false;
+        }
+         
         private void OnNavmapVisibleChanged(bool current, bool previous) { SetVisible(current); }
 
         public void Initialize()
@@ -73,11 +194,23 @@ namespace DCL
         private void OnDestroy()
         {
             MapRenderer.OnParcelClicked -= TriggerToast;
-            MapRenderer.OnParcelHold -= TriggerToast;
+            MapRenderer.OnCursorFarFromParcel -= CloseToast;
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             navmapVisible.OnChange -= OnNavmapVisibleChanged;
-            closeAction.OnTriggered += OnCloseAction;
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
+            mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
+            zoomIn.OnStarted -= OnZoomPlusMinus;
+            zoomOut.OnStarted -= OnZoomPlusMinus;
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
+            DataStore.i.exploreV2.isOpen.OnChange -= OnExploreChange;
+        }
+
+        private void OnExploreChange(bool current, bool previous)
+        {
+            if (current)
+                return;
+
+            SetVisible(false);
         }
 
         internal void SetVisible(bool visible)
@@ -94,6 +227,7 @@ namespace DCL
                 else
                 {
                     waitingForFullscreenHUDOpen = true;
+                    CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
                     CommonScriptableObjects.isFullscreenHUDOpen.OnChange += IsFullscreenHUDOpen_OnChange;
                 }
             }
@@ -108,7 +242,6 @@ namespace DCL
             if (!current)
                 return;
 
-            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
             SetVisibility_Internal(true);
             waitingForFullscreenHUDOpen = false;
         }
@@ -128,8 +261,14 @@ namespace DCL
                 if (!DataStore.i.exploreV2.isInitialized.Get())
                     Utils.UnlockCursor();
 
-                minimapViewport = MapRenderer.i.atlas.viewport;
-                mapRendererMinimapParent = MapRenderer.i.transform.parent;
+                MapRenderer.i.scaleFactor = scale;
+                
+                if(minimapViewport == null)
+                    minimapViewport = MapRenderer.i.atlas.viewport;
+
+                if (mapRendererMinimapParent == null)
+                    mapRendererMinimapParent = MapRenderer.i.transform.parent;
+
                 atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;
 
                 MapRenderer.i.atlas.viewport = scrollRect.viewport;
@@ -149,7 +288,10 @@ namespace DCL
             }
             else
             {
-                toastView.OnCloseClick();
+                if (minimapViewport == null)
+                    return;
+                ResetCameraZoom();
+                CloseToast();
 
                 MapRenderer.i.atlas.viewport = minimapViewport;
                 MapRenderer.i.transform.SetParent(mapRendererMinimapParent);
@@ -169,7 +311,6 @@ namespace DCL
             OnToggle?.Invoke(visible);
         }
 
-        private void OnCloseAction(DCLAction_Trigger action) { navmapVisible.Set(false); }
         void UpdateCurrentSceneData(Vector2Int current, Vector2Int previous)
         {
             const string format = "{0},{1}";
@@ -179,12 +320,16 @@ namespace DCL
 
         void TriggerToast(int cursorTileX, int cursorTileY)
         {
+            if(toastView.isOpen)
+                CloseToast();
             var sceneInfo = mapMetadata.GetSceneInfo(cursorTileX, cursorTileY);
             if (sceneInfo == null)
                 WebInterface.RequestScenesInfoAroundParcel(new Vector2(cursorTileX, cursorTileY), 15);
 
             toastView.Populate(new Vector2Int(cursorTileX, cursorTileY), sceneInfo);
         }
+
+        private void CloseToast() { toastView.OnCloseClick(); }
 
         public void SetExitButtonActive(bool isActive) { closeButton.gameObject.SetActive(isActive); }
 

@@ -4,9 +4,11 @@ using DCL;
 using DCL.Builder;
 using DCL.Helpers;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
 
 namespace Tests
 {
@@ -19,11 +21,16 @@ namespace Tests
         private IProjectsController projectsController;
         private INewProjectFlowController newProjectFlowController;
 
-        private bool condtionMet = false;
+        private bool conditionMet = false;
 
         [SetUp]
         public void SetUp()
         {
+            // This is needed because BuilderMainPanelController uses the Analytics utils, which in turn use
+            // Environment.i.serviceProviders.analytics
+            ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+            Environment.Setup(serviceLocator);
+
             controller = new BuilderMainPanelController();
 
             sectionsController = Substitute.For<ISectionsController>();
@@ -43,15 +50,18 @@ namespace Tests
             catalyst.GetEntities(Arg.Any<string>(), Arg.Any<string[]>()).Returns(new Promise<string>());
             catalyst.GetDeployedScenes(Arg.Any<string[]>()).Returns(new Promise<CatalystSceneEntityPayload[]>());
 
-            controller.Initialize(sectionsController, scenesViewController,
+            IContext context = BIWTestUtils.CreateMockedContext();
+            context.builderAPIController.Configure().GetAllProjectsData().Returns(new Promise<List<ProjectData>>());
+            controller.Initialize(context,sectionsController, scenesViewController,
                 landsesController, projectsController, newProjectFlowController, theGraph, catalyst);
         }
 
         [TearDown]
         public void TearDown()
         {
-            controller.OnJumpInOrEdit -= AssertJump;
+            Environment.Dispose();
 
+            controller.OnJumpInOrEdit -= AssertJump;
             controller.Dispose();
         }
 
@@ -105,20 +115,20 @@ namespace Tests
         {
             //Arrange
             ProjectData[] projectDatas = new [] { new ProjectData() };
-            
+
             //Act
             controller.ProjectsFetched(projectDatas);
-            
+
             //Assert
             Assert.IsFalse(controller.isFetchingProjects);
         }
-        
+
         [Test]
         public void FailCorrectlyOnProjectFetchedError()
         {
             //Act
             controller.ProjectsFetchedError("Intended error");
-            
+
             //Assert
             Assert.IsFalse(controller.isFetchingProjects);
         }
@@ -127,31 +137,17 @@ namespace Tests
         public void GoToCoords()
         {
             //Arrange
-            condtionMet = false;
+            conditionMet = false;
             controller.OnJumpInOrEdit += AssertJump;
 
             //Act
             controller.GoToCoords(new Vector2Int(0, 0));
 
             //Assert
-            Assert.IsTrue(condtionMet);
+            Assert.IsTrue(conditionMet);
         }
 
-        [Test]
-        public void GoToEditScene()
-        {
-            //Arrange
-            condtionMet = false;
-            controller.OnJumpInOrEdit += AssertJump;
-
-            //Act
-            controller.OnGoToEditScene(new Vector2Int(0, 0));
-
-            //Assert
-            Assert.IsTrue(condtionMet);
-        }
-
-        private void AssertJump() { condtionMet = true; }
+        private void AssertJump() { conditionMet = true; }
 
         [Test]
         public void ViewCreatedCorrectly() { Assert.IsNotNull(controller.view); }

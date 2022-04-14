@@ -1,11 +1,12 @@
-﻿using DCL.Components;
+﻿using AvatarSystem;
+using DCL.Components;
 using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
 {
     [RequireComponent(typeof(AvatarShape))]
-    public class AvatarMovementController : MonoBehaviour, IPoolLifecycleHandler
+    public class AvatarMovementController : MonoBehaviour, IPoolLifecycleHandler, IAvatarMovementController
     {
         const float SPEED_SLOW = 2.0f;
         const float SPEED_FAST = 4.0f;
@@ -14,7 +15,7 @@ namespace DCL
         const float ROTATION_SPEED = 6.25f;
         const float SPEED_EPSILON = 0.0001f;
 
-        public float movementLerpWait = 0f;
+        private float movementLerpWait = 0f;
         private float movementLerpWaitCounter = 0f;
 
         Transform avatarTransform
@@ -66,11 +67,17 @@ namespace DCL
         public void OnTransformChanged(object model)
         {
             DCLTransform.Model transformModel = (DCLTransform.Model)model;
-
-            MoveTo(
-                transformModel.position - Vector3.up * DCLCharacterController.i.characterController.height / 2, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet
-                transformModel.rotation);
+            OnTransformChanged(transformModel.position, transformModel.rotation, false);
         }
+        
+        public void OnTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
+        {
+            var offsetPosition = new Vector3(0, DCLCharacterController.i.characterController.height * 0.5f, 0);
+            MoveTo(
+                position - offsetPosition, // To fix the "always flying" avatars issue, We report the chara's centered position but the body hast its pivot at its feet
+                rotation,
+                inmediate);
+        } 
 
         public void MoveTo(Vector3 position, Quaternion rotation, bool immediate = false)
         {
@@ -159,5 +166,7 @@ namespace DCL
                 movementLerpWaitCounter = 0f;
             }
         }
+
+        public void SetMovementLerpWait(float secondsBetweenUpdates) { movementLerpWait = secondsBetweenUpdates; }
     }
 }

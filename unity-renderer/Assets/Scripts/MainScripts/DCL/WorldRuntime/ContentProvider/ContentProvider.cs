@@ -1,3 +1,4 @@
+using System;
 using DCL.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
@@ -45,6 +46,7 @@ namespace DCL
             return contents.FirstOrDefault((x) => x.hash == hash);
         }
 
+        //todo: thread this
         public void BakeHashes()
         {
             if (contents == null)
@@ -65,7 +67,13 @@ namespace DCL
             for (int i = 0; i < contents.Count; i++)
             {
                 MappingPair m = contents[i];
-                fileToHash.Add(m.file.ToLower(), m.hash);
+                var key = m.file.ToLower();
+                if (fileToHash.ContainsKey(key))
+                {
+                    Debug.Log($"Hash key: {key} already exists in the map");
+                    continue;
+                }
+                fileToHash.Add(key, m.hash);
 
                 if (VERBOSE)
                 {

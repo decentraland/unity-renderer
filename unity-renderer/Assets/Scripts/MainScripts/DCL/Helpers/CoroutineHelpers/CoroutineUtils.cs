@@ -23,7 +23,7 @@ namespace DCL
             Func<double, bool> timeBudgetCounter
         )
         {
-            return monoBehaviour.StartCoroutine(DCLCoroutineRunner.Run(enumerator, onException, timeBudgetCounter));
+            return CoroutineStarter.Start(DCLCoroutineRunner.Run(enumerator, onException, timeBudgetCounter));
         }
 
 
@@ -42,7 +42,7 @@ namespace DCL
             Action<Exception> onException
         )
         {
-            return monoBehaviour.StartCoroutine(DCLCoroutineRunner.Run(enumerator, onException, null));
+            return CoroutineStarter.Start(DCLCoroutineRunner.Run(enumerator, onException, null));
         }
 
 
@@ -59,6 +59,28 @@ namespace DCL
             {
                 var coroutine = coroutineGroup[index];
                 yield return coroutine;
+            }
+        }
+
+        /// <summary>
+        /// There are some cases when we need to run a coroutine syncronously for some editor scripts so we use this
+        /// </summary>
+        /// <param name="coroutine"></param>
+        public static void RunCoroutineSync(IEnumerator coroutine)
+        {
+            var stack = new Stack<IEnumerator>();
+            stack.Push(coroutine);
+            while (stack.Count > 0)
+            {
+                var enumerator = stack.Pop();
+                if (enumerator.MoveNext())
+                {
+                    stack.Push(enumerator);
+                    if (enumerator.Current is IEnumerator subEnumerator)
+                    {
+                        stack.Push(subEnumerator);
+                    }
+                }
             }
         }
     }

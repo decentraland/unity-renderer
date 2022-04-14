@@ -15,7 +15,12 @@ public class LoadingBridge : MonoBehaviour
     public void SetLoadingScreen(string jsonMessage)
     {
         Payload payload = JsonUtility.FromJson<Payload>(jsonMessage);
-        DataStore.i.HUDs.loadingHUD.visible.Set(payload.isVisible);
+
+        if (payload.isVisible && !DataStore.i.HUDs.loadingHUD.fadeIn.Get())
+            DataStore.i.HUDs.loadingHUD.fadeIn.Set(true);
+
+        if (!payload.isVisible && !DataStore.i.HUDs.loadingHUD.fadeOut.Get())
+            DataStore.i.HUDs.loadingHUD.fadeOut.Set(true);
 
         if (!string.IsNullOrEmpty(payload.message))
             DataStore.i.HUDs.loadingHUD.message.Set(payload.message);

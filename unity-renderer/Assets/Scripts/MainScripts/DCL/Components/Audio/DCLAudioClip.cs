@@ -55,8 +55,13 @@ namespace DCL.Components
         {
             if (assetAudioClip.audioClip != null)
             {
+                if (this.audioClip != null)
+                    DataStore.i.sceneWorldObjects.RemoveAudioClip(scene.sceneData.id, audioClip);
+
                 this.audioClip = assetAudioClip.audioClip;
                 loadingState = LoadState.LOADING_COMPLETED;
+
+                DataStore.i.sceneWorldObjects.AddAudioClip(scene.sceneData.id, audioClip);
             }
             else
             {
@@ -97,6 +102,9 @@ namespace DCL.Components
         {
             loadingState = LoadState.IDLE;
             AssetPromiseKeeper_AudioClip.i.Forget(audioClipPromise);
+
+            if (this.audioClip != null)
+                DataStore.i.sceneWorldObjects.RemoveAudioClip(scene.sceneData.id, audioClip);
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -127,6 +135,9 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            if (this.audioClip != null)
+                DataStore.i.sceneWorldObjects.RemoveAudioClip(scene.sceneData.id, audioClip);
+
             isDisposed = true;
             AssetPromiseKeeper_AudioClip.i.Forget(audioClipPromise);
             base.Dispose();

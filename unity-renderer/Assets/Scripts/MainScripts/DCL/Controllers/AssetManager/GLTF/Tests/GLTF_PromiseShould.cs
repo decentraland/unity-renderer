@@ -28,10 +28,15 @@ namespace AssetPromiseKeeper_GLTF_Tests
             provider.BakeHashes();
 
             var keeper = new AssetPromiseKeeper_GLTF();
+            keeper.throttlingCounter.enabled = false;
+
             IWebRequestController webRequestController = WebRequestController.Create();
 
             AssetPromise_GLTF cubePromise = new AssetPromise_GLTF(provider, baseUrl + "cube.gltf", webRequestController);
             AssetPromise_GLTF cylinderPromise = new AssetPromise_GLTF(provider, baseUrl + "cylinder.gltf", webRequestController);
+
+            cubePromise.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
+            cylinderPromise.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
 
             keeper.Keep(cubePromise);
             keeper.Keep(cylinderPromise);
@@ -50,16 +55,22 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator NotAddAssetToLibraryMoreThanOnce()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
+            keeper.throttlingCounter.enabled = false;
+
             IWebRequestController webRequestController = WebRequestController.Create();
 
             string url = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb";
             var provider = new ContentProvider_Dummy();
 
             AssetPromise_GLTF promise1 = new AssetPromise_GLTF(provider, url, webRequestController);
+            promise1.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
+
             keeper.Keep(promise1);
             keeper.Forget(promise1);
 
             AssetPromise_GLTF promise2 = new AssetPromise_GLTF(provider, url, webRequestController);
+            promise2.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
+
             keeper.Keep(promise2);
 
             yield return promise2;
@@ -75,12 +86,16 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator RefreshRenderers()
         {
             AssetPromiseKeeper_GLTF keeper = new AssetPromiseKeeper_GLTF();
+            keeper.throttlingCounter.enabled = false;
+
             IWebRequestController webRequestController = WebRequestController.Create();
 
             string url = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb";
             ContentProvider_Dummy provider = new ContentProvider_Dummy();
 
             AssetPromise_GLTF promise = new AssetPromise_GLTF(provider, url, webRequestController);
+            promise.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
+
             GameObject holder1 = new GameObject("Test1");
             promise.settings.parent = holder1.transform;
             keeper.Keep(promise);
@@ -91,8 +106,9 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Assert.AreEqual(renderers.Length, promise.asset.renderers.Count);
             for (int i = 0; i < renderers.Length; i++)
             {
-                Assert.AreEqual(renderers[i], promise.asset.renderers[i]);
+                Assert.IsTrue(promise.asset.renderers.Contains(renderers[i]));
             }
+
             Object.Destroy(holder1);
         }
     }

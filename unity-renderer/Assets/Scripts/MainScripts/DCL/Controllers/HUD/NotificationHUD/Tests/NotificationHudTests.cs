@@ -12,13 +12,10 @@ namespace Tests
     {
         private NotificationHUDController controller;
 
-        private ParcelScene scene;
-
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             controller = new NotificationHUDController();
-            scene = TestUtils.CreateTestScene();
         }
 
         protected override IEnumerator TearDown()
@@ -30,7 +27,7 @@ namespace Tests
         [Test]
         public void NotificationHud_Creation()
         {
-            var views = GameObject.FindObjectsOfType<NotificationHUDView>();
+            var views = Object.FindObjectsOfType<NotificationHUDView>();
 
             Assert.AreEqual(1, views.Length);
 
@@ -62,7 +59,7 @@ namespace Tests
 
             yield return null;
 
-            Notification[] notifications = GameObject.FindObjectsOfType<Notification>();
+            Notification[] notifications = Object.FindObjectsOfType<Notification>();
             Assert.AreEqual(notifications.Length, 1);
 
             Notification n = notifications[0];
@@ -97,7 +94,7 @@ namespace Tests
 
             yield return null;
 
-            Notification[] notifications = GameObject.FindObjectsOfType<Notification>();
+            Notification[] notifications = Object.FindObjectsOfType<Notification>();
             Assert.AreEqual(2, notifications.Length);
         }
 
@@ -115,13 +112,13 @@ namespace Tests
             controller.ShowNotification(model);
             yield return null;
 
-            Notification[] notifications = GameObject.FindObjectsOfType<Notification>();
+            Notification[] notifications = Object.FindObjectsOfType<Notification>();
             Assert.AreEqual(notifications.Length, 1);
             Assert.AreEqual(controller.model.notifications.Count, 1);
 
-            yield return new DCL.WaitUntil(() => notifications.Length == 0, 0.5f);
+            yield return new DCL.WaitUntil(() => notifications.Length == 0, 0.75f);
 
-            notifications = GameObject.FindObjectsOfType<Notification>();
+            notifications = Object.FindObjectsOfType<Notification>();
             Assert.AreEqual(notifications.Length, 0);
             Assert.AreEqual(controller.model.notifications.Count, 0);
         }

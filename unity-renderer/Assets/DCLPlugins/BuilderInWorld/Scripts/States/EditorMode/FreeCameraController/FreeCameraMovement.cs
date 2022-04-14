@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Configuration;
+using DCL.SettingsCommon;
 using UnityEngine;
 
 namespace DCL.Camera
@@ -11,9 +14,6 @@ namespace DCL.Camera
         private const float CAMERA_MOVEMENT_THRESHOLD = 0.001f;
 
         private const float CAMERA_MOVEMENT_DEACTIVATE_INPUT_MAGNITUD = 0.001f;
-
-        private const int SCENE_SNAPSHOT_WIDTH_RES = 854;
-        private const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
 
         public float focusDistance = 5f;
 
@@ -80,7 +80,6 @@ namespace DCL.Camera
         internal Coroutine smoothLookAtCoroutine;
         internal Coroutine smoothFocusOnTargetCoroutine;
         internal Coroutine smoothScrollCoroutine;
-        internal Coroutine takeScreenshotCoroutine;
 
         private InputAction_Hold.Started advanceForwardStartDelegate;
         private InputAction_Hold.Finished advanceForwardFinishedDelegate;
@@ -114,7 +113,9 @@ namespace DCL.Camera
         private float lastMouseWheelTime;
         private float cameraPanAdvance;
         private float cameraLookAdvance;
-        internal UnityEngine.Camera screenshotCamera;
+        private bool isCameraDragging = false;
+
+        public bool invertMouseY = false;
 
         private void Awake()
         {
@@ -180,7 +181,11 @@ namespace DCL.Camera
             }
 
             cameraPanStartDelegate = (action) => isPanCameraActive = true;
-            cameraPanFinishedDelegate = (action) => isPanCameraActive = false;
+            cameraPanFinishedDelegate = (action) =>
+            {
+                isPanCameraActive = false;
+                isCameraDragging = false;
+            };
 
             if (cameraPanInputAction != null)
             {
@@ -197,6 +202,15 @@ namespace DCL.Camera
 
             if (zoomOutFromKeyboardInputAction != null)
                 zoomOutFromKeyboardInputAction.OnTriggered += zoomOutFromKeyboardDelegate;
+
+            invertMouseY = Settings.i.generalSettings.Data.invertYAxis;
+
+            Settings.i.generalSettings.OnChanged += UpdateLocalGeneralSettings;
+        }
+
+        private void UpdateLocalGeneralSettings(GeneralSettings obj)
+        {
+            invertMouseY = obj.invertYAxis;
         }
 
         public void StartDetectingMovement()
@@ -211,10 +225,10 @@ namespace DCL.Camera
 
         internal void OnInputMouseUp(int buttonId, Vector3 mousePosition)
         {
-            if (buttonId != 1)
-                return;
-
-            isMouseRightClickDown = false;
+            if (buttonId == 1)
+                isMouseRightClickDown = false;
+            else if (buttonId == 2)
+                isCameraDragging = false;
         }
 
         internal void OnInputMouseDown(int buttonId, Vector3 mousePosition)
@@ -291,9 +305,8 @@ namespace DCL.Camera
 
             if (smoothFocusOnTargetCoroutine != null)
                 CoroutineStarter.Stop(smoothFocusOnTargetCoroutine);
-
-            if (takeScreenshotCoroutine != null)
-                CoroutineStarter.Stop(takeScreenshotCoroutine);
+            
+            Settings.i.generalSettings.OnChanged -= UpdateLocalGeneralSettings;
         }
 
         private void Update()
@@ -403,7 +416,7 @@ namespace DCL.Camera
 
         internal void MouseWheel(float axis)
         {
-            if (!isCameraAbleToMove)
+            if (!isCameraAbleToMove || isCameraDragging)
                 return;
 
             if (smoothScrollCoroutine != null)
@@ -436,6 +449,7 @@ namespace DCL.Camera
             panAxisX += -axisX * Time.deltaTime * dragSpeed;
             panAxisY += -axisY * Time.deltaTime * dragSpeed;
             cameraPanAdvance = smoothCameraPanAceleration;
+            isCameraDragging = true;
         }
 
         private void CameraLook(float axisX, float axisY)
@@ -444,12 +458,21 @@ namespace DCL.Camera
                 return;
 
             yaw += lookSpeedH * axisX;
-            pitch -= lookSpeedV * axisY;
+            if (invertMouseY)
+            {
+                pitch -= lookSpeedV * -axisY;
+            }
+            else {
+                pitch -= lookSpeedV * axisY;
+            }
             cameraLookAdvance = smoothCameraLookSpeed * Time.deltaTime;
         }
 
         public override Vector3 OnGetRotation() { return transform.eulerAngles; }
 
+        public Vector3 GetCameraPosition => defaultVirtualCamera.transform.position;
+        public Vector3 GetCameraFoward => defaultVirtualCamera.transform.forward;
+        
         public void FocusOnEntities(List<BIWEntity> entitiesToFocus)
         {
             if (entitiesToFocus.Count <= 0)
@@ -471,10 +494,7 @@ namespace DCL.Camera
 
         public void SetPosition(Vector3 position) { transform.position = position; }
 
-        public void LookAt(Transform transformToLookAt)
-        {
-            LookAt(transformToLookAt.position);
-        }
+        public void LookAt(Transform transformToLookAt) { LookAt(transformToLookAt.position); }
 
         public void LookAt(Vector3 pointToLookAt)
         {
@@ -562,10 +582,7 @@ namespace DCL.Camera
             pitch = transform.eulerAngles.x;
         }
 
-        public void SetResetConfiguration(Vector3 position, Transform lookAt)
-        {
-            SetResetConfiguration(position, lookAt.position);
-        }
+        public void SetResetConfiguration(Vector3 position, Transform lookAt) { SetResetConfiguration(position, lookAt.position); }
 
         public void SetResetConfiguration(Vector3 position, Vector3 pointToLook)
         {
@@ -578,61 +595,6 @@ namespace DCL.Camera
             SetPosition(originalCameraPosition);
             LookAt(originalCameraPointToLookAt);
             direction = Vector3.zero;
-        }
-
-        public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess) { takeScreenshotCoroutine = CoroutineStarter.Start(TakeSceneScreenshotCoroutine(onSuccess)); }
-
-        private IEnumerator TakeSceneScreenshotCoroutine(IFreeCameraMovement.OnSnapshotsReady callback)
-        {
-            UnityEngine.Camera camera = UnityEngine.Camera.main;
-            if (screenshotCamera != null)
-                camera = screenshotCamera;
-
-            var current = camera.targetTexture;
-            camera.targetTexture = null;
-
-            yield return null;
-
-            Texture2D sceneScreenshot = ScreenshotFromCamera(camera, SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
-            camera.targetTexture = current;
-            callback?.Invoke(sceneScreenshot);
-        }
-
-        public void TakeSceneScreenshotFromResetPosition(IFreeCameraMovement.OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotFromResetPositionCoroutine(onSuccess)); }
-
-        private IEnumerator TakeSceneScreenshotFromResetPositionCoroutine(IFreeCameraMovement.OnSnapshotsReady callback)
-        {
-            // Store current camera position/direction
-            Vector3 currentPos = transform.position;
-            Vector3 currentLookAt = transform.forward;
-            SetPosition(originalCameraPosition);
-            transform.LookAt(originalCameraPointToLookAt);
-
-            var current = camera.targetTexture;
-            camera.targetTexture = null;
-
-            yield return null;
-
-            Texture2D sceneScreenshot = ScreenshotFromCamera(camera, SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
-            camera.targetTexture = current;
-            callback?.Invoke(sceneScreenshot);
-
-            // Restore camera position/direction after the screenshot
-            SetPosition(currentPos);
-            transform.forward = currentLookAt;
-        }
-
-        private Texture2D ScreenshotFromCamera(UnityEngine.Camera cameraToScreenshot, int width, int height)
-        {
-            RenderTexture rt = new RenderTexture(width, height, 32);
-            cameraToScreenshot.targetTexture = rt;
-            Texture2D screenShot = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
-            cameraToScreenshot.Render();
-            RenderTexture.active = rt;
-            screenShot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            screenShot.Apply();
-
-            return screenShot;
         }
     }
 }

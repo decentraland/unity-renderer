@@ -23,6 +23,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator SucceedWhenMastersParentIsDestroyed()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
+            keeper.throttlingCounter.enabled = false;
 
             string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             GameObject parent = new GameObject("parent");
@@ -51,7 +52,60 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Object.Destroy(parent);
 
             yield return prom;
+            yield return prom2;
+            yield return prom3;
 
+            Assert.AreEqual(AssetPromiseState.IDLE_AND_EMPTY, prom.state);
+            Assert.AreEqual(AssetPromiseState.FINISHED, prom2.state);
+            Assert.AreEqual(AssetPromiseState.FINISHED, prom3.state);
+
+            Assert.IsFalse(failEventCalled2);
+            Assert.IsFalse(failEventCalled3);
+
+            Assert.IsTrue(prom.asset == null);
+            Assert.IsTrue(prom2.asset != null);
+            Assert.IsTrue(prom3.asset != null);
+
+            Assert.IsTrue(keeper.library.Contains(asset));
+            Assert.AreEqual(1, keeper.library.masterAssets.Count);
+        }
+        
+        [UnityTest]
+        public IEnumerator SucceedWhenMastersParentIsDeactivated()
+        {
+            var keeper = new AssetPromiseKeeper_GLTF();
+            keeper.throttlingCounter.enabled = false;
+
+            string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
+            GameObject parent = new GameObject("parent");
+
+            AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
+            prom.settings.parent = parent.transform;
+
+            AssetPromise_GLTF prom2 = new AssetPromise_GLTF(scene.contentProvider, url);
+            bool failEventCalled2 = false;
+            prom2.OnFailEvent += (x, error) => { failEventCalled2 = true; };
+
+            AssetPromise_GLTF prom3 = new AssetPromise_GLTF(scene.contentProvider, url);
+            bool failEventCalled3 = false;
+            prom3.OnFailEvent += (x, error) => { failEventCalled3 = true; };
+
+            keeper.Keep(prom);
+            
+            // This is what happens when a scene is unloaded while a master promise is loading from that scene
+            // (blocking other promises).
+            parent.SetActive(false);
+            
+            keeper.Keep(prom2);
+            keeper.Keep(prom3);
+
+            var asset = prom.asset;
+
+            keeper.Forget(prom);
+
+            Assert.AreEqual(3, keeper.waitingPromisesCount);
+
+            yield return prom;
             yield return prom2;
             yield return prom3;
 
@@ -71,12 +125,14 @@ namespace AssetPromiseKeeper_GLTF_Tests
         }
 
         [UnityTest]
-        public IEnumerator FailCorrectlyWhenGivenWrongURL()
+        public IEnumerator GLTF_FailCorrectlyWhenGivenWrongURL()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
+            keeper.throttlingCounter.enabled = false;
 
             //NOTE(Brian): Expect the 404 error
             LogAssert.Expect(LogType.Log, new Regex("^.*?404"));
+            LogAssert.Expect(LogType.Exception, new Regex("^.*?Failed to Load Json Stream"));
 
             string url = TestAssetsUtils.GetPath() + "/non_existing_url.glb";
 
@@ -122,6 +178,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             Assert.IsFalse(keeper.library.Contains(asset));
             Assert.AreNotEqual(1, keeper.library.masterAssets.Count);
+            
         }
     }
 }

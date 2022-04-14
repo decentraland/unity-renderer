@@ -11,7 +11,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 {
     static DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     public event Action<UserProfile> OnUpdate;
-    public event Action<string, long> OnAvatarExpressionSet;
+    public event Action<string, long> OnAvatarEmoteSet;
+    public event Action<Dictionary<string, int>> OnInventorySet;
 
     public string userId => model.userId;
     public string ethAddress => model.ethAddress;
@@ -19,18 +20,20 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string description => model.description;
     public string email => model.email;
     public string bodySnapshotURL => model.snapshots.body;
-    public string face128SnapshotURL => model.snapshots.face128;
+    public string face256SnapshotURL => model.snapshots.face256;
     public UserProfileModel.ParcelsWithAccess[] parcelsWithAccess => model.parcelsWithAccess;
     public List<string> blocked => model.blocked != null ? model.blocked : new List<string>();
     public List<string> muted => model.muted ?? new List<string>();
     public bool hasConnectedWeb3 => model.hasConnectedWeb3;
     public bool hasClaimedName => model.hasClaimedName;
+    public bool isGuest => !model.hasConnectedWeb3;
     public AvatarModel avatar => model.avatar;
     public int tutorialStep => model.tutorialStep;
 
     internal Dictionary<string, int> inventory = new Dictionary<string, int>();
 
     public ILazyTextureObserver snapshotObserver = new LazyTextureObserver();
+    public ILazyTextureObserver bodySnapshotObserver = new LazyTextureObserver();
 
     internal UserProfileModel model = new UserProfileModel() //Empty initialization to avoid nullchecks
     {
@@ -44,8 +47,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             model = null;
             return;
         }
-
         bool faceSnapshotDirty = model.snapshots.face256 != newModel.snapshots.face256;
+        bool bodySnapshotDirty = model.snapshots.body != newModel.snapshots.body;
 
         model.userId = newModel.userId;
         model.ethAddress = newModel.ethAddress;
@@ -70,6 +73,11 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         if (model.snapshots != null && faceSnapshotDirty)
         {
             this.snapshotObserver.RefreshWithUri(model.snapshots.face256);
+        }
+
+        if (model.snapshots != null && bodySnapshotDirty)
+        {
+            bodySnapshotObserver.RefreshWithUri(model.snapshots.body);
         }
 
         OnUpdate?.Invoke(this);
@@ -98,13 +106,14 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         avatar.expressionTriggerTimestamp = timestamp;
         WebInterface.SendExpression(id, timestamp);
         OnUpdate?.Invoke(this);
-        OnAvatarExpressionSet?.Invoke(id, timestamp);
+        OnAvatarEmoteSet?.Invoke(id, timestamp);
     }
 
     public void SetInventory(string[] inventoryIds)
     {
         inventory.Clear();
         inventory = inventoryIds.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+        OnInventorySet?.Invoke(inventory);
     }
 
     public string[] GetInventoryItemsIds() { return inventory.Keys.ToArray(); }
@@ -123,21 +132,16 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public UserProfileModel CloneModel() => model.Clone();
 
-    public bool IsBlocked(string userId)
-    {
-        return blocked != null && blocked.Contains(userId);
-    }
+    public bool IsBlocked(string userId) { return blocked != null && blocked.Contains(userId); }
 
     public void Block(string userId)
     {
-        if (IsBlocked(userId)) return;
+        if (IsBlocked(userId))
+            return;
         blocked.Add(userId);
     }
-    
-    public void Unblock(string userId)
-    {
-        blocked.Remove(userId);
-    }
+
+    public void Unblock(string userId) { blocked.Remove(userId); }
 
 #if UNITY_EDITOR
     private void OnEnable()

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UnityGLTF
 {
-    public class GLTFThrottlingCounter
+    public class GLTFThrottlingCounter : IThrottlingCounter
     {
         private ThrottlingCounter throttlingCounter = new ThrottlingCounter();
 
@@ -11,6 +11,12 @@ namespace UnityGLTF
         {
             throttlingCounter.enabled = CommonScriptableObjects.rendererState;
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
+        }
+
+        public bool enabled
+        {
+            get => throttlingCounter.enabled;
+            set => throttlingCounter.enabled = value;
         }
 
         public double budgetPerFrameInMilliseconds
@@ -29,4 +35,5 @@ namespace UnityGLTF
             throttlingCounter.enabled = current;
         }
     }
+
 }

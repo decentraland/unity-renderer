@@ -26,22 +26,29 @@ namespace DCL
         internal bool enabled;
         private UnityEngine.Camera mainCamera;
 
-        public AvatarsLODController()
+        public AvatarsLODController ()
         {
             gpuSkinningThrottlingCurve = Resources.Load<GPUSkinningThrottlingCurveSO>("GPUSkinningThrottlingCurve");
             DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagChanged;
+        }
+
+        public void Initialize()
+        {
+            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         private void OnFeatureFlagChanged(FeatureFlag current, FeatureFlag previous)
         {
             if (enabled == current.IsFeatureEnabled(AVATAR_LODS_FLAG_NAME))
                 return;
+
             Initialize(current);
         }
 
         internal void Initialize(FeatureFlag current)
         {
             enabled = current.IsFeatureEnabled(AVATAR_LODS_FLAG_NAME);
+
             if (!enabled)
                 return;
 
@@ -89,24 +96,6 @@ namespace DCL
             cameraForward = CommonScriptableObjects.cameraForward.Get();
 
             UpdateAllLODs(maxAvatars.Get(), maxImpostors.Get());
-            UpdateLODsBillboard();
-        }
-
-        internal void UpdateLODsBillboard()
-        {
-            foreach (var kvp in lodControllers)
-            {
-                Player player = kvp.Value.player;
-
-                if (!IsInFrontOfCamera(player.worldPosition))
-                    continue;
-
-                Vector3 previousForward = player.forwardDirection;
-                Vector3 lookAtDir = (cameraPosition - player.worldPosition).normalized;
-
-                lookAtDir.y = previousForward.y;
-                player.renderer.SetImpostorForward(lookAtDir);
-            }
         }
 
         internal void UpdateAllLODs(int maxAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
@@ -122,9 +111,11 @@ namespace DCL
             overlappingTracker.Reset();
 
             (IAvatarLODController lodController, float distance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
+
             for (int index = 0; index < lodControllersByDistance.Length; index++)
             {
                 (IAvatarLODController lodController, float distance) = lodControllersByDistance[index];
+
                 if (IsInInvisibleDistance(distance))
                 {
                     lodController.SetNameVisible(false);
@@ -134,24 +125,25 @@ namespace DCL
 
                 if (avatarsCount < maxAvatars)
                 {
-                    lodController.SetThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(distance));
+                    lodController.SetAnimationThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(distance));
                     if (distance < simpleAvatarDistance)
-                        lodController.SetFullAvatar();
+                        lodController.SetLOD0();
                     else
-                        lodController.SetSimpleAvatar();
+                        lodController.SetLOD1();
                     avatarsCount++;
 
                     if (mainCamera == null)
                         lodController.SetNameVisible(true);
                     else
                         lodController.SetNameVisible(overlappingTracker.RegisterPosition(lodController.player.playerName.ScreenSpacePos(mainCamera)));
+
                     continue;
                 }
 
                 lodController.SetNameVisible(false);
                 if (impostorCount < maxImpostors)
                 {
-                    lodController.SetImpostor();
+                    lodController.SetLOD2();
                     lodController.UpdateImpostorTint(distance);
                     impostorCount++;
                     continue;
@@ -200,6 +192,7 @@ namespace DCL
 
             otherPlayers.OnAdded -= RegisterAvatar;
             otherPlayers.OnRemoved -= UnregisterAvatar;
+            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         }
     }
 }

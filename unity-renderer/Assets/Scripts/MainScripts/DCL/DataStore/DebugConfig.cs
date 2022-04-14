@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Serialization;
+using Variables.SpawnPoints;
 
 namespace DCL
 {
@@ -27,6 +28,12 @@ namespace DCL
         
         [System.NonSerialized]
         public BaseDictionary<string, bool> showSceneBoundingBoxes = new BaseDictionary<string, bool>();
+        
+        [System.NonSerialized]
+        public  BaseVariable<bool> isPreviewMenuActive = new BaseVariable<bool>();
+        
+        [System.NonSerialized]
+        public BaseDictionary<string, SceneSpawnPointsData> showSceneSpawnPoints = new BaseDictionary<string, SceneSpawnPointsData>();        
 
         /// <summary>
         /// True when WSS message pipeline is enabled

@@ -1,14 +1,16 @@
 {
-    "name": "FocusStateBridge",
-    "references": [
-        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
+  "name": "FocusStateBridge",
+  "rootNamespace": "",
+  "references": [
+    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

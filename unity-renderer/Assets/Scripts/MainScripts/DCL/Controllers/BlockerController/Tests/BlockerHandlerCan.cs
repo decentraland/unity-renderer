@@ -19,8 +19,6 @@ public class BlockerHandlerCan
     [SetUp]
     protected void SetUp()
     {
-        RenderProfileManifest.i.Initialize();
-
         sceneHandler = Substitute.For<ISceneHandler>();
 
         var allLoadedParcelCoords = new HashSet<Vector2Int>();
@@ -35,8 +33,7 @@ public class BlockerHandlerCan
         //NOTE(Brian): Call OnFinish() when blockerAnimationHandler.FadeOut is called.
         blockerAnimationHandler.FadeOut(Arg.Any<GameObject>(), Arg.Invoke());
 
-        var newBlockerInstanceHandler = new BlockerInstanceHandler();
-        newBlockerInstanceHandler.Initialize(blockerAnimationHandler, null);
+        var newBlockerInstanceHandler = new BlockerInstanceHandler(blockerAnimationHandler);
 
         blockerInstanceHandler = newBlockerInstanceHandler;
         blockersParent = new GameObject();

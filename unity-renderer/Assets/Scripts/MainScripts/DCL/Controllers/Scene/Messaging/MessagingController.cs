@@ -28,8 +28,11 @@ namespace DCL
         public readonly MessagingBus systemBus;
         public readonly MessagingBus uiBus;
 
-        public MessagingController(IMessageProcessHandler messageHandler, string debugTag = null)
+        public IMessagingControllersManager messagingManager;
+
+        public MessagingController(IMessagingControllersManager messagingManager, IMessageProcessHandler messageHandler, string debugTag = null)
         {
+            this.messagingManager = messagingManager;
             this.debugTag = debugTag;
             this.messageHandler = messageHandler;
 

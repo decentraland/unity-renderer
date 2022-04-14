@@ -122,6 +122,21 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
         SetCurrentRealm(model.currentRealmName);
         availableRealms.RefreshControl();
     }
+
+    public override void Show(bool instant = false)
+    {
+        base.Show(instant);
+
+        DataStore.i.exploreV2.isSomeModalOpen.Set(true);
+    }
+
+    public override void Hide(bool instant = false)
+    {
+        base.Hide(instant);
+
+        DataStore.i.exploreV2.isSomeModalOpen.Set(false);
+    }
+
     public override void Dispose()
     {
         base.Dispose();

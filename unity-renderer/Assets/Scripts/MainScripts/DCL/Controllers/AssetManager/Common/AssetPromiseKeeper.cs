@@ -43,6 +43,8 @@ namespace DCL
 
         float startTime;
 
+        Coroutine blockedPromiseSolverCoroutine;
+
         public bool IsBlocked(AssetPromiseType promise) { return blockedPromises.Contains(promise); }
 
         public string GetMasterState(AssetPromiseType promise)
@@ -64,7 +66,15 @@ namespace DCL
         public AssetPromiseKeeper(AssetLibraryType library)
         {
             this.library = library;
-            CoroutineStarter.Start(ProcessBlockedPromisesQueue());
+            EnsureProcessBlockerPromiseQueueCoroutine();
+        }
+
+        void EnsureProcessBlockerPromiseQueueCoroutine()
+        {
+            if (blockedPromiseSolverCoroutine == null)
+            {
+                blockedPromiseSolverCoroutine = CoroutineStarter.Start(ProcessBlockedPromisesQueue());
+            }
         }
 
         public AssetPromiseType Keep(AssetPromiseType promise)
@@ -85,6 +95,8 @@ namespace DCL
             //NOTE(Brian): We already have a master promise for this id, add to blocked list.
             if (masterPromiseById.ContainsKey(id))
             {
+                // TODO(Brian): Remove once this class has a proper lifecycle and is on service locator.
+                EnsureProcessBlockerPromiseQueueCoroutine();
                 waitingPromises.Add(promise);
 
                 if (!masterToBlockedPromises.ContainsKey(id))
@@ -338,6 +350,12 @@ namespace DCL
 
         public void Cleanup()
         {
+            if (blockedPromiseSolverCoroutine != null)
+            {
+                CoroutineStarter.Stop(blockedPromiseSolverCoroutine);
+                blockedPromiseSolverCoroutine = null;
+            }
+
             blockedPromises = new HashSet<AssetPromiseType>();
             masterToBlockedPromises = new Dictionary<object, HashSet<AssetPromiseType>>();
 

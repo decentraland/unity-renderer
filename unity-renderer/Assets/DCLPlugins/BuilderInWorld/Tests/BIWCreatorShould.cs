@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Builder;
-using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 using UnityGLTF;
 
 public class BIWCreatorShould : IntegrationTestSuite_Legacy
@@ -34,12 +32,13 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
             entityHandler,
             biwCreatorController
         );
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
 
         biwCreatorController.Initialize(context);
         entityHandler.Initialize(context);
 
-        entityHandler.EnterEditMode(scene);
-        biwCreatorController.EnterEditMode(scene);
+        entityHandler.EnterEditMode(builderScene);
+        biwCreatorController.EnterEditMode(builderScene);
     }
 
     [Test]

@@ -1,4 +1,3 @@
-using DCL;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,7 +5,6 @@ using UnityEngine.UI;
 public class TaskbarHUDView : MonoBehaviour
 {
     const string VIEW_PATH = "Taskbar";
-    const string PORTABLE_EXPERIENCE_ITEMS_POOL = "PortableExperienceItems";
 
     [Header("Taskbar Animation")]
     [SerializeField] internal ShowHideAnimator taskbarAnimator;
@@ -20,11 +18,11 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal VoiceChatButton voiceChatButton;
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
+    [SerializeField] internal TaskbarButton emotesButton;
     [SerializeField] internal ChatHeadGroupView chatHeadsGroup;
 
-    [Header("Right Side Config")]
-    [SerializeField] internal HorizontalLayoutGroup rightButtonsHorizontalLayout;
-    [SerializeField] internal PortableExperienceTaskbarItem portableExperienceItem;
+    [SerializeField] internal GameObject experiencesContainer;
+    [SerializeField] internal TaskbarButton experiencesButton;
 
     [SerializeField] internal RectTransform socialTooltipReference;
 
@@ -32,33 +30,27 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal RectTransform taskbarPanelTransf;
 
     [SerializeField] internal Image taskbarPanelImage;
-    [SerializeField] internal GameObject rightButtonsContainer;
 
     internal TaskbarHUDController controller;
     internal bool isBarVisible = true;
-    internal Dictionary<string, PortableExperienceTaskbarItem> activePortableExperienceItems = new Dictionary<string, PortableExperienceTaskbarItem>();
-    internal Dictionary<string, PoolableObject> activePortableExperiencesPoolables = new Dictionary<string, PoolableObject>();
-    internal Pool portableExperiencesPool = null;
 
     public event System.Action OnChatToggleOn;
     public event System.Action OnChatToggleOff;
     public event System.Action OnFriendsToggleOn;
     public event System.Action OnFriendsToggleOff;
+    public event System.Action OnEmotesToggleOn;
+    public event System.Action OnEmotesToggleOff;
+    public event System.Action OnExperiencesToggleOn;
+    public event System.Action OnExperiencesToggleOff;
 
     internal List<TaskbarButton> GetButtonList()
     {
         var taskbarButtonList = new List<TaskbarButton>();
         taskbarButtonList.Add(chatButton);
         taskbarButtonList.Add(friendsButton);
+        taskbarButtonList.Add(emotesButton);
         taskbarButtonList.AddRange(chatHeadsGroup.chatHeads);
-
-        using (var iterator = activePortableExperienceItems.GetEnumerator())
-        {
-            while (iterator.MoveNext())
-            {
-                taskbarButtonList.Add(iterator.Current.Value.mainButton);
-            }
-        }
+        taskbarButtonList.Add(experiencesButton);
 
         return taskbarButtonList;
     }
@@ -79,12 +71,16 @@ public class TaskbarHUDView : MonoBehaviour
         ShowBar(true, true);
         chatButton.transform.parent.gameObject.SetActive(false);
         friendsButton.transform.parent.gameObject.SetActive(false);
+        emotesButton.transform.parent.gameObject.SetActive(false);
+        experiencesButton.transform.parent.gameObject.SetActive(false);
         voiceChatButtonPlaceholder.SetActive(false);
         voiceChatButton.gameObject.SetActive(false);
 
         chatHeadsGroup.Initialize(chatController, friendsController);
         chatButton.Initialize();
         friendsButton.Initialize();
+        emotesButton.Initialize();
+        experiencesButton.Initialize();
 
         chatHeadsGroup.OnHeadToggleOn += OnWindowToggleOn;
         chatHeadsGroup.OnHeadToggleOff += OnWindowToggleOff;
@@ -95,37 +91,23 @@ public class TaskbarHUDView : MonoBehaviour
         friendsButton.OnToggleOn += OnWindowToggleOn;
         friendsButton.OnToggleOff += OnWindowToggleOff;
 
-        portableExperiencesPool = PoolManager.i.AddPool(
-            PORTABLE_EXPERIENCE_ITEMS_POOL,
-            Instantiate(portableExperienceItem.gameObject),
-            maxPrewarmCount: 5,
-            isPersistent: true);
-
-        portableExperiencesPool.ForcePrewarm();
-
-        AdjustRightButtonsLayoutWidth();
+        emotesButton.OnToggleOn += OnWindowToggleOn;
+        emotesButton.OnToggleOff += OnWindowToggleOff;
+        
+        experiencesButton.OnToggleOn += OnWindowToggleOn;
+        experiencesButton.OnToggleOff += OnWindowToggleOff;
     }
 
     private void OnWindowToggleOff(TaskbarButton obj)
     {
         if (obj == friendsButton)
             OnFriendsToggleOff?.Invoke();
+        if (obj == emotesButton)
+            OnEmotesToggleOff?.Invoke();
         else if (obj == chatButton)
             OnChatToggleOff?.Invoke();
-        else
-        {
-            using (var iterator = activePortableExperienceItems.GetEnumerator())
-            {
-                while (iterator.MoveNext())
-                {
-                    if (iterator.Current.Value.mainButton == obj)
-                    {
-                        iterator.Current.Value.ShowContextMenu(false);
-                        break;
-                    }
-                }
-            }
-        }
+        else if (obj == experiencesButton)
+            OnExperiencesToggleOff?.Invoke();
 
         if (AllButtonsToggledOff())
         {
@@ -153,22 +135,12 @@ public class TaskbarHUDView : MonoBehaviour
     {
         if (obj == friendsButton)
             OnFriendsToggleOn?.Invoke();
+        if (obj == emotesButton)
+            OnEmotesToggleOn?.Invoke();
         else if (obj == chatButton)
             OnChatToggleOn?.Invoke();
-        else
-        {
-            using (var iterator = activePortableExperienceItems.GetEnumerator())
-            {
-                while (iterator.MoveNext())
-                {
-                    if (iterator.Current.Value.mainButton == obj)
-                    {
-                        iterator.Current.Value.ShowContextMenu(true);
-                        break;
-                    }
-                }
-            }
-        }
+        else if (obj == experiencesButton)
+            OnExperiencesToggleOn?.Invoke();
 
         SelectButton(obj);
     }
@@ -188,6 +160,10 @@ public class TaskbarHUDView : MonoBehaviour
 
     internal void OnAddFriendsWindow() { friendsButton.transform.parent.gameObject.SetActive(true); }
 
+    internal void OnAddEmotesWindow() { emotesButton.transform.parent.gameObject.SetActive(true); }
+
+    internal void OnAddExperiencesWindow() { experiencesButton.transform.parent.gameObject.SetActive(true); }
+
     internal void OnAddVoiceChat()
     {
         voiceChatButtonPlaceholder.SetActive(true);
@@ -205,6 +181,8 @@ public class TaskbarHUDView : MonoBehaviour
     }
 
     public void SetVisibility(bool visible) { gameObject.SetActive(visible); }
+
+    public void SetExperiencesVisbility(bool visible) { experiencesContainer.SetActive(visible); }
 
     private void OnDestroy()
     {
@@ -225,73 +203,17 @@ public class TaskbarHUDView : MonoBehaviour
             friendsButton.OnToggleOn -= OnWindowToggleOn;
             friendsButton.OnToggleOff -= OnWindowToggleOff;
         }
-    }
 
-    internal void AddPortableExperienceElement(string id, string name, string iconUrl)
-    {
-        if (portableExperiencesPool == null)
-            return;
-
-        PoolableObject newPEPoolable = portableExperiencesPool.Get();
-        newPEPoolable.gameObject.name = $"PortableExperienceItem ({id})";
-        newPEPoolable.gameObject.transform.SetParent(rightButtonsContainer.transform);
-        newPEPoolable.gameObject.transform.localScale = Vector3.one;
-        newPEPoolable.gameObject.transform.SetAsFirstSibling();
-
-        PortableExperienceTaskbarItem newPEItem = newPEPoolable.gameObject.GetComponent<PortableExperienceTaskbarItem>();
-        newPEItem.ConfigureItem(id, name, iconUrl, controller);
-        newPEItem.mainButton.OnToggleOn += OnWindowToggleOn;
-        newPEItem.mainButton.OnToggleOff += OnWindowToggleOff;
-
-        activePortableExperienceItems.Add(id, newPEItem);
-        activePortableExperiencesPoolables.Add(id, newPEPoolable);
-
-        AdjustRightButtonsLayoutWidth();
-    }
-
-    internal void RemovePortableExperienceElement(string id)
-    {
-        if (portableExperiencesPool == null)
-            return;
-
-        if (activePortableExperienceItems.ContainsKey(id))
+        if (emotesButton != null)
         {
-            PortableExperienceTaskbarItem peToRemove = activePortableExperienceItems[id];
-
-            peToRemove.mainButton.OnToggleOn -= OnWindowToggleOn;
-            peToRemove.mainButton.OnToggleOff -= OnWindowToggleOff;
-
-            activePortableExperienceItems.Remove(id);
-            portableExperiencesPool.Release(activePortableExperiencesPoolables[id]);
-            activePortableExperiencesPoolables.Remove(id);
+            emotesButton.OnToggleOn -= OnWindowToggleOn;
+            emotesButton.OnToggleOff -= OnWindowToggleOff;
         }
 
-        AdjustRightButtonsLayoutWidth();
-    }
-
-    [ContextMenu("AdjustRightButtonsLayoutWidth")]
-    private void AdjustRightButtonsLayoutWidth()
-    {
-        float totalWidth = 0f;
-        int numActiveChild = 0;
-        RectTransform rightButtonsContainerRT = (RectTransform)rightButtonsContainer.transform;
-
-        for (int i = 0; i < rightButtonsContainerRT.childCount; i++)
+        if (experiencesButton != null)
         {
-            RectTransform child = (RectTransform)rightButtonsContainerRT.GetChild(i);
-
-            if (!child.gameObject.activeSelf)
-                continue;
-
-            totalWidth += child.sizeDelta.x;
-            numActiveChild++;
+            experiencesButton.OnToggleOn -= OnWindowToggleOn;
+            experiencesButton.OnToggleOff -= OnWindowToggleOff;
         }
-
-        totalWidth +=
-            ((numActiveChild - 1) * rightButtonsHorizontalLayout.spacing) +
-            rightButtonsHorizontalLayout.padding.left +
-            rightButtonsHorizontalLayout.padding.right;
-
-        ((RectTransform)rightButtonsContainer.transform).sizeDelta = new Vector2(totalWidth, ((RectTransform)rightButtonsContainer.transform).sizeDelta.y);
     }
 }

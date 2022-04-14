@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:unity-renderer/Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Scripts/EmotesCustomization/EmoteCardComponentModel.cs.meta
+guid: 84218ef6e26f397429e51f04aa0b5e15
+=======
+guid: cce32c8e11d86e44f940734b0f3af10d
+>>>>>>> master:unity-renderer/Assets/Scripts/MainScripts/DCL/EmoteAnimationsPlugin/EmoteAnimationsPlugin.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

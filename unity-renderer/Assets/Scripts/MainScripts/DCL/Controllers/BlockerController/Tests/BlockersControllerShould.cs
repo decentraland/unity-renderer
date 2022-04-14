@@ -16,30 +16,25 @@ public class BlockersControllerShould
     [SetUp]
     protected void SetUp()
     {
-        RenderProfileManifest.i.Initialize();
-
-        sceneHandler = Substitute.For<ISceneHandler>();
-
         var allLoadedParcelCoords = new HashSet<Vector2Int>();
         allLoadedParcelCoords.Add(new Vector2Int(0, 0));
         allLoadedParcelCoords.Add(new Vector2Int(-1, 0));
         allLoadedParcelCoords.Add(new Vector2Int(-1, 1));
 
+        sceneHandler = Substitute.For<ISceneHandler>();
         sceneHandler.GetAllLoadedScenesCoords().Returns(allLoadedParcelCoords);
 
         var animationHandler = Substitute.For<IBlockerAnimationHandler>();
         //NOTE(Brian): Call OnFinish() when blockerAnimationHandler.FadeOut is called.
         animationHandler.FadeOut(Arg.Any<GameObject>(), Arg.Invoke());
 
-        var newBlockerInstanceHandler = new BlockerInstanceHandler();
-        newBlockerInstanceHandler.Initialize(animationHandler, null);
+        var newBlockerInstanceHandler = new BlockerInstanceHandler(animationHandler);
 
         blockerInstanceHandler = newBlockerInstanceHandler;
         blockersParent = new GameObject();
         blockerInstanceHandler.SetParent(blockersParent.transform);
 
-        blockerController = new WorldBlockersController();
-        blockerController.Initialize(sceneHandler, blockerInstanceHandler);
+        blockerController = new WorldBlockersController(blockerInstanceHandler, sceneHandler);
     }
 
     [TearDown]
@@ -56,10 +51,8 @@ public class BlockersControllerShould
         blockerInstanceHandler = Substitute.For<IBlockerInstanceHandler>();
         blockerInstanceHandler.GetBlockers().Returns(new Dictionary<Vector2Int, IPoolableObject>());
 
-        if (blockerController != null)
-            blockerController.Dispose();
-
-        blockerController.Initialize(sceneHandler, blockerInstanceHandler);
+        blockerController.Dispose();
+        blockerController = new WorldBlockersController(blockerInstanceHandler, sceneHandler);
 
         // Act-assert #1: first blockers added should be shown
         blockerController.SetupWorldBlockers();

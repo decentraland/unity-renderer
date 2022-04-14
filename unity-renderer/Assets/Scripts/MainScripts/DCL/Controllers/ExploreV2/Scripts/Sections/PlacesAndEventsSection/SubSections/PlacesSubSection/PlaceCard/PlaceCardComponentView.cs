@@ -1,6 +1,6 @@
+using DCL;
 using DCL.Helpers;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -210,6 +210,20 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
     }
 
+    public override void Show(bool instant = false)
+    {
+        base.Show(instant);
+
+        DataStore.i.exploreV2.isSomeModalOpen.Set(true);
+    }
+
+    public override void Hide(bool instant = false)
+    {
+        base.Hide(instant);
+
+        DataStore.i.exploreV2.isSomeModalOpen.Set(false);
+    }
+
     public override void Dispose()
     {
         base.Dispose();
@@ -353,10 +367,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     internal void OnPlaceImageLoaded(Sprite sprite)
     {
         if (sprite != null)
-        {
-            SetPlacePicture(sprite);
-        }
-        else if (!thumbnailFromMarketPlaceRequested)
+            return;
+
+        if (!thumbnailFromMarketPlaceRequested)
         {
             thumbnailFromMarketPlaceRequested = true;
             SetPlacePicture(MapUtils.GetMarketPlaceThumbnailUrl(model.parcels, THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR));
