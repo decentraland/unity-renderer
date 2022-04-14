@@ -10,6 +10,8 @@ namespace DCL.ABConverter
         internal const string CLI_KEEP_BUNDLES_SYNTAX = "keepBundles";
         internal const string CLI_BUILD_SCENE_SYNTAX = "sceneCid";
         internal const string CLI_BUILD_WEARABLES_COLLECTION_SYNTAX = "wearablesCollectionUrnId";
+        internal const string CLI_BUILD_WEARABLES_COLLECTION_RANGE_START_SYNTAX = "wearablesFirstCollectionIndex";
+        internal const string CLI_BUILD_WEARABLES_COLLECTION_RANGE_END_SYNTAX = "wearablesLastCollectionIndex";
         internal const string CLI_BUILD_PARCELS_RANGE_SYNTAX = "parcelsXYWH";
         internal const string CLI_SET_CUSTOM_BASE_URL = "baseUrl";
 
