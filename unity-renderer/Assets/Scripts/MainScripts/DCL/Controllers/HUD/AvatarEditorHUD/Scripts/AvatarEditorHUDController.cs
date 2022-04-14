@@ -59,6 +59,7 @@ public class AvatarEditorHUDController : IHUD
     internal bool collectionsAlreadyLoaded = false;
     private float prevRenderScale = 1.0f;
     private bool isAvatarPreviewReady;
+    private List<string> thirdPartyWearablesLoaded = new List<string>();
 
     internal IEmotesCustomizationComponentController emotesCustomizationComponentController;
 
@@ -144,7 +145,7 @@ public class AvatarEditorHUDController : IHUD
     {
         // If there is more than 1 minute that we have checked the owned wearables, we try it again
         // This is done in order to retrieved the wearables after you has claimed them
-        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 60 &&
+        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 0 &&
              (ownedWearablesAlreadyLoaded ||
               ownedWearablesRemainingRequests <= 0)) ||
             string.IsNullOrEmpty(userProfile.userId))
@@ -158,7 +159,7 @@ public class AvatarEditorHUDController : IHUD
                          .Then((ownedWearables) =>
                          {
                              ownedWearablesAlreadyLoaded = true;
-                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
                              LoadUserProfile(userProfile, true);
                              view.ShowCollectiblesLoadingSpinner(false);
                              view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
@@ -556,14 +557,10 @@ public class AvatarEditorHUDController : IHUD
     private void AddWearable(string id, WearableItem wearable)
     {
         if (!wearable.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE) && userProfile.GetItemAmount(id) == 0)
-        {
             return;
-        }
 
         if (!wearablesByCategory.ContainsKey(wearable.data.category))
-        {
             wearablesByCategory.Add(wearable.data.category, new List<WearableItem>());
-        }
 
         wearablesByCategory[wearable.data.category].Add(wearable);
         view.AddWearable(wearable, userProfile.GetItemAmount(id),
@@ -838,6 +835,12 @@ public class AvatarEditorHUDController : IHUD
             .Select(item => item.id)
             .ToList();
         CatalogController.i.Remove(wearablesToRemove);
+
+        foreach (string wearableId in wearablesToRemove)
+        {
+            userProfile.RemoveFromInventory(wearableId);
+            thirdPartyWearablesLoaded.Remove(wearableId);
+        }
     }
 
     private void FetchAndShowThirdPartyCollection(string collectionId)
@@ -847,8 +850,14 @@ public class AvatarEditorHUDController : IHUD
             .Then(wearables =>
             {
                 foreach (var wearable in wearables)
+                {
                     if (!userProfile.ContainsInInventory(wearable.id))
+                    {
                         userProfile.AddToInventory(wearable.id);
+                        thirdPartyWearablesLoaded.Add(wearable.id);
+                    }
+                }
+
                 view.BlockCollectionsDropdown(false);
                 LoadUserProfile(userProfile, true);
             })
