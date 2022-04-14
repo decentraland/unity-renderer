@@ -297,6 +297,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
                 id = SELECT_ALL_OPTION_ID,
                 text = SELECT_ALL_OPTION_TEXT,
                 isOn = false,
+                isTextActive = true
             },
             $"Option_{SELECT_ALL_OPTION_ID}");
     }
@@ -369,41 +370,5 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     internal void RemoveAllInstantiatedOptions()
     {
         availableOptions.RemoveItems();
-    }
-
-    [ContextMenu("Mock Options")]
-    public void MockOptions()
-    {
-        List<ToggleComponentModel> test = new List<ToggleComponentModel>();
-        for (int i = 0; i < 20; i++)
-        {
-            test.Add(new ToggleComponentModel
-            {
-                id = i.ToString(),
-                isOn = false,
-                text = "Option" + i.ToString()
-            });
-        }
-
-        isMultiselect = false;
-        SetOptions(test);
-    }
-
-    [ContextMenu("Mock Options (Multi-selection)")]
-    public void MockOptions_MultiSelection()
-    {
-        List<ToggleComponentModel> test = new List<ToggleComponentModel>();
-        for (int i = 0; i < 20; i++)
-        {
-            test.Add(new ToggleComponentModel
-            {
-                id = i.ToString(),
-                isOn = false,
-                text = "Option" + i.ToString()
-            });
-        }
-
-        isMultiselect = true;
-        SetOptions(test);
     }
 }
