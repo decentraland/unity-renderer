@@ -123,6 +123,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         else
             inventory.Add(wearableId, 1);
     }
+
+    public void RemoveFromInventory(string wearableId) { inventory.Remove(wearableId); }
     
     public bool ContainsInInventory(string wearableId) => inventory.ContainsKey(wearableId);
 
