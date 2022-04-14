@@ -215,6 +215,9 @@ namespace DCL.Components
                 loadable.initialVisibility = model.visible;
 
             ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
+            
+            if(!entity.components.ContainsKey(CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
+                entity.meshesInfo.animation.enabled = model.visible;
         }
 
         protected virtual void ConfigureColliders(IDCLEntity entity) { CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model)); }
@@ -265,7 +268,7 @@ namespace DCL.Components
             isLoaded = true;
             OnLoaded?.Invoke(this);
 
-            entity.meshesInfo.renderers = entity.meshRootGameObject.GetComponentsInChildren<Renderer>();
+            entity.meshesInfo.meshRootGameObject = entity.meshRootGameObject;
 
             var model = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
 
