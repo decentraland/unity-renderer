@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -81,11 +82,19 @@ public interface IDropdownComponentView
     /// </summary>
     /// <param name="isActive"></param>
     void SetSelectAllOptionActive(bool isActive);
+
+    /// <summary>
+    /// Make the height of the options panel be dynamic depending on the number of instantiated options.
+    /// </summary>
+    /// <param name="isDynamic">True for making it dynamic.</param>
+    /// <param name="maxHeight">Max height to apply.</param>
+    void SetOptionsPanelHeightAsDynamic(bool isDynamic, float maxHeight);
 }
 public class DropdownComponentView : BaseComponentView, IDropdownComponentView, IComponentModelConfig
 {
     internal const string SELECT_ALL_OPTION_ID = "select_all";
     internal const string SELECT_ALL_OPTION_TEXT = "Select All";
+    internal const float BOTTOM_MARGIN_SIZE = 20f;
 
     [Header("Prefab References")]
     [SerializeField] internal Button button;
@@ -93,6 +102,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     [SerializeField] internal SearchBarComponentView searchBar;
     [SerializeField] internal GameObject optionsPanel;
     [SerializeField] internal GameObject loadingPanel;
+    [SerializeField] internal RectTransform availableOptionsParent;
     [SerializeField] internal GridContainerComponentView availableOptions;
     [SerializeField] internal UIHelper_ClickBlocker blocker;
 
@@ -142,6 +152,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         SetTitle(model.title);
         SetOptions(model.options);
         SetSearchPlaceHolderText(model.searchPlaceHolderText);
+        SetOptionsPanelHeightAsDynamic(model.isOptionsPanelHeightDynamic, model.maxValueForDynamicHeight);
     }
 
     public void Open()
@@ -149,6 +160,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         optionsPanel.SetActive(true);
         isOpen = true;
         blocker.Activate();
+        StartCoroutine(RefreshOptionsPanelSize());
     }
 
     public void Close()
@@ -186,6 +198,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
 
         UpdateSelectAllOptionStatus();
         SetSelectAllOptionActive(model.showSelectAllOption);
+        StartCoroutine(RefreshOptionsPanelSize());
     }
 
     public void FilterOptions(string filterText)
@@ -270,6 +283,13 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
             return;
 
         selectAllOptionComponent.gameObject.SetActive(isActive);
+    }
+
+    public void SetOptionsPanelHeightAsDynamic(bool isDynamic, float maxHeight)
+    {
+        model.isOptionsPanelHeightDynamic = isDynamic;
+        model.maxValueForDynamicHeight = maxHeight;
+        StartCoroutine(RefreshOptionsPanelSize());
     }
 
     public override void Dispose()
@@ -370,5 +390,22 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     internal void RemoveAllInstantiatedOptions()
     {
         availableOptions.RemoveItems();
+    }
+
+    internal IEnumerator RefreshOptionsPanelSize()
+    {
+        if (!model.isOptionsPanelHeightDynamic)
+            yield break;
+
+        yield return null;
+
+        Utils.ForceRebuildLayoutImmediate(availableOptionsParent);
+
+        yield return null;
+
+        RectTransform optionsPanelTransform = optionsPanel.transform as RectTransform;
+        optionsPanelTransform.sizeDelta = new Vector2(
+            optionsPanelTransform.sizeDelta.x, 
+            Mathf.Clamp(availableOptionsParent.sizeDelta.y + BOTTOM_MARGIN_SIZE, 0f, model.maxValueForDynamicHeight));
     }
 }
