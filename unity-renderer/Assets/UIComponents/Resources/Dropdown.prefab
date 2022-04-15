@@ -218,7 +218,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -45}
-  m_SizeDelta: {x: 300, y: 400}
+  m_SizeDelta: {x: 300, y: 80}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &7556595360305623375
 CanvasRenderer:
@@ -958,6 +958,7 @@ MonoBehaviour:
   searchBar: {fileID: 5538628011398402728}
   optionsPanel: {fileID: 777722227684817447}
   loadingPanel: {fileID: 5618089819016663889}
+  availableOptionsParent: {fileID: 230430281025453070}
   availableOptions: {fileID: 911716695484925267}
   blocker: {fileID: 1010921512863981265}
   togglePrefab: {fileID: 7411399265605913824, guid: 364e5896a70df11418dc18e8fa2049c7,
@@ -967,6 +968,8 @@ MonoBehaviour:
     searchPlaceHolderText: Place holder text...
     isMultiselect: 1
     showSelectAllOption: 1
+    isOptionsPanelHeightDynamic: 1
+    maxValueForDynamicHeight: 500
     options: []
 --- !u!223 &3188484190589710878
 Canvas:
@@ -1702,7 +1705,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -1712,7 +1715,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -1767,7 +1770,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -60
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
