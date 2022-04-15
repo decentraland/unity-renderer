@@ -807,7 +807,7 @@ public class AvatarEditorHUDController : IHUD
 
     private void LoadCollections()
     {
-        if (collectionsAlreadyLoaded)
+        if (!isThirdPartyCollectionsEnabled || collectionsAlreadyLoaded)
             return;
 
         WearablesFetchingHelper.GetThirdPartyCollections()
