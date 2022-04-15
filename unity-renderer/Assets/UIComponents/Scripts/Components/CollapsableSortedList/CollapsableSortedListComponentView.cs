@@ -100,8 +100,8 @@ namespace UIComponents.CollapsableSortedList
 
         public virtual void Clear()
         {
-            foreach (var userId in entries.Keys.ToList())
-                Remove(userId);
+            foreach (var key in entries.Keys.ToList())
+                Remove(key);
 
             entries.Clear();
             sortedEntries.Clear();

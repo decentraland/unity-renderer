@@ -7,13 +7,19 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 {
     [SerializeField] private CollapsablePublicChannelListComponentView publicChannelList;
     [SerializeField] private CollapsableDirectChatListComponentView directChatList;
+    [SerializeField] private CollapsableChatSearchListComponentView searchResultsList;
     [SerializeField] private Button closeButton;
     [SerializeField] private GameObject directChatsLoadingContainer;
     [SerializeField] private GameObject directChatsContainer;
+    [SerializeField] private GameObject directChannelHeader;
+    [SerializeField] private GameObject searchResultsHeader;
     [SerializeField] private TMP_Text directChatsHeaderLabel;
+    [SerializeField] private TMP_Text searchResultsHeaderLabel;
     [SerializeField] private ScrollRect scroll;
     [SerializeField] private SearchBarComponentView searchBar;
     [SerializeField] private Model model;
+    
+    private string lastSearch;
 
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
@@ -35,7 +41,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         directChatList.OnOpenChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
         publicChannelList.OnOpenChat += entry => OnOpenPublicChannel?.Invoke(entry.Model.channelId);
         searchBar.OnSearchText += Filter;
-        UpdateDirectChatsHeader();
+        UpdateHeaders();
     }
 
     public void Initialize(IChatController chatController)
@@ -59,7 +65,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             model.isOnline,
             model.recentMessage.timestamp));
         directChatList.Sort();
-        UpdateDirectChatsHeader();
+        UpdateHeaders();
     }
 
     public void SetPublicChannel(PublicChatChannelModel model)
@@ -86,10 +92,35 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         SetPrivateChatLoadingVisibility(model.isLoadingDirectChats);
     }
     
-    private void Filter(string text)
+    private void Filter(string search)
     {
-        publicChannelList.Filter(text);
-        directChatList.Filter(text);
+        if (string.IsNullOrEmpty(search) && !string.IsNullOrEmpty(lastSearch))
+        {
+            searchResultsList.Export(publicChannelList, directChatList);
+            searchResultsList.Hide();
+            searchResultsList.Clear();
+            publicChannelList.Show();
+            directChatList.Show();
+            directChannelHeader.SetActive(true);
+            searchResultsHeader.SetActive(false);
+        }
+
+        if (!string.IsNullOrEmpty(search) && string.IsNullOrEmpty(lastSearch))
+        {
+            searchResultsList.Import(publicChannelList, directChatList);
+            publicChannelList.Hide();
+            publicChannelList.Clear();
+            directChatList.Hide();
+            directChatList.Clear();
+            searchResultsList.Sort();
+            searchResultsList.Show();
+            directChannelHeader.SetActive(false);
+            searchResultsHeader.SetActive(true);
+        }
+
+        searchResultsList.Filter(search);
+        lastSearch = search;
+        UpdateHeaders();
     }
 
     private void SetPrivateChatLoadingVisibility(bool visible)
@@ -100,9 +131,10 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         scroll.enabled = !visible;
     }
 
-    private void UpdateDirectChatsHeader()
+    private void UpdateHeaders()
     {
         directChatsHeaderLabel.text = $"Direct Messages ({directChatList.Count()})";
+        searchResultsHeaderLabel.text = $"Results ({searchResultsList.Count()})";
     }
 
     [Serializable]
