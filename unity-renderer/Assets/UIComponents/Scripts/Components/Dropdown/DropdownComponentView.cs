@@ -198,7 +198,9 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
 
         UpdateSelectAllOptionStatus();
         SetSelectAllOptionActive(model.showSelectAllOption);
-        StartCoroutine(RefreshOptionsPanelSize());
+
+        if (gameObject.activeSelf)
+            StartCoroutine(RefreshOptionsPanelSize());
     }
 
     public void FilterOptions(string filterText)
