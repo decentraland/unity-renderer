@@ -106,13 +106,14 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
 {
     internal const string SELECT_ALL_OPTION_ID = "select_all";
     internal const string SELECT_ALL_OPTION_TEXT = "Select All";
-    internal const float BOTTOM_MARGIN_SIZE = 20f;
+    internal const float BOTTOM_MARGIN_SIZE = 40f;
 
     [Header("Prefab References")]
     [SerializeField] internal Button button;
     [SerializeField] internal TMP_Text title;
     [SerializeField] internal SearchBarComponentView searchBar;
     [SerializeField] internal GameObject optionsPanel;
+    [SerializeField] internal Image contentMaskImage;
     [SerializeField] internal GameObject loadingPanel;
     [SerializeField] internal RectTransform availableOptionsParent;
     [SerializeField] internal GridContainerComponentView availableOptions;
@@ -216,6 +217,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         SetSelectAllOptionActive(model.showSelectAllOption);
 
         searchBar.gameObject.SetActive(options.Count > 0);
+        contentMaskImage.enabled = options.Count > 0;
         emptyContentMessage.gameObject.SetActive(options.Count == 0);
 
         if (gameObject.activeSelf)

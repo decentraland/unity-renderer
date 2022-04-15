@@ -12713,7 +12713,7 @@ PrefabInstance:
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 264
+      value: 242
       objectReference: {fileID: 0}
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -12835,6 +12835,11 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3058444398503574320, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5233365928742558889, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_text
@@ -12860,6 +12865,11 @@ PrefabInstance:
       propertyPath: model.placeHolderText
       value: Search linked wearables
       objectReference: {fileID: 0}
+    - target: {fileID: 5986278351746527479, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 6006407925246430769, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_IsActive
@@ -12873,7 +12883,7 @@ PrefabInstance:
     - target: {fileID: 7899743641607750033, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8992885240976846846, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -12904,6 +12914,11 @@ PrefabInstance:
         type: 3}
       propertyPath: model.maxValueForDynamicHeight
       value: 700
+      objectReference: {fileID: 0}
+    - target: {fileID: 8992885240976846846, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: model.isOptionsPanelHeightDynamic
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a3187d731887694b8a4a6274fd63814, type: 3}
