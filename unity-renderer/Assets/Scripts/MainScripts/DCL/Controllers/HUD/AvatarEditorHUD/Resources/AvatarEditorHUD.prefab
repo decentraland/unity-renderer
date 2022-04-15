@@ -12853,12 +12853,17 @@ PrefabInstance:
     - target: {fileID: 5538628011398402728, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: model.placeHolderText
-      value: Search collection
+      value: Search linked wearables
       objectReference: {fileID: 0}
     - target: {fileID: 6989783239237814442, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_Name
       value: CollectionsDropdown
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899743641607750033, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: m_Value
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8992885240976846846, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -12874,6 +12879,11 @@ PrefabInstance:
         type: 3}
       propertyPath: model.searchPlaceHolderText
       value: Search linked wearables
+      objectReference: {fileID: 0}
+    - target: {fileID: 8992885240976846846, guid: 3a3187d731887694b8a4a6274fd63814,
+        type: 3}
+      propertyPath: model.maxValueForDynamicHeight
+      value: 700
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a3187d731887694b8a4a6274fd63814, type: 3}
