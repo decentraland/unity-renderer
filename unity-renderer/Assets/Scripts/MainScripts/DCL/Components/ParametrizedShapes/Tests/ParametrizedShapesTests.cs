@@ -80,7 +80,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
             componentJSON
         );
 
-        BoxShape boxShapeComponent = (BoxShape) scene.GetSharedComponent(componentId);
+        BoxShape boxShapeComponent = (BoxShape) scene.componentsManagerLegacy.GetSceneSharedComponent(componentId);
 
         // 2. Check configured values
         Assert.IsTrue(boxShapeComponent.GetModel().withCollisions);

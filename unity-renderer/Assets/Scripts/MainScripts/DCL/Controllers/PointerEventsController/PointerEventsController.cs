@@ -89,7 +89,7 @@ namespace DCL
             // NOTE: in case of a single scene loaded (preview or builder) sceneId is set to null when stepping outside
             if (didHit && validCurrentSceneId && validCurrentScene)
             {
-                UIScreenSpace currentUIScreenSpace = worldState.loadedScenes[currentSceneId].GetSharedComponent<UIScreenSpace>();
+                UIScreenSpace currentUIScreenSpace = worldState.loadedScenes[currentSceneId].componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
                 GraphicRaycaster raycaster = currentUIScreenSpace?.graphicRaycaster;
 
                 if (raycaster)
@@ -511,10 +511,11 @@ namespace DCL
 
         bool EntityHasPointerEvent(IDCLEntity entity)
         {
-            return entity.components.ContainsKey(Models.CLASS_ID_COMPONENT.UUID_CALLBACK) ||
-                   entity.components.ContainsKey(Models.CLASS_ID_COMPONENT.UUID_ON_UP) ||
-                   entity.components.ContainsKey(Models.CLASS_ID_COMPONENT.UUID_ON_DOWN) ||
-                   entity.components.ContainsKey(Models.CLASS_ID_COMPONENT.UUID_ON_CLICK);
+            var componentsManager = entity.scene.componentsManagerLegacy;
+            return componentsManager.HasComponent(entity, Models.CLASS_ID_COMPONENT.UUID_CALLBACK) ||
+                   componentsManager.HasComponent(entity, Models.CLASS_ID_COMPONENT.UUID_ON_UP) ||
+                   componentsManager.HasComponent(entity, Models.CLASS_ID_COMPONENT.UUID_ON_DOWN) ||
+                   componentsManager.HasComponent(entity, Models.CLASS_ID_COMPONENT.UUID_ON_CLICK);
         }
 
         bool AreCollidersFromSameEntity(RaycastHitInfo hitInfoA, RaycastHitInfo hitInfoB)

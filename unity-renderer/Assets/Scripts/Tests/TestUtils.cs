@@ -163,7 +163,7 @@ namespace DCL.Helpers
                 data = JsonUtility.ToJson(model);
             }
 
-            return scene.EntityComponentCreateOrUpdate(
+            return scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
                 entity.entityId,
                 (CLASS_ID_COMPONENT) componentClassId,
                 data) as T;
@@ -185,7 +185,7 @@ namespace DCL.Helpers
             CLASS_ID_COMPONENT classId = (CLASS_ID_COMPONENT) inferredId;
 
             ParcelScene scene = component.scene as ParcelScene;
-            scene.EntityComponentUpdate(component.entity, classId, JsonUtility.ToJson(model));
+            scene.componentsManagerLegacy.EntityComponentUpdate(component.entity, classId, JsonUtility.ToJson(model));
 
             return component.routine;
         }
@@ -252,7 +252,7 @@ namespace DCL.Helpers
 
             string uniqueId = GetComponentUniqueId(scene, "material", (int) id, "-shared-" + disposableIdCounter);
 
-            T result = scene.SharedComponentCreate(uniqueId, (int) id) as T;
+            T result = scene.componentsManagerLegacy.SceneSharedComponentCreate(uniqueId, (int) id) as T;
 
             Assert.IsNotNull(result, "class-id mismatch!");
 
@@ -264,13 +264,13 @@ namespace DCL.Helpers
         public static void SharedComponentDispose(BaseDisposable component)
         {
             ParcelScene scene = component.scene as ParcelScene;
-            scene.SharedComponentDispose(component.id);
+            scene.componentsManagerLegacy.SceneSharedComponentDispose(component.id);
         }
 
         public static void SharedComponentAttach(BaseDisposable component, IDCLEntity entity)
         {
             ParcelScene scene = entity.scene as ParcelScene;
-            scene.SharedComponentAttach(
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(
                 entity.entityId,
                 component.id
             );
@@ -283,7 +283,7 @@ namespace DCL.Helpers
         public static void SetEntityTransform(ParcelScene scene, IDCLEntity entity, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
-            scene.EntityComponentCreateOrUpdate(
+            scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
                 entity.entityId,
                 CLASS_ID_COMPONENT.TRANSFORM,
                 System.Convert.ToBase64String(pB_Transform.ToByteArray())
@@ -506,7 +506,7 @@ namespace DCL.Helpers
                 return;
             }
 
-            scene.GetSharedComponent(sharedComponentId).DetachFrom(entity);
+            scene.componentsManagerLegacy.GetSceneSharedComponent(sharedComponentId).DetachFrom(entity);
         }
 
         public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position,
@@ -514,7 +514,7 @@ namespace DCL.Helpers
         {
             InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
-            scene.SharedComponentCreate(
+            scene.componentsManagerLegacy.SceneSharedComponentCreate(
                 materialComponentID,
                 (int) DCL.Models.CLASS_ID.BASIC_MATERIAL
             );
@@ -523,7 +523,7 @@ namespace DCL.Helpers
                 materialComponentID,
                 JsonUtility.ToJson(basicMaterial));
 
-            scene.SharedComponentAttach(
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(
                 entityId,
                 materialComponentID
             );
@@ -534,7 +534,7 @@ namespace DCL.Helpers
         {
             InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
-            scene.SharedComponentCreate(
+            scene.componentsManagerLegacy.SceneSharedComponentCreate(
                 materialComponentID,
                 (int) CLASS_ID.PBR_MATERIAL
             );
@@ -543,7 +543,7 @@ namespace DCL.Helpers
                 materialComponentID,
                 JsonUtility.ToJson(pbrMaterial));
 
-            scene.SharedComponentAttach(
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(
                 entityId,
                 materialComponentID
             );
@@ -578,7 +578,7 @@ namespace DCL.Helpers
                 volume = volume
             };
 
-            DCLAudioClip audioClip = scene.SharedComponentCreate(
+            DCLAudioClip audioClip = scene.componentsManagerLegacy.SceneSharedComponentCreate(
                 audioClipId,
                 (int) CLASS_ID.AUDIO_CLIP
             ) as DCLAudioClip;
@@ -621,7 +621,7 @@ namespace DCL.Helpers
             string baseId = salt + "-" + (int) classId + "-" + entityId;
             string finalId = baseId;
 
-            while (scene.GetSharedComponent(finalId) != null)
+            while (scene.componentsManagerLegacy.GetSceneSharedComponent(finalId) != null)
             {
                 finalId = baseId + UnityEngine.Random.Range(1, 10000);
             }
@@ -633,7 +633,7 @@ namespace DCL.Helpers
         {
             string componentId = GetComponentUniqueId(scene, "shape", (int) classId, entityId);
 
-            scene.SharedComponentCreate(
+            scene.componentsManagerLegacy.SceneSharedComponentCreate(
                 componentId,
                 (int) classId
             );
@@ -642,7 +642,7 @@ namespace DCL.Helpers
                 componentId,
                 model);
 
-            scene.SharedComponentAttach(
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(
                 entityId,
                 componentId
             );
@@ -760,7 +760,7 @@ namespace DCL.Helpers
             IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
             int id = (int) poolableFactory.GetIdForType<TComponent>();
 
-            scene.EntityComponentUpdate(e, (CLASS_ID_COMPONENT) id, "{}");
+            scene.componentsManagerLegacy.EntityComponentUpdate(e, (CLASS_ID_COMPONENT) id, "{}");
 
             if (component.routine != null)
             {
@@ -796,8 +796,8 @@ namespace DCL.Helpers
             // Attach 1st component to entity
             TestUtils.SharedComponentAttach(component, entity);
 
-            Assert.IsTrue(entity.GetSharedComponent(componentType) != null);
-            Assert.AreEqual(component, entity.GetSharedComponent(componentType));
+            Assert.IsTrue(scene.componentsManagerLegacy.GetSharedComponent(entity, componentType) != null);
+            Assert.AreEqual(component, scene.componentsManagerLegacy.GetSharedComponent(entity, componentType));
 
             // Assign 2nd component to same entity
             var component2 = SharedComponentCreate<TComponent, TModel>(scene, classId);
@@ -809,8 +809,8 @@ namespace DCL.Helpers
 
             TestUtils.SharedComponentAttach(component2, entity);
 
-            Assert.IsTrue(entity.GetSharedComponent(componentType) != null);
-            Assert.AreEqual(component2, entity.GetSharedComponent(componentType));
+            Assert.IsTrue(scene.componentsManagerLegacy.GetSharedComponent(entity, componentType) != null);
+            Assert.AreEqual(component2, scene.componentsManagerLegacy.GetSharedComponent(entity, componentType));
             Assert.IsFalse(component.attachedEntities.Contains(entity));
         }
 

@@ -48,7 +48,7 @@ namespace DCL.Controllers
             state = State.NOT_READY;
             this.owner = ownerScene;
             owner.OnSetData += OnSceneSetData;
-            owner.OnAddSharedComponent += OnAddSharedComponent;
+            owner.componentsManagerLegacy.OnAddSharedComponent += OnAddSharedComponent;
         }
 
         private void OnAddSharedComponent(string id, ISharedComponent component)

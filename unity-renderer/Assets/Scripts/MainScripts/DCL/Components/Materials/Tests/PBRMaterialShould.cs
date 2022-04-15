@@ -227,7 +227,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         string thirdEntityID = "3";
 
         TestUtils.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
-        scene.SharedComponentAttach(
+        scene.componentsManagerLegacy.SceneSharedComponentAttach(
             thirdEntityID,
             firstMaterialID
         );
@@ -274,7 +274,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         var boxShape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero);
         var entity3 = boxShape.attachedEntities.First();
 
-        scene.SharedComponentAttach(
+        scene.componentsManagerLegacy.SceneSharedComponentAttach(
             entity3.entityId,
             material1.id
         );

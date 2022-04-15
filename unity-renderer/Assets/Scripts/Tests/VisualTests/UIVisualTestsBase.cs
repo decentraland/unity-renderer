@@ -42,7 +42,7 @@ public class UIVisualTestsBase : VisualTestsBase
             model = new SharedComponentModel();
 
         // Creation
-        var component = scene.SharedComponentCreate(
+        var component = scene.componentsManagerLegacy.SceneSharedComponentCreate(
             componentId,
             (int) classId
         ) as SharedComponentType;

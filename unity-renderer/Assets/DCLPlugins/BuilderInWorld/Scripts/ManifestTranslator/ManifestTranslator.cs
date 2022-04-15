@@ -175,7 +175,7 @@ namespace DCL.Builder
                 Entity statlesEntity = new Entity();
                 statlesEntity.id = entity.entityId;
 
-                foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> entityComponent in entity.components)
+                foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> entityComponent in scene.componentsManagerLegacy.GetComponentsDictionary(entity))
                 {
                     Component statelesComponent = new Component();
                     statelesComponent.type = idToHumanReadableDictionary.FirstOrDefault( x => x.Value == (int)entityComponent.Key).Key;
@@ -198,7 +198,7 @@ namespace DCL.Builder
                     statlesEntity.components.Add(statelesComponent);
                 }
 
-                foreach (KeyValuePair<Type, ISharedComponent> entitySharedComponent in entity.sharedComponents)
+                foreach (KeyValuePair<Type, ISharedComponent> entitySharedComponent in scene.componentsManagerLegacy.GetSharedComponentsDictionary(entity))
                 {
                     Component statelesComponent = new Component();
                     statelesComponent.type = idToHumanReadableDictionary.FirstOrDefault( x => x.Value == (int)entitySharedComponent.Value.GetClassId()).Key;
@@ -229,7 +229,7 @@ namespace DCL.Builder
                 string entityName = "";
 
                 // Iterate the entity components to transform them to the builder format
-                foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> entityComponent in entity.components)
+                foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> entityComponent in scene.componentsManagerLegacy.GetComponentsDictionary(entity))
                 {
                     BuilderComponent builderComponent = new BuilderComponent();
                     switch (entityComponent.Key)
@@ -266,7 +266,7 @@ namespace DCL.Builder
                 }
 
                 // Iterate the entity shared components to transform them to the builder format
-                foreach (KeyValuePair<System.Type, ISharedComponent> sharedEntityComponent in entity.sharedComponents)
+                foreach (KeyValuePair<System.Type, ISharedComponent> sharedEntityComponent in scene.componentsManagerLegacy.GetSharedComponentsDictionary(entity))
                 {
                     BuilderComponent builderComponent = new BuilderComponent();
                     // We generate a new uuid for the component since there is no uuid for components in the stateful scheme

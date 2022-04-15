@@ -90,7 +90,7 @@ namespace DCL.Components
 
             if (texturePlayer == null)
             {
-                DCLVideoClip dclVideoClip = scene.GetSharedComponent(lastVideoClipID) as DCLVideoClip;
+                DCLVideoClip dclVideoClip = scene.componentsManagerLegacy.GetSceneSharedComponent(lastVideoClipID) as DCLVideoClip;
 
                 if (dclVideoClip == null)
                 {

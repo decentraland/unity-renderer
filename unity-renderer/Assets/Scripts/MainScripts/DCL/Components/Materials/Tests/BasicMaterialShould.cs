@@ -152,7 +152,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         // Create 2nd entity and attach same material to it
         TestUtils.InstantiateEntityWithShape(scene, secondEntityId, CLASS_ID.BOX_SHAPE, Vector3.zero);
-        scene.SharedComponentAttach(
+        scene.componentsManagerLegacy.SceneSharedComponentAttach(
             secondEntityId,
             materialID
         );
@@ -176,7 +176,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         }
 
         // Dispose material
-        scene.SharedComponentDispose(materialID);
+        scene.componentsManagerLegacy.SceneSharedComponentDispose(materialID);
 
         // Check if material detached correctly
         Assert.IsTrue(firstMeshRenderer.sharedMaterial == null, "MeshRenderer must exist");

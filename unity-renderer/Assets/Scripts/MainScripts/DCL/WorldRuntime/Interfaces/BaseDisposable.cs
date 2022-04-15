@@ -57,7 +57,7 @@ namespace DCL.Components
             }
 
             System.Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
-            entity.AddSharedComponent(thisType, this);
+            scene.componentsManagerLegacy.AddSharedComponent(entity, thisType, this);
 
             attachedEntities.Add(entity);
 
@@ -76,7 +76,7 @@ namespace DCL.Components
             entity.OnRemoved -= OnEntityRemoved;
 
             System.Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
-            entity.RemoveSharedComponent(thisType, false);
+            scene.componentsManagerLegacy.RemoveSharedComponent(entity, thisType, false);
 
             attachedEntities.Remove(entity);
 

@@ -164,7 +164,7 @@ namespace DCL
 
                     foreach (var e in scene.entities)
                     {
-                        componentCount += e.Value.components.Count;
+                        componentCount += scene.componentsManagerLegacy.GetComponentsDictionary(e.Value).Count;
                     }
                 }
 
