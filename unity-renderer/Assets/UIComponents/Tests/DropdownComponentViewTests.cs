@@ -224,6 +224,34 @@ public class DropdownComponentViewTests
     }
 
     [Test]
+    public void SetSearchNotFoundTextCorrectly()
+    {
+        // Arrange
+        string testText = "Test";
+
+        // Act
+        dropdownComponent.SetSearchNotFoundText(testText);
+
+        // Assert
+        Assert.AreEqual(testText, dropdownComponent.model.searchNotFoundText, "The searchNotFoundText does not match in the model.");
+        Assert.AreEqual(testText, dropdownComponent.searchNotFoundMessage.text, "The searchNotFoundMessage text does not match.");
+    }
+
+    [Test]
+    public void SetEmptyContentTextCorrectly()
+    {
+        // Arrange
+        string testText = "Test";
+
+        // Act
+        dropdownComponent.SetEmptyContentText(testText);
+
+        // Assert
+        Assert.AreEqual(testText, dropdownComponent.model.emptyContentText, "The emptyContentText does not match in the model.");
+        Assert.AreEqual(testText, dropdownComponent.emptyContentMessage.text, "The emptyContentMessage text does not match.");
+    }
+
+    [Test]
     [TestCase(true)]
     [TestCase(false)]
     public void SetLoadingActiveCorrectly(bool isActive)
