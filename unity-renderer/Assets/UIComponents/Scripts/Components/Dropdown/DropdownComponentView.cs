@@ -72,6 +72,18 @@ public interface IDropdownComponentView
     void SetSearchPlaceHolderText(string newText);
 
     /// <summary>
+    /// Set the text for when the search doesn't find anything.
+    /// </summary>
+    /// <param name="newText">New text.</param>
+    void SetSearchNotFoundText(string newText);
+
+    /// <summary>
+    /// Set the text for when the dropdown doesn't have items.
+    /// </summary>
+    /// <param name="newText">New text.</param>
+    void SetEmptyContentText(string newText);
+
+    /// <summary>
     /// Show/Hide the loading panel.
     /// </summary>
     /// <param name="isActive">Tru for showing it.</param>
@@ -104,6 +116,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     [SerializeField] internal GameObject loadingPanel;
     [SerializeField] internal RectTransform availableOptionsParent;
     [SerializeField] internal GridContainerComponentView availableOptions;
+    [SerializeField] internal TMP_Text emptyContentMessage;
+    [SerializeField] internal TMP_Text searchNotFoundMessage;
     [SerializeField] internal UIHelper_ClickBlocker blocker;
 
     [Header("Resources")]
@@ -152,6 +166,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         SetTitle(model.title);
         SetOptions(model.options);
         SetSearchPlaceHolderText(model.searchPlaceHolderText);
+        SetSearchNotFoundText(model.searchNotFoundText);
+        SetEmptyContentText(model.emptyContentText);
         SetOptionsPanelHeightAsDynamic(model.isOptionsPanelHeightDynamic, model.maxValueForDynamicHeight);
     }
 
@@ -199,6 +215,9 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         UpdateSelectAllOptionStatus();
         SetSelectAllOptionActive(model.showSelectAllOption);
 
+        searchBar.gameObject.SetActive(options.Count > 0);
+        emptyContentMessage.gameObject.SetActive(options.Count == 0);
+
         if (gameObject.activeSelf)
             StartCoroutine(RefreshOptionsPanelSize());
     }
@@ -207,6 +226,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     {
         if (filterText == string.Empty)
         {
+            searchNotFoundMessage.gameObject.SetActive(false);
             SetOptions(originalOptions);
             return;
         }
@@ -226,6 +246,10 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         {
             CreateOption(newFilteredOptions[i], $"FilteredOption_{i}");
         }
+
+        searchNotFoundMessage.gameObject.SetActive(newFilteredOptions.Count == 0);
+
+        StartCoroutine(RefreshOptionsPanelSize());
     }
 
     public IToggleComponentView GetOption(int index)
@@ -267,6 +291,26 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
             return;
 
         searchBar.SetPlaceHolderText(newText);
+    }
+
+    public void SetSearchNotFoundText(string newText)
+    {
+        model.searchNotFoundText = newText;
+
+        if (searchNotFoundMessage == null)
+            return;
+
+        searchNotFoundMessage.text = newText;
+    }
+
+    public void SetEmptyContentText(string newText)
+    {
+        model.emptyContentText = newText;
+
+        if (emptyContentMessage == null)
+            return;
+
+        emptyContentMessage.text = newText;
     }
 
     public void SetLoadingActive(bool isActive)
