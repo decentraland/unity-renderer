@@ -7,6 +7,8 @@ using UnityEngine.Assertions;
 
 public class PlayerInfoCardHUDController : IHUD
 {
+    internal const string PASSPORT_OPENED_EVENT = "passport_opened";
+
     internal readonly PlayerInfoCardHUDView view;
     internal readonly StringVariable currentPlayerId;
     internal UserProfile currentUserProfile;
@@ -139,6 +141,7 @@ public class PlayerInfoCardHUDController : IHUD
             currentUserProfile.OnUpdate += SetUserProfile;
             SetUserProfile(currentUserProfile);
             view.SetCardActive(true);
+            GenericAnalytics.SendAnalytic(PASSPORT_OPENED_EVENT);
         }
     }
 

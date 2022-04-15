@@ -26,7 +26,7 @@ namespace DCL.Components
 
         protected Model previousModel = new Model();
 
-        protected static Dictionary<GameObject, LoadWrapper> attachedLoaders = new Dictionary<GameObject, LoadWrapper>();
+        private static readonly Dictionary<GameObject, LoadWrapper> attachedLoaders = new Dictionary<GameObject, LoadWrapper>();
 
         public static LoadWrapper GetLoaderForEntity(IDCLEntity entity)
         {
@@ -40,7 +40,7 @@ namespace DCL.Components
             return result;
         }
 
-        public static T GetOrAddLoaderForEntity<T>(IDCLEntity entity)
+        protected static T GetOrAddLoaderForEntity<T>(IDCLEntity entity)
             where T : LoadWrapper, new()
         {
             if (!attachedLoaders.TryGetValue(entity.meshRootGameObject, out LoadWrapper result))
@@ -52,7 +52,12 @@ namespace DCL.Components
             return result as T;
         }
 
-        public LoadableShape() { model = new Model(); }
+        protected static void RemoveLoaderForEntity(IDCLEntity entity)
+        {
+            attachedLoaders.Remove(entity.meshRootGameObject);
+        }
+
+        protected LoadableShape() { model = new Model(); }
 
         public override int GetClassId() { return -1; }
 
@@ -210,6 +215,9 @@ namespace DCL.Components
                 loadable.initialVisibility = model.visible;
 
             ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
+            
+            if(!entity.components.ContainsKey(CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
+                entity.meshesInfo.animation.enabled = model.visible;
         }
 
         protected virtual void ConfigureColliders(IDCLEntity entity) { CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model)); }
@@ -260,7 +268,7 @@ namespace DCL.Components
             isLoaded = true;
             OnLoaded?.Invoke(this);
 
-            entity.meshesInfo.renderers = entity.meshRootGameObject.GetComponentsInChildren<Renderer>();
+            entity.meshesInfo.meshRootGameObject = entity.meshRootGameObject;
 
             var model = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
 
@@ -279,9 +287,8 @@ namespace DCL.Components
                 return;
 
             LoadWrapper loadWrapper = GetLoaderForEntity(entity);
-
             loadWrapper?.Unload();
-
+            RemoveLoaderForEntity(entity);
             entity.meshesInfo.CleanReferences();
         }
 

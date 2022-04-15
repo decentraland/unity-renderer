@@ -580,8 +580,9 @@ namespace DCL
                         continue;
 
                     characterIsInsideScene = WorldStateUtils.IsCharacterInsideScene(scene);
+                    bool isGlobalScene = worldState.globalSceneIds.Contains(scene.sceneData.id);
 
-                    if (!worldState.globalSceneIds.Contains(scene.sceneData.id) && characterIsInsideScene)
+                    if (!isGlobalScene && characterIsInsideScene)
                     {
                         worldState.currentSceneId = scene.sceneData.id;
 
