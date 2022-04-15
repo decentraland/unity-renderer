@@ -258,6 +258,24 @@ public class DropdownComponentViewTests
     }
 
     [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetOptionsPanelHeightAsDynamicCorrectly(bool isDynamic)
+    {
+        // Arrange
+        float testHeight = 100f;
+        dropdownComponent.model.isOptionsPanelHeightDynamic = !isDynamic;
+        dropdownComponent.model.maxValueForDynamicHeight = 0f;
+
+        // Act
+        dropdownComponent.SetOptionsPanelHeightAsDynamic(isDynamic, testHeight);
+
+        // Assert
+        Assert.AreEqual(isDynamic, dropdownComponent.model.isOptionsPanelHeightDynamic, "The isOptionsPanelHeightDynamic property does not match in the model.");
+        Assert.AreEqual(testHeight, dropdownComponent.model.maxValueForDynamicHeight, "The maxValueForDynamicHeight property does not match in the model.");
+    }
+
+    [Test]
     public void CreateSelectAllOptionCorrectly()
     {
         // Act
