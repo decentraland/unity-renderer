@@ -57,6 +57,8 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
         inputField.onValueChanged.AddListener(OnValueChanged);
         inputField.onSubmit.AddListener(SubmitSearch);
+        inputField.onSelect.AddListener(SelectInput);
+        inputField.onDeselect.AddListener(DeselectInput);
         clearSearchButton.onClick.AddListener(ClearSearch);
 
         SetClearMode();
@@ -112,6 +114,8 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
         inputField.onValueChanged.RemoveAllListeners();
         inputField.onSubmit.RemoveAllListeners();
+        inputField.onSelect.RemoveAllListeners();
+        inputField.onDeselect.RemoveAllListeners();
         clearSearchButton.onClick.RemoveAllListeners();
 
         StopSearchCoroutine();
@@ -176,5 +180,18 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
     {
         clearSearchButton.gameObject.SetActive(false);
         searchSpinner.SetActive(false);
+    }
+
+    internal void SelectInput(string value)
+    {
+        placeHolderText.gameObject.SetActive(false);
+    }
+
+    internal void DeselectInput(string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+            return;
+
+        placeHolderText.gameObject.SetActive(true);
     }
 }
