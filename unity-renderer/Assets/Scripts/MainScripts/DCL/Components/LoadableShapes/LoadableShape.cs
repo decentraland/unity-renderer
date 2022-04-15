@@ -216,7 +216,7 @@ namespace DCL.Components
 
             ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
             
-            if(!entity.components.ContainsKey(CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
+            if(!scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
                 entity.meshesInfo.animation.enabled = model.visible;
         }
 
