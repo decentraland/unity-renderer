@@ -308,7 +308,8 @@ namespace DCL
 
         public ISharedComponent GetSceneSharedComponent(string component)
         {
-            return disposableComponents[component];
+            disposableComponents.TryGetValue(component, out ISharedComponent sharedComponent);
+            return sharedComponent;
         }
 
         public bool TryGetSceneSharedComponent(string component, out ISharedComponent sharedComponent)
