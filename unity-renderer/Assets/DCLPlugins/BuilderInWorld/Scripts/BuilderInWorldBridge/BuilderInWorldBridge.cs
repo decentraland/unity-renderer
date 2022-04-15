@@ -234,6 +234,7 @@ public class BuilderInWorldBridge : MonoBehaviour
 
         builderConfig.sceneId = land.sceneId;
         builderConfig.recreateScene = true;
+        builderConfig.killPortableExperiences = true;
         builderConfig.land = land;
 
         config.payload = builderConfig;
