@@ -5,7 +5,6 @@ using DCL.Models;
 using DCL.Controllers.ParcelSceneDebug;
 using System.Collections.Generic;
 using System.Linq;
-using MainScripts.DCL.WorldRuntime;
 using UnityEngine;
 using UnityEngine.Assertions;
 

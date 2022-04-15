@@ -7,7 +7,6 @@ using DCL.Helpers;
 using Google.Protobuf;
 using UnityEngine;
 using DCL.Configuration;
-using MainScripts.DCL.WorldRuntime;
 using Random = UnityEngine.Random;
 
 namespace DCL.Bots
