@@ -49,11 +49,11 @@ public class UIVisualTestsBase : VisualTestsBase
         yield return component.routine;
 
         // "fake" update (triggers 1st ApplyChanges() call)
-        scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new SharedComponentModel()));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(componentId, JsonUtility.ToJson(new SharedComponentModel()));
         yield return component.routine;
 
         // "real" update
-        scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(model));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(componentId, JsonUtility.ToJson(model));
         yield return component.routine;
     }
 }

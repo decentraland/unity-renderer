@@ -11,7 +11,7 @@ namespace DCL
         void CleanComponents(IDCLEntity entity);
         void AddSharedComponent(IDCLEntity entity, Type componentType, ISharedComponent component);
         void RemoveSharedComponent(IDCLEntity entity, Type targetType, bool triggerDetaching = true);
-        [Obsolete("Please, do not use this")]
+        [Obsolete("Please, do not use `TryGetComponent<T>(IDCLEntity entity)`")]
         T TryGetComponent<T>(IDCLEntity entity) where T : class;
         bool TryGetBaseComponent(IDCLEntity entity, CLASS_ID_COMPONENT componentId, out IEntityComponent component);
         bool TryGetSharedComponent(IDCLEntity entity, CLASS_ID componentId, out ISharedComponent component);
@@ -39,5 +39,8 @@ namespace DCL
         IEntityComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, object data);
         IEntityComponent EntityComponentUpdate(IDCLEntity entity, CLASS_ID_COMPONENT classId, string componentJson);
         void SceneSharedComponentDispose(string id);
+        ISharedComponent SceneSharedComponentUpdate(string id, BaseModel model);
+        ISharedComponent SceneSharedComponentUpdate(string id, string json);
+        void EntityComponentRemove(string entityId, string name);
     }
 }

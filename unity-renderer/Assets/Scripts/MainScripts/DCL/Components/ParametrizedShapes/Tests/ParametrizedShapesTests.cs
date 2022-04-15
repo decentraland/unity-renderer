@@ -86,7 +86,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         Assert.IsTrue(boxShapeComponent.GetModel().withCollisions);
 
         // 3. Update component with missing values
-        scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new BoxShape.Model { }));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(componentId, JsonUtility.ToJson(new BoxShape.Model { }));
 
         // 4. Check defaulted values
         Assert.IsTrue(boxShapeComponent.GetModel().withCollisions);

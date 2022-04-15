@@ -84,11 +84,11 @@ namespace Tests
             Assert.IsTrue(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT));
             Assert.IsTrue(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER));
 
-            scene.EntityComponentRemove(entity.entityId, OnPointerDown.NAME);
-            scene.EntityComponentRemove(entity.entityId, OnPointerUp.NAME);
-            scene.EntityComponentRemove(entity.entityId, OnClick.NAME);
-            scene.EntityComponentRemove(entity.entityId, OnPointerHoverEnter.NAME);
-            scene.EntityComponentRemove(entity.entityId, OnPointerHoverExit.NAME);
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, OnPointerDown.NAME);
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, OnPointerUp.NAME);
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, OnClick.NAME);
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, OnPointerHoverEnter.NAME);
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, OnPointerHoverExit.NAME);
 
             Assert.IsFalse(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_CLICK));
             Assert.IsFalse(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_UP));

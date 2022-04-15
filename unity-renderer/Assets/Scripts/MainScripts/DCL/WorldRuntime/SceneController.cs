@@ -254,7 +254,7 @@ namespace DCL
                     case MessagingTypes.ENTITY_COMPONENT_DESTROY:
                         {
                             if (msgPayload is Protocol.EntityComponentDestroy payload)
-                                scene.EntityComponentRemove(payload.entityId, payload.name);
+                                scene.componentsManagerLegacy.EntityComponentRemove(payload.entityId, payload.name);
 
                             break;
                         }
@@ -286,7 +286,7 @@ namespace DCL
                     case MessagingTypes.SHARED_COMPONENT_UPDATE:
                         {
                             if (msgPayload is Protocol.SharedComponentUpdate payload)
-                                delayedComponent = scene.SharedComponentUpdate(payload.componentId, payload.json) as IDelayedComponent;
+                                delayedComponent = scene.componentsManagerLegacy.SceneSharedComponentUpdate(payload.componentId, payload.json) as IDelayedComponent;
 
                             break;
                         }

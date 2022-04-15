@@ -227,7 +227,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
             FilterMode.Bilinear);
 
         // Update material
-        scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new BasicMaterial.Model
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(materialID, JsonUtility.ToJson(new BasicMaterial.Model
         {
             texture = dclTexture.id,
             alphaTest = 0.5f,
@@ -268,7 +268,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         // 3. Update component with missing values
 
-        scene.SharedComponentUpdate(basicMaterialComponent.id, JsonUtility.ToJson(new BasicMaterial.Model { }));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(basicMaterialComponent.id, JsonUtility.ToJson(new BasicMaterial.Model { }));
 
         yield return basicMaterialComponent.routine;
 

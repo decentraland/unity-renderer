@@ -152,7 +152,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         ColorUtility.TryParseHtmlString("#42f4aa", out color2);
         ColorUtility.TryParseHtmlString("#601121", out color3);
 
-        scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
         {
             albedoTexture = texture.id,
             albedoColor = color1,
@@ -297,7 +297,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         Assert.AreApproximatelyEqual(0.66f, secondRenderer.sharedMaterial.GetFloat("_Metallic"));
 
         // Update material properties
-        scene.SharedComponentUpdate(material1.id, JsonUtility.ToJson(new PBRMaterial.Model
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(material1.id, JsonUtility.ToJson(new PBRMaterial.Model
         {
             metallic = 0.95f
         }));
@@ -378,7 +378,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(3f, PBRMaterialComponent.GetModel().specularIntensity);
 
         // 3. Update component with missing values
-        scene.SharedComponentUpdate(PBRMaterialComponent.id, JsonUtility.ToJson(new PBRMaterial.Model { }));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(PBRMaterialComponent.id, JsonUtility.ToJson(new PBRMaterial.Model { }));
 
         yield return PBRMaterialComponent.routine;
 

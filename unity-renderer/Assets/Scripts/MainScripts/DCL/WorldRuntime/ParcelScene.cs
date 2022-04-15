@@ -46,7 +46,7 @@ namespace DCL.Controllers
         public void Awake()
         {
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-            componentsManagerLegacy = new ECSComponentsManagerLegacy(this);
+            componentsManagerLegacy = new ECSComponentsManagerLegacy(this, RemoveEntityComponent, EntityComponentCreateOrUpdate);
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
             metricsCounter = new SceneMetricsCounter(DataStore.i.sceneWorldObjects);
         }
@@ -444,17 +444,65 @@ namespace DCL.Controllers
             }
         }
 
-        public void EntityComponentRemove(string entityId, string name)
+        private IEntityComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, object data)
         {
-            IDCLEntity decentralandEntity = GetEntityById(entityId);
+            IDCLEntity entity = GetEntityById(entityId);
 
-            if (decentralandEntity == null)
+            if (entity == null)
             {
-                return;
+                Debug.LogError($"scene '{sceneData.id}': Can't create entity component if the entity {entityId} doesn't exist!");
+                return null;
             }
 
-            RemoveEntityComponent(decentralandEntity, name);
-        }
+            IEntityComponent newComponent = null;
+
+            if (classId == CLASS_ID_COMPONENT.UUID_CALLBACK)
+            {
+                OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(data as string);
+                classId = model.GetClassIdFromType();
+            }
+            // NOTE: TRANSFORM and AVATAR_ATTACH can't be used in the same Entity at the same time.
+            // so we remove AVATAR_ATTACH (if exists) when a TRANSFORM is created.
+            else if (classId == CLASS_ID_COMPONENT.TRANSFORM
+                     && componentsManagerLegacy.TryGetBaseComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component))
+            {
+                component.Cleanup();
+                componentsManagerLegacy.RemoveComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH);
+            }
+
+            if (!componentsManagerLegacy.HasComponent(entity, classId))
+            {
+                newComponent = Environment.i.world.componentFactory.CreateComponent((int)classId) as IEntityComponent;
+
+                if (newComponent != null)
+                {
+                    componentsManagerLegacy.AddComponent(entity, classId, newComponent);
+
+                    newComponent.Initialize(this, entity);
+
+                    if (data is string json)
+                    {
+                        newComponent.UpdateFromJSON(json);
+                    }
+                    else
+                    {
+                        newComponent.UpdateFromModel(data as BaseModel);
+                    }
+                }
+            }
+            else
+            {
+                newComponent = componentsManagerLegacy.EntityComponentUpdate(entity, classId, data as string);
+            }
+
+            if (newComponent != null && newComponent is IOutOfSceneBoundariesHandler)
+                Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
+
+            Environment.i.platform.physicsSyncController.MarkDirty();
+            Environment.i.platform.cullingController.MarkDirty();
+
+            return newComponent;
+        }        
 
         private void RemoveEntityComponent(IDCLEntity entity, string componentName)
         {
@@ -524,46 +572,6 @@ namespace DCL.Controllers
                     }
                     return;
             }
-        }
-
-        public ISharedComponent SharedComponentUpdate(string id, BaseModel model)
-        {
-            if (disposableComponents.TryGetValue(id, out ISharedComponent sharedComponent))
-            {
-                sharedComponent.UpdateFromModel(model);
-                return sharedComponent;
-            }
-
-            if (gameObject == null)
-            {
-                Debug.LogError($"Unknown disposableComponent {id} -- scene has been destroyed?");
-            }
-            else
-            {
-                Debug.LogError($"Unknown disposableComponent {id}", gameObject);
-            }
-
-            return null;
-        }
-
-        public ISharedComponent SharedComponentUpdate(string id, string json)
-        {
-            if (disposableComponents.TryGetValue(id, out ISharedComponent disposableComponent))
-            {
-                disposableComponent.UpdateFromJSON(json);
-                return disposableComponent;
-            }
-
-            if (gameObject == null)
-            {
-                Debug.LogError($"Unknown disposableComponent {id} -- scene has been destroyed?");
-            }
-            else
-            {
-                Debug.LogError($"Unknown disposableComponent {id}", gameObject);
-            }
-
-            return null;
         }
 
         protected virtual void SendMetricsEvent()

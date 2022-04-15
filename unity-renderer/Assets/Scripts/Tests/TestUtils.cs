@@ -216,7 +216,7 @@ namespace DCL.Helpers
             where T : BaseDisposable
         {
             ParcelScene scene = component.scene as ParcelScene;
-            scene.SharedComponentUpdate(component.id, model);
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(component.id, model);
 
             return component.routine;
         }
@@ -231,7 +231,7 @@ namespace DCL.Helpers
             }
 
             ParcelScene scene = component.scene as ParcelScene;
-            scene.SharedComponentUpdate(component.id, JsonUtility.ToJson(model));
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(component.id, JsonUtility.ToJson(model));
 
             if (component is IDelayedComponent delayedComponent)
                 return delayedComponent.routine;
@@ -256,7 +256,7 @@ namespace DCL.Helpers
 
             Assert.IsNotNull(result, "class-id mismatch!");
 
-            scene.SharedComponentUpdate(uniqueId, JsonUtility.ToJson(model));
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(uniqueId, JsonUtility.ToJson(model));
 
             return result;
         }
@@ -519,7 +519,7 @@ namespace DCL.Helpers
                 (int) DCL.Models.CLASS_ID.BASIC_MATERIAL
             );
 
-            scene.SharedComponentUpdate(
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(
                 materialComponentID,
                 JsonUtility.ToJson(basicMaterial));
 
@@ -539,7 +539,7 @@ namespace DCL.Helpers
                 (int) CLASS_ID.PBR_MATERIAL
             );
 
-            scene.SharedComponentUpdate(
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(
                 materialComponentID,
                 JsonUtility.ToJson(pbrMaterial));
 
@@ -583,7 +583,7 @@ namespace DCL.Helpers
                 (int) CLASS_ID.AUDIO_CLIP
             ) as DCLAudioClip;
 
-            scene.SharedComponentUpdate(audioClipId, JsonUtility.ToJson(model));
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(audioClipId, JsonUtility.ToJson(model));
 
             yield return audioClip.routine;
 
@@ -638,7 +638,7 @@ namespace DCL.Helpers
                 (int) classId
             );
 
-            scene.SharedComponentUpdate(
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(
                 componentId,
                 model);
 
@@ -650,7 +650,10 @@ namespace DCL.Helpers
             return componentId;
         }
 
-        public static void UpdateShape(ParcelScene scene, string componentId, string model) { scene.SharedComponentUpdate(componentId, model); }
+        public static void UpdateShape(ParcelScene scene, string componentId, string model)
+        {
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(componentId, model);
+        }
 
         static object GetRandomValueForType(System.Type t)
         {
@@ -959,7 +962,7 @@ namespace DCL.Helpers
                 Assert.IsTrue(onPointerEventCollider.enabled == renderers[i].enabled);
             }
 
-            scene.EntityComponentRemove(
+            scene.componentsManagerLegacy.EntityComponentRemove(
                 entity.entityId,
                 onClickComponent.name
             );

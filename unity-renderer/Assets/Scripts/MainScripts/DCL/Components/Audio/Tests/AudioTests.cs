@@ -108,7 +108,7 @@ namespace Tests
             // 3. Update component with missing values
             componentModel = new DCLAudioClip.Model { };
 
-            scene.SharedComponentUpdate(audioClip.id, JsonUtility.ToJson(componentModel));
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(audioClip.id, JsonUtility.ToJson(componentModel));
 
             yield return audioClip.routine;
 
