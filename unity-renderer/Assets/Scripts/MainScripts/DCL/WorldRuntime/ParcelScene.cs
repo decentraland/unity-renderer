@@ -50,6 +50,9 @@ namespace DCL.Controllers
         public SceneLifecycleHandler sceneLifecycleHandler;
 
         public bool isReleased { get; private set; }
+        
+        private Vector2 minMaxWorldXPosition;
+        private Vector2 minMaxWorldZPosition;
 
         public void Awake()
         {
@@ -87,10 +90,16 @@ namespace DCL.Controllers
             contentProvider.BakeHashes();
 
             parcels.Clear();
+            
+            Vector3 baseParcelWorldPos = Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y);
+            minMaxWorldXPosition = new Vector2(baseParcelWorldPos.x, baseParcelWorldPos.x + ParcelSettings.PARCEL_SIZE);
+            minMaxWorldZPosition = new Vector2(baseParcelWorldPos.y, baseParcelWorldPos.y + ParcelSettings.PARCEL_SIZE);
 
             for (int i = 0; i < sceneData.parcels.Length; i++)
             {
-                parcels.Add(sceneData.parcels[i]);
+                var parcel = sceneData.parcels[i];
+                UpdateMinMaxValues(parcel);
+                parcels.Add(parcel);
             }
 
             if (DCLCharacterController.i != null)
@@ -104,6 +113,31 @@ namespace DCL.Controllers
             metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
+        }
+
+        public void UpdateMinMaxValues(Vector2Int parcel)
+        {
+            Vector3 parcelWorldPos = Utils.GridToWorldPosition(parcel.x, parcel.y);
+
+            if (parcelWorldPos.x < minMaxWorldXPosition.x)
+                 minMaxWorldXPosition.x = parcelWorldPos.x;
+            else if (parcelWorldPos.x + ParcelSettings.PARCEL_SIZE > minMaxWorldXPosition.y)
+                minMaxWorldXPosition.y = parcelWorldPos.x + ParcelSettings.PARCEL_SIZE;
+            
+            if (parcelWorldPos.z < minMaxWorldZPosition.x)
+                minMaxWorldZPosition.x = parcelWorldPos.z;
+            else if (parcelWorldPos.z + ParcelSettings.PARCEL_SIZE > minMaxWorldZPosition.y)
+                minMaxWorldZPosition.y = parcelWorldPos.z + ParcelSettings.PARCEL_SIZE;
+        }
+
+        public Vector2 GetMinMaxXWorldPosition()
+        {
+            return minMaxWorldXPosition;
+        }
+        
+        public Vector2 GetMinMaxZWorldPosition()
+        {
+            return minMaxWorldZPosition;
         }
 
         void OnWorldReposition(Vector3 current, Vector3 previous)
@@ -387,6 +421,7 @@ namespace DCL.Controllers
 
                 entities.Clear();
 
+                // TODO: Does it make sense that 'RemoveAllEntities()' destroys the whole scene GO in this scenario??
                 Destroy(this.gameObject);
             }
         }
@@ -451,7 +486,7 @@ namespace DCL.Controllers
                 }
             }
             
-            // After reparenting the Entity may end up outside the scene boundaries
+            // After reparenting the Entity may end up outside the scene boundaries ???
             DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(me);
         }
 

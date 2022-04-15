@@ -33,6 +33,6 @@ namespace DCL.Controllers
 
         void RemoveEntityToBeChecked(IDCLEntity entity);
         void EvaluateEntityPosition(IDCLEntity entity);
-        bool IsEntityInsideSceneBoundaries(IDCLEntity entity);
+        bool IsEntityMeshInsideSceneBoundaries(IDCLEntity entity);
     }
 }

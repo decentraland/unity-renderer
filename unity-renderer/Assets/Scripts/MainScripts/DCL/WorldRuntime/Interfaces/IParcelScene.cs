@@ -10,7 +10,7 @@ namespace DCL.Controllers
         event System.Action<float> OnLoadingStateUpdated;
         event System.Action<IDCLEntity> OnEntityAdded;
         event System.Action<IDCLEntity> OnEntityRemoved;
-
+        
         IDCLEntity CreateEntity(string id);
         Transform GetSceneTransform();
         Dictionary<string, IDCLEntity> entities { get; }
@@ -24,6 +24,8 @@ namespace DCL.Controllers
         bool isPersistent { get; }
         bool isTestScene { get; }
         float loadingProgress { get; }
+        Vector2 GetMinMaxXWorldPosition();
+        Vector2 GetMinMaxZWorldPosition();
         string GetSceneName();
         ISceneMetricsCounter metricsCounter { get; }
         bool IsInsideSceneBoundaries(Bounds objectBounds);

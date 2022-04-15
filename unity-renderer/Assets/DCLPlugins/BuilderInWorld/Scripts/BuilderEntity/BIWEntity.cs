@@ -440,7 +440,7 @@ public class BIWEntity
         SaveOriginalMaterial();
 
         DCL.Environment.i.world.sceneBoundsChecker.AddPersistent(rootEntity);
-        SetEntityBoundariesError(DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(rootEntity));
+        SetEntityBoundariesError(DCL.Environment.i.world.sceneBoundsChecker.IsEntityMeshInsideSceneBoundaries(rootEntity));
 
         isLoaded = true;
     }
