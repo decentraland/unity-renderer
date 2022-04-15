@@ -153,9 +153,9 @@ namespace DCL
                         materialCount += scene.metricsCounter.currentCount.materials;
                     }
 
-                    sharedCount += scene.disposableComponents.Count;
+                    sharedCount += scene.componentsManagerLegacy.GetSceneSharedComponentsDictionary().Count;
 
-                    foreach (var e in scene.disposableComponents)
+                    foreach (var e in scene.componentsManagerLegacy.GetSceneSharedComponentsDictionary())
                     {
                         sharedAttachCount += e.Value.GetAttachedEntities().Count;
                     }

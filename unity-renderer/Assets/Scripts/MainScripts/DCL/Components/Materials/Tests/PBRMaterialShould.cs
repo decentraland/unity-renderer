@@ -99,7 +99,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         TestUtils.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
             new PBRMaterial.Model(), materialID);
 
-        var materialComponent = scene.disposableComponents[materialID] as DCL.Components.PBRMaterial;
+        var materialComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(materialID) as DCL.Components.PBRMaterial;
 
         yield return materialComponent.routine;
 

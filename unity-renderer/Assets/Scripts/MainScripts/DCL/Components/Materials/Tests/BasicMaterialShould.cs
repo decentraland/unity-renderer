@@ -117,7 +117,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
         var meshRenderer = scene.entities[entityId].meshRootGameObject.GetComponent<MeshRenderer>();
-        var materialComponent = scene.disposableComponents[materialID] as BasicMaterial;
+        var materialComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(materialID) as BasicMaterial;
 
         yield return materialComponent.routine;
 
@@ -162,7 +162,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         var firstMeshRenderer = scene.entities[firstEntityId].meshRootGameObject.GetComponent<MeshRenderer>();
         var secondMeshRenderer = scene.entities[secondEntityId].meshRootGameObject.GetComponent<MeshRenderer>();
-        var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
+        var materialComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(materialID) as DCL.Components.BasicMaterial;
 
         yield return materialComponent.routine;
 
@@ -189,7 +189,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         string entityId = "1";
         string materialID = "a-material";
 
-        Assert.IsFalse(scene.disposableComponents.ContainsKey(materialID));
+        Assert.IsFalse(scene.componentsManagerLegacy.HasSceneSharedComponent(materialID));
 
         // Instantiate entity with default material
         TestUtils.InstantiateEntityWithMaterial(scene, entityId, new Vector3(8, 1, 8),
@@ -200,7 +200,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
         var meshRenderer = meshObject.GetComponent<MeshRenderer>();
-        var materialComponent = scene.disposableComponents[materialID] as BasicMaterial;
+        var materialComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(materialID) as BasicMaterial;
 
         yield return materialComponent.routine;
 

@@ -20,6 +20,7 @@ namespace DCL
 
         private readonly IParcelScene scene;
         private readonly IRuntimeComponentFactory componentFactory;
+        private readonly IParcelScenesCleaner parcelScenesCleaner;
 
         private readonly Action<IDCLEntity, string> RemoveEntityComponentFunc;
         private readonly Func<string, CLASS_ID_COMPONENT, object, IEntityComponent> EntityComponentCreateOrUpdateFunc;
@@ -31,11 +32,13 @@ namespace DCL
             Func<string, CLASS_ID_COMPONENT, object, IEntityComponent> EntityComponentCreateOrUpdateFunc = null)
             : this(scene,
                 Environment.i.world.componentFactory,
+                Environment.i.platform.parcelScenesCleaner,
                 RemoveEntityComponentFunc,
                 EntityComponentCreateOrUpdateFunc) { }
 
         public ECSComponentsManagerLegacy(IParcelScene scene,
             IRuntimeComponentFactory componentFactory,
+            IParcelScenesCleaner parcelScenesCleaner,
             Action<IDCLEntity, string> RemoveEntityComponentFunc,
             Func<string, CLASS_ID_COMPONENT, object, IEntityComponent> EntityComponentCreateOrUpdateFunc)
         {
@@ -43,6 +46,7 @@ namespace DCL
             this.componentFactory = componentFactory;
             this.RemoveEntityComponentFunc = RemoveEntityComponentFunc;
             this.EntityComponentCreateOrUpdateFunc = EntityComponentCreateOrUpdateFunc;
+            this.parcelScenesCleaner = parcelScenesCleaner;
         }
 
         public void AddSharedComponent(IDCLEntity entity, Type componentType, ISharedComponent component)
@@ -471,6 +475,15 @@ namespace DCL
             }
 
             RemoveEntityComponentFunc.Invoke(decentralandEntity, name);
+        }
+
+        public void DisposeAllSceneComponents()
+        {
+            List<string> allDisposableComponents = disposableComponents.Select(x => x.Key).ToList();
+            foreach (string id in allDisposableComponents)
+            {
+                parcelScenesCleaner.MarkDisposableComponentForCleanup(scene, id);
+            }
         }
     }
 }

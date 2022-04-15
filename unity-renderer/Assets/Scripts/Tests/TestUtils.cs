@@ -472,7 +472,7 @@ namespace DCL.Helpers
 
             shapeId = CreateAndSetShape(scene, entity.entityId, classId, JsonConvert.SerializeObject(model));
 
-            T shape = scene.disposableComponents[shapeId] as T;
+            T shape = scene.componentsManagerLegacy.GetSceneSharedComponent(shapeId) as T;
 
             SetEntityTransform(scene, entity, position, Quaternion.identity, Vector3.one);
 
@@ -587,7 +587,7 @@ namespace DCL.Helpers
 
             yield return audioClip.routine;
 
-            Assert.IsTrue(scene.disposableComponents.ContainsKey(audioClipId), "Shared component was not created correctly!");
+            Assert.IsTrue(scene.componentsManagerLegacy.HasSceneSharedComponent(audioClipId), "Shared component was not created correctly!");
 
             if (waitForLoading)
             {

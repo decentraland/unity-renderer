@@ -13,7 +13,6 @@ namespace DCL.Controllers
     public class ParcelScene : MonoBehaviour, IParcelScene
     {
         public Dictionary<string, IDCLEntity> entities { get; private set; } = new Dictionary<string, IDCLEntity>();
-        public Dictionary<string, ISharedComponent> disposableComponents { get; private set; } = new Dictionary<string, ISharedComponent>();
         public IECSComponentsManagerLegacy componentsManagerLegacy { get; private set; }
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
 
@@ -140,7 +139,7 @@ namespace DCL.Controllers
                 sceneDebugPlane = null;
             }
 
-            DisposeAllSceneComponents();
+            componentsManagerLegacy.DisposeAllSceneComponents();
 
             if (immediate) //!CommonScriptableObjects.rendererState.Get())
             {
@@ -603,15 +602,6 @@ namespace DCL.Controllers
             return entity;
         }
 
-        private void DisposeAllSceneComponents()
-        {
-            List<string> allDisposableComponents = disposableComponents.Select(x => x.Key).ToList();
-            foreach (string id in allDisposableComponents)
-            {
-                Environment.i.platform.parcelScenesCleaner.MarkDisposableComponentForCleanup(this, id);
-            }
-        }
-
         public string GetStateString()
         {
             string baseState = isPersistent ? "global-scene" : "scene";
@@ -622,8 +612,9 @@ namespace DCL.Controllers
                 case SceneLifecycleHandler.State.WAITING_FOR_INIT_MESSAGES:
                     return $"{baseState}:{prettyName} - waiting for init messages...";
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
-                    if (disposableComponents != null && disposableComponents.Count > 0)
-                        return $"{baseState}:{prettyName} - left to ready:{disposableComponents.Count - sceneLifecycleHandler.disposableNotReadyCount}/{disposableComponents.Count} ({loadingProgress}%)";
+                    int sharedComponentsCount = componentsManagerLegacy.GetSceneSharedComponentsCount();
+                    if (sharedComponentsCount > 0)
+                        return $"{baseState}:{prettyName} - left to ready:{sharedComponentsCount - sceneLifecycleHandler.disposableNotReadyCount}/{sharedComponentsCount} ({loadingProgress}%)";
                     else
                         return $"{baseState}:{prettyName} - no components. waiting...";
                 case SceneLifecycleHandler.State.READY:
@@ -656,9 +647,9 @@ namespace DCL.Controllers
 
                     foreach (string componentId in sceneLifecycleHandler.disposableNotReady)
                     {
-                        if (disposableComponents.ContainsKey(componentId))
+                        if (componentsManagerLegacy.HasSceneSharedComponent(componentId))
                         {
-                            var component = disposableComponents[componentId];
+                            var component = componentsManagerLegacy.GetSceneSharedComponent(componentId);
 
                             Debug.Log($"Waiting for: {component.ToString()}");
 
@@ -700,7 +691,8 @@ namespace DCL.Controllers
             if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS ||
                 sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY)
             {
-                loadingProgress = disposableComponents != null && disposableComponents.Count > 0 ? (disposableComponents.Count - sceneLifecycleHandler.disposableNotReadyCount) * 100f / disposableComponents.Count : 100f;
+                int sharedComponentsCount = componentsManagerLegacy.GetSceneSharedComponentsCount();
+                loadingProgress = sharedComponentsCount > 0 ? (sharedComponentsCount - sceneLifecycleHandler.disposableNotReadyCount) * 100f / sharedComponentsCount : 100f;
             }
 
             OnLoadingStateUpdated?.Invoke(loadingProgress);
