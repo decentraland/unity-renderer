@@ -189,9 +189,6 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
     internal void DeselectInput(string value)
     {
-        if (!string.IsNullOrEmpty(value))
-            return;
-
         placeHolderText.gameObject.SetActive(true);
     }
 }
