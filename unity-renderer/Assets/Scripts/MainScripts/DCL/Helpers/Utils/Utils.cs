@@ -554,6 +554,9 @@ namespace DCL.Helpers
 
         public static bool IsPointerOverUIElement(Vector3 mousePosition)
         {
+            if (EventSystem.current == null)
+                return false;
+
             var eventData = new PointerEventData(EventSystem.current);
             eventData.position = mousePosition;
             var results = new List<RaycastResult>();

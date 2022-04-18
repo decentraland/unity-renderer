@@ -92,6 +92,7 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator AudioSourceIsMuted()
         {
             var entity = TestUtils.CreateSceneEntity(scene);
+            scene.isPersistent = false;
 
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
             yield return TestUtils.CreateAudioSourceWithClipForEntity(entity);
@@ -103,6 +104,8 @@ namespace SceneBoundariesCheckerTests
         [UnityTest]
         public IEnumerator AudioSourceWithMeshIsDisabled()
         {
+            scene.isPersistent = false;
+
             TestUtils.CreateEntityWithGLTFShape(scene, new Vector3(8, 1, 8), TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out var entity);
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
