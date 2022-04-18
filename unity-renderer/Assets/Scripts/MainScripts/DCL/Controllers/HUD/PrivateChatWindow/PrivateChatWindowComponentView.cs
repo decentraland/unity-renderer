@@ -13,6 +13,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] private PrivateChatHUDView chatView;
     [SerializeField] private GameObject jumpInButtonContainer;
     [SerializeField] private UserContextMenu userContextMenu;
+    [SerializeField] private RectTransform userContextMenuReferencePoint;
     [SerializeField] private Button optionsButton;
     [SerializeField] private Model model;
 
@@ -76,7 +77,9 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
 
     private void ShowOptions()
     {
-        userContextMenu.transform.position = optionsButton.transform.position;
+        var contextMenuTransform = (RectTransform) userContextMenu.transform;
+        contextMenuTransform.pivot = userContextMenuReferencePoint.pivot;
+        contextMenuTransform.position = userContextMenuReferencePoint.position;
         userContextMenu.Show(model.userId);
     }
 
