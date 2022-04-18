@@ -175,6 +175,11 @@ namespace DCL.Controllers
 
         public void RunEntityEvaluation(IDCLEntity entity)
         {
+            RunEntityEvaluation(entity, false);
+        }
+
+        public void RunEntityEvaluation(IDCLEntity entity, bool onlyOuterBoundsCheck)
+        {
             if (entity == null || entity.scene == null || entity.gameObject == null)
                 return;
 
@@ -185,65 +190,57 @@ namespace DCL.Controllers
                 {
                     while (iterator.MoveNext())
                     {
-                        RunEntityEvaluation(iterator.Current.Value);
+                        RunEntityEvaluation(iterator.Current.Value, onlyOuterBoundsCheck);
                     }
                 }
             }
 
-            if (HasMesh(entity)) // If it has a mesh we don't evaluate its position due to artists 'pivot point sloppiness', we just evaluate its merged bounds position
-            {
-                EvaluateMeshBounds(entity);
-            }
+            // If it has a mesh we don't evaluate its position due to artists 'pivot point sloppiness', we just evaluate its merged bounds position
+            if (HasMesh(entity))
+                EvaluateMeshBounds(entity, onlyOuterBoundsCheck);
             else
-            {
-                Vector3 entityGOPosition = entity.gameObject.transform.position;
-                UpdateComponents(entity, entity.scene.IsInsideSceneOuterBoundaries(entityGOPosition)
-                                         && entity.scene.IsInsideSceneBoundaries(entityGOPosition + CommonScriptableObjects.worldOffset.Get()));
-            }
+                EvaluateEntityPosition(entity, onlyOuterBoundsCheck);
         }
         
-        void RunEntityPreliminaryEvaluation (IDCLEntity entity, bool runOnChildren = true)
+        void EvaluateMeshBounds(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
         {
-            if (runOnChildren)
-            {
-                if (entity.children.Count > 0)
-                {
-                    using (var iterator = entity.children.GetEnumerator())
-                    {
-                        while (iterator.MoveNext())
-                        {
-                            RunEntityPreliminaryEvaluation(iterator.Current.Value);
-                        }
-                    }
-                }
-            }
+            // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
+            if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
+                return;
+
+            var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
+            if (loadWrapper != null && !loadWrapper.alreadyLoaded)
+                return;
             
-            if(entity.gameObject == null) return;
-            
-            if (HasMesh(entity)) // If it has a mesh we don't evaluate its position due to artists 'pivot point sloppiness', we just evaluate its merged bounds position
-            {
-                // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
-                if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
-                    return;
-                
-                var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
-                if (loadWrapper != null && !loadWrapper.alreadyLoaded)
-                    return;
-                
-                // entity.meshesInfo.RecalculateBounds();
-                if (!entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds))
-                {
-                    if (!entity.gameObject.name.Contains("."))
-                        entity.gameObject.name += ".";
-                    SetMeshesAndComponentsInsideBoundariesState(entity, false);
-                }
-            }
-            else if (!entity.scene.IsInsideSceneOuterBoundaries(entity.gameObject.transform.position))
+            // entity.meshesInfo.RecalculateBounds();
+            bool isInsideOuterBounds = entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds);
+            if (!isInsideOuterBounds)
             {
                 if (!entity.gameObject.name.Contains("."))
                     entity.gameObject.name += ".";
+                    
+                SetMeshesAndComponentsInsideBoundariesState(entity, false);
+            }
+            
+            if (!onlyOuterBoundsCheck)
+                SetMeshesAndComponentsInsideBoundariesState(entity, IsEntityMeshInsideSceneBoundaries(entity));
+        }
+        
+        void EvaluateEntityPosition(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
+        {
+            Vector3 entityGOPosition = entity.gameObject.transform.position;
+            bool isInsideOuterBounds = entity.scene.IsInsideSceneOuterBoundaries(entityGOPosition);
+
+            if (!isInsideOuterBounds)
+            {
+                if (!entity.gameObject.name.Contains("."))
+                    entity.gameObject.name += ".";
+                    
                 UpdateComponents(entity, false);
             }
+                    
+            if (!onlyOuterBoundsCheck)
+                UpdateComponents(entity, entity.scene.IsInsideSceneBoundaries(entityGOPosition + CommonScriptableObjects.worldOffset.Get()));
         }
 
         private bool HasMesh(IDCLEntity entity)
@@ -269,20 +266,19 @@ namespace DCL.Controllers
 
             return isInsideBoundaries;
         }
-
-        void EvaluateMeshBounds(IDCLEntity entity)
+        
+        protected bool AreSubmeshesInsideBoundaries(IDCLEntity entity)
         {
-            // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
-            if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
-                return;
+            for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
+            {
+                if (entity.meshesInfo.renderers[i] == null)
+                    continue;
 
-            var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
-            if (loadWrapper != null && !loadWrapper.alreadyLoaded)
-                return;
-            
-            // entity.meshesInfo.RecalculateBounds();
-            bool isInsideBoundaries = entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds) && IsEntityMeshInsideSceneBoundaries(entity);
-            SetMeshesAndComponentsInsideBoundariesState(entity, isInsideBoundaries);
+                if (!entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.renderers[i].GetSafeBounds()))
+                    return false;
+            }
+
+            return true;
         }
 
         void SetMeshesAndComponentsInsideBoundariesState(IDCLEntity entity, bool isInsideBoundaries)
@@ -299,20 +295,6 @@ namespace DCL.Controllers
             UpdateEntityMeshesValidState(entity.meshesInfo, isInsideBoundaries);
             UpdateEntityCollidersValidState(entity.meshesInfo, isInsideBoundaries);
             UpdateComponents(entity, isInsideBoundaries);
-        }
-
-        protected bool AreSubmeshesInsideBoundaries(IDCLEntity entity)
-        {
-            for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
-            {
-                if (entity.meshesInfo.renderers[i] == null)
-                    continue;
-
-                if (!entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.renderers[i].GetSafeBounds()))
-                    return false;
-            }
-
-            return true;
         }
 
         protected void UpdateEntityMeshesValidState(MeshesInfo meshesInfo, bool isInsideBoundaries) { feedbackStyle.ApplyFeedback(meshesInfo, isInsideBoundaries); }
@@ -355,7 +337,8 @@ namespace DCL.Controllers
             if (entity.gameObject != null && !entity.gameObject.name.Contains("$"))
                 entity.gameObject.name += "$";
 
-            RunEntityPreliminaryEvaluation(entity);
+            // The outer bounds check is way cheaper than the regular check
+            RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
             
             AddEntityBasedOnPriority(entity);
         }
