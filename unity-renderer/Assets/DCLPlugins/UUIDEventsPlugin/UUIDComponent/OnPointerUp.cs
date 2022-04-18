@@ -24,12 +24,19 @@ namespace DCL.Components
             if (IsAtHoverDistance(hit.distance) && validButton)
             {
                 string meshName = pointerEventHandler.GetMeshName(hit.collider);
-                WebInterface.ReportOnPointerUpEvent(buttonId, scene.sceneData.id, pointerEventModel.uuid, entity.entityId, meshName, ray, hit.point, hit.normal, hit.distance);
+                WebInterface.ReportOnPointerUpEvent(buttonId, scene.sceneData.id, pointerEventModel.uuid,
+                    entity.entityId, meshName, ray, hit.point, hit.normal, hit.distance);
             }
         }
 
-        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.UUID_ON_UP; }
+        public override int GetClassId()
+        {
+            return (int) CLASS_ID_COMPONENT.UUID_ON_UP;
+        }
 
-        public override PointerInputEventType GetEventType() { return PointerInputEventType.UP; }
+        public override PointerInputEventType GetEventType()
+        {
+            return PointerInputEventType.UP;
+        }
     }
 }

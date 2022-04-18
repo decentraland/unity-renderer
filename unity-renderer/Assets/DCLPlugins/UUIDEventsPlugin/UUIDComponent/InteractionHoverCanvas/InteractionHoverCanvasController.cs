@@ -74,5 +74,8 @@ public class InteractionHoverCanvasController : MonoBehaviour
         canvas.enabled = isHovered;
     }
 
-    public GameObject GetCurrentHoverIcon() { return hoverIcon; }
+    public GameObject GetCurrentHoverIcon()
+    {
+        return hoverIcon;
+    }
 }

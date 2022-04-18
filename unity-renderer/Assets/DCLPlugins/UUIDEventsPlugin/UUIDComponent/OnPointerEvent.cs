@@ -40,7 +40,10 @@ namespace DCL.Components
 
         private IDCLEntity entity;
 
-        public OnPointerEventHandler() { eventColliders = new OnPointerEventColliders(); }
+        public OnPointerEventHandler()
+        {
+            eventColliders = new OnPointerEventColliders();
+        }
 
         public void SetColliders(IDCLEntity entity)
         {
@@ -74,7 +77,10 @@ namespace DCL.Components
             return eventColliders.GetMeshName(collider);
         }
 
-        public void Dispose() { eventColliders.Dispose(); }
+        public void Dispose()
+        {
+            eventColliders.Dispose();
+        }
     }
 
     public class OnPointerEvent : UUIDComponent, IPointerInputEvent
@@ -89,7 +95,10 @@ namespace DCL.Components
             public float distance = 10f;
             public bool showFeedback = true;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
 
             public WebInterface.ACTION_BUTTON GetActionButton()
             {
@@ -123,7 +132,10 @@ namespace DCL.Components
             entity.OnShapeUpdated += SetEventColliders;
         }
 
-        public WebInterface.ACTION_BUTTON GetActionButton() { return ((Model) this.model).GetActionButton(); }
+        public WebInterface.ACTION_BUTTON GetActionButton()
+        {
+            return ((Model) this.model).GetActionButton();
+        }
 
         public void SetHoverState(bool hoverState)
         {
@@ -131,7 +143,10 @@ namespace DCL.Components
             pointerEventHandler.SetFeedbackState(model.showFeedback, hoverState, model.button, model.hoverText);
         }
 
-        void SetEventColliders(IDCLEntity entity) { pointerEventHandler.SetColliders(entity); }
+        void SetEventColliders(IDCLEntity entity)
+        {
+            pointerEventHandler.SetColliders(entity);
+        }
 
         public bool IsVisible()
         {
@@ -176,8 +191,13 @@ namespace DCL.Components
             pointerEventHandler.Dispose();
         }
 
-        public virtual void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit) { }
+        public virtual void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
+        {
+        }
 
-        public virtual PointerInputEventType GetEventType() { return PointerInputEventType.NONE; }
+        public virtual PointerInputEventType GetEventType()
+        {
+            return PointerInputEventType.NONE;
+        }
     }
 }

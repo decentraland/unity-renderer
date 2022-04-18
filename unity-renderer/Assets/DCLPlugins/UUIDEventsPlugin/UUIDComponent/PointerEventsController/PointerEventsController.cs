@@ -278,7 +278,7 @@ namespace DCL
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             Utils.OnCursorLockChanged -= HandleCursorLockChanges;
         }
-        
+
         void RetrieveCamera()
         {
             if (charCamera == null)
@@ -584,7 +584,7 @@ namespace DCL
 
         private void HideOrShowCursor(bool isCursorLocked)
         {
-            DataStore.i.Get<DataStore_Cursor>().visible.Set(isCursorLocked); 
+            DataStore.i.Get<DataStore_Cursor>().visible.Set(isCursorLocked);
         }
 
         private void SetHoverCursor()

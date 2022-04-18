@@ -16,12 +16,13 @@ namespace DCL.Components
                 Model model = this.model as Model;
                 WebInterface.ReportOnPointerHoverExitEvent(scene.sceneData.id, model.uuid);
             }
+
             isHovering = hoverState;
         }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT;
+            return (int) CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT;
         }
     }
 }

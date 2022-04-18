@@ -20,7 +20,8 @@ namespace DCL.Components
             {
                 string meshName = pointerEventHandler.GetMeshName(hit.collider);
 
-                DCL.Interface.WebInterface.ReportOnPointerDownEvent(buttonId, scene.sceneData.id, model.uuid, entity.entityId, meshName, ray, hit.point, hit.normal, hit.distance);
+                DCL.Interface.WebInterface.ReportOnPointerDownEvent(buttonId, scene.sceneData.id, model.uuid,
+                    entity.entityId, meshName, ray, hit.point, hit.normal, hit.distance);
             }
         }
 
@@ -33,8 +34,14 @@ namespace DCL.Components
                    (model.button == "ANY" || buttonId.ToString() == model.button);
         }
 
-        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.UUID_ON_DOWN; }
+        public override int GetClassId()
+        {
+            return (int) CLASS_ID_COMPONENT.UUID_ON_DOWN;
+        }
 
-        public override PointerInputEventType GetEventType() { return PointerInputEventType.DOWN; }
+        public override PointerInputEventType GetEventType()
+        {
+            return PointerInputEventType.DOWN;
+        }
     }
 }

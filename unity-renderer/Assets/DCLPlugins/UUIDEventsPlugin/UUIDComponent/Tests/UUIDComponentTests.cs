@@ -33,11 +33,11 @@ namespace Tests
         protected override ServiceLocator InitializeServiceLocator()
         {
             ServiceLocator result = DCL.ServiceLocatorTestFactory.CreateMocked();
-            result.Register<IPointerEventsController>( () => new PointerEventsController());
-            result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
-            result.Register<IWorldState>( () => new WorldState());
-            result.Register<IUpdateEventHandler>( () => new UpdateEventHandler());
-            result.Register<IWebRequestController>( WebRequestController.Create );
+            result.Register<IPointerEventsController>(() => new PointerEventsController());
+            result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
+            result.Register<IWorldState>(() => new WorldState());
+            result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
+            result.Register<IWebRequestController>(WebRequestController.Create);
             return result;
         }
 
@@ -175,7 +175,8 @@ namespace Tests
                 type = OnPointerHoverEnter.NAME,
                 uuid = onPointerId
             };
-            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity,
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene,
+                entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             var meshFilter = entity.gameObject.GetComponentInChildren<MeshFilter>();
@@ -202,7 +203,8 @@ namespace Tests
                 type = OnPointerHoverExit.NAME,
                 uuid = onPointerId
             };
-            var component = TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, entity,
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene,
+                entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             var meshFilter = entity.gameObject.GetComponentInChildren<MeshFilter>();
@@ -292,7 +294,8 @@ namespace Tests
                 uuid = clickUuid
             };
 
-            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, scene.entities[entityId],
+            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene,
+                scene.entities[entityId],
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
@@ -337,7 +340,8 @@ namespace Tests
                 uuid = clickUuid
             };
 
-            var component = TestUtils.EntityComponentCreate<OnPointerUp, OnPointerUp.Model>(scene, scene.entities[entityId],
+            var component = TestUtils.EntityComponentCreate<OnPointerUp, OnPointerUp.Model>(scene,
+                scene.entities[entityId],
                 OnPointerUpComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
@@ -381,7 +385,8 @@ namespace Tests
                 type = OnPointerHoverEnter.NAME,
                 uuid = clickUuid
             };
-            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene,
+                scene.entities[entityId],
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
@@ -425,7 +430,8 @@ namespace Tests
                 type = OnPointerHoverExit.NAME,
                 uuid = clickUuid
             };
-            var component = TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene,
+                scene.entities[entityId],
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
@@ -549,7 +555,8 @@ namespace Tests
                 uuid = clickUuid
             };
 
-            var component = TestUtils.EntityComponentCreate<OnPointerUp, OnPointerUp.Model>(scene, scene.entities[entityId],
+            var component = TestUtils.EntityComponentCreate<OnPointerUp, OnPointerUp.Model>(scene,
+                scene.entities[entityId],
                 OnPointerUpModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -592,7 +599,8 @@ namespace Tests
                 type = OnPointerHoverEnter.NAME,
                 uuid = clickUuid
             };
-            TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+            TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene,
+                scene.entities[entityId],
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -635,7 +643,8 @@ namespace Tests
                 type = OnPointerHoverExit.NAME,
                 uuid = clickUuid
             };
-            TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+            TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene,
+                scene.entities[entityId],
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -708,13 +717,15 @@ namespace Tests
                 uuid = clickUuid
             };
 
-            var uuidComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, scene.entities[entityId],
+            var uuidComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene,
+                scene.entities[entityId],
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(uuidComponent.gameObject.GetComponent<Rigidbody>() == null,
                 "the root object shouldn't have a rigidbody attached until a shape is added");
 
-            Assert.IsTrue(scene.entities[entityId].gameObject.transform.Find(OnPointerEventColliders.COLLIDER_NAME) == null,
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.transform.Find(OnPointerEventColliders.COLLIDER_NAME) == null,
                 "the OnPointerEventCollider object shouldn't exist until a shape is added");
 
             TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
@@ -745,13 +756,15 @@ namespace Tests
                 uuid = clickUuid
             };
 
-            var component = TestUtils.EntityComponentCreate<OnPointerUp, OnPointerUp.Model>(scene, scene.entities[entityId],
+            var component = TestUtils.EntityComponentCreate<OnPointerUp, OnPointerUp.Model>(scene,
+                scene.entities[entityId],
                 OnPointerUpComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(component.gameObject.GetComponent<Rigidbody>() == null,
                 "the root object shouldn't have a rigidbody attached until a shape is added");
 
-            Assert.IsTrue(scene.entities[entityId].gameObject.transform.Find(OnPointerEventColliders.COLLIDER_NAME) == null,
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.transform.Find(OnPointerEventColliders.COLLIDER_NAME) == null,
                 "the OnPointerEventCollider object shouldn't exist until a shape is added");
 
             TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
@@ -782,13 +795,15 @@ namespace Tests
                 uuid = clickUuid
             };
 
-            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene,
+                scene.entities[entityId],
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(component.gameObject.GetComponent<Rigidbody>() == null,
                 "the root object shouldn't have a rigidbody attached until a shape is added");
 
-            Assert.IsTrue(scene.entities[entityId].gameObject.transform.Find(OnPointerEventColliders.COLLIDER_NAME) == null,
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.transform.Find(OnPointerEventColliders.COLLIDER_NAME) == null,
                 "the OnPointerEventCollider object shouldn't exist until a shape is added");
 
             TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
@@ -819,13 +834,15 @@ namespace Tests
                 uuid = clickUuid
             };
 
-            var component = TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, scene.entities[entityId],
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene,
+                scene.entities[entityId],
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(component.gameObject.GetComponent<Rigidbody>() == null,
                 "the root object shouldn't have a rigidbody attached until a shape is added");
 
-            Assert.IsTrue(scene.entities[entityId].gameObject.transform.Find(OnPointerEventColliders.COLLIDER_NAME) == null,
+            Assert.IsTrue(
+                scene.entities[entityId].gameObject.transform.Find(OnPointerEventColliders.COLLIDER_NAME) == null,
                 "the OnPointerEventCollider object shouldn't exist until a shape is added");
 
             TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
@@ -847,7 +864,8 @@ namespace Tests
         public IEnumerator OnClickEventIsTriggered()
         {
             InstantiateEntityWithShape(out IDCLEntity entity, out BoxShape shape);
-            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity,
+                new Vector3(5, 5, 5));
 
             mainCamera.transform.position = new Vector3(3, 2, 12);
             mainCamera.transform.forward = Vector3.right;
@@ -913,7 +931,8 @@ namespace Tests
         public IEnumerator OnPointerDownEventIsTriggered()
         {
             InstantiateEntityWithShape(out IDCLEntity entity, out BoxShape shape);
-            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity,
+                new Vector3(5, 5, 5));
 
             mainCamera.transform.position = new Vector3(3, 2, 12);
             mainCamera.transform.forward = Vector3.right;
@@ -979,7 +998,8 @@ namespace Tests
             IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
-            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity,
+                new Vector3(5, 5, 5));
 
             mainCamera.transform.position = new Vector3(3, 2, 12);
             mainCamera.transform.forward = Vector3.right;
@@ -1046,7 +1066,8 @@ namespace Tests
             IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
-            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity,
+                new Vector3(5, 5, 5));
 
             mainCamera.transform.position = new Vector3(3, 2, 12);
             mainCamera.transform.forward = Vector3.up;
@@ -1067,19 +1088,22 @@ namespace Tests
                 uuid = uuidHoverExit
             };
 
-            var onPointerHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity,
-                hoverEnterModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+            var onPointerHoverEnterComponent =
+                TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity,
+                    hoverEnterModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
-            var onPointerHoverExitComponent = TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, entity,
-                hoverExitModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+            var onPointerHoverExitComponent =
+                TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, entity,
+                    hoverExitModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(onPointerHoverEnterComponent != null);
             Assert.IsTrue(onPointerHoverExitComponent != null);
 
             string targetEventType = "SceneEvent";
 
-            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> { uuid = uuidHoverEnter };
-            var onPointerHoverExitEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> { uuid = uuidHoverExit };
+            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload>
+                {uuid = uuidHoverEnter};
+            var onPointerHoverExitEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> {uuid = uuidHoverExit};
 
             var sceneEventHoverEnter = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
             {
@@ -1101,10 +1125,7 @@ namespace Tests
             mainCamera.transform.forward = Vector3.right;
 
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEventHoverEnter,
-                () =>
-                {
-                    mainCamera.transform.forward = Vector3.right;
-                },
+                () => { mainCamera.transform.forward = Vector3.right; },
                 (pointerEvent) =>
                 {
                     if (hoverEnterEventTriggered)
@@ -1125,10 +1146,7 @@ namespace Tests
             mainCamera.transform.forward = Vector3.up;
 
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEventHoverExit,
-                () =>
-                {
-                    mainCamera.transform.forward = Vector3.up;
-                },
+                () => { mainCamera.transform.forward = Vector3.up; },
                 (pointerEvent) =>
                 {
                     if (hoverExitEventTriggered)
@@ -1153,7 +1171,8 @@ namespace Tests
             IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
-            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity,
+                new Vector3(5, 5, 5));
 
             mainCamera.transform.position = new Vector3(3, 2, 12);
             mainCamera.transform.forward = Vector3.right;
@@ -1214,7 +1233,7 @@ namespace Tests
             Assert.IsTrue(eventTriggered1);
 
             // turn shape invisible
-            TestUtils.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(new { visible = false }));
+            TestUtils.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(new {visible = false}));
             DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                 DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
 
@@ -1225,7 +1244,8 @@ namespace Tests
                 if (string.IsNullOrEmpty(eventPayload) || eventType != targetEventType)
                     return;
 
-                var pointerEvent = JsonUtility.FromJson<WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>>(eventPayload);
+                var pointerEvent =
+                    JsonUtility.FromJson<WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>>(eventPayload);
                 if (pointerEvent.eventType == sceneEvent.eventType
                     && pointerEvent.payload.uuid == sceneEvent.payload.uuid
                     && pointerEvent.payload.payload.hit.entityId == sceneEvent.payload.payload.hit.entityId)
@@ -1249,7 +1269,8 @@ namespace Tests
             IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
-            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity,
+                new Vector3(5, 5, 5));
 
             mainCamera.transform.position = new Vector3(3, 2, 12);
             mainCamera.transform.forward = Vector3.up;
@@ -1262,14 +1283,15 @@ namespace Tests
                 type = OnPointerHoverEnter.NAME,
                 uuid = onPointerId
             };
-            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity,
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene,
+                entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(component != null);
 
             string targetEventType = "SceneEvent";
 
-            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> { uuid = onPointerId };
+            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> {uuid = onPointerId};
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
             {
@@ -1282,10 +1304,7 @@ namespace Tests
             mainCamera.transform.forward = Vector3.right;
 
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () =>
-                {
-                    mainCamera.transform.forward = Vector3.right;
-                },
+                () => { mainCamera.transform.forward = Vector3.right; },
                 (pointerEvent) =>
                 {
                     if (eventTriggered1)
@@ -1304,7 +1323,7 @@ namespace Tests
             Assert.IsTrue(eventTriggered1);
 
             // turn shape invisible
-            TestUtils.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(new { visible = false }));
+            TestUtils.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(new {visible = false}));
             mainCamera.transform.forward = Vector3.up;
 
             var pointerHoverReceived = false;
@@ -1314,7 +1333,8 @@ namespace Tests
                 if (string.IsNullOrEmpty(eventPayload) || eventType != targetEventType)
                     return;
 
-                var pointerEvent = JsonUtility.FromJson<WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>>(eventPayload);
+                var pointerEvent =
+                    JsonUtility.FromJson<WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>>(eventPayload);
                 if (pointerEvent.eventType == sceneEvent.eventType
                     && pointerEvent.payload.uuid == sceneEvent.payload.uuid)
                 {
@@ -1337,14 +1357,16 @@ namespace Tests
             IDCLEntity blockingEntity;
             BoxShape blockingShape;
             InstantiateEntityWithShape(out blockingEntity, out blockingShape);
-            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity,
+                new Vector3(1, 1, 1));
             yield return blockingShape.routine;
 
             // Create target entity for click
             IDCLEntity clickTargetEntity;
             BoxShape clickTargetShape;
             InstantiateEntityWithShape(out clickTargetEntity, out clickTargetShape);
-            TestUtils.SetEntityTransform(scene, clickTargetEntity, new Vector3(3, 3, 5), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, clickTargetEntity, new Vector3(3, 3, 5), Quaternion.identity,
+                new Vector3(1, 1, 1));
             yield return clickTargetShape.routine;
 
             // Set character position and camera rotation
@@ -1357,7 +1379,8 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, clickTargetEntity,
+            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene,
+                clickTargetEntity,
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(component != null);
@@ -1436,14 +1459,16 @@ namespace Tests
             IDCLEntity blockingEntity;
             BoxShape blockingShape;
             InstantiateEntityWithShape(out blockingEntity, out blockingShape);
-            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity,
+                new Vector3(1, 1, 1));
             yield return blockingShape.routine;
 
             // Create target entity for hover
             IDCLEntity hoverTargetEntity;
             BoxShape hoverTargetShape;
             InstantiateEntityWithShape(out hoverTargetEntity, out hoverTargetShape);
-            TestUtils.SetEntityTransform(scene, hoverTargetEntity, new Vector3(3, 3, 5), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, hoverTargetEntity, new Vector3(3, 3, 5), Quaternion.identity,
+                new Vector3(1, 1, 1));
             yield return hoverTargetShape.routine;
 
             // Set character position and camera rotation
@@ -1457,14 +1482,15 @@ namespace Tests
                 type = OnPointerHoverEnter.NAME,
                 uuid = onPointerId
             };
-            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, hoverTargetEntity,
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene,
+                hoverTargetEntity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(component != null);
 
             string targetEventType = "SceneEvent";
 
-            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> { uuid = onPointerId };
+            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> {uuid = onPointerId};
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
             {
@@ -1476,10 +1502,7 @@ namespace Tests
             // Check if target entity is hit behind other entity
             bool targetEntityHit = false;
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () =>
-                {
-                    mainCamera.transform.forward = Vector3.forward;
-                },
+                () => { mainCamera.transform.forward = Vector3.forward; },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -1503,10 +1526,7 @@ namespace Tests
             // Check if target entity is hit in front of the camera without being blocked
             targetEntityHit = false;
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () =>
-                {
-                    mainCamera.transform.forward = Vector3.back;
-                },
+                () => { mainCamera.transform.forward = Vector3.back; },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -1529,7 +1549,8 @@ namespace Tests
             IDCLEntity blockingEntity;
             BoxShape blockingShape;
             InstantiateEntityWithShape(out blockingEntity, out blockingShape);
-            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity,
+                new Vector3(1, 1, 1));
 
             yield return blockingShape.routine;
 
@@ -1537,7 +1558,8 @@ namespace Tests
             IDCLEntity clickTargetEntity;
             BoxShape clickTargetShape;
             InstantiateEntityWithShape(out clickTargetEntity, out clickTargetShape);
-            TestUtils.SetEntityTransform(scene, clickTargetEntity, new Vector3(3, 3, 5), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, clickTargetEntity, new Vector3(3, 3, 5), Quaternion.identity,
+                new Vector3(1, 1, 1));
 
             yield return clickTargetShape.routine;
 
@@ -1554,7 +1576,8 @@ namespace Tests
                 uuid = onPointerId
             };
 
-            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, clickTargetEntity,
+            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene,
+                clickTargetEntity,
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             yield return component.routine;
@@ -1639,13 +1662,15 @@ namespace Tests
             IDCLEntity blockingEntity;
             BoxShape blockingShape;
             InstantiateEntityWithShape(out blockingEntity, out blockingShape);
-            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity,
+                new Vector3(1, 1, 1));
 
             yield return blockingShape.routine;
 
             // Create target entity for hover
             InstantiateEntityWithShape(out IDCLEntity hoverTargetEntity, out BoxShape hoverTargetShape);
-            TestUtils.SetEntityTransform(scene, hoverTargetEntity, new Vector3(3, 3, 5), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, hoverTargetEntity, new Vector3(3, 3, 5), Quaternion.identity,
+                new Vector3(1, 1, 1));
 
             yield return hoverTargetShape.routine;
 
@@ -1663,7 +1688,8 @@ namespace Tests
                 uuid = onPointerId
             };
 
-            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, hoverTargetEntity,
+            var component = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene,
+                hoverTargetEntity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             yield return component.routine;
@@ -1674,17 +1700,15 @@ namespace Tests
 
             string targetEventType = "SceneEvent";
 
-            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> { uuid = onPointerId };
+            var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> {uuid = onPointerId};
 
-            var sceneEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>> { sceneId = scene.sceneData.id, payload = onPointerHoverEnterEvent, eventType = "uuidEvent" };
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
+                {sceneId = scene.sceneData.id, payload = onPointerHoverEnterEvent, eventType = "uuidEvent"};
 
             // Check the target entity is not hit behind the 'isPointerBlocker' shape
             bool targetEntityHit = false;
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () =>
-                {
-                    mainCamera.transform.forward = Vector3.forward;
-                },
+                () => { mainCamera.transform.forward = Vector3.forward; },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -1709,10 +1733,7 @@ namespace Tests
             // Check the target entity is hit behind the 'isPointerBlocker' shape now
             targetEntityHit = false;
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () =>
-                {
-                    mainCamera.transform.forward = Vector3.forward;
-                },
+                () => { mainCamera.transform.forward = Vector3.forward; },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -1734,14 +1755,16 @@ namespace Tests
         {
             // Create parent entity
             InstantiateEntityWithShape(out IDCLEntity blockingEntity, out BoxShape blockingShape);
-            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity,
+                new Vector3(1, 1, 1));
             yield return blockingShape.routine;
 
             // Create target entity for click
             IDCLEntity clickTargetEntity;
             BoxShape clickTargetShape;
             InstantiateEntityWithShape(out clickTargetEntity, out clickTargetShape);
-            TestUtils.SetEntityTransform(scene, clickTargetEntity, new Vector3(0, 0, 5), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, clickTargetEntity, new Vector3(0, 0, 5), Quaternion.identity,
+                new Vector3(1, 1, 1));
             yield return clickTargetShape.routine;
 
             // Enparent target entity as a child of the blocking entity
@@ -1759,7 +1782,8 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, clickTargetEntity,
+            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene,
+                clickTargetEntity,
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(component != null);
@@ -1836,7 +1860,8 @@ namespace Tests
             IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
-            TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity,
+                new Vector3(3, 3, 3));
             yield return shape.routine;
 
             var onPointerDownModel = new OnPointerDown.Model()
@@ -1859,7 +1884,8 @@ namespace Tests
             Assert.IsTrue(hoverCanvasController.canvas.enabled);
 
             // Check default properties
-            Assert.IsNotNull(hoverCanvasController.GetCurrentHoverIcon(), "OnPointerEvent.SetFeedbackState never called!");
+            Assert.IsNotNull(hoverCanvasController.GetCurrentHoverIcon(),
+                "OnPointerEvent.SetFeedbackState never called!");
             Assert.AreEqual("AnyButtonHoverIcon", hoverCanvasController.GetCurrentHoverIcon().name);
             Assert.AreEqual("Interact", hoverCanvasController.text.text);
 
@@ -1884,7 +1910,8 @@ namespace Tests
             IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
-            TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity,
+                new Vector3(3, 3, 3));
             yield return shape.routine;
 
             var onPointerDownModel = new OnPointerDown.Model()

@@ -110,13 +110,15 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerEvent.Model>(scene, entity,
+            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerEvent.Model>(scene,
+                entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape.Model();
             shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
-            var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
+            var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(shapeModel));
 
             // 3. Change a shape component property while it loads
             shapeModel.visible = false;
@@ -146,13 +148,15 @@ namespace Tests
                 type = OnPointerHoverEnter.NAME,
                 uuid = onPointerId
             };
-            var onHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity,
+            var onHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(
+                scene, entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape.Model();
             shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
-            var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
+            var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(shapeModel));
 
             // 3. Change a shape component property while it loads
             shapeModel.visible = false;
@@ -182,13 +186,15 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
+            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene,
+                entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
             shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
-            var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
+            var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(shapeModel));
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
@@ -218,13 +224,15 @@ namespace Tests
                 type = OnPointerHoverEnter.NAME,
                 uuid = onPointerId
             };
-            var onHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity,
+            var onHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(
+                scene, entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
             shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
-            var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
+            var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(shapeModel));
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
@@ -254,13 +262,15 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity1,
+            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene,
+                entity1,
                 onPointerEventModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
             shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
-            var shapeComponentId = TestUtils.CreateAndSetShape(scene, entity1Id, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
+            var shapeComponentId = TestUtils.CreateAndSetShape(scene, entity1Id, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(shapeModel));
 
             LoadWrapper gltfShapeLoader1 = GLTFShape.GetLoaderForEntity(scene.entities[entity1Id]);
 
@@ -298,13 +308,15 @@ namespace Tests
                 type = OnPointerHoverEnter.NAME,
                 uuid = onPointerId
             };
-            var onHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity1,
+            var onHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(
+                scene, entity1,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
             shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
-            TestUtils.CreateAndSetShape(scene, entity1Id, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
+            TestUtils.CreateAndSetShape(scene, entity1Id, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(shapeModel));
 
             LoadWrapper gltfShapeLoader1 = GLTFShape.GetLoaderForEntity(entity1);
 
@@ -342,7 +354,8 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity1,
+            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene,
+                entity1,
                 onPointerEventModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
@@ -407,7 +420,8 @@ namespace Tests
                 type = OnPointerHoverEnter.NAME,
                 uuid = onPointerId
             };
-            var onHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity1,
+            var onHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(
+                scene, entity1,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape

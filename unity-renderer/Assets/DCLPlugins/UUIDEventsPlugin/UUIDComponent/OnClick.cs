@@ -24,8 +24,14 @@ namespace DCL.Components
             }
         }
 
-        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.UUID_ON_CLICK; }
+        public override int GetClassId()
+        {
+            return (int) CLASS_ID_COMPONENT.UUID_ON_CLICK;
+        }
 
-        public override PointerInputEventType GetEventType() { return PointerInputEventType.CLICK; }
+        public override PointerInputEventType GetEventType()
+        {
+            return PointerInputEventType.CLICK;
+        }
     }
 }

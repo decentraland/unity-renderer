@@ -8,7 +8,8 @@ using Ray = UnityEngine.Ray;
 
 namespace DCL.Components
 {
-    public class AvatarOnPointerDown : MonoBehaviour, IPointerInputEvent, IPoolLifecycleHandler, IAvatarOnPointerDownCollider
+    public class AvatarOnPointerDown : MonoBehaviour, IPointerInputEvent, IPoolLifecycleHandler,
+        IAvatarOnPointerDownCollider
     {
         public new Collider collider;
         private OnPointerEvent.Model model;
@@ -23,7 +24,10 @@ namespace DCL.Components
         private bool onClickReportEnabled = true;
         private Player avatarPlayer;
 
-        public WebInterface.ACTION_BUTTON GetActionButton() { return model.GetActionButton(); }
+        public WebInterface.ACTION_BUTTON GetActionButton()
+        {
+            return model.GetActionButton();
+        }
 
         public void SetHoverState(bool state)
         {
@@ -46,7 +50,10 @@ namespace DCL.Components
             OnPointerExitReport?.Invoke();
         }
 
-        void Awake() { CommonScriptableObjects.playerInfoCardVisibleState.OnChange += ReEnableOnInfoCardClosed; }
+        void Awake()
+        {
+            CommonScriptableObjects.playerInfoCardVisibleState.OnChange += ReEnableOnInfoCardClosed;
+        }
 
         void OnDestroy()
         {
@@ -68,9 +75,15 @@ namespace DCL.Components
             CollidersManager.i.AddOrUpdateEntityCollider(entity, collider);
         }
 
-        public bool IsAtHoverDistance(float distance) { return distance <= model.distance; }
+        public bool IsAtHoverDistance(float distance)
+        {
+            return distance <= model.distance;
+        }
 
-        public bool IsVisible() { return true; }
+        public bool IsVisible()
+        {
+            return true;
+        }
 
         public bool ShouldReportPassportInputEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
         {
@@ -94,15 +107,18 @@ namespace DCL.Components
             if (onClickReportEnabled && ShouldReportOnClickEvent(buttonId, out IParcelScene playerScene))
             {
                 WebInterface.ReportAvatarClick(
-                    playerScene.sceneData.id, 
-                    avatarPlayer.id, 
-                    WorldStateUtils.ConvertUnityToScenePosition(ray.origin, playerScene), 
+                    playerScene.sceneData.id,
+                    avatarPlayer.id,
+                    WorldStateUtils.ConvertUnityToScenePosition(ray.origin, playerScene),
                     ray.direction,
                     hit.distance);
             }
         }
 
-        public PointerInputEventType GetEventType() { return PointerInputEventType.DOWN; }
+        public PointerInputEventType GetEventType()
+        {
+            return PointerInputEventType.DOWN;
+        }
 
         void ReEnableOnInfoCardClosed(bool newState, bool prevState)
         {
@@ -111,11 +127,12 @@ namespace DCL.Components
 
             passportEnabled = true;
         }
+
         public void SetColliderEnabled(bool newEnabledState)
         {
             collider.enabled = newEnabledState;
         }
-        
+
         public void SetPassportEnabled(bool newEnabledState)
         {
             passportEnabled = newEnabledState;
@@ -125,9 +142,12 @@ namespace DCL.Components
         public void SetOnClickReportEnabled(bool newEnabledState)
         {
             onClickReportEnabled = newEnabledState;
-        }        
+        }
 
-        public Transform GetTransform() { return transform; }
+        public Transform GetTransform()
+        {
+            return transform;
+        }
 
         public void OnPoolRelease()
         {
@@ -135,17 +155,19 @@ namespace DCL.Components
             avatarPlayer = null;
         }
 
-        public void OnPoolGet() { }
-        
+        public void OnPoolGet()
+        {
+        }
+
         private bool ShouldReportOnClickEvent(WebInterface.ACTION_BUTTON buttonId, out IParcelScene playerScene)
         {
             playerScene = null;
-            
+
             if (buttonId != WebInterface.ACTION_BUTTON.POINTER)
             {
                 return false;
             }
-            
+
             if (avatarPlayer == null)
             {
                 return false;
@@ -159,12 +181,13 @@ namespace DCL.Components
             }
 
             playerScene = WorldStateUtils.GetCurrentScene();
-            return playerScene?.IsInsideSceneBoundaries(PositionUtils.UnityToWorldPosition(avatarPlayer.worldPosition)) ?? false;
+            return playerScene?.IsInsideSceneBoundaries(
+                PositionUtils.UnityToWorldPosition(avatarPlayer.worldPosition)) ?? false;
         }
 
         public bool ShouldShowHoverFeedback()
         {
             return enabled && model.showFeedback;
-        }        
+        }
     }
 }

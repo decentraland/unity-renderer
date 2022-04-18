@@ -35,7 +35,9 @@ namespace DCL.Components
             entity.OnShapeUpdated += SetEventColliders;
         }
 
-        public virtual void SetHoverState(bool hoverState) { }
+        public virtual void SetHoverState(bool hoverState)
+        {
+        }
 
         void SetEventColliders(IDCLEntity entity)
         {
