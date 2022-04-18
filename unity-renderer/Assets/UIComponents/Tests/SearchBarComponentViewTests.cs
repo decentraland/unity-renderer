@@ -173,6 +173,6 @@ public class SearchBarComponentViewTests
         searchBarComponent.DeselectInput(text);
 
         // Assert
-        Assert.AreEqual(string.IsNullOrEmpty(text) ? true : false, searchBarComponent.placeHolderText.gameObject.activeSelf);
+        Assert.IsTrue(searchBarComponent.placeHolderText.gameObject.activeSelf);
     }
 }
