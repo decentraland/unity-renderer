@@ -20,6 +20,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     [SerializeField] internal float timeToHoverPanel = 1f;
     [SerializeField] internal float timeToHoverGotoPanel = 1f;
     [SerializeField] private bool showUserName = true;
+    [SerializeField] private RectTransform hoverPanelPositionReference;
+    [SerializeField] private RectTransform contextMenuPositionReference;
     [NonSerialized] public string messageLocalDateTime;
 
     private bool fadeEnabled;
@@ -29,9 +31,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     private bool isOverCoordinates;
     private ParcelCoordinates currentCoordinates;
     private ChatEntryModel model;
-
-    public RectTransform hoverPanelPositionReference;
-    public RectTransform contextMenuPositionReference;
 
     public override ChatEntryModel Model => model;
 
@@ -316,5 +315,24 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
         return dtDateTime;
+    }
+
+    public void DockContextMenu(RectTransform panel)
+    {
+        panel.pivot = contextMenuPositionReference.pivot;
+        panel.position = contextMenuPositionReference.position;
+    }
+
+    public void DockHoverPanel(RectTransform panel)
+    {
+        panel.pivot = hoverPanelPositionReference.pivot;
+        panel.position = hoverPanelPositionReference.position;
+    }
+
+    public void DockHoverPanel(float positionX, RectTransform panel)
+    {
+        panel.pivot = hoverPanelPositionReference.pivot;
+        var position = hoverPanelPositionReference.position;
+        panel.position = new Vector3(positionX, position.y, position.z);
     }
 }

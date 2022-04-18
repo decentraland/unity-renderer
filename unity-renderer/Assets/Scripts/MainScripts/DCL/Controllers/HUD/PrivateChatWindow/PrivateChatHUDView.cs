@@ -24,13 +24,6 @@ public class PrivateChatHUDView : ChatHUDView
         dateSeparators.Clear();
     }
 
-    protected override void OnMessageTriggerHover(DefaultChatEntry chatEntry)
-    {
-        (messageHoverPanel.transform as RectTransform).pivot =
-            new Vector2(chatEntry.Model.subType == ChatEntryModel.SubType.SENT ? 1 : 0, 0.5f);
-        base.OnMessageTriggerHover(chatEntry);
-    }
-
     private void AddSeparatorEntryIfNeeded(ChatEntryModel chatEntryModel)
     {
         var entryDateTime = GetDateTimeFromUnixTimestampMilliseconds(chatEntryModel.timestamp).Date;

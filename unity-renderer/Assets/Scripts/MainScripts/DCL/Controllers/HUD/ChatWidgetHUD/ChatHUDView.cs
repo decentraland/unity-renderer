@@ -317,7 +317,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     private void OnOpenContextMenu(DefaultChatEntry chatEntry)
     {
-        contextMenu.transform.position = chatEntry.contextMenuPositionReference.position;
+        chatEntry.DockContextMenu((RectTransform) contextMenu.transform);
         contextMenu.transform.parent = transform;
         contextMenu.Show(chatEntry.Model.senderId);
     }
@@ -328,17 +328,16 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             return;
 
         messageHoverText.text = chatEntry.messageLocalDateTime;
-        messageHoverPanel.transform.position = chatEntry.hoverPanelPositionReference.position;
+        ((RectTransform) messageHoverPanel.transform).pivot =
+            new Vector2(chatEntry.Model.subType == ChatEntryModel.SubType.SENT ? 1 : 0, 0.5f);
+        chatEntry.DockHoverPanel((RectTransform) messageHoverPanel.transform);
         messageHoverPanel.SetActive(true);
     }
 
     protected virtual void OnMessageCoordinatesTriggerHover(DefaultChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
     {
         messageHoverGotoText.text = $"{parcelCoordinates} INFO";
-        var hoverGoToPanelPosition = chatEntry.hoverPanelPositionReference.transform.position;
-        messageHoverGotoPanel.transform.position = new Vector3(Input.mousePosition.x,
-            hoverGoToPanelPosition.y,
-            hoverGoToPanelPosition.z);
+        chatEntry.DockHoverPanel(Input.mousePosition.x, (RectTransform) messageHoverGotoPanel.transform);
         messageHoverGotoPanel.SetActive(true);
     }
 
