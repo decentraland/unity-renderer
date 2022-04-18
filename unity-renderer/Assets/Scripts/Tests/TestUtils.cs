@@ -1277,7 +1277,7 @@ namespace DCL.Helpers
             return new WaitUntil(() => wrapper.alreadyLoaded);
         }
 
-        public static IParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
+        public static ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
         {
             if (data == null)
             {
@@ -1299,7 +1299,7 @@ namespace DCL.Helpers
                 if (Environment.i.world.state.loadedScenes.ContainsKey(data.id))
                 {
                     Debug.LogWarning($"Scene {data.id} is already loaded.");
-                    return Environment.i.world.state.loadedScenes[data.id];
+                    return Environment.i.world.state.loadedScenes[data.id] as ParcelScene;
                 }
             }
 
@@ -1314,7 +1314,6 @@ namespace DCL.Helpers
 
             Environment.i.world.state.scenesSortedByDistance?.Add(newScene);
             Environment.i.world.state.loadedScenes?.Add(data.id, newScene);
-
 
             return newScene;
         }

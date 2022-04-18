@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections;
+using DCL;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CursorController : MonoBehaviour
 {
     private const float ALPHA_INTERPOLATION_DURATION = 0.1f;
-    
+
     public static CursorController i { get; private set; }
     public Image cursorImage;
     public Sprite normalCursor;
@@ -15,15 +16,49 @@ public class CursorController : MonoBehaviour
 
     private Coroutine alphaRoutine;
 
-    void Awake() { i = this; }
+    void Awake()
+    {
+        i = this;
+        DataStore_Cursor data = DataStore.i.Get<DataStore_Cursor>();
+        data.visible.OnChange += OnChangeVisible;
+        data.cursorType.OnChange += OnChangeType;
+    }
+
+    private void OnDestroy()
+    {
+        DataStore_Cursor data = DataStore.i.Get<DataStore_Cursor>();
+        data.visible.OnChange -= OnChangeVisible;
+        data.cursorType.OnChange -= OnChangeType;
+    }
+
+    private void OnChangeType(DataStore_Cursor.CursorType current, DataStore_Cursor.CursorType previous)
+    {
+        switch (current)
+        {
+            case DataStore_Cursor.CursorType.NORMAL:
+                SetNormalCursor();
+                break;
+            case DataStore_Cursor.CursorType.HOVER:
+                SetHoverCursor();
+                break;
+        }
+    }
+
+    private void OnChangeVisible(bool current, bool previous)
+    {
+        if (current)
+            Show();
+        else
+            Hide();
+    }
 
     public void Show()
     {
         if (cursorImage == null) return;
         if (cursorImage.gameObject.activeSelf) return;
-        
+
         cursorImage.gameObject.SetActive(true);
-        
+
         if (gameObject.activeSelf)
         {
             if (alphaRoutine != null) StopCoroutine(alphaRoutine);

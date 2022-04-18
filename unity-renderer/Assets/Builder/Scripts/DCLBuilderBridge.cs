@@ -44,7 +44,6 @@ namespace Builder
         private MouseCatcher mouseCatcher;
         private ParcelScene currentScene;
         private CameraController cameraController;
-        private CursorController cursorController;
         private Vector3 defaultCharacterPosition;
 
         private bool isPreviewMode = false;
@@ -358,7 +357,6 @@ namespace Builder
             SetupRendererPipeline();
 
             cameraController = Object.FindObjectOfType<CameraController>();
-            cursorController = Object.FindObjectOfType<CursorController>();
             mouseCatcher = SceneReferences.i.mouseCatcher;
             var playerAvatarController = Object.FindObjectOfType<PlayerAvatarController>();
 
@@ -380,10 +378,7 @@ namespace Builder
                 cameraController.gameObject.SetActive(false);
             }
 
-            if (cursorController)
-            {
-                cursorController.gameObject.SetActive(false);
-            }
+            DataStore.i.Get<DataStore_Cursor>().visible.Set(false);
 
             // NOTE: no third person camera in builder yet, so avoid rendering being locked waiting for avatar.
             if (playerAvatarController)
@@ -547,7 +542,7 @@ namespace Builder
             }
 
             cameraController?.gameObject.SetActive(isPreviewMode);
-            cursorController?.gameObject.SetActive(isPreviewMode);
+            DataStore.i.Get<DataStore_Cursor>().visible.Set(isPreviewMode);
 
             if (!isPreview)
             {

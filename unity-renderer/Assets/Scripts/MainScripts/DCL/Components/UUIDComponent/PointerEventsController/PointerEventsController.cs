@@ -51,11 +51,8 @@ namespace DCL
 
             hoverController = InteractionHoverCanvasController.i;
 
-            if (CursorController.i != null)
-            {
-                OnPointerHoverStarts += CursorController.i.SetHoverCursor;
-                OnPointerHoverEnds += CursorController.i.SetNormalCursor;
-            }
+            OnPointerHoverStarts += SetHoverCursor;
+            OnPointerHoverEnds += SetNormalCursor;
 
             RetrieveCamera();
 
@@ -90,9 +87,8 @@ namespace DCL
             // NOTE: in case of a single scene loaded (preview or builder) sceneId is set to null when stepping outside
             if (didHit && validCurrentSceneId && validCurrentScene)
             {
-                UIScreenSpace currentUIScreenSpace =
-                    worldState.loadedScenes[currentSceneId].GetSharedComponent<UIScreenSpace>();
-                GraphicRaycaster raycaster = currentUIScreenSpace?.graphicRaycaster;
+                DataStore_World worldData = DataStore.i.Get<DataStore_World>();
+                GraphicRaycaster raycaster = worldData.currentRaycaster.Get();
 
                 if (raycaster)
                 {
@@ -276,16 +272,13 @@ namespace DCL
             newHoveredInputEvent = null;
             lastHoveredEventList = null;
 
-            if (CursorController.i != null)
-            {
-                OnPointerHoverStarts -= CursorController.i.SetHoverCursor;
-                OnPointerHoverEnds -= CursorController.i.SetNormalCursor;
-            }
+            OnPointerHoverStarts -= SetHoverCursor;
+            OnPointerHoverEnds -= SetNormalCursor;
 
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             Utils.OnCursorLockChanged -= HandleCursorLockChanges;
         }
-
+        
         void RetrieveCamera()
         {
             if (charCamera == null)
@@ -373,7 +366,10 @@ namespace DCL
                 worldState.currentSceneId);
 
             // Raycast for global pointer events (for each PE scene)
-            List<string> currentPortableExperienceIds = WorldStateUtils.GetActivePortableExperienceIds();
+            List<string>
+                currentPortableExperienceIds =
+                    Environment.i.world.state
+                        .portableExperienceIds; //PortableExperienceUtils.GetActivePortableExperienceIds();
             for (int i = 0; i < currentPortableExperienceIds.Count; i++)
             {
                 raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer,
@@ -452,15 +448,16 @@ namespace DCL
                 worldState.currentSceneId);
 
             // Raycast for global pointer events (for each PE scene)
-            List<string> currentPortableExperienceIds = WorldStateUtils.GetActivePortableExperienceIds();
-            for (int i = 0; i < currentPortableExperienceIds.Count; i++)
+            IEnumerable<string> currentPortableExperienceIds = DataStore.i.world.portableExperienceIds.Get();
+
+            foreach (var pexId in currentPortableExperienceIds)
             {
                 raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer,
-                    worldState.loadedScenes[currentPortableExperienceIds[i]]);
+                    worldState.loadedScenes[pexId]);
                 raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
                 ReportGlobalPointerDownEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer,
-                    currentPortableExperienceIds[i]);
+                    pexId);
             }
         }
 
@@ -587,10 +584,17 @@ namespace DCL
 
         private void HideOrShowCursor(bool isCursorLocked)
         {
-            if (isCursorLocked)
-                CursorController.i?.Show();
-            else
-                CursorController.i?.Hide();
+            DataStore.i.Get<DataStore_Cursor>().visible.Set(isCursorLocked); 
+        }
+
+        private void SetHoverCursor()
+        {
+            DataStore.i.Get<DataStore_Cursor>().cursorType.Set(DataStore_Cursor.CursorType.HOVER);
+        }
+
+        private void SetNormalCursor()
+        {
+            DataStore.i.Get<DataStore_Cursor>().cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
         }
     }
 }
