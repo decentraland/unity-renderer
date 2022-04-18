@@ -23,8 +23,13 @@ namespace DCL
         {
             isLoadingOrLoaded = true;
 
-            string url = $"{MAP_API_BASE}?center={center.x},{center.y}&width={size.x}&height={size.y}&size={tileSize}";
+            targetImage.texture = Texture2D.whiteTexture;
+            targetImage.color = Color.cyan;
+            targetImage.rectTransform.sizeDelta = MapUtils.CHUNK_SIZE;
 
+            return new WebRequestAsyncOperation(null);
+
+            string url = $"{MAP_API_BASE}?center={center.x},{center.y}&width={size.x}&height={size.y}&size={tileSize}";
             Texture2D result = null;
 
             return Utils.FetchTexture(url, true, (x) =>
