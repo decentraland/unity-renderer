@@ -24,13 +24,13 @@ namespace DCL.Controllers
         bool isPersistent { get; }
         bool isTestScene { get; }
         float loadingProgress { get; }
-        Vector2 GetMinMaxXWorldPosition();
-        Vector2 GetMinMaxZWorldPosition();
         string GetSceneName();
         ISceneMetricsCounter metricsCounter { get; }
         bool IsInsideSceneBoundaries(Bounds objectBounds);
         bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f);
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);
+        bool IsInsideSceneOuterBoundaries(Bounds objectBounds, float height = 0f);
+        bool IsInsideSceneOuterBoundaries(Vector3 objectUnityPosition, float height = 0f);
         void CalculateSceneLoadingState();
         void GetWaitingComponentsDebugInfo();
         void SetEntityParent(string entityId, string parentId);

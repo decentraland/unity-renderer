@@ -32,7 +32,7 @@ namespace DCL.Controllers
         bool WasAddedAsPersistent(IDCLEntity entity);
 
         void RemoveEntityToBeChecked(IDCLEntity entity);
-        void EvaluateEntityPosition(IDCLEntity entity);
+        void RunEntityEvaluation(IDCLEntity entity);
         bool IsEntityMeshInsideSceneBoundaries(IDCLEntity entity);
     }
 }

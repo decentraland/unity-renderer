@@ -74,7 +74,7 @@ namespace DCL.Controllers
 
                             float startTime = Time.realtimeSinceStartup;
 
-                            EvaluateEntityPosition(iterator.Current);
+                            RunEntityEvaluation(iterator.Current);
                             checkedEntities.Add(iterator.Current);
 
                             float finishTime = Time.realtimeSinceStartup;
@@ -173,8 +173,7 @@ namespace DCL.Controllers
             OnRemoveEntity(entity);
         }
 
-        // public void EvaluateEntityPosition(IDCLEntity entity, bool preliminaryEvaluationOnly = false)
-        public void EvaluateEntityPosition(IDCLEntity entity)
+        public void RunEntityEvaluation(IDCLEntity entity)
         {
             if (entity == null || entity.scene == null || entity.gameObject == null)
                 return;
@@ -186,37 +185,64 @@ namespace DCL.Controllers
                 {
                     while (iterator.MoveNext())
                     {
-                        EvaluateEntityPosition(iterator.Current.Value);
+                        RunEntityEvaluation(iterator.Current.Value);
                     }
                 }
             }
 
-            /*
-            // bool wasInsideBoundaries = entity.isInsideBoundaries;
-            RunPreliminaryEvaluation(entity, false);
-            // if (wasInsideBoundaries && !entity.isInsideBoundaries)
-            if (!entity.isInsideBoundaries)
-                return;
-
-            if (preliminaryEvaluationOnly)
-                return;*/
-
-            if (HasMesh(entity))
+            if (HasMesh(entity)) // If it has a mesh we don't evaluate its position due to artists 'pivot point sloppiness', we just evaluate its merged bounds position
+            {
+                EvaluateMeshBounds(entity);
+            }
+            else
+            {
+                Vector3 entityGOPosition = entity.gameObject.transform.position;
+                UpdateComponents(entity, entity.scene.IsInsideSceneOuterBoundaries(entityGOPosition)
+                                         && entity.scene.IsInsideSceneBoundaries(entityGOPosition + CommonScriptableObjects.worldOffset.Get()));
+            }
+        }
+        
+        void RunEntityPreliminaryEvaluation (IDCLEntity entity, bool runOnChildren = true)
+        {
+            if (runOnChildren)
+            {
+                if (entity.children.Count > 0)
+                {
+                    using (var iterator = entity.children.GetEnumerator())
+                    {
+                        while (iterator.MoveNext())
+                        {
+                            RunEntityPreliminaryEvaluation(iterator.Current.Value);
+                        }
+                    }
+                }
+            }
+            
+            if(entity.gameObject == null) return;
+            
+            if (HasMesh(entity)) // If it has a mesh we don't evaluate its position due to artists 'pivot point sloppiness', we just evaluate its merged bounds position
             {
                 // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
                 if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
                     return;
-
+                
                 var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
                 if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                     return;
-
-                EvaluateMeshBounds(entity);   
+                
+                // entity.meshesInfo.RecalculateBounds();
+                if (!entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds))
+                {
+                    if (!entity.gameObject.name.Contains("."))
+                        entity.gameObject.name += ".";
+                    SetMeshesAndComponentsInsideBoundariesState(entity, false);
+                }
             }
-            else
-            {   
-                UpdateComponents(entity, IsEntityInsideSceneOuterBoundaries(entity)
-                                         && entity.scene.IsInsideSceneBoundaries(entity.gameObject.transform.position + CommonScriptableObjects.worldOffset.Get()));
+            else if (!entity.scene.IsInsideSceneOuterBoundaries(entity.gameObject.transform.position))
+            {
+                if (!entity.gameObject.name.Contains("."))
+                    entity.gameObject.name += ".";
+                UpdateComponents(entity, false);
             }
         }
 
@@ -224,24 +250,6 @@ namespace DCL.Controllers
         {
             return entity.meshRootGameObject != null && entity.meshesInfo.renderers != null && entity.meshesInfo.renderers.Length > 0;
         }
-
-        /*const float POSITION_OVERFLOW_LIMIT = 10000;
-        const float POSITION_OVERFLOW_LIMIT_SQR = POSITION_OVERFLOW_LIMIT * POSITION_OVERFLOW_LIMIT;
-        const float MAX_MESH_SIZE = 1000f;
-        const float MAX_MESH_SIZE_SQR = MAX_MESH_SIZE * MAX_MESH_SIZE;
-        private bool IsEntityValidForBoundaryChecks(IDCLEntity entity)
-        {
-            if (entity.gameObject.transform.position.sqrMagnitude >= POSITION_OVERFLOW_LIMIT_SQR)
-                return false;
-
-            if (!HasMesh(entity))
-                return true;
-            
-            // if(entity.meshesInfo.mergedBounds.size.sqrMagnitude == 0)
-                entity.meshesInfo.RecalculateBounds();
-
-            return entity.meshesInfo.mergedBounds.size.sqrMagnitude < MAX_MESH_SIZE_SQR;
-        }*/
 
         public bool IsEntityMeshInsideSceneBoundaries(IDCLEntity entity)
         {
@@ -264,7 +272,16 @@ namespace DCL.Controllers
 
         void EvaluateMeshBounds(IDCLEntity entity)
         {
-            bool isInsideBoundaries = IsEntityInsideSceneOuterBoundaries(entity) && IsEntityMeshInsideSceneBoundaries(entity);
+            // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
+            if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
+                return;
+
+            var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
+            if (loadWrapper != null && !loadWrapper.alreadyLoaded)
+                return;
+            
+            // entity.meshesInfo.RecalculateBounds();
+            bool isInsideBoundaries = entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds) && IsEntityMeshInsideSceneBoundaries(entity);
             SetMeshesAndComponentsInsideBoundariesState(entity, isInsideBoundaries);
         }
 
@@ -335,76 +352,18 @@ namespace DCL.Controllers
 
         protected void OnAddEntity(IDCLEntity entity)
         {
-            if (!entity.gameObject.name.Contains("$"))
+            if (entity.gameObject != null && !entity.gameObject.name.Contains("$"))
                 entity.gameObject.name += "$";
-            // If we evaluate entities at this point, the gigantic meshes of genesis plaza are filtered (except plane shapes)
-            // TODO: Find a way of lighter entity evaluation (EvaluateMeshBounds(entity) is not good enough), maybe just checking
-            // position being beyond the world limits and maybe the mesh bounds size as well (IsEntityValidForBoundaryChecks() does that)
 
-            RunPreliminaryEvaluation(entity);
-            // EvaluateEntityPosition(entity);
-            
-            // if (!IsEntityValidForBoundaryChecks(entity))
-            // {
-            //     SetMeshesAndComponentsInsideBoundariesState(entity, false);
-            // }
+            RunEntityPreliminaryEvaluation(entity);
             
             AddEntityBasedOnPriority(entity);
         }
 
-        void RunPreliminaryEvaluation (IDCLEntity entity, bool runOnChildren = true)
-        {
-            if (runOnChildren)
-            {
-                if (entity.children.Count > 0)
-                {
-                    using (var iterator = entity.children.GetEnumerator())
-                    {
-                        while (iterator.MoveNext())
-                        {
-                            RunPreliminaryEvaluation(iterator.Current.Value);
-                        }
-                    }
-                }
-            }
-            
-            if (HasMesh(entity))
-            {
-                // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
-                if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
-                    return;
-             
-                var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
-                if (loadWrapper != null && !loadWrapper.alreadyLoaded)
-                    return;
-            }
-            
-            if (!IsEntityInsideSceneOuterBoundaries(entity))
-            {
-                if (!entity.gameObject.name.Contains("."))
-                    entity.gameObject.name += ".";
-                SetMeshesAndComponentsInsideBoundariesState(entity, false);
-            }
-        }
-
-        // TODO: Move this to ParcelScene ?
-        // This check is cheaper and ensures that an entity is outside the outer bounds (if it tails it doesn't ensure that it's inside, because of irregular scenes)
-        bool IsEntityInsideSceneOuterBoundaries(IDCLEntity entity)
-        {
-            var entityWorldPos = PositionUtils.UnityToWorldPosition(entity.gameObject.transform.position);
-            Vector2 sceneMinMaxXWorldPosition = entity.scene.GetMinMaxXWorldPosition();
-            Vector2 sceneMinMaxZWorldPosition = entity.scene.GetMinMaxZWorldPosition();
-            
-            // TODO: Also check mesh bounds extents here?
-            return entityWorldPos.x >= sceneMinMaxXWorldPosition.x
-                    && entityWorldPos.x <= sceneMinMaxXWorldPosition.y
-                    && entityWorldPos.z >= sceneMinMaxZWorldPosition.x
-                    && entityWorldPos.z <= sceneMinMaxZWorldPosition.y;
-        }
-
         protected void OnRemoveEntity(IDCLEntity entity)
         {
-            entity.gameObject.name = entity.gameObject.name.Replace("$", "");
+            if(entity.gameObject != null)
+                entity.gameObject.name = entity.gameObject.name.Replace("$", "");
             
             highPrioEntitiesToCheck.Remove(entity);
             entitiesToCheck.Remove(entity);
