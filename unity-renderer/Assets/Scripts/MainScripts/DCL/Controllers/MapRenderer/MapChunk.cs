@@ -27,7 +27,7 @@ namespace DCL
 
             Texture2D result = null;
 
-            return Utils.FetchTexture(url, false, (x) =>
+            return Utils.FetchTexture(url, true, (x) =>
             {
                 result = x;
 
