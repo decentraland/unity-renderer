@@ -51,7 +51,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         {
             if (chatEntryModel.subType == ChatEntryModel.SubType.RECEIVED)
             {
-                userString = $"<b>From {chatEntryModel.senderName}:</b>";
+                userString = $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>";
             }
             else if (chatEntryModel.subType == ChatEntryModel.SubType.SENT)
             {
