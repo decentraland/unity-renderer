@@ -865,7 +865,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 619.99994}
-  m_SizeDelta: {x: 410.0625, y: 50}
+  m_SizeDelta: {x: 410.0625, y: 60}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &5822956738923906067
 CanvasRenderer:
@@ -1207,7 +1207,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -20, y: -16}
+  m_SizeDelta: {x: -100, y: -16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6985556779993845164
 CanvasRenderer:
@@ -1237,7 +1237,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Messages in this chat are encrypted to protect your privacy
+  m_text: Messages in this chat are encrypted to protect your privacy.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 1196159134475820439, guid: a02669827dd9144f39b4b164e753a21a,
@@ -3320,7 +3320,7 @@ PrefabInstance:
     - target: {fileID: 7497584698789204027, guid: bac007ac4ef98284c8cf05867a35ee0f,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 570
+      value: 560
       objectReference: {fileID: 0}
     - target: {fileID: 7497584698789204027, guid: bac007ac4ef98284c8cf05867a35ee0f,
         type: 3}
