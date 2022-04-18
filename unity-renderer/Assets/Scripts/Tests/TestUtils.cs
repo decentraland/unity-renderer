@@ -1277,9 +1277,46 @@ namespace DCL.Helpers
             return new WaitUntil(() => wrapper.alreadyLoaded);
         }
 
-        public static ParcelScene CreateTestScene()
+        public static IParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
         {
-            return WorldStateUtils.CreateTestScene() as ParcelScene;
+            if (data == null)
+            {
+                data = new LoadParcelScenesMessage.UnityParcelScene();
+            }
+
+            if (data.parcels == null)
+            {
+                data.parcels = new Vector2Int[] {data.basePosition};
+            }
+
+            if (string.IsNullOrEmpty(data.id))
+            {
+                data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
+            }
+
+            if (Environment.i.world.state.loadedScenes != null)
+            {
+                if (Environment.i.world.state.loadedScenes.ContainsKey(data.id))
+                {
+                    Debug.LogWarning($"Scene {data.id} is already loaded.");
+                    return Environment.i.world.state.loadedScenes[data.id];
+                }
+            }
+
+            var go = new GameObject();
+            var newScene = go.AddComponent<ParcelScene>();
+            newScene.isTestScene = true;
+            newScene.isPersistent = true;
+            newScene.SetData(data);
+
+            if (DCLCharacterController.i != null)
+                newScene.InitializeDebugPlane();
+
+            Environment.i.world.state.scenesSortedByDistance?.Add(newScene);
+            Environment.i.world.state.loadedScenes?.Add(data.id, newScene);
+
+
+            return newScene;
         }
 
         public static T CreateComponentWithGameObject<T>(string gameObjectName) where T : Component

@@ -75,24 +75,4 @@ public class InteractionHoverCanvasController : MonoBehaviour
     }
 
     public GameObject GetCurrentHoverIcon() { return hoverIcon; }
-    
-
-    // This method will be used when we apply a "loose aim" for the 3rd person camera
-    public void UpdateSizeAndPos()
-    {
-        if (mainCamera == null)
-            mainCamera = Camera.main;
-
-        Vector3 screenPoint = mainCamera.WorldToViewportPoint(meshCenteredPos);
-
-        if (screenPoint.z > 0)
-        {
-            RectTransform canvasRect = (RectTransform) canvas.transform;
-            float width = canvasRect.rect.width;
-            float height = canvasRect.rect.height;
-            screenPoint.Scale(new Vector3(width, height, 0));
-
-            ((RectTransform) backgroundTransform).anchoredPosition = screenPoint;
-        }
-    }
 }
