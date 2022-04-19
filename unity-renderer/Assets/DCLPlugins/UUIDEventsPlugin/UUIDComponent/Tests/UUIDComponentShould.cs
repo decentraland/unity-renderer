@@ -20,6 +20,7 @@ namespace Tests
     public class UUIDComponentShould : IntegrationTestSuite
     {
         private ParcelScene scene;
+        private UUIDEventsPlugin uuidEventsPlugin;
 
         protected override void InitializeServices(ServiceLocator serviceLocator)
         {
@@ -34,6 +35,14 @@ namespace Tests
         {
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
+            uuidEventsPlugin = new UUIDEventsPlugin();
+        }
+
+        [UnityTearDown]
+        protected override IEnumerator TearDown()
+        {
+            uuidEventsPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         [UnityTest]
@@ -472,5 +481,6 @@ namespace Tests
                 Assert.IsNotNull(pointerEventCollider.sharedMesh);
             }
         }
+        
     }
 }

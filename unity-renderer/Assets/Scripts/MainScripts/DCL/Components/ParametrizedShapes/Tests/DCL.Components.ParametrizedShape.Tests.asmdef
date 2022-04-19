@@ -1,5 +1,5 @@
 {
-  "name": "ParametrizedShapesTests",
+  "name": "DCL.Components.ParametrizedShape.Tests",
   "rootNamespace": "",
   "references": [
     "GUID:e555144732b726c4cba5b0f6337fea75",
@@ -17,6 +17,8 @@
     "GUID:fbcc413e192ef9048811d47ab0aca0c0",
     "GUID:f51a759358124dc4180700f1f4f717d8",
     "GUID:0e39b687cf35c7e40a87f984cdaed9f5",
+    "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+    "GUID:be0e3042b7c1c6e41ae8221ae6470d80",
     "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
     "GUID:ab04b35c8c4a57847889009b508e53ae"
   ],

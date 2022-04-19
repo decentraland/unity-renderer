@@ -886,7 +886,9 @@ namespace DCL.Helpers
             }
         }
 
-        public static IEnumerator TestShapeVisibility(BaseShape shapeComponent, BaseShape.Model shapeModel, IDCLEntity entity)
+        public static IEnumerator TestRenderersWithShapeVisibleProperty(BaseShape shapeComponent,
+            BaseShape.Model shapeModel,
+            IDCLEntity entity)
         {
             // make sure the shape is visible first
             shapeModel.visible = true;
@@ -902,8 +904,6 @@ namespace DCL.Helpers
                 Assert.IsTrue(renderers[i].enabled);
             }
 
-            yield return TestShapeOnPointerEventCollider(entity);
-
             // update visibility with 'false'
             shapeModel.visible = false;
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
@@ -914,8 +914,6 @@ namespace DCL.Helpers
                 Assert.IsFalse(renderers[i].enabled);
             }
 
-            yield return TestShapeOnPointerEventCollider(entity);
-
             // update visibility with 'true'
             shapeModel.visible = true;
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
@@ -925,7 +923,24 @@ namespace DCL.Helpers
             {
                 Assert.IsTrue(renderers[i].enabled);
             }
+        }
 
+        public static IEnumerator TestOnPointerEventWithShapeVisibleProperty(BaseShape shapeComponent,
+            BaseShape.Model shapeModel, IDCLEntity entity)
+        {
+            // make sure the shape is visible first
+            shapeModel.visible = true;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
+            yield return TestShapeOnPointerEventCollider(entity);
+
+            // update visibility with 'false'
+            shapeModel.visible = false;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
+            yield return TestShapeOnPointerEventCollider(entity);
+
+            // update visibility with 'true'
+            shapeModel.visible = true;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
             yield return TestShapeOnPointerEventCollider(entity);
         }
 
