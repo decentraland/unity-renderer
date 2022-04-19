@@ -84,12 +84,22 @@ namespace DCL
                 return;
 
             PluginInfo info = allPlugins.plugins[type];
-            info.Disable();
 
             string flag = info.flag;
 
+            if (flag != null)
+            {
+                if (pluginGroupByFlag.ContainsKey(flag))
+                {
+                    if (pluginGroupByFlag[flag].ContainsKey(type))
+                    {
+                        pluginGroupByFlag[flag].Remove(type);
+                    }
+                }
+            }
+
             allPlugins.Remove(type);
-            pluginGroupByFlag[flag].Remove(type);
+            info.Disable();
         }
         
         /// <summary>
