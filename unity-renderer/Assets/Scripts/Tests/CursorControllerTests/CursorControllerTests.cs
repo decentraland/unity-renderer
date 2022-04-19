@@ -20,6 +20,7 @@ namespace Tests
         private ParcelScene scene;
         private Camera mainCamera;
         private CursorController cursorController;
+        private UUIDEventsPlugin uuidEventsPlugin;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
@@ -66,6 +67,9 @@ namespace Tests
             mainCamera.transform.forward = Vector3.forward;
 
             DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
+
+            uuidEventsPlugin = new UUIDEventsPlugin();
+
         }
 
         protected override IEnumerator TearDown()
@@ -277,11 +281,10 @@ namespace Tests
             mainCamera.transform.position = new Vector3(8, 2, 7f);
             mainCamera.transform.forward = Vector3.forward;
 
-            var hoverCanvasController = InteractionHoverCanvasController.i;
-            Assert.IsNotNull(hoverCanvasController);
+            Assert.IsNotNull(uuidEventsPlugin.hoverCanvas);
 
             // Check hover feedback is enabled
-            Assert.IsTrue(hoverCanvasController.canvas.enabled);
+            Assert.IsTrue(uuidEventsPlugin.hoverCanvas.canvas.enabled);
 
             // Put UI in the middle
             UIScreenSpace screenSpaceShape =
@@ -297,7 +300,7 @@ namespace Tests
             yield return null;
 
             // Check hover feedback is no longer enabled
-            Assert.IsFalse(hoverCanvasController.canvas.enabled);
+            Assert.IsFalse(uuidEventsPlugin.hoverCanvas.canvas.enabled);
         }
 
         [UnityTest]
@@ -332,11 +335,10 @@ namespace Tests
 
             yield return null;
 
-            var hoverCanvasController = InteractionHoverCanvasController.i;
-            Assert.IsNotNull(hoverCanvasController);
+            Assert.IsNotNull(uuidEventsPlugin.hoverCanvas);
 
             // Check hover feedback is enabled
-            Assert.IsTrue(hoverCanvasController.canvas.enabled);
+            Assert.IsTrue(uuidEventsPlugin.hoverCanvas.canvas.enabled);
 
             // Put UI in the middle
             UIScreenSpace screenSpaceShape =
@@ -352,7 +354,7 @@ namespace Tests
             yield return null;
 
             // Check hover feedback is still enabled
-            Assert.IsTrue(hoverCanvasController.canvas.enabled);
+            Assert.IsTrue(uuidEventsPlugin.hoverCanvas.canvas.enabled);
         }
     }
 }

@@ -20,14 +20,14 @@ public class CursorController : MonoBehaviour
     {
         i = this;
         DataStore_Cursor data = DataStore.i.Get<DataStore_Cursor>();
-        data.visible.OnChange += OnChangeVisible;
+        data.cursorVisible.OnChange += ChangeCursorVisible;
         data.cursorType.OnChange += OnChangeType;
     }
 
     private void OnDestroy()
     {
         DataStore_Cursor data = DataStore.i.Get<DataStore_Cursor>();
-        data.visible.OnChange -= OnChangeVisible;
+        data.cursorVisible.OnChange -= ChangeCursorVisible;
         data.cursorType.OnChange -= OnChangeType;
     }
 
@@ -44,7 +44,7 @@ public class CursorController : MonoBehaviour
         }
     }
 
-    private void OnChangeVisible(bool current, bool previous)
+    private void ChangeCursorVisible(bool current, bool previous)
     {
         if (current)
             Show();

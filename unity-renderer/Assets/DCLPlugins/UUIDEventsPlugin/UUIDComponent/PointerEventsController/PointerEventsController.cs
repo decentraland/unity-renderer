@@ -590,7 +590,7 @@ namespace DCL
 
         private void HideOrShowCursor(bool isCursorLocked)
         {
-            DataStore.i.Get<DataStore_Cursor>().visible.Set(isCursorLocked);
+            DataStore.i.Get<DataStore_Cursor>().cursorVisible.Set(isCursorLocked);
         }
 
         private void SetHoverCursor()

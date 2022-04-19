@@ -1,3 +1,4 @@
+using System;
 using DCL.Models;
 using DCL.Components;
 using UnityEngine;
@@ -20,11 +21,49 @@ public class InteractionHoverCanvasController : MonoBehaviour
     const string ACTION_BUTTON_PRIMARY = "PRIMARY";
     const string ACTION_BUTTON_SECONDARY = "SECONDARY";
 
+    private DataStore_Cursor dataStore;
     void Awake()
     {
+        dataStore = DataStore.i.Get<DataStore_Cursor>();
         backgroundTransform.gameObject.SetActive(false);
+
+        dataStore.hoverFeedbackButton.OnChange += OnChangeFeedbackButton;
+        dataStore.hoverFeedbackText.OnChange += OnChangeFeedbackText;
+        dataStore.hoverFeedbackEnabled.OnChange += OnChangeFeedbackEnabled;
+        dataStore.hoverFeedbackHoverState.OnChange += OnChangeFeedbackHoverState;
     }
 
+    private void OnDestroy()
+    {
+        if (dataStore == null)
+            return;
+
+        dataStore.hoverFeedbackButton.OnChange -= OnChangeFeedbackButton;
+        dataStore.hoverFeedbackText.OnChange -= OnChangeFeedbackText;
+        dataStore.hoverFeedbackEnabled.OnChange -= OnChangeFeedbackEnabled;
+        dataStore.hoverFeedbackHoverState.OnChange -= OnChangeFeedbackHoverState;
+    }
+
+    private void OnChangeFeedbackHoverState(bool current, bool previous)
+    {
+        SetHoverState(current);
+    }
+
+    private void OnChangeFeedbackEnabled(bool current, bool previous)
+    {
+        enabled = current;
+    }
+
+    private void OnChangeFeedbackText(string current, string previous)
+    {
+        text.text = current;
+    }
+
+    private void OnChangeFeedbackButton(string current, string previous)
+    {
+        ConfigureIcon(current);
+    }
+    
     public void Setup(string button, string feedbackText)
     {
         text.text = feedbackText;

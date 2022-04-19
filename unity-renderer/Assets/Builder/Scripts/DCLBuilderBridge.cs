@@ -378,7 +378,7 @@ namespace Builder
                 cameraController.gameObject.SetActive(false);
             }
 
-            DataStore.i.Get<DataStore_Cursor>().visible.Set(false);
+            DataStore.i.Get<DataStore_Cursor>().cursorVisible.Set(false);
 
             // NOTE: no third person camera in builder yet, so avoid rendering being locked waiting for avatar.
             if (playerAvatarController)
@@ -542,7 +542,7 @@ namespace Builder
             }
 
             cameraController?.gameObject.SetActive(isPreviewMode);
-            DataStore.i.Get<DataStore_Cursor>().visible.Set(isPreviewMode);
+            DataStore.i.Get<DataStore_Cursor>().cursorVisible.Set(isPreviewMode);
 
             if (!isPreview)
             {

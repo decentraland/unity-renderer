@@ -20,6 +20,7 @@ namespace Tests
     {
         private ParcelScene scene;
         private Camera mainCamera;
+        private UUIDEventsPlugin uuidEventsPlugin;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
@@ -39,7 +40,6 @@ namespace Tests
             return result;
         }
 
-        private UUIDEventsPlugin uuidEventsPlugin;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -1881,14 +1881,14 @@ namespace Tests
             mainCamera.transform.position = new Vector3(8, 1, 7);
             yield return null;
 
-            Assert.IsNotNull(hoverCanvasController);
-            Assert.IsTrue(hoverCanvasController.canvas.enabled);
+            Assert.IsNotNull(uuidEventsPlugin.hoverCanvas);
+            Assert.IsTrue(uuidEventsPlugin.hoverCanvas.canvas.enabled);
 
             // Check default properties
-            Assert.IsNotNull(hoverCanvasController.GetCurrentHoverIcon(),
+            Assert.IsNotNull(uuidEventsPlugin.hoverCanvas.GetCurrentHoverIcon(),
                 "OnPointerEvent.SetFeedbackState never called!");
-            Assert.AreEqual("AnyButtonHoverIcon", hoverCanvasController.GetCurrentHoverIcon().name);
-            Assert.AreEqual("Interact", hoverCanvasController.text.text);
+            Assert.AreEqual("AnyButtonHoverIcon", uuidEventsPlugin.hoverCanvas.GetCurrentHoverIcon().name);
+            Assert.AreEqual("Interact", uuidEventsPlugin.hoverCanvas.text.text);
 
             yield return null;
 
@@ -1901,8 +1901,8 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual("PrimaryButtonHoverIcon", hoverCanvasController.GetCurrentHoverIcon().name);
-            Assert.AreEqual("Click!", hoverCanvasController.text.text);
+            Assert.AreEqual("PrimaryButtonHoverIcon", uuidEventsPlugin.hoverCanvas.GetCurrentHoverIcon().name);
+            Assert.AreEqual("Click!", uuidEventsPlugin.hoverCanvas.text.text);
         }
 
         [UnityTest]
@@ -1928,7 +1928,8 @@ namespace Tests
 
             mainCamera.transform.position = new Vector3(8, 2, 7);
 
-            Assert.IsTrue(hoverCanvas.enabled);
+
+            Assert.IsTrue(uuidEventsPlugin.hoverCanvas.enabled);
             yield return null;
 
             onPointerDownModel.distance = 1f;
@@ -1938,7 +1939,7 @@ namespace Tests
 
             yield return null;
 
-            Assert.IsFalse(hoverCanvas.enabled);
+            Assert.IsFalse(uuidEventsPlugin.hoverCanvas.enabled);
             Object.Destroy(component);
         }
     }

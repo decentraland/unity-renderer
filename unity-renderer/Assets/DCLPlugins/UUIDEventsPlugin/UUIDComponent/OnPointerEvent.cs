@@ -64,7 +64,7 @@ namespace DCL.Components
                 if (hoverState)
                 {
                     cursorData.hoverFeedbackButton.Set(button);
-                    cursorData.hoverFeedbackCaption.Set(hoverText);
+                    cursorData.hoverFeedbackText.Set(hoverText);
                 }
 
                 cursorData.hoverFeedbackHoverState.Set(hoverState);
