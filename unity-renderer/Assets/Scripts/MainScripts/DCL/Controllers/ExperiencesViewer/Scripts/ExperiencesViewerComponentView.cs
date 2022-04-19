@@ -149,10 +149,6 @@ namespace DCL.ExperiencesViewer
 
         public List<ExperienceRowComponentView> GetAllAvailableExperiences()
         {
-            List<ExperienceRowComponentView> result = availableExperiences.GetItems()
-                .Select(x => x as ExperienceRowComponentView)
-                .ToList();
-
             return availableExperiences.GetItems()
                 .Select(x => x as ExperienceRowComponentView)
                 .ToList();
