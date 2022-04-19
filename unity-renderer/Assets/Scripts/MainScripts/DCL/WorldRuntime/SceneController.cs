@@ -875,6 +875,8 @@ namespace DCL
             newScene.isPersistent = true;
             newScene.sceneName = globalScene.name;
             newScene.isPortableExperience = globalScene.isPortableExperience;
+            newScene.avatarTransform = avatarTransform;
+            newScene.firstPersonCameraTransform = firstPersonCameraTransform;
 
             LoadParcelScenesMessage.UnityParcelScene data = new LoadParcelScenesMessage.UnityParcelScene
             {

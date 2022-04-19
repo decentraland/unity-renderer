@@ -35,6 +35,9 @@ namespace DCL
 
             i = this;
 
+            if (!disableSceneDependencies)
+                InitializeSceneDependencies();
+
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
@@ -51,9 +54,6 @@ namespace DCL
 
             SetupPlugins();
             InitializeCommunication();
-
-            if (!disableSceneDependencies)
-                InitializeSceneDependencies();
 
             // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
             // We should re-enable this later as produces a performance regression.

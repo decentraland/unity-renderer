@@ -406,35 +406,41 @@ namespace DCL.Controllers
             Environment.i.platform.cullingController.MarkDirty();
             Environment.i.platform.physicsSyncController.MarkDirty();
 
-            if (firstPersonCameraTransform != null)
+            if (parentId == "FirstPersonCameraEntityReference" ||
+                parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
             {
-                if (parentId == "FirstPersonCameraEntityReference" ||
-                    parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+                if (firstPersonCameraTransform == null)
                 {
-                    // In this case, the entity will attached to the first person camera
-                    // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
-                    me.SetParent(null);
-                    me.gameObject.transform.SetParent(firstPersonCameraTransform);
-                    Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
-                    Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                    Debug.LogError("FPS transform is null when trying to set parent!");
                     return;
                 }
+
+                // In this case, the entity will attached to the first person camera
+                // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
+                me.SetParent(null);
+                me.gameObject.transform.SetParent(firstPersonCameraTransform, false);
+                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
+                Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                return;
             }
 
-            if (avatarTransform != null)
+            if (parentId == "AvatarEntityReference" ||
+                parentId ==
+                "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
             {
-                if (parentId == "AvatarEntityReference" ||
-                    parentId ==
-                    "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+                if (avatarTransform == null)
                 {
-                    // In this case, the entity will be attached to the avatar
-                    // It will simply rotate with the avatar, regardless of where the camera is pointing
-                    me.SetParent(null);
-                    me.gameObject.transform.SetParent(avatarTransform);
-                    Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
-                    Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                    Debug.LogError("Avatar transform is null when trying to set parent!");
                     return;
                 }
+
+                // In this case, the entity will be attached to the avatar
+                // It will simply rotate with the avatar, regardless of where the camera is pointing
+                me.SetParent(null);
+                me.gameObject.transform.SetParent(avatarTransform, false);
+                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
+                Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                return;
             }
 
             // Remove from persistent checks if it was formerly added as child of avatarTransform or fpsTransform 
