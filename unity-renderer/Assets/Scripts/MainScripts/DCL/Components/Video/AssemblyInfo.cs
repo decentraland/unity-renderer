@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("VideoTests")]
+[assembly: InternalsVisibleTo("DCL.Components.Video.Tests")]

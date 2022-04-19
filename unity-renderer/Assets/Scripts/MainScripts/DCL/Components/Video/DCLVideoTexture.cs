@@ -7,6 +7,7 @@ using DCL.Components.Video.Plugin;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using UnityEngine.Assertions;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.Components
@@ -14,7 +15,7 @@ namespace DCL.Components
     public class DCLVideoTexture : DCLTexture
     {
         public static bool VERBOSE = false;
-        public static Logger logger = new Logger("DCLVideoTexture") { verboseEnabled = VERBOSE };
+        public static Logger logger = new Logger("DCLVideoTexture") {verboseEnabled = VERBOSE};
 
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
         private const float VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS = 1f;
@@ -47,7 +48,7 @@ namespace DCL.Components
         private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS;
         private float lastVideoProgressReportTime;
 
-        internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
+        internal Dictionary<string, ISharedComponent> attachedMaterials = new Dictionary<string, ISharedComponent>();
         private string lastVideoClipID;
         private VideoState previousVideoState;
 
@@ -94,7 +95,7 @@ namespace DCL.Components
 
                 if (dclVideoClip == null)
                 {
-                    logger.Error( "Wrong video clip type when playing VideoTexture!!");
+                    logger.Error("Wrong video clip type when playing VideoTexture!!");
                     yield break;
                 }
 
@@ -117,7 +118,7 @@ namespace DCL.Components
                 }
 
                 texture = texturePlayer.texture;
-                isPlayStateDirty = true;
+                SetPlayStateDirty();
             }
 
             if (texturePlayer != null)
@@ -160,7 +161,7 @@ namespace DCL.Components
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
-            scene.OnEntityRemoved += OnEntityRemoved;
+            scene.OnEntityRemoved += SetPlayStateDirty;
 
             Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
 
@@ -168,17 +169,7 @@ namespace DCL.Components
         }
 
         public float GetVolume() { return ((Model) model).volume; }
-
-        private bool HasTexturePropertiesChanged() { return texture.wrapMode != unityWrap || texture.filterMode != unitySamplingMode; }
-
-        private void ApplyTextureProperties()
-        {
-            texture.wrapMode = unityWrap;
-            texture.filterMode = unitySamplingMode;
-            texture.Compress(false);
-            texture.Apply(unitySamplingMode != FilterMode.Point, true);
-        }
-
+        
         private IEnumerator OnUpdate()
         {
             while (true)
@@ -192,11 +183,11 @@ namespace DCL.Components
 
         private void UpdateDirtyState()
         {
-            if (isPlayStateDirty)
-            {
-                CalculateVideoVolumeAndPlayStatus();
-                isPlayStateDirty = false;
-            }
+            if (!isPlayStateDirty)
+                return;
+
+            CalculateVideoVolumeAndPlayStatus();
+            isPlayStateDirty = false;
         }
 
         private void UpdateVideoTexture()
@@ -254,12 +245,18 @@ namespace DCL.Components
                     while (iterator.MoveNext())
                     {
                         var materialInfo = iterator.Current;
-                        if (materialInfo.Value.IsVisible())
+                        bool isComponentVisible = DCLVideoTextureUtils.IsComponentVisible(materialInfo.Value);
+
+                        if (isComponentVisible)
                         {
                             isVisible = true;
-                            var entityDist = materialInfo.Value.GetClosestDistanceSqr(DCLCharacterController.i.transform.position);
+
+                            var entityDist = DCLVideoTextureUtils.GetClosestDistanceSqr(materialInfo.Value,
+                                CommonScriptableObjects.playerUnityPosition);
+                            
                             if (entityDist < minDistance)
                                 minDistance = entityDist;
+                            
                             // NOTE: if current minDistance is enough for full volume then there is no need to keep iterating to check distances
                             if (minDistance <= DCL.Configuration.ParcelSettings.PARCEL_SIZE * DCL.Configuration.ParcelSettings.PARCEL_SIZE)
                                 break;
@@ -311,92 +308,57 @@ namespace DCL.Components
             if (string.IsNullOrEmpty(currentSceneId))
                 return false;
 
-            return (scene.sceneData.id == currentSceneId) || (scene is GlobalScene globalScene && globalScene.isPortableExperience);
+            return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
         }
 
-        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords) { isPlayStateDirty = true; }
+        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
+        {
+            SetPlayStateDirty();
+        }
 
         private void OnSceneIDChanged(string current, string previous) { isPlayerInScene = IsPlayerInSameSceneAsComponent(current); }
 
-        public override void AttachTo(PBRMaterial component)
+        public override void AttachTo(ISharedComponent component)
         {
-            base.AttachTo(component);
-            AttachToMaterial(component);
-        }
+            Assert.IsTrue(component != null, "Attachment must not be null!");
 
-        public override void DetachFrom(PBRMaterial component)
-        {
-            base.DetachFrom(component);
-            DetachFromMaterial(component);
-        }
-
-        public override void AttachTo(BasicMaterial component)
-        {
-            base.AttachTo(component);
-            AttachToMaterial(component);
-        }
-
-        public override void DetachFrom(BasicMaterial component)
-        {
-            base.DetachFrom(component);
-            DetachFromMaterial(component);
-        }
-
-        private void AttachToMaterial(BaseDisposable baseDisposable)
-        {
-            if (!attachedMaterials.ContainsKey(baseDisposable.id))
-            {
-                attachedMaterials.Add(baseDisposable.id, new MaterialComponent(baseDisposable));
-                baseDisposable.OnAttach += OnEntityAttachedMaterial;
-                baseDisposable.OnDetach += OnEntityDetachedMaterial;
-                isPlayStateDirty = true;
-
-                if (baseDisposable.attachedEntities.Count > 0)
-                {
-                    using (var iterator = baseDisposable.attachedEntities.GetEnumerator())
-                    {
-                        while (iterator.MoveNext())
-                        {
-                            var entity = iterator.Current;
-                            entity.OnShapeUpdated -= OnEntityShapeUpdated;
-                            entity.OnShapeUpdated += OnEntityShapeUpdated;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void DetachFromMaterial(BaseDisposable baseDisposable)
-        {
-            if (attachedMaterials.ContainsKey(baseDisposable.id))
-            {
-                attachedMaterials.Remove(baseDisposable.id);
-                baseDisposable.OnAttach -= OnEntityAttachedMaterial;
-                baseDisposable.OnDetach -= OnEntityDetachedMaterial;
-                isPlayStateDirty = true;
-            }
-        }
-
-        // TODO: we will need an event for visibility change on UI for supporting video
-        public override void AttachTo(UIImage component)
-        {
-            if (!attachedMaterials.ContainsKey(component.id))
-            {
-                attachedMaterials.Add(component.id, new UIShapeComponent(component));
-                isPlayStateDirty = true;
-            }
-        }
-
-        public override void DetachFrom(UIImage component)
-        {
             if (attachedMaterials.ContainsKey(component.id))
-            {
-                attachedMaterials.Remove(component.id);
-                isPlayStateDirty = true;
-            }
+                return;
+
+            AddReference(component);
+
+            SetPlayStateDirty();
+            attachedMaterials.Add(component.id, component);
+
+            component.OnAttach += SetPlayStateDirty;
+            component.OnDetach += SetPlayStateDirty;
+            DCLVideoTextureUtils.SubscribeToEntityUpdates(component, SetPlayStateDirty);
         }
 
-        void OnEntityRemoved(IDCLEntity entity) { isPlayStateDirty = true; }
+        public override void DetachFrom(ISharedComponent component)
+        {
+            Assert.IsTrue(component != null, "Component must not be null!");
+
+            if (!attachedMaterials.ContainsKey(component.id))
+                return;
+
+            if (texturePlayer != null)
+                texturePlayer.Pause();
+
+            attachedMaterials.Remove(component.id);
+
+            component.OnAttach -= SetPlayStateDirty;
+            component.OnDetach -= SetPlayStateDirty;
+            DCLVideoTextureUtils.UnsubscribeToEntityShapeUpdate(component, SetPlayStateDirty);
+
+            RemoveReference(component);
+            SetPlayStateDirty();
+        }
+
+        void SetPlayStateDirty(IDCLEntity entity = null)
+        {
+            isPlayStateDirty = true;
+        }
 
         void OnAudioSettingsChanged(AudioSettings settings) { UpdateVolume(); }
 
@@ -408,7 +370,8 @@ namespace DCL.Components
             CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
 
             if (scene != null)
-                scene.OnEntityRemoved -= OnEntityRemoved;
+                scene.OnEntityRemoved -= SetPlayStateDirty;
+
             if (texturePlayerUpdateRoutine != null)
             {
                 CoroutineStarter.Stop(texturePlayerUpdateRoutine);
@@ -423,111 +386,6 @@ namespace DCL.Components
 
             Utils.SafeDestroy(texture);
             base.Dispose();
-        }
-
-        private void OnEntityAttachedMaterial(IDCLEntity entity) { entity.OnShapeUpdated += OnEntityShapeUpdated; }
-
-        private void OnEntityDetachedMaterial(IDCLEntity entity)
-        {
-            if (texturePlayer != null)
-                texturePlayer.Pause();
-
-            entity.OnShapeUpdated -= OnEntityShapeUpdated;
-        }
-
-        private void OnEntityShapeUpdated(IDCLEntity entity) { isPlayStateDirty = true; }
-
-        internal interface MaterialInfo
-        {
-            float GetClosestDistanceSqr(Vector3 fromPosition);
-            bool IsVisible();
-        }
-
-        struct MaterialComponent : MaterialInfo
-        {
-            BaseDisposable component;
-
-            float MaterialInfo.GetClosestDistanceSqr(Vector3 fromPosition)
-            {
-                float dist = int.MaxValue;
-                if (component.attachedEntities.Count > 0)
-                {
-                    using (var iterator = component.attachedEntities.GetEnumerator())
-                    {
-                        while (iterator.MoveNext())
-                        {
-                            var entity = iterator.Current;
-                            if (IsEntityVisible(entity))
-                            {
-                                var entityDist = (entity.meshRootGameObject.transform.position - fromPosition).sqrMagnitude;
-                                if (entityDist < dist)
-                                    dist = entityDist;
-                            }
-                        }
-                    }
-                }
-
-                return dist;
-            }
-
-            bool MaterialInfo.IsVisible()
-            {
-                if (component.attachedEntities.Count > 0)
-                {
-                    using (var iterator = component.attachedEntities.GetEnumerator())
-                    {
-                        while (iterator.MoveNext())
-                        {
-                            if (IsEntityVisible(iterator.Current))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-
-                return false;
-            }
-
-            bool IsEntityVisible(IDCLEntity entity)
-            {
-                if (entity.meshesInfo == null)
-                    return false;
-                if (entity.meshesInfo.currentShape == null)
-                    return false;
-                return entity.meshesInfo.currentShape.IsVisible();
-            }
-
-            public MaterialComponent(BaseDisposable component) { this.component = component; }
-        }
-
-        struct UIShapeComponent : MaterialInfo
-        {
-            UIShape shape;
-
-            float MaterialInfo.GetClosestDistanceSqr(Vector3 fromPosition) { return 0; }
-
-            bool MaterialInfo.IsVisible()
-            {
-                if (!((UIShape.Model) shape.GetModel()).visible)
-                    return false;
-                return IsParentVisible(shape);
-            }
-
-            bool IsParentVisible(UIShape shape)
-            {
-                UIShape parent = shape.parentUIComponent;
-                if (parent == null)
-                    return true;
-                if (parent.referencesContainer.canvasGroup.alpha == 0)
-                {
-                    return false;
-                }
-
-                return IsParentVisible(parent);
-            }
-
-            public UIShapeComponent(UIShape image) { shape = image; }
         }
     }
 }
