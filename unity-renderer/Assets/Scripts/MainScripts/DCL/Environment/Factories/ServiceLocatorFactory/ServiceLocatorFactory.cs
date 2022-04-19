@@ -26,7 +26,6 @@ namespace DCL
             result.Register<IFeatureFlagController>(() => new FeatureFlagController());
             result.Register<ISceneController>(() => new SceneController());
             result.Register<IWorldState>(() => new WorldState());
-            result.Register<IPointerEventsController>(() => new PointerEventsController());
             result.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
             result.Register<IWorldBlockersController>(() => new WorldBlockersController());
             result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());

@@ -26,14 +26,12 @@ namespace Tests
             List<GameObject> result = new List<GameObject>();
             result.Add(MainSceneFactory.CreateEnvironment());
             result.Add(MainSceneFactory.CreateEventSystem());
-            result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
             return result;
         }
 
         protected override ServiceLocator InitializeServiceLocator()
         {
             ServiceLocator result = DCL.ServiceLocatorTestFactory.CreateMocked();
-            result.Register<IPointerEventsController>(() => new PointerEventsController());
             result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
             result.Register<IWorldState>(() => new WorldState());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
@@ -41,6 +39,7 @@ namespace Tests
             return result;
         }
 
+        private UUIDEventsPlugin uuidEventsPlugin;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -57,10 +56,13 @@ namespace Tests
             mainCamera.transform.forward = Vector3.forward;
 
             DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
+
+            uuidEventsPlugin = new UUIDEventsPlugin();
         }
 
         protected override IEnumerator TearDown()
         {
+            uuidEventsPlugin.Dispose();
             Object.Destroy(mainCamera.gameObject);
             Utils.UnlockCursor();
             yield return base.TearDown();
@@ -906,7 +908,7 @@ namespace Tests
                 sceneEvent,
                 () =>
                 {
-                    InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                    uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                         DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
                 },
                 (eventObj) =>
@@ -968,7 +970,7 @@ namespace Tests
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
                 () =>
                 {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                    uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                         DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
                 },
                 (pointerEvent) =>
@@ -1032,13 +1034,13 @@ namespace Tests
             sceneEvent.eventType = "uuidEvent";
             bool eventTriggered = false;
 
-            DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+            uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                 DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
 
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
                 () =>
                 {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                    uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                         DCL.InputController_Legacy.EVENT.BUTTON_UP, true, true);
                 },
                 (pointerEvent) =>
@@ -1205,13 +1207,13 @@ namespace Tests
             sceneEvent.eventType = "uuidEvent";
 
             bool eventTriggered1 = false;
-            DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+            uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                 DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
 
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
                 () =>
                 {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                    uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                         DCL.InputController_Legacy.EVENT.BUTTON_UP, true, true);
                 },
                 (pointerEvent) =>
@@ -1234,7 +1236,7 @@ namespace Tests
 
             // turn shape invisible
             TestUtils.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(new {visible = false}));
-            DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+            uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                 DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
 
             var pointerUpReceived = false;
@@ -1256,7 +1258,7 @@ namespace Tests
 
             // Hook up to web interface engine message reporting
             WebInterface.OnMessageFromEngine += MsgFromEngineCallback;
-            InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+            uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                 InputController_Legacy.EVENT.BUTTON_UP, true, true);
             WebInterface.OnMessageFromEngine -= MsgFromEngineCallback;
 
@@ -1404,7 +1406,7 @@ namespace Tests
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
                 () =>
                 {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                    uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                         DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
                 },
                 (pointerEvent) =>
@@ -1433,7 +1435,7 @@ namespace Tests
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
                 () =>
                 {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                    uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                         DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
                 },
                 (pointerEvent) =>
@@ -1605,7 +1607,7 @@ namespace Tests
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
                 () =>
                 {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                    uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                         DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
                 },
                 (pointerEvent) =>
@@ -1633,7 +1635,7 @@ namespace Tests
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
                 () =>
                 {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                    uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                         DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
                 },
                 (pointerEvent) =>
@@ -1807,7 +1809,7 @@ namespace Tests
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
                 () =>
                 {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                    uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                         DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
                 },
                 (pointerEvent) =>
@@ -1835,7 +1837,7 @@ namespace Tests
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
                 () =>
                 {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                    uuidEventsPlugin.inputControllerLegacy.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
                         DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
                 },
                 (pointerEvent) =>
@@ -1879,7 +1881,6 @@ namespace Tests
             mainCamera.transform.position = new Vector3(8, 1, 7);
             yield return null;
 
-            var hoverCanvasController = InteractionHoverCanvasController.i;
             Assert.IsNotNull(hoverCanvasController);
             Assert.IsTrue(hoverCanvasController.canvas.enabled);
 
@@ -1926,9 +1927,6 @@ namespace Tests
             yield return null;
 
             mainCamera.transform.position = new Vector3(8, 2, 7);
-
-            var hoverCanvas = InteractionHoverCanvasController.i.canvas;
-            Assert.IsNotNull(hoverCanvas);
 
             Assert.IsTrue(hoverCanvas.enabled);
             yield return null;

@@ -13,13 +13,12 @@ using Ray = UnityEngine.Ray;
 
 namespace DCL
 {
-    public class PointerEventsController : IPointerEventsController
+    public class PointerEventsController
     {
         private static bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
         public System.Action OnPointerHoverStarts;
         public System.Action OnPointerHoverEnds;
 
-        InteractionHoverCanvasController hoverController;
         RaycastHitInfo lastPointerDownEventHitInfo;
         IPointerInputEvent pointerInputUpEvent;
         IRaycastHandler raycastHandler = new RaycastHandler();
@@ -37,8 +36,16 @@ namespace DCL
         List<RaycastResult> uiGraphicRaycastResults = new List<RaycastResult>();
         GraphicRaycaster uiGraphicRaycaster;
 
-        public void Initialize()
+        private IRaycastPointerClickHandler clickHandler;
+        private InputController_Legacy inputControllerLegacy;
+        private InteractionHoverCanvasController hoverCanvas;
+
+        public PointerEventsController(InputController_Legacy inputControllerLegacy,
+            InteractionHoverCanvasController hoverCanvas)
         {
+            this.inputControllerLegacy = inputControllerLegacy;
+            this.hoverCanvas = hoverCanvas;
+            
             for (int i = 0; i < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; i++)
             {
                 var buttonId = (WebInterface.ACTION_BUTTON) i;
@@ -46,10 +53,8 @@ namespace DCL
                 if (buttonId == WebInterface.ACTION_BUTTON.ANY)
                     continue;
 
-                InputController_Legacy.i.AddListener(buttonId, OnButtonEvent);
+                inputControllerLegacy.AddListener(buttonId, OnButtonEvent);
             }
-
-            hoverController = InteractionHoverCanvasController.i;
 
             OnPointerHoverStarts += SetHoverCursor;
             OnPointerHoverEnds += SetNormalCursor;
@@ -62,8 +67,6 @@ namespace DCL
             HideOrShowCursor(Utils.IsCursorLocked);
         }
 
-        private IRaycastPointerClickHandler clickHandler;
-
         public void Update()
         {
             if (charCamera == null)
@@ -71,13 +74,16 @@ namespace DCL
 
             if (!CommonScriptableObjects.rendererState.Get() || charCamera == null)
                 return;
-            if (!Utils.IsCursorLocked) return;
+
+            if (!Utils.IsCursorLocked)
+                return;
 
             IWorldState worldState = Environment.i.world.state;
 
             // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
             bool didHit = Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity,
                 PhysicsLayers.physicsCastLayerMaskWithoutCharacter);
+            
             bool uiIsBlocking = false;
             string currentSceneId = worldState.currentSceneId;
 
@@ -158,7 +164,7 @@ namespace DCL
                 {
                     if (lastHoveredEventList[i] is IPointerInputEvent e)
                     {
-                        bool eventButtonIsPressed = InputController_Legacy.i.IsPressed(e.GetActionButton());
+                        bool eventButtonIsPressed = inputControllerLegacy.IsPressed(e.GetActionButton());
 
                         bool isClick = e.GetEventType() == PointerInputEventType.CLICK;
                         bool isDown = e.GetEventType() == PointerInputEventType.DOWN;
@@ -236,8 +242,8 @@ namespace DCL
         {
             if (lastHoveredObject == null)
             {
-                if (hoverController != null)
-                    hoverController.SetHoverState(false);
+                if (hoverCanvas != null)
+                    hoverCanvas.SetHoverState(false);
 
                 return;
             }
@@ -264,7 +270,7 @@ namespace DCL
                 if (buttonId == WebInterface.ACTION_BUTTON.ANY)
                     continue;
 
-                InputController_Legacy.i.RemoveListener(buttonId, OnButtonEvent);
+                inputControllerLegacy.RemoveListener(buttonId, OnButtonEvent);
             }
 
             lastHoveredObject = null;

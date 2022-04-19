@@ -53,19 +53,21 @@ namespace DCL.Components
 
         public void SetFeedbackState(bool showFeedback, bool hoverState, string button, string hoverText)
         {
-            var hoverCanvasController = InteractionHoverCanvasController.i;
-
-            if (!enableInteractionHoverFeedback || hoverCanvasController == null)
+            if (!enableInteractionHoverFeedback)
                 return;
 
-            hoverCanvasController.enabled = showFeedback;
+            var cursorData = DataStore.i.Get<DataStore_Cursor>();
+            cursorData.hoverFeedbackEnabled.Set(showFeedback);
 
             if (showFeedback)
             {
                 if (hoverState)
-                    hoverCanvasController.Setup(button, hoverText, entity);
+                {
+                    cursorData.hoverFeedbackButton.Set(button);
+                    cursorData.hoverFeedbackCaption.Set(hoverText);
+                }
 
-                hoverCanvasController.SetHoverState(hoverState);
+                cursorData.hoverFeedbackHoverState.Set(hoverState);
             }
         }
 

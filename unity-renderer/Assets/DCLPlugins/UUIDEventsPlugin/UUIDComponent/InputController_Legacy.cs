@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DCL.Configuration;
 using DCL.Interface;
@@ -5,24 +6,12 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class InputController_Legacy
+    public class InputController_Legacy : IDisposable
     {
         public delegate void ButtonListenerCallback(WebInterface.ACTION_BUTTON buttonId, EVENT eventType,
             bool useRaycast, bool enablePointerEvent);
 
         private static bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
-        private static InputController_Legacy instance = null;
-
-        public static InputController_Legacy i
-        {
-            get
-            {
-                if (instance == null)
-                    instance = new InputController_Legacy();
-
-                return instance;
-            }
-        }
 
         public enum EVENT
         {
@@ -50,7 +39,7 @@ namespace DCL
 
         private List<BUTTON_MAP> buttonsMap = new List<BUTTON_MAP>();
 
-        private InputController_Legacy()
+        public InputController_Legacy()
         {
             buttonsMap.Add(new BUTTON_MAP()
             {
@@ -143,6 +132,8 @@ namespace DCL
                 type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.ActionButton6Keycode,
                 buttonId = WebInterface.ACTION_BUTTON.ACTION_6, useRaycast = true, enablePointerEvent = false
             });
+
+            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         public void AddListener(WebInterface.ACTION_BUTTON buttonId, ButtonListenerCallback callback)
@@ -233,6 +224,11 @@ namespace DCL
                            Input.GetKey(InputSettings.PrimaryButtonKeyCode) ||
                            Input.GetKey(InputSettings.SecondaryButtonKeyCode);
             }
+        }
+
+        public void Dispose()
+        {
+            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         }
     }
 }

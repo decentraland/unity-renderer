@@ -7,17 +7,14 @@ using DCL;
 
 public class InteractionHoverCanvasController : MonoBehaviour
 {
-    public static InteractionHoverCanvasController i { get; private set; }
     public Canvas canvas;
     public RectTransform backgroundTransform;
     public TextMeshProUGUI text;
     public GameObject[] icons;
 
     bool isHovered = false;
-    Camera mainCamera;
     GameObject hoverIcon;
     Vector3 meshCenteredPos;
-    IDCLEntity entity;
 
     const string ACTION_BUTTON_POINTER = "POINTER";
     const string ACTION_BUTTON_PRIMARY = "PRIMARY";
@@ -25,18 +22,13 @@ public class InteractionHoverCanvasController : MonoBehaviour
 
     void Awake()
     {
-        i = this;
-        mainCamera = Camera.main;
         backgroundTransform.gameObject.SetActive(false);
     }
 
-    public void Setup(string button, string feedbackText, IDCLEntity entity)
+    public void Setup(string button, string feedbackText)
     {
         text.text = feedbackText;
-        this.entity = entity;
-
         ConfigureIcon(button);
-
         canvas.enabled = enabled && isHovered;
     }
 

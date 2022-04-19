@@ -127,8 +127,6 @@ namespace DCL
             if (!enabled)
                 return;
 
-            InputController_Legacy.i.Update();
-
             if (lastSortFrame != Time.frameCount && sceneSortDirty)
             {
                 lastSortFrame = Time.frameCount;

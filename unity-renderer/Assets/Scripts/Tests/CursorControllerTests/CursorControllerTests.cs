@@ -26,14 +26,12 @@ namespace Tests
             List<GameObject> result = new List<GameObject>();
             result.Add(MainSceneFactory.CreateEnvironment());
             result.Add(MainSceneFactory.CreateEventSystem());
-            result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
             return result;
         }
 
         protected override ServiceLocator InitializeServiceLocator()
         {
             ServiceLocator result = DCL.ServiceLocatorTestFactory.CreateMocked();
-            result.Register<IPointerEventsController>( () => new PointerEventsController());
             result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
             result.Register<IWorldState>( () => new WorldState());
             result.Register<IUpdateEventHandler>( () => new UpdateEventHandler());

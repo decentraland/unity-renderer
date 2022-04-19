@@ -14,6 +14,8 @@ namespace DCL.Components
         public new Collider collider;
         private OnPointerEvent.Model model;
         private OnPointerEventHandler eventHandler;
+
+        public InteractionHoverCanvasController hoverCanvas;
         public IDCLEntity entity { get; private set; }
         public event System.Action OnPointerDownReport;
         public event System.Action OnPointerEnterReport;
