@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DCL.Controllers
 {
-    public static class ComponentUtils
+    public static class DCLVideoTextureUtils
     {
         public static float GetClosestDistanceSqr(ISharedComponent disposableComponent, Vector3 fromPosition)
         {
