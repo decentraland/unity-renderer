@@ -5,6 +5,11 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
 {
     [SerializeField] private CollapsableDirectChatListComponentView directChatList;
     [SerializeField] private CollapsablePublicChannelListComponentView publicChannelList;
+    
+    public void Initialize(IChatController chatController)
+    {
+        directChatList.Initialize(chatController);
+    }
 
     public void Filter(string search)
     {

@@ -47,6 +47,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public void Initialize(IChatController chatController)
     {
         directChatList.Initialize(chatController);
+        searchResultsList.Initialize(chatController);
     }
 
     public void Show() => gameObject.SetActive(true);
