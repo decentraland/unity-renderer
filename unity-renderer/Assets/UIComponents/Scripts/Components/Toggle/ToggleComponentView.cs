@@ -74,6 +74,7 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
                 return;
 
             toggle.isOn = value;
+            RefreshActiveStatus();
         }
     }
 
@@ -82,15 +83,20 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
         base.Awake();
 
         toggle.onValueChanged.AddListener(ToggleChanged);
+        RefreshActiveStatus();
     }
 
-    private void ToggleChanged(bool isOn) 
+    private void RefreshActiveStatus()
     {
         if (activeOn)
             activeOn.gameObject.SetActive(isOn);
         if (activeOff)
             activeOff.gameObject.SetActive(!isOn);
+    }
 
+    private void ToggleChanged(bool isOn) 
+    {
+        this.isOn = isOn;
         OnSelectedChanged?.Invoke(isOn, model.id, model.text);
     }
 

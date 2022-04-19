@@ -237,6 +237,12 @@ namespace DCL.ExperiencesViewer
                 lastDisablePEXSentToKernel = pausedPEXScenesIds;
                 WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
             }
+
+            List<ExperienceRowComponentView> loadedExperiences = view.GetAllAvailableExperiences();
+            foreach (ExperienceRowComponentView experience in loadedExperiences)
+            {
+                experience.SetAllowStartStop(userProfile.avatar.wearables.Contains(experience.model.id));
+            }
         }
 
         internal virtual IExperiencesViewerComponentView CreateView() => ExperiencesViewerComponentView.Create();

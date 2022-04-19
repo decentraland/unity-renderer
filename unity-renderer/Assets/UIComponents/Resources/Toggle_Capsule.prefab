@@ -524,7 +524,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!114 &7833640354987619407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -554,7 +554,9 @@ MonoBehaviour:
   activeOn: {fileID: 8806659310530846726}
   activeOff: {fileID: 9008524825783389075}
   model:
+    isOn: 0
     text: 
+    id: 
     isTextActive: 0
 --- !u!225 &5668197389447213992
 CanvasGroup:
@@ -618,7 +620,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8038834335027227982
 RectTransform:
   m_ObjectHideFlags: 0
@@ -743,7 +745,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2224212902183062667
 RectTransform:
   m_ObjectHideFlags: 0
