@@ -162,7 +162,9 @@ namespace DCL
             newScene.isTestScene = true;
             newScene.isPersistent = true;
             newScene.SetData(data);
-            newScene.InitializeDebugPlane();
+
+            if (DCLCharacterController.i != null)
+                newScene.InitializeDebugPlane();
 
             Environment.i.world.state.scenesSortedByDistance?.Add(newScene);
             Environment.i.world.state.loadedScenes?.Add(data.id, newScene);
