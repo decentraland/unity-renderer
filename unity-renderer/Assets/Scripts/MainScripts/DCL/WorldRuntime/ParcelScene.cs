@@ -406,29 +406,43 @@ namespace DCL.Controllers
             Environment.i.platform.cullingController.MarkDirty();
             Environment.i.platform.physicsSyncController.MarkDirty();
 
-            if (firstPersonCameraTransform != null && avatarTransform != null)
+            if (firstPersonCameraTransform != null)
             {
-                if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+                if (parentId == "FirstPersonCameraEntityReference" ||
+                    parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will attached to the first person camera
                     // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
                     me.SetParent(null);
                     me.gameObject.transform.SetParent(firstPersonCameraTransform);
-                    Environment.i.world.sceneBoundsChecker.AddPersistent(me);
                     Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
+                    Environment.i.world.sceneBoundsChecker.AddPersistent(me);
                     return;
                 }
+            }
 
-                if (parentId == "AvatarEntityReference" || parentId == "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+            if (avatarTransform != null)
+            {
+                if (parentId == "AvatarEntityReference" ||
+                    parentId ==
+                    "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will be attached to the avatar
                     // It will simply rotate with the avatar, regardless of where the camera is pointing
                     me.SetParent(null);
                     me.gameObject.transform.SetParent(avatarTransform);
-                    Environment.i.world.sceneBoundsChecker.AddPersistent(me);
                     Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
+                    Environment.i.world.sceneBoundsChecker.AddPersistent(me);
                     return;
                 }
+            }
+
+            // Remove from persistent checks if it was formerly added as child of avatarTransform or fpsTransform 
+            if (me.gameObject.transform.parent == avatarTransform ||
+                me.gameObject.transform.parent == firstPersonCameraTransform)
+            {
+                if (Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(me))
+                    Environment.i.world.sceneBoundsChecker.RemovePersistent(me);
             }
 
             if (parentId == "0")
@@ -446,6 +460,7 @@ namespace DCL.Controllers
                     me.SetParent(myParent);
                 }
             }
+
         }
 
         /**
