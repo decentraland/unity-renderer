@@ -139,19 +139,6 @@ namespace DCL
             }
         }
 
-        public static void DecodeTransform(string payload, ref DCLTransform.Model model)
-        {
-#if UNITY_EDITOR
-            DumpMessage(payload, TRANSFORM_FILENAME, ref transformDumpStr, ref transformCount);
-#endif
-            byte[] bytes = System.Convert.FromBase64String(payload);
-
-            DCL.Interface.PB_Transform pbTransform = DCL.Interface.PB_Transform.Parser.ParseFrom(bytes);
-            model.position = new Vector3(pbTransform.Position.X, pbTransform.Position.Y, pbTransform.Position.Z);
-            model.scale = new Vector3(pbTransform.Scale.X, pbTransform.Scale.Y, pbTransform.Scale.Z);
-            model.rotation = new Quaternion((float)pbTransform.Rotation.X, (float)pbTransform.Rotation.Y, (float)pbTransform.Rotation.Z, (float)pbTransform.Rotation.W);
-        }
-
         public static void DecodeQueryMessage(string queryId, string payload, ref QueryMessage query)
         {
 #if UNITY_EDITOR
@@ -172,7 +159,7 @@ namespace DCL
         }
 
 #if UNITY_EDITOR
-        private static void DumpMessage(string payload, string filename, ref string dumpString, ref int counter)
+        public static void DumpMessage(string payload, string filename, ref string dumpString, ref int counter)
         {
             if (DUMP_MESSAGES_FOR_PERFORMANCE_TESTS && CommonScriptableObjects.rendererState.Get())
             {

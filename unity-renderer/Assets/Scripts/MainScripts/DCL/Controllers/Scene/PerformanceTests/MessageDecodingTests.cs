@@ -1,6 +1,7 @@
 using Unity.PerformanceTesting;
 using NUnit.Framework;
 using DCL;
+using DCL.Components;
 using DCL.Interface;
 using DCL.Models;
 
@@ -46,7 +47,7 @@ namespace MessaginPerformanceTests
                    {
                        for (var i = 0; i < count; i++)
                        {
-                           MessageDecoder.DecodeTransform(messages[i], ref transformModel);
+                           DCLTransformUtils.DecodeTransform(messages[i], ref transformModel);
                        }
                    })
                    .SetUp(() => SetupTests())

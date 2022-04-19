@@ -17,7 +17,7 @@ namespace DCL.Components
 
             public override BaseModel GetDataFromJSON(string json)
             {
-                MessageDecoder.DecodeTransform(json, ref DCLTransform.model);
+                DCLTransformUtils.DecodeTransform(json, ref DCLTransform.model);
                 return DCLTransform.model;
             }
         }
