@@ -45,10 +45,7 @@ namespace DCL.Controllers
         public SceneLifecycleHandler sceneLifecycleHandler;
 
         public bool isReleased { get; private set; }
-
-        public Transform avatarTransform;
-        public Transform firstPersonCameraTransform;
-
+        
         public void Awake()
         {
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
@@ -406,12 +403,16 @@ namespace DCL.Controllers
             Environment.i.platform.cullingController.MarkDirty();
             Environment.i.platform.physicsSyncController.MarkDirty();
 
+            DataStore_World worldData = DataStore.i.Get<DataStore_World>();
+            Transform avatarTransform = worldData.avatarTransform.Get();
+            Transform firstPersonCameraTransform = worldData.fpsTransform.Get();
+
             if (parentId == "FirstPersonCameraEntityReference" ||
                 parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
             {
                 if (firstPersonCameraTransform == null)
                 {
-                    Debug.LogError("FPS transform is null when trying to set parent!");
+                    Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.id);
                     return;
                 }
 
@@ -430,7 +431,7 @@ namespace DCL.Controllers
             {
                 if (avatarTransform == null)
                 {
-                    Debug.LogError("Avatar transform is null when trying to set parent!");
+                    Debug.LogError("Avatar transform is null when trying to set parent! " + sceneData.id);
                     return;
                 }
 

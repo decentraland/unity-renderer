@@ -31,9 +31,6 @@ namespace DCL
         private CancellationTokenSource tokenSource;
         private IMessagingControllersManager messagingControllersManager => Environment.i.messaging.manager;
 
-        public Transform avatarTransform { get; set; }
-        public Transform firstPersonCameraTransform { get; set; }
-
         public void Initialize()
         {
             tokenSource = new CancellationTokenSource();
@@ -665,8 +662,6 @@ namespace DCL
                 var newGameObject = new GameObject("New Scene");
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
-                newScene.avatarTransform = avatarTransform;
-                newScene.firstPersonCameraTransform = firstPersonCameraTransform;
                 newScene.SetData(sceneToLoad);
 
                 if (debugConfig.isDebugMode.Get())
@@ -684,7 +679,7 @@ namespace DCL
                 messagingControllersManager.AddControllerIfNotExists(this, newScene.sceneData.id);
 
                 if (VERBOSE)
-                    Debug.Log($"{Time.frameCount} : Load parcel scene {newScene.sceneData.basePosition}");
+                    Debug.Log($"{Time.frameCount}: Load parcel scene (id: {newScene.sceneData.id})");
             }
 
             ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_LOAD);
@@ -875,8 +870,6 @@ namespace DCL
             newScene.isPersistent = true;
             newScene.sceneName = globalScene.name;
             newScene.isPortableExperience = globalScene.isPortableExperience;
-            newScene.avatarTransform = avatarTransform;
-            newScene.firstPersonCameraTransform = firstPersonCameraTransform;
 
             LoadParcelScenesMessage.UnityParcelScene data = new LoadParcelScenesMessage.UnityParcelScene
             {
@@ -904,9 +897,7 @@ namespace DCL
             messagingControllersManager.AddControllerIfNotExists(this, newGlobalSceneId, isGlobal: true);
 
             if (VERBOSE)
-            {
                 Debug.Log($"Creating Global scene {newGlobalSceneId}");
-            }
         }
 
         public void IsolateScene(IParcelScene sceneToActive)

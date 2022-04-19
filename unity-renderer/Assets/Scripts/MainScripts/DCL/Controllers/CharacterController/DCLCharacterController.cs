@@ -97,7 +97,7 @@ public class DCLCharacterController : MonoBehaviour
     public event System.Action OnJump;
     public event System.Action OnHitGround;
     public event System.Action<float> OnMoved;
-
+    
     void Awake()
     {
         if (i != null)
@@ -134,11 +134,9 @@ public class DCLCharacterController : MonoBehaviour
             throw new System.Exception("Both the avatar and first person camera game objects must be set.");
         }
 
-        if (Environment.i.world.sceneController != null)
-        {
-            Environment.i.world.sceneController.avatarTransform = avatarGameObject.transform;
-            Environment.i.world.sceneController.firstPersonCameraTransform = firstPersonCameraGameObject.transform;
-        }
+        var worldData = DataStore.i.Get<DataStore_World>();
+        worldData.avatarTransform.Set(avatarGameObject.transform);
+        worldData.fpsTransform.Set(firstPersonCameraGameObject.transform);
     }
 
     private void SubscribeToInput()
