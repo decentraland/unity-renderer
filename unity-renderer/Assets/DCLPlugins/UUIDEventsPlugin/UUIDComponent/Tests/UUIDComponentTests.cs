@@ -1926,11 +1926,14 @@ namespace Tests
 
             yield return null;
 
+            // Canvas should be initialized as false
+            Assert.IsFalse(uuidEventsPlugin.hoverCanvas.canvas.enabled);
             mainCamera.transform.position = new Vector3(8, 2, 7);
 
-
-            Assert.IsTrue(uuidEventsPlugin.hoverCanvas.enabled);
             yield return null;
+
+            // Canvas now should be true because the camera was repositioned 
+            Assert.IsTrue(uuidEventsPlugin.hoverCanvas.canvas.enabled);
 
             onPointerDownModel.distance = 1f;
             // we can't use TestHelpers.EntityComponentUpdate() to update UUIDComponents until we separate every UUIComponent to their own new CLASS_ID_COMPONENT
@@ -1939,7 +1942,8 @@ namespace Tests
 
             yield return null;
 
-            Assert.IsFalse(uuidEventsPlugin.hoverCanvas.enabled);
+            // Canvas should be false again because the distance value was set to 1 
+            Assert.IsFalse(uuidEventsPlugin.hoverCanvas.canvas.enabled);
             Object.Destroy(component);
         }
     }

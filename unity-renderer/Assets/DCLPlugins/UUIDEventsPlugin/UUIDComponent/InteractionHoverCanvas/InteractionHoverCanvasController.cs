@@ -31,6 +31,8 @@ public class InteractionHoverCanvasController : MonoBehaviour
         dataStore.hoverFeedbackText.OnChange += OnChangeFeedbackText;
         dataStore.hoverFeedbackEnabled.OnChange += OnChangeFeedbackEnabled;
         dataStore.hoverFeedbackHoverState.OnChange += OnChangeFeedbackHoverState;
+
+        UpdateCanvas();
     }
 
     private void OnDestroy()
@@ -52,23 +54,26 @@ public class InteractionHoverCanvasController : MonoBehaviour
     private void OnChangeFeedbackEnabled(bool current, bool previous)
     {
         enabled = current;
+        UpdateCanvas();
     }
 
     private void OnChangeFeedbackText(string current, string previous)
     {
         text.text = current;
+        UpdateCanvas();
     }
 
     private void OnChangeFeedbackButton(string current, string previous)
     {
         ConfigureIcon(current);
+        UpdateCanvas();
     }
     
     public void Setup(string button, string feedbackText)
     {
         text.text = feedbackText;
         ConfigureIcon(button);
-        canvas.enabled = enabled && isHovered;
+        UpdateCanvas();
     }
 
     void ConfigureIcon(string button)
@@ -101,12 +106,19 @@ public class InteractionHoverCanvasController : MonoBehaviour
             return;
 
         isHovered = hoverState;
-
-        canvas.enabled = isHovered;
+        UpdateCanvas();
     }
 
     public GameObject GetCurrentHoverIcon()
     {
         return hoverIcon;
+    }
+
+    void UpdateCanvas()
+    {
+        bool newValue = enabled && isHovered;
+
+        if (canvas.enabled != newValue)
+            canvas.enabled = newValue;
     }
 }
