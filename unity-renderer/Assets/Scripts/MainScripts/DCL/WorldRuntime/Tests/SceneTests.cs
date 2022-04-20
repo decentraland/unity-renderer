@@ -282,7 +282,9 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public void ParcelScene_SetEntityParent()
     {
         var entityId = "entityId";
+        var entityId2 = "entityId_2";
         var entity = TestUtils.CreateSceneEntity(scene, entityId);
+        var entity2 = TestUtils.CreateSceneEntity(scene, entityId2);
 
         // Make sure that it doesn't have a parent
         Assert.IsNull(entity.parent);
@@ -290,12 +292,17 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         // Set player reference as parent
         TestUtils.SetEntityParent(scene, entityId, "FirstPersonCameraEntityReference");
-        Assert.AreEqual(entity.parent, DCLCharacterController.i.firstPersonCameraReference);
+        Assert.AreEqual(entity.gameObject.transform.parent,
+            DCLCharacterController.i.firstPersonCameraGameObject.transform);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
+
+        // Set another entity as parent and ensure is not added as persistent
+        TestUtils.SetEntityParent(scene, entityId, entityId2);
+        Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set avatar position reference as parent
         TestUtils.SetEntityParent(scene, entityId, "AvatarEntityReference");
-        Assert.AreEqual(entity.parent, DCLCharacterController.i.avatarReference);
+        Assert.AreEqual(entity.gameObject.transform.parent, DCLCharacterController.i.avatarGameObject.transform);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Remove all parents
