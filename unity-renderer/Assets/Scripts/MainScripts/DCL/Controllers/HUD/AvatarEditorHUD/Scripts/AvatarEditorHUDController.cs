@@ -145,7 +145,7 @@ public class AvatarEditorHUDController : IHUD
     {
         // If there is more than 1 minute that we have checked the owned wearables, we try it again
         // This is done in order to retrieved the wearables after you has claimed them
-        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 0 &&
+        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 60 &&
              (ownedWearablesAlreadyLoaded ||
               ownedWearablesRemainingRequests <= 0)) ||
             string.IsNullOrEmpty(userProfile.userId))
@@ -815,8 +815,31 @@ public class AvatarEditorHUDController : IHUD
             {
                 view.LoadCollectionsDropdown(collections);
                 collectionsAlreadyLoaded = true;
+                LoadUserThirdPartyWearables();
             })
             .Catch((error) => Debug.LogError(error));
+    }
+
+    private void LoadUserThirdPartyWearables()
+    {
+        List<string> collectionIdsToLoad = new List<string>();
+        foreach (string wearableId in userProfile.avatar.wearables)
+        {
+            CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
+
+            if (wearable != null && wearable.IsFromThirdPartyCollection)
+            {
+                if (!collectionIdsToLoad.Contains(wearable.ThirdPartyCollectionId))
+                    collectionIdsToLoad.Add(wearable.ThirdPartyCollectionId);
+            }
+        }
+
+        List<IToggleComponentView> allCollectionOptions = view.GetAllCollectionOptions();
+        foreach (IToggleComponentView collectionOption in allCollectionOptions)
+        {
+            if (collectionIdsToLoad.Contains(collectionOption.id))
+                collectionOption.isOn = true;
+        }
     }
 
     public void ToggleThirdPartyCollection(bool isOn, string collectionId, string collectionName)
@@ -825,6 +848,33 @@ public class AvatarEditorHUDController : IHUD
             FetchAndShowThirdPartyCollection(collectionId, collectionName);
         else
             RemoveThirdPartyCollection(collectionId);
+    }
+
+    private void FetchAndShowThirdPartyCollection(string collectionId, string collectionName)
+    {
+        view.BlockCollectionsDropdown(true);
+        CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
+            .Then(wearables =>
+            {
+                foreach (var wearable in wearables)
+                {
+                    if (!userProfile.ContainsInInventory(wearable.id))
+                    {
+                        userProfile.AddToInventory(wearable.id);
+                        
+                        if (!thirdPartyWearablesLoaded.Contains(wearable.id))
+                            thirdPartyWearablesLoaded.Add(wearable.id);
+                    }
+                }
+
+                view.BlockCollectionsDropdown(false);
+                LoadUserProfile(userProfile, true);
+            })
+            .Catch((error) =>
+            {
+                view.BlockCollectionsDropdown(false);
+                Debug.LogError(error);
+            });
     }
 
     private void RemoveThirdPartyCollection(string collectionId)
@@ -841,32 +891,8 @@ public class AvatarEditorHUDController : IHUD
             userProfile.RemoveFromInventory(wearableId);
             thirdPartyWearablesLoaded.Remove(wearableId);
         }
-    }
 
-    private void FetchAndShowThirdPartyCollection(string collectionId, string collectionName)
-    {
-        view.BlockCollectionsDropdown(true);
-        CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
-            .Then(wearables =>
-            {
-                foreach (var wearable in wearables)
-                {
-                    wearable.collectionPrettyName = collectionName;
-                    if (!userProfile.ContainsInInventory(wearable.id))
-                    {
-                        userProfile.AddToInventory(wearable.id);
-                        thirdPartyWearablesLoaded.Add(wearable.id);
-                    }
-                }
-
-                view.BlockCollectionsDropdown(false);
-                LoadUserProfile(userProfile, true);
-            })
-            .Catch((error) =>
-            {
-                view.BlockCollectionsDropdown(false);
-                Debug.LogError(error);
-            });
+        LoadUserProfile(userProfile, true);
     }
 
     private bool ShouldShowHideOtherWearablesToast(WearableItem wearable)

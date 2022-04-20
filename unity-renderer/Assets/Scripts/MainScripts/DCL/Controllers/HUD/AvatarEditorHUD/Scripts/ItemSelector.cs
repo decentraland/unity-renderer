@@ -50,13 +50,16 @@ public class ItemSelector : MonoBehaviour
 
     private void OnDestroy() { loadingRetryButton.onClick.RemoveListener(RetryLoading); }
 
-    public void AddItemToggle(WearableItem item, int amount,
+    public void AddItemToggle(
+        WearableItem item,
+        string collectionName,
+        int amount,
         Func<WearableItem, bool> hideOtherWearablesToastStrategy,
         Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
     {
         CollectionGroup collectionGroup;
         if (item.IsFromThirdPartyCollection)
-            collectionGroup = CreateCollectionGroupIfNeeded(item.ThirdPartyCollectionId, item.collectionPrettyName);
+            collectionGroup = CreateCollectionGroupIfNeeded(item.ThirdPartyCollectionId, collectionName);
         else
             collectionGroup = CreateCollectionGroupIfNeeded(DECENTRALAND_COLLECTION_ID, DECENTRALAND_COLLECTION_ID);
 
