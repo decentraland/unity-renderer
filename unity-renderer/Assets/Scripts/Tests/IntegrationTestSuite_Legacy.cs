@@ -37,11 +37,11 @@ public class IntegrationTestSuite_Legacy
 
         Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
-        legacySystems = SetUp_LegacySystems();
-
         InitializeDefaultRenderSettings();
 
         Environment.Setup(InitializeServiceLocator());
+
+        legacySystems = SetUp_LegacySystems();
 
         yield return SetUp_Camera();
     }
