@@ -328,8 +328,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             return;
 
         messageHoverText.text = chatEntry.messageLocalDateTime;
-        ((RectTransform) messageHoverPanel.transform).pivot =
-            new Vector2(chatEntry.Model.subType == ChatEntryModel.SubType.SENT ? 1 : 0, 0.5f);
         chatEntry.DockHoverPanel((RectTransform) messageHoverPanel.transform);
         messageHoverPanel.SetActive(true);
     }
