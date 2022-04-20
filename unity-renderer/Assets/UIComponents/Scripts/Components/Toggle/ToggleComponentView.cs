@@ -11,7 +11,7 @@ public interface IToggleComponentView
     event Action<bool, string, string> OnSelectedChanged;
 
     /// <summary>
-    /// Id asociated to the toogle.
+    /// Id associated to the toogle.
     /// </summary>
     string id { get; }
 
@@ -19,6 +19,11 @@ public interface IToggleComponentView
     /// On/Off state of the toggle.
     /// </summary>
     bool isOn { get; set; }
+
+    /// <summary>
+    /// Text (if exists) associated to the toggle.
+    /// </summary>
+    string title { get; }
 
     /// <summary>
     /// Set the toggle text.
@@ -77,6 +82,8 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
             RefreshActiveStatus();
         }
     }
+
+    public string title => text.text;
 
     public override void Awake()
     {
