@@ -99,7 +99,6 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         {
             searchResultsList.Export(publicChannelList, directChatList);
             searchResultsList.Hide();
-            searchResultsList.Clear();
             publicChannelList.Show();
             directChatList.Show();
             directChannelHeader.SetActive(true);
@@ -109,17 +108,16 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         if (!string.IsNullOrEmpty(search) && string.IsNullOrEmpty(lastSearch))
         {
             searchResultsList.Import(publicChannelList, directChatList);
-            publicChannelList.Hide();
-            publicChannelList.Clear();
-            directChatList.Hide();
-            directChatList.Clear();
-            searchResultsList.Sort();
             searchResultsList.Show();
+            publicChannelList.Hide();
+            directChatList.Hide();
             directChannelHeader.SetActive(false);
             searchResultsHeader.SetActive(true);
         }
 
         searchResultsList.Filter(search);
+        publicChannelList.Filter(search);
+        directChatList.Filter(search);
         lastSearch = search;
         UpdateHeaders();
     }

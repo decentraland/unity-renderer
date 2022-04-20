@@ -15,6 +15,7 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private Pool entryPool;
     private IChatController chatController;
+    private bool releaseEntriesFromPool = true;
 
     public event Action<PrivateChatEntry> OnOpenChat;
 
@@ -30,11 +31,23 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
             /*|| regex.IsMatch(entry.Model.lastMessage)*/);
     }
 
+    public void Clear(bool releaseEntriesFromPool)
+    {
+        // avoids releasing instances from pool just for this clear
+        this.releaseEntriesFromPool = releaseEntriesFromPool;
+        base.Clear();
+        this.releaseEntriesFromPool = true;
+    }
+
     public override PrivateChatEntry Remove(string key)
     {
-        if (pooleableEntries.ContainsKey(key))
-            pooleableEntries[key].Release();
-        pooleableEntries.Remove(key);
+        if (releaseEntriesFromPool)
+        {
+            if (pooleableEntries.ContainsKey(key))
+                pooleableEntries[key].Release();
+            pooleableEntries.Remove(key);    
+        }
+        
         return base.Remove(key);
     }
 

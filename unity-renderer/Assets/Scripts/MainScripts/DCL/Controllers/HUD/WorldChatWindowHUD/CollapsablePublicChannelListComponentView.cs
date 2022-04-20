@@ -13,6 +13,7 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private Pool entryPool;
+    private bool releaseEntriesFromPool = true;
 
     public event Action<PublicChannelEntry> OnOpenChat;
 
@@ -22,11 +23,23 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         Filter(entry => regex.IsMatch(entry.Model.name));
     }
 
+    public void Clear(bool releaseEntriesFromPool)
+    {
+        // avoids releasing instances from pool just for this clear
+        this.releaseEntriesFromPool = releaseEntriesFromPool;
+        base.Clear();
+        this.releaseEntriesFromPool = true;
+    }
+
     public override PublicChannelEntry Remove(string key)
     {
-        if (pooleableEntries.ContainsKey(key))
-            pooleableEntries[key].Release();
-        pooleableEntries.Remove(key);
+        if (releaseEntriesFromPool)
+        {
+            if (pooleableEntries.ContainsKey(key))
+                pooleableEntries[key].Release();
+            pooleableEntries.Remove(key);    
+        }
+        
         return base.Remove(key);
     }
 

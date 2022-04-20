@@ -19,7 +19,8 @@ public class PrivateChatHUDView : ChatHUDView
         base.ClearAllEntries();
         
         foreach (var separator in dateSeparators.Values)
-            Destroy(separator.gameObject);
+            if (separator)
+                Destroy(separator.gameObject);
 
         dateSeparators.Clear();
     }

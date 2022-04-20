@@ -22,6 +22,12 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
         return directChatList.Count() + publicChannelList.Count();
     }
 
+    public void Clear(bool releaseEntriesFromPool)
+    {
+        directChatList.Clear(releaseEntriesFromPool);
+        publicChannelList.Clear(releaseEntriesFromPool);
+    }
+
     public override void Clear()
     {
         directChatList.Clear();
@@ -49,17 +55,22 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
         CollapsableDirectChatListComponentView privateChatList)
     {
         foreach (var pair in this.publicChannelList.Entries)
-            publicChannelList.Set(pair.Key, pair.Value.Model);
+            publicChannelList.Add(pair.Key, pair.Value);
         foreach (var pair in directChatList.Entries)
-            privateChatList.Set(pair.Key, pair.Value.Model);
+            privateChatList.Add(pair.Key, pair.Value);
+        
+        Clear(false);
     }
 
     public void Import(CollapsablePublicChannelListComponentView publicChannelList,
         CollapsableDirectChatListComponentView privateChatList)
     {
         foreach (var pair in privateChatList.Entries)
-            directChatList.Set(pair.Key, pair.Value.Model);
+            directChatList.Add(pair.Key, pair.Value);
         foreach (var pair in publicChannelList.Entries)
-            this.publicChannelList.Set(pair.Key, pair.Value.Model);
+            this.publicChannelList.Add(pair.Key, pair.Value);
+        
+        privateChatList.Clear(false);
+        publicChannelList.Clear(false);
     }
 }
