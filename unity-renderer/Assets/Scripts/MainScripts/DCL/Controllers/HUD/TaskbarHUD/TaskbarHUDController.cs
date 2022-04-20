@@ -96,6 +96,9 @@ public class TaskbarHUDController : IHUD
 
     private void View_OnFriendsToggleOn()
     {
+        worldChatWindowHud.SetVisibility(false);
+        privateChatWindow.SetVisibility(false);
+        publicChatChannel.SetVisibility(false);
         friendsHud?.SetVisibility(true);
         OnAnyTaskbarButtonClicked?.Invoke();
     }
@@ -173,6 +176,7 @@ public class TaskbarHUDController : IHUD
         privateChatWindow.Configure(userId);
         worldChatWindowHud.SetVisibility(false);
         privateChatWindow.SetVisibility(true);
+        friendsHud.SetVisibility(false);
     }
 
     public void OpenPublicChatChannel(string channelId)
@@ -180,6 +184,7 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.SetVisibility(false);
         publicChatChannel.Setup(channelId);
         publicChatChannel.SetVisibility(true);
+        friendsHud.SetVisibility(false);
     }
     
     public void OpenChatList()
