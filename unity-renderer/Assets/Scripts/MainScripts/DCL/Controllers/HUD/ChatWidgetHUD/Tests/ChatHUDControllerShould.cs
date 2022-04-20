@@ -4,12 +4,14 @@ using NUnit.Framework;
 using System.Collections;
 using DCL;
 using NSubstitute;
+using UnityEngine;
 
 public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
 {
+    private const string OWN_USER_ID = "ownUserId";
+    
     private ChatHUDController controller;
     private IChatHUDComponentView view;
-    private ChatMessage lastMsgSent;
     private DataStore dataStore;
 
     protected override IEnumerator SetUp()
@@ -18,15 +20,18 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
         dataStore = new DataStore();
         dataStore.settings.profanityChatFilteringEnabled.Set(true);
         view = Substitute.For<IChatHUDComponentView>();
-        controller = new ChatHUDController(dataStore, Substitute.For<IUserProfileBridge>(), true, profanityFilter);
-        controller.OnSendMessage += OnSendMessage;
+        var userProfileBridge = Substitute.For<IUserProfileBridge>();
+        var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
+        userProfileBridge.GetOwn().Returns(ownUserProfile);
+        controller = new ChatHUDController(dataStore, userProfileBridge, true, profanityFilter);
+        controller.Initialize(view);
         Assert.IsTrue(view != null);
         yield break;
     }
 
     protected override IEnumerator TearDown()
     {
-        controller.OnSendMessage -= OnSendMessage;
         controller.Dispose();
         yield break;
     }
@@ -34,25 +39,31 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
     [Test]
     public void SubmitMessageProperly()
     {
+        ChatMessage sentMsg = null;
+        void SendMessage(ChatMessage msg) => sentMsg = msg;
+        controller.OnSendMessage += SendMessage;
         view.OnSendMessage += Raise.Event<Action<ChatMessage>>(
             new ChatMessage(ChatMessage.Type.PUBLIC, "idk", "test message"));
-        Assert.AreEqual("test message", lastMsgSent.body);
+        Assert.AreEqual("test message", sentMsg.body);
+        Assert.AreEqual(ChatMessage.Type.PUBLIC, sentMsg.messageType);
+        Assert.AreEqual(OWN_USER_ID, sentMsg.sender);
+        controller.OnSendMessage -= SendMessage;
     }
 
     [Test]
     public void TrimWhenTooMuchMessagesAreInView()
     {
         view.EntryCount.Returns(ChatHUDController.MAX_CHAT_ENTRIES + 1);
-        
+
         var msg = new ChatEntryModel
         {
             messageType = ChatMessage.Type.PUBLIC,
             senderName = "test",
             bodyText = "test"
         };
-        
+
         controller.AddChatMessage(msg);
-        
+
         view.Received(1).RemoveFirstEntry();
     }
 
@@ -65,10 +76,13 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             senderName = "test",
             bodyText = "test"
         };
-        
+
         controller.AddChatMessage(msg);
-        
-        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.Equals(msg)));
+
+        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.messageType == msg.messageType
+                                                                  && model.senderName == msg.senderName
+                                                                  && model.bodyText ==
+                                                                  $"<noparse>{msg.bodyText}</noparse>"));
     }
 
     [TestCase("ShiT hello shithead", "**** hello shithead")]
@@ -81,12 +95,12 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             senderName = "test",
             bodyText = body
         };
-        
+
         controller.AddChatMessage(msg);
-        
-        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText.Equals(expected)));
+
+        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{expected}</noparse>"));
     }
-    
+
     [TestCase("fuck1 heh bitch", "****1 heh *****")]
     [TestCase("assfuck bitching", "ass**** *****ing")]
     public void FilterProfanityMessageWithNonExplicitWords(string body, string expected)
@@ -97,10 +111,10 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             senderName = "test",
             bodyText = body
         };
-        
+
         controller.AddChatMessage(msg);
-        
-        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText.Equals(expected)));
+
+        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{expected}</noparse>"));
     }
 
     [TestCase("fucker123", "****er123")]
@@ -113,12 +127,12 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             senderName = originalName,
             bodyText = "test"
         };
-        
+
         controller.AddChatMessage(msg);
-        
+
         view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.senderName.Equals(filteredName)));
     }
-    
+
     [TestCase("assholeeee", "*******eee")]
     [TestCase("goodname", "goodname")]
     public void FilterProfanityReceiverName(string originalName, string filteredName)
@@ -130,9 +144,9 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             recipientName = originalName,
             bodyText = "test"
         };
-        
+
         controller.AddChatMessage(msg);
-        
+
         view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.recipientName.Equals(filteredName)));
     }
 
@@ -140,17 +154,18 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
     public void DoNotFilterProfanityMessageWhenFeatureFlagIsDisabled()
     {
         dataStore.settings.profanityChatFilteringEnabled.Set(false);
-        
+
         var msg = new ChatEntryModel
         {
             messageType = ChatMessage.Type.PUBLIC,
             senderName = "test",
             bodyText = "shit"
         };
-        
+
         controller.AddChatMessage(msg);
-        
-        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText.Equals(msg.bodyText)));
+
+        view.Received(1)
+            .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
     }
 
     [Test]
@@ -162,14 +177,13 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             senderName = "test",
             bodyText = "shit"
         };
-        
+
         controller.AddChatMessage(msg);
-        
-        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText.Equals(msg.bodyText)));
+
+        view.Received(1)
+            .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
     }
-    
-    private void OnSendMessage(ChatMessage msg) => lastMsgSent = msg;
-    
+
     private RegexProfanityFilter GivenProfanityFilter()
     {
         var wordProvider = Substitute.For<IProfanityWordProvider>();
