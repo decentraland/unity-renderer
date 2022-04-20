@@ -276,25 +276,28 @@ namespace Tests
                 onPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
             Assert.IsTrue(component != null);
 
-            yield return null;
+            // Hover feedback is disabled by default
+            Assert.IsFalse(uuidEventsPlugin.hoverCanvas.canvas.enabled);
 
             mainCamera.transform.position = new Vector3(8, 2, 7f);
             mainCamera.transform.forward = Vector3.forward;
 
-            Assert.IsNotNull(uuidEventsPlugin.hoverCanvas);
+            yield return null;
 
-            // Check hover feedback is enabled
+            Assert.IsNotNull(uuidEventsPlugin.hoverCanvas);
             Assert.IsTrue(uuidEventsPlugin.hoverCanvas.canvas.enabled);
 
             // Put UI in the middle
             UIScreenSpace screenSpaceShape =
                 TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+
             yield return screenSpaceShape.routine;
 
             UIContainerRect uiContainerRectShape =
                 TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT, new UIContainerRect.Model() { color = Color.white });
+            
             yield return uiContainerRectShape.routine;
 
             yield return null;
