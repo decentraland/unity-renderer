@@ -8,7 +8,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static WearableCollectionsAPIData;
-using DCL;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
@@ -317,7 +316,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void UpdateAvatarPreview(AvatarModel avatarModel)
     {
-        if (IsAvatarPreviewLoading(avatarModel))
+        if (avatarModel?.wearables == null)
             return;
 
         doneButton.interactable = false;
@@ -335,8 +334,6 @@ public class AvatarEditorHUDView : MonoBehaviour
             });
     }
 
-    private bool IsAvatarPreviewLoading(AvatarModel avatarModel) { return avatarModel?.wearables == null || loadingSpinnerGameObject.activeSelf; }
-
     public void AddWearable(WearableItem wearableItem, int amount,
         Func<WearableItem, bool> hideOtherWearablesToastStrategy,
         Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
@@ -350,13 +347,40 @@ public class AvatarEditorHUDView : MonoBehaviour
             return;
         }
 
-        selectorsByCategory[wearableItem.data.category].AddItemToggle(wearableItem, amount,
-            hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);
+        string collectionName = GetWearableCollectionName(wearableItem);
+
+        selectorsByCategory[wearableItem.data.category].AddItemToggle(
+            wearableItem,
+            collectionName,
+            amount,
+            hideOtherWearablesToastStrategy, 
+            replaceOtherWearablesToastStrategy);
+
         if (wearableItem.IsCollectible() || wearableItem.IsFromThirdPartyCollection)
         {
-            collectiblesItemSelector.AddItemToggle(wearableItem, amount,
-                hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);
+            collectiblesItemSelector.AddItemToggle(
+                wearableItem,
+                collectionName,
+                amount,
+                hideOtherWearablesToastStrategy, 
+                replaceOtherWearablesToastStrategy);
         }
+    }
+
+    private string GetWearableCollectionName(WearableItem wearableItem)
+    {
+        string collectionName = string.Empty;
+        
+        if (wearableItem.IsFromThirdPartyCollection)
+        {
+            List<IToggleComponentView> allCollectionOptions = GetAllCollectionOptions();
+            IToggleComponentView collectionOption = allCollectionOptions.FirstOrDefault(x => x.id == wearableItem.ThirdPartyCollectionId);
+
+            if (collectionOption != null)
+                collectionName = collectionOption.title;
+        }
+
+        return collectionName;
     }
 
     public void RemoveWearable(WearableItem wearableItem)
@@ -580,4 +604,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     public void PlayPreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
 
     public void ResetPreviewEmote() { PlayPreviewEmote(RESET_PREVIEW_ANIMATION); }
+
+    public List<IToggleComponentView> GetAllCollectionOptions() { return collectionsDropdown.GetAllOptions(); }
 }
