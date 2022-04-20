@@ -6,9 +6,9 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     [SerializeField] private CollapsableDirectChatListComponentView directChatList;
     [SerializeField] private CollapsablePublicChannelListComponentView publicChannelList;
     
-    public void Initialize(IChatController chatController)
+    public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService)
     {
-        directChatList.Initialize(chatController);
+        directChatList.Initialize(chatController, lastReadMessagesService);
     }
 
     public void Filter(string search)

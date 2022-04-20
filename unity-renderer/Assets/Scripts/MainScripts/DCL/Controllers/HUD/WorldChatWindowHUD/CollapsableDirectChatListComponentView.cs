@@ -15,13 +15,15 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private Pool entryPool;
     private IChatController chatController;
+    private ILastReadMessagesService lastReadMessagesService;
     private bool releaseEntriesFromPool = true;
 
     public event Action<PrivateChatEntry> OnOpenChat;
 
-    public void Initialize(IChatController chatController)
+    public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService)
     {
         this.chatController = chatController;
+        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Filter(string search)
@@ -66,7 +68,7 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         pooleableEntries.Add(userId, newFriendEntry);
         var entry = newFriendEntry.gameObject.GetComponent<PrivateChatEntry>();
         Add(userId, entry);
-        entry.Initialize(chatController, userContextMenu);
+        entry.Initialize(chatController, userContextMenu, lastReadMessagesService);
         entry.OnOpenChat += () => OnOpenChat?.Invoke(entry);
     }
     

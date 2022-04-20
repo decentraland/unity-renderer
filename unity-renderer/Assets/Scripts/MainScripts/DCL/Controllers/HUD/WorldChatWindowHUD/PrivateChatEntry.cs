@@ -19,6 +19,7 @@ public class PrivateChatEntry : BaseComponentView
 
     private UserContextMenu userContextMenu;
     private IChatController chatController;
+    private ILastReadMessagesService lastReadMessagesService;
 
     public PrivateChatEntryModel Model => model;
 
@@ -36,10 +37,12 @@ public class PrivateChatEntry : BaseComponentView
     }
 
     public void Initialize(IChatController chatController,
-        UserContextMenu userContextMenu)
+        UserContextMenu userContextMenu,
+        ILastReadMessagesService lastReadMessagesService)
     {
         this.chatController = chatController;
         this.userContextMenu = userContextMenu;
+        this.lastReadMessagesService = lastReadMessagesService;
         userContextMenu.OnBlock -= HandleUserBlocked;
         userContextMenu.OnBlock += HandleUserBlocked;
     }
@@ -57,7 +60,7 @@ public class PrivateChatEntry : BaseComponentView
         picture.Configure(new ImageComponentModel {uri = model.pictureUrl});
         SetBlockStatus(model.isBlocked);
         SetPresence(model.isOnline);
-        unreadNotifications.Initialize(chatController, model.userId);
+        unreadNotifications.Initialize(chatController, model.userId, lastReadMessagesService);
     }
     
     private void HandleUserBlocked(string userId, bool blocked)

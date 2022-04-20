@@ -10,7 +10,8 @@ public class WorldChatWindowController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
     private readonly IChatController chatController;
-    
+    private readonly ILastReadMessagesService lastReadMessagesService;
+
     private Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private IWorldChatWindowView view;
@@ -28,17 +29,19 @@ public class WorldChatWindowController : IHUD
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
-        IChatController chatController)
+        IChatController chatController,
+        ILastReadMessagesService lastReadMessagesService)
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
         this.chatController = chatController;
+        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Initialize(IWorldChatWindowView view)
     {
         this.view = view;
-        view.Initialize(chatController);
+        view.Initialize(chatController, lastReadMessagesService);
         view.OnClose += HandleViewCloseRequest;
         view.OnOpenPrivateChat += OpenPrivateChat;
         view.OnOpenPublicChannel += OpenPublicChannel;

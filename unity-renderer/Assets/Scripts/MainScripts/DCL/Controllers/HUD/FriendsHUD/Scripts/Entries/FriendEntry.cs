@@ -1,3 +1,4 @@
+using DCL;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,10 +21,8 @@ public class FriendEntry : FriendEntryBase
 
     private void Start()
     {
-        unreadNotificationBadge?.Initialize(ChatController.i, userId);
+        unreadNotificationBadge?.Initialize(ChatController.i, userId, Environment.i.serviceLocator.Get<ILastReadMessagesService>());
         jumpInButton.Initialize(FriendsController.i, userId);
         jumpInButton.OnClick += () => OnJumpInClick?.Invoke(this);
     }
-
-    public override void Populate(Model model) { base.Populate(model); }
 }

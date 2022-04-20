@@ -44,10 +44,10 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         UpdateHeaders();
     }
 
-    public void Initialize(IChatController chatController)
+    public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService)
     {
-        directChatList.Initialize(chatController);
-        searchResultsList.Initialize(chatController);
+        directChatList.Initialize(chatController, lastReadMessagesService);
+        searchResultsList.Initialize(chatController, lastReadMessagesService);
     }
 
     public void Show() => gameObject.SetActive(true);

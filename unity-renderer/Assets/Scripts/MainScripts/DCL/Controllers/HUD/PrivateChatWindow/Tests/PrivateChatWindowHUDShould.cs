@@ -180,8 +180,8 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IUserProfileBridge>(),
             chatController,
             Substitute.For<IFriendsController>(),
-            Substitute.For<IPlayerPrefs>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>());
+            ScriptableObject.CreateInstance<InputAction_Trigger>(),
+            Substitute.For<ILastReadMessagesService>());
         controller.Initialize(view);
         controller.Configure(testProfileModel.userId);
         controller.SetVisibility(true);

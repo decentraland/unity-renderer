@@ -1,15 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using DCL;
-using DCL.Helpers;
 using DCL.Interface;
-using Newtonsoft.Json;
 
 public class PrivateChatWindowController : IHUD
 {
-    private const string PLAYER_PREFS_LAST_READ_CHAT_MESSAGES = "LastReadChatMessages";
-
     public IPrivateChatComponentView view;
 
     public string conversationUserId { get; private set; } = string.Empty;
@@ -18,8 +13,8 @@ public class PrivateChatWindowController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IChatController chatController;
     private readonly IFriendsController friendsController;
-    private readonly IPlayerPrefs playerPrefs;
     private readonly InputAction_Trigger closeWindowTrigger;
+    private readonly ILastReadMessagesService lastReadMessagesService;
     private string conversationUserName = string.Empty;
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
@@ -32,15 +27,15 @@ public class PrivateChatWindowController : IHUD
         IUserProfileBridge userProfileBridge,
         IChatController chatController,
         IFriendsController friendsController,
-        IPlayerPrefs playerPrefs,
-        InputAction_Trigger closeWindowTrigger)
+        InputAction_Trigger closeWindowTrigger,
+        ILastReadMessagesService lastReadMessagesService)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
         this.chatController = chatController;
         this.friendsController = friendsController;
-        this.playerPrefs = playerPrefs;
         this.closeWindowTrigger = closeWindowTrigger;
+        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Initialize(IPrivateChatComponentView view = null)
@@ -68,7 +63,6 @@ public class PrivateChatWindowController : IHUD
         chatHudController.OnInputFieldSelected += HandleInputFieldSelection;
         chatHudController.OnSendMessage += SendChatMessage;
         chatHudController.FocusInputField();
-        LoadLatestReadChatMessagesStatus();
 
         if (chatController != null)
         {
@@ -142,7 +136,6 @@ public class PrivateChatWindowController : IHUD
 
             view.Show();
             chatHudController.FocusInputField();
-            // The messages from 'conversationUserId' are marked as read once the private chat is opened
             MarkUserChatMessagesAsRead(conversationUserId);
         }
         else
@@ -164,27 +157,20 @@ public class PrivateChatWindowController : IHUD
         view?.Dispose();
     }
 
-    public void ForceFocus()
-    {
-        SetVisibility(true);
-        chatHudController.FocusInputField();
-    }
-
     private void HandleCloseInputTriggered(DCLAction_Trigger action) => OnCloseView();
 
     private void OnMinimizeView() => SetVisibility(false);
 
     private void HandleMessageReceived(ChatMessage message)
     {
-        if (!IsMessageFomCurrentConversation(message))
-            return;
+        if (!IsMessageFomCurrentConversation(message)) return;
 
         chatHudController.AddChatMessage(message);
 
         if (conversationProfile.userId == conversationUserId)
         {
             // The messages from 'conversationUserId' are marked as read if his private chat window is currently open
-            MarkUserChatMessagesAsRead(conversationUserId, (long) message.timestamp);
+            MarkUserChatMessagesAsRead(conversationUserId);
         }
     }
 
@@ -198,49 +184,8 @@ public class PrivateChatWindowController : IHUD
                (message.sender == conversationUserId || message.recipient == conversationUserId);
     }
 
-    private void MarkUserChatMessagesAsRead(string userId, long? timestamp = null)
-    {
-        long timeMark = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        if (timestamp != null && timestamp.Value > timeMark)
-            timeMark = timestamp.Value;
-
-        CommonScriptableObjects.lastReadChatMessages.Remove(userId);
-        CommonScriptableObjects.lastReadChatMessages.Add(userId, timeMark);
-        SaveLatestReadChatMessagesStatus();
-    }
-
-    private void SaveLatestReadChatMessagesStatus()
-    {
-        List<KeyValuePair<string, long>> lastReadChatMessagesList = new List<KeyValuePair<string, long>>();
-        using (var iterator = CommonScriptableObjects.lastReadChatMessages.GetEnumerator())
-        {
-            while (iterator.MoveNext())
-            {
-                lastReadChatMessagesList.Add(new KeyValuePair<string, long>(iterator.Current.Key,
-                    iterator.Current.Value));
-            }
-        }
-
-        playerPrefs.Set(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES,
-            JsonConvert.SerializeObject(lastReadChatMessagesList));
-        playerPrefs.Save();
-    }
-
-    private void LoadLatestReadChatMessagesStatus()
-    {
-        CommonScriptableObjects.lastReadChatMessages.Clear();
-
-        List<KeyValuePair<string, long>> lastReadChatMessagesList =
-            JsonConvert.DeserializeObject<List<KeyValuePair<string, long>>>(
-                playerPrefs.GetString(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES));
-        if (lastReadChatMessagesList != null)
-        {
-            foreach (var item in lastReadChatMessagesList)
-            {
-                CommonScriptableObjects.lastReadChatMessages.Add(item.Key, item.Value);
-            }
-        }
-    }
+    private void MarkUserChatMessagesAsRead(string userId) =>
+        lastReadMessagesService.MarkAllRead(userId);
 
     private void HandleInputFieldSelection()
     {

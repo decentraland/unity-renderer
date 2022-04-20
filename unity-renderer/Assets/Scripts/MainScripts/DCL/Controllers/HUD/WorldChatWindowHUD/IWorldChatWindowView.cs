@@ -11,7 +11,7 @@ public interface IWorldChatWindowView
     RectTransform Transform { get; }
     bool IsActive { get; }
 
-    void Initialize(IChatController chatController);
+    void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService);
     void Show();
     void Hide();
     void SetPrivateChat(PrivateChatModel model);

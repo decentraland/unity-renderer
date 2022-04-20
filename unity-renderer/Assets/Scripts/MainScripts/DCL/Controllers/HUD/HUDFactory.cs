@@ -55,7 +55,8 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
-                    FriendsController.i, ChatController.i);
+                    FriendsController.i, ChatController.i,
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
                 // hudElement = new WorldChatWindowController(
                 //     new FakeUserProfileBridge(new UserProfileWebInterfaceBridge()),
                 //     new FakeFriendsController(), new FakeChatController());
@@ -63,8 +64,9 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(DataStore.i,
                     new UserProfileWebInterfaceBridge(),
-                    ChatController.i, FriendsController.i, new DefaultPlayerPrefs(),
-                    Resources.Load<InputAction_Trigger>("CloseWindow"));
+                    ChatController.i, FriendsController.i,
+                    Resources.Load<InputAction_Trigger>("CloseWindow"),
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
                 // hudElement = new PrivateChatWindowController(DataStore.i,
                 //     new FakeUserProfileBridge(new UserProfileWebInterfaceBridge()),
                 //     new FakeChatController(), new FakeFriendsController(), new DefaultPlayerPrefs());

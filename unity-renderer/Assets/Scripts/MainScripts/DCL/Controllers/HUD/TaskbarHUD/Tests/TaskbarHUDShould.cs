@@ -63,7 +63,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController = new WorldChatWindowController(
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
-            Substitute.For<IChatController>());
+            Substitute.For<IChatController>(),
+            Substitute.For<ILastReadMessagesService>());
         worldChatWindowController.Initialize(Substitute.For<IWorldChatWindowView>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -91,8 +92,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IUserProfileBridge>(),
             chatController,
             Substitute.For<IFriendsController>(),
-            Substitute.For<IPlayerPrefs>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>());
+            ScriptableObject.CreateInstance<InputAction_Trigger>(),
+            Substitute.For<ILastReadMessagesService>());
         privateChatController.Initialize(Substitute.For<IPrivateChatComponentView>());
         controller.AddPrivateChatWindow(privateChatController);
 
@@ -107,7 +108,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController = new WorldChatWindowController(
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
-            chatController);
+            chatController,
+            Substitute.For<ILastReadMessagesService>());
         worldChatWindowController.Initialize(Substitute.For<IWorldChatWindowView>());
         controller.AddWorldChatWindow(worldChatWindowController);
 

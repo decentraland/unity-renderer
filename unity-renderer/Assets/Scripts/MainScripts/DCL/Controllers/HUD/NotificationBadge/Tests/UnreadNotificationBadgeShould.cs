@@ -1,6 +1,7 @@
 using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -20,7 +21,7 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
 
         GameObject go = Object.Instantiate((GameObject)Resources.Load(UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME));
         unreadNotificationBadge = go.GetComponent<UnreadNotificationBadge>();
-        unreadNotificationBadge.Initialize(chatController, TEST_USER_ID);
+        unreadNotificationBadge.Initialize(chatController, TEST_USER_ID, Substitute.For<ILastReadMessagesService>());
 
         CommonScriptableObjects.lastReadChatMessages.Remove(TEST_USER_ID);
         CommonScriptableObjects.lastReadChatMessages.Remove(INVALID_TEST_USER_ID);
