@@ -679,7 +679,7 @@ namespace DCL
                 messagingControllersManager.AddControllerIfNotExists(this, newScene.sceneData.id);
 
                 if (VERBOSE)
-                    Debug.Log($"{Time.frameCount} : Load parcel scene {newScene.sceneData.basePosition}");
+                    Debug.Log($"{Time.frameCount}: Load parcel scene (id: {newScene.sceneData.id})");
             }
 
             ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_LOAD);
@@ -897,9 +897,7 @@ namespace DCL
             messagingControllersManager.AddControllerIfNotExists(this, newGlobalSceneId, isGlobal: true);
 
             if (VERBOSE)
-            {
                 Debug.Log($"Creating Global scene {newGlobalSceneId}");
-            }
         }
 
         public void IsolateScene(IParcelScene sceneToActive)
