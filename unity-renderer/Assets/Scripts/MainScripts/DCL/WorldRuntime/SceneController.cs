@@ -127,8 +127,6 @@ namespace DCL
             if (!enabled)
                 return;
 
-            InputController_Legacy.i.Update();
-
             if (lastSortFrame != Time.frameCount && sceneSortDirty)
             {
                 lastSortFrame = Time.frameCount;
@@ -506,16 +504,7 @@ namespace DCL
 
         //======================================================================
         public event Action<string> OnReadyScene;
-
-        public IParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
-        {
-            IParcelScene result = WorldStateUtils.CreateTestScene(data);
-            messagingControllersManager.AddControllerIfNotExists(this, data.id);
-            OnNewSceneAdded?.Invoke(result);
-
-            return result;
-        }
-
+        
         public void SendSceneReady(string sceneId)
         {
             Environment.i.world.state.readyScenes.Add(sceneId);
@@ -742,7 +731,9 @@ namespace DCL
                 sceneToUnload.isPersistent = false;
 
                 if (sceneToUnload is GlobalScene globalScene && globalScene.isPortableExperience)
-                    OnNewPortableExperienceSceneRemoved?.Invoke(sceneKey);
+                {
+                    worldState.portableExperienceIds.Remove(sceneKey);
+                }
             }
         }
 
@@ -890,7 +881,9 @@ namespace DCL
             OnNewSceneAdded?.Invoke(newScene);
 
             if (newScene.isPortableExperience)
-                OnNewPortableExperienceSceneAdded?.Invoke(newScene);
+            {
+                worldState.portableExperienceIds.Add(newGlobalSceneId);
+            }
 
             worldState.globalSceneIds.Add(newGlobalSceneId);
 
@@ -935,9 +928,7 @@ namespace DCL
         public event Action OnSortScenes;
         public event Action<IParcelScene, string> OnOpenExternalUrlRequest;
         public event Action<IParcelScene> OnNewSceneAdded;
-        public event Action<IParcelScene> OnNewPortableExperienceSceneAdded;
-        public event Action<string> OnNewPortableExperienceSceneRemoved;
-
+        
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
         private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
     }
