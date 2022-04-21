@@ -167,7 +167,6 @@ namespace DCL
             MainSceneFactory.CreateSettingsController();
             MainSceneFactory.CreateNavMap();
             MainSceneFactory.CreateEventSystem();
-            MainSceneFactory.CreateInteractionHoverCanvas();
         }
 
         protected virtual void CreateEnvironment() => MainSceneFactory.CreateEnvironment();

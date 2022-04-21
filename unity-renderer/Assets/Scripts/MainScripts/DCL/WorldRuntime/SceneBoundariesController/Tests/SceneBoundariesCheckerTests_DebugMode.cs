@@ -17,7 +17,7 @@ namespace SceneBoundariesCheckerTests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene();
+            scene = TestUtils.CreateTestScene() as ParcelScene;
 
             Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedBox());
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
