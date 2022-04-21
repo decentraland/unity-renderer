@@ -235,7 +235,7 @@ namespace Tests
                     src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
@@ -282,7 +282,7 @@ namespace Tests
                     src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
@@ -328,7 +328,7 @@ namespace Tests
                     src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
@@ -374,7 +374,7 @@ namespace Tests
                     src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
@@ -419,7 +419,7 @@ namespace Tests
                     src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
@@ -473,7 +473,7 @@ namespace Tests
             var uuidComponent = TestUtils.EntityComponentCreate<OnClick, OnClick.Model>(scene, scene.entities[entityId],
                 OnClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
@@ -516,7 +516,7 @@ namespace Tests
             TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, scene.entities[entityId],
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
@@ -561,7 +561,7 @@ namespace Tests
                 scene.entities[entityId],
                 OnPointerUpModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
@@ -605,7 +605,7 @@ namespace Tests
                 scene.entities[entityId],
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
@@ -649,7 +649,7 @@ namespace Tests
                 scene.entities[entityId],
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(

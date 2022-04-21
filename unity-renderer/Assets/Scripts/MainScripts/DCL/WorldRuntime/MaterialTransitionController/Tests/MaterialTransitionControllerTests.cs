@@ -4,9 +4,11 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL;
 using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
+using WaitUntil = UnityEngine.WaitUntil;
 
 namespace Tests
 {
@@ -46,7 +48,7 @@ namespace Tests
                 out entity,
                 new GLTFShape.Model() {src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"});
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+            LoadWrapper gltfShape = DCL.Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             float timeout = 0;

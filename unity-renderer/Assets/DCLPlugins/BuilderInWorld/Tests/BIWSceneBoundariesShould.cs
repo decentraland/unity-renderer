@@ -57,7 +57,7 @@ public class BIWSceneBoundariesShould : IntegrationTestSuite
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         //Act

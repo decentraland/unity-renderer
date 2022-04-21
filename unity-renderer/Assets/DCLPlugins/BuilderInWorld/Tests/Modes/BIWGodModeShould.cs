@@ -570,7 +570,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
             }));
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
         yield return null;
 

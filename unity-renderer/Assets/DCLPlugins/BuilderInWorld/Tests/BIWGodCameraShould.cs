@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
 using DCL.Camera;
 using DCL.Components;
 using DCL.Controllers;
@@ -46,7 +47,7 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
 

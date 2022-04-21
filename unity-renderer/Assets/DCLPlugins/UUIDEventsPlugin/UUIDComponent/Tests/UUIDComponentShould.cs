@@ -136,7 +136,7 @@ namespace Tests
             var pointerEventColliders = onPointerDownComponent.pointerEventHandler.eventColliders.colliders;
             Assert.IsTrue(pointerEventColliders == null || pointerEventColliders.Length == 0);
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             // 4. Check if the PointerEvent colliders were created
@@ -174,7 +174,7 @@ namespace Tests
             var pointerEventColliders = onHoverEnterComponent.pointerEventColliders.colliders;
             Assert.IsTrue(pointerEventColliders == null || pointerEventColliders.Length == 0);
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             // 4. Check if the PointerEvent colliders were created
@@ -205,7 +205,7 @@ namespace Tests
             var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(shapeModel));
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             var pointerEventColliders = onPointerDownComponent.pointerEventHandler.eventColliders.colliders;
@@ -243,7 +243,7 @@ namespace Tests
             var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(shapeModel));
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             var pointerEventColliders = onHoverEnterComponent.pointerEventColliders.colliders;
@@ -281,7 +281,7 @@ namespace Tests
             var shapeComponentId = TestUtils.CreateAndSetShape(scene, entity1Id, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(shapeModel));
 
-            LoadWrapper gltfShapeLoader1 = GLTFShape.GetLoaderForEntity(scene.entities[entity1Id]);
+            LoadWrapper gltfShapeLoader1 = Environment.i.world.state.GetLoaderForEntity(scene.entities[entity1Id]);
 
             yield return new WaitUntil(() => gltfShapeLoader1.alreadyLoaded);
             yield return null;
@@ -327,7 +327,7 @@ namespace Tests
             TestUtils.CreateAndSetShape(scene, entity1Id, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(shapeModel));
 
-            LoadWrapper gltfShapeLoader1 = GLTFShape.GetLoaderForEntity(entity1);
+            LoadWrapper gltfShapeLoader1 = Environment.i.world.state.GetLoaderForEntity(entity1);
 
             yield return new WaitUntil(() => gltfShapeLoader1.alreadyLoaded);
             yield return null;

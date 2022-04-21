@@ -50,7 +50,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[ENTITY_ID]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[ENTITY_ID]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         outlinerController = new BIWOutlinerController();

@@ -36,7 +36,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         Assert.IsTrue(
@@ -76,7 +76,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             }));
 
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
 
         Assert.IsTrue(gltfShape is LoadWrapper_GLTF);
 
@@ -101,7 +101,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         {
@@ -117,7 +117,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
             }));
 
-        gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         {
@@ -141,7 +141,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = LoadableShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         TestUtils.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
@@ -150,7 +150,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
             }));
 
-        gltfShape = LoadableShape.GetLoaderForEntity(scene.entities[entityId]);
+        gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         Assert.AreEqual(1,
@@ -171,7 +171,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             }));
         var gltf1 = scene.componentsManagerLegacy.GetSceneSharedComponent(gltfId1);
 
-        LoadWrapper gltfLoader = LoadableShape.GetLoaderForEntity(entity);
+        LoadWrapper gltfLoader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new DCL.WaitUntil(() => gltfLoader.alreadyLoaded);
 
         Assert.AreEqual(gltf1, scene.componentsManagerLegacy.GetSharedComponent(entity, typeof(BaseShape)));
@@ -183,7 +183,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        gltfLoader = LoadableShape.GetLoaderForEntity(entity);
+        gltfLoader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new DCL.WaitUntil(() => gltfLoader.alreadyLoaded);
 
         Assert.AreEqual(scene.componentsManagerLegacy.GetSceneSharedComponent(gltfId2), scene.componentsManagerLegacy.GetSharedComponent(entity, typeof(BaseShape)));
@@ -211,7 +211,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        var shapeLoader = LoadableShape.GetLoaderForEntity(entity);
+        var shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new DCL.WaitUntil(() => shapeLoader.alreadyLoaded);
 
         yield return TestUtils.TestShapeCollision(shapeComponent, shapeModel, entity);
@@ -236,7 +236,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        var shapeLoader = LoadableShape.GetLoaderForEntity(entity);
+        var shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new DCL.WaitUntil(() => shapeLoader.alreadyLoaded);
 
         yield return TestUtils.TestOnPointerEventWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
@@ -258,7 +258,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             JsonConvert.SerializeObject(shapeModel));
         var shape1Component = scene.componentsManagerLegacy.GetSceneSharedComponent(shape1Id);
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded == true);
 
         Animation animation = entity.meshRootGameObject.GetComponentInChildren<Animation>();
@@ -270,7 +270,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         yield return TestUtils.SharedComponentUpdate(shape1Component, shapeModel);
         
         Assert.IsFalse(animation.enabled);
-        
+
         shapeModel.visible = true;
         yield return TestUtils.SharedComponentUpdate(shape1Component, shapeModel);
         
@@ -305,7 +305,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         DCLAnimator animator = TestUtils.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
 
-        LoadWrapper gltfShape2 = GLTFShape.GetLoaderForEntity(entity);
+        LoadWrapper gltfShape2 = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new UnityEngine.WaitUntil(() => gltfShape2.alreadyLoaded == true);
 
         Assert.IsTrue(animator.animComponent != null);

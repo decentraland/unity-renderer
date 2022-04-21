@@ -66,7 +66,8 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entity.rootEntity.entityId]);
+        LoadWrapper gltfShape =
+            Environment.i.world.state.GetLoaderForEntity(scene.entities[entity.rootEntity.entityId]);
         yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
         //Act

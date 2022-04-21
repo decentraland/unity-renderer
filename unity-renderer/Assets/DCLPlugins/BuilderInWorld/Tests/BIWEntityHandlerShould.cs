@@ -263,7 +263,8 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[newEntity.rootEntity.entityId]);
+        LoadWrapper gltfShape =
+            Environment.i.world.state.GetLoaderForEntity(scene.entities[newEntity.rootEntity.entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         //Act

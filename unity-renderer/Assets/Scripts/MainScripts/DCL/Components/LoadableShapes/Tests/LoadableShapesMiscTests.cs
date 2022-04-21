@@ -4,9 +4,11 @@ using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using DCL;
 using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
+using WaitUntil = UnityEngine.WaitUntil;
 
 public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
 {
@@ -37,7 +39,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/OBJ/teapot.obj"
             }));
 
-        LoadWrapper objShape = LoadableShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper objShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => objShape.alreadyLoaded);
 
         Assert.IsTrue(scene.entities[entityId].meshRootGameObject != null,
@@ -87,7 +89,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
         Assert.IsTrue(entity.meshesInfo.currentShape != null, "current shape must exist 2");
