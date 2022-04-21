@@ -177,7 +177,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         optionsPanel.SetActive(true);
         isOpen = true;
         blocker.Activate();
-        CoroutineStarter.Start(RefreshOptionsPanelSize());
+        StartCoroutine(RefreshOptionsPanelSize());
     }
 
     public void Close()
@@ -221,7 +221,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         emptyContentMessage.gameObject.SetActive(options.Count == 0);
 
         if (gameObject.activeSelf)
-            CoroutineStarter.Start(RefreshOptionsPanelSize());
+            StartCoroutine(RefreshOptionsPanelSize());
     }
 
     public void FilterOptions(string filterText)
@@ -251,7 +251,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
 
         searchNotFoundMessage.gameObject.SetActive(newFilteredOptions.Count == 0);
 
-        CoroutineStarter.Start(RefreshOptionsPanelSize());
+        StartCoroutine(RefreshOptionsPanelSize());
     }
 
     public IToggleComponentView GetOption(int index)
@@ -337,7 +337,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     {
         model.isOptionsPanelHeightDynamic = isDynamic;
         model.maxValueForDynamicHeight = maxHeight;
-        CoroutineStarter.Start(RefreshOptionsPanelSize());
+        StartCoroutine(RefreshOptionsPanelSize());
     }
 
     public override void Dispose()
