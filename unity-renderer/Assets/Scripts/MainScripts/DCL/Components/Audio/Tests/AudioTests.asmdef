@@ -2,7 +2,6 @@
   "name": "AudioTests",
   "rootNamespace": "",
   "references": [
-    "GUID:e555144732b726c4cba5b0f6337fea75",
     "GUID:b1087c5731ff68448a0a9c625bb7e52d",
     "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
     "GUID:27619889b8ba8c24980f49ee34dbb44a",
@@ -17,7 +16,8 @@
     "GUID:fbcc413e192ef9048811d47ab0aca0c0",
     "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
     "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
-    "GUID:6fe88ed11deba994da7c1eac6bd9aa10"
+    "GUID:6fe88ed11deba994da7c1eac6bd9aa10",
+    "GUID:44a9db8f655ab05409802e5476cf9dd3"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

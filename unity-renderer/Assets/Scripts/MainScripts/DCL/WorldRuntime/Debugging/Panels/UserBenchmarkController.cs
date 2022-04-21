@@ -184,7 +184,7 @@ namespace DCL
                     return scene;
             }
 
-            var currentPos = Utils.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition);
+            var currentPos = Utils.WorldToGridPosition(CommonScriptableObjects.playerWorldPosition);
             return worldState.loadedScenes.Values.FirstOrDefault(
                 x => x.sceneData.parcels != null
                      && x.sceneData.parcels.Any(y => y == currentPos));

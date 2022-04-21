@@ -2,7 +2,6 @@
     "name": "AvatarShapeTests",
     "rootNamespace": "",
     "references": [
-        "GUID:e555144732b726c4cba5b0f6337fea75",
         "GUID:54b09a4a10c111e46a817873fcea53fe",
         "GUID:e65144cdbd5b744238fa03c40df6cd71",
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
@@ -34,7 +33,8 @@
         "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
         "GUID:18ee28afad71091499d9ebad494c995e",
         "GUID:ab04b35c8c4a57847889009b508e53ae",
-        "GUID:44002c75b9995c34d97b8afc551d32eb"
+        "GUID:44002c75b9995c34d97b8afc551d32eb",
+        "GUID:44a9db8f655ab05409802e5476cf9dd3"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
