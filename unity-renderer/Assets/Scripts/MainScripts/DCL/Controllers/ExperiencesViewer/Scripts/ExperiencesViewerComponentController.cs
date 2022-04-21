@@ -239,9 +239,9 @@ namespace DCL.ExperiencesViewer
             }
 
             List<ExperienceRowComponentView> loadedExperiences = view.GetAllAvailableExperiences();
-            foreach (ExperienceRowComponentView experience in loadedExperiences)
+            for (int i = 0; i < loadedExperiences.Count; i++)
             {
-                experience.SetAllowStartStop(userProfile.avatar.wearables.Contains(experience.model.id));
+                loadedExperiences[i].SetAllowStartStop(userProfile.avatar.wearables.Contains(loadedExperiences[i].model.id));
             }
         }
 
