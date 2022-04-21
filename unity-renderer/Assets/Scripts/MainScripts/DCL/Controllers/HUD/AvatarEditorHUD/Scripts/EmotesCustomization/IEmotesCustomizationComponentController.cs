@@ -27,9 +27,19 @@ namespace DCL.EmotesCustomization
         /// <summary>
         /// Initializes the emotes customization controller.
         /// </summary>
-        /// <param name="userProfile">User profile.</param>
-        /// <param name="catalog">Wearables catalog.</param>
-        IEmotesCustomizationComponentView Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog);
+        /// <param name="emotesCustomizationDataStore">Emotes customization data store.</param>
+        /// <param name="emotesDataStore">Emotes data store.</param>
+        /// <param name="exploreV2DataStore">Explore V2 data store.</param>
+        /// <param name="hudsDataStore">HUDs data store.</param>
+        /// <param name="userProfile">User Profile data store.</param>
+        /// <param name="catalog">Catalog data store.</param>
+        /// <returns></returns>
+        IEmotesCustomizationComponentView Initialize(
+            DataStore_EmotesCustomization emotesCustomizationDataStore,
+            DataStore_Emotes emotesDataStore,
+            DataStore_ExploreV2 exploreV2DataStore,
+            DataStore_HUDs hudsDataStore,
+            UserProfile userProfile, BaseDictionary<string, WearableItem> catalog);
 
         /// <summary>
         /// Restore the emote slots with the stored data.
