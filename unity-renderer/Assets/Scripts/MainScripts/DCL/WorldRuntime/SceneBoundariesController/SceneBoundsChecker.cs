@@ -159,6 +159,12 @@ namespace DCL.Controllers
             persistentEntities.Add(entity);
         }
 
+        public void RemovePersistent(IDCLEntity entity)
+        {
+            if (persistentEntities.Contains(entity))
+                persistentEntities.Remove(entity);
+        }
+
         /// <summary>
         /// Returns whether an entity was added to be consistently checked
         /// </summary>
