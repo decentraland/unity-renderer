@@ -10,9 +10,6 @@ using UnityEngine.EventSystems;
 
 public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    private const string COORDINATES_COLOR_PRIVATE = "#4886E3";
-    private const string COORDINATES_COLOR_PUBLIC = "#62C6FF";
-
     [SerializeField] internal float timeToFade = 10f;
     [SerializeField] internal float fadeDuration = 5f;
     [SerializeField] internal TextMeshProUGUI body;
@@ -76,14 +73,9 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             for (int i = 0; i < textCoordinates.Count; i++)
             {
                 PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(textCoordinates[i]));
-                string coordinatesColor;
-                if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
-                    coordinatesColor = COORDINATES_COLOR_PRIVATE;
-                else
-                    coordinatesColor = COORDINATES_COLOR_PUBLIC;
 
                 body.text = body.text.Replace(textCoordinates[i],
-                    $"</noparse><link={textCoordinates[i]}><color={coordinatesColor}><u>{textCoordinates[i]}</u></color></link><noparse>");
+                    $"</noparse><link={textCoordinates[i]}><color=#4886E3><u>{textCoordinates[i]}</u></color></link><noparse>");
             }
         }
 
