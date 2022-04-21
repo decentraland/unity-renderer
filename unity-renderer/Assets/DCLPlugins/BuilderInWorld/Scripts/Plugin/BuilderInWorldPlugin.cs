@@ -1,5 +1,7 @@
 using DCL;
 using DCL.Builder;
+using DCL.Components;
+using DCL.Models;
 
 public class BuilderInWorldPlugin : IPlugin
 {
@@ -18,6 +20,12 @@ public class BuilderInWorldPlugin : IPlugin
     {
         if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DEV_FLAG_NAME))
             DataStore.i.builderInWorld.isDevBuild.Set(true);
+
+        // Builder in world
+        IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
+        factory.RegisterBuilder((int) CLASS_ID.NAME, BuildComponent<DCLName>);
+        factory.RegisterBuilder((int) CLASS_ID.LOCKED_ON_EDIT, BuildComponent<DCLLockedOnEdit>);
+        factory.RegisterBuilder((int) CLASS_ID.VISIBLE_ON_EDIT, BuildComponent<DCLVisibleOnEdit>);
 
         panelController = new BuilderMainPanelController();
         editor = new BuilderInWorldEditor();
@@ -48,7 +56,7 @@ public class BuilderInWorldPlugin : IPlugin
             new BIWRaycastController(),
             new BIWGizmosController(),
             SceneReferences.i);
-
+        
         Initialize();
     }
 
@@ -64,6 +72,12 @@ public class BuilderInWorldPlugin : IPlugin
         commonHUD = context.commonHUD;
 
         Initialize();
+    }
+
+    protected T BuildComponent<T>()
+        where T : IComponent, new()
+    {
+        return new T();
     }
 
     private void Initialize()
@@ -104,6 +118,12 @@ public class BuilderInWorldPlugin : IPlugin
         Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
+
+        IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
+        factory.UnregisterBuilder((int) CLASS_ID.NAME);
+        factory.UnregisterBuilder((int) CLASS_ID.LOCKED_ON_EDIT);
+        factory.UnregisterBuilder((int) CLASS_ID.VISIBLE_ON_EDIT);
+
     }
 
     public void Update()

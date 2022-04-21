@@ -50,12 +50,7 @@ public class CoreComponentsPlugin : IPlugin
         // Video
         factory.RegisterBuilder((int) CLASS_ID.VIDEO_CLIP, BuildComponent<DCLVideoClip>);
         factory.RegisterBuilder((int) CLASS_ID.VIDEO_TEXTURE, BuildComponent<DCLVideoTexture>);
-
-        // Builder in world
-        // factory.RegisterBuilder((int) CLASS_ID.NAME, BuildComponent<DCLName>);
-        // factory.RegisterBuilder((int) CLASS_ID.LOCKED_ON_EDIT, BuildComponent<DCLLockedOnEdit>);
-        // factory.RegisterBuilder((int) CLASS_ID.VISIBLE_ON_EDIT, BuildComponent<DCLVisibleOnEdit>);
-
+        
         // Others
         factory.RegisterBuilder((int) CLASS_ID.FONT, BuildComponent<DCLFont>);
         factory.RegisterBuilder((int) CLASS_ID_COMPONENT.AVATAR_SHAPE,
