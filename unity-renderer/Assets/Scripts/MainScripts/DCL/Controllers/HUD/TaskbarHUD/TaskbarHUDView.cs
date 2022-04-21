@@ -49,16 +49,14 @@ public class TaskbarHUDView : MonoBehaviour
         return taskbarButtonList;
     }
 
-    internal static TaskbarHUDView Create(TaskbarHUDController controller, IChatController chatController,
-        IFriendsController friendsController)
+    internal static TaskbarHUDView Create(TaskbarHUDController controller)
     {
         var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<TaskbarHUDView>();
-        view.Initialize(controller, chatController, friendsController);
+        view.Initialize(controller);
         return view;
     }
 
-    public void Initialize(TaskbarHUDController controller, IChatController chatController,
-        IFriendsController friendsController)
+    public void Initialize(TaskbarHUDController controller)
     {
         this.controller = controller;
 
@@ -91,27 +89,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnChatToggleOff?.Invoke();
         else if (obj == experiencesButton)
             OnExperiencesToggleOff?.Invoke();
-
-        if (AllButtonsToggledOff())
-        {
-            chatButton.SetToggleState(false, useCallback: false);
-            controller.worldChatWindowHud.SetVisibility(true);
-        }
-    }
-
-    public bool AllButtonsToggledOff()
-    {
-        var btns = GetButtonList();
-
-        bool allToggledOff = true;
-
-        foreach (var btn in btns)
-        {
-            if (btn.toggledOn)
-                allToggledOff = false;
-        }
-
-        return allToggledOff;
     }
 
     private void OnWindowToggleOn(TaskbarButton obj)

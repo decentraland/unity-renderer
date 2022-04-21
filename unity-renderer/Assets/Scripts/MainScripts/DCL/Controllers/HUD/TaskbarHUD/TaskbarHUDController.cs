@@ -38,7 +38,7 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
 
-    protected internal virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(this, chatController, friendsController); }
+    protected internal virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(this); }
 
     public void Initialize(
         IMouseCatcher mouseCatcher,
@@ -127,7 +127,7 @@ public class TaskbarHUDController : IHUD
 
     private void View_OnChatToggleOn()
     {
-        worldChatWindowHud.SetVisibility(true);
+        OpenChatList();
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
@@ -190,6 +190,9 @@ public class TaskbarHUDController : IHUD
     public void OpenChatList()
     {
         worldChatWindowHud.SetVisibility(true);
+        friendsHud.SetVisibility(false);
+        publicChatChannel.SetVisibility(false);
+        privateChatWindow.SetVisibility(false);
     }
 
     public void AddPrivateChatWindow(PrivateChatWindowController controller)
