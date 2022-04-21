@@ -332,10 +332,10 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         messageHoverPanel.SetActive(true);
     }
 
-    protected virtual void OnMessageCoordinatesTriggerHover(DefaultChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
+    private void OnMessageCoordinatesTriggerHover(DefaultChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
     {
         messageHoverGotoText.text = $"{parcelCoordinates} INFO";
-        chatEntry.DockHoverPanel(Input.mousePosition.x, (RectTransform) messageHoverGotoPanel.transform);
+        chatEntry.DockHoverPanel((RectTransform) messageHoverGotoPanel.transform);
         messageHoverGotoPanel.SetActive(true);
     }
 

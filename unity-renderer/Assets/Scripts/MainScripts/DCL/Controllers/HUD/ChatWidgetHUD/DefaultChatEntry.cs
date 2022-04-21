@@ -320,11 +320,4 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         panel.pivot = hoverPanelPositionReference.pivot;
         panel.position = hoverPanelPositionReference.position;
     }
-
-    public void DockHoverPanel(float positionX, RectTransform panel)
-    {
-        panel.pivot = hoverPanelPositionReference.pivot;
-        var position = hoverPanelPositionReference.position;
-        panel.position = new Vector3(positionX, position.y, position.z);
-    }
 }
