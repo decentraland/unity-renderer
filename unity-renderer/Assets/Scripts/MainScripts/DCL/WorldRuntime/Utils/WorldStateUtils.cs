@@ -169,7 +169,6 @@ namespace DCL
             Environment.i.world.state.scenesSortedByDistance?.Add(newScene);
             Environment.i.world.state.loadedScenes?.Add(data.id, newScene);
 
-
             return newScene;
         }
     }

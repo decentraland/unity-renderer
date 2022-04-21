@@ -75,28 +75,7 @@ public class InteractionHoverCanvasController : MonoBehaviour
     }
 
     public GameObject GetCurrentHoverIcon() { return hoverIcon; }
-
-    // This method will be used when we apply a "loose aim" for the 3rd person camera
-    void CalculateMeshCenteredPos(DCLTransform.Model transformModel = null)
-    {
-        if (!canvas.enabled)
-            return;
-
-        if (entity.meshesInfo.renderers == null || entity.meshesInfo.renderers.Length == 0)
-        {
-            meshCenteredPos = transform.parent.position;
-        }
-        else
-        {
-            Vector3 sum = Vector3.zero;
-            for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
-            {
-                sum += entity.meshesInfo.renderers[i].bounds.center;
-            }
-
-            meshCenteredPos = sum / entity.meshesInfo.renderers.Length;
-        }
-    }
+    
 
     // This method will be used when we apply a "loose aim" for the 3rd person camera
     public void UpdateSizeAndPos()
