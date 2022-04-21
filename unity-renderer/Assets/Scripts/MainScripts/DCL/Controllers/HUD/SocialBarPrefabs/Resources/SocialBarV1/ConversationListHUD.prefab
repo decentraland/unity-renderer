@@ -3015,6 +3015,11 @@ PrefabInstance:
       propertyPath: m_fontColor32.rgba
       value: 4289239968
       objectReference: {fileID: 0}
+    - target: {fileID: 7152686171439982118, guid: db08434be6dadc943b7e258f41869504,
+        type: 3}
+      propertyPath: m_CaretWidth
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7852822990777563400, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
       propertyPath: m_SizeDelta.x
