@@ -8,6 +8,7 @@ using UnityEngine;
 public class NFTShapePlugin : IPlugin
 {
     private IRuntimeComponentFactory factory => DCL.Environment.i.world.componentFactory;
+
     public NFTShapePlugin()
     {
         // TODO(Brian): Move all the NFTShape files to the plugin's directory.

@@ -1,5 +1,5 @@
 {
-  "name": "DCL.Plugins.UUIDEvents",
+  "name": "DCL.Plugins.UUIDEventComponents",
   "rootNamespace": "",
   "references": [
     "GUID:7fe146b43e76fe745aeaf2020feb54b7",

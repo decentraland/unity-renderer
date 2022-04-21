@@ -22,6 +22,7 @@ public class InteractionHoverCanvasController : MonoBehaviour
     const string ACTION_BUTTON_SECONDARY = "SECONDARY";
 
     private DataStore_Cursor dataStore;
+
     void Awake()
     {
         dataStore = DataStore.i.Get<DataStore_Cursor>();
@@ -68,7 +69,7 @@ public class InteractionHoverCanvasController : MonoBehaviour
         ConfigureIcon(current);
         UpdateCanvas();
     }
-    
+
     public void Setup(string button, string feedbackText)
     {
         text.text = feedbackText;

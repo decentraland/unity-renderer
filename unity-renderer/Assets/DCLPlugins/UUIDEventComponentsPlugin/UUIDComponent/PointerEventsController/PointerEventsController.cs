@@ -45,7 +45,7 @@ namespace DCL
         {
             this.inputControllerLegacy = inputControllerLegacy;
             this.hoverCanvas = hoverCanvas;
-            
+
             for (int i = 0; i < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; i++)
             {
                 var buttonId = (WebInterface.ACTION_BUTTON) i;
@@ -83,7 +83,7 @@ namespace DCL
             // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
             bool didHit = Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity,
                 PhysicsLayers.physicsCastLayerMaskWithoutCharacter);
-            
+
             bool uiIsBlocking = false;
             string currentSceneId = worldState.currentSceneId;
 

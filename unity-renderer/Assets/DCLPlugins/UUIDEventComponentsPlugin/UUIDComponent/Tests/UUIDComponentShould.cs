@@ -481,6 +481,5 @@ namespace Tests
                 Assert.IsNotNull(pointerEventCollider.sharedMesh);
             }
         }
-        
     }
 }
