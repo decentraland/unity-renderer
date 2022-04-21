@@ -68,10 +68,19 @@ public class AvatarEditorHUDView : MonoBehaviour
     internal ColorSelector skinColorSelector;
 
     [SerializeField]
+    internal ColorPickerView skinColorPicker;
+
+    [SerializeField]
     internal ColorSelector eyeColorSelector;
 
     [SerializeField]
+    internal ColorPickerView eyeColorPicker;
+
+    [SerializeField]
     internal ColorSelector hairColorSelector;
+
+    [SerializeField]
+    internal ColorPickerView hairColorPicker;
 
     [SerializeField]
     internal GameObject characterPreviewPrefab;
@@ -217,8 +226,11 @@ public class AvatarEditorHUDView : MonoBehaviour
         collectiblesItemSelector.OnRetryClicked += controller.RetryLoadOwnedWearables;
 
         skinColorSelector.OnColorChanged += controller.SkinColorClicked;
+        skinColorPicker.OnColorChanged += controller.SkinColorClicked;
         eyeColorSelector.OnColorChanged += controller.EyesColorClicked;
+        eyeColorPicker.OnColorChanged += controller.EyesColorClicked;
         hairColorSelector.OnColorChanged += controller.HairColorClicked;
+        hairColorPicker.OnColorChanged += controller.HairColorClicked;
     }
 
     internal static AvatarEditorHUDView Create(AvatarEditorHUDController controller)
@@ -281,11 +293,23 @@ public class AvatarEditorHUDView : MonoBehaviour
         wearablesWithLoadingSpinner.Clear();
     }
 
-    public void SelectHairColor(Color hairColor) { hairColorSelector.Select(hairColor); }
+    public void SelectHairColor(Color hairColor) 
+    { 
+        //hairColorSelector.Select(hairColor);
+        hairColorPicker.UpdateSliderValues(hairColor);
+    }
 
-    public void SelectSkinColor(Color skinColor) { skinColorSelector.Select(skinColor); }
+    public void SelectSkinColor(Color skinColor) 
+    { 
+        //skinColorSelector.Select(skinColor);
+        skinColorPicker.UpdateSliderValues(skinColor);
+    }
 
-    public void SelectEyeColor(Color eyesColor) { eyeColorSelector.Select(eyesColor); }
+    public void SelectEyeColor(Color eyesColor) 
+    {
+        //eyeColorSelector.Select(eyesColor);
+        eyeColorPicker.UpdateSliderValues(eyesColor);
+    }
 
     public void SetColors(List<Color> skinColors, List<Color> hairColors, List<Color> eyeColors)
     {
@@ -451,10 +475,16 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         if (skinColorSelector != null)
             skinColorSelector.OnColorChanged -= controller.SkinColorClicked;
+        if (skinColorPicker != null)
+            skinColorPicker.OnColorChanged -= controller.SkinColorClicked;
         if (eyeColorSelector != null)
             eyeColorSelector.OnColorChanged -= controller.EyesColorClicked;
+        if (eyeColorPicker != null)
+            eyeColorPicker.OnColorChanged -= controller.EyesColorClicked;
         if (hairColorSelector != null)
             hairColorSelector.OnColorChanged -= controller.HairColorClicked;
+        if (hairColorPicker != null)
+            hairColorPicker.OnColorChanged -= controller.HairColorClicked;
 
         if (this != null)
             Destroy(gameObject);

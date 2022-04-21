@@ -399,37 +399,19 @@ public class AvatarEditorHUDController : IHUD
 
     private void EquipHairColor(Color color)
     {
-        var colorToSet = color;
-        if (!hairColorList.colors.Any(x => x.AproxComparison(colorToSet)))
-        {
-            colorToSet = hairColorList.colors[hairColorList.defaultColor];
-        }
-
-        model.hairColor = colorToSet;
+        model.hairColor = color;
         view.SelectHairColor(model.hairColor);
     }
 
     private void EquipEyesColor(Color color)
     {
-        var colorToSet = color;
-        if (!eyeColorList.colors.Any(x => x.AproxComparison(color)))
-        {
-            colorToSet = eyeColorList.colors[eyeColorList.defaultColor];
-        }
-
-        model.eyesColor = colorToSet;
+        model.eyesColor = color;
         view.SelectEyeColor(model.eyesColor);
     }
 
     private void EquipSkinColor(Color color)
     {
-        var colorToSet = color;
-        if (!skinColorList.colors.Any(x => x.AproxComparison(colorToSet)))
-        {
-            colorToSet = skinColorList.colors[skinColorList.defaultColor];
-        }
-
-        model.skinColor = colorToSet;
+        model.skinColor = color;
         view.SelectSkinColor(model.skinColor);
     }
 
