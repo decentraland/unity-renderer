@@ -6,17 +6,17 @@ namespace DCL.ECSRuntime
 {
     public class SceneComponentsManager
     {
-        private readonly IReadOnlyDictionary<ComponentsId, ComponentsFactory.ECSComponentBuilder> components;
-        private readonly IReadOnlyDictionary<ComponentsId, IECSComponent> sceneComponents;
+        private readonly IReadOnlyDictionary<int, ComponentsFactory.ECSComponentBuilder> components;
+        internal readonly Dictionary<int, IECSComponent> sceneComponents = new Dictionary<int, IECSComponent>();
         private readonly IParcelScene scene;
 
-        public SceneComponentsManager(IParcelScene scene, IReadOnlyDictionary<ComponentsId, ComponentsFactory.ECSComponentBuilder> components)
+        public SceneComponentsManager(IParcelScene scene, IReadOnlyDictionary<int, ComponentsFactory.ECSComponentBuilder> components)
         {
             this.components = components;
             this.scene = scene;
         }
 
-        public IECSComponent GetOrCreateComponent(ComponentsId componentId, IDCLEntity entity)
+        public IECSComponent GetOrCreateComponent(int componentId, IDCLEntity entity)
         {
             if (sceneComponents.TryGetValue(componentId, out IECSComponent component))
             {
@@ -28,16 +28,18 @@ namespace DCL.ECSRuntime
             else if (components.TryGetValue(componentId, out ComponentsFactory.ECSComponentBuilder componentBuilder))
             {
                 component = componentBuilder.Invoke(scene);
+                sceneComponents.Add(componentId, component);
+                component.Create(entity);
             }
             return component;
         }
 
-        public void DeserializeComponent(ComponentsId componentId, IDCLEntity entity, object message)
+        public void DeserializeComponent(int componentId, IDCLEntity entity, object message)
         {
             GetOrCreateComponent(componentId, entity).Deserialize(entity, message);
         }
 
-        public bool RemoveComponent(ComponentsId componentId, IDCLEntity entity)
+        public bool RemoveComponent(int componentId, IDCLEntity entity)
         {
             if (sceneComponents.TryGetValue(componentId, out IECSComponent component))
             {

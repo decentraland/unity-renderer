@@ -7,8 +7,8 @@ namespace DCL.ECSRuntime
 {
     public class ECSComponent<ModelType> : IECSComponent
     {
-        private Dictionary<string, ComponentData<ModelType>> entities = new Dictionary<string, ComponentData<ModelType>>();
-        private Dictionary<string, IComponentHandler<ModelType>> handlers = new Dictionary<string, IComponentHandler<ModelType>>();
+        internal Dictionary<string, ComponentData<ModelType>> entities = new Dictionary<string, ComponentData<ModelType>>();
+        internal Dictionary<string, IComponentHandler<ModelType>> handlers = new Dictionary<string, IComponentHandler<ModelType>>();
 
         private readonly Func<IComponentHandler<ModelType>> handlerBuilder;
         private readonly Func<object, ModelType> deserializer;
@@ -23,7 +23,7 @@ namespace DCL.ECSRuntime
 
         public void Create(IDCLEntity entity)
         {
-            string entityId = entity.entityId;
+            var entityId = entity.entityId;
             entities[entityId] = new ComponentData<ModelType>()
             {
                 entity = entity,
@@ -42,7 +42,7 @@ namespace DCL.ECSRuntime
 
         public bool Remove(IDCLEntity entity)
         {
-            string entityId = entity.entityId;
+            var entityId = entity.entityId;
             if (handlers.TryGetValue(entityId, out IComponentHandler<ModelType> handler))
             {
                 handler.OnComponentRemoved(scene, entity);
@@ -53,7 +53,7 @@ namespace DCL.ECSRuntime
 
         public void SetModel(IDCLEntity entity, ModelType model)
         {
-            string entityId = entity.entityId;
+            var entityId = entity.entityId;
             if (entities.TryGetValue(entity.entityId, out ComponentData<ModelType> data))
             {
                 data.model = model;
@@ -81,6 +81,17 @@ namespace DCL.ECSRuntime
                 return data;
             }
             return null;
+        }
+
+        public IEnumerator<ComponentData<ModelType>> Get()
+        {
+            using (var iterator = entities.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    yield return iterator.Current.Value;
+                }
+            }
         }
     }
 }

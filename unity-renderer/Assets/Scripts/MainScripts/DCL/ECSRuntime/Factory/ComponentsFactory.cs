@@ -8,25 +8,32 @@ namespace DCL.ECSRuntime
     {
         public delegate IECSComponent ECSComponentBuilder(IParcelScene scene);
 
-        private static Dictionary<ComponentsId, ECSComponentBuilder> components =
-            new Dictionary<ComponentsId, ECSComponentBuilder>();
+        private static Dictionary<int, ECSComponentBuilder> components =
+            new Dictionary<int, ECSComponentBuilder>();
 
-        public static IReadOnlyDictionary<ComponentsId, ECSComponentBuilder> definedComponents => components;
+        public static IReadOnlyDictionary<int, ECSComponentBuilder> definedComponents => components;
 
         public static void AddOrReplaceComponent<ModelType>(
-            ComponentsId componentId,
+            int componentId,
             Func<object, ModelType> deserializer,
             Func<IComponentHandler<ModelType>> handlerBuilder)
         {
-            components[componentId] = (scene) => DefineComponent(scene, deserializer, handlerBuilder);
+            components[componentId] = (scene) => BuildComponent(scene, deserializer, handlerBuilder);
         }
 
-        public static IECSComponent DefineComponent<ModelType>(
+        private static IECSComponent BuildComponent<ModelType>(
             IParcelScene scene,
             Func<object, ModelType> deserializer,
             Func<IComponentHandler<ModelType>> handlerBuilder)
         {
             return new ECSComponent<ModelType>(scene, deserializer, handlerBuilder);
+        }
+
+        public static ECSComponentBuilder DefineComponent<ModelType>(
+            Func<object, ModelType> deserializer,
+            Func<IComponentHandler<ModelType>> handlerBuilder)
+        {
+            return (scene) => BuildComponent(scene, deserializer, handlerBuilder);
         }
     }
 }
