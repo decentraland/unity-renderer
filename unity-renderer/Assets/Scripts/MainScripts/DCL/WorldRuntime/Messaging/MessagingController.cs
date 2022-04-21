@@ -17,7 +17,9 @@ namespace DCL
             Systems,
         }
 
-        public Dictionary<MessagingBusType, MessagingBus> messagingBuses = new Dictionary<MessagingBusType, MessagingBus>();
+        public Dictionary<MessagingBusType, MessagingBus> messagingBuses =
+            new Dictionary<MessagingBusType, MessagingBus>();
+
         public IMessageProcessHandler messageHandler;
         public string debugTag;
         public bool enabled = true;
@@ -30,7 +32,8 @@ namespace DCL
 
         public IMessagingControllersManager messagingManager;
 
-        public MessagingController(IMessagingControllersManager messagingManager, IMessageProcessHandler messageHandler, string debugTag = null)
+        public MessagingController(IMessagingControllersManager messagingManager, IMessageProcessHandler messageHandler,
+            string debugTag = null)
         {
             this.messagingManager = messagingManager;
             this.debugTag = debugTag;
@@ -94,7 +97,10 @@ namespace DCL
             }
         }
 
-        public void ForceEnqueue(MessagingBusType busType, QueuedSceneMessage queuedMessage) { messagingBuses[busType].Enqueue(queuedMessage); }
+        public void ForceEnqueue(MessagingBusType busType, QueuedSceneMessage queuedMessage)
+        {
+            messagingBuses[busType].Enqueue(queuedMessage);
+        }
 
         public void Enqueue(bool isUiBus, QueuedSceneMessage_Scene queuedMessage, out MessagingBusType busType)
         {

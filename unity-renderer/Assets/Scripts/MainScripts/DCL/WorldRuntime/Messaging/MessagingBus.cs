@@ -40,12 +40,18 @@ namespace DCL
         public MessagingController owner;
         private IMessagingControllersManager manager;
 
-        Dictionary<string, LinkedListNode<QueuedSceneMessage>> unreliableMessages = new Dictionary<string, LinkedListNode<QueuedSceneMessage>>();
+        Dictionary<string, LinkedListNode<QueuedSceneMessage>> unreliableMessages =
+            new Dictionary<string, LinkedListNode<QueuedSceneMessage>>();
+
         public int unreliableMessagesReplaced = 0;
 
         public bool enabled;
 
-        public float timeBudget { get => renderingIsDisabled ? float.MaxValue : timeBudgetValue; set => timeBudgetValue = value; }
+        public float timeBudget
+        {
+            get => renderingIsDisabled ? float.MaxValue : timeBudgetValue;
+            set => timeBudgetValue = value;
+        }
 
         public MessagingBus(MessagingBusType type, IMessageProcessHandler handler, MessagingController owner)
         {
@@ -58,19 +64,25 @@ namespace DCL
             manager = owner.messagingManager;
         }
 
-        public void Start() { enabled = true; }
+        public void Start()
+        {
+            enabled = true;
+        }
 
         public void Stop()
         {
             enabled = false;
 
-            if ( msgYieldInstruction is CleanableYieldInstruction cleanableYieldInstruction )
+            if (msgYieldInstruction is CleanableYieldInstruction cleanableYieldInstruction)
                 cleanableYieldInstruction.Cleanup();
 
             pendingMessagesCount = 0;
         }
 
-        public void Dispose() { Stop(); }
+        public void Dispose()
+        {
+            Stop();
+        }
 
         public void Enqueue(QueuedSceneMessage message, QueueMode queueMode = QueueMode.Reliable)
         {
@@ -82,11 +94,12 @@ namespace DCL
                 bool enqueued = true;
 
                 // When removing an entity we have to ensure that the enqueued lossy messages after it are processed and not replaced
-                if (message is QueuedSceneMessage_Scene queuedSceneMessage && queuedSceneMessage.payload is Protocol.RemoveEntity removeEntityPayload)
+                if (message is QueuedSceneMessage_Scene queuedSceneMessage &&
+                    queuedSceneMessage.payload is Protocol.RemoveEntity removeEntityPayload)
                 {
                     unreliableMessages = unreliableMessages
-                                         .Where(kvp => !kvp.Key.Contains(removeEntityPayload.entityId))
-                                         .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                        .Where(kvp => !kvp.Key.Contains(removeEntityPayload.entityId))
+                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 }
 
                 if (queueMode == QueueMode.Reliable)
@@ -216,7 +229,7 @@ namespace DCL
 
                             msgYieldInstruction = null;
                         }
-                        
+
                         break;
                     case QueuedSceneMessage.Type.LOAD_PARCEL:
                         handler.LoadParcelScenesExecute(m.message);
@@ -272,7 +285,7 @@ namespace DCL
 
             lock (pendingMessages)
             {
-                addReliableMessage  = pendingMessages.AddLast(message);
+                addReliableMessage = pendingMessages.AddLast(message);
             }
 
             return addReliableMessage;
@@ -305,11 +318,13 @@ namespace DCL
 
             if (logType)
             {
-                Debug.Log($"#{bus.processedMessagesCount} ... bus = {finalTag}, id = {bus.type}... processing msg... type = {m.type}... message = {m.message}");
+                Debug.Log(
+                    $"#{bus.processedMessagesCount} ... bus = {finalTag}, id = {bus.type}... processing msg... type = {m.type}... message = {m.message}");
             }
             else
             {
-                Debug.Log($"#{bus.processedMessagesCount} ... Bus = {finalTag}, id = {bus.type}... processing msg... {m.message}");
+                Debug.Log(
+                    $"#{bus.processedMessagesCount} ... Bus = {finalTag}, id = {bus.type}... processing msg... {m.message}");
             }
         }
     }

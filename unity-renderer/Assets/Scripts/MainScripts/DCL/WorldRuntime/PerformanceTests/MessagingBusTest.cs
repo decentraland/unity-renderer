@@ -14,12 +14,14 @@ namespace MessagingBusTest
         private string entityId;
         private IMessageProcessHandler messageProcessHandler;
         private MessagingBus bus;
+
         [SetUp]
         public void SetUp()
         {
             entityId = "entity";
             messageProcessHandler = Substitute.For<IMessageProcessHandler>();
-            bus = new MessagingBus(MessagingBusType.SYSTEM, messageProcessHandler, new MessagingController(new MessagingControllersManager(messageProcessHandler), messageProcessHandler));
+            bus = new MessagingBus(MessagingBusType.SYSTEM, messageProcessHandler,
+                new MessagingController(new MessagingControllersManager(messageProcessHandler), messageProcessHandler));
         }
 
         [UnityTest]
@@ -27,14 +29,14 @@ namespace MessagingBusTest
         {
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity { entityId = entityId },
+                payload = new Protocol.CreateEntity {entityId = entityId},
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
                 tag = "entity_1"
             }, QueueMode.Lossy);
 
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity { entityId = entityId },
+                payload = new Protocol.CreateEntity {entityId = entityId},
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
                 tag = "entity_1"
             }, QueueMode.Lossy);
@@ -50,14 +52,14 @@ namespace MessagingBusTest
         {
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity { entityId = entityId },
+                payload = new Protocol.CreateEntity {entityId = entityId},
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
                 tag = "entity_1"
             }, QueueMode.Lossy);
 
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.RemoveEntity() { entityId = entityId },
+                payload = new Protocol.RemoveEntity() {entityId = entityId},
                 type = QueuedSceneMessage.Type.SCENE_MESSAGE,
                 method = MessagingTypes.ENTITY_DESTROY,
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
@@ -65,7 +67,7 @@ namespace MessagingBusTest
 
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity { entityId = entityId },
+                payload = new Protocol.CreateEntity {entityId = entityId},
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
                 tag = "entity_1"
             }, QueueMode.Lossy);
@@ -84,7 +86,7 @@ namespace MessagingBusTest
 
             QueuedSceneMessage_Scene queuedSceneMessageScene = new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity { entityId = entityId },
+                payload = new Protocol.CreateEntity {entityId = entityId},
                 message = messageType.ToString(),
                 tag = "entity_1",
                 type = messageType
@@ -96,7 +98,8 @@ namespace MessagingBusTest
             bus.ProcessQueue(0.1f, out _);
 
             //Then
-            messageProcessHandler.Received(1).ProcessMessage(Arg.Any<QueuedSceneMessage_Scene>(), out Arg.Any<CustomYieldInstruction>());
+            messageProcessHandler.Received(1).ProcessMessage(Arg.Any<QueuedSceneMessage_Scene>(),
+                out Arg.Any<CustomYieldInstruction>());
         }
 
         [Test]
@@ -108,7 +111,7 @@ namespace MessagingBusTest
 
             QueuedSceneMessage_Scene queuedSceneMessageScene = new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity { entityId = entityId },
+                payload = new Protocol.CreateEntity {entityId = entityId},
                 message = messagePayload,
                 tag = "entity_1",
                 type = messageType
@@ -133,7 +136,7 @@ namespace MessagingBusTest
 
             QueuedSceneMessage_Scene queuedSceneMessageScene = new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity { entityId = entityId },
+                payload = new Protocol.CreateEntity {entityId = entityId},
                 message = messagePayload,
                 tag = "entity_1",
                 type = messageType
@@ -157,7 +160,7 @@ namespace MessagingBusTest
 
             QueuedSceneMessage_Scene queuedSceneMessageScene = new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity { entityId = entityId },
+                payload = new Protocol.CreateEntity {entityId = entityId},
                 message = messagePayload,
                 tag = "entity_1",
                 type = messageType
@@ -181,7 +184,7 @@ namespace MessagingBusTest
 
             QueuedSceneMessage_Scene queuedSceneMessageScene = new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity { entityId = entityId },
+                payload = new Protocol.CreateEntity {entityId = entityId},
                 message = messagePayload,
                 tag = "entity_1",
                 type = messageType

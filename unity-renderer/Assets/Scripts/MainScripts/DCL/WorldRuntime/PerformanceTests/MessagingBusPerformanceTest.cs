@@ -11,7 +11,6 @@ namespace MessagingBusPerformanceTest
 {
     public class MessagingBusPerformanceTest
     {
-        
         private const string SEND_SCENE_MESSAGE = "SceneController.SendSceneMessage";
         private const int SEND_SCENE_UNUSED_CHARS = 3;
         private string[] dataAsJson;
@@ -21,10 +20,10 @@ namespace MessagingBusPerformanceTest
         private IEnumerator<QueuedSceneMessage_Scene> nextQueueMessage;
         private MessagingController controller;
         private MessagingControllersManager manager;
-        
+
         public void SetupTests()
         {
-            if ( manager == null )
+            if (manager == null)
                 manager = new MessagingControllersManager(dummyHandler);
 
             if (controller == null)
@@ -65,29 +64,29 @@ namespace MessagingBusPerformanceTest
         public IEnumerator MeasureTimeToProcessThousandMessages()
         {
             Measure.Method(() =>
-                   {
-                       var processed = controller.initBus.processedMessagesCount;
-                       Assert.IsTrue(controller.initBus.pendingMessagesCount > 1000);
-                       while (controller.initBus.processedMessagesCount < processed + 1000)
-                       {
-                           controller.initBus.ProcessQueue(0.1f, out _);
-                       }
-                   })
-                   .SetUp(() =>
-                   {
-                       SetupTests();
-                       controller.StartBus(MessagingBusType.INIT);
-                       for (var i = 0; i < 1001; i++)
-                       {
-                           EnqueueNextMessage();
-                       }
-                   })
-                   .WarmupCount(3)
-                   .MeasurementCount(10)
-                   .IterationsPerMeasurement(10)
-                   .GC()
-                   .Run();
-            
+                {
+                    var processed = controller.initBus.processedMessagesCount;
+                    Assert.IsTrue(controller.initBus.pendingMessagesCount > 1000);
+                    while (controller.initBus.processedMessagesCount < processed + 1000)
+                    {
+                        controller.initBus.ProcessQueue(0.1f, out _);
+                    }
+                })
+                .SetUp(() =>
+                {
+                    SetupTests();
+                    controller.StartBus(MessagingBusType.INIT);
+                    for (var i = 0; i < 1001; i++)
+                    {
+                        EnqueueNextMessage();
+                    }
+                })
+                .WarmupCount(3)
+                .MeasurementCount(10)
+                .IterationsPerMeasurement(10)
+                .GC()
+                .Run();
+
             yield return null;
         }
 
@@ -97,7 +96,10 @@ namespace MessagingBusPerformanceTest
             controller.Enqueue(false, queuedMessage, out _);
         }
 
-        private string SceneMessagesPath() { return Application.dataPath + "/" + dataSource; }
+        private string SceneMessagesPath()
+        {
+            return Application.dataPath + "/" + dataSource;
+        }
 
         private void SetupDataFile()
         {
@@ -130,7 +132,8 @@ namespace MessagingBusPerformanceTest
 
                 if (locator == SEND_SCENE_MESSAGE)
                 {
-                    raw = message.Substring(separator + 2, message.Length - SEND_SCENE_MESSAGE.Length - SEND_SCENE_UNUSED_CHARS);
+                    raw = message.Substring(separator + 2,
+                        message.Length - SEND_SCENE_MESSAGE.Length - SEND_SCENE_UNUSED_CHARS);
                     queuedMessages.AddLast(ParseRawIntoQueuedMessage(raw));
                 }
             }

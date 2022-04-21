@@ -31,7 +31,7 @@ namespace DCL
         private int maxDownloadingAssetsRef = 0;
         private int maxDownloadingCalculatedPercentage = 0;
 
-        public LoadingFeedbackController ()
+        public LoadingFeedbackController()
         {
             loadedScenes = new List<SceneLoadingStatus>();
 
@@ -53,7 +53,7 @@ namespace DCL
         {
             var parcelScene = scene as ParcelScene;
 
-            if ( parcelScene == null )
+            if (parcelScene == null)
                 return;
 
             parcelScene.sceneLifecycleHandler.OnStateRefreshed += Scene_OnStateRefreshed;
@@ -91,9 +91,15 @@ namespace DCL
             }
         }
 
-        private void GLTFComponent_OnDownloadingProgressUpdate() { RefreshFeedbackMessage(); }
+        private void GLTFComponent_OnDownloadingProgressUpdate()
+        {
+            RefreshFeedbackMessage();
+        }
 
-        private void AssetPromise_AB_OnDownloadingProgressUpdate() { RefreshFeedbackMessage(); }
+        private void AssetPromise_AB_OnDownloadingProgressUpdate()
+        {
+            RefreshFeedbackMessage();
+        }
 
         private void RefreshFeedbackMessage()
         {
@@ -114,11 +120,13 @@ namespace DCL
                 loadingText = string.Format("Loading scenes {0}%", loadingComponentsPercentage);
             }
 
-            totalActiveDownloads = AssetPromiseKeeper_GLTF.i.waitingPromisesCount + AssetPromiseKeeper_AB.i.waitingPromisesCount;
+            totalActiveDownloads = AssetPromiseKeeper_GLTF.i.waitingPromisesCount +
+                                   AssetPromiseKeeper_AB.i.waitingPromisesCount;
             if (totalActiveDownloads > 0)
             {
                 downloadingAssetsPercentage = GetDownloadingAssetsPercentage(totalActiveDownloads);
-                secondLoadingText = string.Format("Downloading images, 3D models, and sounds {0}%", downloadingAssetsPercentage);
+                secondLoadingText = string.Format("Downloading images, 3D models, and sounds {0}%",
+                    downloadingAssetsPercentage);
 
                 if (!string.IsNullOrEmpty(loadingText))
                 {

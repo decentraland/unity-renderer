@@ -49,7 +49,8 @@ namespace DCL.Models
                     lastBoundsCalculationPosition = meshRootGameObject.transform.position;
                 }
 
-                if (meshRootGameObject.transform.lossyScale != lastBoundsCalculationScale || meshRootGameObject.transform.rotation != lastBoundsCalculationRotation)
+                if (meshRootGameObject.transform.lossyScale != lastBoundsCalculationScale ||
+                    meshRootGameObject.transform.rotation != lastBoundsCalculationRotation)
                     RecalculateBounds();
 
                 return mergedBoundsValue;
@@ -108,7 +109,8 @@ namespace DCL.Models
             }
             else
             {
-                Debug.LogError($"MeshFilter index {meshFilterIndex} out of bounds - MeshesInfo.UpdateExistingMesh failed");
+                Debug.LogError(
+                    $"MeshFilter index {meshFilterIndex} out of bounds - MeshesInfo.UpdateExistingMesh failed");
             }
         }
     }

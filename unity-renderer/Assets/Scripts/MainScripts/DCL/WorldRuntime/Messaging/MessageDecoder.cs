@@ -24,7 +24,8 @@ namespace DCL
         static string queryDumpStr;
 #endif
 
-        public static bool DecodePayloadChunk(string payload, out string sceneId, out string message, out string tag, out PB_SendSceneMessage sendSceneMessage)
+        public static bool DecodePayloadChunk(string payload, out string sceneId, out string message, out string tag,
+            out PB_SendSceneMessage sendSceneMessage)
         {
 #if UNITY_EDITOR
             DumpMessage(payload, MESSAGES_FILENAME, ref messageDumpStr, ref messagesCount);
@@ -86,7 +87,8 @@ namespace DCL
             return true;
         }
 
-        public static void DecodeSceneMessage(string sceneId, string method, string tag, PB_SendSceneMessage sendSceneMessage, ref QueuedSceneMessage_Scene queuedMessage)
+        public static void DecodeSceneMessage(string sceneId, string method, string tag,
+            PB_SendSceneMessage sendSceneMessage, ref QueuedSceneMessage_Scene queuedMessage)
         {
             queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
             queuedMessage.sceneId = sceneId;
@@ -116,7 +118,8 @@ namespace DCL
                     queuedMessage.payload = Protocol.SharedComponentCreate.FromPB(sendSceneMessage.ComponentCreated);
                     break;
                 case MessagingTypes.SHARED_COMPONENT_ATTACH:
-                    queuedMessage.payload = Protocol.SharedComponentAttach.FromPB(sendSceneMessage.AttachEntityComponent);
+                    queuedMessage.payload =
+                        Protocol.SharedComponentAttach.FromPB(sendSceneMessage.AttachEntityComponent);
                     break;
                 case MessagingTypes.SHARED_COMPONENT_UPDATE:
                     queuedMessage.payload = Protocol.SharedComponentUpdate.FromPB(sendSceneMessage.ComponentUpdated);
@@ -125,7 +128,8 @@ namespace DCL
                     queuedMessage.payload = Protocol.SharedComponentDispose.FromPB(sendSceneMessage.ComponentDisposed);
                     break;
                 case MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE:
-                    queuedMessage.payload = Protocol.EntityComponentCreateOrUpdate.FromPB(sendSceneMessage.UpdateEntityComponent);
+                    queuedMessage.payload =
+                        Protocol.EntityComponentCreateOrUpdate.FromPB(sendSceneMessage.UpdateEntityComponent);
                     break;
                 case MessagingTypes.ENTITY_COMPONENT_DESTROY:
                     queuedMessage.payload = Protocol.EntityComponentDestroy.FromPB(sendSceneMessage.ComponentRemoved);
@@ -153,9 +157,11 @@ namespace DCL
             query.payload.id = pbRayQuery.QueryId;
             query.payload.raycastType = Protocol.RaycastLiteralToType(pbRayQuery.QueryType);
             query.payload.ray = new DCL.Models.Ray();
-            query.payload.ray.direction = new Vector3(pbRayQuery.Ray.Direction.X, pbRayQuery.Ray.Direction.Y, pbRayQuery.Ray.Direction.Z);
+            query.payload.ray.direction = new Vector3(pbRayQuery.Ray.Direction.X, pbRayQuery.Ray.Direction.Y,
+                pbRayQuery.Ray.Direction.Z);
             query.payload.ray.distance = pbRayQuery.Ray.Distance;
-            query.payload.ray.origin = new Vector3(pbRayQuery.Ray.Origin.X, pbRayQuery.Ray.Origin.Y, pbRayQuery.Ray.Origin.Z);
+            query.payload.ray.origin =
+                new Vector3(pbRayQuery.Ray.Origin.X, pbRayQuery.Ray.Origin.Y, pbRayQuery.Ray.Origin.Z);
         }
 
 #if UNITY_EDITOR

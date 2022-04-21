@@ -34,7 +34,7 @@ namespace DCL
 
         public object Clone()
         {
-            var result = (Rendereable)this.MemberwiseClone();
+            var result = (Rendereable) this.MemberwiseClone();
             result.meshToTriangleCount = new Dictionary<Mesh, int>(meshToTriangleCount);
             result.renderers = new HashSet<Renderer>(renderers);
             result.materials = new HashSet<Material>(materials);
@@ -52,14 +52,16 @@ namespace DCL
             rendereable.textures = MeshesInfoUtils.ExtractUniqueTextures(rendereable.materials);
             rendereable.meshes = MeshesInfoUtils.ExtractUniqueMeshes(rendereable.renderers);
             rendereable.meshToTriangleCount = MeshesInfoUtils.ExtractMeshToTriangleMap(rendereable.meshes.ToList());
-            rendereable.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(rendereable.renderers, rendereable.meshToTriangleCount);
+            rendereable.totalTriangleCount =
+                MeshesInfoUtils.ComputeTotalTriangles(rendereable.renderers, rendereable.meshToTriangleCount);
 
             return rendereable;
         }
 
         public override string ToString()
         {
-            return $"Rendereable - owner: {ownerId} ... textures: {textures.Count} ... triangles: {totalTriangleCount} ... materials: {materials.Count} ... meshes: {meshes.Count} ... renderers: {renderers.Count}";
+            return
+                $"Rendereable - owner: {ownerId} ... textures: {textures.Count} ... triangles: {totalTriangleCount} ... materials: {materials.Count} ... meshes: {meshes.Count} ... renderers: {renderers.Count}";
         }
     }
 }
