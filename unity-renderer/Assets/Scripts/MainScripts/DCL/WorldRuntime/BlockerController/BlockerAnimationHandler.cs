@@ -16,9 +16,15 @@ namespace DCL.Controllers
     /// </summary>
     public class BlockerAnimationHandler : IBlockerAnimationHandler
     {
-        public void FadeIn(GameObject go) { CoroutineStarter.Start(FadeInCoroutine(go)); }
+        public void FadeIn(GameObject go)
+        {
+            CoroutineStarter.Start(FadeInCoroutine(go));
+        }
 
-        public void FadeOut(GameObject go, System.Action OnFinish) { CoroutineStarter.Start(FadeOutCoroutine(go, OnFinish)); }
+        public void FadeOut(GameObject go, System.Action OnFinish)
+        {
+            CoroutineStarter.Start(FadeOutCoroutine(go, OnFinish));
+        }
 
         IEnumerator FadeInCoroutine(GameObject go)
         {
@@ -40,7 +46,7 @@ namespace DCL.Controllers
             if (DataStore.i.common.isApplicationQuitting.Get())
                 yield break;
 #endif
-            
+
             Renderer rend = go.GetComponent<Renderer>();
 
             Color color = rend.material.GetColor(ShaderUtils.BaseColor);

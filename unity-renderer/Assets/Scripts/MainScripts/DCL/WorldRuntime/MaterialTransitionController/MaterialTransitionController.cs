@@ -58,7 +58,11 @@ public class MaterialTransitionController : MonoBehaviour
     float time;
 
     public bool materialReady { get; private set; }
-    public bool canSwitchMaterial { get { return materialReady && state != State.FINISHED; } }
+
+    public bool canSwitchMaterial
+    {
+        get { return materialReady && state != State.FINISHED; }
+    }
 
     public void PopulateTargetRendererWithMaterial(Material[] newMaterials, bool updateCulling = false)
     {
@@ -158,7 +162,7 @@ public class MaterialTransitionController : MonoBehaviour
             hologramMaterial = Resources.Load("Materials/HologramMaterial") as Material;
 
         hologramMaterialCopy = new Material(hologramMaterial);
-        placeholderRenderer.sharedMaterials = new Material[] { hologramMaterialCopy };
+        placeholderRenderer.sharedMaterials = new Material[] {hologramMaterialCopy};
     }
 
     private void Update()
@@ -173,53 +177,53 @@ public class MaterialTransitionController : MonoBehaviour
         switch (state)
         {
             case State.NOT_LOADED:
+            {
+                currentCullYPlane += (topYRendererBounds - currentCullYPlane) * 0.1f;
+                currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
+                time += Time.deltaTime;
+
+                UpdateCullYValueHologram();
+
+                if (materialReady && time > delay)
                 {
-                    currentCullYPlane += (topYRendererBounds - currentCullYPlane) * 0.1f;
-                    currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
-                    time += Time.deltaTime;
+                    currentCullYPlane = topYRendererBounds;
+                    targetRendererValue.enabled = true;
 
-                    UpdateCullYValueHologram();
+                    PrepareCullingFXMaterials();
+                    PopulateTargetRendererWithMaterial(cullingFXMaterials, true);
 
-                    if (materialReady && time > delay)
-                    {
-                        currentCullYPlane = topYRendererBounds;
-                        targetRendererValue.enabled = true;
-
-                        PrepareCullingFXMaterials();
-                        PopulateTargetRendererWithMaterial(cullingFXMaterials, true);
-
-                        state = State.SHOWING_LOADED;
-                    }
-
-                    break;
+                    state = State.SHOWING_LOADED;
                 }
+
+                break;
+            }
 
             case State.SHOWING_LOADED:
+            {
+                currentCullYPlane += (lowerYRendererBounds - currentCullYPlane) * 0.1f;
+                currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
+
+                UpdateCullYValueHologram();
+                UpdateCullYValueFXMaterial();
+
+                if (currentCullYPlane <= lowerYRendererBounds + 0.1f)
                 {
-                    currentCullYPlane += (lowerYRendererBounds - currentCullYPlane) * 0.1f;
-                    currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
+                    // We don't update the culling value in the final material to avoid affecting the already-loaded meshes
+                    PopulateTargetRendererWithMaterial(finalMaterials);
 
-                    UpdateCullYValueHologram();
-                    UpdateCullYValueFXMaterial();
-
-                    if (currentCullYPlane <= lowerYRendererBounds + 0.1f)
-                    {
-                        // We don't update the culling value in the final material to avoid affecting the already-loaded meshes
-                        PopulateTargetRendererWithMaterial(finalMaterials);
-
-                        DestroyPlaceholder();
-                        state = State.FINISHED;
-                    }
-
-                    break;
+                    DestroyPlaceholder();
+                    state = State.FINISHED;
                 }
+
+                break;
+            }
 
             case State.FINISHED:
-                {
-                    onFinishedLoading?.Invoke();
-                    Destroy(this);
-                    break;
-                }
+            {
+                onFinishedLoading?.Invoke();
+                Destroy(this);
+                break;
+            }
         }
     }
 
@@ -261,15 +265,22 @@ public class MaterialTransitionController : MonoBehaviour
 
     public void OnDidFinishLoading(Material finishMaterial)
     {
-        finalMaterials = new Material[] { finishMaterial };
+        finalMaterials = new Material[] {finishMaterial};
         materialReady = true;
     }
 
-    public float GetLowerBoundsY(Renderer targetRenderer) { return targetRenderer.bounds.min.y - fadeThickness; }
+    public float GetLowerBoundsY(Renderer targetRenderer)
+    {
+        return targetRenderer.bounds.min.y - fadeThickness;
+    }
 
-    public float GetTopBoundsY(Renderer targetRenderer) { return targetRenderer.bounds.max.y + fadeThickness; }
+    public float GetTopBoundsY(Renderer targetRenderer)
+    {
+        return targetRenderer.bounds.max.y + fadeThickness;
+    }
 
-    public static void ApplyToLoadedObject(GameObject meshContainer, bool useHologram = true, float fadeThickness = 20, float delay = 0)
+    public static void ApplyToLoadedObject(GameObject meshContainer, bool useHologram = true, float fadeThickness = 20,
+        float delay = 0)
     {
         Renderer[] renderers = meshContainer.GetComponentsInChildren<Renderer>();
 

@@ -17,7 +17,10 @@ namespace DCL
             PoolManager.i.OnGet += MarkDirty;
         }
 
-        public void MarkDirty() { isDirty = true; }
+        public void MarkDirty()
+        {
+            isDirty = true;
+        }
 
         public void Sync()
         {

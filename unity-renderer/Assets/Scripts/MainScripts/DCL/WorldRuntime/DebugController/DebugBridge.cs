@@ -17,7 +17,7 @@ namespace DCL
             public string sceneId;
             public bool enabled;
         }
-        
+
 
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
         private IDebugController debugController;
@@ -29,15 +29,30 @@ namespace DCL
 
         // Beware this SetDebug() may be called before Awake() somehow...
         [ContextMenu("Set Debug mode")]
-        public void SetDebug() { debugController.SetDebug(); }
+        public void SetDebug()
+        {
+            debugController.SetDebug();
+        }
 
-        public void HideFPSPanel() { debugController.HideFPSPanel(); }
+        public void HideFPSPanel()
+        {
+            debugController.HideFPSPanel();
+        }
 
-        public void ShowFPSPanel() { debugController.ShowFPSPanel(); }
+        public void ShowFPSPanel()
+        {
+            debugController.ShowFPSPanel();
+        }
 
-        public void SetSceneDebugPanel() { debugController.SetSceneDebugPanel(); }
+        public void SetSceneDebugPanel()
+        {
+            debugController.SetSceneDebugPanel();
+        }
 
-        public void SetEngineDebugPanel() { debugController.SetEngineDebugPanel(); }
+        public void SetEngineDebugPanel()
+        {
+            debugController.SetEngineDebugPanel();
+        }
 
         [ContextMenu("Dump Scenes Load Info")]
         public void DumpScenesLoadInfo()
@@ -50,7 +65,7 @@ namespace DCL
                 debugLogger.Log("Dumping state for scene: " + kvp.Value.sceneData.id);
                 scene.GetWaitingComponentsDebugInfo();
             }
-            
+
             Debug.unityLogger.logEnabled = originalLoggingValue;
         }
 
@@ -59,13 +74,13 @@ namespace DCL
         {
             bool originalLoggingValue = Debug.unityLogger.logEnabled;
             Debug.unityLogger.logEnabled = true;
-            
+
             var worstMetricOffenses = DataStore.i.Get<DataStore_SceneMetrics>().worstMetricOffenses;
-            foreach ( var offense in worstMetricOffenses )
+            foreach (var offense in worstMetricOffenses)
             {
                 debugLogger.Log($"Scene: {offense.Key} ... Metrics: {offense.Value}");
             }
-            
+
             Debug.unityLogger.logEnabled = originalLoggingValue;
         }
 
@@ -79,7 +94,7 @@ namespace DCL
         {
             bool originalLoggingValue = Debug.unityLogger.logEnabled;
             Debug.unityLogger.logEnabled = true;
-            
+
             RenderingController renderingController = FindObjectOfType<RenderingController>();
             if (renderingController == null)
             {
@@ -97,7 +112,7 @@ namespace DCL
             {
                 debugLogger.Log($"Renderer is locked by id: {lockId} of type {lockId.GetType()}");
             }
-            
+
             Debug.unityLogger.logEnabled = originalLoggingValue;
         }
 
@@ -105,7 +120,7 @@ namespace DCL
         {
             bool originalLoggingValue = Debug.unityLogger.logEnabled;
             Debug.unityLogger.logEnabled = true;
-            
+
             var crashPayload = CrashPayloadUtils.ComputePayload
             (
                 DCL.Environment.i.world.state.loadedScenes,
@@ -114,7 +129,7 @@ namespace DCL
             );
 
             CrashPayloadResponse(crashPayload);
-            
+
             Debug.unityLogger.logEnabled = originalLoggingValue;
         }
 
@@ -129,8 +144,9 @@ namespace DCL
         {
             bool originalLoggingValue = Debug.unityLogger.logEnabled;
             Debug.unityLogger.logEnabled = true;
-            
-            debugLogger.Log($"MEMORY -- total {Profiler.GetTotalAllocatedMemoryLong()} ... used by mono {Profiler.GetMonoUsedSizeLong()}");
+
+            debugLogger.Log(
+                $"MEMORY -- total {Profiler.GetTotalAllocatedMemoryLong()} ... used by mono {Profiler.GetMonoUsedSizeLong()}");
 
             var payload = CrashPayloadUtils.ComputePayload
             (
@@ -139,7 +155,7 @@ namespace DCL
                 debugController.GetTrackedTeleportPositions()
             );
 
-            foreach ( var field in payload.fields)
+            foreach (var field in payload.fields)
             {
                 string dump = JsonConvert.SerializeObject(field.Value);
                 debugLogger.Log($"Crash payload ({field.Key}): {dump}");
@@ -147,19 +163,44 @@ namespace DCL
 
             string fullDump = JsonConvert.SerializeObject(payload);
             debugLogger.Log($"Full crash payload size: {fullDump.Length}");
-            
+
             Debug.unityLogger.logEnabled = originalLoggingValue;
         }
 
-        public void RunPerformanceMeterTool(float durationInSeconds) { debugController.RunPerformanceMeterTool(durationInSeconds); }
+        public void RunPerformanceMeterTool(float durationInSeconds)
+        {
+            debugController.RunPerformanceMeterTool(durationInSeconds);
+        }
 
-        public void InstantiateBotsAtWorldPos(string configJson) { debugController.InstantiateBotsAtWorldPos(configJson); }
+        public void InstantiateBotsAtWorldPos(string configJson)
+        {
+            debugController.InstantiateBotsAtWorldPos(configJson);
+        }
 
-        public void InstantiateBotsAtCoords(string configJson) { debugController.InstantiateBotsAtCoords(configJson); }
-        public void StartBotsRandomizedMovement(string configJson) { debugController.StartBotsRandomizedMovement(configJson); }
-        public void StopBotsMovement() { debugController.StopBotsMovement(); }
-        public void RemoveBot(string targetEntityId) { debugController.RemoveBot(targetEntityId); }
-        public void ClearBots() { debugController.ClearBots(); }
+        public void InstantiateBotsAtCoords(string configJson)
+        {
+            debugController.InstantiateBotsAtCoords(configJson);
+        }
+
+        public void StartBotsRandomizedMovement(string configJson)
+        {
+            debugController.StartBotsRandomizedMovement(configJson);
+        }
+
+        public void StopBotsMovement()
+        {
+            debugController.StopBotsMovement();
+        }
+
+        public void RemoveBot(string targetEntityId)
+        {
+            debugController.RemoveBot(targetEntityId);
+        }
+
+        public void ClearBots()
+        {
+            debugController.ClearBots();
+        }
 
         public void ToggleSceneBoundingBoxes(string payload)
         {
@@ -169,10 +210,10 @@ namespace DCL
 
         public void TogglePreviewMenu(string payload)
         {
-            PreviewMenuPayload data =  JsonUtility.FromJson<PreviewMenuPayload>(payload);
+            PreviewMenuPayload data = JsonUtility.FromJson<PreviewMenuPayload>(payload);
             DataStore.i.debugConfig.isPreviewMenuActive.Set(data.enabled);
         }
-        
+
         public void ToggleSceneSpawnPoints(string payload)
         {
             ToggleSpawnPointsPayload data = Utils.FromJsonWithNulls<ToggleSpawnPointsPayload>(payload);
@@ -182,12 +223,16 @@ namespace DCL
                 var prevData = DataStore.i.debugConfig.showSceneSpawnPoints.Get(data.sceneId);
                 data.enabled = prevData == null || !prevData.enabled.HasValue ? false : prevData.enabled;
             }
+
             DataStore.i.debugConfig.showSceneSpawnPoints.AddOrSet(data.sceneId, data);
-        }        
+        }
 
 #if UNITY_EDITOR
         [ContextMenu("Run Performance Meter Tool for 30 seconds")]
-        public void DebugPerformanceMeter() { RunPerformanceMeterTool(30); }
+        public void DebugPerformanceMeter()
+        {
+            RunPerformanceMeterTool(30);
+        }
 
         [ContextMenu("Instantiate 3 bots at player coordinates")]
         public void DebugBotsInstantiation()

@@ -41,7 +41,7 @@ namespace DCL.Controllers
         }
 
         public void ShowBlocker(Vector2Int pos, bool instant = false, bool colliderEnabled = true)
-        {            
+        {
             float centerOffset = ParcelSettings.PARCEL_SIZE / 2;
             PoolableObject blockerPoolable = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
             GameObject blockerGo = blockerPoolable.gameObject;
@@ -88,7 +88,10 @@ namespace DCL.Controllers
             pool.ForcePrewarm();
         }
 
-        public void SetParent(Transform parent) { this.parent = parent; }
+        public void SetParent(Transform parent)
+        {
+            this.parent = parent;
+        }
 
         public void HideBlocker(Vector2Int coords, bool instant = false)
         {
@@ -113,7 +116,10 @@ namespace DCL.Controllers
             blockers.Remove(coords);
         }
 
-        public Dictionary<Vector2Int, IPoolableObject> GetBlockers() { return new Dictionary<Vector2Int, IPoolableObject>(blockers); }
+        public Dictionary<Vector2Int, IPoolableObject> GetBlockers()
+        {
+            return new Dictionary<Vector2Int, IPoolableObject>(blockers);
+        }
 
         public void SetCollision(bool newState)
         {
@@ -122,7 +128,7 @@ namespace DCL.Controllers
                 keyValuePair.Value.gameObject.GetComponent<Collider>().enabled = newState;
             }
         }
-        
+
         public void DestroyAllBlockers()
         {
             var keys = blockers.Keys.ToArray();

@@ -4,24 +4,30 @@ namespace DCL
 {
     public class DebugView : MonoBehaviour
     {
-        [Header("Debug Tools")]
-        [SerializeField]
+        [Header("Debug Tools")] [SerializeField]
         private GameObject fpsPanel;
 
-        [Header("Debug Panel")]
-        [SerializeField]
+        [Header("Debug Panel")] [SerializeField]
         private GameObject engineDebugPanel;
 
-        [SerializeField]
-        private GameObject sceneDebugPanel;
+        [SerializeField] private GameObject sceneDebugPanel;
 
         [SerializeField] private InfoPanel infoPanel;
 
-        private void Awake() { infoPanel.SetVisible(false); }
+        private void Awake()
+        {
+            infoPanel.SetVisible(false);
+        }
 
-        public void ShowFPSPanel() { fpsPanel.SetActive(true); }
+        public void ShowFPSPanel()
+        {
+            fpsPanel.SetActive(true);
+        }
 
-        public void HideFPSPanel() { fpsPanel.SetActive(false); }
+        public void HideFPSPanel()
+        {
+            fpsPanel.SetActive(false);
+        }
 
         public void SetSceneDebugPanel()
         {
@@ -34,6 +40,7 @@ namespace DCL
             sceneDebugPanel.SetActive(false);
             engineDebugPanel.SetActive(true);
         }
+
         public void ShowInfoPanel(string network, string realm)
         {
             infoPanel.Setup(network, realm);

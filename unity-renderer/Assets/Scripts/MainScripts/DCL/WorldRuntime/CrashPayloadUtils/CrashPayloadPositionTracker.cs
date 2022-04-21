@@ -13,7 +13,7 @@ namespace DCL.Helpers
         private float positionUpdateInterval = 30.0f;
         private int maxQueueSize = 50;
 
-        public CrashPayloadPositionTracker ()
+        public CrashPayloadPositionTracker()
         {
             CommonScriptableObjects.playerWorldPosition.OnChange += OnPositionChange;
             DataStore.i.player.lastTeleportPosition.OnChange += OnTeleport;
@@ -27,20 +27,20 @@ namespace DCL.Helpers
 
         private void OnTeleport(Vector3 current, Vector3 previous)
         {
-            teleportPositions.Add( current );
+            teleportPositions.Add(current);
 
-            if ( teleportPositions.Count > maxQueueSize )
+            if (teleportPositions.Count > maxQueueSize)
                 teleportPositions.RemoveAt(0);
         }
 
         private void OnPositionChange(Vector3 current, Vector3 previous)
         {
-            if ( lastPositionUpdate + positionUpdateInterval > Time.time )
+            if (lastPositionUpdate + positionUpdateInterval > Time.time)
             {
-                movePositions.Add( current );
+                movePositions.Add(current);
                 lastPositionUpdate = Time.time;
 
-                if ( movePositions.Count > maxQueueSize )
+                if (movePositions.Count > maxQueueSize)
                     movePositions.RemoveAt(0);
             }
         }

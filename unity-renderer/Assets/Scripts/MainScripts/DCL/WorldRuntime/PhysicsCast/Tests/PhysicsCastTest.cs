@@ -91,9 +91,11 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
         response.queryId = raycastQuery.QueryId;
         response.payload = new WebInterface.RaycastHitEntity();
         response.payload.ray = new WebInterface.RayInfo();
-        response.payload.ray.origin = new Vector3(raycastQuery.Ray.Origin.X, raycastQuery.Ray.Origin.Y, raycastQuery.Ray.Origin.Z);
+        response.payload.ray.origin =
+            new Vector3(raycastQuery.Ray.Origin.X, raycastQuery.Ray.Origin.Y, raycastQuery.Ray.Origin.Z);
         response.payload.ray.distance = raycastQuery.Ray.Distance;
-        response.payload.ray.direction = new Vector3(raycastQuery.Ray.Direction.X, raycastQuery.Ray.Direction.Y, raycastQuery.Ray.Direction.Z);
+        response.payload.ray.direction = new Vector3(raycastQuery.Ray.Direction.X, raycastQuery.Ray.Direction.Y,
+            raycastQuery.Ray.Direction.Z);
         response.payload.entity = new WebInterface.HitEntityInfo();
         response.payload.entity.entityId = entities[0].entityId;
 
@@ -109,10 +111,12 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
                 responseCount++;
                 Assert.IsTrue(responseCount == 1, "This raycast query should be lossy and therefore excecuted once.");
                 Assert.IsTrue(raycastResponse != null);
-                Assert.IsTrue(raycastResponse.payload.payload.entity.entityId == sceneEvent.payload.payload.entity.entityId);
+                Assert.IsTrue(raycastResponse.payload.payload.entity.entityId ==
+                              sceneEvent.payload.payload.entity.entityId);
 
                 if (raycastResponse != null &&
-                    AreSceneEventsEqual<WebInterface.RaycastHitFirstResponse, WebInterface.RaycastHitEntity>(raycastResponse, sceneEvent) &&
+                    AreSceneEventsEqual<WebInterface.RaycastHitFirstResponse, WebInterface.RaycastHitEntity>(
+                        raycastResponse, sceneEvent) &&
                     raycastResponse.payload.payload.entity.entityId == sceneEvent.payload.payload.entity.entityId)
                 {
                     eventTriggered = true;
@@ -158,9 +162,11 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
         response.queryId = raycastQuery.QueryId;
         response.payload = new WebInterface.RaycastHitEntities();
         response.payload.ray = new WebInterface.RayInfo();
-        response.payload.ray.origin = new Vector3(raycastQuery.Ray.Origin.X, raycastQuery.Ray.Origin.Y, raycastQuery.Ray.Origin.Z);
+        response.payload.ray.origin =
+            new Vector3(raycastQuery.Ray.Origin.X, raycastQuery.Ray.Origin.Y, raycastQuery.Ray.Origin.Z);
         response.payload.ray.distance = raycastQuery.Ray.Distance;
-        response.payload.ray.direction = new Vector3(raycastQuery.Ray.Direction.X, raycastQuery.Ray.Direction.Y, raycastQuery.Ray.Direction.Z);
+        response.payload.ray.direction = new Vector3(raycastQuery.Ray.Direction.X, raycastQuery.Ray.Direction.Y,
+            raycastQuery.Ray.Direction.Z);
         response.payload.entities = new WebInterface.RaycastHitEntity[ENTITIES_COUNT];
 
         for (int i = 0; i < ENTITIES_COUNT; i++)
@@ -189,7 +195,8 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
                 Assert.IsTrue(raycastResponse.payload.payload.entities.Length == ENTITIES_COUNT);
 
                 if (raycastResponse != null &&
-                    AreSceneEventsEqual<WebInterface.RaycastHitAllResponse, WebInterface.RaycastHitEntities>(raycastResponse, sceneEvent) &&
+                    AreSceneEventsEqual<WebInterface.RaycastHitAllResponse, WebInterface.RaycastHitEntities>(
+                        raycastResponse, sceneEvent) &&
                     raycastResponse.payload.payload.entities.Length == ENTITIES_COUNT)
                 {
                     for (int i = 0; i < raycastResponse.payload.payload.entities.Length; i++)
@@ -198,7 +205,8 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
 
                         for (int j = 0; j < sceneEvent.payload.payload.entities.Length; j++)
                         {
-                            if (raycastResponse.payload.payload.entities[i].entity.entityId == sceneEvent.payload.payload.entities[j].entity.entityId)
+                            if (raycastResponse.payload.payload.entities[i].entity.entityId ==
+                                sceneEvent.payload.payload.entities[j].entity.entityId)
                             {
                                 found = raycastResponse.payload.payload.entities[i].didHit;
                                 break;
@@ -251,7 +259,8 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
             OnMessageReceived);
     }
 
-    private bool AreSceneEventsEqual<T, T2>(WebInterface.SceneEvent<T> s1, WebInterface.SceneEvent<T> s2) where T2 : WebInterface.RaycastHitInfo where T : WebInterface.RaycastResponse<T2>
+    private bool AreSceneEventsEqual<T, T2>(WebInterface.SceneEvent<T> s1, WebInterface.SceneEvent<T> s2)
+        where T2 : WebInterface.RaycastHitInfo where T : WebInterface.RaycastResponse<T2>
     {
         Assert.IsTrue(s1.eventType == s2.eventType);
         Assert.IsTrue(s1.sceneId == s2.sceneId);
@@ -263,7 +272,8 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
         return AreRaycastResponsesEqual(s1.payload, s2.payload);
     }
 
-    private bool AreRaycastResponsesEqual<T>(WebInterface.RaycastResponse<T> r1, WebInterface.RaycastResponse<T> r2) where T : WebInterface.RaycastHitInfo
+    private bool AreRaycastResponsesEqual<T>(WebInterface.RaycastResponse<T> r1, WebInterface.RaycastResponse<T> r2)
+        where T : WebInterface.RaycastHitInfo
     {
         Assert.IsTrue(r1.queryId == r2.queryId);
         Assert.IsTrue(r1.queryType == r2.queryType);

@@ -42,9 +42,15 @@ public class RenderingController : MonoBehaviour
     }
 
     [ContextMenu("Enable Rendering")]
-    public void ActivateRendering() { ActivateRendering(forceActivate: false); }
+    public void ActivateRendering()
+    {
+        ActivateRendering(forceActivate: false);
+    }
 
-    public void ForceActivateRendering() { ActivateRendering(forceActivate: true); }
+    public void ForceActivateRendering()
+    {
+        ActivateRendering(forceActivate: true);
+    }
 
     public void ActivateRendering(bool forceActivate)
     {

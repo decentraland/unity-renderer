@@ -11,7 +11,7 @@ namespace DCL
         private DebugBridge debugBridge;
         private Promise<KernelConfigModel> kernelConfigPromise;
 
-        public DebugPluginFeature ()
+        public DebugPluginFeature()
         {
             SetupSystems();
             SetupKernelConfig();
@@ -34,7 +34,10 @@ namespace DCL
             DataStore.i.realm.playerRealm.OnChange += OnPlayerRealmChanged;
         }
 
-        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { OnKernelConfigChanged(current); }
+        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
+        {
+            OnKernelConfigChanged(current);
+        }
 
         private void OnKernelConfigChanged(KernelConfigModel kernelConfig)
         {
@@ -63,7 +66,10 @@ namespace DCL
             return !network.ToLower().Contains("mainnet");
         }
 
-        private static string GetRealmName() { return DataStore.i.realm.playerRealm.Get()?.serverName; }
+        private static string GetRealmName()
+        {
+            return DataStore.i.realm.playerRealm.Get()?.serverName;
+        }
 
         public void Dispose()
         {

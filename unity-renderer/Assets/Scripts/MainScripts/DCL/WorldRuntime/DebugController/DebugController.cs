@@ -54,7 +54,7 @@ namespace DCL
         {
             if (current == previous)
                 return;
-            
+
             if (current)
             {
                 Debug.unityLogger.logEnabled = true;
@@ -67,15 +67,24 @@ namespace DCL
                 Debug.unityLogger.logEnabled = false;
                 HideFPSPanel();
             }
-            
+
             OnDebugModeSet?.Invoke();
         }
 
-        public void SetDebug() { debugConfig.isDebugMode.Set(true); }
+        public void SetDebug()
+        {
+            debugConfig.isDebugMode.Set(true);
+        }
 
-        public void HideFPSPanel() { isFPSPanelVisible.Set(false); }
+        public void HideFPSPanel()
+        {
+            isFPSPanelVisible.Set(false);
+        }
 
-        public void ShowFPSPanel() { isFPSPanelVisible.Set(true); }
+        public void ShowFPSPanel()
+        {
+            isFPSPanelVisible.Set(true);
+        }
 
         public void ShowInfoPanel(string network, string realm)
         {
@@ -100,19 +109,22 @@ namespace DCL
             var kernelConfig = KernelConfig.i.Get();
             if (kernelConfig.debugConfig.sceneDebugPanelEnabled)
                 return;
-            
+
             var newConfig = kernelConfig.Clone();
             newConfig.debugConfig.sceneDebugPanelEnabled = true;
             KernelConfig.i.Set(newConfig);
         }
-        
+
         public void HideInfoPanel()
         {
             if (debugView != null)
                 debugView.HideInfoPanel();
         }
 
-        public void RunPerformanceMeterTool(float durationInSeconds) { performanceMeterController.StartSampling(durationInSeconds); }
+        public void RunPerformanceMeterTool(float durationInSeconds)
+        {
+            performanceMeterController.StartSampling(durationInSeconds);
+        }
 
         public void InstantiateBotsAtWorldPos(string configJson)
         {
@@ -138,15 +150,30 @@ namespace DCL
             botsController.StartRandomMovement(config);
         }
 
-        public void StopBotsMovement() { botsController.StopRandomMovement(); }
+        public void StopBotsMovement()
+        {
+            botsController.StopRandomMovement();
+        }
 
-        public void RemoveBot(string targetEntityId) { botsController.RemoveBot(targetEntityId); }
+        public void RemoveBot(string targetEntityId)
+        {
+            botsController.RemoveBot(targetEntityId);
+        }
 
-        public void ClearBots() { botsController.ClearBots(); }
+        public void ClearBots()
+        {
+            botsController.ClearBots();
+        }
 
-        public List<Vector3> GetTrackedTeleportPositions() { return positionTracker.teleportPositions; }
+        public List<Vector3> GetTrackedTeleportPositions()
+        {
+            return positionTracker.teleportPositions;
+        }
 
-        public List<Vector3> GetTrackedMovements() { return positionTracker.movePositions; }
+        public List<Vector3> GetTrackedMovements()
+        {
+            return positionTracker.movePositions;
+        }
 
         public void Dispose()
         {
@@ -159,12 +186,12 @@ namespace DCL
             if (debugView != null)
                 Object.Destroy(debugView.gameObject);
         }
-        
+
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
         {
             if (debugView == null)
                 return;
-            
+
             if (current.debugConfig.sceneDebugPanelEnabled)
             {
                 debugView.SetSceneDebugPanel();

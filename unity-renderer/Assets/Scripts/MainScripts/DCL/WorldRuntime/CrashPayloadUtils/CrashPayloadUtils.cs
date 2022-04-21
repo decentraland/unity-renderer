@@ -18,13 +18,14 @@ namespace DCL.Helpers
         {
             CrashPayload result = new CrashPayload();
 
-            ScenesDumper.Dump(allScenes, AssetPromiseKeeper_Texture.i.library, PersistentAssetCache.ImageCacheByUri, result );
-            PoolManagerDumper.Dump(PoolManager.i, result );
-            QualitySettingsDumper.Dump(Settings.i.qualitySettings.Data, result );
-            GltfDumper.Dump( AssetPromiseKeeper_GLTF.i.library, result );
-            AssetBundleDumper.Dump( AssetPromiseKeeper_AB.i.library, result );
-            TextureDumper.Dump( AssetPromiseKeeper_Texture.i.library, PersistentAssetCache.ImageCacheByUri, result );
-            PositionDumper.Dump( trackedMovements, trackedTeleports, result );
+            ScenesDumper.Dump(allScenes, AssetPromiseKeeper_Texture.i.library, PersistentAssetCache.ImageCacheByUri,
+                result);
+            PoolManagerDumper.Dump(PoolManager.i, result);
+            QualitySettingsDumper.Dump(Settings.i.qualitySettings.Data, result);
+            GltfDumper.Dump(AssetPromiseKeeper_GLTF.i.library, result);
+            AssetBundleDumper.Dump(AssetPromiseKeeper_AB.i.library, result);
+            TextureDumper.Dump(AssetPromiseKeeper_Texture.i.library, PersistentAssetCache.ImageCacheByUri, result);
+            PositionDumper.Dump(trackedMovements, trackedTeleports, result);
 
             return result;
         }
@@ -34,8 +35,8 @@ namespace DCL.Helpers
     {
         public static void Dump(List<Vector3> movePositions, List<Vector3> teleportPositions, CrashPayload payload)
         {
-            payload.fields.Add( CrashPayload.DumpLiterals.TRAIL, movePositions.ToArray() );
-            payload.fields.Add( CrashPayload.DumpLiterals.TELEPORTS, teleportPositions.ToArray() );
+            payload.fields.Add(CrashPayload.DumpLiterals.TRAIL, movePositions.ToArray());
+            payload.fields.Add(CrashPayload.DumpLiterals.TELEPORTS, teleportPositions.ToArray());
         }
     }
 
@@ -49,17 +50,17 @@ namespace DCL.Helpers
 
         public static void Dump(AssetLibrary_GLTF library, CrashPayload payload)
         {
-            var assets = new AssetInfo[ library.masterAssets.Count ];
+            var assets = new AssetInfo[library.masterAssets.Count];
 
             var ids = library.masterAssets
-                .Select( x =>
+                .Select(x =>
                     new AssetInfo()
                     {
                         id = x.Key.ToString()
-                    } )
+                    })
                 .ToArray();
 
-            payload.fields.Add( CrashPayload.DumpLiterals.GLTFS, ids );
+            payload.fields.Add(CrashPayload.DumpLiterals.GLTFS, ids);
         }
     }
 
@@ -73,17 +74,17 @@ namespace DCL.Helpers
 
         public static void Dump(AssetLibrary_AB library, CrashPayload payload)
         {
-            var assets = new AssetInfo[ library.masterAssets.Count ];
+            var assets = new AssetInfo[library.masterAssets.Count];
 
             var ids = library.masterAssets
-                .Select( x =>
+                .Select(x =>
                     new AssetInfo()
                     {
                         id = x.Key.ToString()
-                    } )
+                    })
                 .ToArray();
 
-            payload.fields.Add( CrashPayload.DumpLiterals.ASSET_BUNDLES, ids );
+            payload.fields.Add(CrashPayload.DumpLiterals.ASSET_BUNDLES, ids);
         }
     }
 
@@ -99,10 +100,11 @@ namespace DCL.Helpers
             public int refCount;
         }
 
-        public static void Dump(AssetLibrary_Texture library, Dictionary<string, RefCountedTextureData> textureData, CrashPayload payload)
+        public static void Dump(AssetLibrary_Texture library, Dictionary<string, RefCountedTextureData> textureData,
+            CrashPayload payload)
         {
             var apkData = library.masterAssets
-                .Select( x =>
+                .Select(x =>
                     new TextureInfo()
                     {
                         id = x.Key.ToString(),
@@ -111,10 +113,10 @@ namespace DCL.Helpers
                         mipmaps = x.Value.asset.texture.mipmapCount,
                         format = x.Value.asset.texture.graphicsFormat.ToString(),
                         refCount = x.Value.referenceCount
-                    } );
+                    });
 
             var persistentCacheData = textureData
-                .Select( x =>
+                .Select(x =>
                     new TextureInfo()
                     {
                         id = x.Key,
@@ -122,17 +124,20 @@ namespace DCL.Helpers
                         mipmaps = x.Value.Texture.mipmapCount,
                         format = x.Value.Texture.graphicsFormat.ToString(),
                         refCount = x.Value.RefCount
-                    } );
+                    });
 
-            TextureInfo[] finalData = apkData.Union( persistentCacheData ).ToArray();
+            TextureInfo[] finalData = apkData.Union(persistentCacheData).ToArray();
 
-            payload.fields.Add( CrashPayload.DumpLiterals.TEXTURES, finalData );
+            payload.fields.Add(CrashPayload.DumpLiterals.TEXTURES, finalData);
         }
     }
 
     static class QualitySettingsDumper
     {
-        public static void Dump(QualitySettings settings, CrashPayload payload) { payload.fields.Add( CrashPayload.DumpLiterals.QUALITY_SETTINGS, settings ); }
+        public static void Dump(QualitySettings settings, CrashPayload payload)
+        {
+            payload.fields.Add(CrashPayload.DumpLiterals.QUALITY_SETTINGS, settings);
+        }
     }
 
     static class PoolManagerDumper
@@ -147,11 +152,11 @@ namespace DCL.Helpers
 
         public static void Dump(PoolManager poolManager, CrashPayload payload)
         {
-            PoolInfo[] pools = new PoolInfo[ poolManager.pools.Count ];
+            PoolInfo[] pools = new PoolInfo[poolManager.pools.Count];
 
             int index = 0;
 
-            foreach ( KeyValuePair<object, Pool> pool in poolManager.pools )
+            foreach (KeyValuePair<object, Pool> pool in poolManager.pools)
             {
                 pools[index] = new PoolInfo
                 {
@@ -163,7 +168,7 @@ namespace DCL.Helpers
                 index++;
             }
 
-            payload.fields.Add( CrashPayload.DumpLiterals.POOL_MANAGER, pools );
+            payload.fields.Add(CrashPayload.DumpLiterals.POOL_MANAGER, pools);
         }
     }
 
@@ -182,13 +187,14 @@ namespace DCL.Helpers
             public int quantity;
         }
 
-        public static void Dump(Dictionary<string, IParcelScene> allScenes, AssetLibrary_Texture library, Dictionary<string, RefCountedTextureData> textureData, CrashPayload payload)
+        public static void Dump(Dictionary<string, IParcelScene> allScenes, AssetLibrary_Texture library,
+            Dictionary<string, RefCountedTextureData> textureData, CrashPayload payload)
         {
             var componentsDump = new List<ComponentsDump>();
             var totalSceneLimits = new WebInterface.MetricsModel();
 
             var loadedScenes = allScenes
-                .Select( x =>
+                .Select(x =>
                     new LoadedScenesDump
                     {
                         id = x.Key
@@ -200,14 +206,14 @@ namespace DCL.Helpers
             Dictionary<int, int> sharedComponentsCount = new Dictionary<int, int>();
             Dictionary<int, int> entityComponentsCount = new Dictionary<int, int>();
 
-            foreach ( var kvp in allScenes )
+            foreach (var kvp in allScenes)
             {
                 IParcelScene scene = kvp.Value;
 
                 // Sum operator is overloaded
                 totalSceneLimits += scene.metricsCounter?.currentCount.ToMetricsModel();
 
-                loadedScenes.Add( new LoadedScenesDump
+                loadedScenes.Add(new LoadedScenesDump
                     {
                         id = kvp.Key
                     }
@@ -217,13 +223,13 @@ namespace DCL.Helpers
                 {
                     int classId = kvpComponents.Value.GetClassId();
 
-                    if ( !sharedComponentsCount.ContainsKey(classId) )
-                        sharedComponentsCount.Add( classId, 0 );
+                    if (!sharedComponentsCount.ContainsKey(classId))
+                        sharedComponentsCount.Add(classId, 0);
 
                     sharedComponentsCount[classId]++;
                 }
 
-                foreach ( var kvpEntities in kvp.Value.entities )
+                foreach (var kvpEntities in kvp.Value.entities)
                 {
                     using (var iterator = scene.componentsManagerLegacy.GetComponents(kvpEntities.Value))
                     {
@@ -240,21 +246,21 @@ namespace DCL.Helpers
                 }
             }
 
-            foreach ( var kvp in sharedComponentsCount )
+            foreach (var kvp in sharedComponentsCount)
             {
-                componentsDump.Add( new ComponentsDump
+                componentsDump.Add(new ComponentsDump
                     {
-                        type = ((CLASS_ID)kvp.Key).ToString(),
+                        type = ((CLASS_ID) kvp.Key).ToString(),
                         quantity = kvp.Value
                     }
                 );
             }
 
-            foreach ( var kvp in entityComponentsCount )
+            foreach (var kvp in entityComponentsCount)
             {
-                componentsDump.Add( new ComponentsDump
+                componentsDump.Add(new ComponentsDump
                     {
-                        type = ((CLASS_ID_COMPONENT)kvp.Key).ToString(),
+                        type = ((CLASS_ID_COMPONENT) kvp.Key).ToString(),
                         quantity = kvp.Value
                     }
                 );

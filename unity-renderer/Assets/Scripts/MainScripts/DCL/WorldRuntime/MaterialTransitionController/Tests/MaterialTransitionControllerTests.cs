@@ -44,7 +44,7 @@ namespace Tests
                 DCL.Models.CLASS_ID.GLTF_SHAPE,
                 Vector3.zero,
                 out entity,
-                new GLTFShape.Model() { src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb" });
+                new GLTFShape.Model() {src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"});
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
@@ -132,7 +132,7 @@ namespace Tests
                         Assert.IsTrue(c.placeholder == null,
                             "placeholder must be null because we're not using holograms with parametric shapes.");
 
-                        yield return new DCL.WaitUntil( () => c == null, 5.0f);
+                        yield return new DCL.WaitUntil(() => c == null, 5.0f);
 
                         Assert.IsTrue(c == null, "MaterialTransitionController should be destroyed by now!");
 
