@@ -35,10 +35,10 @@ namespace DCL
 
             i = this;
 
-            Settings.CreateSharedInstance(new DefaultSettingsFactory());
-
             if (!disableSceneDependencies)
                 InitializeSceneDependencies();
+
+            Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
@@ -53,7 +53,6 @@ namespace DCL
 #endif
 
             SetupPlugins();
-
             InitializeCommunication();
 
             // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
@@ -64,7 +63,6 @@ namespace DCL
 
         protected virtual void InitializeCommunication()
         {
-
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
             Debug.unityLogger.logEnabled = false;
