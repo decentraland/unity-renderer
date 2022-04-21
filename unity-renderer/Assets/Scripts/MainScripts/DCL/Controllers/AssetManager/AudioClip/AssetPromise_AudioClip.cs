@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using Debug = UnityEngine.Debug;
@@ -22,8 +23,10 @@ namespace DCL
         private readonly IWebRequestController webRequestController;
         private WebRequestAsyncOperation webRequestAsyncOperation;
         private Action OnSuccess;
-        private static Coroutine coroutineQueueLoader;
-        private static readonly Queue<QueueItem> requestQueue = new Queue<QueueItem>();
+        private Coroutine coroutineQueueLoader;
+        private static Queue<QueueItem> requestQueue = new Queue<QueueItem>();
+        private static readonly RendererState renderState = CommonScriptableObjects.rendererState;
+        private QueueItem queueItem;
         public AssetPromise_AudioClip(string clipPath, ContentProvider provider) : this(clipPath, provider, Environment.i.platform.webRequest) { }
 
         public AssetPromise_AudioClip(string clipPath, ContentProvider provider, IWebRequestController webRequestController)
@@ -46,8 +49,16 @@ namespace DCL
             webRequestAsyncOperation = webRequestController.GetAudioClip(url, audioType,
                 request =>
                 {
-                    requestQueue.Enqueue(new QueueItem { promise = this, request = request.webRequest});
-                    coroutineQueueLoader ??= CoroutineStarter.Start(CoroutineQueueLoader());
+                    if (renderState.Get())
+                    {
+                        queueItem = new QueueItem { promise = this, request = request.webRequest};
+                        requestQueue.Enqueue(queueItem);
+                        coroutineQueueLoader = CoroutineStarter.Start(CoroutineQueueLoader());
+                    }
+                    else
+                    {
+                        GetAudioClipFromRequest(this, request.webRequest);
+                    }
                 },
                 request =>
                 {
@@ -58,16 +69,15 @@ namespace DCL
         /// <summary>
         /// This coroutine prevents multiple audio clips being loaded at the same time, reducing hiccups in the process
         /// </summary>
-        private static IEnumerator CoroutineQueueLoader()
+        private IEnumerator CoroutineQueueLoader()
         {
-            while (requestQueue.Count > 0)
+            while (!requestQueue.Peek().Equals(queueItem))   
             {
-                var request = requestQueue.Dequeue();
-                GetAudioClipFromRequest(request.promise, request.request);
                 yield return new WaitForEndOfFrame();
             }
-
-            coroutineQueueLoader = null;
+            
+            var request = requestQueue.Dequeue();
+            GetAudioClipFromRequest(request.promise, request.request);
         }
         
         static void GetAudioClipFromRequest(AssetPromise_AudioClip promise, UnityWebRequest www)
@@ -87,6 +97,8 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
+            requestQueue = new Queue<QueueItem>(requestQueue.Where(i => i.promise != this));
+            CoroutineStarter.Stop(coroutineQueueLoader);
             webRequestAsyncOperation?.Dispose();
             webRequestAsyncOperation = null;
         }
