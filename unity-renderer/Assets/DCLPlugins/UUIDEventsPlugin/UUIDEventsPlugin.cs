@@ -19,27 +19,42 @@ public class UUIDEventsPlugin : IPlugin
 
         pointerEventsController = new PointerEventsController(inputControllerLegacy, hoverCanvas);
 
-        Environment.i.world.componentFactory.RegisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_DOWN,
+        IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
+
+        factory.RegisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_DOWN,
             BuildUUIDEventComponent<OnPointerDown>);
-        Environment.i.world.componentFactory.RegisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_UP,
+        factory.RegisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_UP,
             BuildUUIDEventComponent<OnPointerUp>);
-        Environment.i.world.componentFactory.RegisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_CLICK,
+        factory.RegisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_CLICK,
             BuildUUIDEventComponent<OnClick>);
-        Environment.i.world.componentFactory.RegisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT,
+        factory.RegisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT,
             BuildUUIDEventComponent<OnPointerHoverExit>);
-        Environment.i.world.componentFactory.RegisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER,
+        factory.RegisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER,
             BuildUUIDEventComponent<OnPointerHoverEnter>);
+
+        factory.createOverrides.Add((int) CLASS_ID_COMPONENT.UUID_CALLBACK, OnUUIDCallbackIsAdded);
     }
+
+    private void OnUUIDCallbackIsAdded(string sceneid, string entityid, ref int classId, object data)
+    {
+        OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(data as string);
+        classId = (int) model.GetClassIdFromType();
+    }
+
     public void Dispose()
     {
         pointerEventsController.Dispose();
         inputControllerLegacy.Dispose();
 
-        Environment.i.world.componentFactory.UnregisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_DOWN);
-        Environment.i.world.componentFactory.UnregisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_UP);
-        Environment.i.world.componentFactory.UnregisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_CLICK);
-        Environment.i.world.componentFactory.UnregisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT);
-        Environment.i.world.componentFactory.UnregisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER);
+        IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
+
+        factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_DOWN);
+        factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_UP);
+        factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_CLICK);
+        factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT);
+        factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER);
+
+        factory.createOverrides.Remove((int) CLASS_ID_COMPONENT.UUID_CALLBACK);
     }
 
     private static T LoadAndInstantiate<T>(string name)

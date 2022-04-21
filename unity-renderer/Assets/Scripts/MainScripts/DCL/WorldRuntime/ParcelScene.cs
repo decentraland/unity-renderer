@@ -549,7 +549,7 @@ namespace DCL.Controllers
 
                             foreach (var entity in component.GetAttachedEntities())
                             {
-                                var loader = LoadableShape.GetLoaderForEntity(entity);
+                                var loader = Environment.i.world.state.GetLoaderForEntity(entity);
 
                                 string loadInfo = "No loader";
 

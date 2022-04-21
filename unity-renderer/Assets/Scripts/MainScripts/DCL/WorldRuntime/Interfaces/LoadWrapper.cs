@@ -1,7 +1,7 @@
 using DCL.Models;
 using System;
 
-namespace DCL.Components
+namespace DCL
 {
     public abstract class LoadWrapper
     {

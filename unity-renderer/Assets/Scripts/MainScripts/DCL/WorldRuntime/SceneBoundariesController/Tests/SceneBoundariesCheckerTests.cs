@@ -108,7 +108,7 @@ namespace SceneBoundariesCheckerTests
             scene.isPersistent = false;
 
             TestUtils.CreateEntityWithGLTFShape(scene, new Vector3(8, 1, 8), TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out var entity);
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
             yield return TestUtils.CreateAudioSourceWithClipForEntity(entity);

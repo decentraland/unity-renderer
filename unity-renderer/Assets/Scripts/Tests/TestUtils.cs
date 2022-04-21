@@ -347,7 +347,7 @@ namespace DCL.Helpers
                     src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
                 }));
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entity.entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entity.entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
         }
 
@@ -1291,7 +1291,7 @@ namespace DCL.Helpers
 
         public static IEnumerator WaitForGLTFLoad(IDCLEntity entity)
         {
-            LoadWrapper_GLTF wrapper = GLTFShape.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
+            LoadWrapper_GLTF wrapper = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
             return new WaitUntil(() => wrapper.alreadyLoaded);
         }
 
