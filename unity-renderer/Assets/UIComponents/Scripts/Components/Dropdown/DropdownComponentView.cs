@@ -130,6 +130,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     public event Action<bool, string, string> OnOptionSelectionChanged;
 
     internal ToggleComponentView selectAllOptionComponent;
+    internal Coroutine refreshOptionsPanelCoroutine;
 
     public bool isMultiselect 
     {
@@ -177,7 +178,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         optionsPanel.SetActive(true);
         isOpen = true;
         blocker.Activate();
-        StartCoroutine(RefreshOptionsPanelSize());
+        CoroutineStarter.Stop(refreshOptionsPanelCoroutine);
+        refreshOptionsPanelCoroutine = CoroutineStarter.Start(RefreshOptionsPanelSize());
     }
 
     public void Close()
@@ -220,8 +222,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         contentMaskImage.enabled = options.Count > 0;
         emptyContentMessage.gameObject.SetActive(options.Count == 0);
 
-        if (gameObject.activeSelf)
-            StartCoroutine(RefreshOptionsPanelSize());
+        CoroutineStarter.Stop(refreshOptionsPanelCoroutine);
+        refreshOptionsPanelCoroutine = CoroutineStarter.Start(RefreshOptionsPanelSize());
     }
 
     public void FilterOptions(string filterText)
@@ -251,7 +253,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
 
         searchNotFoundMessage.gameObject.SetActive(newFilteredOptions.Count == 0);
 
-        StartCoroutine(RefreshOptionsPanelSize());
+        CoroutineStarter.Stop(refreshOptionsPanelCoroutine);
+        refreshOptionsPanelCoroutine = CoroutineStarter.Start(RefreshOptionsPanelSize());
     }
 
     public IToggleComponentView GetOption(int index)
@@ -337,7 +340,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     {
         model.isOptionsPanelHeightDynamic = isDynamic;
         model.maxValueForDynamicHeight = maxHeight;
-        StartCoroutine(RefreshOptionsPanelSize());
+        CoroutineStarter.Stop(refreshOptionsPanelCoroutine);
+        refreshOptionsPanelCoroutine = CoroutineStarter.Start(RefreshOptionsPanelSize());
     }
 
     public override void Dispose()
@@ -347,6 +351,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         blocker.OnClicked -= Close;
         button.onClick.RemoveAllListeners();
         searchBar.OnSearchText -= FilterOptions;
+
+        CoroutineStarter.Stop(refreshOptionsPanelCoroutine);
     }
 
     internal void ToggleOptionsList()
