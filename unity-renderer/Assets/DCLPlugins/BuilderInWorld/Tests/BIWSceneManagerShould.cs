@@ -34,7 +34,6 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         result.Add(MainSceneFactory.CreateMouseCatcher());
         result.Add(MainSceneFactory.CreateSettingsController());
         result.Add(MainSceneFactory.CreateEventSystem());
-        result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
         return result;
     }
 

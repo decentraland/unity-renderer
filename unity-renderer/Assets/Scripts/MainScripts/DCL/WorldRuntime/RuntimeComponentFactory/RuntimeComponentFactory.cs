@@ -96,13 +96,6 @@ namespace DCL
             builders.Add((int) CLASS_ID.LOCKED_ON_EDIT, BuildComponent<DCLLockedOnEdit>);
             builders.Add((int) CLASS_ID.VISIBLE_ON_EDIT, BuildComponent<DCLVisibleOnEdit>);
 
-            // Events
-            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_UP, BuildUUIDComponent<OnPointerUp>);
-            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_DOWN, BuildUUIDComponent<OnPointerDown>);
-            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_CLICK, BuildUUIDComponent<OnClick>);
-            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER, BuildUUIDComponent<OnPointerHoverEnter>);
-            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT, BuildUUIDComponent<OnPointerHoverExit>);
-
             // Others
             builders.Add((int) CLASS_ID_COMPONENT.AVATAR_SHAPE, BuildPoolableComponent);
             builders.Add((int) CLASS_ID_COMPONENT.ANIMATOR, BuildPoolableComponent);
@@ -120,14 +113,6 @@ namespace DCL
             where T : IComponent, new()
         {
             return new T();
-        }
-
-        private T BuildUUIDComponent<T>(int classId)
-            where T : UnityEngine.Component
-        {
-            var go = new GameObject("UUID Component");
-            T newComponent = go.GetOrCreateComponent<T>();
-            return newComponent;
         }
 
         public IComponent CreateComponent(int classId)
