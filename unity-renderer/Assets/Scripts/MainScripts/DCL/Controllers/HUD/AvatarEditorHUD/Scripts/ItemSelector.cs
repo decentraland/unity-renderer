@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ public class ItemSelector : MonoBehaviour
     internal CollectionGroup collectionGroupPrefab;
 
     [SerializeField]
-    internal Transform content;
+    internal RectTransform content;
 
     [SerializeField]
     internal GameObject loadingSpinner;
@@ -59,9 +60,15 @@ public class ItemSelector : MonoBehaviour
     {
         CollectionGroup collectionGroup;
         if (item.IsFromThirdPartyCollection)
+        {
             collectionGroup = CreateCollectionGroupIfNeeded(item.ThirdPartyCollectionId, collectionName);
+            collectionGroup.transform.SetAsLastSibling();
+        }
         else
+        {
             collectionGroup = CreateCollectionGroupIfNeeded(DECENTRALAND_COLLECTION_ID, DECENTRALAND_COLLECTION_ID);
+            collectionGroup.transform.SetAsFirstSibling();
+        }
 
         if (item == null)
             return;
@@ -89,6 +96,7 @@ public class ItemSelector : MonoBehaviour
 
         bool active = string.IsNullOrEmpty(currentBodyShape) || item.SupportsBodyShape(currentBodyShape);
         newToggle.gameObject.SetActive(active);
+        Utils.ForceUpdateLayout(content);
     }
 
     public void RemoveItemToggle(string itemID)
@@ -103,6 +111,7 @@ public class ItemSelector : MonoBehaviour
         itemToggles.Remove(itemID);
         Destroy(toggle.gameObject);
         RemoveCollectionGroupIfNeeded(toggle.collectionId);
+        Utils.ForceUpdateLayout(content);
     }
 
     public void RemoveAllItemToggle()
@@ -117,6 +126,7 @@ public class ItemSelector : MonoBehaviour
         }
 
         itemToggles.Clear();
+        Utils.ForceUpdateLayout(content);
     }
 
     public void SetBodyShape(string bodyShape)
