@@ -24,7 +24,7 @@ public class IntegrationTestSuite_SceneMetricsCounter : IntegrationTestSuite
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
         serviceLocator.Register<IWorldState>(() => new WorldState());
-        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory));
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
         serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
         serviceLocator.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
     }

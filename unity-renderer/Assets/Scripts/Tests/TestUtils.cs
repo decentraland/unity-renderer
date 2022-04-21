@@ -143,8 +143,9 @@ namespace DCL.Helpers
             where T : BaseComponent
             where K : new()
         {
-            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
-            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            IPoolableComponentFactory poolableFactory =
+                Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+            ;
             int inferredId = (int) poolableFactory.GetIdForType<T>();
 
             int componentClassId = classId == CLASS_ID_COMPONENT.NONE
@@ -178,8 +179,9 @@ namespace DCL.Helpers
                 model = new K();
             }
 
-            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
-            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            IPoolableComponentFactory poolableFactory =
+                Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+            ;
             int inferredId = (int) poolableFactory.GetIdForType<T>();
 
             CLASS_ID_COMPONENT classId = (CLASS_ID_COMPONENT) inferredId;
@@ -759,8 +761,9 @@ namespace DCL.Helpers
                 yield return component.routine;
             }
 
-            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
-            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            IPoolableComponentFactory poolableFactory =
+                Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+            ;
             int id = (int) poolableFactory.GetIdForType<TComponent>();
 
             scene.componentsManagerLegacy.EntityComponentUpdate(e, (CLASS_ID_COMPONENT) id, "{}");

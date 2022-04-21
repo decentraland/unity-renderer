@@ -24,8 +24,7 @@ namespace DCL
             public CLASS_ID_COMPONENT classId;
             public Component prefab;
 
-            [Header("Pool Options")]
-            public bool usePool;
+            [Header("Pool Options")] public bool usePool;
 
             public int prewarmCount;
         }
@@ -34,7 +33,10 @@ namespace DCL
 
         Dictionary<CLASS_ID_COMPONENT, Item> factoryDict;
 
-        public static PoolableComponentFactory Create() { return Resources.Load("RuntimeComponentFactory") as PoolableComponentFactory; }
+        public static PoolableComponentFactory Create()
+        {
+            return Resources.Load("RuntimeComponentFactory") as PoolableComponentFactory;
+        }
 
         public void EnsureFactoryDictionary()
         {
@@ -83,7 +85,10 @@ namespace DCL
             }
         }
 
-        private Pool GetPoolForItem(Item item) { return PoolManager.i.GetPool(GetIdForPool(item)); }
+        private Pool GetPoolForItem(Item item)
+        {
+            return PoolManager.i.GetPool(GetIdForPool(item));
+        }
 
         private object GetIdForPool(Item item)
         {
@@ -102,7 +107,8 @@ namespace DCL
                 return;
 
             GameObject original = Instantiate(item.prefab.gameObject);
-            pool = PoolManager.i.AddPool(GetIdForPool(item), original, maxPrewarmCount: item.prewarmCount, isPersistent: true);
+            pool = PoolManager.i.AddPool(GetIdForPool(item), original, maxPrewarmCount: item.prewarmCount,
+                isPersistent: true);
             pool.useLifecycleHandlers = true;
         }
 

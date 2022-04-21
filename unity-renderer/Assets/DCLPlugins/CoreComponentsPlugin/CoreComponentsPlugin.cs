@@ -1,3 +1,4 @@
+using System.Collections;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
@@ -10,7 +11,7 @@ public class CoreComponentsPlugin : IPlugin
 
     public CoreComponentsPlugin()
     {
-        poolableComponentFactory = Resources.Load<PoolableComponentFactory>("PoolableFactory");
+        poolableComponentFactory = Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
         IRuntimeComponentFactory factory = Environment.i.world.componentFactory; 
 
         // Transform
@@ -70,6 +71,14 @@ public class CoreComponentsPlugin : IPlugin
         factory.RegisterBuilder((int) CLASS_ID_COMPONENT.CAMERA_MODE_AREA, BuildComponent<CameraModeArea>);
 
         factory.createOverrides.Add((int) CLASS_ID_COMPONENT.TRANSFORM, HandleAvatarAttachExclusivity);
+
+        CoroutineStarter.Start(PrewarmPoolablePools());
+    }
+
+    IEnumerator PrewarmPoolablePools()
+    {
+        yield return null;
+        poolableComponentFactory.PrewarmPools();
     }
 
     private void HandleAvatarAttachExclusivity(string sceneid, string entityid, ref int classid, object data)

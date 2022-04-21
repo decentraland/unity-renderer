@@ -22,20 +22,6 @@ namespace DCL
 
         protected Dictionary<int, ComponentBuilder> builders = new Dictionary<int, ComponentBuilder>();
 
-
-        public IPoolableComponentFactory poolableComponentFactory { get; private set; }
-
-        public void Initialize()
-        {
-            CoroutineStarter.Start(InitializeCoroutine());
-        }
-
-        IEnumerator InitializeCoroutine()
-        {
-            yield return null;
-            poolableComponentFactory.PrewarmPools();
-        }
-
         public void RegisterBuilder(int classId, Func<IComponent> builder)
         {
             if (builders.ContainsKey(classId))
@@ -52,12 +38,6 @@ namespace DCL
             builders.Remove(classId);
         }
 
-        public RuntimeComponentFactory(IPoolableComponentFactory poolableComponentFactory = null)
-        {
-            this.poolableComponentFactory = poolableComponentFactory ?? PoolableComponentFactory.Create();
-            CoroutineStarter.Start(InitializeCoroutine());
-        }
-
         public IComponent CreateComponent(int classId)
         {
             if (!builders.ContainsKey(classId))
@@ -69,6 +49,14 @@ namespace DCL
             IComponent newComponent = builders[classId](classId);
 
             return newComponent;
+        }
+
+        public RuntimeComponentFactory()
+        {
+        }
+
+        public void Initialize()
+        {
         }
 
         public void Dispose()

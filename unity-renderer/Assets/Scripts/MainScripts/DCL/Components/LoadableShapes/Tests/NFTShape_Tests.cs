@@ -17,7 +17,7 @@ public class NFTShape_Tests : IntegrationTestSuite
     {
         serviceLocator.Register<ISceneController>(() => new SceneController());
         serviceLocator.Register<IWorldState>(() => new WorldState());
-        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory));
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
         serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
     }
 
