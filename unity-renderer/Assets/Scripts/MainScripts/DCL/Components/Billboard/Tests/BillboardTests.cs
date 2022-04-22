@@ -18,7 +18,7 @@ namespace Tests
         {
             CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene();
+            scene = TestUtils.CreateTestScene() as ParcelScene;
         }
 
         [UnityTest]

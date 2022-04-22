@@ -97,6 +97,12 @@ namespace DCL.Components
             var model = (Model) this.model;
 
             isInsideSceneBounds = scene.IsInsideSceneBoundaries(Utils.WorldToGridPosition(CommonScriptableObjects.playerWorldPosition));
+
+            if (isInsideSceneBounds)
+            {
+                DataStore.i.Get<DataStore_World>().currentRaycaster.Set(graphicRaycaster);
+            }
+            
             bool shouldBeVisible = scene.isPersistent || (model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get() && isUIEnabled.Get());
 
             canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
