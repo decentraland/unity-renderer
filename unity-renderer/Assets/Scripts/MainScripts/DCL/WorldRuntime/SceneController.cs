@@ -760,23 +760,13 @@ namespace DCL
         {
             var worldState = Environment.i.world.state;
 
-            if (includePersistent)
-            {
-                var persistentScenes = worldState.loadedScenes.Where(x => x.Value.isPersistent);
-
-                foreach (var kvp in persistentScenes)
-                {
-                    if (kvp.Value is ParcelScene scene)
-                    {
-                        scene.isPersistent = false;
-                    }
-                }
-            }
-
             var list = worldState.loadedScenes.ToArray();
 
             for (int i = 0; i < list.Length; i++)
             {
+                if (list[i].Value.isPersistent && !includePersistent)
+                    continue;
+                
                 UnloadParcelSceneExecute(list[i].Key);
             }
         }
