@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 
@@ -52,6 +53,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         searchBar.OnSubmit += SendFriendRequest;
         searchBar.OnSearchText += OnSearchInputValueChanged;
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
+        ((RectTransform) filledStateContainer.transform).ForceUpdateLayout();
     }
 
     public override void OnDisable()
