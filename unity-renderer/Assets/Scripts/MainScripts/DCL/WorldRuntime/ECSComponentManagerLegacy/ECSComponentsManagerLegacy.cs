@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL.Components;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
+using DCL.Rendering;
 using UnityEngine;
 
 namespace DCL
@@ -21,32 +23,33 @@ namespace DCL
         private readonly IParcelScene scene;
         private readonly IRuntimeComponentFactory componentFactory;
         private readonly IParcelScenesCleaner parcelScenesCleaner;
-
-        private readonly Action<IDCLEntity, string> RemoveEntityComponentFunc;
-        private readonly Func<string, CLASS_ID_COMPONENT, object, IEntityComponent> EntityComponentCreateOrUpdateFunc;
+        private readonly ISceneBoundsChecker sceneBoundsChecker;
+        private readonly IPhysicsSyncController physicsSyncController;
+        private readonly ICullingController cullingController;
 
         public event Action<string, ISharedComponent> OnAddSharedComponent;
 
-        public ECSComponentsManagerLegacy(IParcelScene scene,
-            Action<IDCLEntity, string> RemoveEntityComponentFunc = null,
-            Func<string, CLASS_ID_COMPONENT, object, IEntityComponent> EntityComponentCreateOrUpdateFunc = null)
+        public ECSComponentsManagerLegacy(IParcelScene scene)
             : this(scene,
                 Environment.i.world.componentFactory,
                 Environment.i.platform.parcelScenesCleaner,
-                RemoveEntityComponentFunc,
-                EntityComponentCreateOrUpdateFunc) { }
+                Environment.i.world.sceneBoundsChecker,
+                Environment.i.platform.physicsSyncController,
+                Environment.i.platform.cullingController) { }
 
         public ECSComponentsManagerLegacy(IParcelScene scene,
             IRuntimeComponentFactory componentFactory,
             IParcelScenesCleaner parcelScenesCleaner,
-            Action<IDCLEntity, string> RemoveEntityComponentFunc,
-            Func<string, CLASS_ID_COMPONENT, object, IEntityComponent> EntityComponentCreateOrUpdateFunc)
+            ISceneBoundsChecker sceneBoundsChecker,
+            IPhysicsSyncController physicsSyncController,
+            ICullingController cullingController)
         {
             this.scene = scene;
             this.componentFactory = componentFactory;
-            this.RemoveEntityComponentFunc = RemoveEntityComponentFunc;
-            this.EntityComponentCreateOrUpdateFunc = EntityComponentCreateOrUpdateFunc;
             this.parcelScenesCleaner = parcelScenesCleaner;
+            this.sceneBoundsChecker = sceneBoundsChecker;
+            this.physicsSyncController = physicsSyncController;
+            this.cullingController = cullingController;
         }
 
         public void AddSharedComponent(IDCLEntity entity, Type componentType, ISharedComponent component)
@@ -393,7 +396,62 @@ namespace DCL
 
         public IEntityComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, object data)
         {
-            return EntityComponentCreateOrUpdateFunc.Invoke(entityId, classId, data);
+            IDCLEntity entity = scene.GetEntityById(entityId);
+
+            if (entity == null)
+            {
+                Debug.LogError($"scene '{scene.sceneData.id}': Can't create entity component if the entity {entityId} doesn't exist!");
+                return null;
+            }
+
+            IEntityComponent newComponent = null;
+
+            if (classId == CLASS_ID_COMPONENT.UUID_CALLBACK)
+            {
+                OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(data as string);
+                classId = model.GetClassIdFromType();
+            }
+            // NOTE: TRANSFORM and AVATAR_ATTACH can't be used in the same Entity at the same time.
+            // so we remove AVATAR_ATTACH (if exists) when a TRANSFORM is created.
+            else if (classId == CLASS_ID_COMPONENT.TRANSFORM
+                     && TryGetBaseComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component))
+            {
+                component.Cleanup();
+                RemoveComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH);
+            }
+
+            if (!HasComponent(entity, classId))
+            {
+                newComponent = Environment.i.world.componentFactory.CreateComponent((int)classId) as IEntityComponent;
+
+                if (newComponent != null)
+                {
+                    AddComponent(entity, classId, newComponent);
+
+                    newComponent.Initialize(scene, entity);
+
+                    if (data is string json)
+                    {
+                        newComponent.UpdateFromJSON(json);
+                    }
+                    else
+                    {
+                        newComponent.UpdateFromModel(data as BaseModel);
+                    }
+                }
+            }
+            else
+            {
+                newComponent = EntityComponentUpdate(entity, classId, data as string);
+            }
+
+            if (newComponent != null && newComponent is IOutOfSceneBoundariesHandler)
+                sceneBoundsChecker?.AddEntityToBeChecked(entity);
+
+            physicsSyncController.MarkDirty();
+            cullingController.MarkDirty();
+
+            return newComponent;
         }
 
         public IEntityComponent EntityComponentUpdate(IDCLEntity entity, CLASS_ID_COMPONENT classId,
@@ -466,16 +524,81 @@ namespace DCL
             return null;
         }
 
-        public void EntityComponentRemove(string entityId, string name)
+        public void EntityComponentRemove(string entityId, string componentName)
         {
-            IDCLEntity decentralandEntity = scene.GetEntityById(entityId);
+            IDCLEntity entity = scene.GetEntityById(entityId);
 
-            if (decentralandEntity == null)
+            if (entity == null)
             {
                 return;
             }
 
-            RemoveEntityComponentFunc.Invoke(decentralandEntity, name);
+            switch (componentName)
+            {
+                case "shape":
+                    if (entity.meshesInfo.currentShape is BaseShape baseShape)
+                    {
+                        baseShape.DetachFrom(entity);
+                    }
+
+                    return;
+
+                case OnClick.NAME:
+                    {
+                        if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_CLICK, out IEntityComponent component))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_CLICK);
+                        }
+
+                        return;
+                    }
+                case OnPointerDown.NAME:
+                    {
+                        if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_DOWN, out IEntityComponent component))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_DOWN);
+                        }
+                    }
+                    return;
+                case OnPointerUp.NAME:
+                    {
+                        if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_UP, out IEntityComponent component))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_UP);
+                        }
+                    }
+                    return;
+                case OnPointerHoverEnter.NAME:
+                    {
+                        if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER, out IEntityComponent component))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER);
+                        }
+                    }
+                    return;
+                case OnPointerHoverExit.NAME:
+                    {
+                        if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT, out IEntityComponent component))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT);
+                        }
+                    }
+                    return;
+                case "transform":
+                    {
+                        if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component))
+                        {
+                            component.Cleanup();
+                            RemoveComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH);
+                        }
+                    }
+                    return;
+            }
         }
 
         public void DisposeAllSceneComponents()

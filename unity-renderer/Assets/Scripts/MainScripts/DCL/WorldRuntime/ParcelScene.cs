@@ -43,7 +43,7 @@ namespace DCL.Controllers
         public void Awake()
         {
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-            componentsManagerLegacy = new ECSComponentsManagerLegacy(this, RemoveEntityComponent, EntityComponentCreateOrUpdate);
+            componentsManagerLegacy = new ECSComponentsManagerLegacy(this);
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
             metricsCounter = new SceneMetricsCounter(DataStore.i.sceneWorldObjects);
         }
@@ -463,136 +463,6 @@ namespace DCL.Controllers
                 }
             }
 
-        }
-
-        private IEntityComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, object data)
-        {
-            IDCLEntity entity = GetEntityById(entityId);
-
-            if (entity == null)
-            {
-                Debug.LogError($"scene '{sceneData.id}': Can't create entity component if the entity {entityId} doesn't exist!");
-                return null;
-            }
-
-            IEntityComponent newComponent = null;
-
-            if (classId == CLASS_ID_COMPONENT.UUID_CALLBACK)
-            {
-                OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(data as string);
-                classId = model.GetClassIdFromType();
-            }
-            // NOTE: TRANSFORM and AVATAR_ATTACH can't be used in the same Entity at the same time.
-            // so we remove AVATAR_ATTACH (if exists) when a TRANSFORM is created.
-            else if (classId == CLASS_ID_COMPONENT.TRANSFORM
-                     && componentsManagerLegacy.TryGetBaseComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component))
-            {
-                component.Cleanup();
-                componentsManagerLegacy.RemoveComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH);
-            }
-
-            if (!componentsManagerLegacy.HasComponent(entity, classId))
-            {
-                newComponent = Environment.i.world.componentFactory.CreateComponent((int)classId) as IEntityComponent;
-
-                if (newComponent != null)
-                {
-                    componentsManagerLegacy.AddComponent(entity, classId, newComponent);
-
-                    newComponent.Initialize(this, entity);
-
-                    if (data is string json)
-                    {
-                        newComponent.UpdateFromJSON(json);
-                    }
-                    else
-                    {
-                        newComponent.UpdateFromModel(data as BaseModel);
-                    }
-                }
-            }
-            else
-            {
-                newComponent = componentsManagerLegacy.EntityComponentUpdate(entity, classId, data as string);
-            }
-
-            if (newComponent != null && newComponent is IOutOfSceneBoundariesHandler)
-                Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
-
-            Environment.i.platform.physicsSyncController.MarkDirty();
-            Environment.i.platform.cullingController.MarkDirty();
-
-            return newComponent;
-        }        
-
-        private void RemoveEntityComponent(IDCLEntity entity, string componentName)
-        {
-            switch (componentName)
-            {
-                case "shape":
-                    if (entity.meshesInfo.currentShape is BaseShape baseShape)
-                    {
-                        baseShape.DetachFrom(entity);
-                    }
-
-                    return;
-
-                case OnClick.NAME:
-                    {
-                        if ( componentsManagerLegacy.TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_CLICK, out IEntityComponent component ))
-                        {
-                            Utils.SafeDestroy(component.GetTransform().gameObject);
-                            componentsManagerLegacy.RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_CLICK);
-                        }
-
-                        return;
-                    }
-                case OnPointerDown.NAME:
-                    {
-                        if ( componentsManagerLegacy.TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_DOWN, out IEntityComponent component ))
-                        {
-                            Utils.SafeDestroy(component.GetTransform().gameObject);
-                            componentsManagerLegacy.RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_DOWN);
-                        }
-                    }
-                    return;
-                case OnPointerUp.NAME:
-                    {
-                        if ( componentsManagerLegacy.TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_UP, out IEntityComponent component ))
-                        {
-                            Utils.SafeDestroy(component.GetTransform().gameObject);
-                            componentsManagerLegacy.RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_UP);
-                        }
-                    }
-                    return;
-                case OnPointerHoverEnter.NAME:
-                    {
-                        if ( componentsManagerLegacy.TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER, out IEntityComponent component ))
-                        {
-                            Utils.SafeDestroy(component.GetTransform().gameObject);
-                            componentsManagerLegacy.RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER);
-                        }
-                    }
-                    return;
-                case OnPointerHoverExit.NAME:
-                    {
-                        if ( componentsManagerLegacy.TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT, out IEntityComponent component ))
-                        {
-                            Utils.SafeDestroy(component.GetTransform().gameObject);
-                            componentsManagerLegacy.RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT);
-                        }
-                    }
-                    return;
-                case "transform":
-                    {
-                        if ( componentsManagerLegacy.TryGetBaseComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component ))
-                        {
-                            component.Cleanup();
-                            componentsManagerLegacy.RemoveComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH);
-                        }
-                    }
-                    return;
-            }
         }
 
         protected virtual void SendMetricsEvent()
