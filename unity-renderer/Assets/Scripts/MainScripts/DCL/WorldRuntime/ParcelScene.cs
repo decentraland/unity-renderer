@@ -134,7 +134,7 @@ namespace DCL.Controllers
 
         public void Cleanup(bool immediate)
         {
-            if (isReleased)
+            if (isReleased || gameObject == null)
                 return;
 
             if (sceneDebugPlane != null)
@@ -382,7 +382,8 @@ namespace DCL.Controllers
 
                 entities.Clear();
 
-                Destroy(this.gameObject);
+                if (gameObject != null)
+                    Destroy(gameObject);
             }
         }
 
