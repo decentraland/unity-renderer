@@ -54,7 +54,8 @@ namespace DCL.Components
 
         protected static void RemoveLoaderForEntity(IDCLEntity entity)
         {
-            attachedLoaders.Remove(entity.meshRootGameObject);
+            if (entity.meshRootGameObject != null)
+                attachedLoaders.Remove(entity.meshRootGameObject);
         }
 
         protected LoadableShape() { model = new Model(); }
