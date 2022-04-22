@@ -13,8 +13,64 @@ public class UIImageVisualTests : UIVisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator UIImageVisualTests_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(UIImageTest1()); }
+    public IEnumerator UIImageVisualTests_Generate()
+    {
+        yield return VisualTestUtils.GenerateBaselineForTest(UIImageTexResizingTest());
+        yield return VisualTestUtils.GenerateBaselineForTest(UIImageTest1());
+    }
 
+    [UnityTest]
+    [VisualTest]
+    [Category("Visual Tests")]
+    public IEnumerator UIImageTexResizingTest()
+    {
+        string mainContainerId = "herodes";
+        yield return CreateUIComponent<UIContainerRect, UIContainerRect.Model>(CLASS_ID.UI_CONTAINER_RECT, new UIContainerRect.Model
+        {
+            parentComponent = screenSpaceId,
+            color = Color.green,
+            width = new UIValue(50f, UIValue.Unit.PERCENT),
+            height = new UIValue(50f, UIValue.Unit.PERCENT)
+        }, mainContainerId);
+
+        // For debugging only: uncomment next line to avoid resizing
+        // DataStore.i.textureSize.generalMaxSize.Set(4096);
+        
+        DCLTexture texture = TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/poker-cards-atlas-2.png");
+        yield return texture.routine;
+
+        // Values used by DG in their scene:
+        // let cardScale = 0.4;
+        // let card = new UIImage(canvas, new Texture('images/sprite/cardsUI.png'));
+        // card.width = 170 * cardScale;
+        // card.height = 255 * cardScale;
+        // card.sourceWidth = 170;
+        // card.sourceHeight = 255;
+        // card.sourceLeft = 170;
+        // card.sourceTop = 255;
+        
+        float cardScale = 0.4f;
+        float cardWidth = 170f;
+        float cardHeight = 255f;
+        yield return CreateUIComponent<UIImage, UIImage.Model>(CLASS_ID.UI_IMAGE_SHAPE, new UIImage.Model
+        {
+            parentComponent = mainContainerId,
+            source = texture.id,
+            width = new UIValue(cardWidth * cardScale),
+            height = new UIValue(cardHeight * cardScale),
+            sourceWidth = cardWidth,
+            sourceHeight = cardHeight,
+            sourceLeft = cardWidth,
+            sourceTop = cardHeight,
+        }, "testUIImage");
+
+        // Use this Debug.Break() to pause with the UI state instead of taking a snapshot
+        // Debug.Break();
+        // yield return null;
+
+        yield return VisualTestUtils.TakeSnapshot("UIImageTest", camera, new Vector3(0f, 2f, 0f));
+    }
+    
     [UnityTest]
     [VisualTest]
     [Category("Visual Tests")]

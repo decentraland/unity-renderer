@@ -15,6 +15,8 @@ public static class TextureHelpers
 
         Texture2D dstTex = Resize(source, (int) (width * factor), (int) (height * factor), linear, useGPUCopy);
 
+        Debug.Log($"Resizing tex... previous size: {source.width}x{source.height}; new size: {dstTex.width}x{dstTex.height}");
+        
         if (Application.isPlaying)
             Object.Destroy(source);
         else
