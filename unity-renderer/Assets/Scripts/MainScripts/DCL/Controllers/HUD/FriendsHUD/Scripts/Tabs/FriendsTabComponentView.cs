@@ -48,16 +48,16 @@ public class FriendsTabComponentView : BaseComponentView
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
         contextMenuPanel.OnUnfriend += HandleUnfriendRequest;
 
-        int SortByTimestamp(FriendEntryBase.Model u1, FriendEntryBase.Model u2)
+        int SortByTimestamp(FriendEntryBase u1, FriendEntryBase u2)
         {
-            var t1 = timestamps.ContainsKey(u1.userId) ? timestamps[u1.userId] : 0;
-            var t2 = timestamps.ContainsKey(u2.userId) ? timestamps[u2.userId] : 0;
+            var t1 = timestamps.ContainsKey(u1.model.userId) ? timestamps[u1.model.userId] : 0;
+            var t2 = timestamps.ContainsKey(u2.model.userId) ? timestamps[u2.model.userId] : 0;
             return t2.CompareTo(t1);
         }
 
-        int SortByAlphabeticalOrder(FriendEntryBase.Model u1, FriendEntryBase.Model u2)
+        int SortByAlphabeticalOrder(FriendEntryBase u1, FriendEntryBase u2)
         {
-            return string.Compare(u2.userName, u1.userName, StringComparison.Ordinal);
+            return string.Compare(u2.model.userName, u1.model.userName, StringComparison.Ordinal);
         }
 
         onlineFriendsList.list.SortingMethod = SortByTimestamp;
@@ -153,7 +153,6 @@ public class FriendsTabComponentView : BaseComponentView
 
         var entry = entries[userId];
         entry.Populate(model);
-        entry.userId = userId;
 
         if (model.status == PresenceStatus.ONLINE)
         {

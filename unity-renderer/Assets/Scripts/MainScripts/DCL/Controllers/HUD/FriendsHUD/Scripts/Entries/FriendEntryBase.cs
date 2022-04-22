@@ -21,7 +21,6 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
     }
 
     public Model model { get; private set; } = new Model();
-    [NonSerialized] public string userId;
 
     public Image playerBlockedImage;
     public Transform menuPositionReference;

@@ -89,7 +89,7 @@ public class FriendsHUDController : IHUD
 
         for (int i = 0; i < entriesCount; i++)
         {
-            entries[i].model.blocked = allBlockedUsers.Contains(entries[i].userId);
+            entries[i].model.blocked = allBlockedUsers.Contains(entries[i].model.userId);
             entries[i].Populate(entries[i].model);
         }
     }
@@ -211,7 +211,7 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private void Entry_OnWhisper(FriendEntry entry) { OnPressWhisper?.Invoke(entry.userId); }
+    private void Entry_OnWhisper(FriendEntry entry) { OnPressWhisper?.Invoke(entry.model.userId); }
 
     private void Entry_OnDelete(string userId)
     {
@@ -226,10 +226,10 @@ public class FriendsHUDController : IHUD
     private void Entry_OnRequestRejected(FriendRequestEntry entry)
     {
         WebInterface.UpdateFriendshipStatus(
-            new FriendsController.FriendshipUpdateStatusMessage()
+            new FriendsController.FriendshipUpdateStatusMessage
             {
                 action = FriendshipAction.REJECTED,
-                userId = entry.userId
+                userId = entry.model.userId
             });
     }
 
@@ -239,7 +239,7 @@ public class FriendsHUDController : IHUD
             new FriendsController.FriendshipUpdateStatusMessage()
             {
                 action = FriendshipAction.CANCELLED,
-                userId = entry.userId
+                userId = entry.model.userId
             });
     }
 
@@ -249,7 +249,7 @@ public class FriendsHUDController : IHUD
             new FriendsController.FriendshipUpdateStatusMessage()
             {
                 action = FriendshipAction.APPROVED,
-                userId = entry.userId
+                userId = entry.model.userId
             });
     }
 

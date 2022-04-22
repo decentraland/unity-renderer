@@ -171,7 +171,7 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
         view.friendRequestsList.confirmationDialog.confirmButton.onClick.Invoke();
 
         Assert.IsFalse(view.friendRequestsList.confirmationDialog.gameObject.activeSelf);
-        Assert.IsNull(view.friendRequestsList.GetEntry(entry.userId));
+        Assert.IsNull(view.friendRequestsList.GetEntry(entry.model.userId));
 
         //NOTE(Brian): Deny cancellation
         var entry2 = CreateFriendRequestEntry("id1", "Warren Buffet", isReceived: true);
@@ -183,7 +183,7 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
         view.friendRequestsList.confirmationDialog.cancelButton.onClick.Invoke();
 
         Assert.IsFalse(view.friendRequestsList.confirmationDialog.gameObject.activeSelf);
-        Assert.IsNotNull(view.friendRequestsList.GetEntry(entry2.userId));
+        Assert.IsNotNull(view.friendRequestsList.GetEntry(entry2.model.userId));
     }
 
     [Test]
@@ -199,7 +199,7 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
         view.friendRequestsList.confirmationDialog.confirmButton.onClick.Invoke();
 
         Assert.IsFalse(view.friendRequestsList.confirmationDialog.gameObject.activeSelf);
-        Assert.IsNull(view.friendRequestsList.GetEntry(entry.userId));
+        Assert.IsNull(view.friendRequestsList.GetEntry(entry.model.userId));
 
         //NOTE(Brian): Deny cancellation
         var entry2 = CreateFriendRequestEntry("id1", "Warren Buffet", isReceived: false);
@@ -211,7 +211,7 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
         view.friendRequestsList.confirmationDialog.cancelButton.onClick.Invoke();
 
         Assert.IsFalse(view.friendRequestsList.confirmationDialog.gameObject.activeSelf);
-        Assert.IsNotNull(view.friendRequestsList.GetEntry(entry2.userId));
+        Assert.IsNotNull(view.friendRequestsList.GetEntry(entry2.model.userId));
     }
 
     void RequestCreateFriendEntry(string id, string name, PresenceStatus status = PresenceStatus.ONLINE)

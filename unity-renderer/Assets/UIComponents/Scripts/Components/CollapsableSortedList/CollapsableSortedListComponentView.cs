@@ -84,7 +84,7 @@ namespace UIComponents.CollapsableSortedList
             entryTransform.localScale = Vector3.one;
             Sort();
             UpdateEmptyState();
-            ((RectTransform) container).ForceUpdateLayout();
+            UpdateLayout();
         }
 
         public virtual V Remove(K key)
@@ -94,7 +94,7 @@ namespace UIComponents.CollapsableSortedList
             entries.Remove(key);
             sortedEntries.RemoveAll(model => model.Equals(entry));
             UpdateEmptyState();
-            ((RectTransform) container).ForceUpdateLayout();
+            UpdateLayout();
             return entry;
         }
 
@@ -106,7 +106,7 @@ namespace UIComponents.CollapsableSortedList
             entries.Clear();
             sortedEntries.Clear();
             UpdateEmptyState();
-            ((RectTransform) container).ForceUpdateLayout();
+            UpdateLayout();
         }
 
         public void Filter(Func<V, bool> comparision)
@@ -122,7 +122,7 @@ namespace UIComponents.CollapsableSortedList
                     filteredCount++;
             }
 
-            ((RectTransform) container).ForceUpdateLayout();
+            UpdateLayout();
         }
 
         public virtual void Sort()
@@ -133,5 +133,7 @@ namespace UIComponents.CollapsableSortedList
         }
 
         private void UpdateEmptyState() => emptyStateContainer.SetActive(Count() == 0);
+
+        private void UpdateLayout() => ((RectTransform) container).ForceUpdateLayout();
     }
 }

@@ -251,7 +251,6 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         var entry = entries[userId];
 
         entry.Populate(model);
-        entry.userId = userId;
 
         layoutIsDirty = true;
         return true;

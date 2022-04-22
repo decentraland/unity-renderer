@@ -137,7 +137,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
         
         var entry = entries[userId];
         entry.Populate(model);
-        entry.userId = userId;
     }
 
     public void Set(string userId, FriendEntryBase.Model model, bool isReceived)
@@ -147,7 +146,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
         
         var entry = entries[userId];
         entry.Populate(model);
-        entry.userId = userId;
         entry.SetReceived(isReceived);
 
         if (isReceived)
@@ -241,12 +239,12 @@ public class FriendRequestsTabComponentView : BaseComponentView
         // Add placeholder friend to avoid affecting UX by roundtrip with kernel
         FriendsController.i?.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
         {
-            userId = requestEntry.userId,
+            userId = requestEntry.model.userId,
             action = FriendshipAction.APPROVED
         });
 
         ShowFriendAcceptedNotification(requestEntry);
-        Remove(requestEntry.userId);
+        Remove(requestEntry.model.userId);
         OnFriendRequestApproved?.Invoke(requestEntry);
     }
 
@@ -260,13 +258,13 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     private void OnEntryRejectButtonPressed(FriendRequestEntry requestEntry)
     {
-        Remove(requestEntry.userId);
+        Remove(requestEntry.model.userId);
         OnRejectConfirmation?.Invoke(requestEntry);
     }
 
     private void OnEntryCancelButtonPressed(FriendRequestEntry requestEntry)
     {
-        Remove(requestEntry.userId);
+        Remove(requestEntry.model.userId);
         OnCancelConfirmation?.Invoke(requestEntry);
     }
     
