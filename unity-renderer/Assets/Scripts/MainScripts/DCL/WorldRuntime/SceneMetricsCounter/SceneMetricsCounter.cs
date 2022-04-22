@@ -222,6 +222,8 @@ namespace DCL
 
         void OnMeshAdded(Mesh mesh)
         {
+            if (mesh == null)
+                return;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             currentCountValue.meshMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(mesh);
 #endif
@@ -230,6 +232,8 @@ namespace DCL
 
         void OnMeshRemoved(Mesh mesh)
         {
+            if (mesh == null)
+                return;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             currentCountValue.meshMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(mesh);
 #endif
@@ -238,6 +242,9 @@ namespace DCL
 
         void OnAnimationClipAdded(AnimationClip animationClip)
         {
+            if (animationClip == null)
+                return;
+            
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             currentCountValue.animationClipMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(animationClip);
 #endif
@@ -246,6 +253,9 @@ namespace DCL
 
         void OnAnimationClipRemoved(AnimationClip animationClip)
         {
+            if (animationClip == null)
+                return;
+            
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             currentCountValue.animationClipMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(animationClip);
 #endif
@@ -254,6 +264,9 @@ namespace DCL
 
         void OnAudioClipAdded(AudioClip audioClip)
         {
+            if (audioClip == null)
+                return;
+
             MarkDirty();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             currentCountValue.audioClipMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(audioClip);
@@ -263,6 +276,9 @@ namespace DCL
 
         void OnAudioClipRemoved(AudioClip audioClip)
         {
+            if (audioClip == null)
+                return;
+
             MarkDirty();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             currentCountValue.audioClipMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(audioClip);
@@ -285,6 +301,9 @@ namespace DCL
 
         void OnTextureAdded(Texture texture)
         {
+            if (texture == null)
+                return;
+
             MarkDirty();
 
             if (texture is Texture2D tex2D)
@@ -298,6 +317,9 @@ namespace DCL
 
         void OnTextureRemoved(Texture texture)
         {
+            if (texture == null)
+                return;
+
             MarkDirty();
 
             if (texture is Texture2D tex2D)
