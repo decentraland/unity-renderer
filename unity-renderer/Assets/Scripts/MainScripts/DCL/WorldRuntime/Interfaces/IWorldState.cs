@@ -10,7 +10,6 @@ namespace DCL
         Dictionary<string, IParcelScene> loadedScenes { get; set; }
         List<IParcelScene> scenesSortedByDistance { get; set; }
         List<string> globalSceneIds { get; set; }
-        List<string> portableExperienceIds { get; set; }
         string currentSceneId { get; set; }
         bool TryGetScene(string id, out IParcelScene scene);
         bool TryGetScene<T>(string id, out T scene) where T : class, IParcelScene;

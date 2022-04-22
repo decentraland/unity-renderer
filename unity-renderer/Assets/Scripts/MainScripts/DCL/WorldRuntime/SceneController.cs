@@ -22,7 +22,7 @@ namespace DCL
         const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
 
         public bool enabled { get; set; } = true;
-        internal BaseVariable<Transform> isPortableExperiencesInitialized => DataStore.i.experiencesViewer.isInitialized;
+        internal BaseVariable<Transform> isPexViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
 
         //TODO(Brian): Move to WorldRuntimePlugin later
         private LoadingFeedbackController loadingFeedbackController;
@@ -720,21 +720,7 @@ namespace DCL
             ProfilingEvents.OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_DESTROY);
 
             messagingControllersManager.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
-
             messagingControllersManager.RemoveController(sceneKey);
-
-            IWorldState worldState = Environment.i.world.state;
-
-            if (worldState.loadedScenes.ContainsKey(sceneKey))
-            {
-                ParcelScene sceneToUnload = worldState.GetScene(sceneKey) as ParcelScene;
-                sceneToUnload.isPersistent = false;
-
-                if (sceneToUnload is GlobalScene globalScene && globalScene.isPortableExperience)
-                {
-                    worldState.portableExperienceIds.Remove(sceneKey);
-                }
-            }
         }
 
         public void UnloadParcelSceneExecute(string sceneId)
@@ -743,19 +729,15 @@ namespace DCL
 
             IWorldState worldState = Environment.i.world.state;
 
-            if (!worldState.Contains(sceneId) || worldState.loadedScenes[sceneId].isPersistent)
-            {
-                return;
-            }
-
-            var scene = worldState.loadedScenes[sceneId] as ParcelScene;
-
-            if (scene == null)
+            if (!worldState.Contains(sceneId))
                 return;
 
+            ParcelScene scene = (ParcelScene) worldState.loadedScenes[sceneId];
+            
             worldState.loadedScenes.Remove(sceneId);
             worldState.globalSceneIds.Remove(sceneId);
-
+            DataStore.i.world.portableExperienceIds.Remove(sceneId);
+            
             // Remove the scene id from the msg. priorities list
             worldState.scenesSortedByDistance.Remove(scene);
 
@@ -844,8 +826,15 @@ namespace DCL
 #endif
             CreateGlobalSceneMessage globalScene = Utils.SafeFromJson<CreateGlobalSceneMessage>(json);
 
-            if (globalScene.isPortableExperience && !isPortableExperiencesInitialized.Get())
+            // NOTE(Brian): We should remove this line. SceneController is a runtime core class.
+            //              It should never have references to UI systems or higher level systems.
+            if (globalScene.isPortableExperience && !isPexViewerInitialized.Get())
+            {
+                Debug.LogError(
+                    "Portable experiences are trying to be added before the system is initialized!. SceneID: " +
+                    globalScene.id);
                 return;
+            }
 
             string newGlobalSceneId = globalScene.id;
 
@@ -882,7 +871,7 @@ namespace DCL
 
             if (newScene.isPortableExperience)
             {
-                worldState.portableExperienceIds.Add(newGlobalSceneId);
+                DataStore.i.world.portableExperienceIds.Add(newGlobalSceneId);
             }
 
             worldState.globalSceneIds.Add(newGlobalSceneId);
