@@ -60,15 +60,9 @@ public class ItemSelector : MonoBehaviour
     {
         CollectionGroup collectionGroup;
         if (item.IsFromThirdPartyCollection)
-        {
             collectionGroup = CreateCollectionGroupIfNeeded(item.ThirdPartyCollectionId, collectionName);
-            collectionGroup.transform.SetAsLastSibling();
-        }
         else
-        {
             collectionGroup = CreateCollectionGroupIfNeeded(DECENTRALAND_COLLECTION_ID, DECENTRALAND_COLLECTION_ID);
-            collectionGroup.transform.SetAsFirstSibling();
-        }
 
         if (item == null)
             return;
@@ -216,6 +210,11 @@ public class ItemSelector : MonoBehaviour
         CollectionGroup newCollectionGroup = Instantiate(collectionGroupPrefab, content);
         newCollectionGroup.Configure(collectionId, collectionName);
         currentCollectionGroups.Add(collectionId, newCollectionGroup);
+
+        if (collectionId == DECENTRALAND_COLLECTION_ID)
+            newCollectionGroup.transform.SetAsFirstSibling();
+        else
+            newCollectionGroup.transform.SetAsLastSibling();
 
         return newCollectionGroup;
     }
