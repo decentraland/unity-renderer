@@ -1,0 +1,18 @@
+{
+    "name": "DCL.CRDTProtocol.Tests",
+    "rootNamespace": "UNITY_INCLUDE_TESTS",
+    "references": [
+        "GUID:80f579cff5cf4136aa8969bf6fa1098c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
