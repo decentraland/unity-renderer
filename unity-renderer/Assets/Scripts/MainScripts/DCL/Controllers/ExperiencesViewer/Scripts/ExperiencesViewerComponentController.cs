@@ -92,7 +92,7 @@ namespace DCL.ExperiencesViewer
             activePEXScenes.TryGetValue(pexId, out IParcelScene scene);
             if (scene != null)
             {
-                UIScreenSpace sceneUIComponent = scene.GetSharedComponent<UIScreenSpace>();
+                UIScreenSpace sceneUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
                 sceneUIComponent.canvas.enabled = isVisible;
             }
 

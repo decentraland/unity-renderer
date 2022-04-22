@@ -52,7 +52,7 @@ namespace DCL.Components
             if (attachedEntities.Contains(entity))
                 return;
 
-            entity.RemoveSharedComponent(typeof(PBRMaterial));
+            scene.componentsManagerLegacy.RemoveSharedComponent(entity, (typeof(PBRMaterial)));
             base.AttachTo(entity, overridenAttachedType);
         }
 

@@ -80,13 +80,13 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
             componentJSON
         );
 
-        BoxShape boxShapeComponent = (BoxShape) scene.GetSharedComponent(componentId);
+        BoxShape boxShapeComponent = (BoxShape) scene.componentsManagerLegacy.GetSceneSharedComponent(componentId);
 
         // 2. Check configured values
         Assert.IsTrue(boxShapeComponent.GetModel().withCollisions);
 
         // 3. Update component with missing values
-        scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new BoxShape.Model { }));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(componentId, JsonUtility.ToJson(new BoxShape.Model { }));
 
         // 4. Check defaulted values
         Assert.IsTrue(boxShapeComponent.GetModel().withCollisions);
