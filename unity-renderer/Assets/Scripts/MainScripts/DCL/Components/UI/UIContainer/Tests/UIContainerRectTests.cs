@@ -40,7 +40,7 @@ namespace Tests
             Assert.AreEqual(Vector3.zero, uiContainerRectShape.childHookRectTransform.localPosition);
 
             // Update UIContainerRectShape properties
-            uiContainerRectShape = scene.SharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new UIContainerRect.Model
+            uiContainerRectShape = scene.componentsManagerLegacy.SceneSharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new UIContainerRect.Model
             {
                 parentComponent = screenSpaceShape.id,
                 thickness = 5,
@@ -92,7 +92,7 @@ namespace Tests
             yield return uiContainerRectShape.routine;
 
             // Update UIContainerRectShape parent
-            scene.SharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new UIContainerRect.Model
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new UIContainerRect.Model
             {
                 parentComponent = screenSpaceShape.id,
             }));
@@ -109,7 +109,7 @@ namespace Tests
             yield return uiContainerRectShape2.routine;
 
             // Update UIContainerRectShape parent to the previous container
-            scene.SharedComponentUpdate(uiContainerRectShape2.id, JsonUtility.ToJson(new UIContainerRect.Model
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(uiContainerRectShape2.id, JsonUtility.ToJson(new UIContainerRect.Model
             {
                 parentComponent = uiContainerRectShape.id,
             }));
@@ -156,7 +156,7 @@ namespace Tests
             yield return uiContainerRectShape.routine;
 
             // Update UIContainerRectShape properties
-            uiContainerRectShape = scene.SharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new UIContainerRect.Model
+            uiContainerRectShape = scene.componentsManagerLegacy.SceneSharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new UIContainerRect.Model
             {
                 parentComponent = screenSpaceShape.id,
                 width = new UIValue(50, UIValue.Unit.PERCENT),
@@ -194,7 +194,7 @@ namespace Tests
             yield return uiContainerRectShape.routine;
 
             // Update UIContainerRectShape properties
-            uiContainerRectShape = scene.SharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new UIContainerRect.Model
+            uiContainerRectShape = scene.componentsManagerLegacy.SceneSharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new UIContainerRect.Model
             {
                 parentComponent = screenSpaceShape.id,
                 thickness = 5,

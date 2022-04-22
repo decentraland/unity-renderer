@@ -69,14 +69,13 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     public void UpdateSmartItemComponent(BIWEntity entity, IParcelScene scene)
     {
-        SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>();
-        if (smartItemComponent == null)
+        if (scene.componentsManagerLegacy.TryGetBaseComponent(entity.rootEntity, CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent component))
             return;
 
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID_COMPONENT.SMART_ITEM;
 
-        entitySingleComponentPayload.data = smartItemComponent.GetValues();
+        entitySingleComponentPayload.data = ((SmartItemComponent)component).GetValues();
 
         ChangeEntityComponent(entitySingleComponentPayload, scene);
     }
@@ -86,12 +85,9 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID.LOCKED_ON_EDIT;
 
-        foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in entity.rootEntity.sharedComponents)
+        if (scene.componentsManagerLegacy.TryGetSharedComponent(entity.rootEntity, CLASS_ID.LOCKED_ON_EDIT, out ISharedComponent component))
         {
-            if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.LOCKED_ON_EDIT)
-            {
-                entitySingleComponentPayload.data = ((DCLLockedOnEdit) keyValuePairBaseDisposable.Value).GetModel();
-            }
+            entitySingleComponentPayload.data = ((DCLLockedOnEdit) component).GetModel();
         }
 
         ChangeEntityComponent(entitySingleComponentPayload, scene);
@@ -101,13 +97,10 @@ public class BuilderInWorldBridge : MonoBehaviour
     {
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID.NAME;
-
-        foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in entity.rootEntity.sharedComponents)
+        
+        if (scene.componentsManagerLegacy.TryGetSharedComponent(entity.rootEntity, CLASS_ID.NAME, out ISharedComponent component))
         {
-            if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NAME)
-            {
-                entitySingleComponentPayload.data = ((DCLName) keyValuePairBaseDisposable.Value).GetModel();
-            }
+            entitySingleComponentPayload.data = ((DCLName) component).GetModel();
         }
 
         ChangeEntityComponent(entitySingleComponentPayload, scene);
@@ -139,7 +132,7 @@ public class BuilderInWorldBridge : MonoBehaviour
 
         List<ComponentPayload> list = new List<ComponentPayload>();
 
-        foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> keyValuePair in entity.components)
+        foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> keyValuePair in scene.componentsManagerLegacy.GetComponentsDictionary(entity))
         {
             ComponentPayload componentPayLoad = new ComponentPayload();
             componentPayLoad.componentId = Convert.ToInt32(keyValuePair.Key);
@@ -162,30 +155,33 @@ public class BuilderInWorldBridge : MonoBehaviour
             list.Add(componentPayLoad);
         }
 
-        foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in entity.sharedComponents)
+        using (var iterator = scene.componentsManagerLegacy.GetSharedComponents(entity))
         {
-            ComponentPayload componentPayLoad = new ComponentPayload();
-
-            componentPayLoad.componentId = keyValuePairBaseDisposable.Value.GetClassId();
-
-            if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
+            while (iterator.MoveNext())
             {
-                NFTComponent nftComponent = new NFTComponent();
-                NFTShape.Model model = (NFTShape.Model) keyValuePairBaseDisposable.Value.GetModel();
+                ComponentPayload componentPayLoad = new ComponentPayload();
 
-                nftComponent.color = new ColorRepresentation(model.color);
-                nftComponent.assetId = model.assetId;
-                nftComponent.src = model.src;
-                nftComponent.style = model.style;
+                componentPayLoad.componentId = iterator.Current.GetClassId();
 
-                componentPayLoad.data = nftComponent;
+                if (iterator.Current.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
+                {
+                    NFTComponent nftComponent = new NFTComponent();
+                    NFTShape.Model model = (NFTShape.Model) iterator.Current.GetModel();
+
+                    nftComponent.color = new ColorRepresentation(model.color);
+                    nftComponent.assetId = model.assetId;
+                    nftComponent.src = model.src;
+                    nftComponent.style = model.style;
+
+                    componentPayLoad.data = nftComponent;
+                }
+                else
+                {
+                    componentPayLoad.data = iterator.Current.GetModel();
+                }
+
+                list.Add(componentPayLoad);
             }
-            else
-            {
-                componentPayLoad.data = keyValuePairBaseDisposable.Value.GetModel();
-            }
-
-            list.Add(componentPayLoad);
         }
 
         SendNewEntityToKernel(scene.sceneData.id, entity.entityId, list.ToArray());

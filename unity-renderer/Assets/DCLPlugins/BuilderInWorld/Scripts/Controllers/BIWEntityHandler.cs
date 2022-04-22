@@ -503,8 +503,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     {
         IDCLEntity entity = SceneUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
         //Note: If the entity contains the name component or DCLLockedOnEdit, we don't want to copy them 
-        entity.RemoveSharedComponent(typeof(DCLName), false);
-        entity.RemoveSharedComponent(typeof(DCLLockedOnEdit), false);
+        sceneToEdit.componentsManagerLegacy.RemoveSharedComponent(entity, typeof(DCLName), false);
+        sceneToEdit.componentsManagerLegacy.RemoveSharedComponent(entity, typeof(DCLLockedOnEdit), false);
 
         BIWUtils.CopyGameObjectStatus(entityToDuplicate.rootEntity.gameObject, entity.gameObject, false, false);
         BIWEntity convertedEntity = SetupEntityToEdit(entity);
@@ -532,12 +532,12 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         foreach (ProtocolV2.GenericComponent component in data.components)
         {
-            sceneToEdit.EntityComponentCreateOrUpdateWithModel(newEntity.entityId, (CLASS_ID_COMPONENT) component.componentId, component.data);
+            sceneToEdit.componentsManagerLegacy.EntityComponentCreateOrUpdate(newEntity.entityId, (CLASS_ID_COMPONENT) component.componentId, component.data);
         }
 
         foreach (ProtocolV2.GenericComponent component in data.sharedComponents)
         {
-            sceneToEdit.SharedComponentAttach(newEntity.entityId, component.classId);
+            sceneToEdit.componentsManagerLegacy.SceneSharedComponentAttach(newEntity.entityId, component.classId);
         }
 
         if (data.nftComponent != null)
@@ -554,11 +554,12 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         
         if(!convertedEntity.isLoaded)
             creatorController.CreateLoadingObject(convertedEntity);
-        
-        if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.GLTF_SHAPE, out var gltfComponent))
+
+        var rootEntity = convertedEntity.rootEntity;
+        if (sceneToEdit.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.GLTF_SHAPE, out var gltfComponent))
             gltfComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
 
-        if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.NFT_SHAPE, out var nftComponent))
+        if (sceneToEdit.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.NFT_SHAPE, out var nftComponent))
             nftComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
         
         EntityListChanged();
