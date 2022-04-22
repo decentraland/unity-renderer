@@ -11,8 +11,6 @@ namespace DCL
         public Dictionary<string, IParcelScene> loadedScenes { get; set; } = new Dictionary<string, IParcelScene>();
         public List<IParcelScene> scenesSortedByDistance { get; set; } = new List<IParcelScene>();
         public List<string> globalSceneIds { get; set; } = new List<string>();
-
-        public List<string> portableExperienceIds { get; set; } = new List<string>();
         public string currentSceneId { get; set; } = null;
 
         public IParcelScene GetScene(string id)
