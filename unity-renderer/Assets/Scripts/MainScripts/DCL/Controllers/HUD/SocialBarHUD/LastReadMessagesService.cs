@@ -12,6 +12,9 @@ public class LastReadMessagesService : ILastReadMessagesService
     private readonly ReadMessagesDictionary memoryRepository;
     private readonly IChatController chatController;
     private readonly IPlayerPrefs persistentRepository;
+    
+    public event Action<string> OnUpdated;
+    
     public LastReadMessagesService(ReadMessagesDictionary memoryRepository,
         IChatController chatController,
         IPlayerPrefs persistentRepository)
@@ -29,6 +32,7 @@ public class LastReadMessagesService : ILastReadMessagesService
         memoryRepository.Remove(chatId);
         memoryRepository.Add(chatId, timestamp);
         Persist();
+        OnUpdated?.Invoke(chatId);
     }
 
     public int GetUnreadCount(string chatId)
