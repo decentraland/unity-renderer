@@ -372,10 +372,9 @@ namespace DCL
                 worldState.currentSceneId);
 
             // Raycast for global pointer events (for each PE scene)
-            List<string>
-                currentPortableExperienceIds =
-                    Environment.i.world.state
-                        .portableExperienceIds; //PortableExperienceUtils.GetActivePortableExperienceIds();
+            List<string> currentPortableExperienceIds =
+                DataStore.i.Get<DataStore_World>().portableExperienceIds.Get().ToList();
+
             for (int i = 0; i < currentPortableExperienceIds.Count; i++)
             {
                 raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer,

@@ -24,7 +24,6 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTearDown]
     protected override IEnumerator TearDown()
     {
-        Object.Destroy(scene.gameObject);
         yield return base.TearDown();
     }
 
