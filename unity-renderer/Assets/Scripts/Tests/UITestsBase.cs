@@ -22,7 +22,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene();
+            scene = TestUtils.CreateTestScene() as ParcelScene;
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
             DCLCharacterController.i.PauseGravity();
             TestUtils.SetCharacterPosition(new Vector3(8f, 0f, 8f));

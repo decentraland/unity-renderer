@@ -886,7 +886,9 @@ namespace DCL.Helpers
             }
         }
 
-        public static IEnumerator TestShapeVisibility(BaseShape shapeComponent, BaseShape.Model shapeModel, IDCLEntity entity)
+        public static IEnumerator TestRenderersWithShapeVisibleProperty(BaseShape shapeComponent,
+            BaseShape.Model shapeModel,
+            IDCLEntity entity)
         {
             // make sure the shape is visible first
             shapeModel.visible = true;
@@ -902,8 +904,6 @@ namespace DCL.Helpers
                 Assert.IsTrue(renderers[i].enabled);
             }
 
-            yield return TestShapeOnPointerEventCollider(entity);
-
             // update visibility with 'false'
             shapeModel.visible = false;
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
@@ -914,8 +914,6 @@ namespace DCL.Helpers
                 Assert.IsFalse(renderers[i].enabled);
             }
 
-            yield return TestShapeOnPointerEventCollider(entity);
-
             // update visibility with 'true'
             shapeModel.visible = true;
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
@@ -925,7 +923,24 @@ namespace DCL.Helpers
             {
                 Assert.IsTrue(renderers[i].enabled);
             }
+        }
 
+        public static IEnumerator TestOnPointerEventWithShapeVisibleProperty(BaseShape shapeComponent,
+            BaseShape.Model shapeModel, IDCLEntity entity)
+        {
+            // make sure the shape is visible first
+            shapeModel.visible = true;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
+            yield return TestShapeOnPointerEventCollider(entity);
+
+            // update visibility with 'false'
+            shapeModel.visible = false;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
+            yield return TestShapeOnPointerEventCollider(entity);
+
+            // update visibility with 'true'
+            shapeModel.visible = true;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
             yield return TestShapeOnPointerEventCollider(entity);
         }
 
@@ -1277,9 +1292,45 @@ namespace DCL.Helpers
             return new WaitUntil(() => wrapper.alreadyLoaded);
         }
 
-        public static ParcelScene CreateTestScene()
+        public static ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
         {
-            return WorldStateUtils.CreateTestScene() as ParcelScene;
+            if (data == null)
+            {
+                data = new LoadParcelScenesMessage.UnityParcelScene();
+            }
+
+            if (data.parcels == null)
+            {
+                data.parcels = new Vector2Int[] {data.basePosition};
+            }
+
+            if (string.IsNullOrEmpty(data.id))
+            {
+                data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
+            }
+
+            if (Environment.i.world.state.loadedScenes != null)
+            {
+                if (Environment.i.world.state.loadedScenes.ContainsKey(data.id))
+                {
+                    Debug.LogWarning($"Scene {data.id} is already loaded.");
+                    return Environment.i.world.state.loadedScenes[data.id] as ParcelScene;
+                }
+            }
+
+            var go = new GameObject();
+            var newScene = go.AddComponent<ParcelScene>();
+            newScene.isTestScene = true;
+            newScene.isPersistent = true;
+            newScene.SetData(data);
+
+            if (DCLCharacterController.i != null)
+                newScene.InitializeDebugPlane();
+
+            Environment.i.world.state.scenesSortedByDistance?.Add(newScene);
+            Environment.i.world.state.loadedScenes?.Add(data.id, newScene);
+
+            return newScene;
         }
 
         public static T CreateComponentWithGameObject<T>(string gameObjectName) where T : Component
