@@ -15,16 +15,19 @@ namespace Tests
     {
         private ParcelScene scene;
         private CatalogController catalogController;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene();
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
         }
 
         protected override IEnumerator TearDown()
         {
+            coreComponentsPlugin.Dispose();
             Object.Destroy(catalogController.gameObject);
             yield return base.TearDown();
         }

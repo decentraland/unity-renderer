@@ -27,15 +27,20 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     private BIWEntityHandler entityHandler;
     private IContext context;
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        scene = TestUtils.CreateTestScene();
+        coreComponentsPlugin = new CoreComponentsPlugin();
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
+
         entityHandler = new BIWEntityHandler();
         context = BIWTestUtils.CreateMockedContextForTestScene();
         entityHandler.Initialize(context);
 
-        scene = TestUtils.CreateTestScene();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
         var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
@@ -485,6 +490,9 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         entity.isVisible = true;
         entity.isLocked = false;
         entity.isVoxel = false;
+
+        coreComponentsPlugin.Dispose();
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
 
         BIWCatalogManager.ClearCatalog();
         entityHandler.Dispose();

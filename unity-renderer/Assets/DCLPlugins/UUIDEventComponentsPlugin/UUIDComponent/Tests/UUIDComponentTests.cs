@@ -21,6 +21,7 @@ namespace Tests
         private ParcelScene scene;
         private Camera mainCamera;
         private UUIDEventsPlugin uuidEventsPlugin;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
@@ -58,11 +59,14 @@ namespace Tests
             DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
 
             uuidEventsPlugin = new UUIDEventsPlugin();
+            coreComponentsPlugin = new CoreComponentsPlugin();
         }
 
         protected override IEnumerator TearDown()
         {
             uuidEventsPlugin.Dispose();
+            coreComponentsPlugin.Dispose();
+                
             Object.Destroy(mainCamera.gameObject);
             Utils.UnlockCursor();
             yield return base.TearDown();

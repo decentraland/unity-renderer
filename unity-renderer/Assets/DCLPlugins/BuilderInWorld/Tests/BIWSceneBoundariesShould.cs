@@ -13,6 +13,19 @@ using UnityGLTF;
 
 public class BIWSceneBoundariesShould : IntegrationTestSuite
 {
+    private CoreComponentsPlugin coreComponentsPlugin;
+
+    protected override IEnumerator SetUp()
+    {
+        yield return base.SetUp();
+        coreComponentsPlugin = new CoreComponentsPlugin();
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
+    }
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
         serviceLocator.Register<ISceneController>(() => new SceneController());
@@ -73,5 +86,5 @@ public class BIWSceneBoundariesShould : IntegrationTestSuite
         }
     }
 
-    protected override IEnumerator TearDown() { yield return base.TearDown(); }
+
 }

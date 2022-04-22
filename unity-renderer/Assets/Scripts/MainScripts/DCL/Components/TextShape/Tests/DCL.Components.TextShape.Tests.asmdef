@@ -1,17 +1,17 @@
 {
-  "name": "TexturesTests",
+  "name": "DCL.Components.TextShape.Tests",
   "rootNamespace": "",
   "references": [
-    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+    "GUID:6055be8ebefd69e48b49212b09b47b2f",
     "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
     "GUID:27619889b8ba8c24980f49ee34dbb44a",
     "GUID:0acc523941302664db1f4e527237feb3",
     "GUID:a881b57670b1d2747a6d7f9e32b63230",
-    "GUID:b308ae946900fa04080222d7daf47d9a",
+    "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
     "GUID:97d8897529779cb49bebd400c7f402a6",
-    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-    "GUID:3ac909a9e663fbd4fbcffe071a761ac6",
-    "GUID:44a9db8f655ab05409802e5476cf9dd3"
+    "GUID:0ba1943dc1f942a498c75a357c7c42cf",
+    "GUID:44a9db8f655ab05409802e5476cf9dd3",
+    "GUID:9a16a75a9de4ba2458b50ed374f1b28f"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

@@ -21,6 +21,7 @@ namespace Tests
     {
         private ParcelScene scene;
         private UUIDEventsPlugin uuidEventsPlugin;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override void InitializeServices(ServiceLocator serviceLocator)
         {
@@ -36,12 +37,14 @@ namespace Tests
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
             uuidEventsPlugin = new UUIDEventsPlugin();
+            coreComponentsPlugin = new CoreComponentsPlugin();
         }
 
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
             uuidEventsPlugin.Dispose();
+            coreComponentsPlugin.Dispose();
             yield return base.TearDown();
         }
 

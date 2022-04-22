@@ -42,7 +42,8 @@ namespace DCL
         {
             if (!builders.ContainsKey(classId))
             {
-                Debug.LogError($"Unknown classId");
+                Debug.LogError(
+                    $"Unknown classId: {classId} - Make sure the component is registered! (You forgot to add a plugin?)");
                 return null;
             }
 

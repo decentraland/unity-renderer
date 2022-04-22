@@ -105,6 +105,9 @@ public class CoreComponentsPlugin : IPlugin
     {
         IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
 
+        if (factory == null)
+            return;
+        
         // Transform
         factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.TRANSFORM);
         factory.UnregisterBuilder((int) CLASS_ID_COMPONENT.AVATAR_ATTACH);

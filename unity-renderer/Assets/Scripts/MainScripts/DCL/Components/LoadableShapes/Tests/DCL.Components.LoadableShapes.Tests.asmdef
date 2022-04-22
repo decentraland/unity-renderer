@@ -1,5 +1,5 @@
 {
-  "name": "LoadableShapesTests",
+  "name": "DCL.Components.LoadableShapes.Tests",
   "rootNamespace": "",
   "references": [
     "GUID:54b09a4a10c111e46a817873fcea53fe",
@@ -38,7 +38,8 @@
     "GUID:ba1fa35f5f69c024fabff38cdd17f569",
     "GUID:ab04b35c8c4a57847889009b508e53ae",
     "GUID:368c6e04213c6854080327949458d09a",
-    "GUID:44a9db8f655ab05409802e5476cf9dd3"
+    "GUID:44a9db8f655ab05409802e5476cf9dd3",
+    "GUID:9a16a75a9de4ba2458b50ed374f1b28f"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

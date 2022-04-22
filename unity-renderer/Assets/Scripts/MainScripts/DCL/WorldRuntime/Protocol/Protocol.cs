@@ -6,7 +6,7 @@ namespace DCL.Models
 {
     public static class ComponentNameLiterals
     {
-        public const string OnClick = "OnClick";
+        public const string OnClick = "onClick";
         public const string OnPointerDown = "pointerDown";
         public const string OnPointerUp = "pointerUp";
         public const string OnPointerHoverEnter = "pointerHoverEnter";

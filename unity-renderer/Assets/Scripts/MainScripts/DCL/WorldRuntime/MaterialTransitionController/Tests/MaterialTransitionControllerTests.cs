@@ -15,11 +15,19 @@ namespace Tests
     public class MaterialTransitionControllerTests : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
+        }
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
+            coreComponentsPlugin = new CoreComponentsPlugin();
             CommonScriptableObjects.rendererState.Set(true);
         }
 

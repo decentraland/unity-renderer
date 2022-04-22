@@ -13,11 +13,13 @@ namespace SceneBoundariesCheckerTests
     public class SceneBoundariesCheckerTests_DebugMode : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene() as ParcelScene;
+            coreComponentsPlugin = new CoreComponentsPlugin();
 
             Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedBox());
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
@@ -28,6 +30,13 @@ namespace SceneBoundariesCheckerTests
 
             TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
         }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
+        }
+
 
         [UnityTest]
         public IEnumerator ResetMaterialCorrectlyWhenInvalidEntitiesAreRemoved()

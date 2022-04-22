@@ -13,12 +13,20 @@ namespace Tests
         Billboard billboard;
         string entityId = "e1";
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override IEnumerator SetUp()
         {
             CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene() as ParcelScene;
+            coreComponentsPlugin = new CoreComponentsPlugin();
+            scene = TestUtils.CreateTestScene();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            yield return base.TearDown();
+            coreComponentsPlugin.Dispose();
         }
 
         [UnityTest]

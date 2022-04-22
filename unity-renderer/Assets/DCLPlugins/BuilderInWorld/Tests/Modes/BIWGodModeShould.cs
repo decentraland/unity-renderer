@@ -80,6 +80,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator EndMultiSelection()
     {
+        var coreComponentsPlugin = new CoreComponentsPlugin();
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
@@ -105,6 +106,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         //Assert
         context.editorContext.outlinerController.Received().CancelAllOutlines();
         context.editorContext.entityHandler.Received().SelectEntity(entity);
+        coreComponentsPlugin.Dispose();
     }
 
     [Test]
@@ -189,6 +191,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OutlineEntitiesInsideSquareSelection()
     {
+        var coreComponentsPlugin = new CoreComponentsPlugin();
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
@@ -213,6 +216,8 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
 
         //Assert
         context.editorContext.outlinerController.Received().OutlineEntity(entity);
+
+        coreComponentsPlugin.Dispose();
     }
 
     [Test]
@@ -560,6 +565,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator CalculateEntityMidPoint()
     {
+        var coreComponentsPlugin = new CoreComponentsPlugin();
         //Arrange
         var entity = TestUtils.CreateSceneEntity(scene);
 
@@ -579,6 +585,8 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.AreEqual(postion, entity.renderers[0].bounds.center);
+
+        coreComponentsPlugin.Dispose();
     }
 
     [Test]

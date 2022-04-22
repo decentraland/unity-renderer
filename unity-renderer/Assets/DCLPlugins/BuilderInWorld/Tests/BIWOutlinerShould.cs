@@ -20,6 +20,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     private IContext context;
     private IBuilderScene builderScene;
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override List<GameObject> SetUp_LegacySystems()
     {
@@ -41,6 +42,8 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         scene = TestUtils.CreateTestScene();
+        coreComponentsPlugin = new CoreComponentsPlugin();
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
 
@@ -137,6 +140,8 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
+        coreComponentsPlugin.Dispose();
         context.Dispose();
         yield return base.TearDown();
     }

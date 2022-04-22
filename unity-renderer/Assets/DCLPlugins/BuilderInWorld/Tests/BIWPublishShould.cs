@@ -17,6 +17,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     private BuilderInWorldBridge biwBridge;
     private IContext context;
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     private const string entityId = "E1";
 
@@ -32,6 +33,9 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
             biwPublishController,
             biwEntityHandler
         );
+
+        coreComponentsPlugin = new CoreComponentsPlugin();
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
         scene = TestUtils.CreateTestScene();
         
         var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
@@ -102,6 +106,8 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
+        coreComponentsPlugin.Dispose();
         Object.Destroy(biwBridge.gameObject);
         biwPublishController.Dispose();
         biwEntityHandler.Dispose();

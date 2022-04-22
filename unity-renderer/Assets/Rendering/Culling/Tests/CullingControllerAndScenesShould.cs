@@ -16,11 +16,13 @@ namespace CullingControllerTests
     public class CullingControllerAndScenesShould : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
+            coreComponentsPlugin = new CoreComponentsPlugin();
 
             Environment.i.platform.cullingController.Stop();
             Assert.IsFalse(Environment.i.platform.cullingController.IsRunning());
@@ -34,6 +36,12 @@ namespace CullingControllerTests
 
             Assert.IsTrue(Environment.i.platform.cullingController.IsRunning());
             Assert.IsTrue(settings.enableObjectCulling);
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         protected override ServiceLocator InitializeServiceLocator()
