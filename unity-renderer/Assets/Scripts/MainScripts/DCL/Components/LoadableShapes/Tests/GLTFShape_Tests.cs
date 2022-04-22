@@ -239,7 +239,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         var shapeLoader = LoadableShape.GetLoaderForEntity(entity);
         yield return new DCL.WaitUntil(() => shapeLoader.alreadyLoaded);
 
-        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestOnPointerEventWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
     }
     
     [UnityTest]
