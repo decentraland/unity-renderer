@@ -92,11 +92,13 @@ public class IntegrationTestSuite_Legacy
     {
         yield return null;
 
+        // Set rendererState as false so ParcelScene.CleanUp is called with immediate as true
+        CommonScriptableObjects.rendererState.Set(false);
+
         if (runtimeGameObjectsRoot != null)
             Object.Destroy(runtimeGameObjectsRoot.gameObject);
 
         yield return TearDown_LegacySystems();
-        Environment.Dispose();
         DataStore.Clear();
         TearDown_Memory();
 
@@ -104,6 +106,10 @@ public class IntegrationTestSuite_Legacy
             MapRenderer.i.Cleanup();
 
         CatalogController.Clear();
+
+        Environment.Dispose();
+
+        yield return null;
 
         GameObject[] gos = Object.FindObjectsOfType<GameObject>(true);
 
