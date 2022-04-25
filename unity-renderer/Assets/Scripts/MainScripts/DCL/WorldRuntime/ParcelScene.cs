@@ -112,7 +112,7 @@ namespace DCL.Controllers
             switch (entityId)
             {
                 case "0":
-                    return CONST_SCENE_ROOT_ENTITY;
+                    return CONST_SCENE_ROOT_ENTITY ;
                 case "FirstPersonCameraEntityReference":
                     return CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE;
                 case "AvatarEntityReference":
@@ -123,7 +123,7 @@ namespace DCL.Controllers
                     return CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE;
             }
 
-            return entityId.GetHashCode();
+            return entityId.GetHashCode() << 9;
         }
 
         void OnWorldReposition(Vector3 current, Vector3 previous)
