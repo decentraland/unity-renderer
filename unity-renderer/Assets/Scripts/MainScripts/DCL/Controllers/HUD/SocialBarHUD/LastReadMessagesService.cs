@@ -4,6 +4,7 @@ using System.Linq;
 using DCL.Helpers;
 using DCL.Interface;
 using Newtonsoft.Json;
+using UnityEngine;
 
 public class LastReadMessagesService : ILastReadMessagesService
 {
@@ -28,6 +29,11 @@ public class LastReadMessagesService : ILastReadMessagesService
 
     public void MarkAllRead(string chatId)
     {
+        if (string.IsNullOrEmpty(chatId))
+        {
+            Debug.LogWarning("Trying to clear last read messages for an empty chatId");
+            return;
+        }
         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         memoryRepository.Remove(chatId);
         memoryRepository.Add(chatId, timestamp);
@@ -37,6 +43,12 @@ public class LastReadMessagesService : ILastReadMessagesService
 
     public int GetUnreadCount(string chatId)
     {
+        if (string.IsNullOrEmpty(chatId))
+        {
+            Debug.LogWarning("Trying to get unread messages count for an empty chatId");
+            return 0;
+        }
+        
         var timestamp = Get(chatId);
 
         return chatController.GetEntries()

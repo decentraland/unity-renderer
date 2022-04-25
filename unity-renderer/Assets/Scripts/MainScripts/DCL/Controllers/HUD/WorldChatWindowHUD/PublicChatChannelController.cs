@@ -114,14 +114,14 @@ public class PublicChatChannelController : IHUD
 
     public void SetVisibility(bool visible)
     {
-        if (!visible)
-            view.Hide();
-        else
+        if (visible)
         {
             view.Show();
             MarkChatMessagesAsRead();
             chatHudController.FocusInputField();
         }
+        else
+            view.Hide();
     }
 
     private void MarkChatMessagesAsRead() => lastReadMessagesService.MarkAllRead(channelId);
