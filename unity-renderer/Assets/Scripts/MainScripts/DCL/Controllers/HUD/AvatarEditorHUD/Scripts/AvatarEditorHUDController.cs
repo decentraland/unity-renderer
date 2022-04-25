@@ -23,7 +23,7 @@ public class AvatarEditorHUDController : IHUD
     private const string URL_SELL_COLLECTIBLE_GENERIC = "https://market.decentraland.org/account";
     private const string URL_SELL_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}";
     private const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
-
+    private const string THIRD_PARTY_COLLECTIONS_FEATURE_FLAG = "third_party_collections";
     protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
     protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
 
@@ -63,7 +63,7 @@ public class AvatarEditorHUDController : IHUD
 
     internal IEmotesCustomizationComponentController emotesCustomizationComponentController;
 
-    private bool isThirdPartyCollectionsEnabled => featureFlags.flags.Get().IsFeatureEnabled("third_party_collections");
+    private bool isThirdPartyCollectionsEnabled => featureFlags.flags.Get().IsFeatureEnabled(THIRD_PARTY_COLLECTIONS_FEATURE_FLAG);
 
     public AvatarEditorHUDView view;
 
