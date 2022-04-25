@@ -53,13 +53,13 @@ namespace DCL
         public static IEnumerator FetchTextureComponent(IParcelScene scene, string componentId,
             System.Action<DCLTexture> OnFinish)
         {
-            if (!scene.disposableComponents.ContainsKey(componentId))
+            if (!scene.componentsManagerLegacy.HasSceneSharedComponent(componentId))
             {
                 Debug.Log($"couldn't fetch texture, the DCLTexture component with id {componentId} doesn't exist");
                 yield break;
             }
 
-            DCLTexture textureComponent = scene.disposableComponents[componentId] as DCLTexture;
+            DCLTexture textureComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(componentId) as DCLTexture;
 
             if (textureComponent == null)
             {

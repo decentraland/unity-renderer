@@ -14,7 +14,7 @@ public class WithAudioClip_SceneMetricsCounterShould : IntegrationTestSuite_Scen
 
         Assert.That(scene.metricsCounter.currentCount.audioClipMemoryScore, Is.EqualTo(2560376));
 
-        var audioClip = scene.GetSharedComponent("audioClipTest");
+        var audioClip = scene.componentsManagerLegacy.GetSceneSharedComponent("audioClipTest");
         audioClip.Dispose();
 
         Assert.That(scene.metricsCounter.currentCount.audioClipMemoryScore, Is.EqualTo(0));

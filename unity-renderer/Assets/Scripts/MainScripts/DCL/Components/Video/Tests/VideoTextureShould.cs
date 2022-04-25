@@ -29,7 +29,7 @@ namespace Tests
         {
             yield return base.SetUp();
 
-            scene = TestUtils.CreateTestScene();
+            scene = TestUtils.CreateTestScene() as ParcelScene;
             IVideoPluginWrapper pluginWrapper = new VideoPluginWrapper_Mock();
             originalVideoPluginBuilder = DCLVideoTexture.videoPluginWrapperBuilder;
             DCLVideoTexture.videoPluginWrapperBuilder = () => pluginWrapper;

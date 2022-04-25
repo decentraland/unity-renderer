@@ -88,7 +88,7 @@ namespace DCL.Components
 
             if (model.playing)
             {
-                DCLAudioClip dclAudioClip = scene.GetSharedComponent(model.audioClipId) as DCLAudioClip;
+                DCLAudioClip dclAudioClip = scene.componentsManagerLegacy.GetSceneSharedComponent(model.audioClipId) as DCLAudioClip;
 
                 if (dclAudioClip != null)
                 {
