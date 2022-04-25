@@ -3,7 +3,7 @@ using DCL.Models;
 
 namespace DCL.ECSRuntime
 {
-    public interface IComponentHandler<ModelType>
+    public interface IECSComponentHandler<ModelType>
     {
         void OnComponentCreated(IParcelScene scene, IDCLEntity entity);
         void OnComponentRemoved(IParcelScene scene, IDCLEntity entity);

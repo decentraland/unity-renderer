@@ -4,16 +4,22 @@ using DCL.Models;
 
 namespace DCL.ECSRuntime
 {
-    public class SceneComponentsManager
+    public class ECSComponentsManager
     {
-        private readonly IReadOnlyDictionary<int, ComponentsFactory.ECSComponentBuilder> components;
+        private readonly IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders;
         internal readonly Dictionary<int, IECSComponent> sceneComponents = new Dictionary<int, IECSComponent>();
         private readonly IParcelScene scene;
 
-        public SceneComponentsManager(IParcelScene scene, IReadOnlyDictionary<int, ComponentsFactory.ECSComponentBuilder> components)
+        public ECSComponentsManager(IParcelScene scene, IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders)
         {
-            this.components = components;
+            this.componentBuilders = componentBuilders;
             this.scene = scene;
+        }
+
+        public IECSComponent GetComponent(int componentId)
+        {
+            sceneComponents.TryGetValue(componentId, out IECSComponent component);
+            return component;
         }
 
         public IECSComponent GetOrCreateComponent(int componentId, IDCLEntity entity)
@@ -25,7 +31,7 @@ namespace DCL.ECSRuntime
                     component.Create(entity);
                 }
             }
-            else if (components.TryGetValue(componentId, out ComponentsFactory.ECSComponentBuilder componentBuilder))
+            else if (componentBuilders.TryGetValue(componentId, out ECSComponentsFactory.ECSComponentBuilder componentBuilder))
             {
                 component = componentBuilder.Invoke(scene);
                 sceneComponents.Add(componentId, component);
@@ -36,7 +42,8 @@ namespace DCL.ECSRuntime
 
         public void DeserializeComponent(int componentId, IDCLEntity entity, object message)
         {
-            GetOrCreateComponent(componentId, entity).Deserialize(entity, message);
+            var component = GetOrCreateComponent(componentId, entity);
+            component?.Deserialize(entity, message);
         }
 
         public bool RemoveComponent(int componentId, IDCLEntity entity)

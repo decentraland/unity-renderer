@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Tests
 {
-    public class SceneComponentsManagerShould
+    public class ECSComponentsManagerShould
     {
         enum ComponentsID
         {
@@ -18,31 +18,31 @@ namespace Tests
         }
 
         IParcelScene scene;
-        IComponentHandler<TestingComponent> componentHandler0;
-        IComponentHandler<TestingComponent> componentHandler1;
-        SceneComponentsManager componentsManager;
+        IECSComponentHandler<TestingComponent> componentHandler0;
+        IECSComponentHandler<TestingComponent> componentHandler1;
+        ECSComponentsManager componentsManager;
 
         [SetUp]
         public void SetUp()
         {
             scene = Substitute.For<IParcelScene>();
-            componentHandler0 = Substitute.For<IComponentHandler<TestingComponent>>();
-            componentHandler1 = Substitute.For<IComponentHandler<TestingComponent>>();
+            componentHandler0 = Substitute.For<IECSComponentHandler<TestingComponent>>();
+            componentHandler1 = Substitute.For<IECSComponentHandler<TestingComponent>>();
 
-            Dictionary<int, ComponentsFactory.ECSComponentBuilder> components =
-                new Dictionary<int, ComponentsFactory.ECSComponentBuilder>()
+            Dictionary<int, ECSComponentsFactory.ECSComponentBuilder> components =
+                new Dictionary<int, ECSComponentsFactory.ECSComponentBuilder>()
                 {
                     {
                         (int)ComponentsID.Component0,
-                        ComponentsFactory.DefineComponent(TestingComponentSerialization.Deserialize, () => componentHandler0)
+                        ECSComponentsFactory.CreateComponentBuilder(TestingComponentSerialization.Deserialize, () => componentHandler0)
                     },
                     {
                         (int)ComponentsID.Component1,
-                        ComponentsFactory.DefineComponent(TestingComponentSerialization.Deserialize, () => componentHandler1)
+                        ECSComponentsFactory.CreateComponentBuilder(TestingComponentSerialization.Deserialize, () => componentHandler1)
                     },
                 };
 
-            componentsManager = new SceneComponentsManager(scene, components);
+            componentsManager = new ECSComponentsManager(scene, components);
         }
 
         [Test]
@@ -83,6 +83,18 @@ namespace Tests
             Assert.AreEqual(comp1, componentsManager.sceneComponents[(int)ComponentsID.Component1]);
 
             Assert.AreEqual(2, componentsManager.sceneComponents.Count);
+        }
+
+        [Test]
+        public void GetCreatedComponent()
+        {
+            IDCLEntity entity = Substitute.For<IDCLEntity>();
+            entity.entityId.Returns("1");
+
+            IECSComponent comp0 = componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, entity);
+            IECSComponent comp1 = componentsManager.GetComponent((int)ComponentsID.Component0);
+
+            Assert.AreEqual(comp0, comp1);
         }
 
         [Test]

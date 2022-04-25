@@ -2,19 +2,20 @@ using System;
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Models;
+using UnityEngine;
 
 namespace DCL.ECSRuntime
 {
     public class ECSComponent<ModelType> : IECSComponent
     {
-        internal Dictionary<string, ComponentData<ModelType>> entities = new Dictionary<string, ComponentData<ModelType>>();
-        internal Dictionary<string, IComponentHandler<ModelType>> handlers = new Dictionary<string, IComponentHandler<ModelType>>();
+        internal Dictionary<string, ECSComponentData<ModelType>> entities = new Dictionary<string, ECSComponentData<ModelType>>();
+        internal Dictionary<string, IECSComponentHandler<ModelType>> handlers = new Dictionary<string, IECSComponentHandler<ModelType>>();
 
-        private readonly Func<IComponentHandler<ModelType>> handlerBuilder;
+        private readonly Func<IECSComponentHandler<ModelType>> handlerBuilder;
         private readonly Func<object, ModelType> deserializer;
         private readonly IParcelScene scene;
 
-        public ECSComponent(IParcelScene scene, Func<object, ModelType> deserializer, Func<IComponentHandler<ModelType>> handlerBuilder)
+        public ECSComponent(IParcelScene scene, Func<object, ModelType> deserializer, Func<IECSComponentHandler<ModelType>> handlerBuilder)
         {
             this.scene = scene;
             this.deserializer = deserializer;
@@ -24,7 +25,14 @@ namespace DCL.ECSRuntime
         public void Create(IDCLEntity entity)
         {
             var entityId = entity.entityId;
-            entities[entityId] = new ComponentData<ModelType>()
+
+            if (entities.ContainsKey(entityId))
+            {
+                Debug.LogError($"entity {entityId} already contains component {typeof(ModelType)}", entity.gameObject);
+                return;
+            }
+
+            entities[entityId] = new ECSComponentData<ModelType>()
             {
                 entity = entity,
                 model = default,
@@ -43,7 +51,7 @@ namespace DCL.ECSRuntime
         public bool Remove(IDCLEntity entity)
         {
             var entityId = entity.entityId;
-            if (handlers.TryGetValue(entityId, out IComponentHandler<ModelType> handler))
+            if (handlers.TryGetValue(entityId, out IECSComponentHandler<ModelType> handler))
             {
                 handler.OnComponentRemoved(scene, entity);
             }
@@ -54,11 +62,17 @@ namespace DCL.ECSRuntime
         public void SetModel(IDCLEntity entity, ModelType model)
         {
             var entityId = entity.entityId;
-            if (entities.TryGetValue(entity.entityId, out ComponentData<ModelType> data))
+            if (entities.TryGetValue(entity.entityId, out ECSComponentData<ModelType> data))
             {
                 data.model = model;
             }
-            if (handlers.TryGetValue(entityId, out IComponentHandler<ModelType> handler))
+            else
+            {
+                Debug.LogError($"trying to update model but entity {entityId} does not contains component {typeof(ModelType)}",
+                    entity.gameObject);
+            }
+
+            if (handlers.TryGetValue(entityId, out IECSComponentHandler<ModelType> handler))
             {
                 handler.OnComponentModelUpdated(scene, entity, model);
             }
@@ -74,16 +88,16 @@ namespace DCL.ECSRuntime
             return entities.ContainsKey(entity.entityId);
         }
 
-        public ComponentData<ModelType> Get(IDCLEntity entity)
+        public ECSComponentData<ModelType> Get(IDCLEntity entity)
         {
-            if (entities.TryGetValue(entity.entityId, out ComponentData<ModelType> data))
+            if (entities.TryGetValue(entity.entityId, out ECSComponentData<ModelType> data))
             {
                 return data;
             }
             return null;
         }
 
-        public IEnumerator<ComponentData<ModelType>> Get()
+        public IEnumerator<ECSComponentData<ModelType>> Get()
         {
             using (var iterator = entities.GetEnumerator())
             {
