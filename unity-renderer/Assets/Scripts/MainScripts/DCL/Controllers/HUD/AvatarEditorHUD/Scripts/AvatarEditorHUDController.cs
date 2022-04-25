@@ -834,11 +834,9 @@ public class AvatarEditorHUDController : IHUD
             }
         }
 
-        List<IToggleComponentView> allCollectionOptions = view.GetAllCollectionOptions();
-        foreach (IToggleComponentView collectionOption in allCollectionOptions)
+        foreach (string collectionId in collectionIdsToLoad)
         {
-            if (collectionIdsToLoad.Contains(collectionOption.id))
-                collectionOption.isOn = true;
+            view.ToggleThirdPartyCollection(collectionId, true);
         }
     }
 
