@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -141,7 +142,14 @@ public class PlayerInfoCardHUDController : IHUD
         else
         {
             currentUserProfile.OnUpdate += SetUserProfile;
-            SetUserProfile(currentUserProfile);
+
+            TaskUtils.Run(async () =>
+                     {
+                         await AsyncSetUserProfile(currentUserProfile);
+                         view.SetCardActive(true);
+                     })
+                     .Forget();
+
             GenericAnalytics.SendAnalytic(PASSPORT_OPENED_EVENT);
         }
     }
@@ -150,9 +158,9 @@ public class PlayerInfoCardHUDController : IHUD
     {
         Assert.IsTrue(userProfile != null, "userProfile can't be null");
 
-        AsyncSetUserProfile(userProfile).Forget();
+        TaskUtils.Run(async () => await AsyncSetUserProfile(userProfile)).Forget();
     }
-    private async UniTaskVoid AsyncSetUserProfile(UserProfile userProfile)
+    private async UniTask AsyncSetUserProfile(UserProfile userProfile)
     {
         view.SetName(await FilterName(userProfile));
         view.SetDescription(await FilterDescription(userProfile));
@@ -166,13 +174,12 @@ public class PlayerInfoCardHUDController : IHUD
 
         userProfile.snapshotObserver.AddListener(view.SetFaceSnapshot);
         viewingUserProfile = userProfile;
-        view.SetCardActive(true);
     }
 
     public void SetVisibility(bool visible)
     {
         view.SetVisibility(visible);
-        
+
         if (viewingUserProfile != null)
             viewingUserProfile.snapshotObserver.RemoveListener(view.SetFaceSnapshot);
 
@@ -223,7 +230,7 @@ public class PlayerInfoCardHUDController : IHUD
 
         if (toggleFriendsTrigger != null)
             toggleFriendsTrigger.OnTriggered -= OnCloseButtonPressed;
-        
+
         if (viewingUserProfile != null)
             viewingUserProfile.snapshotObserver.RemoveListener(view.SetFaceSnapshot);
 
@@ -259,17 +266,17 @@ public class PlayerInfoCardHUDController : IHUD
     private void LoadAndShowWearables(UserProfile userProfile)
     {
         wearableCatalogBridge.RequestOwnedWearables(userProfile.userId)
-            .Then(wearables =>
-            {
-                var wearableIds = wearables.Select(x => x.id).ToArray();
-                userProfile.SetInventory(wearableIds);
-                loadedWearables.AddRange(wearableIds);
-                var containedWearables = wearables
-                    // this makes any sense?
-                    .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
-                view.SetWearables(containedWearables);
-            })
-            .Catch(Debug.LogError);
+                             .Then(wearables =>
+                             {
+                                 var wearableIds = wearables.Select(x => x.id).ToArray();
+                                 userProfile.SetInventory(wearableIds);
+                                 loadedWearables.AddRange(wearableIds);
+                                 var containedWearables = wearables
+                                     // this makes any sense?
+                                     .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
+                                 view.SetWearables(containedWearables);
+                             })
+                             .Catch(Debug.LogError);
     }
 
     private bool IsBlocked(string userId)

@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Events;
@@ -60,7 +61,7 @@ public class ChatHUDController : IDisposable
 
     public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
-        AsyncAddChatMessage(chatEntryModel, setScrollPositionToBottom).Forget();
+        TaskUtils.Run(() => AsyncAddChatMessage(chatEntryModel, setScrollPositionToBottom)).Forget();
     }
     private async UniTaskVoid AsyncAddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom)
     {
