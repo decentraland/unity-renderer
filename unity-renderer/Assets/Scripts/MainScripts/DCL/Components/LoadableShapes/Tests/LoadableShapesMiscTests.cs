@@ -61,14 +61,14 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
 
         // Set its shape as a BOX
         var componentId = TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
-        yield return ((scene.GetSharedComponent(componentId)) as IDelayedComponent).routine;
+        yield return ((scene.componentsManagerLegacy.GetSceneSharedComponent(componentId)) as IDelayedComponent).routine;
 
         var meshName = entity.meshRootGameObject.GetComponent<MeshFilter>().mesh.name;
         Assert.AreEqual("DCL Box Instance", meshName);
 
         // Update its shape to a cylinder
         TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
-        yield return (scene.GetSharedComponent(componentId) as IDelayedComponent).routine;
+        yield return (scene.componentsManagerLegacy.GetSceneSharedComponent(componentId) as IDelayedComponent).routine;
 
         Assert.IsTrue(entity.meshRootGameObject != null, "meshGameObject should not be null");
 
@@ -103,7 +103,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
 
         // Update its shape to a sphere
         TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.SPHERE_SHAPE, "{}");
-        yield return (scene.GetSharedComponent(componentId) as IDelayedComponent).routine;
+        yield return (scene.componentsManagerLegacy.GetSceneSharedComponent(componentId) as IDelayedComponent).routine;
 
         yield return null;
 

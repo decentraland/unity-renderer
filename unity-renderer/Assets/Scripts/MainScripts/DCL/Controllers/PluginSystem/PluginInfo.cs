@@ -6,6 +6,7 @@
         public string flag;
         public PluginBuilder builder;
         public IPlugin instance;
+        public bool enableOnInit = false;
 
         public void Enable()
         {
@@ -13,6 +14,7 @@
                 return;
 
             instance = builder.Invoke();
+            enableOnInit = false;
         }
 
         public void Disable()

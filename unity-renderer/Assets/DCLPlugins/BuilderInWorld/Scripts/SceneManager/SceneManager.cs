@@ -246,7 +246,7 @@ namespace DCL.Builder
                             break;
                         case "Script":
                             SmartItemComponent.Model smartModel = JsonConvert.DeserializeObject<SmartItemComponent.Model>(component.data.ToString());
-                            sceneToEdit.scene.EntityComponentCreateOrUpdateWithModel(entity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, smartModel);
+                            sceneToEdit.scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, smartModel);
                             break;
                     }
                 }

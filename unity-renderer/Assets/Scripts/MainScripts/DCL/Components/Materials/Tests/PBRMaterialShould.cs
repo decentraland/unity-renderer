@@ -99,7 +99,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         TestUtils.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
             new PBRMaterial.Model(), materialID);
 
-        var materialComponent = scene.disposableComponents[materialID] as DCL.Components.PBRMaterial;
+        var materialComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(materialID) as DCL.Components.PBRMaterial;
 
         yield return materialComponent.routine;
 
@@ -152,7 +152,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         ColorUtility.TryParseHtmlString("#42f4aa", out color2);
         ColorUtility.TryParseHtmlString("#601121", out color3);
 
-        scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
         {
             albedoTexture = texture.id,
             albedoColor = color1,
@@ -227,7 +227,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         string thirdEntityID = "3";
 
         TestUtils.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
-        scene.SharedComponentAttach(
+        scene.componentsManagerLegacy.SceneSharedComponentAttach(
             thirdEntityID,
             firstMaterialID
         );
@@ -274,7 +274,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         var boxShape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero);
         var entity3 = boxShape.attachedEntities.First();
 
-        scene.SharedComponentAttach(
+        scene.componentsManagerLegacy.SceneSharedComponentAttach(
             entity3.entityId,
             material1.id
         );
@@ -297,7 +297,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         Assert.AreApproximatelyEqual(0.66f, secondRenderer.sharedMaterial.GetFloat("_Metallic"));
 
         // Update material properties
-        scene.SharedComponentUpdate(material1.id, JsonUtility.ToJson(new PBRMaterial.Model
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(material1.id, JsonUtility.ToJson(new PBRMaterial.Model
         {
             metallic = 0.95f
         }));
@@ -378,7 +378,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(3f, PBRMaterialComponent.GetModel().specularIntensity);
 
         // 3. Update component with missing values
-        scene.SharedComponentUpdate(PBRMaterialComponent.id, JsonUtility.ToJson(new PBRMaterial.Model { }));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(PBRMaterialComponent.id, JsonUtility.ToJson(new PBRMaterial.Model { }));
 
         yield return PBRMaterialComponent.routine;
 

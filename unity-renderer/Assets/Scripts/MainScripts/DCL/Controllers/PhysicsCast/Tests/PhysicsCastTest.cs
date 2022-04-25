@@ -28,7 +28,7 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        scene = TestUtils.CreateTestScene();
+        scene = TestUtils.CreateTestScene() as ParcelScene;
         Environment.i.world.sceneBoundsChecker.Stop();
     }
 

@@ -22,7 +22,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene();
+            scene = TestUtils.CreateTestScene() as ParcelScene;
             CommonScriptableObjects.rendererState.Set(true);
         }
 
@@ -108,7 +108,7 @@ namespace Tests
             // 3. Update component with missing values
             componentModel = new DCLAudioClip.Model { };
 
-            scene.SharedComponentUpdate(audioClip.id, JsonUtility.ToJson(componentModel));
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(audioClip.id, JsonUtility.ToJson(componentModel));
 
             yield return audioClip.routine;
 
@@ -128,7 +128,7 @@ namespace Tests
 
             yield return TestUtils.CreateAudioSource(scene, entity.entityId, "1", true, loop: true);
 
-            DCLAudioSource dclAudioSource = entity.components.Values.FirstOrDefault(x => x is DCLAudioSource) as DCLAudioSource;
+            DCLAudioSource dclAudioSource = scene.componentsManagerLegacy.GetComponent(entity, CLASS_ID_COMPONENT.AUDIO_SOURCE) as DCLAudioSource;
 
             Assert.IsTrue(dclAudioSource.audioSource.loop);
         }
@@ -143,7 +143,7 @@ namespace Tests
 
             yield return TestUtils.CreateAudioSource(scene, entity.entityId, "1", true, loop: false);
 
-            DCLAudioSource dclAudioSource = entity.components.Values.FirstOrDefault(x => x is DCLAudioSource) as DCLAudioSource;
+            DCLAudioSource dclAudioSource = scene.componentsManagerLegacy.GetComponent(entity, CLASS_ID_COMPONENT.AUDIO_SOURCE) as DCLAudioSource;
             dclAudioSource.audioSource.time = dclAudioSource.audioSource.clip.length - 0.05f;
             yield return new WaitForSeconds(0.1f);
 
@@ -162,6 +162,7 @@ namespace Tests
         {
             // We disable SceneController monobehaviour to avoid its current scene id update
             sceneController.enabled = false;
+            scene.isPersistent = false;
 
             // Set current scene as a different one
             CommonScriptableObjects.sceneID.Set("unexistent-scene");
@@ -208,6 +209,7 @@ namespace Tests
         {
             // We disable SceneController monobehaviour to avoid its current scene id update
             sceneController.enabled = false;
+            scene.isPersistent = false;
 
             // Set current scene with this scene's id
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
@@ -256,6 +258,33 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator VolumeIsNotMutedForPersistentScenes()
+        {
+            // We disable SceneController monobehaviour to avoid its current scene id update
+            sceneController.enabled = false;
+            scene.isPersistent = true;
+
+            // Set current scene with this scene's id
+            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+
+            var entity = TestUtils.CreateSceneEntity(scene);
+            yield return null;
+
+            yield return TestUtils.CreateAudioSourceWithClipForEntity(entity);
+
+            DCLAudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<DCLAudioSource>();
+            yield return dclAudioSource.routine;
+
+            AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
+
+            // Set current scene as a different one
+            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+
+            // Check the volume
+            Assert.AreNotEqual(unityAudioSource.volume, 0);
+        }
+
+        [UnityTest]
         public IEnumerator AudioStreamComponentCreation()
         {
             var entity = TestUtils.CreateSceneEntity(scene);
@@ -268,17 +297,72 @@ namespace Tests
             DCLAudioStream component = TestUtils.EntityComponentCreate<DCLAudioStream, DCLAudioStream.Model>(scene, entity, model );
 
             yield return component.routine;
-            Assert.IsFalse(component.GetModel().playing);
+            Assert.IsFalse(component.isPlaying);
 
             model.playing = true;
             component.UpdateFromModel(model);
             yield return component.routine;
-            Assert.IsTrue(component.GetModel().playing);
+            Assert.IsTrue(component.isPlaying);
 
             model.playing = false;
             component.UpdateFromModel(model);
             yield return component.routine;
-            Assert.IsFalse(component.GetModel().playing);
+            Assert.IsFalse(component.isPlaying);
+        }
+
+        [UnityTest]
+        public IEnumerator AudioStreamShouldNotPlayIfUserIsOutsideTheScene()
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+            DCLAudioStream.Model model = new DCLAudioStream.Model()
+            {
+                url = "https://audio.dcl.guru/radio/8110/radio.mp3",
+                playing = true,
+                volume = 1f
+            };
+
+
+            // IsPersistent value should be set manually because the test scenes have it set 
+            // as true by default.
+            scene.isPersistent = false;
+
+            DCLAudioStream component =
+                TestUtils.EntityComponentCreate<DCLAudioStream, DCLAudioStream.Model>(scene, entity, model);
+
+            yield return component.routine;
+
+            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            Assert.IsTrue(component.isPlaying);
+
+            CommonScriptableObjects.sceneID.Set("Other_id");
+            Assert.IsFalse(component.isPlaying);
+        }
+
+        [UnityTest]
+        public IEnumerator AudioStreamShouldAlwaysPlayInPersistentScenes()
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+            DCLAudioStream.Model model = new DCLAudioStream.Model()
+            {
+                url = "https://audio.dcl.guru/radio/8110/radio.mp3",
+                playing = true,
+                volume = 1f
+            };
+
+            DCLAudioStream component =
+                TestUtils.EntityComponentCreate<DCLAudioStream, DCLAudioStream.Model>(scene, entity, model);
+
+            yield return component.routine;
+
+            // IsPersistent value should be set manually because the test scenes have it set 
+            // as true by default.
+            scene.isPersistent = false;
+            CommonScriptableObjects.sceneID.Set("Fake_Id");
+            Assert.IsFalse(component.isPlaying);
+
+            scene.isPersistent = true;
+            CommonScriptableObjects.sceneID.Set("Another_Fake_Id");
+            Assert.IsTrue(component.isPlaying);
         }
 
         [Test]

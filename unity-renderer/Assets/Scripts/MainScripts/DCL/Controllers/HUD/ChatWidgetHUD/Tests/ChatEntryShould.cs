@@ -38,8 +38,8 @@ public class ChatEntryShould : IntegrationTestSuite_Legacy
         entry.Populate(message);
 
         Assert.AreEqual(entry.worldMessageColor, entry.body.color);
-        Assert.AreEqual("<b>user-test:</b>", entry.username.text);
-        Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
+        Assert.AreEqual("user-test:", entry.username.text);
+        Assert.AreEqual("user-test: test message", entry.body.text);
 
         message.messageType = ChatMessage.Type.PRIVATE;
         message.subType = ChatEntry.Model.SubType.PRIVATE_TO;
