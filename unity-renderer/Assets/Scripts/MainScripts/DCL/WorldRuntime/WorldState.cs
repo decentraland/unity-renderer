@@ -104,6 +104,9 @@ namespace DCL
 
         public void RemoveLoaderForEntity(IDCLEntity entity)
         {
+            if (entity == null || entity.meshRootGameObject == null)
+                return;
+            
             attachedLoaders.Remove(entity.meshRootGameObject);
         }
 
