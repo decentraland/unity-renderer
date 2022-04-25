@@ -126,6 +126,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
     private readonly HashSet<WearableItem> wearablesWithLoadingSpinner = new HashSet<WearableItem>();
+    private Dictionary<string, ToggleComponentModel> loadedCollectionModels = new Dictionary<string, ToggleComponentModel>();
 
     public event Action<AvatarModel> OnAvatarAppear;
     public event Action<bool> OnSetVisibility;
@@ -373,11 +374,10 @@ public class AvatarEditorHUDView : MonoBehaviour
         
         if (wearableItem.IsFromThirdPartyCollection)
         {
-            List<IToggleComponentView> allCollectionOptions = GetAllCollectionOptions();
-            IToggleComponentView collectionOption = allCollectionOptions.FirstOrDefault(x => x.id == wearableItem.ThirdPartyCollectionId);
-
-            if (collectionOption != null)
-                collectionName = collectionOption.title;
+            loadedCollectionModels.TryGetValue(wearableItem.ThirdPartyCollectionId, out ToggleComponentModel collectionModel);
+            
+            if (collectionModel != null)
+                collectionName = collectionModel.text;
         }
 
         return collectionName;
@@ -535,13 +535,16 @@ public class AvatarEditorHUDView : MonoBehaviour
         List<ToggleComponentModel> collectionsToAdd = new List<ToggleComponentModel>();
         foreach (var collection in collections)
         {
-            collectionsToAdd.Add(new ToggleComponentModel
+            ToggleComponentModel newCollectionModel = new ToggleComponentModel
             {
                 id = collection.urn,
                 text = collection.name,
                 isOn = false,
                 isTextActive = true
-            });
+            };
+
+            collectionsToAdd.Add(newCollectionModel);
+            loadedCollectionModels.Add(collection.urn, newCollectionModel);
         }
 
         collectionsDropdown.SetOptions(collectionsToAdd);
@@ -605,5 +608,13 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void ResetPreviewEmote() { PlayPreviewEmote(RESET_PREVIEW_ANIMATION); }
 
-    public List<IToggleComponentView> GetAllCollectionOptions() { return collectionsDropdown.GetAllOptions(); }
+    public void ToggleThirdPartyCollection(string collectionId, bool isOn)
+    {
+        List<IToggleComponentView> allCollectionOptions = collectionsDropdown.GetAllOptions();
+        foreach (IToggleComponentView collectionOption in allCollectionOptions)
+        {
+            if (collectionOption.id == collectionId)
+                collectionOption.isOn = isOn;
+        }
+    }
 }
