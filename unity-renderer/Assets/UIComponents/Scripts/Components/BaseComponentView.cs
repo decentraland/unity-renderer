@@ -178,7 +178,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         OnScreenSizeChanged();
     }
 
-    internal static T Create<T>(string resourceName) where T : BaseComponentView
+    public static T Create<T>(string resourceName) where T : BaseComponentView
     {
         T buttonComponentView = Instantiate(Resources.Load<GameObject>(resourceName)).GetComponent<T>();
         return buttonComponentView;

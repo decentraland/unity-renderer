@@ -78,15 +78,8 @@ public class DCLCharacterController : MonoBehaviour
     public static System.Action<DCLCharacterPosition> OnPositionSet;
     public event System.Action<float> OnUpdateFinish;
 
-    // Will allow the game objects to be set, and create the DecentralandEntity manually during the Awake
-    public DCL.Models.IDCLEntity avatarReference { get; private set; }
-    public DCL.Models.IDCLEntity firstPersonCameraReference { get; private set; }
-
-    [SerializeField]
-    private GameObject avatarGameObject;
-
-    [SerializeField]
-    private GameObject firstPersonCameraGameObject;
+    public GameObject avatarGameObject;
+    public GameObject firstPersonCameraGameObject;
 
     [SerializeField]
     private InputAction_Measurable characterYAxis;
@@ -104,7 +97,7 @@ public class DCLCharacterController : MonoBehaviour
     public event System.Action OnJump;
     public event System.Action OnHitGround;
     public event System.Action<float> OnMoved;
-
+    
     void Awake()
     {
         if (i != null)
@@ -141,8 +134,9 @@ public class DCLCharacterController : MonoBehaviour
             throw new System.Exception("Both the avatar and first person camera game objects must be set.");
         }
 
-        avatarReference = new DCL.Models.DecentralandEntity { gameObject = avatarGameObject };
-        firstPersonCameraReference = new DCL.Models.DecentralandEntity { gameObject = firstPersonCameraGameObject };
+        var worldData = DataStore.i.Get<DataStore_World>();
+        worldData.avatarTransform.Set(avatarGameObject.transform);
+        worldData.fpsTransform.Set(firstPersonCameraGameObject.transform);
     }
 
     private void SubscribeToInput()

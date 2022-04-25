@@ -91,7 +91,7 @@ namespace DCL.Components
 
             if (texturePlayer == null)
             {
-                DCLVideoClip dclVideoClip = scene.GetSharedComponent(lastVideoClipID) as DCLVideoClip;
+                DCLVideoClip dclVideoClip = scene.componentsManagerLegacy.GetSceneSharedComponent(lastVideoClipID) as DCLVideoClip;
 
                 if (dclVideoClip == null)
                 {
@@ -245,14 +245,14 @@ namespace DCL.Components
                     while (iterator.MoveNext())
                     {
                         var materialInfo = iterator.Current;
-                        bool isComponentVisible = ComponentUtils.IsComponentVisible(materialInfo.Value);
+                        bool isComponentVisible = DCLVideoTextureUtils.IsComponentVisible(materialInfo.Value);
 
                         if (isComponentVisible)
                         {
                             isVisible = true;
-                            
-                            var entityDist = ComponentUtils.GetClosestDistanceSqr(materialInfo.Value,
-                                DCLCharacterController.i.transform.position);
+
+                            var entityDist = DCLVideoTextureUtils.GetClosestDistanceSqr(materialInfo.Value,
+                                CommonScriptableObjects.playerUnityPosition);
                             
                             if (entityDist < minDistance)
                                 minDistance = entityDist;
@@ -308,7 +308,7 @@ namespace DCL.Components
             if (string.IsNullOrEmpty(currentSceneId))
                 return false;
 
-            return (scene.sceneData.id == currentSceneId) || (scene is GlobalScene globalScene && globalScene.isPortableExperience);
+            return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
         }
 
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
@@ -332,7 +332,7 @@ namespace DCL.Components
 
             component.OnAttach += SetPlayStateDirty;
             component.OnDetach += SetPlayStateDirty;
-            ComponentUtils.SubscribeToEntityUpdates(component, SetPlayStateDirty);
+            DCLVideoTextureUtils.SubscribeToEntityUpdates(component, SetPlayStateDirty);
         }
 
         public override void DetachFrom(ISharedComponent component)
@@ -349,7 +349,7 @@ namespace DCL.Components
 
             component.OnAttach -= SetPlayStateDirty;
             component.OnDetach -= SetPlayStateDirty;
-            ComponentUtils.UnsubscribeToEntityShapeUpdate(component, SetPlayStateDirty);
+            DCLVideoTextureUtils.UnsubscribeToEntityShapeUpdate(component, SetPlayStateDirty);
 
             RemoveReference(component);
             SetPlayStateDirty();

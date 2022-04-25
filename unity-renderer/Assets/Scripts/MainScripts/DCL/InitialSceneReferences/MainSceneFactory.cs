@@ -72,7 +72,6 @@ namespace DCL
 
         public static GameObject CreateEventSystem() => LoadAndInstantiate("EventSystem");
 
-        public static GameObject CreateInteractionHoverCanvas() => LoadAndInstantiate("InteractionHoverCanvas");
 
         public static BuilderInWorldBridge CreateBuilderInWorldBridge(GameObject gameObject = null)
         {

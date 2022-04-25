@@ -155,7 +155,7 @@ namespace DCL
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.ENTITIES_VS_LIMIT, $"{metrics.entities} of {limits.entities}");
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.MESHES_VS_LIMIT, $"{metrics.meshes} of {limits.meshes}");
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.BODIES_VS_LIMIT, $"{metrics.bodies} of {limits.bodies}");
-                    statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.COMPONENT_OBJECTS_COUNT, activeScene.disposableComponents.Count + activeScene.entities.Select(x => x.Value.components.Count).Sum().ToString());
+                    statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.COMPONENT_OBJECTS_COUNT, (activeScene.componentsManagerLegacy.GetSceneSharedComponentsDictionary().Count + activeScene.componentsManagerLegacy.GetComponentsCount()).ToString());
                 }
 
                 yield return WaitForSecondsCache.Get(0.2f);

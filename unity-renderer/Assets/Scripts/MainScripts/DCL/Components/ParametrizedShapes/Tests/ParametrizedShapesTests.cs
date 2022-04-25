@@ -80,13 +80,13 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
             componentJSON
         );
 
-        BoxShape boxShapeComponent = (BoxShape) scene.GetSharedComponent(componentId);
+        BoxShape boxShapeComponent = (BoxShape) scene.componentsManagerLegacy.GetSceneSharedComponent(componentId);
 
         // 2. Check configured values
         Assert.IsTrue(boxShapeComponent.GetModel().withCollisions);
 
         // 3. Update component with missing values
-        scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new BoxShape.Model { }));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(componentId, JsonUtility.ToJson(new BoxShape.Model { }));
 
         // 4. Check defaulted values
         Assert.IsTrue(boxShapeComponent.GetModel().withCollisions);
@@ -238,7 +238,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
-    public IEnumerator VisibleProperty()
+    public IEnumerator VisiblePropertyWithRenderers()
     {
         string entityId = "entityId";
         TestUtils.CreateSceneEntity(scene, entityId);
@@ -255,7 +255,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
 
         TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestRenderersWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
 
         TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
@@ -268,7 +268,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
 
         TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestRenderersWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
 
         TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
@@ -281,7 +281,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
 
         TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestRenderersWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
 
         TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
@@ -294,7 +294,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
 
         TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestRenderersWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
 
         TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
@@ -307,11 +307,99 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
 
         TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestRenderersWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
 
         TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
         yield return null;
+    }
+
+
+    [UnityTest]
+    public IEnumerator VisiblePropertyWithOnPointerEvents()
+    {
+        // Add UUID plugin to enable OnPointerEvent components for this integration test.
+        UUIDEventsPlugin eventsPlugin = new UUIDEventsPlugin();
+
+        string entityId = "entityId";
+        TestUtils.CreateSceneEntity(scene, entityId);
+        var entity = scene.entities[entityId];
+
+        TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
+
+        yield return null;
+
+        // BoxShape
+        BaseShape.Model shapeModel = new BoxShape.Model();
+        BaseShape shapeComponent =
+            TestUtils.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, shapeModel);
+        yield return shapeComponent.routine;
+
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
+
+        yield return TestUtils.TestOnPointerEventWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
+
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        shapeComponent.Dispose();
+        yield return null;
+
+        // SphereShape
+        shapeModel = new SphereShape.Model();
+        shapeComponent =
+            TestUtils.SharedComponentCreate<SphereShape, BaseShape.Model>(scene, CLASS_ID.SPHERE_SHAPE, shapeModel);
+        yield return shapeComponent.routine;
+
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
+
+        yield return TestUtils.TestOnPointerEventWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
+
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        shapeComponent.Dispose();
+        yield return null;
+
+        // ConeShape
+        shapeModel = new ConeShape.Model();
+        shapeComponent =
+            TestUtils.SharedComponentCreate<ConeShape, BaseShape.Model>(scene, CLASS_ID.CONE_SHAPE, shapeModel);
+        yield return shapeComponent.routine;
+
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
+
+        yield return TestUtils.TestOnPointerEventWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
+
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        shapeComponent.Dispose();
+        yield return null;
+
+        // CylinderShape
+        shapeModel = new CylinderShape.Model();
+        shapeComponent =
+            TestUtils.SharedComponentCreate<CylinderShape, BaseShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE, shapeModel);
+        yield return shapeComponent.routine;
+
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
+
+        yield return TestUtils.TestOnPointerEventWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
+
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        shapeComponent.Dispose();
+        yield return null;
+
+        // PlaneShape
+        shapeModel = new PlaneShape.Model();
+        shapeComponent =
+            TestUtils.SharedComponentCreate<PlaneShape, BaseShape.Model>(scene, CLASS_ID.PLANE_SHAPE, shapeModel);
+        yield return shapeComponent.routine;
+
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
+
+        yield return TestUtils.TestOnPointerEventWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
+
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        shapeComponent.Dispose();
+        yield return null;
+
+        eventsPlugin.Dispose();
     }
 
     [UnityTest]

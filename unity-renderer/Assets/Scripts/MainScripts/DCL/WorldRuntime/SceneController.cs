@@ -22,7 +22,7 @@ namespace DCL
         const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
 
         public bool enabled { get; set; } = true;
-        internal BaseVariable<Transform> isPortableExperiencesInitialized => DataStore.i.experiencesViewer.isInitialized;
+        internal BaseVariable<Transform> isPexViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
 
         //TODO(Brian): Move to WorldRuntimePlugin later
         private LoadingFeedbackController loadingFeedbackController;
@@ -126,8 +126,6 @@ namespace DCL
         {
             if (!enabled)
                 return;
-
-            InputController_Legacy.i.Update();
 
             if (lastSortFrame != Time.frameCount && sceneSortDirty)
             {
@@ -244,7 +242,7 @@ namespace DCL
                         {
                             if (msgPayload is Protocol.EntityComponentCreateOrUpdate payload)
                             {
-                                delayedComponent = scene.EntityComponentCreateOrUpdate(payload.entityId,
+                                delayedComponent = scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(payload.entityId,
                                     (CLASS_ID_COMPONENT) payload.classId, payload.json) as IDelayedComponent;
                             }
 
@@ -254,7 +252,7 @@ namespace DCL
                     case MessagingTypes.ENTITY_COMPONENT_DESTROY:
                         {
                             if (msgPayload is Protocol.EntityComponentDestroy payload)
-                                scene.EntityComponentRemove(payload.entityId, payload.name);
+                                scene.componentsManagerLegacy.EntityComponentRemove(payload.entityId, payload.name);
 
                             break;
                         }
@@ -262,7 +260,7 @@ namespace DCL
                     case MessagingTypes.SHARED_COMPONENT_ATTACH:
                         {
                             if (msgPayload is Protocol.SharedComponentAttach payload)
-                                scene.SharedComponentAttach(payload.entityId, payload.id);
+                                scene.componentsManagerLegacy.SceneSharedComponentAttach(payload.entityId, payload.id);
 
                             break;
                         }
@@ -270,7 +268,7 @@ namespace DCL
                     case MessagingTypes.SHARED_COMPONENT_CREATE:
                         {
                             if (msgPayload is Protocol.SharedComponentCreate payload)
-                                scene.SharedComponentCreate(payload.id, payload.classId);
+                                scene.componentsManagerLegacy.SceneSharedComponentCreate(payload.id, payload.classId);
 
                             break;
                         }
@@ -278,7 +276,7 @@ namespace DCL
                     case MessagingTypes.SHARED_COMPONENT_DISPOSE:
                         {
                             if (msgPayload is Protocol.SharedComponentDispose payload)
-                                scene.SharedComponentDispose(payload.id);
+                                scene.componentsManagerLegacy.SceneSharedComponentDispose(payload.id);
 
                             break;
                         }
@@ -286,7 +284,7 @@ namespace DCL
                     case MessagingTypes.SHARED_COMPONENT_UPDATE:
                         {
                             if (msgPayload is Protocol.SharedComponentUpdate payload)
-                                delayedComponent = scene.SharedComponentUpdate(payload.componentId, payload.json) as IDelayedComponent;
+                                delayedComponent = scene.componentsManagerLegacy.SceneSharedComponentUpdate(payload.componentId, payload.json) as IDelayedComponent;
 
                             break;
                         }
@@ -506,16 +504,7 @@ namespace DCL
 
         //======================================================================
         public event Action<string> OnReadyScene;
-
-        public IParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
-        {
-            IParcelScene result = WorldStateUtils.CreateTestScene(data);
-            messagingControllersManager.AddControllerIfNotExists(this, data.id);
-            OnNewSceneAdded?.Invoke(result);
-
-            return result;
-        }
-
+        
         public void SendSceneReady(string sceneId)
         {
             Environment.i.world.state.readyScenes.Add(sceneId);
@@ -679,7 +668,7 @@ namespace DCL
                 messagingControllersManager.AddControllerIfNotExists(this, newScene.sceneData.id);
 
                 if (VERBOSE)
-                    Debug.Log($"{Time.frameCount} : Load parcel scene {newScene.sceneData.basePosition}");
+                    Debug.Log($"{Time.frameCount}: Load parcel scene (id: {newScene.sceneData.id})");
             }
 
             ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_LOAD);
@@ -731,19 +720,7 @@ namespace DCL
             ProfilingEvents.OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_DESTROY);
 
             messagingControllersManager.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
-
             messagingControllersManager.RemoveController(sceneKey);
-
-            IWorldState worldState = Environment.i.world.state;
-
-            if (worldState.loadedScenes.ContainsKey(sceneKey))
-            {
-                ParcelScene sceneToUnload = worldState.GetScene(sceneKey) as ParcelScene;
-                sceneToUnload.isPersistent = false;
-
-                if (sceneToUnload is GlobalScene globalScene && globalScene.isPortableExperience)
-                    OnNewPortableExperienceSceneRemoved?.Invoke(sceneKey);
-            }
         }
 
         public void UnloadParcelSceneExecute(string sceneId)
@@ -752,19 +729,15 @@ namespace DCL
 
             IWorldState worldState = Environment.i.world.state;
 
-            if (!worldState.Contains(sceneId) || worldState.loadedScenes[sceneId].isPersistent)
-            {
-                return;
-            }
-
-            var scene = worldState.loadedScenes[sceneId] as ParcelScene;
-
-            if (scene == null)
+            if (!worldState.Contains(sceneId))
                 return;
 
+            ParcelScene scene = (ParcelScene) worldState.loadedScenes[sceneId];
+            
             worldState.loadedScenes.Remove(sceneId);
             worldState.globalSceneIds.Remove(sceneId);
-
+            DataStore.i.world.portableExperienceIds.Remove(sceneId);
+            
             // Remove the scene id from the msg. priorities list
             worldState.scenesSortedByDistance.Remove(scene);
 
@@ -787,23 +760,13 @@ namespace DCL
         {
             var worldState = Environment.i.world.state;
 
-            if (includePersistent)
-            {
-                var persistentScenes = worldState.loadedScenes.Where(x => x.Value.isPersistent);
-
-                foreach (var kvp in persistentScenes)
-                {
-                    if (kvp.Value is ParcelScene scene)
-                    {
-                        scene.isPersistent = false;
-                    }
-                }
-            }
-
             var list = worldState.loadedScenes.ToArray();
 
             for (int i = 0; i < list.Length; i++)
             {
+                if (list[i].Value.isPersistent && !includePersistent)
+                    continue;
+                
                 UnloadParcelSceneExecute(list[i].Key);
             }
         }
@@ -853,8 +816,15 @@ namespace DCL
 #endif
             CreateGlobalSceneMessage globalScene = Utils.SafeFromJson<CreateGlobalSceneMessage>(json);
 
-            if (globalScene.isPortableExperience && !isPortableExperiencesInitialized.Get())
+            // NOTE(Brian): We should remove this line. SceneController is a runtime core class.
+            //              It should never have references to UI systems or higher level systems.
+            if (globalScene.isPortableExperience && !isPexViewerInitialized.Get())
+            {
+                Debug.LogError(
+                    "Portable experiences are trying to be added before the system is initialized!. SceneID: " +
+                    globalScene.id);
                 return;
+            }
 
             string newGlobalSceneId = globalScene.id;
 
@@ -890,16 +860,16 @@ namespace DCL
             OnNewSceneAdded?.Invoke(newScene);
 
             if (newScene.isPortableExperience)
-                OnNewPortableExperienceSceneAdded?.Invoke(newScene);
+            {
+                DataStore.i.world.portableExperienceIds.Add(newGlobalSceneId);
+            }
 
             worldState.globalSceneIds.Add(newGlobalSceneId);
 
             messagingControllersManager.AddControllerIfNotExists(this, newGlobalSceneId, isGlobal: true);
 
             if (VERBOSE)
-            {
                 Debug.Log($"Creating Global scene {newGlobalSceneId}");
-            }
         }
 
         public void IsolateScene(IParcelScene sceneToActive)
@@ -937,9 +907,7 @@ namespace DCL
         public event Action OnSortScenes;
         public event Action<IParcelScene, string> OnOpenExternalUrlRequest;
         public event Action<IParcelScene> OnNewSceneAdded;
-        public event Action<IParcelScene> OnNewPortableExperienceSceneAdded;
-        public event Action<string> OnNewPortableExperienceSceneRemoved;
-
+        
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
         private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
     }

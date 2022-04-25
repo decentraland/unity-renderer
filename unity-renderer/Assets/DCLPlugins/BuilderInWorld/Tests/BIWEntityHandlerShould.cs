@@ -421,7 +421,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         var createdEntity = entityHandler.CreateEntityFromJSON(jsonValue);
 
         //Assert
-        Assert.IsTrue(createdEntity.TryGetSharedComponent(CLASS_ID.NFT_SHAPE, out ISharedComponent component));
+        Assert.IsTrue(createdEntity.scene.componentsManagerLegacy.TryGetSharedComponent(createdEntity, CLASS_ID.NFT_SHAPE, out ISharedComponent component));
     }
 
     [Test]

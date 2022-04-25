@@ -213,7 +213,7 @@ namespace DCL.Helpers
                     }
                 );
 
-                foreach ( var kvpComponents in scene.disposableComponents )
+                foreach ( var kvpComponents in scene.componentsManagerLegacy.GetSceneSharedComponentsDictionary() )
                 {
                     int classId = kvpComponents.Value.GetClassId();
 
@@ -225,14 +225,17 @@ namespace DCL.Helpers
 
                 foreach ( var kvpEntities in kvp.Value.entities )
                 {
-                    foreach ( var kvpComponents in kvpEntities.Value.components )
+                    using (var iterator = scene.componentsManagerLegacy.GetComponents(kvpEntities.Value))
                     {
-                        int classId = kvpComponents.Value.GetClassId();
+                        while (iterator.MoveNext())
+                        {
+                            int classId = iterator.Current.GetClassId();
 
-                        if ( !entityComponentsCount.ContainsKey(classId) )
-                            entityComponentsCount.Add( classId, 0 );
+                            if ( !entityComponentsCount.ContainsKey(classId) )
+                                entityComponentsCount.Add( classId, 0 );
 
-                        entityComponentsCount[classId]++;
+                            entityComponentsCount[classId]++;
+                        }
                     }
                 }
             }
