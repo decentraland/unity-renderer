@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
 using UnityEngine;
@@ -140,7 +142,6 @@ public class PlayerInfoCardHUDController : IHUD
         {
             currentUserProfile.OnUpdate += SetUserProfile;
             SetUserProfile(currentUserProfile);
-            view.SetCardActive(true);
             GenericAnalytics.SendAnalytic(PASSPORT_OPENED_EVENT);
         }
     }
@@ -149,8 +150,12 @@ public class PlayerInfoCardHUDController : IHUD
     {
         Assert.IsTrue(userProfile != null, "userProfile can't be null");
 
-        view.SetName(FilterName(userProfile));
-        view.SetDescription(FilterDescription(userProfile));
+        AsyncSetUserProfile(userProfile).Forget();
+    }
+    private async UniTaskVoid AsyncSetUserProfile(UserProfile userProfile)
+    {
+        view.SetName(await FilterName(userProfile));
+        view.SetDescription(await FilterDescription(userProfile));
         view.ClearCollectibles();
         view.SetIsBlocked(IsBlocked(userProfile.userId));
         LoadAndShowWearables(userProfile);
@@ -158,8 +163,10 @@ public class PlayerInfoCardHUDController : IHUD
 
         if (viewingUserProfile != null)
             viewingUserProfile.snapshotObserver.RemoveListener(view.SetFaceSnapshot);
+
         userProfile.snapshotObserver.AddListener(view.SetFaceSnapshot);
         viewingUserProfile = userProfile;
+        view.SetCardActive(true);
     }
 
     public void SetVisibility(bool visible)
@@ -270,17 +277,17 @@ public class PlayerInfoCardHUDController : IHUD
         return ownUserProfile != null && ownUserProfile.IsBlocked(userId);
     }
 
-    private string FilterName(UserProfile userProfile)
+    private async UniTask<string> FilterName(UserProfile userProfile)
     {
         return IsProfanityFilteringEnabled()
-            ? profanityFilter.Filter(userProfile.userName)
+            ? await profanityFilter.Filter(userProfile.userName)
             : userProfile.userName;
     }
 
-    private string FilterDescription(UserProfile userProfile)
+    private async UniTask<string> FilterDescription(UserProfile userProfile)
     {
         return IsProfanityFilteringEnabled()
-            ? profanityFilter.Filter(userProfile.description)
+            ? await profanityFilter.Filter(userProfile.description)
             : userProfile.description;
     }
 
