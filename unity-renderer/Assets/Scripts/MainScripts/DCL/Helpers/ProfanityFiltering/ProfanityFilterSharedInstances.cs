@@ -1,13 +1,13 @@
 ﻿public static class ProfanityFilterSharedInstances
 {
-    private static RegexProfanityFilter regexFilterInstance;
+    private static IProfanityFilter regexFilterInstance;
 
-    public static RegexProfanityFilter regexFilter
+    public static IProfanityFilter regexFilter
     {
         get
         {
-            return regexFilterInstance ??= new RegexProfanityFilter(
-                new ProfanityWordProviderFromResourcesJson("Profanity/badwords"));
+            return regexFilterInstance ??= new ThrottledRegexProfanityFilter(
+                new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20);
         }
     }
 }

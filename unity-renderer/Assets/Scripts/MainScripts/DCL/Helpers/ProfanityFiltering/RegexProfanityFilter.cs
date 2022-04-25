@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 
-public class RegexProfanityFilter
+public class RegexProfanityFilter : IProfanityFilter
 {
     private readonly Regex regex;
 
