@@ -6,7 +6,20 @@ using UnityEngine;
 
 public interface IResourceManagerService : IService
 {
+    /// <summary>
+    /// Get a material based in a model, if it is created, it will return the already created material,
+    /// If not, it will create one based on it
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
     UniTask<Material> GetMaterial(MaterialModel model);
+    
+    /// <summary>
+    /// Get a texture based in a model, if it is created, it will return the already created texture,
+    /// If not, it will create one based on it
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
     UniTask<Texture> GetDCLTexture(TextureModel model);
 }
 

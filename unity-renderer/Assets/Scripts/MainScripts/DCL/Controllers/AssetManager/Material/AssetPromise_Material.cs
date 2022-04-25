@@ -84,6 +84,7 @@ namespace DCL
             if (model.bumpTexture != null)
                 bumpPromiseDclTexture = AssignTextureToMaterial(material, ShaderUtils.BumpMap, model.bumpTexture, OnFail);
 
+            // Checked two times so they can be loaded at the same time
             if (model.alphaTexture != null)
                 yield return  alphaAssetPromiseDclTexture;
             if (model.albedoTexture != null)
