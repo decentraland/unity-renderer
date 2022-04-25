@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
+using NSubstitute;
 using NUnit.Framework;
 using Tests;
 using UnityEngine;
@@ -14,6 +16,25 @@ public class DCLResourcesShould : IntegrationTestSuite
     {
         base.InitializeServices(serviceLocator);
         serviceLocator.Register<IResourceManagerService>(() => new ResourceManagerService());
+    }
+    
+    [UnitySetUp]
+    protected virtual IEnumerator SetUp()
+    {
+        var serviceLocator = DCL.ServiceLocatorFactory.CreateDefault();
+        serviceLocator.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
+        Environment.Setup(serviceLocator);
+        yield break;
+    }
+
+    [UnityTearDown]
+    protected virtual IEnumerator TearDown()
+    {
+        // If the asset bundles cache is not cleared, the tests are going to stop working on successive runs
+        Caching.ClearCache();
+
+        Environment.Dispose();
+        yield break;
     }
     
     [UnityTest]
@@ -121,7 +142,7 @@ public class DCLResourcesShould : IntegrationTestSuite
     {
         return new TextureModel
         {
-            src = "ThisUrl",
+            src =  TestAssetsUtils.GetPath() + "/Images/atlas.png",
             wrap = TextureModel.BabylonWrapMode.WRAP,
             samplingMode = FilterMode.Bilinear,
         };
