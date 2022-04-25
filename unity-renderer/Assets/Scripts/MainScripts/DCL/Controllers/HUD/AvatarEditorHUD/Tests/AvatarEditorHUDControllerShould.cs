@@ -40,6 +40,9 @@ namespace AvatarEditorHUD_Tests
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags);
+            // TODO: We should convert the WearablesFetchingHelper static class into a non-static one and make it implement an interface. It would allow us to inject it
+            //       into AvatarEditorHUDController and we would be able to replace the GetThirdPartyCollections() call by a mocked one in this test, allowing us to avoid
+            //       the use of 'collectionsAlreadyLoaded = true'.
             controller.collectionsAlreadyLoaded = true;
             controller.Initialize(userProfile, catalog);
             controller.SetVisibility(true);
