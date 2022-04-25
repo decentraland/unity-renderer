@@ -91,6 +91,7 @@ namespace DCL
         protected virtual void SetupPlugins()
         {
             pluginSystem = PluginSystemFactory.Create();
+            pluginSystem.Initialize();
         }
 
         protected virtual void SetupServices()
