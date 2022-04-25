@@ -14,7 +14,6 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
     private IChannelChatWindowView view;
     private IChatHUDComponentView internalChatView;
     private ChatController_Mock chatController;
-    private MouseCatcher_Mock mouseCatcher;
     private UserProfileModel ownProfileModel;
     private UserProfileModel testProfileModel;
     private UserProfileController userProfileController;
@@ -42,13 +41,11 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
         //             Adding this here because its used by the chat flow in ChatMessageToChatEntry.
         userProfileController.AddUserProfileToCatalog(ownProfileModel);
 
-        controller = new PublicChatChannelController(chatController, mouseCatcher,
-            Substitute.For<IPlayerPrefs>(),
-            ScriptableObject.CreateInstance<LongVariable>(),
+        controller = new PublicChatChannelController(chatController,
+            Substitute.For<ILastReadMessagesService>(),
             Substitute.For<IUserProfileBridge>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>());
         chatController = new ChatController_Mock();
-        mouseCatcher = new MouseCatcher_Mock();
 
         view = Substitute.For<IChannelChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();
@@ -172,12 +169,5 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
         internalChatView.OnMessageUpdated += Raise.Event<Action<string>>("/r ");
 
         internalChatView.Received(1).SetInputFieldText($"/w {model.name} ");
-    }
-
-    [Test]
-    public void HandleMouseCatcherProperly()
-    {
-        mouseCatcher.RaiseMouseLock();
-        view.Received(1).ActivatePreview();
     }
 }

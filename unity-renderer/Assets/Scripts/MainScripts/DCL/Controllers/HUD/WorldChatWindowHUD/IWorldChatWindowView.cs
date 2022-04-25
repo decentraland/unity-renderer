@@ -1,5 +1,4 @@
 ﻿using System;
-using DCL.Interface;
 using UnityEngine;
 
 public interface IWorldChatWindowView
@@ -18,4 +17,5 @@ public interface IWorldChatWindowView
     void SetPublicChannel(PublicChatChannelModel model);
     void ShowPrivateChatsLoading();
     void HidePrivateChatsLoading();
+    void Dispose();
 }

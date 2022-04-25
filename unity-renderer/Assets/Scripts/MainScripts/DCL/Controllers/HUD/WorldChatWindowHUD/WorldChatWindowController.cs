@@ -68,6 +68,7 @@ public class WorldChatWindowController : IHUD
         view.OnClose -= HandleViewCloseRequest;
         view.OnOpenPrivateChat -= OpenPrivateChat;
         view.OnOpenPublicChannel -= OpenPublicChannel;
+        view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;

@@ -57,9 +57,6 @@ public class HUDFactory : IHUDFactory
                     new UserProfileWebInterfaceBridge(),
                     FriendsController.i, ChatController.i,
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>());
-                // hudElement = new WorldChatWindowController(
-                //     new FakeUserProfileBridge(new UserProfileWebInterfaceBridge()),
-                //     new FakeFriendsController(), new FakeChatController());
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(DataStore.i,
@@ -67,22 +64,12 @@ public class HUDFactory : IHUDFactory
                     ChatController.i, FriendsController.i,
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>());
-                // hudElement = new PrivateChatWindowController(DataStore.i,
-                //     new FakeUserProfileBridge(new UserProfileWebInterfaceBridge()),
-                //     new FakeChatController(), new FakeFriendsController(), new DefaultPlayerPrefs());
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
-                hudElement = new PublicChatChannelController(ChatController.i, 
-                    SceneReferences.i.mouseCatcher,
-                    new DefaultPlayerPrefs(),
-                    CommonScriptableObjects.lastReadWorldChatMessages,
+                hudElement = new PublicChatChannelController(ChatController.i,
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
                     new UserProfileWebInterfaceBridge(),
                     Resources.Load<InputAction_Trigger>("CloseWindow"));
-                // hudElement = new PublicChatChannelController(new FakeChatController(),
-                //     SceneReferences.i.mouseCatcher,
-                //     new DefaultPlayerPrefs(),
-                //     CommonScriptableObjects.lastReadWorldChatMessages,
-                //     new FakeUserProfileBridge(new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();

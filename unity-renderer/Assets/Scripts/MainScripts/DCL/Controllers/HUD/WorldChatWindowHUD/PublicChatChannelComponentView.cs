@@ -15,11 +15,8 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     
     public event Action OnClose;
     public event Action OnBack;
-    public event Action OnDeactivatePreview;
-    public event Action OnActivatePreview;
 
     public bool IsActive => gameObject.activeInHierarchy;
-    public bool IsPreview => false;
     public IChatHUDComponentView ChatHUD => chatView;
     public RectTransform Transform => (RectTransform) transform;
 
@@ -39,14 +36,6 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     {
         nameLabel.text = model.name;
         descriptionLabel.text = model.description;
-    }
-
-    public void ActivatePreview()
-    {
-    }
-
-    public void DeactivatePreview()
-    {
     }
 
     public void Hide() => gameObject.SetActive(false);

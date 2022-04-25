@@ -343,7 +343,6 @@ public class TaskbarHUDController : IHUD
 
         view.chatButton.SetToggleState(false, false);
         publicChatChannel.ResetInputField();
-        publicChatChannel.view.ActivatePreview();
     }
 
     public void SetVoiceChatRecording(bool recording) { view?.voiceChatButton.SetOnRecording(recording); }
