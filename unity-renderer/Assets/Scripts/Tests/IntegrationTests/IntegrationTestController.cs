@@ -82,7 +82,7 @@ public class IntegrationTestController : MonoBehaviour
         TestUtils.CreateAndSetShape(scene as ParcelScene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
         {
-            scene.EntityComponentCreateOrUpdate(
+            scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
                 entityId,
                 CLASS_ID_COMPONENT.TRANSFORM,
                 "{\"tag\":\"transform\",\"position\":{\"x\":0,\"y\":0,\"z\":0},\"rotation\":{\"x\":0,\"y\":0,\"z\":0,\"w\":1},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
@@ -93,7 +93,7 @@ public class IntegrationTestController : MonoBehaviour
         // 2nd message
         TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
         {
-            scene.EntityComponentCreateOrUpdate(
+            scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
                 entityId,
                 CLASS_ID_COMPONENT.TRANSFORM,
                 "{\"tag\":\"transform\",\"position\":{\"x\":6,\"y\":0,\"z\":5},\"rotation\":{\"x\":0,\"y\":0.39134957508996265,\"z\":0,\"w\":0.9202420931897769},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"

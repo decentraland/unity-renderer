@@ -716,52 +716,61 @@ public static partial class BIWUtils
         EntityData builderInWorldEntityData = new EntityData();
         builderInWorldEntityData.entityId = entity.entityId;
 
+        var components = entity.scene.componentsManagerLegacy.GetComponentsDictionary(entity);
 
-        foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> keyValuePair in entity.components)
+        if (components != null)
         {
-            if (keyValuePair.Key == CLASS_ID_COMPONENT.TRANSFORM)
+            foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> keyValuePair in components)
             {
-                EntityData.TransformComponent entityComponentModel = new EntityData.TransformComponent();
+                if (keyValuePair.Key == CLASS_ID_COMPONENT.TRANSFORM)
+                {
+                    EntityData.TransformComponent entityComponentModel = new EntityData.TransformComponent();
 
-                entityComponentModel.position = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, entity.scene);
-                entityComponentModel.rotation = entity.gameObject.transform.localRotation.eulerAngles;
-                entityComponentModel.scale = entity.gameObject.transform.localScale;
+                    entityComponentModel.position = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, entity.scene);
+                    entityComponentModel.rotation = entity.gameObject.transform.localRotation.eulerAngles;
+                    entityComponentModel.scale = entity.gameObject.transform.localScale;
 
-                builderInWorldEntityData.transformComponent = entityComponentModel;
-            }
-            else
-            {
-                ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
-                entityComponentModel.componentId = (int) keyValuePair.Key;
-                entityComponentModel.data = keyValuePair.Value.GetModel();
+                    builderInWorldEntityData.transformComponent = entityComponentModel;
+                }
+                else
+                {
+                    ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
+                    entityComponentModel.componentId = (int)keyValuePair.Key;
+                    entityComponentModel.data = keyValuePair.Value.GetModel();
 
-                builderInWorldEntityData.components.Add(entityComponentModel);
+                    builderInWorldEntityData.components.Add(entityComponentModel);
+                }
             }
         }
 
-        foreach (KeyValuePair<Type, ISharedComponent> keyValuePair in entity.sharedComponents)
+        var sharedComponents = entity.scene.componentsManagerLegacy.GetSharedComponentsDictionary(entity);
+
+        if (sharedComponents != null)
         {
-            if (keyValuePair.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
+            foreach (KeyValuePair<Type, ISharedComponent> keyValuePair in sharedComponents)
             {
-                EntityData.NFTComponent nFTComponent = new EntityData.NFTComponent();
-                NFTShape.Model model = (NFTShape.Model) keyValuePair.Value.GetModel();
+                if (keyValuePair.Value.GetClassId() == (int)CLASS_ID.NFT_SHAPE)
+                {
+                    EntityData.NFTComponent nFTComponent = new EntityData.NFTComponent();
+                    NFTShape.Model model = (NFTShape.Model)keyValuePair.Value.GetModel();
 
-                nFTComponent.id = keyValuePair.Value.id;
-                nFTComponent.color = new ColorRepresentation(model.color);
-                nFTComponent.assetId = model.assetId;
-                nFTComponent.src = model.src;
-                nFTComponent.style = model.style;
+                    nFTComponent.id = keyValuePair.Value.id;
+                    nFTComponent.color = new ColorRepresentation(model.color);
+                    nFTComponent.assetId = model.assetId;
+                    nFTComponent.src = model.src;
+                    nFTComponent.style = model.style;
 
-                builderInWorldEntityData.nftComponent = nFTComponent;
-            }
-            else
-            {
-                ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
-                entityComponentModel.componentId = keyValuePair.Value.GetClassId();
-                entityComponentModel.data = keyValuePair.Value.GetModel();
-                entityComponentModel.classId = keyValuePair.Value.id;
+                    builderInWorldEntityData.nftComponent = nFTComponent;
+                }
+                else
+                {
+                    ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
+                    entityComponentModel.componentId = keyValuePair.Value.GetClassId();
+                    entityComponentModel.data = keyValuePair.Value.GetModel();
+                    entityComponentModel.classId = keyValuePair.Value.id;
 
-                builderInWorldEntityData.sharedComponents.Add(entityComponentModel);
+                    builderInWorldEntityData.sharedComponents.Add(entityComponentModel);
+                }
             }
         }
 
