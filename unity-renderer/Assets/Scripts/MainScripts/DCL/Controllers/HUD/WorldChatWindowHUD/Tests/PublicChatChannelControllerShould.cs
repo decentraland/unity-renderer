@@ -130,9 +130,12 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
         var isViewActive = false;
         view.When(v => v.Show()).Do(info => isViewActive = true);
         view.When(v => v.Hide()).Do(info => isViewActive = false);
+        controller.OnClosed += () => isViewActive = false;
         view.IsActive.Returns(info => isViewActive);
+        
         controller.SetVisibility(true);
         Assert.IsTrue(view.IsActive);
+        
         controller.view.OnClose += Raise.Event<Action>();
         Assert.IsFalse(view.IsActive);
     }
