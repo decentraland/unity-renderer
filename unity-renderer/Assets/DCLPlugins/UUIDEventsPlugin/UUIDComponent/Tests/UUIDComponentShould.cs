@@ -87,23 +87,23 @@ namespace Tests
             TestUtils.EntityComponentCreate<OnPointerHoverExit, OnPointerHoverEvent.Model>(scene, entity,
                 hoverModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
-            Assert.IsTrue(entity.components.ContainsKey(CLASS_ID_COMPONENT.UUID_ON_CLICK));
-            Assert.IsTrue(entity.components.ContainsKey(CLASS_ID_COMPONENT.UUID_ON_UP));
-            Assert.IsTrue(entity.components.ContainsKey(CLASS_ID_COMPONENT.UUID_ON_DOWN));
-            Assert.IsTrue(entity.components.ContainsKey(CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT));
-            Assert.IsTrue(entity.components.ContainsKey(CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER));
+            Assert.IsTrue(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_CLICK));
+            Assert.IsTrue(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_UP));
+            Assert.IsTrue(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_DOWN));
+            Assert.IsTrue(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT));
+            Assert.IsTrue(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER));
 
-            scene.EntityComponentRemove(entity.entityId, OnPointerDown.NAME);
-            scene.EntityComponentRemove(entity.entityId, OnPointerUp.NAME);
-            scene.EntityComponentRemove(entity.entityId, OnClick.NAME);
-            scene.EntityComponentRemove(entity.entityId, OnPointerHoverEnter.NAME);
-            scene.EntityComponentRemove(entity.entityId, OnPointerHoverExit.NAME);
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, OnPointerDown.NAME);
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, OnPointerUp.NAME);
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, OnClick.NAME);
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, OnPointerHoverEnter.NAME);
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, OnPointerHoverExit.NAME);
 
-            Assert.IsFalse(entity.components.ContainsKey(CLASS_ID_COMPONENT.UUID_ON_CLICK));
-            Assert.IsFalse(entity.components.ContainsKey(CLASS_ID_COMPONENT.UUID_ON_UP));
-            Assert.IsFalse(entity.components.ContainsKey(CLASS_ID_COMPONENT.UUID_ON_DOWN));
-            Assert.IsFalse(entity.components.ContainsKey(CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT));
-            Assert.IsFalse(entity.components.ContainsKey(CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER));
+            Assert.IsFalse(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_CLICK));
+            Assert.IsFalse(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_UP));
+            Assert.IsFalse(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_DOWN));
+            Assert.IsFalse(scene.componentsManagerLegacy.HasComponent(entity, (CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT)));
+            Assert.IsFalse(scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER));
         }
 
         [UnityTest]
@@ -290,7 +290,7 @@ namespace Tests
             Transform shapeInstanceRootTransform = entity1.meshRootGameObject.transform.GetChild(0);
 
             // 4. Remove shape so that it returns to its pool
-            entity1.RemoveSharedComponent(typeof(BaseShape));
+            scene.componentsManagerLegacy.RemoveSharedComponent(entity1, typeof(BaseShape));
             yield return null;
 
             // 5. Check that the pooled mesh doesn't have the collider children and the onPointerEvent component
@@ -336,7 +336,7 @@ namespace Tests
             Transform shapeInstanceRootTransform = entity1.meshRootGameObject.transform.GetChild(0);
 
             // 4. Remove shape so that it returns to its pool
-            entity1.RemoveSharedComponent(typeof(BaseShape));
+            scene.componentsManagerLegacy.RemoveSharedComponent(entity1, typeof(BaseShape));
             yield return null;
 
             // 5. Check that the pooled mesh doesn't have the collider children and the onPointerEvent component

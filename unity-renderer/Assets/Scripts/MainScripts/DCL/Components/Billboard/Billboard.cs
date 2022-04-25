@@ -63,7 +63,7 @@ namespace DCL
 
         Vector3 GetLookAtVector()
         {
-            bool hasTextShape = entity.components.ContainsKey(Models.CLASS_ID_COMPONENT.TEXT_SHAPE);
+            bool hasTextShape = scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TEXT_SHAPE);
             Vector3 lookAtDir = hasTextShape ? (entityTransform.position - cameraPosition) : (cameraPosition - entityTransform.position);
 
             Model model = (Model) this.model;
