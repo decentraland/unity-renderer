@@ -11,6 +11,12 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene
     {
+        public const long CONST_SCENE_ROOT_ENTITY = 0;
+        public const long CONST_AVATAR_ENTITY_REFERENCE = 1;
+        public const long CONST_AVATAR_POSITION_REFERENCE = 2;
+        public const long CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 3;
+        public const long CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 4;
+        
         public Dictionary<string, IDCLEntity> entities { get; private set; } = new Dictionary<string, IDCLEntity>();
         public IECSComponentsManagerLegacy componentsManagerLegacy { get; private set; }
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
@@ -403,8 +409,8 @@ namespace DCL.Controllers
             Transform avatarTransform = worldData.avatarTransform.Get();
             Transform firstPersonCameraTransform = worldData.fpsTransform.Get();
 
-            if (parentId == "FirstPersonCameraEntityReference" ||
-                parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+            if (parentId == "FirstPersonCameraEntityReference" || parentId == CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE.ToString() ||
+                parentId == "PlayerEntityReference" ) // PlayerEntityReference is for compatibility purposes
             {
                 if (firstPersonCameraTransform == null)
                 {
@@ -421,9 +427,8 @@ namespace DCL.Controllers
                 return;
             }
 
-            if (parentId == "AvatarEntityReference" ||
-                parentId ==
-                "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+            if (parentId == "AvatarEntityReference" || parentId == CONST_AVATAR_ENTITY_REFERENCE.ToString() ||
+                parentId == "AvatarPositionEntityReference" || parentId == CONST_AVATAR_POSITION_REFERENCE.ToString()) // AvatarPositionEntityReference is for compatibility purposes
             {
                 if (avatarTransform == null)
                 {
