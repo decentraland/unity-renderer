@@ -373,7 +373,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         
         if (wearableItem.IsFromThirdPartyCollection)
         {
-            List<IToggleComponentView> allCollectionOptions = GetAllCollectionOptions();
+            List<IToggleComponentView> allCollectionOptions = collectionsDropdown.GetAllOptions();
             IToggleComponentView collectionOption = allCollectionOptions.FirstOrDefault(x => x.id == wearableItem.ThirdPartyCollectionId);
 
             if (collectionOption != null)
@@ -605,5 +605,13 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void ResetPreviewEmote() { PlayPreviewEmote(RESET_PREVIEW_ANIMATION); }
 
-    public List<IToggleComponentView> GetAllCollectionOptions() { return collectionsDropdown.GetAllOptions(); }
+    public void ToggleThirdPartyCollection(string collectionId, bool isOn)
+    {
+        List<IToggleComponentView> allCollectionOptions = collectionsDropdown.GetAllOptions();
+        foreach (IToggleComponentView collectionOption in allCollectionOptions)
+        {
+            if (collectionOption.id == collectionId)
+                collectionOption.isOn = isOn;
+        }
+    }
 }
