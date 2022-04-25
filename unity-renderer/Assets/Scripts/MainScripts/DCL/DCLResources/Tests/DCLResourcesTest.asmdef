@@ -1,0 +1,28 @@
+{
+    "name": "DCLResourcesTest",
+    "rootNamespace": "",
+    "references": [
+        "GUID:c9fbb75c15a4cd042b731877ede4a5c1",
+        "GUID:edb4fd4c6735d5949a5de4488a5abbb1",
+        "GUID:c9b57d45efa7bc3409338684f2d93b65",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:5715460bf51b753418261fbc6fb0c50a",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll",
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -30,6 +30,7 @@ namespace DCL
             result.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
             result.Register<IWorldBlockersController>(() => new WorldBlockersController());
             result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
+            result.Register<IResourceManagerService>(() => new ResourceManagerService());
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
 
