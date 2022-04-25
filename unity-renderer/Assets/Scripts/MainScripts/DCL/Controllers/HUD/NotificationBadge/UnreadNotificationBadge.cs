@@ -70,7 +70,8 @@ public class UnreadNotificationBadge : MonoBehaviour
     {
         if (currentChatController != null)
             currentChatController.OnAddMessage -= HandleMessageAdded;
-        lastReadMessagesService.OnUpdated -= HandleUnreadMessagesUpdated;
+        if (lastReadMessagesService != null)
+            lastReadMessagesService.OnUpdated -= HandleUnreadMessagesUpdated;
     }
 
     private void HandleMessageAdded(ChatMessage newMessage)
