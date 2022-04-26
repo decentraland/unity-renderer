@@ -180,8 +180,8 @@ public class FriendRequestsTabComponentView : BaseComponentView
         entry.OnCancelled += OnEntryCancelButtonPressed;
         entry.OnMenuToggle += x =>
         {
-            contextMenuPanel.transform.position = entry.menuPositionReference.position;
             contextMenuPanel.Show(userId);
+            entry.Dock(contextMenuPanel);
         };
     }
 

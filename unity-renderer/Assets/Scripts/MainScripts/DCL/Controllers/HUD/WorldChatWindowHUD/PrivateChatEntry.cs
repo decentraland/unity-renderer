@@ -15,7 +15,7 @@ public class PrivateChatEntry : BaseComponentView
     [SerializeField] private GameObject blockedContainer;
     [SerializeField] private GameObject onlineStatusContainer;
     [SerializeField] private GameObject offlineStatusContainer;
-    [SerializeField] private Transform userContextMenuPositionReference;
+    [SerializeField] private RectTransform userContextMenuPositionReference;
 
     private UserContextMenu userContextMenu;
     private IChatController chatController;
@@ -30,8 +30,8 @@ public class PrivateChatEntry : BaseComponentView
         base.Awake();
         optionsButton.onClick.AddListener(() =>
         {
-            Dock(userContextMenu);
             userContextMenu.Show(model.userId);
+            Dock(userContextMenu);
         });
         openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke());
     }
@@ -82,8 +82,12 @@ public class PrivateChatEntry : BaseComponentView
         offlineStatusContainer.SetActive(!isOnline && !model.isBlocked);
     }
 
-    private void Dock(UserContextMenu userContextMenu) =>
-        userContextMenu.transform.position = userContextMenuPositionReference.position;
+    private void Dock(UserContextMenu userContextMenu)
+    {
+        var menuTransform = (RectTransform) userContextMenu.transform;
+        menuTransform.pivot = userContextMenuPositionReference.pivot;
+        menuTransform.position = userContextMenuPositionReference.position;
+    }
 
     [Serializable]
     public struct PrivateChatEntryModel

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
 {
     public class Model
     {
@@ -23,8 +23,8 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public Model model { get; private set; } = new Model();
 
     public Image playerBlockedImage;
-    public Transform menuPositionReference;
-
+    
+    [SerializeField] private RectTransform menuPositionReference;
     [SerializeField] protected internal TextMeshProUGUI playerNameText;
     [SerializeField] protected internal RawImage playerImage;
     [SerializeField] protected internal Button menuButton;
@@ -50,9 +50,12 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (audioEventHover != null)
             audioEventHover.Play(true);
     }
-
-    public void OnPointerExit(PointerEventData eventData)
+    
+    public void Dock(UserContextMenu contextMenuPanel)
     {
+        var panelTransform = (RectTransform) contextMenuPanel.transform;
+        panelTransform.pivot = menuPositionReference.pivot;
+        panelTransform.position = menuPositionReference.position;
     }
 
     private void OnEnable()
@@ -64,7 +67,6 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
     protected virtual void OnDisable()
     {
         model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
-        OnPointerExit(null);
     }
 
     protected void OnDestroy()

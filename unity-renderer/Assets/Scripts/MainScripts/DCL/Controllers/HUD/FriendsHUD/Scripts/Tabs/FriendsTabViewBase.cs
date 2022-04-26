@@ -235,7 +235,7 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
 
         entry.OnMenuToggle += (x) =>
         {
-            contextMenuPanel.transform.position = entry.menuPositionReference.position;
+            entry.Dock(contextMenuPanel);
             contextMenuPanel.Show(userId);
         };
 

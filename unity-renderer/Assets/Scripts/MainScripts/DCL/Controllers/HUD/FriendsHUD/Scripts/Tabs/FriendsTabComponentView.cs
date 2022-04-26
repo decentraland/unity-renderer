@@ -270,8 +270,8 @@ public class FriendsTabComponentView : BaseComponentView
 
         entry.OnMenuToggle += x =>
         {
-            contextMenuPanel.transform.position = entry.menuPositionReference.position;
             contextMenuPanel.Show(userId);
+            entry.Dock(contextMenuPanel);
         };
 
         entry.OnWhisperClick += x => OnWhisper?.Invoke(x);
