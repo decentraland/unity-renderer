@@ -2,6 +2,7 @@ using DCL.Interface;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using UnityEngine;
@@ -142,7 +143,7 @@ public class PrivateChatWindowHUDController : IHUD
         if (!IsMessageFomCurrentConversation(message))
             return;
 
-        view.chatHudView.controller.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message));
+        TaskUtils.Run(() => view.chatHudView.controller.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message))).Forget(); 
 
         if (view.userId == conversationUserId)
         {
