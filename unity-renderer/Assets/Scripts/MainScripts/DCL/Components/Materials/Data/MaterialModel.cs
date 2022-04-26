@@ -40,4 +40,44 @@ public class MaterialModel
     public TextureModel alphaTexture;
     public TextureModel emissiveTexture;
     public TextureModel bumpTexture;
+    
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int hashCode = alphaTest.GetHashCode();
+            hashCode = (hashCode * 397) ^ albedoColor.GetHashCode();
+            hashCode = (hashCode * 397) ^ metallic.GetHashCode();
+            hashCode = (hashCode * 397) ^ roughness.GetHashCode();
+            hashCode = (hashCode * 397) ^ microSurface.GetHashCode();
+            hashCode = (hashCode * 397) ^ specularIntensity.GetHashCode();
+            hashCode = (hashCode * 397) ^ emissiveColor.GetHashCode();
+            hashCode = (hashCode * 397) ^ emissiveIntensity.GetHashCode();
+            hashCode = (hashCode * 397) ^ reflectivityColor.GetHashCode();
+            hashCode = (hashCode * 397) ^ directIntensity.GetHashCode();
+            hashCode = (hashCode * 397) ^ castShadows.GetHashCode();
+            hashCode = (hashCode * 397) ^ transparencyMode;
+            hashCode = (hashCode * 397) ^ (albedoTexture != null ? albedoTexture.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (alphaTexture != null ? alphaTexture.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (emissiveTexture != null ? emissiveTexture.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (bumpTexture != null ? bumpTexture.GetHashCode() : 0);
+            return hashCode;
+        }
+    }
+    
+    protected bool Equals(MaterialModel other)
+    {
+        return alphaTest.Equals(other.alphaTest) && albedoColor.Equals(other.albedoColor) && metallic.Equals(other.metallic) && roughness.Equals(other.roughness) && microSurface.Equals(other.microSurface) && specularIntensity.Equals(other.specularIntensity) && emissiveColor.Equals(other.emissiveColor) && emissiveIntensity.Equals(other.emissiveIntensity) && reflectivityColor.Equals(other.reflectivityColor) && directIntensity.Equals(other.directIntensity) && castShadows == other.castShadows && transparencyMode == other.transparencyMode && Equals(albedoTexture, other.albedoTexture) && Equals(alphaTexture, other.alphaTexture) && Equals(emissiveTexture, other.emissiveTexture) && Equals(bumpTexture, other.bumpTexture);
+    }
+    
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != this.GetType())
+            return false;
+        return Equals((MaterialModel) obj);
+    }
 }
