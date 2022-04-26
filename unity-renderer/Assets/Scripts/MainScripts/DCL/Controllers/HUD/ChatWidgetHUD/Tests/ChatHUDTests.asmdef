@@ -1,33 +1,34 @@
 {
-  "name": "ChatHUDTests",
-  "rootNamespace": "",
-  "references": [
-    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-    "GUID:6c83ec3e64bad1743a40f7646cd964a4",
-    "GUID:6055be8ebefd69e48b49212b09b47b2f",
-    "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
-    "GUID:eb95615676ca6984687c5ae7774d6309",
-    "GUID:6afcac5154f98e846bbd9f27e454b57a",
-    "GUID:27619889b8ba8c24980f49ee34dbb44a",
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:8bf30e5f113c544d88fc302761d180c0",
-    "GUID:28f74c468a54948bfa9f625c5d428f56",
-    "GUID:faaad46a7200be44786dc614001b0d5f",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "nunit.framework.dll",
-    "NSubstitute.dll",
-    "System.Threading.Tasks.Extensions.dll"
-  ],
-  "autoReferenced": false,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "ChatHUDTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:6c83ec3e64bad1743a40f7646cd964a4",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:eb95615676ca6984687c5ae7774d6309",
+        "GUID:6afcac5154f98e846bbd9f27e454b57a",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:8bf30e5f113c544d88fc302761d180c0",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:faaad46a7200be44786dc614001b0d5f",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

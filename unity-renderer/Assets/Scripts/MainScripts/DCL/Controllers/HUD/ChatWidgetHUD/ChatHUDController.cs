@@ -59,11 +59,7 @@ public class ChatHUDController : IDisposable
         }
     }
 
-    public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
-    {
-        TaskUtils.Run(() => AsyncAddChatMessage(chatEntryModel, setScrollPositionToBottom)).Forget();
-    }
-    private async UniTaskVoid AsyncAddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom)
+    public async UniTask AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
         chatEntryModel.bodyText = ChatUtils.AddNoParse(chatEntryModel.bodyText);
 
