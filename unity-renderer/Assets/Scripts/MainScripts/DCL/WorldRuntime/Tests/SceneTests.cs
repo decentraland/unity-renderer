@@ -401,7 +401,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         long result = scene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
-        Assert.AreNotEqual(result, ParcelScene.CONST_SCENE_ROOT_ENTITY);
+        Assert.AreEqual(result, ParcelScene.CONST_SCENE_ROOT_ENTITY);
     }
     
     [Test]
@@ -414,7 +414,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         long result = scene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
-        Assert.AreNotEqual(result, ParcelScene.CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE);
+        Assert.AreEqual(result, ParcelScene.CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE);
     }
         
     [Test]
@@ -427,7 +427,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         long result = scene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
-        Assert.AreNotEqual(result, ParcelScene.CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
+        Assert.AreEqual(result, ParcelScene.CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
     }
     
     [Test]
@@ -440,7 +440,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         long result = scene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
-        Assert.AreNotEqual(result, ParcelScene.CONST_AVATAR_POSITION_REFERENCE);
+        Assert.AreEqual(result, ParcelScene.CONST_AVATAR_POSITION_REFERENCE);
     }
     
     [Test]
@@ -453,6 +453,6 @@ public class SceneTests : IntegrationTestSuite_Legacy
         long result = scene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
-        Assert.AreNotEqual(result, ParcelScene.CONST_AVATAR_ENTITY_REFERENCE);
+        Assert.AreEqual(result, ParcelScene.CONST_AVATAR_ENTITY_REFERENCE);
     }
 }
