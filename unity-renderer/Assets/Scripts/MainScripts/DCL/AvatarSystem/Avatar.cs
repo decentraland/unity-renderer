@@ -89,6 +89,7 @@ namespace AvatarSystem
             catch (OperationCanceledException)
             {
                 Dispose();
+                throw;
             }
             catch (Exception e)
             {
