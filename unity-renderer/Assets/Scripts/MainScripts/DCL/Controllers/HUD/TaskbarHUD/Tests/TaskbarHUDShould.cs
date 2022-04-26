@@ -103,7 +103,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         controller.AddWorldChatWindow(worldChatWindowController);
 
         var publicChatChannelController = new PublicChatChannelController(chatController, lastReadMessagesService, userProfileBridge,
-            ScriptableObject.CreateInstance<InputAction_Trigger>());
+            ScriptableObject.CreateInstance<InputAction_Trigger>(),
+            new DataStore(),
+            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()));
         publicChatChannelController.Initialize(new GameObject("PublicChatChannelWindowMock").AddComponent<PublicChatChannelWindowMock>());
         controller.AddPublicChatChannel(publicChatChannelController);
 
