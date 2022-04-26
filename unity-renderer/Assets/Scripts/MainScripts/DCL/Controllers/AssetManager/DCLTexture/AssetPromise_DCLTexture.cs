@@ -8,25 +8,9 @@ namespace DCL
         private TextureModel model;
         private AssetPromise_Texture texturePromise;
         
-        FilterMode unitySamplingMode;
-        TextureWrapMode unityWrap = TextureWrapMode.Clamp;
-        
         public AssetPromise_DCLTexture(TextureModel model)
         {
             this.model = model;
-            unitySamplingMode = model.samplingMode;
-            switch (model.wrap)
-            {
-                case TextureModel.BabylonWrapMode.CLAMP:
-                    unityWrap = TextureWrapMode.Clamp;
-                    break;
-                case TextureModel.BabylonWrapMode.WRAP:
-                    unityWrap = TextureWrapMode.Repeat;
-                    break;
-                case TextureModel.BabylonWrapMode.MIRROR:
-                    unityWrap = TextureWrapMode.Mirror;
-                    break;
-            }
         }
         
         protected override void OnAfterLoadOrReuse() { }
@@ -47,6 +31,21 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
+            FilterMode unitySamplingMode = model.samplingMode;
+            TextureWrapMode unityWrap = TextureWrapMode.Clamp;
+            switch (model.wrap)
+            {
+                case TextureModel.BabylonWrapMode.CLAMP:
+                    unityWrap = TextureWrapMode.Clamp;
+                    break;
+                case TextureModel.BabylonWrapMode.WRAP:
+                    unityWrap = TextureWrapMode.Repeat;
+                    break;
+                case TextureModel.BabylonWrapMode.MIRROR:
+                    unityWrap = TextureWrapMode.Mirror;
+                    break;
+            }
+            
             if (!string.IsNullOrEmpty(model.src))
             {
                 bool isBase64 = model.src.Contains("image/png;base64");
