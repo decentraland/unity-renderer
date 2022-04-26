@@ -28,6 +28,18 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
+            CleanPromises();
+        }
+
+        public override void Cleanup()
+        {
+            base.Cleanup();
+            CleanPromises();
+        }
+
+        private void CleanPromises()
+        {
+              
             if (emissionAssetPromiseDclTexture != null)
                 AssetPromiseKeeper_DCLTexture.i.Forget(emissionAssetPromiseDclTexture);
             if (alphaAssetPromiseDclTexture != null)
@@ -38,10 +50,12 @@ namespace DCL
                 AssetPromiseKeeper_DCLTexture.i.Forget(bumpPromiseDclTexture);
             
             CoroutineStarter.Stop(loadCoroutine);
+            loadCoroutine = null;
         }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
+            CoroutineStarter.Stop(loadCoroutine);
             loadCoroutine = CoroutineStarter.Start(CreateMaterial(model, OnSuccess, OnFail));
         }
         
@@ -173,7 +187,7 @@ namespace DCL
                     onFail?.Invoke(error);
                 };
 
-                AssetPromiseKeeper_DCLTexture.i.Keep(emissionAssetPromiseDclTexture);
+                AssetPromiseKeeper_DCLTexture.i.Keep(promiseDclTexture);
             }
             else
             {
