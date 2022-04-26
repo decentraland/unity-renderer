@@ -16,12 +16,23 @@ namespace DCL.ECSRuntime
             this.scene = scene;
         }
 
+        /// <summary>
+        /// get a component instance using it id
+        /// </summary>
+        /// <param name="componentId"></param>
+        /// <returns>component instance of null if it does not exist</returns>
         public IECSComponent GetComponent(int componentId)
         {
             sceneComponents.TryGetValue(componentId, out IECSComponent component);
             return component;
         }
 
+        /// <summary>
+        /// get or create a component for an entity
+        /// </summary>
+        /// <param name="componentId"></param>
+        /// <param name="entity"></param>
+        /// <returns>the instance of existing or newly created component</returns>
         public IECSComponent GetOrCreateComponent(int componentId, IDCLEntity entity)
         {
             if (sceneComponents.TryGetValue(componentId, out IECSComponent component))
@@ -40,12 +51,24 @@ namespace DCL.ECSRuntime
             return component;
         }
 
+        /// <summary>
+        /// deserialize data for a component. it will create the component if it does not exists
+        /// </summary>
+        /// <param name="componentId"></param>
+        /// <param name="entity"></param>
+        /// <param name="message"></param>
         public void DeserializeComponent(int componentId, IDCLEntity entity, object message)
         {
             var component = GetOrCreateComponent(componentId, entity);
             component?.Deserialize(entity, message);
         }
 
+        /// <summary>
+        /// remove a component from an entity
+        /// </summary>
+        /// <param name="componentId"></param>
+        /// <param name="entity"></param>
+        /// <returns>true if component removed successfully, false if entity didn't contain component</returns>
         public bool RemoveComponent(int componentId, IDCLEntity entity)
         {
             if (sceneComponents.TryGetValue(componentId, out IECSComponent component))

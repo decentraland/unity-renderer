@@ -22,6 +22,10 @@ namespace DCL.ECSRuntime
             this.handlerBuilder = handlerBuilder;
         }
 
+        /// <summary>
+        /// creates and add component to an entity
+        /// </summary>
+        /// <param name="entity">target entity</param>
         public void Create(IDCLEntity entity)
         {
             var entityId = entity.entityId;
@@ -48,6 +52,11 @@ namespace DCL.ECSRuntime
             }
         }
 
+        /// <summary>
+        /// remove component from entity
+        /// </summary>
+        /// <param name="entity">target entity</param>
+        /// <returns>true if component removed successfully, false if entity didn't contain component</returns>
         public bool Remove(IDCLEntity entity)
         {
             var entityId = entity.entityId;
@@ -59,6 +68,11 @@ namespace DCL.ECSRuntime
             return entities.Remove(entityId);
         }
 
+        /// <summary>
+        /// set component model for entity
+        /// </summary>
+        /// <param name="entity">target entity</param>
+        /// <param name="model">new model</param>
         public void SetModel(IDCLEntity entity, ModelType model)
         {
             var entityId = entity.entityId;
@@ -78,16 +92,31 @@ namespace DCL.ECSRuntime
             }
         }
 
+        /// <summary>
+        /// deserialize message and apply a new model for an entity
+        /// </summary>
+        /// <param name="entity">target entity</param>
+        /// <param name="message">message</param>
         public void Deserialize(IDCLEntity entity, object message)
         {
             SetModel(entity, deserializer.Invoke(message));
         }
 
+        /// <summary>
+        /// check if entity contains component
+        /// </summary>
+        /// <param name="entity">target entity</param>
+        /// <returns>true if entity contains this component</returns>
         public bool HasComponent(IDCLEntity entity)
         {
             return entities.ContainsKey(entity.entityId);
         }
 
+        /// <summary>
+        /// get component data for an entity
+        /// </summary>
+        /// <param name="entity">target entity</param>
+        /// <returns>component data, including model</returns>
         public ECSComponentData<ModelType> Get(IDCLEntity entity)
         {
             if (entities.TryGetValue(entity.entityId, out ECSComponentData<ModelType> data))
@@ -97,6 +126,10 @@ namespace DCL.ECSRuntime
             return null;
         }
 
+        /// <summary>
+        /// get every component data for every entity containing this component
+        /// </summary>
+        /// <returns>enumerator to iterate through the component data</returns>
         public IEnumerator<ECSComponentData<ModelType>> Get()
         {
             using (var iterator = entities.GetEnumerator())
