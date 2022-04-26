@@ -13,23 +13,28 @@ public class PublicChatChannelController : IHUD
     private readonly ILastReadMessagesService lastReadMessagesService;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly InputAction_Trigger closeWindowTrigger;
+    private readonly DataStore dataStore;
+    private readonly RegexProfanityFilter regexProfanityFilter;
     private ChatHUDController chatHudController;
-
-    internal string lastPrivateMessageRecipient = string.Empty;
     private double initTimeInSeconds;
     private string channelId;
+    internal string lastPrivateMessageRecipient = string.Empty;
 
-    private UserProfile ownProfile => UserProfile.GetOwnUserProfile();
+    private UserProfile ownProfile => userProfileBridge.GetOwn();
 
     public PublicChatChannelController(IChatController chatController,
         ILastReadMessagesService lastReadMessagesService,
         IUserProfileBridge userProfileBridge,
-        InputAction_Trigger closeWindowTrigger)
+        InputAction_Trigger closeWindowTrigger,
+        DataStore dataStore,
+        RegexProfanityFilter regexProfanityFilter)
     {
         this.chatController = chatController;
         this.lastReadMessagesService = lastReadMessagesService;
         this.userProfileBridge = userProfileBridge;
         this.closeWindowTrigger = closeWindowTrigger;
+        this.dataStore = dataStore;
+        this.regexProfanityFilter = regexProfanityFilter;
     }
 
     public void Initialize(IChannelChatWindowView view = null)
@@ -41,31 +46,28 @@ public class PublicChatChannelController : IHUD
         closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
         closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
 
-        chatHudController = new ChatHUDController(DataStore.i,
-            new UserProfileWebInterfaceBridge(),
+        chatHudController = new ChatHUDController(dataStore,
+            userProfileBridge,
             true,
-            ProfanityFilterSharedInstances.regexFilter);
+            regexProfanityFilter);
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnSendMessage += SendChatMessage;
         chatHudController.OnMessageUpdated += HandleMessageInputUpdated;
         chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
 
-        if (chatController != null)
-        {
-            chatController.OnAddMessage -= HandleMessageReceived;
-            chatController.OnAddMessage += HandleMessageReceived;
-        }
-        
+        chatController.OnAddMessage -= HandleMessageReceived;
+        chatController.OnAddMessage += HandleMessageReceived;
+
         initTimeInSeconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
     }
 
     public void Setup(string channelId)
     {
         this.channelId = channelId;
-        
+
         // TODO: retrieve data from a channel provider
         view.Setup(this.channelId, "General", "Any useful description here");
-        
+
         chatHudController.ClearAllEntries();
         var messageEntries = chatController.GetEntries()
             .ToList();
@@ -91,7 +93,7 @@ public class PublicChatChannelController : IHUD
     {
         bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
         bool isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
-        
+
         if (isPrivateMessage && isValidMessage)
             lastPrivateMessageRecipient = message.recipient;
         else
@@ -139,7 +141,7 @@ public class PublicChatChannelController : IHUD
         if (!string.IsNullOrEmpty(lastPrivateMessageRecipient) && message == "/r ")
             chatHudController.SetInputFieldText($"/w {lastPrivateMessageRecipient} ");
     }
-    
+
     private void HandleInputFieldSelected()
     {
         if (string.IsNullOrEmpty(lastPrivateMessageRecipient)) return;

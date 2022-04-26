@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using DCL;
 using DCL.Helpers;
 using DCL.Interface;
 using NSubstitute;
@@ -13,39 +14,43 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
     private PublicChatChannelController controller;
     private IChannelChatWindowView view;
     private IChatHUDComponentView internalChatView;
-    private ChatController_Mock chatController;
+    private IChatController chatController;
     private UserProfileModel ownProfileModel;
     private UserProfileModel testProfileModel;
-    private UserProfileController userProfileController;
+    private IUserProfileBridge userProfileBridge;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
-        userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
-        userProfileController.ClearProfilesCatalog();
-
-        var ownProfile = UserProfile.GetOwnUserProfile();
-
-        ownProfileModel = new UserProfileModel();
-        ownProfileModel.userId = "my-user-id";
-        ownProfileModel.name = "NO_USER";
+        var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
+        ownProfileModel = new UserProfileModel
+        {
+            userId = "my-user-id",
+            name = "NO_USER"
+        };
         ownProfile.UpdateData(ownProfileModel);
 
-        testProfileModel = new UserProfileModel();
-        testProfileModel.userId = "my-user-id-2";
-        testProfileModel.name = "TEST_USER";
-        userProfileController.AddUserProfileToCatalog(testProfileModel);
+        var testProfile = ScriptableObject.CreateInstance<UserProfile>();
+        testProfileModel = new UserProfileModel
+        {
+            userId = "my-user-id-2",
+            name = "TEST_USER"
+        };
+        testProfile.UpdateData(testProfileModel);
+        
+        userProfileBridge = Substitute.For<IUserProfileBridge>();
+        userProfileBridge.Get(ownProfileModel.userId).Returns(ownProfile);
+        userProfileBridge.Get(testProfileModel.userId).Returns(testProfile);
+        userProfileBridge.GetOwn().Returns(ownProfile);
 
-        //NOTE(Brian): This profile is added by the LoadProfile message in the normal flow.
-        //             Adding this here because its used by the chat flow in ChatMessageToChatEntry.
-        userProfileController.AddUserProfileToCatalog(ownProfileModel);
-
+        chatController = Substitute.For<IChatController>();
         controller = new PublicChatChannelController(chatController,
             Substitute.For<ILastReadMessagesService>(),
-            Substitute.For<IUserProfileBridge>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>());
-        chatController = new ChatController_Mock();
+            userProfileBridge,
+            ScriptableObject.CreateInstance<InputAction_Trigger>(),
+            new DataStore(),
+            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()));
 
         view = Substitute.For<IChannelChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();
@@ -58,33 +63,33 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
-        Object.Destroy(userProfileController.gameObject);
         controller.Dispose();
         yield return base.TearDown();
     }
 
     [Test]
-    public void HandlePrivateMessagesProperly()
+    public void AddEntryWhenPrivateMessage()
     {
         var sentPM = new ChatMessage
         {
             messageType = ChatMessage.Type.PRIVATE,
             body = "test message",
             sender = ownProfileModel.userId,
-            recipient = testProfileModel.userId
+            recipient = testProfileModel.userId,
+            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };
 
-        chatController.RaiseAddMessage(sentPM);
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(sentPM);
 
         internalChatView.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == sentPM.messageType
-            && model.bodyText == sentPM.body
+            && model.bodyText == $"<noparse>{sentPM.body}</noparse>"
             && model.senderId == sentPM.sender
             && model.otherUserId == sentPM.recipient));
     }
 
     [Test]
-    public void HandleChatControllerProperly()
+    public void AddEntryWhenMessageReceived()
     {
         var chatMessage = new ChatMessage
         {
@@ -93,35 +98,19 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
             sender = testProfileModel.userId
         };
 
-        chatController.RaiseAddMessage(chatMessage);
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage);
 
         internalChatView.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == chatMessage.messageType
-            && model.bodyText == chatMessage.body
+            && model.bodyText == $"<noparse>{chatMessage.body}</noparse>"
             && model.senderId == chatMessage.sender));
     }
 
-    [UnityTest]
-    public IEnumerator SendChatMessageProperly()
+    [Test]
+    public void SendChatMessageProperly()
     {
-        bool messageWasSent = false;
-
-        Action<string, string> messageCallback =
-            (type, msg) =>
-            {
-                if (type == "SendChatMessage" && msg.Contains("test message"))
-                {
-                    messageWasSent = true;
-                }
-            };
-
-        WebInterface.OnMessageFromEngine += messageCallback;
         controller.SendChatMessage(new ChatMessage {body = "test message"});
-        Assert.IsTrue(messageWasSent);
-        WebInterface.OnMessageFromEngine -= messageCallback;
-        yield return null;
-        yield return null;
-        yield return null;
+        chatController.Received(1).Send(Arg.Is<ChatMessage>(c => c.body == "test message"));
     }
 
     [Test]
@@ -130,7 +119,8 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
         var isViewActive = false;
         view.When(v => v.Show()).Do(info => isViewActive = true);
         view.When(v => v.Hide()).Do(info => isViewActive = false);
-        controller.OnClosed += () => isViewActive = false;
+        void HandleControllerClosed() => isViewActive = false;
+        controller.OnClosed += HandleControllerClosed;
         view.IsActive.Returns(info => isViewActive);
         
         controller.SetVisibility(true);
@@ -138,39 +128,31 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
         
         controller.view.OnClose += Raise.Event<Action>();
         Assert.IsFalse(view.IsActive);
+        controller.OnClosed -= HandleControllerClosed;
     }
 
     [UnityTest]
-    public IEnumerator WhisperLastPrivateMessageSenderOnReply()
+    public IEnumerator ReplyToWhisperingSender()
     {
-        UserProfile ownProfile = UserProfile.GetOwnUserProfile();
-
-        var model = new UserProfileModel
-        {
-            userId = "testUserId",
-            name = "testUserName",
-        };
-
-        userProfileController.AddUserProfileToCatalog(model);
-
         var msg = new ChatMessage
         {
             body = "test message",
-            sender = model.userId,
-            recipient = ownProfile.userId,
-            messageType = ChatMessage.Type.PRIVATE
+            sender = testProfileModel.userId,
+            recipient = ownProfileModel.userId,
+            messageType = ChatMessage.Type.PRIVATE,
+            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };
 
         yield return null;
 
-        chatController.AddMessageToChatWindow(JsonUtility.ToJson(msg));
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg);
 
         yield return null;
 
-        Assert.AreEqual(controller.lastPrivateMessageRecipient, model.name);
+        Assert.AreEqual(controller.lastPrivateMessageRecipient, testProfileModel.name);
 
         internalChatView.OnMessageUpdated += Raise.Event<Action<string>>("/r ");
 
-        internalChatView.Received(1).SetInputFieldText($"/w {model.name} ");
+        internalChatView.Received(1).SetInputFieldText($"/w {testProfileModel.name} ");
     }
 }
