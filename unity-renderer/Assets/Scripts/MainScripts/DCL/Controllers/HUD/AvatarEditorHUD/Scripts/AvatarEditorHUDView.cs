@@ -377,6 +377,8 @@ public class AvatarEditorHUDView : MonoBehaviour
                 iterator.Current.Value.UpdateSelectorLayout();
             }
         }
+
+        collectiblesItemSelector.UpdateSelectorLayout();
     }
 
     private string GetWearableCollectionName(WearableItem wearableItem)
