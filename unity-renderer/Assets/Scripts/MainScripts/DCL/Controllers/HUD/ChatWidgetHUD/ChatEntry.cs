@@ -88,11 +88,11 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
         if (chatEntryModel.subType == Model.SubType.PRIVATE_FROM)
         {
-            userString = $"<b>From {chatEntryModel.senderName}:</b>";
+            userString = $"From {chatEntryModel.senderName}:";
         }
         else if (chatEntryModel.subType == Model.SubType.PRIVATE_TO)
         {
-            userString = $"<b>To {chatEntryModel.recipientName}:</b>";
+            userString = $"To {chatEntryModel.recipientName}:";
         }
 
         switch (chatEntryModel.messageType)
@@ -366,7 +366,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     string GetDefaultSenderString(string sender)
     {
         if (!string.IsNullOrEmpty(sender))
-            return $"<b>{sender}:</b>";
+            return $"{sender}:";
 
         return "";
     }

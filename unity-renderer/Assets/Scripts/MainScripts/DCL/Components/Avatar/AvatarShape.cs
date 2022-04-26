@@ -118,7 +118,7 @@ namespace DCL
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
             // To deal with the cases in which the entity transform was configured before the AvatarShape
-            if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
+            if (!initializedPosition && scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TRANSFORM))
             {
                 initializedPosition = true;
                 OnEntityTransformChanged(entity.gameObject.transform.localPosition,
