@@ -368,6 +368,17 @@ public class AvatarEditorHUDView : MonoBehaviour
         }
     }
 
+    public void RefreshSelectorsSize()
+    {
+        using (var iterator = selectorsByCategory.GetEnumerator())
+        {
+            while (iterator.MoveNext())
+            {
+                iterator.Current.Value.UpdateSelectorLayout();
+            }
+        }
+    }
+
     private string GetWearableCollectionName(WearableItem wearableItem)
     {
         string collectionName = string.Empty;
