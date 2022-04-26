@@ -552,6 +552,8 @@ public class AvatarEditorHUDController : IHUD
                 AddWearable(iterator.Current.Key, iterator.Current.Value);
             }
         }
+
+        view.RefreshSelectorsSize();
     }
 
     private void AddWearable(string id, WearableItem wearable)

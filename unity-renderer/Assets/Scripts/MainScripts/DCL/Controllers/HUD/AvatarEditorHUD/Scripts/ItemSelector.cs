@@ -90,7 +90,6 @@ public class ItemSelector : MonoBehaviour
 
         bool active = string.IsNullOrEmpty(currentBodyShape) || item.SupportsBodyShape(currentBodyShape);
         newToggle.gameObject.SetActive(active);
-        //Utils.ForceUpdateLayout(content);
     }
 
     public void RemoveItemToggle(string itemID)
@@ -105,7 +104,6 @@ public class ItemSelector : MonoBehaviour
         itemToggles.Remove(itemID);
         Destroy(toggle.gameObject);
         RemoveCollectionGroupIfNeeded(toggle.collectionId);
-        //Utils.ForceUpdateLayout(content);
     }
 
     public void RemoveAllItemToggle()
@@ -120,7 +118,6 @@ public class ItemSelector : MonoBehaviour
         }
 
         itemToggles.Clear();
-        //Utils.ForceUpdateLayout(content);
     }
 
     public void SetBodyShape(string bodyShape)
@@ -131,6 +128,8 @@ public class ItemSelector : MonoBehaviour
         currentBodyShape = bodyShape;
         ShowCompatibleWithBodyShape();
     }
+
+    public void UpdateSelectorLayout() { Utils.ForceUpdateLayout(content); }
 
     private void ShowCompatibleWithBodyShape()
     {
