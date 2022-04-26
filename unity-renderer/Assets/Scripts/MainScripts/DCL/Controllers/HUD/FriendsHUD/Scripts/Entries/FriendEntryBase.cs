@@ -28,25 +28,17 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] protected internal TextMeshProUGUI playerNameText;
     [SerializeField] protected internal RawImage playerImage;
     [SerializeField] protected internal Button menuButton;
-    [SerializeField] protected internal Image backgroundImage;
-    [SerializeField] protected internal Sprite hoveredBackgroundSprite;
     [SerializeField] protected internal AudioEvent audioEventHover;
     [SerializeField] protected internal GameObject onlineStatusContainer;
     [SerializeField] protected internal GameObject offlineStatusContainer;
     [SerializeField] protected internal Button passportButton;
-    [SerializeField] private Selectable.Transition transition = Selectable.Transition.SpriteSwap;
-    [SerializeField] private ColorBlock transitionColors;
     
-    protected internal Sprite unhoveredBackgroundSprite;
     private StringVariable currentPlayerInfoCardId;
-    private Color originalBackgroundColor;
 
     public event Action<FriendEntryBase> OnMenuToggle;
 
     public virtual void Awake()
     {
-        originalBackgroundColor = backgroundImage.color;
-        unhoveredBackgroundSprite = backgroundImage.sprite;
         menuButton.onClick.RemoveAllListeners();
         menuButton.onClick.AddListener(() => OnMenuToggle?.Invoke(this));
         passportButton?.onClick.RemoveAllListeners();
@@ -55,30 +47,18 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (transition == Selectable.Transition.SpriteSwap)
-            backgroundImage.sprite = hoveredBackgroundSprite;
-        else if (transition == Selectable.Transition.ColorTint)
-            backgroundImage.color = originalBackgroundColor * transitionColors.highlightedColor;
-
         if (audioEventHover != null)
             audioEventHover.Play(true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (transition == Selectable.Transition.SpriteSwap)
-            backgroundImage.sprite = unhoveredBackgroundSprite;
-        else if (transition == Selectable.Transition.ColorTint)
-            backgroundImage.color = originalBackgroundColor * transitionColors.normalColor;
     }
 
     private void OnEnable()
     {
         // TODO: replace image loading for ImageComponentView implementation
         model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
-        
-        if (transition == Selectable.Transition.ColorTint)
-            backgroundImage.color = originalBackgroundColor * transitionColors.normalColor;
     }
 
     protected virtual void OnDisable()
