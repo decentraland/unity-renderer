@@ -18,16 +18,13 @@ namespace DCL.Skybox
 
             EditorGUILayout.Separator();
 
-
-            EditorGUILayout.Separator();
-
             // Time Span
             RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.timeSpan, SkyboxEditorLiterals.start, ref config.timeSpan_start, SkyboxEditorLiterals.end, ref config.timeSpan_End);
             SkyboxEditorUtils.ClampToDayTime(ref config.timeSpan_start);
             SkyboxEditorUtils.ClampToDayTime(ref config.timeSpan_End);
 
             // Fading
-            //RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.fade, SkyboxEditorLiterals.inStr, ref layer.fadingInTime, SkyboxEditorLiterals.outStr, ref layer.fadingOutTime);
+            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.fade, SkyboxEditorLiterals.inStr, ref config.fadeInTime, SkyboxEditorLiterals.outStr, ref config.fadeOutTime);
 
             //// Tint
             //RenderSimpleValues.RenderFloatFieldAsSlider(SkyboxEditorLiterals.tint, ref layer.tintPercentage, 0, 100);

@@ -91,10 +91,11 @@ namespace DCL.Skybox
                 if (!satelliteLayers[i].enabled)
                 {
                     satelliteRefs[i].satelliteParent.SetActive(false);
+                    satelliteRefs[i].satelliteBehavior.ChangeRenderType(LayerRenderType.NotRendering);
                     continue;
                 }
 
-                satelliteRefs[i].satelliteBehavior.AssignValues(satelliteLayers[i].timeSpan_start, satelliteLayers[i].timeSpan_End, satelliteLayers[i].satelliteSize, satelliteLayers[i].radius, satelliteLayers[i].initialAngle, satelliteLayers[i].horizonPlaneRotation, satelliteLayers[i].inclination, satelliteLayers[i].movementSpeed, satelliteLayers[i].satelliteRotation, satelliteLayers[i].fixedRotation, satelliteLayers[i].rotateAroundAxis, satelliteLayers[i].rotateSpeed, dayTime, cycleTime);
+                satelliteRefs[i].satelliteBehavior.AssignValues(satelliteLayers[i], dayTime, cycleTime);
             }
         }
 

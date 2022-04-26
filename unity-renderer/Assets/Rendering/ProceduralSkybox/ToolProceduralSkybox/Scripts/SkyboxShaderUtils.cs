@@ -18,6 +18,7 @@ namespace DCL.Skybox
         public static readonly int HorizonMaskValues = Shader.PropertyToID("_horizonMaskValues");
         public static readonly int HorizonPlaneColor = Shader.PropertyToID("_HorizonPlaneColor");
         public static readonly int HorizonPlaneHeight = Shader.PropertyToID("_horizonPlaneHeight");
+        public static readonly int Opacity = Shader.PropertyToID("_Opacity");
 
         static SkyboxShaderUtils() { CacheShaderProperties(); }
 

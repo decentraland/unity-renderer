@@ -11,6 +11,8 @@ namespace DCL.Skybox
         public string nameInEditor;
         public float timeSpan_start;
         public float timeSpan_End;
+        public float fadeInTime = 0;
+        public float fadeOutTime = 0;
 
         // Satellite orbit properties
         public GameObject satellite;

@@ -1066,36 +1066,40 @@ MonoBehaviour:
     isTrigger: 0
   satelliteLayers:
   - enabled: 1
-    nameInEditor: dfgdf
-    timeSpan_start: 0
-    timeSpan_End: 24
-    satellite: {fileID: 6438672508873746031, guid: 0c8c9997b5c986d45b555c1da35e5c4d,
-      type: 3}
-    satelliteSize: 50
-    radius: 300
-    initialAngle: 104
-    horizonPlaneRotation: 112
-    inclination: 69
-    movementSpeed: 50
-    satelliteRotation: 1
-    fixedRotation: {x: 0, y: 0, z: 0}
-    rotateAroundAxis: {x: 0, y: 1, z: 0}
-    rotateSpeed: 50
-    renderType: 0
-  - enabled: 1
-    nameInEditor: Tex Layer 2
-    timeSpan_start: 0
-    timeSpan_End: 24
+    nameInEditor: Tex Layer 1
+    timeSpan_start: 6
+    timeSpan_End: 19
+    fadeInTime: 0
+    fadeOutTime: 0
     satellite: {fileID: 6438672508873746031, guid: 0c8c9997b5c986d45b555c1da35e5c4d,
       type: 3}
     satelliteSize: 50
     radius: 300
     initialAngle: 0
-    horizonPlaneRotation: 92
+    horizonPlaneRotation: 90
     inclination: 0
-    movementSpeed: 50
+    movementSpeed: 25
     satelliteRotation: 0
     fixedRotation: {x: 0, y: 0, z: 0}
     rotateAroundAxis: {x: 0, y: 0, z: 0}
     rotateSpeed: 25
     renderType: 0
+  - enabled: 0
+    nameInEditor: Tex Layer 2
+    timeSpan_start: 0
+    timeSpan_End: 24
+    fadeInTime: 0
+    fadeOutTime: 0
+    satellite: {fileID: 6438672508873746031, guid: 0c8c9997b5c986d45b555c1da35e5c4d,
+      type: 3}
+    satelliteSize: 50
+    radius: 50
+    initialAngle: 0
+    horizonPlaneRotation: 0
+    inclination: 0
+    movementSpeed: 25
+    satelliteRotation: 0
+    fixedRotation: {x: 0, y: 0, z: 0}
+    rotateAroundAxis: {x: 0, y: 0, z: 0}
+    rotateSpeed: 25
+    renderType: 1

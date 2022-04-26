@@ -106,7 +106,7 @@ namespace DCL.Skybox
         {
             // Layer Type
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(SkyboxEditorLiterals.layerType, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             enumVar = (T)EditorGUILayout.EnumPopup(enumVar, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Separator();

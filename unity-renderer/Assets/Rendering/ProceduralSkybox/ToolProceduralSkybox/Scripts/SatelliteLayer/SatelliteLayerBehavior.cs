@@ -9,32 +9,15 @@ namespace DCL.Skybox
 
     public class SatelliteLayerBehavior : MonoBehaviour
     {
-        public float timeSpan_start = 0;
-        public float timeSpan_end = 24;
-        public Transform followTarget;
+        Satellite3DLayer layerProperties;
         public GameObject satelliteOrbit;
         public GameObject satellite;
-        public float satelliteSize = 1;
-        public float radius = 10;
+
         public float thickness = 1;
-        [Range(0, 360)]
-        public float initialAngle = 0;
-        [Range(0, 180)]
-        public float horizonPlaneRotation = 0;
-        [Range(0, 180)]
-        public float inclination = 0;
-
-        public bool startMovement;
-        public float movementSpeed;             // speed in degree/hr (virtual hour)
-
-        [Header("Satellite Properties")]
-        public RotationType satelliteRotation;
-        public Vector3 fixedRotation;
-        public Vector3 rotateAroundAxis;
-        public float rotateSpeed;
 
         private float currentAngle;
         private float cycleTime = 24;
+        private List<Material> materials;
 
         public void UpdateRotation()
         {
@@ -44,13 +27,13 @@ namespace DCL.Skybox
             }
 
 
-            switch (satelliteRotation)
+            switch (layerProperties.satelliteRotation)
             {
                 case RotationType.Fixed:
-                    satellite.transform.localRotation = Quaternion.Euler(fixedRotation);
+                    satellite.transform.localRotation = Quaternion.Euler(layerProperties.fixedRotation);
                     break;
                 case RotationType.Rotate:
-                    satellite.transform.Rotate(rotateAroundAxis, rotateSpeed * Time.deltaTime, Space.Self);
+                    satellite.transform.Rotate(layerProperties.rotateAroundAxis, layerProperties.rotateSpeed * Time.deltaTime, Space.Self);
                     break;
                 case RotationType.LookAtOrbit:
                     if (Camera.main != null)
@@ -63,34 +46,34 @@ namespace DCL.Skybox
             }
         }
 
-        internal void AssignValues(float inTime, float outTime, float satelliteSize, float radius, float initialAngle, float horizonPlaneRotation, float inclination, float movementSpeed, RotationType satelliteRotation, Vector3 fixedRotation, Vector3 rotateAroundAxis, float rotateSpeed, float timeOfTheDay, float cycleTime)
+        internal void AssignValues(Satellite3DLayer properties, float timeOfTheDay, float cycleTime)
         {
-            this.timeSpan_start = inTime;
-            this.timeSpan_end = outTime;
-            this.satelliteSize = satelliteSize;
-            this.radius = radius;
-            radius = Mathf.Clamp(radius, 0, Mathf.Infinity);
-            this.initialAngle = initialAngle;
-            this.horizonPlaneRotation = horizonPlaneRotation;
-            this.inclination = inclination;
-            this.movementSpeed = movementSpeed;
-            this.satelliteRotation = satelliteRotation;
-            this.fixedRotation = fixedRotation;
-            this.rotateAroundAxis = rotateAroundAxis;
-            this.rotateSpeed = rotateSpeed;
+            // Check and assign Materials
+            CheckAndAssignMats();
+
+            layerProperties = properties;
+            layerProperties.radius = Mathf.Clamp(layerProperties.radius, 0, Mathf.Infinity);
+
             this.cycleTime = cycleTime;
+
+            if (!CheckIfSatelliteInTimeBounds(timeOfTheDay))
+            {
+                satellite.gameObject.SetActive(false);
+                ChangeRenderType(LayerRenderType.NotRendering);
+                return;
+            }
+
+            satellite.gameObject.SetActive(true);
+            ChangeRenderType(LayerRenderType.Rendering);
+
+            // Apply fade
+            ApplyFade(timeOfTheDay);
 
             // Update orbit rotation
             UpdateOrbitRotation();
             // Change satellite size
             UpdateSatelliteSize();
 
-            if (!CheckIfSatelliteInTimeBounds(timeOfTheDay))
-            {
-                satellite.gameObject.SetActive(false);
-                return;
-            }
-            satellite.gameObject.SetActive(true);
 
             // Update SatellitePosition
             UpdateSatellitePos(timeOfTheDay);
@@ -98,19 +81,45 @@ namespace DCL.Skybox
             UpdateRotation();
         }
 
+        private void CheckAndAssignMats()
+        {
+            if (materials == null)
+            {
+                materials = new List<Material>();
+                Renderer[] renderers = GetComponentsInChildren<Renderer>();
+                for (int i = 0; i < renderers.Length; i++)
+                {
+                    for (int j = 0; j < renderers[i].sharedMaterials.Length; j++)
+                    {
+                        materials.Add(renderers[i].sharedMaterials[j]);
+                    }
+                }
+            }
+        }
+
+        public void ChangeRenderType(LayerRenderType type)
+        {
+            if (layerProperties == null)
+            {
+                return;
+            }
+
+            layerProperties.renderType = type;
+        }
+
         private void UpdateSatellitePos(float timeOfTheDay)
         {
             float timeOfDayEdited = timeOfTheDay;
 
-            if (timeOfTheDay < timeSpan_start)
+            if (timeOfTheDay < layerProperties.timeSpan_start)
             {
                 timeOfDayEdited += cycleTime;
             }
 
-            float diff = timeOfDayEdited - timeSpan_start;
-            currentAngle = initialAngle + (diff * movementSpeed);
+            float diff = timeOfDayEdited - layerProperties.timeSpan_start;
+            currentAngle = layerProperties.initialAngle + (diff * layerProperties.movementSpeed);
 
-            satellite.transform.localPosition = GetSatellitePosition(radius, currentAngle);
+            satellite.transform.localPosition = GetSatellitePosition(layerProperties.radius, currentAngle);
         }
 
         private void UpdateSatelliteSize()
@@ -120,7 +129,7 @@ namespace DCL.Skybox
                 return;
             }
             // change satellite size
-            satellite.transform.localScale = Vector3.one * satelliteSize;
+            satellite.transform.localScale = Vector3.one * layerProperties.satelliteSize;
         }
 
         private void UpdateOrbitRotation()
@@ -134,9 +143,9 @@ namespace DCL.Skybox
             //  Rotate orbit plane along horizon line
             Vector3 rot = satelliteOrbit.transform.localRotation.eulerAngles;
             rot.z = 0;
-            rot.y = horizonPlaneRotation;
+            rot.y = layerProperties.horizonPlaneRotation;
             //  Rotate orbit plane along inclination line
-            rot.x = inclination;
+            rot.x = layerProperties.inclination;
             satelliteOrbit.transform.localRotation = Quaternion.Euler(rot);
         }
 
@@ -152,20 +161,20 @@ namespace DCL.Skybox
         private bool CheckIfSatelliteInTimeBounds(float timeOfTheDay)
         {
             // Calculate edited time for the case of out time less than in time (over the day scenario)
-            float outTimeEdited = timeSpan_end;
+            float outTimeEdited = layerProperties.timeSpan_End;
             float timeOfTheDayEdited = timeOfTheDay;
 
-            if (timeSpan_end < timeSpan_start)
+            if (layerProperties.timeSpan_End < layerProperties.timeSpan_start)
             {
                 outTimeEdited += cycleTime;
             }
 
-            if (timeOfTheDay < timeSpan_start)
+            if (timeOfTheDay < layerProperties.timeSpan_start)
             {
                 timeOfTheDayEdited += cycleTime;
             }
 
-            if (timeOfTheDayEdited >= timeSpan_start && timeOfTheDayEdited <= outTimeEdited)
+            if (timeOfTheDayEdited >= layerProperties.timeSpan_start && timeOfTheDayEdited <= outTimeEdited)
             {
                 return true;
             }
@@ -182,13 +191,92 @@ namespace DCL.Skybox
             Handles.color = Color.gray;
             Handles.DrawWireDisc(position, Vector3.up, 1000, thickness);
 
-            if (satelliteOrbit == null)
+            if (satelliteOrbit == null || layerProperties == null)
             {
                 return;
             }
             // Draw wire disc of green color for orbit orthogonal to y = 1
             Handles.color = Color.green;
-            Handles.DrawWireDisc(position, satelliteOrbit.transform.forward, radius, thickness);
+            Handles.DrawWireDisc(position, satelliteOrbit.transform.forward, layerProperties.radius, thickness);
+        }
+
+        private void ApplyFade(float timeOfTheDay)
+        {
+            float fadeAmount = 1;
+
+            if (CheckFadingIn(timeOfTheDay, out fadeAmount))
+            {
+                for (int i = 0; i < materials.Count; i++)
+                {
+                    materials[i].SetFloat(SkyboxShaderUtils.Opacity, fadeAmount);
+                }
+            }
+            else if (CheckFadingOut(timeOfTheDay, out fadeAmount))
+            {
+                for (int i = 0; i < materials.Count; i++)
+                {
+                    materials[i].SetFloat(SkyboxShaderUtils.Opacity, fadeAmount);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < materials.Count; i++)
+                {
+                    materials[i].SetFloat(SkyboxShaderUtils.Opacity, fadeAmount);
+                }
+
+            }
+        }
+
+        private bool CheckFadingIn(float dayTime, out float fadeAmt)
+        {
+            fadeAmt = 1;
+            bool fadeChanged = false;
+            float fadeInCompletionTime = layerProperties.timeSpan_start + layerProperties.fadeInTime;
+            float dayTimeEdited = dayTime;
+            if (dayTime < layerProperties.timeSpan_start)
+            {
+                dayTimeEdited = cycleTime + dayTime;
+            }
+
+            if (dayTimeEdited < fadeInCompletionTime)
+            {
+                float percentage = Mathf.InverseLerp(layerProperties.timeSpan_start, fadeInCompletionTime, dayTimeEdited);
+                fadeAmt = percentage;
+                fadeChanged = true;
+            }
+
+            return fadeChanged;
+        }
+
+        private bool CheckFadingOut(float dayTime, out float fadeAmt)
+        {
+            fadeAmt = 1;
+            bool fadeChanged = false;
+            float endTimeEdited = layerProperties.timeSpan_End;
+            float dayTimeEdited = dayTime;
+
+            if (layerProperties.timeSpan_End < layerProperties.timeSpan_start)
+            {
+                endTimeEdited = cycleTime + layerProperties.timeSpan_End;
+            }
+
+            if (dayTime < layerProperties.timeSpan_start)
+            {
+                dayTimeEdited = cycleTime + dayTime;
+            }
+
+
+            float fadeOutStartTime = endTimeEdited - layerProperties.fadeOutTime;
+
+            if (dayTimeEdited > fadeOutStartTime)
+            {
+                float percentage = Mathf.InverseLerp(endTimeEdited, fadeOutStartTime, dayTimeEdited);
+                fadeAmt = percentage;
+                fadeChanged = true;
+            }
+
+            return fadeChanged;
         }
 
     }
