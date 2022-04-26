@@ -333,8 +333,8 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [Test]
     public void ParcelScene_SetEntityParent()
     {
-        var entityId = 11;
-        var entityId2 = "entityId_2";
+        var entityId = 1134;
+        var entityId2 = 3124;
         var entity = TestUtils.CreateSceneEntity(scene, entityId);
         var entity2 = TestUtils.CreateSceneEntity(scene, entityId2);
 
@@ -361,5 +361,98 @@ public class SceneTests : IntegrationTestSuite_Legacy
         TestUtils.SetEntityParent(scene, entityId, ParcelScene.CONST_SCENE_ROOT_ENTITY);
         Assert.IsNull(entity.parent);
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
+    }
+
+    [Test]
+    public void ConvertLegacyEntityIdsCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "Eed";
+        
+        // Act
+        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreEqual(result,885819392);
+        Assert.AreEqual(result,legacyEntityId.GetHashCode() << 9);
+    }
+    
+    [Test]
+    public void ReserveThe512FirstEntitiesCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "Eed";
+        
+        // Act
+        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreNotEqual(result,-1273338300);
+        Assert.AreNotEqual(result,legacyEntityId.GetHashCode());
+    }
+
+    [Test]
+    public void EntityLegacyGiveRootCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "0";
+        
+        // Act
+        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreNotEqual(result, ParcelScene.CONST_SCENE_ROOT_ENTITY);
+    }
+    
+    [Test]
+    public void EntityLegacyGiveThirdPersonCameraEntityCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "PlayerEntityReference";
+        
+        // Act
+        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreNotEqual(result, ParcelScene.CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE);
+    }
+        
+    [Test]
+    public void EntityLegacyGiveFirstPersonCameraEntityCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "FirstPersonCameraEntityReference";
+        
+        // Act
+        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreNotEqual(result, ParcelScene.CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
+    }
+    
+    [Test]
+    public void EntityLegacyGiveAvatarPositionEntityCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "AvatarPositionEntityReference";
+        
+        // Act
+        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreNotEqual(result, ParcelScene.CONST_AVATAR_POSITION_REFERENCE);
+    }
+    
+    [Test]
+    public void EntityLegacyGiveAvatarEntityCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "AvatarEntityReference";
+        
+        // Act
+        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreNotEqual(result, ParcelScene.CONST_AVATAR_ENTITY_REFERENCE);
     }
 }

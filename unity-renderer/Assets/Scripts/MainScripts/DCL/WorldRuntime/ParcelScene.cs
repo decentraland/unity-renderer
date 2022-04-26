@@ -102,7 +102,7 @@ namespace DCL.Controllers
             OnSetData?.Invoke(data);
         }
         
-        private long EntityFromLegacyEntityString(string entityId)
+        internal long EntityFromLegacyEntityString(string entityId)
         {
             switch (entityId)
             {
@@ -269,6 +269,7 @@ namespace DCL.Controllers
             return false;
         }
 
+        public IDCLEntity GetEntityById(string entityId) { throw new System.NotImplementedException(); }
         public Transform GetSceneTransform() { return transform; }
 
         public IDCLEntity CreateEntity(long id)
@@ -433,15 +434,10 @@ namespace DCL.Controllers
             Transform avatarTransform = worldData.avatarTransform.Get();
             Transform firstPersonCameraTransform = worldData.fpsTransform.Get();
 
-            if (parentId == "FirstPersonCameraEntityReference" ||
-                parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+            // CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE is for compatibility purposes
+            if (parentId == CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE || parentId == CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE)
             {
-                if (parentId == CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE || parentId == CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE) // PlayerEntityReference is for compatibility purposes
-                {
-                    Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.id);
-                    return;
-                }
-                
+
                 if (firstPersonCameraTransform == null)
                 {
                     Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.id);

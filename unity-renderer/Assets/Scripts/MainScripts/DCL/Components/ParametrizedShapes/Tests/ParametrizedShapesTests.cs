@@ -321,7 +321,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         // Add UUID plugin to enable OnPointerEvent components for this integration test.
         UUIDEventsPlugin eventsPlugin = new UUIDEventsPlugin();
 
-        string entityId = "entityId";
+        long entityId = 2134;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
 

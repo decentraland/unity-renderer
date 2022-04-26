@@ -13,14 +13,9 @@ namespace DCL.Controllers
         event Action<IDCLEntity> OnEntityRemoved;
 
         IDCLEntity CreateEntity(long id);
-        IDCLEntity GetEntityById(string entityId);
+        IDCLEntity GetEntityById(long entityId);
         Transform GetSceneTransform();
         Dictionary<long, IDCLEntity> entities { get; }
-        Dictionary<string, ISharedComponent> disposableComponents { get; }
-        T GetSharedComponent<T>() where T : class;
-        ISharedComponent GetSharedComponent(string id);
-        ISharedComponent SharedComponentCreate(string id, int classId);
-        void SharedComponentAttach(long entityId, string id);
         IECSComponentsManagerLegacy componentsManagerLegacy { get; }
         LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
         ContentProvider contentProvider { get; }
