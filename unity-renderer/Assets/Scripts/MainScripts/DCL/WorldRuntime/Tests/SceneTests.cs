@@ -55,7 +55,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
             "IsInsideSceneBoundaries() should always return true.");
         Assert.IsTrue(globalScene.IsInsideSceneBoundaries(new Vector2Int(-1000, -1000)),
             "IsInsideSceneBoundaries() should always return true.");
-
+        
         yield return null;
 
         // Position character inside parcel (0,0)
@@ -70,26 +70,60 @@ public class SceneTests : IntegrationTestSuite_Legacy
             "Scene not in loaded dictionary when far! GlobalScenes must not be unloaded by distance!");
     }
 
-    [Test]
-    public void ParcelScene_TrackDisposables_AfterInitDone()
+    [UnityTest]
+    public IEnumerator UnloadGlobalScene()
     {
-        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        string sceneId = "Test Global Scene";
 
-        scene.sceneLifecycleHandler.SetInitMessagesDone();
+        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() {id = sceneId}));
 
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.IsTrue(Environment.i.world.state.Contains(sceneId), "Scene not in loaded dictionary!");
+
+        sceneController.UnloadParcelSceneExecute(sceneId);
+
+        Assert.IsFalse(Environment.i.world.state.Contains(sceneId), "Scene not unloaded correctly!");
+
+        yield break;
     }
 
-    [Test]
-    public void ParcelScene_TrackDisposables_Empty()
-    {
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
-    }
 
     [UnityTest]
-    public IEnumerator SceneLoading()
+    public IEnumerator TrackPortableExperiencesInDataStore()
+    {
+        DataStore_World worldData = DataStore.i.Get<DataStore_World>();
+        string sceneId = "Test Global Scene";
+
+        GameObject experiencesViewerMockedGo = new GameObject();
+        DataStore.i.experiencesViewer.isInitialized.Set(experiencesViewerMockedGo.transform);
+
+        // Ensure its added to DataStore when created
+        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage()
+            {id = sceneId, isPortableExperience = true}));
+        Assert.IsTrue(worldData.portableExperienceIds.Contains(sceneId));
+
+        // Ensure its removed from DataStore when unloaded
+        sceneController.UnloadParcelSceneExecute(sceneId);
+        Assert.IsFalse(worldData.portableExperienceIds.Contains(sceneId));
+
+        // If re-added when isPortableExperience is false, then it shouldn't be in the data store
+        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage()
+            {id = sceneId, isPortableExperience = false}));
+        Assert.IsFalse(worldData.portableExperienceIds.Contains(sceneId));
+
+        // Whe re-added with isPortableExperience as true, it should work again
+        sceneController.UnloadParcelSceneExecute(sceneId);
+        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage()
+            {id = sceneId, isPortableExperience = true}));
+        Assert.IsTrue(worldData.portableExperienceIds.Contains(sceneId));
+
+        Object.Destroy(experiencesViewerMockedGo);
+        DataStore.i.experiencesViewer.isInitialized.Set(null);
+        yield break;
+    }
+
+
+    [UnityTest]
+    public IEnumerator LoadScene()
     {
         sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
         yield return new WaitForAllMessagesProcessed();
@@ -101,7 +135,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
-    public IEnumerator SceneUnloading()
+    public IEnumerator UnloadScene()
     {
         sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
@@ -137,7 +171,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
-    public IEnumerator SeveralParcelsFromJSON()
+    public IEnumerator LoadManyParcelsFromJSON()
     {
         string severalParcelsJson = (Resources.Load("TestJSON/TestSceneSeveralParcels") as TextAsset).text;
 
@@ -178,6 +212,24 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         sceneController.UnloadAllScenes(includePersistent: true);
         yield return null;
+    }
+
+    [Test]
+    public void ParcelScene_TrackDisposables_AfterInitDone()
+    {
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+
+        scene.sceneLifecycleHandler.SetInitMessagesDone();
+
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+    }
+
+    [Test]
+    public void ParcelScene_TrackDisposables_Empty()
+    {
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
     }
 
     [UnityTest]
@@ -282,7 +334,9 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public void ParcelScene_SetEntityParent()
     {
         var entityId = 11;
+        var entityId2 = "entityId_2";
         var entity = TestUtils.CreateSceneEntity(scene, entityId);
+        var entity2 = TestUtils.CreateSceneEntity(scene, entityId2);
 
         // Make sure that it doesn't have a parent
         Assert.IsNull(entity.parent);
@@ -290,12 +344,17 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         // Set player reference as parent
         TestUtils.SetEntityParent(scene, entityId, ParcelScene.CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
-        Assert.AreEqual(entity.parent, DCLCharacterController.i.firstPersonCameraReference);
+        Assert.AreEqual(entity.gameObject.transform.parent,
+            DCLCharacterController.i.firstPersonCameraGameObject.transform);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
+
+        // Set another entity as parent and ensure is not added as persistent
+        TestUtils.SetEntityParent(scene, entityId, entityId2);
+        Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set avatar position reference as parent
         TestUtils.SetEntityParent(scene, entityId, ParcelScene.CONST_AVATAR_ENTITY_REFERENCE);
-        Assert.AreEqual(entity.parent, DCLCharacterController.i.avatarReference);
+        Assert.AreEqual(entity.gameObject.transform.parent, DCLCharacterController.i.avatarGameObject.transform);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Remove all parents

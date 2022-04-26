@@ -29,7 +29,7 @@ namespace Tests
         {
             yield return base.SetUp();
 
-            scene = TestUtils.CreateTestScene();
+            scene = TestUtils.CreateTestScene() as ParcelScene;
             IVideoPluginWrapper pluginWrapper = new VideoPluginWrapper_Mock();
             originalVideoPluginBuilder = DCLVideoTexture.videoPluginWrapperBuilder;
             DCLVideoTexture.videoPluginWrapperBuilder = () => pluginWrapper;
@@ -293,6 +293,7 @@ namespace Tests
         {
             // We disable SceneController monobehaviour to avoid its current scene id update
             sceneController.enabled = false;
+            scene.isPersistent = false;
 
             // Set current scene as a different one
             CommonScriptableObjects.sceneID.Set("non-existent-scene");
@@ -380,6 +381,7 @@ namespace Tests
         {
             // We disable SceneController monobehaviour to avoid its current scene id update
             sceneController.enabled = false;
+            scene.isPersistent = false;
 
             // Set current scene with this scene's id
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);

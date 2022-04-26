@@ -9,6 +9,7 @@ namespace DCL
         BUILDER_IN_WORLD_EDITION
     }
 
+
     public class DataStore
     {
         private static DataStore instance = new DataStore();
@@ -35,6 +36,7 @@ namespace DCL
 
         public static void Clear() => instance = new DataStore();
 
+        public DataStore_World world => i.Get<DataStore_World>();
         public DataStore_Common common => i.Get<DataStore_Common>();
         public DataStore_Realm realm => i.Get<DataStore_Realm>();
         public DebugConfig debugConfig => i.Get<DebugConfig>();

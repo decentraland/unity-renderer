@@ -68,7 +68,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
         ColorUtility.TryParseHtmlString("#FF9292", out color1);
 
         // Update material attached to 2 entities, adding albedoColor
-        scene.SharedComponentUpdate(m.id, JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(m.id, JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
         {
             albedoTexture = dclAvatarTexture.id,
             metallic = 1,

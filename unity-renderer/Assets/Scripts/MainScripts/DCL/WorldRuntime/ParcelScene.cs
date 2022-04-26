@@ -4,14 +4,12 @@ using DCL.Helpers;
 using DCL.Models;
 using DCL.Controllers.ParcelSceneDebug;
 using System.Collections.Generic;
-using System.Linq;
-using MainScripts.DCL.WorldRuntime;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace DCL.Controllers
 {
-    public class ParcelScene : MonoBehaviour, IParcelScene, ISceneMessageProcessor
+    public class ParcelScene : MonoBehaviour, IParcelScene
     {
         public const long CONST_SCENE_ROOT_ENTITY = 0;
         public const long CONST_AVATAR_ENTITY_REFERENCE = 1;
@@ -20,18 +18,14 @@ namespace DCL.Controllers
         public const long CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 4;
         
         public Dictionary<long, IDCLEntity> entities { get; private set; } = new Dictionary<long, IDCLEntity>();
-        public Dictionary<string, ISharedComponent> disposableComponents { get; private set; } = new Dictionary<string, ISharedComponent>();
+        public IECSComponentsManagerLegacy componentsManagerLegacy { get; private set; }
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
 
         public HashSet<Vector2Int> parcels = new HashSet<Vector2Int>();
         public ISceneMetricsCounter metricsCounter { get; set; }
         public event System.Action<IDCLEntity> OnEntityAdded;
         public event System.Action<IDCLEntity> OnEntityRemoved;
-        public event System.Action<IComponent> OnComponentAdded;
-        public event System.Action<IComponent> OnComponentRemoved;
-        public event System.Action OnChanged;
         public event System.Action<LoadParcelScenesMessage.UnityParcelScene> OnSetData;
-        public event System.Action<string, ISharedComponent> OnAddSharedComponent;
         public event System.Action<float> OnLoadingStateUpdated;
 
         public ContentProvider contentProvider { get; set; }
@@ -51,10 +45,11 @@ namespace DCL.Controllers
         public SceneLifecycleHandler sceneLifecycleHandler;
 
         public bool isReleased { get; private set; }
-
+        
         public void Awake()
         {
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
+            componentsManagerLegacy = new ECSComponentsManagerLegacy(this);
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
             metricsCounter = new SceneMetricsCounter(DataStore.i.sceneWorldObjects);
         }
@@ -159,7 +154,7 @@ namespace DCL.Controllers
 
         public void Cleanup(bool immediate)
         {
-            if (isReleased)
+            if (isReleased || gameObject == null)
                 return;
 
             if (sceneDebugPlane != null)
@@ -168,7 +163,7 @@ namespace DCL.Controllers
                 sceneDebugPlane = null;
             }
 
-            DisposeAllSceneComponents();
+            componentsManagerLegacy.DisposeAllSceneComponents();
 
             if (immediate) //!CommonScriptableObjects.rendererState.Get())
             {
@@ -407,7 +402,8 @@ namespace DCL.Controllers
 
                 entities.Clear();
 
-                Destroy(this.gameObject);
+                if (gameObject != null)
+                    Destroy(gameObject);
             }
         }
 
@@ -425,7 +421,7 @@ namespace DCL.Controllers
                 return;
             }
 
-            IDCLEntity me = GetEntityForUpdate(entityId);
+            IDCLEntity me = GetEntityById(entityId);
 
             if (me == null)
                 return;
@@ -433,30 +429,60 @@ namespace DCL.Controllers
             Environment.i.platform.cullingController.MarkDirty();
             Environment.i.platform.physicsSyncController.MarkDirty();
 
-            if ( DCLCharacterController.i != null )
+            DataStore_World worldData = DataStore.i.Get<DataStore_World>();
+            Transform avatarTransform = worldData.avatarTransform.Get();
+            Transform firstPersonCameraTransform = worldData.fpsTransform.Get();
+
+            if (parentId == "FirstPersonCameraEntityReference" ||
+                parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
             {
                 if (parentId == CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE || parentId == CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE) // PlayerEntityReference is for compatibility purposes
                 {
-                    // In this case, the entity will attached to the first person camera
-                    // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
-                    me.SetParent(DCLCharacterController.i.firstPersonCameraReference);
-                    Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                    Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.id);
+                    return;
+                }
+                
+                if (firstPersonCameraTransform == null)
+                {
+                    Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.id);
                     return;
                 }
 
-                if (parentId == CONST_AVATAR_ENTITY_REFERENCE || parentId == CONST_AVATAR_POSITION_REFERENCE) // AvatarPositionEntityReference is for compatibility purposes
+
+                // In this case, the entity will attached to the first person camera
+                // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
+                me.SetParent(null);
+                me.gameObject.transform.SetParent(firstPersonCameraTransform, false);
+                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
+                Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                return;
+            }
+
+            if (parentId == CONST_AVATAR_ENTITY_REFERENCE ||
+                parentId ==
+                CONST_AVATAR_POSITION_REFERENCE) // AvatarPositionEntityReference is for compatibility purposes
+            {
+                if (avatarTransform == null)
                 {
-                    // In this case, the entity will be attached to the avatar
-                    // It will simply rotate with the avatar, regardless of where the camera is pointing
-                    me.SetParent(DCLCharacterController.i.avatarReference);
-                    Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                    Debug.LogError("Avatar transform is null when trying to set parent! " + sceneData.id);
                     return;
                 }
 
-                if (me.parent == DCLCharacterController.i.firstPersonCameraReference || me.parent == DCLCharacterController.i.avatarReference)
-                {
-                    Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
-                }
+                // In this case, the entity will be attached to the avatar
+                // It will simply rotate with the avatar, regardless of where the camera is pointing
+                me.SetParent(null);
+                me.gameObject.transform.SetParent(avatarTransform, false);
+                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
+                Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                return;
+            }
+
+            // Remove from persistent checks if it was formerly added as child of avatarTransform or fpsTransform 
+            if (me.gameObject.transform.parent == avatarTransform ||
+                me.gameObject.transform.parent == firstPersonCameraTransform)
+            {
+                if (Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(me))
+                    Environment.i.world.sceneBoundsChecker.RemovePersistent(me);
             }
 
             if (parentId == CONST_SCENE_ROOT_ENTITY)
@@ -467,294 +493,14 @@ namespace DCL.Controllers
             }
             else
             {
-                IDCLEntity myParent = GetEntityForUpdate(parentId);
+                IDCLEntity myParent = GetEntityById(parentId);
 
                 if (myParent != null)
                 {
                     me.SetParent(myParent);
                 }
             }
-        }
 
-        /**
-          * This method is called when we need to attach a disposable component to the entity
-          */
-        public void SharedComponentAttach(long entityId, string componentId)
-        {
-            IDCLEntity entity = GetEntityForUpdate(entityId);
-
-            if (entity == null)
-                return;
-
-            if (disposableComponents.TryGetValue(componentId, out ISharedComponent sharedComponent))
-            {
-                sharedComponent.AttachTo(entity);
-            }
-        }
-
-        public IEntityComponent EntityComponentCreateOrUpdateWithModel(long entityId, CLASS_ID_COMPONENT classId, object data)
-        {
-            IDCLEntity entity = GetEntityForUpdate(entityId);
-
-            if (entity == null)
-            {
-                Debug.LogError($"scene '{sceneData.id}': Can't create entity component if the entity {entityId} doesn't exist!");
-                return null;
-            }
-
-            IEntityComponent newComponent = null;
-
-            if (classId == CLASS_ID_COMPONENT.UUID_CALLBACK)
-            {
-                OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(data as string);
-                classId = model.GetClassIdFromType();
-            }
-            // NOTE: TRANSFORM and AVATAR_ATTACH can't be used in the same Entity at the same time.
-            // so we remove AVATAR_ATTACH (if exists) when a TRANSFORM is created.
-            else if (classId == CLASS_ID_COMPONENT.TRANSFORM
-                     && entity.TryGetBaseComponent(CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component))
-            {
-                component.Cleanup();
-                entity.components.Remove( CLASS_ID_COMPONENT.AVATAR_ATTACH );
-            }
-
-            if (!entity.components.ContainsKey(classId))
-            {
-                var factory = Environment.i.world.componentFactory;
-                newComponent = factory.CreateComponent((int) classId) as IEntityComponent;
-
-                if (newComponent != null)
-                {
-                    entity.components.Add(classId, newComponent);
-                    OnComponentAdded?.Invoke(newComponent);
-
-                    newComponent.Initialize(this, entity);
-
-                    if (data is string json)
-                    {
-                        newComponent.UpdateFromJSON(json);
-                    }
-                    else
-                    {
-                        newComponent.UpdateFromModel(data as BaseModel);
-                    }
-                }
-            }
-            else
-            {
-                newComponent = EntityComponentUpdate(entity, classId, data as string);
-            }
-
-            if (newComponent != null && newComponent is IOutOfSceneBoundariesHandler)
-                Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
-
-            OnChanged?.Invoke();
-            Environment.i.platform.physicsSyncController.MarkDirty();
-            Environment.i.platform.cullingController.MarkDirty();
-            return newComponent;
-        }
-
-        public IEntityComponent EntityComponentCreateOrUpdate(long entityId, CLASS_ID_COMPONENT classId, string data) { return EntityComponentCreateOrUpdateWithModel(entityId, classId, data); }
-
-        // The EntityComponentUpdate() parameters differ from other similar methods because there is no EntityComponentUpdate protocol message yet.
-        public IEntityComponent EntityComponentUpdate(IDCLEntity entity, CLASS_ID_COMPONENT classId,
-            string componentJson)
-        {
-            if (entity == null)
-            {
-                Debug.LogError($"Can't update the {classId} component of a nonexistent entity!", this);
-                return null;
-            }
-
-            if (!entity.components.ContainsKey(classId))
-            {
-                Debug.LogError($"Entity {entity.entityId} doesn't have a {classId} component to update!", this);
-                return null;
-            }
-
-            IComponent targetComponent = entity.components[classId];
-            targetComponent.UpdateFromJSON(componentJson);
-
-            return targetComponent as IEntityComponent;
-        }
-
-        public ISharedComponent SharedComponentCreate(string id, int classId)
-        {
-            if (disposableComponents.TryGetValue(id, out ISharedComponent component))
-                return component;
-
-            if (classId == (int) CLASS_ID.UI_SCREEN_SPACE_SHAPE || classId == (int) CLASS_ID.UI_FULLSCREEN_SHAPE)
-            {
-                if (GetSharedComponent<UIScreenSpace>() != null)
-                    return null;
-            }
-
-            var factory = Environment.i.world.componentFactory;
-            ISharedComponent newComponent = factory.CreateComponent(classId) as ISharedComponent;
-
-            if (newComponent == null)
-                return null;
-
-            disposableComponents.Add(id, newComponent);
-            OnAddSharedComponent?.Invoke(id, newComponent);
-
-            newComponent.Initialize(this, id);
-
-            return newComponent;
-        }
-
-        public void SharedComponentDispose(string id)
-        {
-            if (disposableComponents.TryGetValue(id, out ISharedComponent sharedComponent))
-            {
-                sharedComponent?.Dispose();
-                disposableComponents.Remove(id);
-                OnComponentRemoved?.Invoke(sharedComponent);
-            }
-        }
-
-        public void EntityComponentRemove(long entityId, string name)
-        {
-            IDCLEntity decentralandEntity = GetEntityForUpdate(entityId);
-
-            if (decentralandEntity == null)
-            {
-                return;
-            }
-
-            RemoveEntityComponent(decentralandEntity, name);
-        }
-
-        public T GetSharedComponent<T>()
-            where T : class
-        {
-            return disposableComponents.Values.FirstOrDefault(x => x is T) as T;
-        }
-
-        private void RemoveComponentType<T>(IDCLEntity entity, CLASS_ID_COMPONENT classId)
-            where T : MonoBehaviour
-        {
-            var component = entity.components[classId] as IEntityComponent;
-
-            if (component == null)
-                return;
-
-            var monoBehaviour = component.GetTransform().GetComponent<T>();
-
-            if (monoBehaviour != null)
-            {
-                Utils.SafeDestroy(monoBehaviour);
-            }
-        }
-
-        private void RemoveEntityComponent(IDCLEntity entity, string componentName)
-        {
-            switch (componentName)
-            {
-                case "shape":
-                    if (entity.meshesInfo.currentShape is BaseShape baseShape)
-                    {
-                        baseShape.DetachFrom(entity);
-                    }
-
-                    return;
-
-                case OnClick.NAME:
-                    {
-                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_CLICK, out IEntityComponent component ))
-                        {
-                            Utils.SafeDestroy(component.GetTransform().gameObject);
-                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_CLICK );
-                        }
-
-                        return;
-                    }
-                case OnPointerDown.NAME:
-                    {
-                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_DOWN, out IEntityComponent component ))
-                        {
-                            Utils.SafeDestroy(component.GetTransform().gameObject);
-                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_DOWN );
-                        }
-                    }
-                    return;
-                case OnPointerUp.NAME:
-                    {
-                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_UP, out IEntityComponent component ))
-                        {
-                            Utils.SafeDestroy(component.GetTransform().gameObject);
-                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_UP );
-                        }
-                    }
-                    return;
-                case OnPointerHoverEnter.NAME:
-                    {
-                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER, out IEntityComponent component ))
-                        {
-                            Utils.SafeDestroy(component.GetTransform().gameObject);
-                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER );
-                        }
-                    }
-                    return;
-                case OnPointerHoverExit.NAME:
-                    {
-                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT, out IEntityComponent component ))
-                        {
-                            Utils.SafeDestroy(component.GetTransform().gameObject);
-                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT );
-                        }
-                    }
-                    return;
-                case "transform":
-                    {
-                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component ))
-                        {
-                            component.Cleanup();
-                            entity.components.Remove( CLASS_ID_COMPONENT.AVATAR_ATTACH );
-                        }
-                    }
-                    return;
-            }
-        }
-
-        public ISharedComponent SharedComponentUpdate(string id, BaseModel model)
-        {
-            if (disposableComponents.TryGetValue(id, out ISharedComponent sharedComponent))
-            {
-                sharedComponent.UpdateFromModel(model);
-                return sharedComponent;
-            }
-
-            if (gameObject == null)
-            {
-                Debug.LogError($"Unknown disposableComponent {id} -- scene has been destroyed?");
-            }
-            else
-            {
-                Debug.LogError($"Unknown disposableComponent {id}", gameObject);
-            }
-
-            return null;
-        }
-
-        public ISharedComponent SharedComponentUpdate(string id, string json)
-        {
-            if (disposableComponents.TryGetValue(id, out ISharedComponent disposableComponent))
-            {
-                disposableComponent.UpdateFromJSON(json);
-                return disposableComponent;
-            }
-
-            if (gameObject == null)
-            {
-                Debug.LogError($"Unknown disposableComponent {id} -- scene has been destroyed?");
-            }
-            else
-            {
-                Debug.LogError($"Unknown disposableComponent {id}", gameObject);
-            }
-
-            return null;
         }
 
         protected virtual void SendMetricsEvent()
@@ -763,17 +509,7 @@ namespace DCL.Controllers
                 metricsCounter.SendEvent();
         }
 
-        public ISharedComponent GetSharedComponent(string componentId)
-        {
-            if (!disposableComponents.TryGetValue(componentId, out ISharedComponent result))
-            {
-                return null;
-            }
-
-            return result;
-        }
-
-        private IDCLEntity GetEntityForUpdate(long entityId)
+        public IDCLEntity GetEntityById(long entityId)
         {
             if (!entities.TryGetValue(entityId, out IDCLEntity entity))
             {
@@ -791,15 +527,6 @@ namespace DCL.Controllers
             return entity;
         }
 
-        private void DisposeAllSceneComponents()
-        {
-            List<string> allDisposableComponents = disposableComponents.Select(x => x.Key).ToList();
-            foreach (string id in allDisposableComponents)
-            {
-                Environment.i.platform.parcelScenesCleaner.MarkDisposableComponentForCleanup(this, id);
-            }
-        }
-
         public string GetStateString()
         {
             string baseState = isPersistent ? "global-scene" : "scene";
@@ -810,8 +537,9 @@ namespace DCL.Controllers
                 case SceneLifecycleHandler.State.WAITING_FOR_INIT_MESSAGES:
                     return $"{baseState}:{prettyName} - waiting for init messages...";
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
-                    if (disposableComponents != null && disposableComponents.Count > 0)
-                        return $"{baseState}:{prettyName} - left to ready:{disposableComponents.Count - sceneLifecycleHandler.disposableNotReadyCount}/{disposableComponents.Count} ({loadingProgress}%)";
+                    int sharedComponentsCount = componentsManagerLegacy.GetSceneSharedComponentsCount();
+                    if (sharedComponentsCount > 0)
+                        return $"{baseState}:{prettyName} - left to ready:{sharedComponentsCount - sceneLifecycleHandler.disposableNotReadyCount}/{sharedComponentsCount} ({loadingProgress}%)";
                     else
                         return $"{baseState}:{prettyName} - no components. waiting...";
                 case SceneLifecycleHandler.State.READY:
@@ -844,9 +572,9 @@ namespace DCL.Controllers
 
                     foreach (string componentId in sceneLifecycleHandler.disposableNotReady)
                     {
-                        if (disposableComponents.ContainsKey(componentId))
+                        if (componentsManagerLegacy.HasSceneSharedComponent(componentId))
                         {
-                            var component = disposableComponents[componentId];
+                            var component = componentsManagerLegacy.GetSceneSharedComponent(componentId);
 
                             Debug.Log($"Waiting for: {component.ToString()}");
 
@@ -888,7 +616,8 @@ namespace DCL.Controllers
             if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS ||
                 sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY)
             {
-                loadingProgress = disposableComponents != null && disposableComponents.Count > 0 ? (disposableComponents.Count - sceneLifecycleHandler.disposableNotReadyCount) * 100f / disposableComponents.Count : 100f;
+                int sharedComponentsCount = componentsManagerLegacy.GetSceneSharedComponentsCount();
+                loadingProgress = sharedComponentsCount > 0 ? (sharedComponentsCount - sceneLifecycleHandler.disposableNotReadyCount) * 100f / sharedComponentsCount : 100f;
             }
 
             OnLoadingStateUpdated?.Invoke(loadingProgress);

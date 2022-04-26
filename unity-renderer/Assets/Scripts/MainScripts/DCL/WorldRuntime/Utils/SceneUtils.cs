@@ -32,16 +32,24 @@ namespace DCL.Controllers
             DCLTransform.model.rotation = entity.gameObject.transform.rotation;
             DCLTransform.model.scale = entity.gameObject.transform.lossyScale;
 
-            foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> component in entity.components)
+            var components = scene.componentsManagerLegacy.GetComponentsDictionary(entity);
+
+            if (components != null)
             {
-                scene.EntityComponentCreateOrUpdateWithModel(newEntity.entityId, component.Key, component.Value.GetModel());
+                foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> component in components)
+                {
+                    scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(newEntity.entityId, component.Key, component.Value.GetModel());
+                }
             }
 
-            foreach (KeyValuePair<System.Type, ISharedComponent> component in entity.sharedComponents)
+            using (var iterator = scene.componentsManagerLegacy.GetSharedComponents(entity))
             {
-                ISharedComponent sharedComponent = scene.SharedComponentCreate(System.Guid.NewGuid().ToString(), component.Value.GetClassId());
-                sharedComponent.UpdateFromModel(component.Value.GetModel());
-                scene.SharedComponentAttach(newEntity.entityId, sharedComponent.id);
+                while (iterator.MoveNext())
+                {
+                    ISharedComponent sharedComponent = scene.componentsManagerLegacy.SceneSharedComponentCreate(System.Guid.NewGuid().ToString(), iterator.Current.GetClassId());
+                    sharedComponent.UpdateFromModel(iterator.Current.GetModel());
+                    scene.componentsManagerLegacy.SceneSharedComponentAttach(newEntity.entityId, sharedComponent.id);
+                }
             }
 
             return newEntity;

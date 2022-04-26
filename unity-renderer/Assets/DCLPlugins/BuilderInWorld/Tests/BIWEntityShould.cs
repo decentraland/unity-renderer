@@ -111,9 +111,9 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
 
         SmartItemComponent smartItemComponent = null;
 
-        scene.EntityComponentCreateOrUpdateWithModel(ENTITY_ID, CLASS_ID_COMPONENT.SMART_ITEM, model);
+        scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(ENTITY_ID, CLASS_ID_COMPONENT.SMART_ITEM, model);
 
-        if (scene.entities[ENTITY_ID].TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent baseComponent))
+        if (scene.componentsManagerLegacy.TryGetBaseComponent(scene.entities[ENTITY_ID], CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent baseComponent))
         {
             //Note (Adrian): We can't wait to set the component 1 frame in production, so we set it like production
             smartItemComponent = ((SmartItemComponent) baseComponent);

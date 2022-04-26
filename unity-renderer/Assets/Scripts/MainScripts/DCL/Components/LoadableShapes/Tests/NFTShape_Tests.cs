@@ -125,6 +125,6 @@ public class NFTShape_Tests : IntegrationTestSuite
         var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_NFT>(true);
         yield return new DCL.WaitUntil(() => shapeLoader.alreadyLoaded);
 
-        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestOnPointerEventWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
     }
 }

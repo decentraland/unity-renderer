@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DCL.Emotes;
 using GPUSkinning;
 using UnityEngine;
 
 namespace AvatarSystem
 {
+    // [ADR 65 - https://github.com/decentraland/adr]
     public class Avatar : IAvatar
     {
         private const float RESCALING_BOUNDS_FACTOR = 100f;

@@ -7,7 +7,6 @@ using DCL.Helpers;
 using Google.Protobuf;
 using UnityEngine;
 using DCL.Configuration;
-using MainScripts.DCL.WorldRuntime;
 using Random = UnityEngine.Random;
 
 namespace DCL.Bots
@@ -19,7 +18,7 @@ namespace DCL.Bots
     /// </summary>
     public class BotsController : IBotsController
     {
-        private ISceneMessageProcessor globalScene;
+        private IParcelScene globalScene;
         private List<string> randomizedCollections = new List<string>();
         private List<long> instantiatedBots = new List<long>();
         private List<string> eyesWearableIds = new List<string>();
@@ -42,7 +41,7 @@ namespace DCL.Bots
             if (globalScene != null)
                 yield break;
 
-            globalScene = Environment.i.world.state.loadedScenes[Environment.i.world.state.globalSceneIds[0]] as ISceneMessageProcessor;
+            globalScene = Environment.i.world.state.loadedScenes[Environment.i.world.state.globalSceneIds[0]];
 
             CatalogController.wearableCatalog.Clear();
 
@@ -224,7 +223,7 @@ namespace DCL.Bots
             };
 
             globalScene.CreateEntity(entityId);
-            globalScene.EntityComponentCreateOrUpdateWithModel(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
+            globalScene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
             UpdateEntityTransform(globalScene, entityId, position, Quaternion.identity, Vector3.one);
 
             instantiatedBots.Add(entityId);
@@ -411,10 +410,10 @@ namespace DCL.Bots
             }
         }
 
-        void UpdateEntityTransform(ISceneMessageProcessor scene, long entityId, Vector3 position, Quaternion rotation, Vector3 scale)
+        void UpdateEntityTransform(IParcelScene scene, long entityId, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
-            scene.EntityComponentCreateOrUpdate(
+            scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
                 entityId,
                 CLASS_ID_COMPONENT.TRANSFORM,
                 System.Convert.ToBase64String(pB_Transform.ToByteArray())
