@@ -102,7 +102,7 @@ namespace DCL.Controllers
             OnSetData?.Invoke(data);
         }
         
-        internal long EntityFromLegacyEntityString(string entityId)
+        public static long EntityFromLegacyEntityString(string entityId)
         {
             switch (entityId)
             {

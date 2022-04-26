@@ -370,7 +370,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         string legacyEntityId = "Eed";
         
         // Act
-        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        long result = ParcelScene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
         Assert.AreEqual(result,885819392);
@@ -384,7 +384,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         string legacyEntityId = "Eed";
         
         // Act
-        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        long result = ParcelScene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
         Assert.AreNotEqual(result,-1273338300);
@@ -398,7 +398,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         string legacyEntityId = "0";
         
         // Act
-        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        long result = ParcelScene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
         Assert.AreEqual(result, ParcelScene.CONST_SCENE_ROOT_ENTITY);
@@ -411,7 +411,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         string legacyEntityId = "PlayerEntityReference";
         
         // Act
-        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        long result = ParcelScene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
         Assert.AreEqual(result, ParcelScene.CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE);
@@ -424,7 +424,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         string legacyEntityId = "FirstPersonCameraEntityReference";
         
         // Act
-        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        long result = ParcelScene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
         Assert.AreEqual(result, ParcelScene.CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
@@ -437,7 +437,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         string legacyEntityId = "AvatarPositionEntityReference";
         
         // Act
-        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        long result = ParcelScene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
         Assert.AreEqual(result, ParcelScene.CONST_AVATAR_POSITION_REFERENCE);
@@ -450,7 +450,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         string legacyEntityId = "AvatarEntityReference";
         
         // Act
-        long result = scene.EntityFromLegacyEntityString(legacyEntityId);
+        long result = ParcelScene.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
         Assert.AreEqual(result, ParcelScene.CONST_AVATAR_ENTITY_REFERENCE);
