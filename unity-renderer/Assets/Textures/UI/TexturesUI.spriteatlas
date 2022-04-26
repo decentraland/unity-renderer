@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 5444937
+    totalSpriteSurfaceArea: 5455977
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -80,6 +80,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 12f3d2a007b6b49f6a274df5427d424a, type: 3}
   - {fileID: 21300000, guid: 4c7c27a0c63aa439a88614596bc1edeb, type: 3}
   - {fileID: 21300000, guid: f5aa2ca039b5f4fc0ab1f49ecc6b2926, type: 3}
+  - {fileID: 21300000, guid: 61dc3ec0be076473f85d0d5a9baa17cc, type: 3}
   - {fileID: 21300000, guid: a0fc61d060820459290cbde64b85e7ff, type: 3}
   - {fileID: 21300000, guid: 4c253fd08e34648f8a509d98c99fba7f, type: 3}
   - {fileID: 21300000, guid: 436a77f04f3514b10b2d7054b7c7eb2e, type: 3}
@@ -411,6 +412,7 @@ SpriteAtlas:
   - CollapseStroke
   - DeleteIconOutline
   - SearchIcon
+  - SliderHighlight
   - MapStroke
   - ContainerRow
   - MenuContainer

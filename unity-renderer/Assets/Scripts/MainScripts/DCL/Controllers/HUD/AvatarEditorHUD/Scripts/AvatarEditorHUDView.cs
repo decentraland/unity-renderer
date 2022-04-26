@@ -226,7 +226,9 @@ public class AvatarEditorHUDView : MonoBehaviour
         collectiblesItemSelector.OnRetryClicked += controller.RetryLoadOwnedWearables;
 
         skinColorSelector.OnColorChanged += controller.SkinColorClicked;
-        skinColorPicker.OnColorChanged += controller.SkinColorClicked;
+        /* UNCOMMENT TO ENABLE SKIN COLOR PICKER
+         * skinColorPicker.OnColorChanged += controller.SkinColorClicked;
+         */
         eyeColorSelector.OnColorChanged += controller.EyesColorClicked;
         eyeColorPicker.OnColorChanged += controller.EyesColorClicked;
         hairColorSelector.OnColorChanged += controller.HairColorClicked;
@@ -295,19 +297,31 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void SelectHairColor(Color hairColor) 
     { 
-        //hairColorSelector.Select(hairColor);
+        hairColorSelector.Select(hairColor);
         hairColorPicker.UpdateSliderValues(hairColor);
+    }
+
+    public void SelectRandomHairColor()
+    {
+        hairColorPicker.SetRandomColor();
+    }
+
+    public void SelectRandomEyeColor()
+    {
+        eyeColorPicker.SetRandomColor();
     }
 
     public void SelectSkinColor(Color skinColor) 
     { 
-        //skinColorSelector.Select(skinColor);
-        skinColorPicker.UpdateSliderValues(skinColor);
+        skinColorSelector.Select(skinColor);
+        /* UNCOMMENT TO ENABLE SKIN COLOR PICKER
+         * skinColorPicker.UpdateSliderValues(skinColor);
+         */
     }
 
     public void SelectEyeColor(Color eyesColor) 
     {
-        //eyeColorSelector.Select(eyesColor);
+        eyeColorSelector.Select(eyesColor);
         eyeColorPicker.UpdateSliderValues(eyesColor);
     }
 
@@ -475,8 +489,10 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         if (skinColorSelector != null)
             skinColorSelector.OnColorChanged -= controller.SkinColorClicked;
-        if (skinColorPicker != null)
-            skinColorPicker.OnColorChanged -= controller.SkinColorClicked;
+        /*  UNCOMMENT TO ENABLE SKIN COLOR PICKER
+         * if (skinColorPicker != null)
+         *  skinColorPicker.OnColorChanged -= controller.SkinColorClicked;
+         */
         if (eyeColorSelector != null)
             eyeColorSelector.OnColorChanged -= controller.EyesColorClicked;
         if (eyeColorPicker != null)
