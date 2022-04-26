@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class UIChargeWheel : MonoBehaviour
 {
-    Material _mat;
+    Material material;
 
     public float speed = 1;
 
@@ -19,9 +19,9 @@ public class UIChargeWheel : MonoBehaviour
     void Start()
     {
         Image img = GetComponent<Image>();
-        _mat = new Material(img.material);
-        img.material = _mat;
-        _mat.SetColor("_color01", colors[colorIndex]);
+        material = new Material(img.material);
+        img.material = material;
+        material.SetColor("_color01", colors[colorIndex]);
     }
 
     
@@ -34,21 +34,21 @@ public class UIChargeWheel : MonoBehaviour
         {
             head += tempSpeedH * Time.deltaTime;
 
-            _mat.SetFloat("_fillHead", head);
+            material.SetFloat("_fillHead", head);
         }
         else if(tail < 1)
         {
             tail += tempSpeedT * Time.deltaTime;
 
-            _mat.SetFloat("_fillTail", tail);
+            material.SetFloat("_fillTail", tail);
         }
         else
         {
             head = 0;
             tail = 0;
 
-            _mat.SetFloat("_fillHead", head);
-            _mat.SetFloat("_fillTail", tail);
+            material.SetFloat("_fillHead", head);
+            material.SetFloat("_fillTail", tail);
 
             ColorChange();
         }
@@ -65,6 +65,6 @@ public class UIChargeWheel : MonoBehaviour
             colorIndex = 0;
         }
 
-        _mat.SetColor("_color01", colors[colorIndex]);
+        material.SetColor("_color01", colors[colorIndex]);
     }
 }
