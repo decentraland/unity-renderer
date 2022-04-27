@@ -1079,7 +1079,7 @@ MonoBehaviour:
     horizonPlaneRotation: 90
     inclination: 0
     movementSpeed: 25
-    satelliteRotation: 0
+    satelliteRotation: 2
     fixedRotation: {x: 0, y: 0, z: 0}
     rotateAroundAxis: {x: 0, y: 0, z: 0}
     rotateSpeed: 25
