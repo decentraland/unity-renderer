@@ -16,6 +16,7 @@ namespace Tests
         const string TEST_BUILTIN_FONT_NAME = "builtin:SF-UI-Text-Regular SDF";
 
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override void InitializeServices(ServiceLocator serviceLocator)
         {
@@ -24,11 +25,17 @@ namespace Tests
             serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
         }
 
-        [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene() as ParcelScene;
+            coreComponentsPlugin = new CoreComponentsPlugin();
+            scene = TestUtils.CreateTestScene();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         [UnityTest]

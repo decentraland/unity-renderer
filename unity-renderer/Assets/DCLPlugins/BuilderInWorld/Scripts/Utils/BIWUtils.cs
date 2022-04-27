@@ -24,6 +24,55 @@ using UnityEngine.Events;
 
 public static partial class BIWUtils
 {
+    public static IDCLEntity DuplicateEntity(IParcelScene scene, IDCLEntity entity)
+    {
+        if (!scene.entities.ContainsKey(entity.entityId))
+            return null;
+
+        IDCLEntity newEntity = scene.CreateEntity(System.Guid.NewGuid().ToString());
+
+        if (entity.children.Count > 0)
+        {
+            using (var iterator = entity.children.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    IDCLEntity childDuplicate = DuplicateEntity(scene, iterator.Current.Value);
+                    childDuplicate.SetParent(newEntity);
+                }
+            }
+        }
+
+        if (entity.parent != null)
+            scene.SetEntityParent(newEntity.entityId, entity.parent.entityId);
+
+        DCLTransform.model.position = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position);
+        DCLTransform.model.rotation = entity.gameObject.transform.rotation;
+        DCLTransform.model.scale = entity.gameObject.transform.lossyScale;
+
+        var components = scene.componentsManagerLegacy.GetComponentsDictionary(entity);
+
+        if (components != null)
+        {
+            foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> component in components)
+            {
+                scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(newEntity.entityId, component.Key, component.Value.GetModel());
+            }
+        }
+
+        using (var iterator = scene.componentsManagerLegacy.GetSharedComponents(entity))
+        {
+            while (iterator.MoveNext())
+            {
+                ISharedComponent sharedComponent = scene.componentsManagerLegacy.SceneSharedComponentCreate(System.Guid.NewGuid().ToString(), iterator.Current.GetClassId());
+                sharedComponent.UpdateFromModel(iterator.Current.GetModel());
+                scene.componentsManagerLegacy.SceneSharedComponentAttach(newEntity.entityId, sharedComponent.id);
+            }
+        }
+        
+        return newEntity;
+    }
+    
     public static bool IsParcelSceneSquare(Vector2Int[] parcelsPoints)
     {
         int minX = int.MaxValue;

@@ -17,6 +17,7 @@ namespace Tests
     {
         private ParcelScene scene;
         private ISceneController sceneController => DCL.Environment.i.world.sceneController;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -24,6 +25,13 @@ namespace Tests
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene() as ParcelScene;
             CommonScriptableObjects.rendererState.Set(true);
+            coreComponentsPlugin = new CoreComponentsPlugin();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         public DCLAudioClip CreateAudioClip(string url, bool loop, bool shouldTryToLoad, double volume)

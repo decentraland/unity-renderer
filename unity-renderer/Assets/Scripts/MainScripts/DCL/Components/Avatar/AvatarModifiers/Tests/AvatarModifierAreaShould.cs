@@ -17,13 +17,15 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
     private AvatarModifierArea avatarModifierArea;
     private AvatarModifier mockAvatarModifier;
     public ParcelScene scene;
+    public CoreComponentsPlugin coreComponentsPlugin;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
-        var entity = TestUtils.CreateSceneEntity(scene);
+        IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
 
         AvatarModifierArea.Model model = new AvatarModifierArea.Model
         {
@@ -38,6 +40,12 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
 
         //now that the modifier has been added we trigger the Update again so it gets taken into account
         yield return TestUtils.EntityComponentUpdate(avatarModifierArea, model);
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     [UnityTest]

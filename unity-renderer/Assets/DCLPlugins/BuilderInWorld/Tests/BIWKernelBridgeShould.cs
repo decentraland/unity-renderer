@@ -18,11 +18,15 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
 
     private bool messageReceived = false;
 
+    private CoreComponentsPlugin coreComponentsPlugin;
+
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
 
         entityHandler = new BIWEntityHandler();
@@ -34,10 +38,14 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
         biwBridge = MainSceneFactory.CreateBuilderInWorldBridge();
 
         WebInterface.OnMessageFromEngine += MessageReceived;
+        
     }
 
     protected override IEnumerator TearDown()
     {
+        coreComponentsPlugin.Dispose();
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
+
         Object.Destroy(biwBridge.gameObject);
         WebInterface.OnMessageFromEngine -= MessageReceived;
         yield return base.TearDown();
