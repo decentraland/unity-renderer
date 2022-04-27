@@ -345,8 +345,8 @@ namespace DCL
         {
             if (disposableComponents.TryGetValue(id, out ISharedComponent component))
                 return component;
-            
-            var factory = Environment.i.world.componentFactory;
+
+            IRuntimeComponentFactory factory = componentFactory;
             
             if (factory.createConditions.ContainsKey(classId))
             {
