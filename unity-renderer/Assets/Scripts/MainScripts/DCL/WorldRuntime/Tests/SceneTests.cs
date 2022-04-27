@@ -231,13 +231,13 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         scene.sceneLifecycleHandler.SetInitMessagesDone();
 
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.pendingResourcesCount);
     }
 
     [Test]
     public void ParcelScene_TrackDisposables_Empty()
     {
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.pendingResourcesCount);
     }
 
     [UnityTest]
@@ -306,11 +306,11 @@ public class SceneTests : IntegrationTestSuite_Legacy
             src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
         });
 
-        Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(1, scene.sceneLifecycleHandler.pendingResourcesCount);
         scene.sceneLifecycleHandler.SetInitMessagesDone();
-        Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(1, scene.sceneLifecycleHandler.pendingResourcesCount);
         yield return TestUtils.WaitForGLTFLoad(entity);
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.pendingResourcesCount);
     }
 
     [Test]
@@ -322,7 +322,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
         TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
 
-        Assert.AreEqual(3, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(3, scene.sceneLifecycleHandler.pendingResourcesCount);
     }
 
     [UnityTest]
@@ -331,11 +331,11 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public IEnumerator ParcelScene_TrackDisposables_InstantReadyDisposable()
     {
         var boxShape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-        Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(1, scene.sceneLifecycleHandler.pendingResourcesCount);
         scene.sceneLifecycleHandler.SetInitMessagesDone();
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.pendingResourcesCount);
         yield return boxShape.routine;
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.pendingResourcesCount);
     }
 
     [Test]
