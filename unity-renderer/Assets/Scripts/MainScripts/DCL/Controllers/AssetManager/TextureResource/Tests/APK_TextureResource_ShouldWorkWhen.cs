@@ -6,15 +6,15 @@ using UnityEngine;
 
 namespace AssetPromiseKeeper_DCLTexture_Tests
 {
-    public class APK_DCLTexture_ShouldWorkWhen : APKWithRefCountedAssetShouldWorkWhen_Base<AssetPromiseKeeper_DCLTexture,
-        AssetPromise_DCLTexture,
-        Asset_DCLTexture,
-        AssetLibrary_RefCounted<Asset_DCLTexture>>
+    public class APK_TextureResource_ShouldWorkWhen : APKWithRefCountedAssetShouldWorkWhen_Base<AssetPromiseKeeper_TextureResource,
+        AssetPromise_TextureResource,
+        Asset_TextureResource,
+        AssetLibrary_RefCounted<Asset_TextureResource>>
     {
-        protected override AssetPromise_DCLTexture CreatePromise()
+        protected override AssetPromise_TextureResource CreatePromise()
         {
             var model = CreateTextureModel();
-            var prom = new AssetPromise_DCLTexture(model);
+            var prom = new AssetPromise_TextureResource(model);
             return prom;
         }
         

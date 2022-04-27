@@ -16,7 +16,7 @@ namespace AssetPromiseKeeper_Material_Tests
         protected override IEnumerator TearDown()
         {
             AssetPromiseKeeper_Texture.i.library.Cleanup();
-            AssetPromiseKeeper_DCLTexture.i.library.Cleanup();
+            AssetPromiseKeeper_TextureResource.i.library.Cleanup();
             return base.TearDown();
         }
         

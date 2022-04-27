@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class AssetPromise_DCLTexture : AssetPromise<Asset_DCLTexture>
+    public class AssetPromise_TextureResource : AssetPromise<Asset_TextureResource>
     {
         private TextureModel model;
         private AssetPromise_Texture texturePromise;
         
-        public AssetPromise_DCLTexture(TextureModel model)
+        public AssetPromise_TextureResource(TextureModel model)
         {
             this.model = model;
         }

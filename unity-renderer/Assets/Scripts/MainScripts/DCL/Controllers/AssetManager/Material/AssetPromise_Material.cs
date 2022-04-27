@@ -13,10 +13,10 @@ namespace DCL
 
         private MaterialModel model;
 
-        private AssetPromise_DCLTexture emissionAssetPromiseDclTexture = null;
-        private AssetPromise_DCLTexture alphaAssetPromiseDclTexture = null;
-        private AssetPromise_DCLTexture baseAssetPromiseDclTexture = null;
-        private AssetPromise_DCLTexture bumpPromiseDclTexture = null;
+        private AssetPromise_TextureResource emissionAssetPromiseTextureResource = null;
+        private AssetPromise_TextureResource alphaAssetPromiseTextureResource = null;
+        private AssetPromise_TextureResource baseAssetPromiseTextureResource = null;
+        private AssetPromise_TextureResource bumpPromiseTextureResource = null;
 
         private Coroutine loadCoroutine;
 
@@ -39,15 +39,14 @@ namespace DCL
 
         private void CleanPromises()
         {
-              
-            if (emissionAssetPromiseDclTexture != null)
-                AssetPromiseKeeper_DCLTexture.i.Forget(emissionAssetPromiseDclTexture);
-            if (alphaAssetPromiseDclTexture != null)
-                AssetPromiseKeeper_DCLTexture.i.Forget(alphaAssetPromiseDclTexture);
-            if (baseAssetPromiseDclTexture != null)
-                AssetPromiseKeeper_DCLTexture.i.Forget(baseAssetPromiseDclTexture);
-            if (bumpPromiseDclTexture != null)
-                AssetPromiseKeeper_DCLTexture.i.Forget(bumpPromiseDclTexture);
+            if (emissionAssetPromiseTextureResource != null)
+                AssetPromiseKeeper_TextureResource.i.Forget(emissionAssetPromiseTextureResource);
+            if (alphaAssetPromiseTextureResource != null)
+                AssetPromiseKeeper_TextureResource.i.Forget(alphaAssetPromiseTextureResource);
+            if (baseAssetPromiseTextureResource != null)
+                AssetPromiseKeeper_TextureResource.i.Forget(baseAssetPromiseTextureResource);
+            if (bumpPromiseTextureResource != null)
+                AssetPromiseKeeper_TextureResource.i.Forget(bumpPromiseTextureResource);
             
             CoroutineStarter.Stop(loadCoroutine);
             loadCoroutine = null;
@@ -85,29 +84,30 @@ namespace DCL
 
 
             if (model.emissiveTexture != null)
-                emissionAssetPromiseDclTexture = AssignTextureToMaterial(material, ShaderUtils.EmissionMap, model.emissiveTexture, OnFail);
+                emissionAssetPromiseTextureResource = AssignTextureToMaterial(material, ShaderUtils.EmissionMap, model.emissiveTexture, OnFail);
 
             SetupTransparencyMode(material, model);
 
             if (model.alphaTexture != null)
-                alphaAssetPromiseDclTexture = AssignTextureToMaterial(material, ShaderUtils.AlphaTexture, model.alphaTexture, OnFail);
+                alphaAssetPromiseTextureResource = AssignTextureToMaterial(material, ShaderUtils.AlphaTexture, model.alphaTexture, OnFail);
 
             if (model.albedoTexture != null)
-                baseAssetPromiseDclTexture = AssignTextureToMaterial(material, ShaderUtils.BaseMap, model.albedoTexture, OnFail);
+                baseAssetPromiseTextureResource = AssignTextureToMaterial(material, ShaderUtils.BaseMap, model.albedoTexture, OnFail);
 
             if (model.bumpTexture != null)
-                bumpPromiseDclTexture = AssignTextureToMaterial(material, ShaderUtils.BumpMap, model.bumpTexture, OnFail);
+                bumpPromiseTextureResource = AssignTextureToMaterial(material, ShaderUtils.BumpMap, model.bumpTexture, OnFail);
 
             // Checked two times so they can be loaded at the same time
             if (model.alphaTexture != null)
-                yield return  alphaAssetPromiseDclTexture;
+                yield return  alphaAssetPromiseTextureResource;
             if (model.albedoTexture != null)
-                yield return  baseAssetPromiseDclTexture;
+                yield return  baseAssetPromiseTextureResource;
             if (model.bumpTexture != null)
-                yield return  bumpPromiseDclTexture;
+                yield return  bumpPromiseTextureResource;
             if (model.emissiveTexture != null)
-                yield return  emissionAssetPromiseDclTexture;
+                yield return  emissionAssetPromiseTextureResource;
 
+            SRPBatchingHelper.OptimizeMaterial(material);
             asset.material = material;
             OnSuccess?.Invoke();
         }
@@ -173,27 +173,27 @@ namespace DCL
             }
         }
 
-        private AssetPromise_DCLTexture AssignTextureToMaterial(Material material, int materialProperty, TextureModel model, Action<Exception> onFail)
+        private AssetPromise_TextureResource AssignTextureToMaterial(Material material, int materialProperty, TextureModel model, Action<Exception> onFail)
         {
-            AssetPromise_DCLTexture promiseDclTexture = new AssetPromise_DCLTexture(model);
+            AssetPromise_TextureResource promiseTextureResource = new AssetPromise_TextureResource(model);
             if (model != null)
             {
-                promiseDclTexture.OnSuccessEvent += (x) =>
+                promiseTextureResource.OnSuccessEvent += (x) =>
                 {
                     SetMaterialTexture(material, materialProperty, x.texture2D);
                 };
-                promiseDclTexture.OnFailEvent += (x, error) =>
+                promiseTextureResource.OnFailEvent += (x, error) =>
                 {
                     onFail?.Invoke(error);
                 };
 
-                AssetPromiseKeeper_DCLTexture.i.Keep(promiseDclTexture);
+                AssetPromiseKeeper_TextureResource.i.Keep(promiseTextureResource);
             }
             else
             {
                 SetMaterialTexture(material, materialProperty, null);
             }
-            return promiseDclTexture;
+            return promiseTextureResource;
         }
 
         private void SetMaterialTexture(Material material, int materialPropertyId, Texture2D texture2D) { material.SetTexture(materialPropertyId, texture2D); }

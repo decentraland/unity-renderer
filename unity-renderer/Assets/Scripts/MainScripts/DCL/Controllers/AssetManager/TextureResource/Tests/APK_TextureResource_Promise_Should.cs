@@ -8,22 +8,22 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_DCLTexture_Tests
 {
-    public class APK_DCLTexture_Promise_Should : TestsBase_APK<AssetPromiseKeeper_DCLTexture,
-        AssetPromise_DCLTexture,
-        Asset_DCLTexture,
-        AssetLibrary_RefCounted<Asset_DCLTexture>>
+    public class APK_TextureResource_Promise_Should : TestsBase_APK<AssetPromiseKeeper_TextureResource,
+        AssetPromise_TextureResource,
+        Asset_TextureResource,
+        AssetLibrary_RefCounted<Asset_TextureResource>>
     {
-        protected AssetPromise_DCLTexture CreatePromise()
+        protected AssetPromise_TextureResource CreatePromise()
         {
             TextureModel model = CreateTextureModel();
-            var prom = new AssetPromise_DCLTexture(model);
+            var prom = new AssetPromise_TextureResource(model);
             return prom;
         }
 
-        protected AssetPromise_DCLTexture CreatePromise(TextureModel.BabylonWrapMode wrapmode, FilterMode filterMode)
+        protected AssetPromise_TextureResource CreatePromise(TextureModel.BabylonWrapMode wrapmode, FilterMode filterMode)
         {
             TextureModel model = CreateTextureModel(wrapmode,filterMode);
-            AssetPromise_DCLTexture prom = new AssetPromise_DCLTexture(model);
+            AssetPromise_TextureResource prom = new AssetPromise_TextureResource(model);
 
             return prom;
         }
@@ -48,7 +48,7 @@ namespace AssetPromiseKeeper_DCLTexture_Tests
         public IEnumerator BeSetupCorrectlyAfterLoad()
         {
             // Check non-default-settings texture
-            Asset_DCLTexture loadedAsset = null;
+            Asset_TextureResource loadedAsset = null;
             var prom = CreatePromise(TextureModel.BabylonWrapMode.CLAMP, FilterMode.Point);
 
             prom.OnSuccessEvent += (x) => loadedAsset = x;
@@ -86,7 +86,7 @@ namespace AssetPromiseKeeper_DCLTexture_Tests
         public IEnumerator ShareTextureAmongPromisesWithSameSettings()
         {
             // 2 non-default textures
-            Asset_DCLTexture loadedAsset = null;
+            Asset_TextureResource loadedAsset = null;
             var prom = CreatePromise(TextureModel.BabylonWrapMode.WRAP, FilterMode.Trilinear);
 
             prom.OnSuccessEvent += (x) => loadedAsset = x;
@@ -94,7 +94,7 @@ namespace AssetPromiseKeeper_DCLTexture_Tests
             keeper.Keep(prom);
             yield return prom;
 
-            Asset_DCLTexture loadedAsset2 = null;
+            Asset_TextureResource loadedAsset2 = null;
             var prom2 = CreatePromise(TextureModel.BabylonWrapMode.WRAP, FilterMode.Trilinear);
 
             prom2.OnSuccessEvent += (x) => loadedAsset2 = x;
@@ -110,7 +110,7 @@ namespace AssetPromiseKeeper_DCLTexture_Tests
             Assert.IsTrue(loadedAsset.texture2D == loadedAsset2.texture2D);
 
             // 2 default textures
-            Asset_DCLTexture loadedAsset3 = null;
+            Asset_TextureResource loadedAsset3 = null;
             var prom3 = CreatePromise(TextureModel.BabylonWrapMode.WRAP, FilterMode.Trilinear);
 
             prom3.OnSuccessEvent += (x) => loadedAsset3 = x;
@@ -118,7 +118,7 @@ namespace AssetPromiseKeeper_DCLTexture_Tests
             keeper.Keep(prom3);
             yield return prom3;
 
-            Asset_DCLTexture loadedAsset4 = null;
+            Asset_TextureResource loadedAsset4 = null;
             var prom4 = CreatePromise(TextureModel.BabylonWrapMode.WRAP, FilterMode.Trilinear);
 
             prom4.OnSuccessEvent += (x) => loadedAsset4 = x;
@@ -139,10 +139,10 @@ namespace AssetPromiseKeeper_DCLTexture_Tests
         {
             string url = $"file://{Application.dataPath + "/../TestResources/Audio/Train.wav"}";
 
-            Asset_DCLTexture loadedAsset = null;
+            Asset_TextureResource loadedAsset = null;
             var model = CreateTextureModel();
             model.src = url;
-            AssetPromise_DCLTexture prom = new AssetPromise_DCLTexture(model);
+            AssetPromise_TextureResource prom = new AssetPromise_TextureResource(model);
             bool failed = false;
             bool succeeded = false;
             prom.OnSuccessEvent += (x) => succeeded = true;

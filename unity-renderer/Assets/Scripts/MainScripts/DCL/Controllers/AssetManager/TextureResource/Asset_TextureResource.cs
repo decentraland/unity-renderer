@@ -3,7 +3,7 @@ using UnityGLTF.Cache;
 
 namespace DCL
 {
-    public class Asset_DCLTexture : Asset
+    public class Asset_TextureResource : Asset
     {
         public Texture2D texture2D;
         

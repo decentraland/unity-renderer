@@ -8,10 +8,10 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_DCLTexture_Tests
 {
-    public class BlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_DCLTexture,
-        AssetPromise_DCLTexture,
-        Asset_DCLTexture,
-        AssetLibrary_RefCounted<Asset_DCLTexture>>
+    public class BlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_TextureResource,
+        AssetPromise_TextureResource,
+        Asset_TextureResource,
+        AssetLibrary_RefCounted<Asset_TextureResource>>
     {
         protected override IEnumerator TearDown()
         {
@@ -19,9 +19,9 @@ namespace AssetPromiseKeeper_DCLTexture_Tests
             return base.TearDown();
         }
         
-        protected AssetPromise_DCLTexture CreatePromise(string promiseURL, int wrapmode = -1, int filterMode = -1)
+        protected AssetPromise_TextureResource CreatePromise(string promiseURL, int wrapmode = -1, int filterMode = -1)
         {
-            AssetPromise_DCLTexture prom;
+            AssetPromise_TextureResource prom;
 
             TextureModel model = new TextureModel();
             model.src = promiseURL;
@@ -31,7 +31,7 @@ namespace AssetPromiseKeeper_DCLTexture_Tests
                 model.samplingMode = (FilterMode)filterMode;
             }
 
-            prom = new AssetPromise_DCLTexture(model);
+            prom = new AssetPromise_TextureResource(model);
 
             return prom;
         }
@@ -40,19 +40,19 @@ namespace AssetPromiseKeeper_DCLTexture_Tests
         public IEnumerator Texture_FailCorrectlyWhenGivenWrongURL()
         {
             var prom = CreatePromise("123325");
-            Asset_DCLTexture asset = null;
+            Asset_TextureResource asset = null;
             bool failEventCalled1 = false;
             prom.OnSuccessEvent += (x) => { asset = x; };
             prom.OnFailEvent += (x, error) => { failEventCalled1 = true; };
 
             var prom2 = CreatePromise("43254378");
-            Asset_DCLTexture asset2 = null;
+            Asset_TextureResource asset2 = null;
             bool failEventCalled2 = false;
             prom2.OnSuccessEvent += (x) => { asset2 = x; };
             prom2.OnFailEvent += (x, error) => { failEventCalled2 = true; };
 
             var prom3 = CreatePromise("09898765");
-            Asset_DCLTexture asset3 = null;
+            Asset_TextureResource asset3 = null;
             bool failEventCalled3 = false;
             prom3.OnSuccessEvent += (x) => { asset3 = x; };
             prom3.OnFailEvent += (x, error) => { failEventCalled3 = true; };
