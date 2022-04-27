@@ -184,22 +184,6 @@ namespace DCL.Skybox
             }
         }
 
-        private void OnDrawGizmos()
-        {
-            var tr = transform;
-            var position = tr.position;
-            Handles.color = Color.gray;
-            Handles.DrawWireDisc(position, Vector3.up, 1000, thickness);
-
-            if (satelliteOrbit == null || layerProperties == null)
-            {
-                return;
-            }
-            // Draw wire disc of green color for orbit orthogonal to y = 1
-            Handles.color = Color.green;
-            Handles.DrawWireDisc(position, satelliteOrbit.transform.forward, layerProperties.radius, thickness);
-        }
-
         private void ApplyFade(float timeOfTheDay)
         {
             float fadeAmount = 1;
@@ -279,5 +263,22 @@ namespace DCL.Skybox
             return fadeChanged;
         }
 
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            var tr = transform;
+            var position = tr.position;
+            Handles.color = Color.gray;
+            Handles.DrawWireDisc(position, Vector3.up, 1000, thickness);
+
+            if (satelliteOrbit == null || layerProperties == null)
+            {
+                return;
+            }
+            // Draw wire disc of green color for orbit orthogonal to y = 1
+            Handles.color = Color.green;
+            Handles.DrawWireDisc(position, satelliteOrbit.transform.forward, layerProperties.radius, thickness);
+        }
+#endif
     }
 }
