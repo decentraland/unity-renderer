@@ -349,7 +349,9 @@ namespace DCL.ABConverter
             // Disable editor assets auto-import temporarily to avoid Unity trying to import the GLTF on its own, when we know dependencies haven't been downloaded yet
             AssetDatabase.StartAssetEditing();
 
-            string path = DownloadAsset(gltfPaths[0]);
+            // 'isGLTF' param should be false here to avoid adding the GLTF to the GLTFs that will be waited upon in Convert()
+            // That's because we download the gltf here just to read its dependencies first; And there is no way to check the AssetDatabase 'AssetEditing' state
+            string path = DownloadAsset(gltfPaths[0], isGLTF: false);
 
             if (string.IsNullOrEmpty(path))
             {
@@ -425,7 +427,7 @@ namespace DCL.ABConverter
             //NOTE(Brian): Prepare textures and buffers. We should prepare all the dependencies in this phase.
             assetsToMark.AddRange(DumpImportableAssets(texturePaths));
             DumpRawAssets(bufferPaths);
-
+            
             foreach (var gltfPath in gltfPaths)
             {
                 assetsToMark.Add(DumpGltf(gltfPath, texturePaths, bufferPaths));
@@ -652,13 +654,13 @@ namespace DCL.ABConverter
 
                 return outputPath;
             }
-
+            
             DownloadHandler downloadHandler = null;
 
             try
             {
                 downloadHandler = env.webRequest.Get(finalUrl);
-
+                
                 if (downloadHandler == null)
                 {
                     log.Error($"Download failed! {finalUrl} -- null DownloadHandler");
@@ -682,7 +684,7 @@ namespace DCL.ABConverter
                 env.directory.CreateDirectory(outputPathDir);
 
             env.file.WriteAllBytes(outputPath, assetData);
-
+            
             if (isGLTF)
             {
                 GLTFSceneImporter gltfSceneImporter = CreateGLTFScene(outputPath);

@@ -16,8 +16,6 @@ namespace DCL
         /// </summary>
         UnityWebRequest webRequest { get; }
         
-        UnityWebRequestAsyncOperation asyncOp { get; }
-        
         /// <summary>
         /// Returns true after the request has finished communicating with the remote server.
         /// </summary>
@@ -155,10 +153,5 @@ namespace DCL
         }
 
         internal void SetNewWebRequest(UnityWebRequest newRequest) { webRequest = newRequest; }
-        public UnityWebRequestAsyncOperation SendWebRequest()
-        {
-            asyncOp = webRequest.SendWebRequest();
-            return asyncOp;
-        }
     }
 }

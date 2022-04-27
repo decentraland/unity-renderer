@@ -144,7 +144,7 @@ namespace DCL
             resultOp.disposeOnCompleted = disposeOnCompleted;
             ongoingWebRequests.Add(resultOp);
 
-            UnityWebRequestAsyncOperation requestOp = resultOp.SendWebRequest();
+            UnityWebRequestAsyncOperation requestOp = resultOp.webRequest.SendWebRequest();
             requestOp.completed += (asyncOp) =>
             {
                 if (!resultOp.isDisposed)
