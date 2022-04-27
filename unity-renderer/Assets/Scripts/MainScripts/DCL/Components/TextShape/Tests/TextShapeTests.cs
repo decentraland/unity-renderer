@@ -13,11 +13,19 @@ namespace Tests
     public class TextShapeTests : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         [UnityTest]

@@ -20,6 +20,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     private IContext context;
     private IBuilderScene builderScene;
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override List<GameObject> SetUp_LegacySystems()
     {
@@ -41,6 +42,8 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         scene = TestUtils.CreateTestScene();
+        coreComponentsPlugin = new CoreComponentsPlugin();
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
 
@@ -50,7 +53,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[ENTITY_ID]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[ENTITY_ID]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         outlinerController = new BIWOutlinerController();
@@ -137,6 +140,8 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
+        coreComponentsPlugin.Dispose();
         context.Dispose();
         yield return base.TearDown();
     }

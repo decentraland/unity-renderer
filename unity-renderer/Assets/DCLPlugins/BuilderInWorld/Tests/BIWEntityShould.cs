@@ -14,6 +14,7 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
     BIWEntity entity;
     BIWEntityHandler entityHandler;
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override IEnumerator SetUp()
     {
@@ -21,12 +22,21 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
         entityHandler = new BIWEntityHandler();
         entityHandler.Initialize(BIWTestUtils.CreateMockedContextForTestScene());
 
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
         var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
         entityHandler.EnterEditMode(builderScene);
         entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
+        yield return base.TearDown();
     }
 
     [Test]
