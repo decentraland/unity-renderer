@@ -3817,11 +3817,11 @@ MonoBehaviour:
     focus: 0
   collectiblesItemSelector: {fileID: 5289564723011178695}
   skinColorSelector: {fileID: 3615833362840057512}
-  skinColorPicker: {fileID: 7521061608535015197}
+  skinColorPicker: {fileID: 3080264173943520993}
   eyeColorSelector: {fileID: 4486635766695052161}
-  eyeColorPicker: {fileID: 7344706665550873235}
+  eyeColorPicker: {fileID: 2824537143334388591}
   hairColorSelector: {fileID: 2062177768833475134}
-  hairColorPicker: {fileID: 5129682955332461356}
+  hairColorPicker: {fileID: 427610127671681744}
   characterPreviewPrefab: {fileID: 3569267310167974304, guid: 164e126ce7f309a47b78e9f75cbca418,
     type: 3}
   characterPreviewRotation: {fileID: 6749458557699296124}
@@ -12879,9 +12879,9 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2257774214972786866}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5129682955332461356 stripped
+--- !u!114 &427610127671681744 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6369623518019775390, guid: 25d04fa6df6844ac2a5b485cb56e7068,
+  m_CorrespondingSourceObject: {fileID: 1925874377623579234, guid: 25d04fa6df6844ac2a5b485cb56e7068,
     type: 3}
   m_PrefabInstance: {fileID: 2257774214972786866}
   m_PrefabAsset: {fileID: 0}
@@ -23490,9 +23490,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 25d04fa6df6844ac2a5b485cb56e7068, type: 3}
---- !u!114 &7521061608535015197 stripped
+--- !u!114 &3080264173943520993 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6369623518019775390, guid: 25d04fa6df6844ac2a5b485cb56e7068,
+  m_CorrespondingSourceObject: {fileID: 1925874377623579234, guid: 25d04fa6df6844ac2a5b485cb56e7068,
     type: 3}
   m_PrefabInstance: {fileID: 3460276861161198723}
   m_PrefabAsset: {fileID: 0}
@@ -24103,9 +24103,9 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4434023750984296717}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7344706665550873235 stripped
+--- !u!114 &2824537143334388591 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6369623518019775390, guid: 25d04fa6df6844ac2a5b485cb56e7068,
+  m_CorrespondingSourceObject: {fileID: 1925874377623579234, guid: 25d04fa6df6844ac2a5b485cb56e7068,
     type: 3}
   m_PrefabInstance: {fileID: 4434023750984296717}
   m_PrefabAsset: {fileID: 0}

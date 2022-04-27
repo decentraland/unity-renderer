@@ -105,7 +105,7 @@ public class ColorPickerView : MonoBehaviour
         OnColorChanged.Invoke(newColor);
     }
 
-    private void SetActive(bool isActive) 
+    public void SetActive(bool isActive) 
     {
         container.SetActive(isActive);
     }

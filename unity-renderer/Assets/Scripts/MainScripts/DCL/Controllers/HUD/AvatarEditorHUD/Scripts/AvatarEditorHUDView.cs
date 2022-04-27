@@ -6,11 +6,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
-public class AvatarEditorHUDView : MonoBehaviour
+public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 {
     private static readonly int RANDOMIZE_ANIMATOR_LOADING_BOOL = Animator.StringToHash("Loading");
     private const string VIEW_PATH = "AvatarEditorHUD";
@@ -534,6 +535,15 @@ public class AvatarEditorHUDView : MonoBehaviour
         rectTransform.localPosition = Vector2.zero;
         rectTransform.offsetMax = Vector2.zero;
         rectTransform.offsetMin = Vector2.zero;
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (eventData.pointerPressRaycast.gameObject != eyeColorPicker.gameObject && eventData.pointerPressRaycast.gameObject != hairColorPicker.gameObject)
+        {
+            eyeColorPicker.SetActive(false);
+            hairColorPicker.SetActive(false);
+        }
     }
 
     public void ShowSkinPopulatedList(bool show)
