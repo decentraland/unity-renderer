@@ -1,62 +1,53 @@
 using System;
+using System.Text.RegularExpressions;
 using DCL;
 using DCL.Interface;
-using UnityEngine;
-using UnityEngine.Events;
-using Object = UnityEngine.Object;
 
 public class ChatHUDController : IDisposable
 {
-    public static int MAX_CHAT_ENTRIES { internal set; get; } = 30;
+    public const int MAX_CHAT_ENTRIES = 30;
 
-    public ChatHUDView view;
-
-    public event UnityAction<string> OnPressPrivateMessage;
+    public event Action OnInputFieldSelected;
+    public event Action<ChatMessage> OnSendMessage;
+    public event Action<string> OnMessageUpdated;
 
     private readonly DataStore dataStore;
+    private readonly IUserProfileBridge userProfileBridge;
+    private readonly bool detectWhisper;
     private readonly RegexProfanityFilter profanityFilter;
-    private InputAction_Trigger closeWindowTrigger;
+    private readonly Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
+    private IChatHUDComponentView view;
 
-    public ChatHUDController(DataStore dataStore, RegexProfanityFilter profanityFilter = null)
+    public ChatHUDController(DataStore dataStore,
+        IUserProfileBridge userProfileBridge,
+        bool detectWhisper,
+        RegexProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
+        this.userProfileBridge = userProfileBridge;
+        this.detectWhisper = detectWhisper;
         this.profanityFilter = profanityFilter;
     }
 
-    public void Initialize(ChatHUDView view = null, UnityAction<ChatMessage> onSendMessage = null)
+    public void Initialize(IChatHUDComponentView view)
     {
-        this.view = view ?? ChatHUDView.Create();
-
-        this.view.Initialize(this, onSendMessage);
-
-        this.view.OnPressPrivateMessage -= View_OnPressPrivateMessage;
-        this.view.OnPressPrivateMessage += View_OnPressPrivateMessage;
-
-        if (this.view.contextMenu != null)
-        {
-            this.view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
-            this.view.contextMenu.OnShowMenu += ContextMenu_OnShowMenu;
-        }
-
-        closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
-        closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
-        closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
+        this.view = view;
+        this.view.OnShowMenu -= ContextMenu_OnShowMenu;
+        this.view.OnShowMenu += ContextMenu_OnShowMenu;
+        this.view.OnInputFieldSelected -= HandleInputFieldSelection;
+        this.view.OnInputFieldSelected += HandleInputFieldSelection;
+        this.view.OnSendMessage -= HandleSendMessage;
+        this.view.OnSendMessage += HandleSendMessage;
+        this.view.OnMessageUpdated -= HandleMessageUpdated;
+        this.view.OnMessageUpdated += HandleMessageUpdated;
     }
 
-    void View_OnPressPrivateMessage(string friendUserId) { OnPressPrivateMessage?.Invoke(friendUserId); }
-
-    private void ContextMenu_OnShowMenu() { view.OnMessageCancelHover(); }
-
-    private void OnCloseButtonPressed(DCLAction_Trigger action)
+    public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false)
     {
-        if (view.contextMenu != null)
-        {
-            view.contextMenu.Hide();
-            view.confirmationDialog.Hide();
-        }
+        AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom);
     }
 
-    public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
+    public void AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false)
     {
         chatEntryModel.bodyText = ChatUtils.AddNoParse(chatEntryModel.bodyText);
 
@@ -68,32 +59,37 @@ public class ChatHUDController : IDisposable
             if (!string.IsNullOrEmpty(chatEntryModel.recipientName))
                 chatEntryModel.recipientName = profanityFilter.Filter(chatEntryModel.recipientName);
         }
-            
+
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
-        if (view.entries.Count > MAX_CHAT_ENTRIES)
-        {
-            Object.Destroy(view.entries[0].gameObject);
-            view.entries.Remove(view.entries[0]);
-        }
+        if (view.EntryCount > MAX_CHAT_ENTRIES)
+            view.RemoveFirstEntry();
     }
 
     public void Dispose()
     {
-        view.OnPressPrivateMessage -= View_OnPressPrivateMessage;
-        if (view.contextMenu != null)
-        {
-            view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
-        }
-        closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
-        Object.Destroy(view.gameObject);
+        view.OnShowMenu -= ContextMenu_OnShowMenu;
+        view.OnMessageUpdated -= HandleMessageUpdated;
+        view.OnSendMessage -= HandleSendMessage;
+        view.OnInputFieldSelected -= HandleInputFieldSelection;
+        OnSendMessage = null;
+        OnMessageUpdated = null;
+        OnInputFieldSelected = null;
+        view.Dispose();
     }
 
-    public static ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)
-    {
-        ChatEntry.Model model = new ChatEntry.Model();
+    public void ClearAllEntries() => view.ClearAllEntries();
 
-        var ownProfile = UserProfile.GetOwnUserProfile();
+    public void ResetInputField(bool loseFocus = false) => view.ResetInputField(loseFocus);
+
+    public void FocusInputField() => view.FocusInputField();
+
+    public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
+
+    private ChatEntryModel ChatMessageToChatEntry(ChatMessage message)
+    {
+        var model = new ChatEntryModel();
+        var ownProfile = userProfileBridge.GetOwn();
 
         model.messageType = message.messageType;
         model.bodyText = message.body;
@@ -101,41 +97,74 @@ public class ChatHUDController : IDisposable
 
         if (message.recipient != null)
         {
-            var recipientProfile = UserProfileController.userProfilesCatalog.Get(message.recipient);
+            var recipientProfile = userProfileBridge.Get(message.recipient);
             model.recipientName = recipientProfile != null ? recipientProfile.userName : message.recipient;
         }
 
         if (message.sender != null)
         {
-            var senderProfile = UserProfileController.userProfilesCatalog.Get(message.sender);
+            var senderProfile = userProfileBridge.Get(message.sender);
             model.senderName = senderProfile != null ? senderProfile.userName : message.sender;
             model.senderId = message.sender;
         }
 
-        if (model.messageType == ChatMessage.Type.PRIVATE)
+        if (message.messageType == ChatMessage.Type.PRIVATE)
         {
             if (message.recipient == ownProfile.userId)
             {
-                model.subType = ChatEntry.Model.SubType.PRIVATE_FROM;
+                model.subType = ChatEntryModel.SubType.RECEIVED;
                 model.otherUserId = message.sender;
             }
             else if (message.sender == ownProfile.userId)
             {
-                model.subType = ChatEntry.Model.SubType.PRIVATE_TO;
+                model.subType = ChatEntryModel.SubType.SENT;
                 model.otherUserId = message.recipient;
             }
             else
             {
-                model.subType = ChatEntry.Model.SubType.NONE;
+                model.subType = ChatEntryModel.SubType.NONE;
             }
+        }
+        else if (message.messageType == ChatMessage.Type.PUBLIC)
+        {
+            model.subType = message.sender == ownProfile.userId
+                ? ChatEntryModel.SubType.SENT
+                : ChatEntryModel.SubType.RECEIVED;
         }
 
         return model;
     }
-    
+
+    private void ContextMenu_OnShowMenu() => view.OnMessageCancelHover();
+
     private bool IsProfanityFilteringEnabled()
     {
         return dataStore.settings.profanityChatFilteringEnabled.Get()
-            && profanityFilter != null;
+               && profanityFilter != null;
     }
+
+    private void HandleMessageUpdated(string obj) => OnMessageUpdated?.Invoke(obj);
+
+    private void HandleSendMessage(ChatMessage message)
+    {
+        message.sender = userProfileBridge.GetOwn().userId;
+        ApplyWhisperAttributes(message);
+        OnSendMessage?.Invoke(message);
+    }
+
+    private void ApplyWhisperAttributes(ChatMessage message)
+    {
+        if (!detectWhisper) return;
+        var body = message.body;
+        if (string.IsNullOrWhiteSpace(body)) return;
+
+        var match = whisperRegex.Match(body);
+        if (!match.Success) return;
+
+        message.messageType = ChatMessage.Type.PRIVATE;
+        message.recipient = match.Groups[2].Value;
+        message.body = match.Groups[4].Value;
+    }
+
+    private void HandleInputFieldSelection() => OnInputFieldSelected?.Invoke();
 }

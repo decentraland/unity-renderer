@@ -1,5 +1,4 @@
 using DCL.Interface;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -14,16 +13,26 @@ public class UnreadNotificationBadge : MonoBehaviour
 
     private IChatController currentChatController;
     private string currentUserId;
-    private long currentTimestampReading;
     private int currentUnreadMessagesValue;
+    private ILastReadMessagesService lastReadMessagesService;
+    private bool isInitialized;
 
-    public int currentUnreadMessages
+    public int CurrentUnreadMessages
     {
         get => currentUnreadMessagesValue;
         set
         {
             currentUnreadMessagesValue = value;
-            RefreshNotificationBadge();
+            
+            if (currentUnreadMessagesValue > 0)
+            {
+                notificationContainer.SetActive(true);
+                notificationText.text = currentUnreadMessagesValue <= maxNumberToShow ? currentUnreadMessagesValue.ToString() : $"+{maxNumberToShow}";
+            }
+            else
+            {
+                notificationContainer.SetActive(false);
+            }
         }
     }
 
@@ -32,73 +41,51 @@ public class UnreadNotificationBadge : MonoBehaviour
     /// </summary>
     /// <param name="chatController">Chat Controlled to be listened</param>
     /// <param name="userId">User ID to listen to</param>
-    public void Initialize(IChatController chatController, string userId)
+    /// <param name="lastReadMessagesService">Service that handles unread messages</param>
+    public void Initialize(IChatController chatController, string userId, ILastReadMessagesService lastReadMessagesService)
     {
         if (chatController == null)
             return;
 
+        this.lastReadMessagesService = lastReadMessagesService;
         currentChatController = chatController;
         currentUserId = userId;
 
-        CommonScriptableObjects.lastReadChatMessages.TryGetValue(currentUserId, out currentTimestampReading);
         UpdateUnreadMessages();
 
-        currentChatController.OnAddMessage -= ChatController_OnAddMessage;
-        currentChatController.OnAddMessage += ChatController_OnAddMessage;
+        currentChatController.OnAddMessage -= HandleMessageAdded;
+        currentChatController.OnAddMessage += HandleMessageAdded;
+        lastReadMessagesService.OnUpdated += HandleUnreadMessagesUpdated;
 
-        CommonScriptableObjects.lastReadChatMessages.OnAdded -= LastReadChatMessages_OnAdded;
-        CommonScriptableObjects.lastReadChatMessages.OnAdded += LastReadChatMessages_OnAdded;
+        isInitialized = true;
+    }
+
+    private void OnEnable()
+    {
+        if (!isInitialized) return;
+        UpdateUnreadMessages();
     }
 
     private void OnDestroy()
     {
-        if (currentChatController == null)
-            return;
-
-        currentChatController.OnAddMessage -= ChatController_OnAddMessage;
-        CommonScriptableObjects.lastReadChatMessages.OnAdded -= LastReadChatMessages_OnAdded;
+        if (currentChatController != null)
+            currentChatController.OnAddMessage -= HandleMessageAdded;
+        if (lastReadMessagesService != null)
+            lastReadMessagesService.OnUpdated -= HandleUnreadMessagesUpdated;
     }
 
-    private void ChatController_OnAddMessage(ChatMessage newMessage)
+    private void HandleMessageAdded(ChatMessage newMessage)
     {
         if (newMessage.messageType == ChatMessage.Type.PRIVATE &&
             newMessage.sender == currentUserId)
-        {
-            // A new message from [userId] is received
             UpdateUnreadMessages();
-        }
     }
 
-    private void LastReadChatMessages_OnAdded(string addedKey, long addedValue)
+    private void HandleUnreadMessagesUpdated(string userId)
     {
-        if (addedKey == currentUserId)
-        {
-            // The player reads the latest messages of [userId]
-            currentTimestampReading = addedValue;
-            currentUnreadMessages = 0;
-            UpdateUnreadMessages();
-        }
+        if (userId != currentUserId) return;
+        UpdateUnreadMessages();
     }
 
-    private void UpdateUnreadMessages()
-    {
-        currentUnreadMessages = currentChatController.GetEntries()
-                                                     .Count(
-                                                         msg => msg.messageType == ChatMessage.Type.PRIVATE &&
-                                                                msg.sender == currentUserId &&
-                                                                msg.timestamp > (ulong)currentTimestampReading);
-    }
-
-    private void RefreshNotificationBadge()
-    {
-        if (currentUnreadMessagesValue > 0)
-        {
-            notificationContainer.SetActive(true);
-            notificationText.text = currentUnreadMessagesValue <= maxNumberToShow ? currentUnreadMessagesValue.ToString() : string.Format("+{0}", maxNumberToShow);
-        }
-        else
-        {
-            notificationContainer.SetActive(false);
-        }
-    }
+    private void UpdateUnreadMessages() => CurrentUnreadMessages = lastReadMessagesService.GetUnreadCount(currentUserId);
 }

@@ -3,27 +3,32 @@ using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using DCL.Helpers;
 using NSubstitute;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 {
     private NotificationsController notificationsController;
-    private PrivateChatWindowHUDController controller;
-    private PrivateChatWindowHUDView view;
-
+    private PrivateChatWindowController controller;
+    private IPrivateChatComponentView view;
+    private IChatHUDComponentView internalChatView;
     private UserProfileModel ownProfileModel;
     private UserProfileModel testProfileModel;
-
-    private UserProfileController userProfileController;
+    private IUserProfileBridge userProfileBridge;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
-        userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
-        notificationsController = TestUtils.CreateComponentWithGameObject<NotificationsController>("NotificationsController");
+        view = Substitute.For<IPrivateChatComponentView>();
+        internalChatView = Substitute.For<IChatHUDComponentView>();
+        view.ChatHUD.Returns(internalChatView);
+
+        notificationsController =
+            TestUtils.CreateComponentWithGameObject<NotificationsController>("NotificationsController");
 
         UserProfile ownProfile = UserProfile.GetOwnUserProfile();
 
@@ -35,59 +40,50 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         testProfileModel = new UserProfileModel();
         testProfileModel.userId = "my-user-id-2";
         testProfileModel.name = "TEST_USER";
-        userProfileController.AddUserProfileToCatalog(testProfileModel);
 
-        //NOTE(Brian): This profile is added by the LoadProfile message in the normal flow.
-        //             Adding this here because its used by the chat flow in ChatMessageToChatEntry.
-        userProfileController.AddUserProfileToCatalog(ownProfileModel);
-    }
-
-    private void InitializeChatWindowController(IChatController chatController)
-    {
-        controller = new PrivateChatWindowHUDController();
-        controller.Initialize(chatController);
-        controller.Configure(testProfileModel.userId);
-        controller.SetVisibility(true);
-        view = controller.view;
+        var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+        ownUserProfile.UpdateData(ownProfileModel);
+        var testUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+        testUserProfile.UpdateData(testProfileModel);
+        userProfileBridge = Substitute.For<IUserProfileBridge>();
+        userProfileBridge.GetOwn().Returns(ownUserProfile);
+        userProfileBridge.Get(ownProfileModel.userId).Returns(ownUserProfile);
+        userProfileBridge.Get(testProfileModel.userId).Returns(testUserProfile);
     }
 
     protected override IEnumerator TearDown()
     {
-        UnityEngine.Object.Destroy(userProfileController.gameObject);
         UnityEngine.Object.Destroy(notificationsController.gameObject);
         controller.Dispose();
         yield return base.TearDown();
     }
 
     [Test]
-    public void ProcessCurrentMessagesOnControllerInitialize()
+    public void ProcessCurrentMessagesWhenInitialize()
     {
         IChatController chatController = Substitute.For<IChatController>();
         chatController.GetEntries()
             .ReturnsForAnyArgs(new List<ChatMessage>
             {
-                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message1"),
-                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message2"),
-                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message3"),
+                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message1")
+                    {recipient = testProfileModel.userId},
+                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message2")
+                    {recipient = testProfileModel.userId},
+                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message3")
+                    {recipient = testProfileModel.userId},
             });
         InitializeChatWindowController(chatController);
 
-        Assert.AreEqual(3, controller.view.chatHudView.entries.Count);
+        internalChatView.Received(3).AddEntry(Arg.Is<ChatEntryModel>(model =>
+            model.messageType == ChatMessage.Type.PRIVATE
+            && model.senderId == testProfileModel.userId));
 
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);
-        ;
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(0).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message1"), GetViewEntryModel(0).bodyText);
-
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);
-        ;
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(1).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message2"), GetViewEntryModel(1).bodyText);
-
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);
-        ;
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(2).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message3"), GetViewEntryModel(2).bodyText);
+        Received.InOrder(() =>
+        {
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message1</noparse>"));
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message2</noparse>"));
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message3</noparse>"));
+        });
     }
 
     [Test]
@@ -104,46 +100,29 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage2);
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage3);
 
-        Assert.AreEqual(3, controller.view.chatHudView.entries.Count);
+        internalChatView.Received(3).AddEntry(Arg.Is<ChatEntryModel>(model =>
+            model.messageType == ChatMessage.Type.PRIVATE
+            && model.senderId == testProfileModel.userId));
 
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(0).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message1"), GetViewEntryModel(0).bodyText);
-
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(1).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message2"), GetViewEntryModel(1).bodyText);
-
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);
-        Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(2).senderId);
-        Assert.AreEqual(ChatUtils.AddNoParse("message3"), GetViewEntryModel(2).bodyText);
+        Received.InOrder(() =>
+        {
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message1</noparse>"));
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message2</noparse>"));
+            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message3</noparse>"));
+        });
     }
 
-    [UnityTest]
-    public IEnumerator SendChatMessageProperly()
+    [Test]
+    public void SendChatMessageWhenViewTriggers()
     {
-        IChatController chatController = Substitute.For<IChatController>();
+        var chatController = Substitute.For<IChatController>();
         chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
         InitializeChatWindowController(chatController);
 
-        bool messageWasSent = false;
+        internalChatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage {body = "test message"});
 
-        System.Action<string, string> messageCallback =
-            (type, msg) =>
-            {
-                if (type == "SendChatMessage" && msg.Contains("test message"))
-                {
-                    messageWasSent = true;
-                }
-            };
-
-        WebInterface.OnMessageFromEngine += messageCallback;
-        controller.resetInputFieldOnSubmit = false;
-        controller.SendChatMessage(new ChatMessage() { body = "test message", recipient = "testUser" });
-        Assert.IsTrue(messageWasSent);
-        Assert.AreEqual("", controller.view.chatHudView.inputField.text);
-        WebInterface.OnMessageFromEngine -= messageCallback;
-        yield break;
+        chatController.Received(1).Send(Arg.Is<ChatMessage>(message => message.body == $"/w {testProfileModel.name} test message"
+                                                                 && message.recipient == testProfileModel.name));
     }
 
     [Test]
@@ -152,26 +131,16 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         IChatController chatController = Substitute.For<IChatController>();
         chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
         InitializeChatWindowController(chatController);
+        var isViewActive = false;
+        view.When(v => v.Show()).Do(info => isViewActive = true);
+        view.When(v => v.Hide()).Do(info => isViewActive = false);
+        view.IsActive.Returns(info => isViewActive);
 
         controller.SetVisibility(true);
-        Assert.AreEqual(true, controller.view.gameObject.activeSelf);
-        controller.view.minimizeButton.onClick.Invoke();
-        Assert.AreEqual(false, controller.view.gameObject.activeSelf);
-    }
+        Assert.IsTrue(isViewActive);
 
-    [Test]
-    public void CloseOnBackButtonPressed()
-    {
-        IChatController chatController = Substitute.For<IChatController>();
-        chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
-        InitializeChatWindowController(chatController);
-
-        controller.SetVisibility(true);
-        Assert.AreEqual(true, controller.view.gameObject.activeSelf);
-        bool pressedBack = false;
-        controller.view.OnPressBack += () => { pressedBack = true; };
-        controller.view.backButton.onClick.Invoke();
-        Assert.IsTrue(pressedBack);
+        view.OnClose += Raise.Event<Action>();
+        Assert.IsFalse(isViewActive);
     }
 
     [UnityTest]
@@ -190,11 +159,8 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(view != null, "Friends hud view is null?");
         Assert.IsTrue(controller != null, "Friends hud controller is null?");
 
-        // initialize private chat
         controller.SetVisibility(true);
-        Assert.AreEqual(true, controller.view.gameObject.activeSelf);
-
-        controller.view.backButton.onClick.Invoke();
+        view.OnPressBack += Raise.Event<Action>();
         yield return null;
 
         Assert.AreEqual(true, friendsHudController.view.IsActive());
@@ -203,5 +169,16 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         notificationsController.Dispose();
     }
 
-    private ChatEntry.Model GetViewEntryModel(int index) { return controller.view.chatHudView.entries[index].model; }
+    private void InitializeChatWindowController(IChatController chatController)
+    {
+        controller = new PrivateChatWindowController(new DataStore(),
+            userProfileBridge,
+            chatController,
+            Substitute.For<IFriendsController>(),
+            ScriptableObject.CreateInstance<InputAction_Trigger>(),
+            Substitute.For<ILastReadMessagesService>());
+        controller.Initialize(view);
+        controller.Configure(testProfileModel.userId);
+        controller.SetVisibility(true);
+    }
 }

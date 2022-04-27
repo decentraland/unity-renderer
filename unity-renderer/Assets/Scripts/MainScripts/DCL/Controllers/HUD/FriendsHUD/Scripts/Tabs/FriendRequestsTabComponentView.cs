@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 
@@ -52,6 +53,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         searchBar.OnSubmit += SendFriendRequest;
         searchBar.OnSearchText += OnSearchInputValueChanged;
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
+        ((RectTransform) filledStateContainer.transform).ForceUpdateLayout();
     }
 
     public override void OnDisable()
@@ -137,7 +139,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
         
         var entry = entries[userId];
         entry.Populate(model);
-        entry.userId = userId;
     }
 
     public void Set(string userId, FriendEntryBase.Model model, bool isReceived)
@@ -147,7 +148,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
         
         var entry = entries[userId];
         entry.Populate(model);
-        entry.userId = userId;
         entry.SetReceived(isReceived);
 
         if (isReceived)
@@ -180,8 +180,8 @@ public class FriendRequestsTabComponentView : BaseComponentView
         entry.OnCancelled += OnEntryCancelButtonPressed;
         entry.OnMenuToggle += x =>
         {
-            contextMenuPanel.transform.position = entry.menuPositionReference.position;
             contextMenuPanel.Show(userId);
+            entry.Dock(contextMenuPanel);
         };
     }
 
@@ -241,12 +241,12 @@ public class FriendRequestsTabComponentView : BaseComponentView
         // Add placeholder friend to avoid affecting UX by roundtrip with kernel
         FriendsController.i?.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
         {
-            userId = requestEntry.userId,
+            userId = requestEntry.model.userId,
             action = FriendshipAction.APPROVED
         });
 
         ShowFriendAcceptedNotification(requestEntry);
-        Remove(requestEntry.userId);
+        Remove(requestEntry.model.userId);
         OnFriendRequestApproved?.Invoke(requestEntry);
     }
 
@@ -260,13 +260,13 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     private void OnEntryRejectButtonPressed(FriendRequestEntry requestEntry)
     {
-        Remove(requestEntry.userId);
+        Remove(requestEntry.model.userId);
         OnRejectConfirmation?.Invoke(requestEntry);
     }
 
     private void OnEntryCancelButtonPressed(FriendRequestEntry requestEntry)
     {
-        Remove(requestEntry.userId);
+        Remove(requestEntry.model.userId);
         OnCancelConfirmation?.Invoke(requestEntry);
     }
     

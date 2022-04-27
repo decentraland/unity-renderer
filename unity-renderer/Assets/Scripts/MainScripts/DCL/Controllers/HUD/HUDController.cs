@@ -30,7 +30,7 @@ public class HUDController : IHUDController
         groupID = "UIHiddenNotification"
     };
 
-    public HUDController (IHUDFactory hudFactory = null)
+    public HUDController(IHUDFactory hudFactory = null)
     {
         this.hudFactory = hudFactory;
     }
@@ -39,7 +39,7 @@ public class HUDController : IHUDController
     {
         i = this;
 
-        if ( this.hudFactory == null )
+        if (this.hudFactory == null)
             this.hudFactory = DCL.Environment.i.hud.factory;
 
         toggleUIVisibilityTrigger = Resources.Load<InputAction_Trigger>(TOGGLE_UI_VISIBILITY_ASSET_NAME);
@@ -62,7 +62,8 @@ public class HUDController : IHUDController
     public AvatarEditorHUDController avatarEditorHud =>
         GetHUDElement(HUDElementID.AVATAR_EDITOR) as AvatarEditorHUDController;
 
-    public SettingsPanelHUDController settingsPanelHud => GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
+    public SettingsPanelHUDController settingsPanelHud =>
+        GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
 
     public EmotesHUDController emotesHUD =>
         GetHUDElement(HUDElementID.EMOTES) as EmotesHUDController;
@@ -80,25 +81,36 @@ public class HUDController : IHUDController
 
     public LoadingHUDController loadingHud => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
 
-    public WorldChatWindowHUDController worldChatWindowHud =>
-        GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowHUDController;
+    public WorldChatWindowController worldChatWindowHud =>
+        GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowController;
 
-    public PrivateChatWindowHUDController privateChatWindowHud =>
-        GetHUDElement(HUDElementID.PRIVATE_CHAT_WINDOW) as PrivateChatWindowHUDController;
+    public PrivateChatWindowController PrivateChatWindow =>
+        GetHUDElement(HUDElementID.PRIVATE_CHAT_WINDOW) as PrivateChatWindowController;
+
+    public PublicChatChannelController PublicChatChannelHud =>
+        GetHUDElement(HUDElementID.PUBLIC_CHAT_CHANNEL) as PublicChatChannelController;
 
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
 
-    public TeleportPromptHUDController teleportHud => GetHUDElement(HUDElementID.TELEPORT_DIALOG) as TeleportPromptHUDController;
+    public TeleportPromptHUDController teleportHud =>
+        GetHUDElement(HUDElementID.TELEPORT_DIALOG) as TeleportPromptHUDController;
 
     public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
 
-    public HelpAndSupportHUDController helpAndSupportHud => GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
+    public HelpAndSupportHUDController helpAndSupportHud =>
+        GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
 
     public MinimapHUDController minimapHUD => GetHUDElement(HUDElementID.MINIMAP) as MinimapHUDController;
 
-    public UsersAroundListHUDController usersAroundListHud => GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
-    public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
-    public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
+    public UsersAroundListHUDController usersAroundListHud =>
+        GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
+
+    public QuestsPanelHUDController questsPanelHUD =>
+        GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
+
+    public QuestsTrackerHUDController questsTrackerHUD =>
+        GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
+
     public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
     public LoadingHUDController loadingController => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
 
@@ -107,16 +119,23 @@ public class HUDController : IHUDController
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private BaseDictionary<string, WearableItem> wearableCatalog => CatalogController.wearableCatalog;
 
-    private void ShowSettings() { settingsPanelHud?.SetVisibility(true); }
+    private void ShowSettings()
+    {
+        settingsPanelHud?.SetVisibility(true);
+    }
 
-    private void ShowControls() { controlsHud?.SetVisibility(true); }
+    private void ShowControls()
+    {
+        controlsHud?.SetVisibility(true);
+    }
 
     private void ToggleUIVisibility_OnTriggered(DCLAction_Trigger action)
     {
         bool anyInputFieldIsSelected = EventSystem.current != null &&
                                        EventSystem.current.currentSelectedGameObject != null &&
-                                       EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
-                                       (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
+                                       EventSystem.current.currentSelectedGameObject
+                                           .GetComponent<TMPro.TMP_InputField>() != null &&
+                                       (!worldChatWindowHud.IsInputFieldFocused || !worldChatWindowHud.IsPreview);
 
         if (anyInputFieldIsSelected ||
             settingsPanelHud.view.isOpen ||
@@ -140,7 +159,8 @@ public class HUDController : IHUDController
         }
     }
 
-    public void ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration, string extraPayload = null)
+    public void ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration,
+        string extraPayload = null)
     {
         //TODO(Brian): For now, the factory code is using this switch approach.
         //             In order to avoid the factory upkeep we can transform the IHUD elements
@@ -164,6 +184,7 @@ public class HUDController : IHUDController
                         minimapHud.Initialize();
                     }
                 }
+
                 break;
             case HUDElementID.PROFILE_HUD:
                 CreateHudElement(configuration, hudElementId);
@@ -201,19 +222,54 @@ public class HUDController : IHUDController
 
                     if (worldChatWindowHud != null)
                     {
-                        worldChatWindowHud.Initialize(ChatController.i, SceneReferences.i.mouseCatcher);
-                        worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
-                        worldChatWindowHud.OnPressPrivateMessage += OpenPrivateChatWindow;
-                        worldChatWindowHud.view.OnDeactivatePreview -= View_OnDeactivatePreview;
-                        worldChatWindowHud.view.OnDeactivatePreview += View_OnDeactivatePreview;
+                        worldChatWindowHud.Initialize(WorldChatWindowComponentView.Create());
+                        worldChatWindowHud.SetVisibility(false);
+                        worldChatWindowHud.OnOpenPrivateChat -= OpenPrivateChatWindow;
+                        worldChatWindowHud.OnOpenPrivateChat += OpenPrivateChatWindow;
+                        worldChatWindowHud.OnOpenPublicChannel -= OpenPublicChannelWindow;
+                        worldChatWindowHud.OnOpenPublicChannel += OpenPublicChannelWindow;
+                        worldChatWindowHud.OnDeactivatePreview -= View_OnDeactivatePreview;
+                        worldChatWindowHud.OnDeactivatePreview += View_OnDeactivatePreview;
 
                         taskbarHud?.AddWorldChatWindow(worldChatWindowHud);
                     }
                 }
                 else
-                {
                     UpdateHudElement(configuration, hudElementId);
+
+                if (PublicChatChannelHud == null)
+                {
+                    CreateHudElement(configuration, HUDElementID.PUBLIC_CHAT_CHANNEL);
+                    if (PublicChatChannelHud != null)
+                    {
+                        PublicChatChannelHud.Initialize();
+                        PublicChatChannelHud.OnBack -= HandlePublicChatChannelBacked;
+                        PublicChatChannelHud.OnBack += HandlePublicChatChannelBacked;
+                        PublicChatChannelHud.OnClosed -= HandlePublicChatChannelClosed;
+                        PublicChatChannelHud.OnClosed += HandlePublicChatChannelClosed;
+                        PublicChatChannelHud.SetVisibility(false);
+                    }
+                    taskbarHud?.AddPublicChatChannel(PublicChatChannelHud);
                 }
+                else
+                    UpdateHudElement(configuration, HUDElementID.PUBLIC_CHAT_CHANNEL);
+                
+                if (PrivateChatWindow == null)
+                {
+                    CreateHudElement(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
+
+                    if (PrivateChatWindow != null)
+                    {
+                        PrivateChatWindow.Initialize();
+                        PrivateChatWindow.SetVisibility(false);
+                        PrivateChatWindow.OnPressBack -= PrivateChatWindowHud_OnPressBack;
+                        PrivateChatWindow.OnPressBack += PrivateChatWindowHud_OnPressBack;
+
+                        taskbarHud?.AddPrivateChatWindow(PrivateChatWindow);
+                    }
+                }
+                else
+                    UpdateHudElement(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
 
                 break;
             case HUDElementID.FRIENDS:
@@ -236,20 +292,6 @@ public class HUDController : IHUDController
 
                     if (!configuration.active)
                         taskbarHud?.DisableFriendsWindow();
-                }
-
-                if (privateChatWindowHud == null)
-                {
-                    CreateHudElement(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
-
-                    if (privateChatWindowHud != null)
-                    {
-                        privateChatWindowHud.Initialize(ChatController.i);
-                        privateChatWindowHud.OnPressBack -= PrivateChatWindowHud_OnPressBack;
-                        privateChatWindowHud.OnPressBack += PrivateChatWindowHud_OnPressBack;
-
-                        taskbarHud?.AddPrivateChatWindow(privateChatWindowHud);
-                    }
                 }
 
                 break;
@@ -340,8 +382,8 @@ public class HUDController : IHUDController
                     CreateHudElement(configuration, hudElementId);
                     if (loadingHud != null && configuration.active)
                         loadingController.Initialize();
-
                 }
+
                 break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message
@@ -354,13 +396,37 @@ public class HUDController : IHUDController
             hudElement.SetVisibility(configuration.active && configuration.visible);
     }
 
-    private void OpenPrivateChatWindow(string targetUserId) { taskbarHud?.OpenPrivateChatTo(targetUserId); }
+    private void HandlePublicChatChannelBacked()
+    {
+        PublicChatChannelHud.SetVisibility(false);
+        taskbarHud?.OpenChatList();
+    }
 
-    private void View_OnDeactivatePreview() { playerInfoCardHud?.CloseCard(); }
+    private void OpenPublicChannelWindow(string channelId)
+    {
+        taskbarHud?.OpenPublicChatChannel(channelId);
+    }
 
-    private void PrivateChatWindowHud_OnPressBack() { taskbarHud?.OpenFriendsWindow(); }
+    private void OpenPrivateChatWindow(string targetUserId)
+    {
+        taskbarHud?.OpenPrivateChatTo(targetUserId);
+    }
 
-    private void TaskbarHud_onAnyTaskbarButtonClicked() { playerInfoCardHud?.CloseCard(); }
+    private void View_OnDeactivatePreview()
+    {
+        playerInfoCardHud?.CloseCard();
+    }
+
+    private void PrivateChatWindowHud_OnPressBack()
+    {
+        PrivateChatWindow?.SetVisibility(false);
+        taskbarHud?.OpenChatList();
+    }
+
+    private void TaskbarHud_onAnyTaskbarButtonClicked()
+    {
+        playerInfoCardHud?.CloseCard();
+    }
 
     public void CreateHudElement(HUDConfiguration config, HUDElementID id)
     {
@@ -381,7 +447,8 @@ public class HUDController : IHUDController
             return;
 
         if (VERBOSE)
-            Debug.Log($"Updating {id}, type {hudElements[id].GetType().Name}, active: {config.active} visible: {config.visible}");
+            Debug.Log(
+                $"Updating {id}, type {hudElements[id].GetType().Name}, active: {config.active} visible: {config.visible}");
 
         hudElements[id].SetVisibility(config.visible);
     }
@@ -393,12 +460,20 @@ public class HUDController : IHUDController
 
         if (worldChatWindowHud != null)
         {
-            worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
-            worldChatWindowHud.view.OnDeactivatePreview -= View_OnDeactivatePreview;
+            worldChatWindowHud.OnOpenPrivateChat -= OpenPrivateChatWindow;
+            worldChatWindowHud.OnOpenPublicChannel -= OpenPublicChannelWindow;
+            worldChatWindowHud.OnDeactivatePreview -= View_OnDeactivatePreview;
         }
 
-        if (privateChatWindowHud != null)
-            privateChatWindowHud.OnPressBack -= PrivateChatWindowHud_OnPressBack;
+        if (PrivateChatWindow != null)
+            PrivateChatWindow.OnPressBack -= PrivateChatWindowHud_OnPressBack;
+
+        if (PublicChatChannelHud != null)
+        {
+            PublicChatChannelHud.OnClosed -= HandlePublicChatChannelClosed;
+            PublicChatChannelHud.OnBack -= HandlePublicChatChannelBacked;
+        }
+            
 
         if (friendsHud != null)
             friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
@@ -414,6 +489,11 @@ public class HUDController : IHUDController
         }
 
         hudElements.Clear();
+    }
+
+    private void HandlePublicChatChannelClosed()
+    {
+        PublicChatChannelHud.SetVisibility(false);
     }
 
     public IHUD GetHUDElement(HUDElementID id)
@@ -452,5 +532,8 @@ public class HUDController : IHUDController
         Resources.Load<StringVariable>("CurrentPlayerInfoCardId").Set(newModel.userId);
     }
 #endif
-    public void Dispose() { Cleanup(); }
+    public void Dispose()
+    {
+        Cleanup();
+    }
 }

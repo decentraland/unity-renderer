@@ -288,7 +288,7 @@ public class UserContextMenu : MonoBehaviour
             configFlags &= ~usesFriendsApiFlags;
         }
 
-        this.currentConfigFlags = configFlags;
+        currentConfigFlags = configFlags;
         ProcessActiveElements(configFlags);
 
         if ((configFlags & MenuConfigFlags.Block) != 0)

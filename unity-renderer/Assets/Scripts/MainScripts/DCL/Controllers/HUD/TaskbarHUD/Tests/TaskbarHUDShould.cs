@@ -1,10 +1,8 @@
-using DCL.SettingsPanelHUD;
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
-using DCL.Helpers;
 using NSubstitute;
+using NUnit.Framework;
 using UnityEngine;
 
 public class TaskbarHUDShould : IntegrationTestSuite_Legacy
@@ -15,11 +13,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private readonly FriendsController_Mock friendsController = new FriendsController_Mock();
     private readonly ChatController_Mock chatController = new ChatController_Mock();
 
-    private GameObject userProfileGO;
-    private PrivateChatWindowHUDController privateChatController;
+    private PrivateChatWindowController privateChatController;
     private FriendsHUDController friendsHudController;
-    private WorldChatWindowHUDController worldChatWindowController;
-    private UserProfileController userProfileController;
+    private WorldChatWindowController worldChatWindowController;
 
     protected override List<GameObject> SetUp_LegacySystems()
     {
@@ -31,9 +27,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-
-        userProfileGO = new GameObject();
-        userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
 
         controller = new TaskbarHUDController();
         controller.Initialize(null, chatController, null);
@@ -52,8 +45,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         friendsHudController?.Dispose();
 
         controller.Dispose();
-        Object.Destroy(userProfileGO);
-        Object.Destroy(userProfileController.gameObject);
 
         yield return base.TearDown();
     }
@@ -61,13 +52,17 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void AddWorldChatWindowProperly()
     {
-        worldChatWindowController = new WorldChatWindowHUDController();
-        worldChatWindowController.Initialize(null, null);
+        worldChatWindowController = new WorldChatWindowController(
+            Substitute.For<IUserProfileBridge>(),
+            Substitute.For<IFriendsController>(),
+            chatController,
+            Substitute.For<ILastReadMessagesService>());
+        worldChatWindowController.Initialize(new GameObject("WorldChatWindowComponentView").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
-        Assert.IsTrue(worldChatWindowController.view.transform.parent == view.leftWindowContainer,
+        Assert.IsTrue(worldChatWindowController.View.Transform.parent == view.leftWindowContainer,
             "Chat window isn't inside taskbar window container!");
-        Assert.IsTrue(worldChatWindowController.view.gameObject.activeSelf, "Chat window is disabled!");
+        Assert.IsTrue(worldChatWindowController.View.IsActive, "Chat window is disabled!");
     }
 
     [Test]
@@ -85,76 +80,63 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void ToggleWindowsProperly()
     {
-        privateChatController = new PrivateChatWindowHUDController();
-        privateChatController.Initialize(chatController);
+        var userProfileBridge = Substitute.For<IUserProfileBridge>();
+        var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
+        ownProfile.UpdateData(new UserProfileModel{name = "myself", userId = "myUserId"});
+        userProfileBridge.GetOwn().Returns(ownProfile);
+        var lastReadMessagesService = Substitute.For<ILastReadMessagesService>();
+        privateChatController = new PrivateChatWindowController(new DataStore(),
+            userProfileBridge,
+            chatController,
+            Substitute.For<IFriendsController>(),
+            ScriptableObject.CreateInstance<InputAction_Trigger>(),
+            lastReadMessagesService);
+        privateChatController.Initialize(new GameObject("PrivateChatWindowMock").AddComponent<PrivateChatWindowMock>());
         controller.AddPrivateChatWindow(privateChatController);
 
-        const string badPositionMsg =
-            "Anchored position should be zero or it won't be correctly placed inside the taskbar";
-        const string badPivotMsg = "Pivot should be zero or it won't be correctly placed inside the taskbar";
-
-        RectTransform rt = privateChatController.view.transform as RectTransform;
-        Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
-        Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
-
-        worldChatWindowController = new WorldChatWindowHUDController();
-        worldChatWindowController.Initialize(chatController, null);
+        worldChatWindowController = new WorldChatWindowController(
+            userProfileBridge,
+            Substitute.For<IFriendsController>(),
+            chatController,
+            lastReadMessagesService);
+        worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
-        rt = worldChatWindowController.view.transform as RectTransform;
-        Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
-        Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
+        var publicChatChannelController = new PublicChatChannelController(chatController, lastReadMessagesService, userProfileBridge,
+            ScriptableObject.CreateInstance<InputAction_Trigger>(),
+            new DataStore(),
+            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()));
+        publicChatChannelController.Initialize(new GameObject("PublicChatChannelWindowMock").AddComponent<PublicChatChannelWindowMock>());
+        controller.AddPublicChatChannel(publicChatChannelController);
 
         friendsHudController = new FriendsHUDController();
         friendsHudController.Initialize(friendsController, UserProfile.GetOwnUserProfile(), chatController);
         controller.AddFriendsWindow(friendsHudController);
 
-        rt = friendsHudController.view.Transform as RectTransform;
-        Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
-        Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
-
-        TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, friendsHudController.view, "test-1");
-        TestHelpers_Chat.FakePrivateChatMessageFrom(userProfileController, chatController, "test-1", "test message!");
-
-        var buttonList = view.GetButtonList();
-
-        Assert.AreEqual(4, buttonList.Count, "Chat head is missing when receiving a private message?");
-
         Assert.IsFalse(view.chatButton.toggledOn);
-        Assert.IsTrue(buttonList[2] is ChatHeadButton);
 
-        ChatHeadButton headButton = buttonList[2] as ChatHeadButton;
-        Assert.IsFalse(headButton.toggledOn);
-        Assert.IsTrue(headButton.toggleButton.interactable);
-
-        //NOTE(Brian): Toggle chat head on and test it works as intended
-        headButton.toggleButton.onClick.Invoke();
-
-        Assert.IsTrue(headButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.chatButton.lineOnIndicator.isVisible);
-        Assert.IsTrue(controller.privateChatWindowHud.view.gameObject.activeInHierarchy);
+        Assert.IsTrue(controller.privateChatWindow.view.IsActive);
 
         //NOTE(Brian): Toggle friends window on and test all other windows are untoggled
         view.friendsButton.toggleButton.onClick.Invoke();
 
-        Assert.IsFalse(controller.privateChatWindowHud.view.gameObject.activeInHierarchy);
-        Assert.IsFalse(headButton.lineOnIndicator.isVisible);
+        Assert.IsFalse(controller.privateChatWindow.view.IsActive);
         Assert.IsTrue(view.friendsButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.chatButton.lineOnIndicator.isVisible);
 
         //NOTE(Brian): Toggle friends window off and test all other windows are untoggled
         view.friendsButton.toggleButton.onClick.Invoke();
 
-        Assert.IsFalse(controller.privateChatWindowHud.view.gameObject.activeInHierarchy);
-        Assert.IsFalse(headButton.lineOnIndicator.isVisible);
+        Assert.IsFalse(controller.privateChatWindow.view.IsActive);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
 
         //NOTE(Brian): Toggle friends on, and then chat button on. Then check if world chat window is showing up.
         view.friendsButton.toggleButton.onClick.Invoke();
         view.chatButton.toggleButton.onClick.Invoke();
 
-        Assert.IsTrue(controller.worldChatWindowHud.view.gameObject.activeInHierarchy);
+        Assert.IsTrue(controller.worldChatWindowHud.View.IsActive);
         Assert.IsFalse(controller.friendsHud.view.IsActive());
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
     }

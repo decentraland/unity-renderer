@@ -1,10 +1,9 @@
-using System;
 using DCL;
 using DCL.HelpAndSupportHUD;
+using DCL.Helpers;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.SettingsPanelHUD;
-using LoadingHUD;
 using SignupHUD;
 using UnityEngine;
 
@@ -50,14 +49,29 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.TERMS_OF_SERVICE:
                 hudElement = new TermsOfServiceHUDController();
                 break;
-            case HUDElementID.WORLD_CHAT_WINDOW:
-                hudElement = new WorldChatWindowHUDController();
-                break;
             case HUDElementID.FRIENDS:
                 hudElement = new FriendsHUDController();
                 break;
+            case HUDElementID.WORLD_CHAT_WINDOW:
+                hudElement = new WorldChatWindowController(
+                    new UserProfileWebInterfaceBridge(),
+                    FriendsController.i, ChatController.i,
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
+                break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
-                hudElement = new PrivateChatWindowHUDController();
+                hudElement = new PrivateChatWindowController(DataStore.i,
+                    new UserProfileWebInterfaceBridge(),
+                    ChatController.i, FriendsController.i,
+                    Resources.Load<InputAction_Trigger>("CloseWindow"),
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
+                break;
+            case HUDElementID.PUBLIC_CHAT_CHANNEL:
+                hudElement = new PublicChatChannelController(ChatController.i,
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
+                    new UserProfileWebInterfaceBridge(),
+                    Resources.Load<InputAction_Trigger>("CloseWindow"),
+                    DataStore.i,
+                    ProfanityFilterSharedInstances.regexFilter);
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();

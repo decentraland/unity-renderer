@@ -155,14 +155,14 @@ public class FriendRequestsTabView : FriendsTabViewBase
         // Add placeholder friend to avoid affecting UX by roundtrip with kernel
         FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
         {
-            userId = requestEntry.userId,
+            userId = requestEntry.model.userId,
             action = FriendshipAction.APPROVED
         });
 
         acceptedFriendNotification.model.message = $"You and {requestEntry.model.userName} are now friends!";
         NotificationsController.i.ShowNotification(acceptedFriendNotification);
 
-        RemoveEntry(requestEntry.userId);
+        RemoveEntry(requestEntry.model.userId);
 
         OnFriendRequestApproved?.Invoke(requestEntry);
     }
@@ -172,7 +172,7 @@ public class FriendRequestsTabView : FriendsTabViewBase
         confirmationDialog.SetText($"Are you sure you want to reject {requestEntry.model.userName} friend request?");
         confirmationDialog.Show(() =>
         {
-            RemoveEntry(requestEntry.userId);
+            RemoveEntry(requestEntry.model.userId);
             OnRejectConfirmation?.Invoke(requestEntry as FriendRequestEntry);
         });
     }
@@ -182,7 +182,7 @@ public class FriendRequestsTabView : FriendsTabViewBase
         confirmationDialog.SetText($"Are you sure you want to cancel {requestEntry.model.userName} friend request?");
         confirmationDialog.Show(() =>
         {
-            RemoveEntry(requestEntry.userId);
+            RemoveEntry(requestEntry.model.userId);
             OnCancelConfirmation?.Invoke(requestEntry as FriendRequestEntry);
         });
     }
