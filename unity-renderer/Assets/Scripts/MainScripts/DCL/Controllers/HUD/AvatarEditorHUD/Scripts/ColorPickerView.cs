@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using UnityEngine.EventSystems;
+using DCL;
 
 public class ColorPickerView : MonoBehaviour
 {
@@ -42,7 +43,13 @@ public class ColorPickerView : MonoBehaviour
         value.increaseButton.onClick.AddListener(() => ChangeProperty("val", BUTTON_INCREMENT));
         value.decreaseButton.onClick.AddListener(() => ChangeProperty("val", -BUTTON_INCREMENT));
 
+        DataStore.i.HUDs.avatarEditorVisible.OnChange += CloseOnAvatarEditorClose;
         toggleButton.onClick.AddListener(() => SetActive(!container.activeInHierarchy));
+        SetActive(false);
+    }
+
+    private void CloseOnAvatarEditorClose(bool current, bool previous)
+    {
         SetActive(false);
     }
 
@@ -103,4 +110,8 @@ public class ColorPickerView : MonoBehaviour
         container.SetActive(isActive);
     }
 
+    private void OnDestroy()
+    {
+        DataStore.i.HUDs.avatarEditorVisible.OnChange -= CloseOnAvatarEditorClose;
+    }
 }
