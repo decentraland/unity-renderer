@@ -410,11 +410,6 @@ namespace DCL.Controllers
 
         private void RemoveAllEntitiesImmediate() { RemoveAllEntities(instant: true); }
 
-        public void SetEntityParent(string entityId, string parentId)
-        {
-            SetEntityParent(EntityFromLegacyEntityString(entityId), EntityFromLegacyEntityString(parentId));
-        }
-        
         public void SetEntityParent(long entityId, long parentId)
         {
             if (entityId == parentId)
