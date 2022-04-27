@@ -15,12 +15,15 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     private IContext context;
     private ParcelScene scene;
     private AssetCatalogBridge assetCatalogBridge;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
@@ -38,19 +41,22 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
             biwCreatorController
         );
 
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
         biwActionController.Initialize(context);
         entityHandler.Initialize(context);
         biwFloorHandler.Initialize(context);
         biwCreatorController.Initialize(context);
 
-        biwActionController.EnterEditMode(scene);
-        entityHandler.EnterEditMode(scene);
-        biwFloorHandler.EnterEditMode(scene);
-        biwCreatorController.EnterEditMode(scene);
+        biwActionController.EnterEditMode(builderScene);
+        entityHandler.EnterEditMode(builderScene);
+        biwFloorHandler.EnterEditMode(builderScene);
+        biwCreatorController.EnterEditMode(builderScene);
     }
 
     protected override IEnumerator TearDown()
     {
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
+        coreComponentsPlugin.Dispose();
         Object.Destroy( assetCatalogBridge.gameObject );
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();

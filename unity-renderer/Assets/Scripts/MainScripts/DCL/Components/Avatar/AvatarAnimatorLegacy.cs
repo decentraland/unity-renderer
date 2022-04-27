@@ -25,6 +25,13 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     const float RAY_OFFSET_LENGTH = 3.0f;
 
     const float MAX_VELOCITY = 6.25f;
+    
+    // Time it takes to determine if a character is grounded when vertical velocity is 0
+    const float FORCE_GROUND_TIME = 0.05f;
+    
+    // Minimum vertical speed used to consider whether an avatar is on air
+    const float MIN_VERTICAL_SPEED_AIR = 0.025f;
+
 
     [System.Serializable]
     public class AvatarLocomotion
@@ -65,6 +72,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     Vector3 lastPosition;
     bool isOwnPlayer = false;
     private AvatarAnimationEventHandler animEventHandler;
+    
+    private float lastOnAirTime = 0;
 
     public void Start() { OnPoolGet(); }
 
@@ -113,6 +122,13 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         //NOTE(Brian): Vertical speed
         float verticalVelocity = flattenedVelocity.y;
+
+        //NOTE(Kinerius): if we have more or less than zero we consider that we are either jumping or falling
+        if (Mathf.Abs(verticalVelocity) > MIN_VERTICAL_SPEED_AIR)
+        {
+            lastOnAirTime = Time.time;
+        }
+        
         blackboard.verticalSpeed = verticalVelocity;
 
         flattenedVelocity.y = 0;
@@ -123,11 +139,21 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             blackboard.movementSpeed = flattenedVelocity.magnitude;
 
         Vector3 rayOffset = Vector3.up * RAY_OFFSET_LENGTH;
-        //NOTE(Brian): isGrounded?
-        blackboard.isGrounded = Physics.Raycast(target.transform.position + rayOffset,
+        
+        //NOTE(Kinerius): This check is just for the playing character, it uses a combination of collision flags and raycasts to determine the ground state, its precise
+        bool isGroundedByCharacterController = isOwnPlayer && DCLCharacterController.i.isGrounded;
+        
+        //NOTE(Kinerius): This check is for interpolated avatars (the other players) as we dont have a Character Controller, we determine their ground state by checking its vertical velocity
+        //                this check is cheap and fast but not precise
+        bool isGroundedByVelocity = !isOwnPlayer && Time.time - lastOnAirTime > FORCE_GROUND_TIME;
+        
+        //NOTE(Kinerius): This additional check is both for the player and interpolated avatars, we cast an additional raycast per avatar to check ground state
+        bool isGroundedByRaycast = Physics.Raycast(target.transform.position + rayOffset,
             Vector3.down,
             RAY_OFFSET_LENGTH - ELEVATION_OFFSET,
             DCLCharacterController.i.groundLayers);
+
+        blackboard.isGrounded = isGroundedByCharacterController || isGroundedByVelocity || isGroundedByRaycast;
 
 #if UNITY_EDITOR
         Debug.DrawRay(target.transform.position + rayOffset, Vector3.down * (RAY_OFFSET_LENGTH - ELEVATION_OFFSET), blackboard.isGrounded ? Color.green : Color.red);
@@ -319,7 +345,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     private void InitializeAvatarAudioAndParticleHandlers(Animation createdAnimation)
     {
         //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
-        AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventHandler>();
+        AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.GetOrCreateComponent<AvatarAnimationEventHandler>();
         AudioContainer audioContainer = transform.GetComponentInChildren<AudioContainer>();
         if (audioContainer != null)
         {

@@ -64,7 +64,7 @@ public class SceneLimitsController : ISceneLimitsController
         if (currentParcelScene == null)
             return;
 
-        if (IsParcelSceneSquare(currentParcelScene))
+        if (BIWUtils.IsParcelSceneSquare( currentParcelScene.sceneData.parcels))
         {
             int size = (int)Math.Sqrt(currentParcelScene.sceneData.parcels.Length);
             int meters = size * 16;
@@ -147,36 +147,5 @@ public class SceneLimitsController : ISceneLimitsController
             result = percentMeshes;
 
         return result;
-    }
-
-    internal bool IsParcelSceneSquare(IParcelScene scene)
-    {
-        Vector2Int[] parcelsPoints = scene.sceneData.parcels;
-        int minX = int.MaxValue;
-        int minY = int.MaxValue;
-        int maxX = int.MinValue;
-        int maxY = int.MinValue;
-
-        foreach (Vector2Int vector in parcelsPoints)
-        {
-            if (vector.x < minX)
-                minX = vector.x;
-            if (vector.y < minY)
-                minY = vector.y;
-            if (vector.x > maxX)
-                maxX = vector.x;
-            if (vector.y > maxY)
-                maxY = vector.y;
-        }
-
-        if (maxX - minX != maxY - minY)
-            return false;
-
-        int lateralLengh = Math.Abs((maxX - minX) + 1);
-
-        if (parcelsPoints.Length != lateralLengh * lateralLengh)
-            return false;
-
-        return true;
     }
 }

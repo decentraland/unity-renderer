@@ -1,6 +1,9 @@
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using DCL.Interface;
 
 public class ChatHUDController : IDisposable
@@ -47,17 +50,19 @@ public class ChatHUDController : IDisposable
         AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom);
     }
 
-    public void AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false)
+    public async UniTask AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false)
     {
         chatEntryModel.bodyText = ChatUtils.AddNoParse(chatEntryModel.bodyText);
 
         if (IsProfanityFilteringEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
         {
-            chatEntryModel.bodyText = profanityFilter.Filter(chatEntryModel.bodyText);
+            chatEntryModel.bodyText = await profanityFilter.Filter(chatEntryModel.bodyText);
+
             if (!string.IsNullOrEmpty(chatEntryModel.senderName))
-                chatEntryModel.senderName = profanityFilter.Filter(chatEntryModel.senderName);
+                chatEntryModel.senderName = await profanityFilter.Filter(chatEntryModel.senderName);
+
             if (!string.IsNullOrEmpty(chatEntryModel.recipientName))
-                chatEntryModel.recipientName = profanityFilter.Filter(chatEntryModel.recipientName);
+                chatEntryModel.recipientName = await profanityFilter.Filter(chatEntryModel.recipientName);
         }
 
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);

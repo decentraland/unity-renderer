@@ -6,6 +6,8 @@ using DCL.Interface;
 using System;
 using System.Collections;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using DCL.Configuration;
 using UnityEngine;
 using Variables.RealmsInfo;
 using Environment = DCL.Environment;
@@ -13,12 +15,19 @@ using Object = UnityEngine.Object;
 
 public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 {
+    private const string DELETE_PROJECT_CONFIRM_TEXT = "Are you sure that you want to delete {0} project?";
     private const string CREATING_PROJECT_ERROR = "Error creating a new project: ";
     private const string OBTAIN_PROJECT_ERROR = "Error obtaining the project: ";
+
+    private const string DUPLICATE_PROJECT_ERROR = "Error duplicating the project: ";
+    private const string PUBLISH_PROJECT_ERROR = "Error publishing the project: ";
+
+    private const string DELETE_PROJECT_ERROR = "Error deleting the project: ";
+    private const string DELETE_PROJECT_SUCCESS = "<b>{0}</b> has been deleted";
+
     private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
-    private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
-    private const string VIEW_PREFAB_PATH_DEV = "BuilderProjectsPanelDev";
+    private const string VIEW_PREFAB_PATH = "BuilderProjectsPanelDev";
 
     private const float CACHE_TIME_LAND = 5 * 60;
     private const float CACHE_TIME_SCENES = 1 * 60;
@@ -58,10 +67,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     public BuilderMainPanelController()
     {
-        if (DataStore.i.builderInWorld.isDevBuild.Get())
-            SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH_DEV)));
-        else
-            SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH)));
+        SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH)));
 
         configureBuilderInFullscreenMenu.OnChange += ConfigureBuilderInFullscreenMenuChanged;
         ConfigureBuilderInFullscreenMenuChanged(configureBuilderInFullscreenMenu.Get(), null);
@@ -72,7 +78,10 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         this.view = view;
         view.OnClosePressed += OnClose;
         view.OnBackPressed += OnBack;
+        view.OnGuestConnectWallet += ConnectGuestWallet;
     }
+
+    private void ConnectGuestWallet() { WebInterface.OpenURL(BIWSettings.GUEST_WALLET_INFO); }
 
     private void OnBack()
     {
@@ -84,15 +93,22 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         StopFetchInterval();
 
+        context.publisher.OnPublishFinish -= PublishFinish;
+        
         sectionsController.OnRequestOpenUrl -= OpenUrl;
         sectionsController.OnRequestGoToCoords -= GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords -= OnGoToEditScene;
         sectionsController.OnCreateProjectRequest -= newProjectFlowController.NewProject;
-
+        sectionsController.OnSectionContentEmpty -= SectionContentEmpty;
+        sectionsController.OnSectionContentNotEmpty -= SectionContentNotEmpty;
+        
         scenesViewController.OnJumpInPressed -= GoToCoords;
         scenesViewController.OnRequestOpenUrl -= OpenUrl;
         scenesViewController.OnEditorPressed -= OnGoToEditScene;
         projectsController.OnEditorPressed -= GetManifestToEdit;
+        projectsController.OnDeleteProject -= DeleteProject;
+        projectsController.OnDuplicateProject -= DuplicateProject;
+        projectsController.OnPublishProject -= PublishProject;
 
         newProjectFlowController.OnNewProjectCrated -= CreateNewProject;
 
@@ -102,6 +118,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
         view.OnBackPressed -= OnBack;
+        view.OnGuestConnectWallet -= ConnectGuestWallet;
 
         unpublishPopupController?.Dispose();
 
@@ -125,23 +142,25 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     public void Initialize(IContext context)
     {
-        this.context = context;
-        Initialize(new SectionsController(view.GetSectionContainer()),
+        Initialize(context,new SectionsController(view.GetSectionContainer()),
             new ScenesViewController(view.GetSceneCardViewPrefab(), view.GetTransform()),
             new LandsController(),
-            new ProjectsController(view.GetProjectCardView(), view.GetTransform()),
+            new ProjectsController(view.GetProjectCardView(), view.GetProjectCardViewContextMenu(), view.GetTransform()),
             new NewProjectFlowController(),
             Environment.i.platform.serviceProviders.theGraph,
             Environment.i.platform.serviceProviders.catalyst);
     }
 
-    internal void Initialize(ISectionsController sectionsController,
+    internal void Initialize(IContext context,ISectionsController sectionsController,
         IScenesViewController scenesViewController, ILandsController landsesController, IProjectsController projectsController, INewProjectFlowController newProjectFlowController, ITheGraph theGraph, ICatalyst catalyst)
     {
         if (isInitialized)
             return;
 
         isInitialized = true;
+        
+        this.context = context;
+        this.context.publisher.OnPublishFinish += PublishFinish;
 
         this.sectionsController = sectionsController;
         this.scenesViewController = scenesViewController;
@@ -153,7 +172,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         this.theGraph = theGraph;
         this.catalyst = catalyst;
 
-        this.unpublishPopupController = new UnpublishPopupController(view.GetUnpublishPopup());
+        this.unpublishPopupController = new UnpublishPopupController(context,view.GetUnpublishPopup());
 
         // set listeners for sections, setup searchbar for section, handle request for opening a new section
         sectionsHandler = new SectionsHandler(sectionsController, scenesViewController, landsesController, projectsController, view.GetSearchBar());
@@ -164,12 +183,16 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         // handle scene's context menu options
         sceneContextMenuHandler = new SceneContextMenuHandler(view.GetSceneCardViewContextMenu(), sectionsController, scenesViewController, unpublishPopupController);
 
+        this.projectsController.SetSceneContextMenuHandler(sceneContextMenuHandler);
+
         SetView();
 
         sectionsController.OnRequestOpenUrl += OpenUrl;
         sectionsController.OnRequestGoToCoords += GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords += OnGoToEditScene;
         sectionsController.OnCreateProjectRequest += newProjectFlowController.NewProject;
+        sectionsController.OnSectionContentEmpty += SectionContentEmpty;
+        sectionsController.OnSectionContentNotEmpty += SectionContentNotEmpty;
 
         scenesViewController.OnJumpInPressed += GoToCoords;
         scenesViewController.OnRequestOpenUrl += OpenUrl;
@@ -178,9 +201,125 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         view.OnCreateProjectPressed += this.newProjectFlowController.NewProject;
         this.projectsController.OnEditorPressed += GetManifestToEdit;
+        this.projectsController.OnDeleteProject += DeleteProject;
+        this.projectsController.OnDuplicateProject += DuplicateProject;
+        this.projectsController.OnPublishProject += PublishProject;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
+    }
+    
+    private void SectionContentNotEmpty() { view.SetSearchViewVisible(true); }
+
+    private void SectionContentEmpty() { view.SetSearchViewVisible(false); }
+
+    private void DuplicateProject(ProjectData data)
+    {
+        Promise<Manifest> manifestPromise = context.builderAPIController.GetManifestById(data.id);
+        manifestPromise.Then( (manifest) =>
+        {
+            DuplicateProject(data, manifest);
+        });
+
+        manifestPromise.Catch( errorString =>
+        {
+            BIWUtils.ShowGenericNotification(DUPLICATE_PROJECT_ERROR + errorString);
+        });
+
+    }
+    
+    private async void DuplicateProject(ProjectData data, Manifest manifest)
+    {
+        string url = BIWUrlUtils.GetBuilderProjecThumbnailUrl(data.id, data.thumbnail);
+        Promise<Texture2D> screenshotPromise = new Promise<Texture2D>();
+        BIWUtils.MakeGetTextureCall(url, screenshotPromise);
+
+        string scene_id = Guid.NewGuid().ToString();
+        manifest.project.title += " Copy";
+        manifest.project.id = Guid.NewGuid().ToString();
+        manifest.project.scene_id = scene_id;
+        manifest.scene.id = scene_id;
+        manifest.project.created_at = DateTime.UtcNow;
+        manifest.project.updated_at = DateTime.UtcNow;
+
+        screenshotPromise.Then(texture =>
+        {
+            context.builderAPIController.SetThumbnail(manifest.project.id, texture);
+        });
+
+        Promise<bool> createPromise = context.builderAPIController.SetManifest(manifest);
+        createPromise.Then(isOk =>
+        {
+            if (!isOk)
+                BIWUtils.ShowGenericNotification(DUPLICATE_PROJECT_ERROR);
+        });
+        createPromise.Catch(error =>
+        {
+            BIWUtils.ShowGenericNotification(DUPLICATE_PROJECT_ERROR + error);
+        });
+
+        await createPromise;
+        await screenshotPromise;
+
+        // We need to wait a bit before refreshing the projects so the server is able to process the data 
+        CoroutineStarter.Start(WaitASecondAndRefreshProjects());
+        
+        BIWAnalytics.ProjectDuplicated(data.id, new Vector2Int(data.rows,data.cols));
+    }
+
+    private async void PublishProject(ProjectData data)
+    {
+        Promise<Manifest> manifestPromise = context.builderAPIController.GetManifestById(data.id);
+        manifestPromise.Then( (manifest) =>
+        {
+            manifest.project = data;
+            PublishProject(manifest);
+        });
+
+        manifestPromise.Catch( errorString =>
+        {
+            BIWUtils.ShowGenericNotification(PUBLISH_PROJECT_ERROR + errorString);
+        });
+    }
+
+    private async void PublishProject(Manifest manifest)
+    {
+        string url = BIWUrlUtils.GetBuilderProjecThumbnailUrl(manifest.project.id, manifest.project.thumbnail);
+        Promise<Texture2D> screenshotPromise = new Promise<Texture2D>();
+        BIWUtils.MakeGetTextureCall(url, screenshotPromise);
+
+        IBuilderScene builderScene = new BuilderScene(manifest, IBuilderScene.SceneType.PROJECT);
+        builderScene.SetScene(ManifestTranslator.ManifestToParcelSceneWithOnlyData(manifest));
+        screenshotPromise.Then((texture2D => builderScene.sceneScreenshotTexture = texture2D));
+        await screenshotPromise;
+        context.publisher.StartPublish(builderScene);
+    }
+
+    private void DeleteProject(ProjectData data)
+    {
+        string deleteText = DELETE_PROJECT_CONFIRM_TEXT.Replace("{0}", data.title);
+
+        context.commonHUD.GetPopUp()
+               .ShowPopUpWithoutTitle(deleteText, "YES", "NO", () =>
+               {
+                   Promise<bool> manifestPromise = context.builderAPIController.DeleteProject(data.id);
+                   manifestPromise.Then( (isOk) =>
+                   {
+                       if (isOk)
+                       {
+                           string text = DELETE_PROJECT_SUCCESS.Replace("{0}", data.title);
+                           view.ShowToast(text);
+                           FetchProjectData();
+                       }
+                   });
+
+                   manifestPromise.Catch( errorString =>
+                   {
+                       BIWUtils.ShowGenericNotification(DELETE_PROJECT_ERROR + errorString);
+                   });
+                   
+                   BIWAnalytics.ProjectDeleted(data.id, new Vector2Int(data.rows,data.cols));
+               }, null);
     }
 
     private void GetManifestToEdit(ProjectData data)
@@ -196,19 +335,35 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private void CreateNewProject(ProjectData project)
     {
-        Promise<Manifest> projectPromise = context.builderAPIController.CreateNewProject(project);
+        context.sceneManager.ShowBuilderLoading();
+        Promise<ProjectData> projectPromise = context.builderAPIController.CreateNewProject(project);
 
-        projectPromise.Then( OpenEditorFromManifest);
+        projectPromise.Then( OpenEditorFromNewProject);
 
         projectPromise.Catch( errorString =>
         {
+            context.sceneManager.HideBuilderLoading();
             BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR + errorString);
         });
+        
+        BIWAnalytics.CreatedNewProject(project.title, project.description, new Vector2Int(project.rows,project.cols));
     }
 
-    private void OpenEditorFromManifest(Manifest manifest) { context.sceneManager.StartEditorFromManifest(manifest); }
+    private void OpenEditorFromNewProject(ProjectData projectData)
+    {
+        var manifest = BIWUtils.CreateManifestFromProject(projectData);
+        DataStore.i.builderInWorld.lastProjectIdCreated.Set(manifest.project.id);
+        OpenEditorFromManifest(manifest);
+    }
 
-    public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
+    private void OpenEditorFromManifest(Manifest manifest) { context.sceneManager.StartFlowFromProject(manifest); }
+
+    public void SetVisibility(bool visible)
+    {
+        // Note: we set it here since the profile is not ready at the initialization part
+        view.SetGuestMode(UserProfile.GetOwnUserProfile().isGuest);
+        DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible);
+    }
 
     private void OnVisibilityChanged(bool isVisible, bool prev)
     {
@@ -217,6 +372,9 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         view.SetVisible(isVisible);
 
+        // Note: we set it here since the profile is not ready at the initialization part
+        view.SetGuestMode(UserProfile.GetOwnUserProfile().isGuest);
+
         if (isVisible)
         {
             if (DataStore.i.builderInWorld.landsWithAccess.Get() != null)
@@ -224,12 +382,10 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             else
                 sendPlayerOpenPanelEvent = true;
 
+            sectionsController.OpenSection(SectionId.PROJECTS);
+            
             FetchPanelInfo();
             StartFetchInterval();
-            if (DataStore.i.builderInWorld.isDevBuild.Get())
-                sectionsController.OpenSection(SectionId.PROJECTS);
-            else
-                sectionsController.OpenSection(SectionId.SCENES);
         }
         else
         {
@@ -284,7 +440,15 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         projectsController.AddListener((IProjectsListener) view);
     }
 
-    private void FetchPanelInfo(float landCacheTime = CACHE_TIME_LAND, float scenesCacheTime = CACHE_TIME_SCENES)
+    private void PublishFinish(bool isOk)
+    {
+        if(isOk)
+            FetchPanelInfo(0,0);
+    }
+
+    private void FetchPanelInfo() => FetchPanelInfo(CACHE_TIME_LAND, CACHE_TIME_SCENES);
+    
+    private void FetchPanelInfo(float landCacheTime, float scenesCacheTime)
     {
         if (isFetchingLands || isFetchingProjects)
             return;
@@ -315,9 +479,13 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         fetchLandPromise
             .Then(LandsFetched)
             .Catch(LandsFetchedError);
+        
+        FetchProjectData();
+    }
 
-        if (!DataStore.i.builderInWorld.isDevBuild.Get())
-            return;
+    internal void FetchProjectData()
+    {
+        sectionsController.SetFetchingDataStart<SectionProjectController>();
         fetchProjectsPromise = BuilderPanelDataFetcher.FetchProjectData(context.builderAPIController);
         fetchProjectsPromise
             .Then(ProjectsFetched)
@@ -328,6 +496,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         DataStore.i.builderInWorld.projectData.Set(data);
         isFetchingProjects = false;
+        sectionsController.SetFetchingDataEnd<SectionProjectController>();
         projectsController.SetProjects(data);
         UpdateProjectsDeploymentStatus();
     }
@@ -362,23 +531,29 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
         sectionsController.SetFetchingDataEnd<SectionLandController>();
+        sectionsController.SetFetchingDataEnd<SectionScenesController>();
         isFetchingLands = false;
         UpdateProjectsDeploymentStatus();
 
         try
         {
-            ISceneData[] places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
-                .Aggregate((i, j) => i.Concat(j))
-                .ToArray();
-
+            ISceneData[] places = { };
+            
+            if(lands.Length > 0)
+                places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
+                                       .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+                                       .Aggregate((i, j) => i.Concat(j))
+                                       .ToArray();
+            
             if (sendPlayerOpenPanelEvent)
                 PanelOpenEvent(lands);
+            
             landsesController.SetLands(lands);
             scenesViewController.SetScenes(places);
         }
         catch (Exception e)
         {
+            Debug.Log("Error setting the lands and scenes "+ e);
             landsesController.SetLands(lands);
             scenesViewController.SetScenes(new ISceneData[] { });
         }
@@ -395,13 +570,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal void OnGoToEditScene(Vector2Int coords)
     {
-        bool isGoingToTeleport = BIWTeleportAndEdit.TeleportAndEdit(coords);
-        if (isGoingToTeleport)
-        {
-            SetVisibility(false);
-        }
-
-        OnJumpInOrEdit?.Invoke();
+        SetVisibility(false);
+        context.sceneManager.StartFlowFromLandCoords(coords);
     }
 
     private void StartFetchInterval()
@@ -427,6 +597,12 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             yield return WaitForSecondsCache.Get(REFRESH_INTERVAL);
             FetchPanelInfo();
         }
+    }
+
+    IEnumerator WaitASecondAndRefreshProjects()
+    {
+        yield return new WaitForSeconds(1f);
+        FetchProjectData();
     }
 
     private void OnSceneUnpublished(PublishSceneResultPayload current, PublishSceneResultPayload previous)

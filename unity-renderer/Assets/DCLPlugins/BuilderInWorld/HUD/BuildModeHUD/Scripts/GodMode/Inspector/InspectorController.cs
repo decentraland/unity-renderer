@@ -56,6 +56,9 @@ public class InspectorController : IInspectorController
 
     public void Dispose()
     {
+        if (inspectorView == null)
+            return;
+        
         inspectorView.OnEntityActionInvoked -= EntityActionInvoked;
         inspectorView.OnEntityRename -= EntityRename;
     }

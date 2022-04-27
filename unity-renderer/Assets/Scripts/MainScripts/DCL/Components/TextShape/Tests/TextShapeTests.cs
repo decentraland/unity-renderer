@@ -13,11 +13,19 @@ namespace Tests
     public class TextShapeTests : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         [UnityTest]
@@ -123,7 +131,7 @@ namespace Tests
             Assert.AreEqual(Color.red, textShapeComponent.GetModel().shadowColor);
 
             // 3. Update component with missing values
-            scene.EntityComponentUpdate(scene.entities[entityId], CLASS_ID_COMPONENT.TEXT_SHAPE,
+            scene.componentsManagerLegacy.EntityComponentUpdate(scene.entities[entityId], CLASS_ID_COMPONENT.TEXT_SHAPE,
                 JsonUtility.ToJson(new TextShape.Model { }));
 
             yield return textShapeComponent.routine;

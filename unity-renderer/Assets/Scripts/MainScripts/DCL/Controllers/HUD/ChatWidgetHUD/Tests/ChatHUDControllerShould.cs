@@ -2,14 +2,16 @@ using System;
 using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
+using Cysharp.Threading.Tasks;
 using DCL;
 using NSubstitute;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
 {
     private const string OWN_USER_ID = "ownUserId";
-    
+
     private ChatHUDController controller;
     private IChatHUDComponentView view;
     private DataStore dataStore;
@@ -50,8 +52,8 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
         controller.OnSendMessage -= SendMessage;
     }
 
-    [Test]
-    public void TrimWhenTooMuchMessagesAreInView()
+    [UnityTest]
+    public IEnumerator TrimWhenTooMuchMessagesAreInView() => UniTask.ToCoroutine(async () =>
     {
         view.EntryCount.Returns(ChatHUDController.MAX_CHAT_ENTRIES + 1);
 
@@ -62,13 +64,13 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             bodyText = "test"
         };
 
-        controller.AddChatMessage(msg);
+        await controller.AddChatMessage(msg);
 
         view.Received(1).RemoveFirstEntry();
-    }
+    });
 
-    [Test]
-    public void AddChatEntryProperly()
+    [UnityTest]
+    public IEnumerator AddChatEntryProperly() => UniTask.ToCoroutine(async () =>
     {
         var msg = new ChatEntryModel
         {
@@ -77,81 +79,90 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             bodyText = "test"
         };
 
-        controller.AddChatMessage(msg);
+        await controller.AddChatMessage(msg);
 
-        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.messageType == msg.messageType
-                                                                  && model.senderName == msg.senderName
-                                                                  && model.bodyText ==
-                                                                  $"<noparse>{msg.bodyText}</noparse>"));
-    }
+        view.Received(1)
+            .AddEntry(Arg.Is<ChatEntryModel>(
+                model => model.messageType == msg.messageType && model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
+    });
 
-    [TestCase("ShiT hello shithead", "**** hello shithead")]
-    [TestCase("ass hi grass", "*** hi grass")]
-    public void FilterProfanityMessageWithExplicitWords(string body, string expected)
-    {
-        var msg = new ChatEntryModel
+    [UnityTest]
+    [TestCase("ShiT hello shithead", "**** hello shithead", ExpectedResult = (IEnumerator) null)]
+    [TestCase("ass hi grass", "*** hi grass", ExpectedResult = (IEnumerator) null)]
+    public IEnumerator FilterProfanityMessageWithExplicitWords(string body, string expected) => UniTask.ToCoroutine(
+        async () =>
         {
-            messageType = ChatMessage.Type.PUBLIC,
-            senderName = "test",
-            bodyText = body
-        };
+            var msg = new ChatEntryModel
+            {
+                messageType = ChatMessage.Type.PUBLIC,
+                senderName = "test",
+                bodyText = body
+            };
 
-        controller.AddChatMessage(msg);
+            await controller.AddChatMessage(msg);
 
-        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{expected}</noparse>"));
-    }
+            view.Received(1)
+                .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{expected}</noparse>"));
+        });
 
-    [TestCase("fuck1 heh bitch", "****1 heh *****")]
-    [TestCase("assfuck bitching", "ass**** *****ing")]
-    public void FilterProfanityMessageWithNonExplicitWords(string body, string expected)
-    {
-        var msg = new ChatEntryModel
+    [UnityTest]
+    [TestCase("fuck1 heh bitch", "****1 heh *****", ExpectedResult = (IEnumerator) null)]
+    [TestCase("assfuck bitching", "ass**** *****ing", ExpectedResult = (IEnumerator) null)]
+    public IEnumerator FilterProfanityMessageWithNonExplicitWords(string body, string expected) => UniTask.ToCoroutine(
+        async () =>
         {
-            messageType = ChatMessage.Type.PUBLIC,
-            senderName = "test",
-            bodyText = body
-        };
+            var msg = new ChatEntryModel
+            {
+                messageType = ChatMessage.Type.PUBLIC,
+                senderName = "test",
+                bodyText = body
+            };
 
-        controller.AddChatMessage(msg);
+            await controller.AddChatMessage(msg);
 
-        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{expected}</noparse>"));
-    }
+            view.Received(1)
+                .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{expected}</noparse>"));
+        });
 
-    [TestCase("fucker123", "****er123")]
-    [TestCase("goodname", "goodname")]
-    public void FilterProfanitySenderName(string originalName, string filteredName)
-    {
-        var msg = new ChatEntryModel
+    [UnityTest]
+    [TestCase("fucker123", "****er123", ExpectedResult = (IEnumerator) null)]
+    [TestCase("goodname", "goodname", ExpectedResult = (IEnumerator) null)]
+    public IEnumerator FilterProfanitySenderName(string originalName, string filteredName) => UniTask.ToCoroutine(
+        async () =>
         {
-            messageType = ChatMessage.Type.PUBLIC,
-            senderName = originalName,
-            bodyText = "test"
-        };
+            var msg = new ChatEntryModel
+            {
+                messageType = ChatMessage.Type.PUBLIC,
+                senderName = originalName,
+                bodyText = "test"
+            };
 
-        controller.AddChatMessage(msg);
+            controller.AddChatMessage(msg);
 
-        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.senderName.Equals(filteredName)));
-    }
+            view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.senderName.Equals(filteredName)));
+        });
 
-    [TestCase("assholeeee", "*******eee")]
-    [TestCase("goodname", "goodname")]
-    public void FilterProfanityReceiverName(string originalName, string filteredName)
-    {
-        var msg = new ChatEntryModel
+    [UnityTest]
+    [TestCase("assholeeee", "*******eee", ExpectedResult = (IEnumerator) null)]
+    [TestCase("goodname", "goodname", ExpectedResult = (IEnumerator) null)]
+    public IEnumerator FilterProfanityReceiverName(string originalName, string filteredName) => UniTask.ToCoroutine(
+        async () =>
         {
-            messageType = ChatMessage.Type.PUBLIC,
-            senderName = "test",
-            recipientName = originalName,
-            bodyText = "test"
-        };
+            var msg = new ChatEntryModel
+            {
+                messageType = ChatMessage.Type.PUBLIC,
+                senderName = "test",
+                recipientName = originalName,
+                bodyText = "test"
+            };
 
-        controller.AddChatMessage(msg);
+            await controller.AddChatMessage(msg);
 
-        view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.recipientName.Equals(filteredName)));
-    }
+            view.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model => model.recipientName.Equals(filteredName)));
+        });
 
-    [Test]
-    public void DoNotFilterProfanityMessageWhenFeatureFlagIsDisabled()
+    [UnityTest]
+    public IEnumerator DoNotFilterProfanityMessageWhenFeatureFlagIsDisabled() => UniTask.ToCoroutine(async () =>
     {
         dataStore.settings.profanityChatFilteringEnabled.Set(false);
 
@@ -162,14 +173,14 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             bodyText = "shit"
         };
 
-        controller.AddChatMessage(msg);
+        await controller.AddChatMessage(msg);
 
         view.Received(1)
             .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
-    }
+    });
 
-    [Test]
-    public void DoNotFilterProfanityMessageWhenIsPrivate()
+    [UnityTest]
+    public IEnumerator DoNotFilterProfanityMessageWhenIsPrivate() => UniTask.ToCoroutine(async () =>
     {
         var msg = new ChatEntryModel
         {
@@ -178,11 +189,11 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             bodyText = "shit"
         };
 
-        controller.AddChatMessage(msg);
+        await controller.AddChatMessage(msg);
 
         view.Received(1)
             .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
-    }
+    });
 
     private RegexProfanityFilter GivenProfanityFilter()
     {

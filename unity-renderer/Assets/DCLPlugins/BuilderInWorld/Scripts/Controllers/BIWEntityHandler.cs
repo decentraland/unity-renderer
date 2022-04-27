@@ -24,6 +24,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private IBIWActionController actionController;
     private IBIWCreatorController creatorController;
     private IBIWRaycastController raycastController;
+    private IBIWSaveController saveController;
 
     private BuilderInWorldBridge bridge;
     private Material editMaterial;
@@ -87,6 +88,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         actionController = context.editorContext.actionController;
         creatorController = context.editorContext.creatorController;
         raycastController = context.editorContext.raycastController;
+        saveController = context.editorContext.saveController;
 
         editMaterial = context.projectReferencesAsset.editMaterial;
 
@@ -190,7 +192,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public void SetMultiSelectionActive(bool isActive) { isMultiSelectionActive = isActive; }
 
-    public override void EnterEditMode(IParcelScene scene)
+    public override void EnterEditMode(IBuilderScene scene)
     {
         base.EnterEditMode(scene);
 
@@ -484,12 +486,14 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
                 continue;
 
             var entityDuplicated = DuplicateEntity(entityToDuplicate);
+            
+            // We move the entity before completing the action to save its position too
+            entityDuplicated.rootEntity.gameObject.transform.position += Vector3.right * DUPLICATE_OFFSET;
+            
             BIWEntityAction biwEntityAction = new BIWEntityAction(entityDuplicated.rootEntity, entityDuplicated.rootEntity.entityId, BIWUtils.ConvertEntityToJSON(entityDuplicated.rootEntity));
             entityActionList.Add(biwEntityAction);
             SelectEntity(entityDuplicated);
         }
-
-        currentActiveMode?.SetDuplicationOffset(DUPLICATE_OFFSET);
 
         buildAction.CreateActionType(entityActionList, IBIWCompleteAction.ActionType.CREATE);
         actionController.AddAction(buildAction);
@@ -497,10 +501,10 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public BIWEntity DuplicateEntity(BIWEntity entityToDuplicate)
     {
-        IDCLEntity entity = SceneUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
+        IDCLEntity entity = BIWUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
         //Note: If the entity contains the name component or DCLLockedOnEdit, we don't want to copy them 
-        entity.RemoveSharedComponent(typeof(DCLName), false);
-        entity.RemoveSharedComponent(typeof(DCLLockedOnEdit), false);
+        sceneToEdit.componentsManagerLegacy.RemoveSharedComponent(entity, typeof(DCLName), false);
+        sceneToEdit.componentsManagerLegacy.RemoveSharedComponent(entity, typeof(DCLLockedOnEdit), false);
 
         BIWUtils.CopyGameObjectStatus(entityToDuplicate.rootEntity.gameObject, entity.gameObject, false, false);
         BIWEntity convertedEntity = SetupEntityToEdit(entity);
@@ -516,7 +520,6 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         IDCLEntity newEntity = sceneToEdit.CreateEntity(data.entityId);
 
-
         if (data.transformComponent != null)
         {
             DCLTransform.Model model = new DCLTransform.Model();
@@ -529,12 +532,12 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         foreach (ProtocolV2.GenericComponent component in data.components)
         {
-            sceneToEdit.EntityComponentCreateOrUpdateWithModel(newEntity.entityId, (CLASS_ID_COMPONENT) component.componentId, component.data);
+            sceneToEdit.componentsManagerLegacy.EntityComponentCreateOrUpdate(newEntity.entityId, (CLASS_ID_COMPONENT) component.componentId, component.data);
         }
 
         foreach (ProtocolV2.GenericComponent component in data.sharedComponents)
         {
-            sceneToEdit.SharedComponentAttach(newEntity.entityId, component.classId);
+            sceneToEdit.componentsManagerLegacy.SceneSharedComponentAttach(newEntity.entityId, component.classId);
         }
 
         if (data.nftComponent != null)
@@ -548,17 +551,18 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         }
 
         var convertedEntity = SetupEntityToEdit(newEntity, true);
+        
+        if(!convertedEntity.isLoaded)
+            creatorController.CreateLoadingObject(convertedEntity);
 
-        if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.GLTF_SHAPE, out var gltfComponent))
+        var rootEntity = convertedEntity.rootEntity;
+        if (sceneToEdit.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.GLTF_SHAPE, out var gltfComponent))
             gltfComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
 
-        if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.NFT_SHAPE, out var nftComponent))
+        if (sceneToEdit.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.NFT_SHAPE, out var nftComponent))
             nftComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
-
-
-        creatorController.CreateLoadingObject(convertedEntity);
+        
         EntityListChanged();
-
         return newEntity;
     }
 
@@ -613,6 +617,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             DeleteEntity(entity, false);
         }
 
+        saveController.TryToSave();
         hudController?.HideEntityInformation();
     }
 
@@ -707,6 +712,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         foreach (BIWEntity entity in entitiesToDelete)
             DeleteEntity(entity, false);
+        
+        saveController.TryToSave();
     }
 
     public void DeleteEntity(string entityId)
@@ -753,6 +760,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     {
         actionController.CreateActionEntityDeleted(entityToDelete);
         DeleteEntity(entityToDelete, true);
+        saveController.TryToSave();
     }
 
     public void DeleteSelectedEntities()
@@ -774,6 +782,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         }
 
         OnDeleteSelectedEntities?.Invoke(entitiesToRemove);
+        saveController.TryToSave();
     }
 
     public void DeleteEntitiesOutsideSceneBoundaries()
@@ -794,6 +803,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         {
             DeleteEntity(entity);
         }
+        
+        saveController.TryToSave();
     }
 
     private void DestroyCollidersForAllEntities()

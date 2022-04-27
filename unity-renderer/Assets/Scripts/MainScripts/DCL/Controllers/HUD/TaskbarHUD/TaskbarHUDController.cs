@@ -34,6 +34,8 @@ public class TaskbarHUDController : IHUD
 
     public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
 
+    internal BaseVariable<bool> isEmotesWheelInitialized => DataStore.i.emotesCustomization.isWheelInitialized;
+    internal BaseVariable<bool> isEmotesVisible => DataStore.i.HUDs.emotesVisible;
     internal BaseVariable<Transform> isExperiencesViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
@@ -65,6 +67,8 @@ public class TaskbarHUDController : IHUD
         view.OnChatToggleOn += View_OnChatToggleOn;
         view.OnFriendsToggleOff += View_OnFriendsToggleOff;
         view.OnFriendsToggleOn += View_OnFriendsToggleOn;
+        view.OnEmotesToggleOff += View_OnEmotesToggleOff;
+        view.OnEmotesToggleOn += View_OnEmotesToggleOn;
         view.OnExperiencesToggleOff += View_OnExperiencesToggleOff;
         view.OnExperiencesToggleOn += View_OnExperiencesToggleOn;
 
@@ -80,6 +84,10 @@ public class TaskbarHUDController : IHUD
         toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
         toggleWorldChatTrigger.OnTriggered += ToggleWorldChatTrigger_OnTriggered;
 
+        isEmotesWheelInitialized.OnChange += InitializeEmotesSelector;
+        InitializeEmotesSelector(isEmotesWheelInitialized.Get(), false);
+        isEmotesVisible.OnChange += IsEmotesVisibleChanged;
+        
         isExperiencesViewerOpen.OnChange += IsExperiencesViewerOpenChanged;
 
         view.leftWindowContainerAnimator.Show();
@@ -105,6 +113,14 @@ public class TaskbarHUDController : IHUD
 
     private void View_OnFriendsToggleOff() { friendsHud?.SetVisibility(false); }
 
+    private void View_OnEmotesToggleOn()
+    {
+        isEmotesVisible.Set(true);
+        OnAnyTaskbarButtonClicked?.Invoke();
+    }
+
+    private void View_OnEmotesToggleOff() { isEmotesVisible.Set(false); }
+    
     private void View_OnExperiencesToggleOn()
     {
         isExperiencesViewerOpen.Set(true);
@@ -250,6 +266,22 @@ public class TaskbarHUDController : IHUD
         };
     }
 
+    private void InitializeEmotesSelector(bool current, bool previous) 
+    {
+        if (!current)
+            return;
+
+        view.OnAddEmotesWindow(); 
+    }
+
+    private void IsEmotesVisibleChanged(bool current, bool previous)
+    {
+        if (current && !isEmotesVisible.Get())
+            return;
+
+        view.emotesButton.SetToggleState(current, false);
+    }
+
     internal void InitializeExperiencesViewer(Transform currentViewTransform, Transform previousViewTransform)
     {
         if (currentViewTransform == null)
@@ -293,6 +325,8 @@ public class TaskbarHUDController : IHUD
             view.OnChatToggleOn -= View_OnChatToggleOn;
             view.OnFriendsToggleOff -= View_OnFriendsToggleOff;
             view.OnFriendsToggleOn -= View_OnFriendsToggleOn;
+            view.OnEmotesToggleOff -= View_OnEmotesToggleOff;
+            view.OnEmotesToggleOn -= View_OnEmotesToggleOn;
             view.OnExperiencesToggleOff -= View_OnExperiencesToggleOff;
             view.OnExperiencesToggleOn -= View_OnExperiencesToggleOn;
 
@@ -315,6 +349,8 @@ public class TaskbarHUDController : IHUD
             toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
 
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
+        isEmotesWheelInitialized.OnChange -= InitializeEmotesSelector;
+        isEmotesVisible.OnChange -= IsEmotesVisibleChanged;
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
         isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
         numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;

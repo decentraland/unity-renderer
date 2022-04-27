@@ -32,6 +32,9 @@ public class CatalogBtnController : ICatalogBtnController
 
     public void Dispose()
     {
+        if (catalogBtnView == null)
+            return;
+        
         catalogBtnView.OnCatalogButtonClick -= Click;
         catalogBtnView.OnShowTooltip -= ShowTooltip;
         catalogBtnView.OnHideTooltip -= HideTooltip;

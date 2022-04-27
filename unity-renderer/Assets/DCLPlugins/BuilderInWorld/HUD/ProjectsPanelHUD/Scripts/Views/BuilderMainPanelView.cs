@@ -2,20 +2,24 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DCL.Builder;
 
 namespace DCL.Builder
 {
     internal interface IBuilderMainPanelView : IDisposable
     {
+        event Action OnGuestConnectWallet;
         event Action OnBackToMainMenuPressed;
         event Action OnClosePressed;
         event Action OnBackPressed;
         event Action OnCreateProjectPressed;
         void SetVisible(bool visible);
+        void SetSearchViewVisible(bool visible);
         bool IsVisible();
         void SetTogglOnWithoutNotify(SectionId sectionId);
         void SetMainLeftPanel();
         void SetProjectSettingsLeftPanel();
+        void ShowToast(string text);
         SceneCardView GetSceneCardViewPrefab();
         ProjectCardView GetProjectCardView();
         Transform GetSectionContainer();
@@ -23,8 +27,10 @@ namespace DCL.Builder
         SearchBarView GetSearchBar();
         LeftMenuSettingsViewReferences GetSettingsViewReferences();
         SceneCardViewContextMenu GetSceneCardViewContextMenu();
+        ProjectContextMenuView GetProjectCardViewContextMenu();
         IUnpublishPopupView GetUnpublishPopup();
         void SetAsFullScreenMenuMode(Transform parentTransform);
+        void SetGuestMode(bool active);
     }
 
     internal class BuilderMainPanelView : MonoBehaviour, IBuilderMainPanelView, ISceneListener, IProjectsListener
@@ -34,9 +40,13 @@ namespace DCL.Builder
         [SerializeField] internal Button backgroundButton;
         [SerializeField] internal Transform sectionsContainer;
         [SerializeField] internal SceneCardViewContextMenu contextMenu;
+        [SerializeField] internal ProjectContextMenuView projectContextMenu;
         [SerializeField] internal SearchBarView searchBarView;
         [SerializeField] internal ShowHideAnimator showHideAnimator;
         [SerializeField] internal InputAction_Trigger closeTrigger;
+        [SerializeField] internal GameObject guestModeGameObject;
+        [SerializeField] internal GameObject sectionGameObject;
+        [SerializeField] internal Toast toastView;
 
         [Header("Left-Panel Section Buttons")]
         [SerializeField] internal LeftMenuButtonToggleView[] sectionToggles;
@@ -47,6 +57,7 @@ namespace DCL.Builder
         [SerializeField] internal Button createSceneButton;
         [SerializeField] internal Button importSceneButton;
         [SerializeField] internal Button backToMainPanelButton;
+        [SerializeField] internal Button connectWalletButton;
         [SerializeField] internal LeftMenuSettingsViewReferences settingsViewReferences;
 
         [Header("Assets")]
@@ -56,6 +67,7 @@ namespace DCL.Builder
         [Header("Popups")]
         [SerializeField] internal UnpublishPopupView unpublishPopupView;
 
+        public event Action OnGuestConnectWallet;
         public event Action OnClosePressed;
         public event Action OnBackPressed;
         public event Action OnCreateProjectPressed;
@@ -65,6 +77,8 @@ namespace DCL.Builder
         private int scenesCount = 0;
         private int projectScenesCount = 0;
         private bool isDestroyed = false;
+
+        public void SetSearchViewVisible(bool visible) => searchBarView.gameObject.SetActive(visible);
 
         public bool IsVisible() { return gameObject.activeSelf; }
 
@@ -117,6 +131,7 @@ namespace DCL.Builder
         LeftMenuSettingsViewReferences IBuilderMainPanelView.GetSettingsViewReferences() { return settingsViewReferences; }
 
         SceneCardViewContextMenu IBuilderMainPanelView.GetSceneCardViewContextMenu() { return contextMenu; }
+        public ProjectContextMenuView GetProjectCardViewContextMenu() { return projectContextMenu; }
 
         IUnpublishPopupView IBuilderMainPanelView.GetUnpublishPopup() { return unpublishPopupView; }
 
@@ -137,6 +152,7 @@ namespace DCL.Builder
             createSceneButton.onClick.AddListener(() => OnCreateProjectPressed?.Invoke());
             importSceneButton.onClick.AddListener(() => OnImportScenePressed?.Invoke());
             backToMainPanelButton.onClick.AddListener(() => OnBackToMainMenuPressed?.Invoke());
+            connectWalletButton.onClick.AddListener(() => OnGuestConnectWallet?.Invoke());
             closeTrigger.OnTriggered += CloseTriggerOnOnTriggered;
 
             contextMenu.Hide();
@@ -150,6 +166,38 @@ namespace DCL.Builder
 
         private void OnDestroy() { isDestroyed = true; }
 
+        public void SetGuestMode(bool active)
+        {
+            if (active)
+            {
+                guestModeGameObject.SetActive(true);
+                sectionGameObject.SetActive(false);
+                createSceneButton.interactable = false;
+
+                for (int i = 0; i < sectionToggles.Length; i++)
+                {
+                    sectionToggles[i].Disable();
+                }
+            }
+            else
+            {
+                guestModeGameObject.SetActive(false);
+                sectionGameObject.SetActive(true);
+                createSceneButton.interactable = true;
+
+                for (int i = 0; i < sectionToggles.Length; i++)
+                {
+                    sectionToggles[i].Enable();
+                }
+            }
+        }
+
+        public void ShowToast(string text)
+        {
+            toastView.SetText(text);
+            toastView.Show(false);
+        }
+        
         private void CloseTriggerOnOnTriggered(DCLAction_Trigger action) { OnBackPressed?.Invoke(); }
 
         void ISceneListener.SetScenes(Dictionary<string, ISceneCardView> scenes) { scenesCount = scenes.Count; }

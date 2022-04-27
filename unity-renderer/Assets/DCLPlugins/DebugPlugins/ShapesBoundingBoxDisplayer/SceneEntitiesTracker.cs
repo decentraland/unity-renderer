@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL;
 using DCL.Helpers;
 using DCL.Models;
 using DCLPlugins.DebugPlugins.Commons;
@@ -9,11 +10,18 @@ using Object = UnityEngine.Object;
 internal class SceneEntitiesTracker : ISceneListener
 {
     internal const string WIREFRAME_GAMEOBJECT_NAME = "ShapeBoundingBoxWireframe";
-    private const string WIREFRAME_PREFAB_NAME = "Prefabs/WireframeCubeMesh";
+    internal const string WIREFRAME_PREFAB_NAME = "Prefabs/WireframeCubeMesh";
 
     private readonly Dictionary<IDCLEntity, WatchEntityShapeHandler> entityShapeHandler = new Dictionary<IDCLEntity, WatchEntityShapeHandler>();
+    private readonly IUpdateEventHandler updateEventHandler;
+    
     private GameObject wireframeOriginal;
     private Material wireframeMaterial;
+
+    public SceneEntitiesTracker(IUpdateEventHandler updateEventHandler)
+    {
+        this.updateEventHandler = updateEventHandler;
+    }
 
     void IDisposable.Dispose()
     {
@@ -42,7 +50,8 @@ internal class SceneEntitiesTracker : ISceneListener
         {
             return;
         }
-        entityShapeHandler.Add(entity, new WatchEntityShapeHandler(entity, new EntityWireframe(GetWireframeOriginal())));
+        entityShapeHandler.Add(entity, new WatchEntityShapeHandler(entity,
+            new EntityWireframe(GetWireframeOriginal(), updateEventHandler)));
     }
 
     private void KillWatchEntityShape(IDCLEntity entity)

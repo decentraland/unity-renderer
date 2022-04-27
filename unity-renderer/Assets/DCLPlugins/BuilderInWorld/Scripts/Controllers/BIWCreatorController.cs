@@ -192,7 +192,7 @@ namespace DCL.Builder
             if (!isFloor)
                 CreateLoadingObject(entity);
 
-            entity.rootEntity.OnShapeUpdated += (entity) => onFloorLoadedAction?.Invoke(entity);
+            entity.rootEntity.OnShapeLoaded += (entity) => onFloorLoadedAction?.Invoke(entity);
 
             AddShape(catalogItem, entity);
             AddEntityNameComponent(catalogItem, entity);
@@ -270,16 +270,6 @@ namespace DCL.Builder
         private void AddSmartItemComponent(BIWEntity entity)
         {
             //Note (Adrian): This will disable the smart item component until it is implemented in kernel
-            //TODO: After the implementation in kernel of smart items, we should eliminate this return
-            return;
-            SmartItemComponent.Model model = new SmartItemComponent.Model();
-            model.values = new Dictionary<object, object>();
-
-            sceneToEdit.EntityComponentCreateOrUpdateWithModel(entity.rootEntity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, model);
-
-            //Note (Adrian): We can't wait to set the component 1 frame, so we set it
-            if (entity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent component))
-                ((SmartItemComponent) component).UpdateFromModel(model);
         }
 
         private void AddEntityNameComponent(CatalogItem catalogItem, BIWEntity entity)

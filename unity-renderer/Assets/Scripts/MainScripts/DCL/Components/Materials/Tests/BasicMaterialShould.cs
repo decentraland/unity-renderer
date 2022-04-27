@@ -12,11 +12,13 @@ using Assert = UnityEngine.Assertions.Assert;
 public class BasicMaterialShould : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
         Environment.i.world.sceneBoundsChecker.Stop();
     }
@@ -24,7 +26,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTearDown]
     protected override IEnumerator TearDown()
     {
-        Object.Destroy(scene.gameObject);
+        coreComponentsPlugin.Dispose();
         yield return base.TearDown();
     }
 
@@ -117,7 +119,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
         var meshRenderer = scene.entities[entityId].meshRootGameObject.GetComponent<MeshRenderer>();
-        var materialComponent = scene.disposableComponents[materialID] as BasicMaterial;
+        var materialComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(materialID) as BasicMaterial;
 
         yield return materialComponent.routine;
 
@@ -152,7 +154,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         // Create 2nd entity and attach same material to it
         TestUtils.InstantiateEntityWithShape(scene, secondEntityId, CLASS_ID.BOX_SHAPE, Vector3.zero);
-        scene.SharedComponentAttach(
+        scene.componentsManagerLegacy.SceneSharedComponentAttach(
             secondEntityId,
             materialID
         );
@@ -162,7 +164,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         var firstMeshRenderer = scene.entities[firstEntityId].meshRootGameObject.GetComponent<MeshRenderer>();
         var secondMeshRenderer = scene.entities[secondEntityId].meshRootGameObject.GetComponent<MeshRenderer>();
-        var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
+        var materialComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(materialID) as DCL.Components.BasicMaterial;
 
         yield return materialComponent.routine;
 
@@ -176,7 +178,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         }
 
         // Dispose material
-        scene.SharedComponentDispose(materialID);
+        scene.componentsManagerLegacy.SceneSharedComponentDispose(materialID);
 
         // Check if material detached correctly
         Assert.IsTrue(firstMeshRenderer.sharedMaterial == null, "MeshRenderer must exist");
@@ -189,7 +191,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         string entityId = "1";
         string materialID = "a-material";
 
-        Assert.IsFalse(scene.disposableComponents.ContainsKey(materialID));
+        Assert.IsFalse(scene.componentsManagerLegacy.HasSceneSharedComponent(materialID));
 
         // Instantiate entity with default material
         TestUtils.InstantiateEntityWithMaterial(scene, entityId, new Vector3(8, 1, 8),
@@ -200,7 +202,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
         var meshRenderer = meshObject.GetComponent<MeshRenderer>();
-        var materialComponent = scene.disposableComponents[materialID] as BasicMaterial;
+        var materialComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(materialID) as BasicMaterial;
 
         yield return materialComponent.routine;
 
@@ -227,7 +229,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
             FilterMode.Bilinear);
 
         // Update material
-        scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new BasicMaterial.Model
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(materialID, JsonUtility.ToJson(new BasicMaterial.Model
         {
             texture = dclTexture.id,
             alphaTest = 0.5f,
@@ -268,7 +270,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         // 3. Update component with missing values
 
-        scene.SharedComponentUpdate(basicMaterialComponent.id, JsonUtility.ToJson(new BasicMaterial.Model { }));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(basicMaterialComponent.id, JsonUtility.ToJson(new BasicMaterial.Model { }));
 
         yield return basicMaterialComponent.routine;
 

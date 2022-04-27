@@ -31,10 +31,6 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.SETTINGS_PANEL:
                 hudElement = new SettingsPanelHUDController();
                 break;
-            case HUDElementID.EXPRESSIONS:
-            case HUDElementID.EMOTES:
-                hudElement = new EmotesHUDController();
-                break;
             case HUDElementID.PLAYER_INFO_CARD:
                 hudElement = new PlayerInfoCardHUDController(FriendsController.i,
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),

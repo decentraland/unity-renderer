@@ -13,11 +13,13 @@ namespace SceneBoundariesCheckerTests
     public class SceneBoundariesCheckerTests_DebugMode : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene();
+            scene = TestUtils.CreateTestScene() as ParcelScene;
+            coreComponentsPlugin = new CoreComponentsPlugin();
 
             Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedBox());
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
@@ -25,7 +27,16 @@ namespace SceneBoundariesCheckerTests
             UnityEngine.Assertions.Assert.IsTrue(Environment.i.world.sceneBoundsChecker.enabled);
             UnityEngine.Assertions.Assert.IsTrue(
                 Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox);
+
+            TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
         }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
+        }
+
 
         [UnityTest]
         public IEnumerator ResetMaterialCorrectlyWhenInvalidEntitiesAreRemoved()
@@ -38,7 +49,7 @@ namespace SceneBoundariesCheckerTests
                     src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
                 }));
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
 
             yield return null;
@@ -66,7 +77,7 @@ namespace SceneBoundariesCheckerTests
                     src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
                 }));
 
-            LoadWrapper gltfShape2 = GLTFShape.GetLoaderForEntity(entity2);
+            LoadWrapper gltfShape2 = Environment.i.world.state.GetLoaderForEntity(entity2);
 
             yield return new UnityEngine.WaitUntil(() => gltfShape2.alreadyLoaded);
             yield return null;
@@ -81,8 +92,6 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
@@ -92,8 +101,6 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator GLTFShapeIsInvalidatedWhenLeavingBoundsDebugMode() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBoundsDebugMode() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]

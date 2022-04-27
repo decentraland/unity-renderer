@@ -28,6 +28,9 @@ public class TooltipController : ITooltipController
     {
         KillTooltipCoroutine();
 
+        if (view == null)
+            return;
+        
         view.OnHideTooltip -= HideTooltip;
     }
 

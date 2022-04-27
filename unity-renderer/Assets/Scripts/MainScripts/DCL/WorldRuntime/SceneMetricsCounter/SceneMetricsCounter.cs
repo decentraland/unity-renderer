@@ -34,7 +34,10 @@ namespace DCL
 
         private SceneMetricsModel maxCountValue = new SceneMetricsModel();
         private SceneMetricsModel currentCountValue = new SceneMetricsModel();
+        private SceneMetricsModel lastCountValue = new SceneMetricsModel();
 
+        // TODO: We should handle this better, right now if we get the current amount of limits, we update the metrics
+        // So if someone check the current amount when subscribed to the OnMetricsUpdated, we will try to Update the metrics twice
         public SceneMetricsModel currentCount
         {
             get
@@ -96,8 +99,11 @@ namespace DCL
             sceneData.textures.OnAdded += OnTextureAdded;
             sceneData.textures.OnRemoved += OnTextureRemoved;
 
-            sceneData.meshes.OnAdded += OnDataChanged;
-            sceneData.meshes.OnRemoved += OnDataChanged;
+            sceneData.meshes.OnAdded += OnMeshAdded;
+            sceneData.meshes.OnRemoved += OnMeshRemoved;
+
+            sceneData.animationClips.OnAdded += OnAnimationClipAdded;
+            sceneData.animationClips.OnRemoved += OnAnimationClipRemoved;
 
             sceneData.animationClipSize.OnChange += OnAnimationClipSizeChange;
             sceneData.meshDataSize.OnChange += OnMeshDataSizeChange;
@@ -129,14 +135,17 @@ namespace DCL
             sceneData.textures.OnAdded -= OnTextureAdded;
             sceneData.textures.OnRemoved -= OnTextureRemoved;
 
-            sceneData.meshes.OnAdded -= OnDataChanged;
-            sceneData.meshes.OnRemoved -= OnDataChanged;
+            sceneData.meshes.OnAdded -= OnMeshAdded;
+            sceneData.meshes.OnRemoved -= OnMeshRemoved;
 
             sceneData.animationClipSize.OnChange -= OnAnimationClipSizeChange;
             sceneData.meshDataSize.OnChange -= OnMeshDataSizeChange;
 
             sceneData.audioClips.OnAdded -= OnAudioClipAdded;
             sceneData.audioClips.OnRemoved -= OnAudioClipRemoved;
+
+            sceneData.animationClips.OnAdded -= OnDataChanged;
+            sceneData.animationClips.OnRemoved -= OnDataChanged;
 
             sceneData.renderers.OnAdded -= OnDataChanged;
             sceneData.renderers.OnRemoved -= OnDataChanged;
@@ -211,48 +220,114 @@ namespace DCL
             Interface.WebInterface.ReportOnMetricsUpdate(sceneId, currentCountValue.ToMetricsModel(), maxCount.ToMetricsModel());
         }
 
+        void OnMeshAdded(Mesh mesh)
+        {
+            if (mesh == null)
+                return;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.meshMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(mesh);
+#endif
+            MarkDirty();
+        }
+
+        void OnMeshRemoved(Mesh mesh)
+        {
+            if (mesh == null)
+                return;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.meshMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(mesh);
+#endif
+            MarkDirty();
+        }
+
+        void OnAnimationClipAdded(AnimationClip animationClip)
+        {
+            if (animationClip == null)
+                return;
+            
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.animationClipMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(animationClip);
+#endif
+            MarkDirty();
+        }
+
+        void OnAnimationClipRemoved(AnimationClip animationClip)
+        {
+            if (animationClip == null)
+                return;
+            
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.animationClipMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(animationClip);
+#endif
+            MarkDirty();
+        }
+
         void OnAudioClipAdded(AudioClip audioClip)
         {
+            if (audioClip == null)
+                return;
+
             MarkDirty();
-            currentCountValue.audioClipMemory += MetricsScoreUtils.ComputeAudioClipScore(audioClip);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.audioClipMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(audioClip);
+#endif
+            currentCountValue.audioClipMemoryScore += MetricsScoreUtils.ComputeAudioClipScore(audioClip);
         }
 
         void OnAudioClipRemoved(AudioClip audioClip)
         {
+            if (audioClip == null)
+                return;
+
             MarkDirty();
-            currentCountValue.audioClipMemory -= MetricsScoreUtils.ComputeAudioClipScore(audioClip);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            currentCountValue.audioClipMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(audioClip);
+#endif
+            currentCountValue.audioClipMemoryScore -= MetricsScoreUtils.ComputeAudioClipScore(audioClip);
         }
 
 
         private void OnMeshDataSizeChange(long current, long previous)
         {
             MarkDirty();
-            currentCountValue.meshMemory = current;
+            currentCountValue.meshMemoryScore = current;
         }
 
         void OnAnimationClipSizeChange(long animationClipSize, long previous)
         {
             MarkDirty();
-            currentCountValue.animationClipMemory = animationClipSize;
+            currentCountValue.animationClipMemoryScore = animationClipSize;
         }
 
         void OnTextureAdded(Texture texture)
         {
+            if (texture == null)
+                return;
+
             MarkDirty();
 
             if (texture is Texture2D tex2D)
             {
-                currentCountValue.textureMemory += MetricsScoreUtils.ComputeTextureScore(tex2D);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                currentCountValue.textureMemoryProfiler += Profiler.GetRuntimeMemorySizeLong(tex2D);
+#endif
+                currentCountValue.textureMemoryScore += MetricsScoreUtils.ComputeTextureScore(tex2D);
             }
         }
 
         void OnTextureRemoved(Texture texture)
         {
+            if (texture == null)
+                return;
+
             MarkDirty();
 
             if (texture is Texture2D tex2D)
             {
-                currentCountValue.textureMemory -= MetricsScoreUtils.ComputeTextureScore(tex2D);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                currentCountValue.textureMemoryProfiler -= Profiler.GetRuntimeMemorySizeLong(tex2D);
+#endif
+                currentCountValue.textureMemoryScore -= MetricsScoreUtils.ComputeTextureScore(tex2D);
             }
         }
         
@@ -269,7 +344,7 @@ namespace DCL
 
         private void UpdateMetrics()
         {
-            if (string.IsNullOrEmpty(sceneId))
+            if (string.IsNullOrEmpty(sceneId) || data == null || !data.sceneData.ContainsKey(sceneId))
                 return;
 
             if (data != null && data.sceneData.ContainsKey(sceneId))
@@ -323,11 +398,15 @@ namespace DCL
                 logger.Verbose($"New offending scene {sceneId} {scenePosition}!\nmetrics: {currentCountValue}\nlimits: {maxCountValue}\ndelta:{currentOffense}");
             }
         }
-
+        
         private void RaiseMetricsUpdate()
         {
             UpdateWorstMetricsOffense();
-            OnMetricsUpdated?.Invoke(this);
+            if (!currentCountValue.Equals(lastCountValue))
+            {
+                lastCountValue = currentCountValue;
+                OnMetricsUpdated?.Invoke(this);
+            }
         }
     }
 }

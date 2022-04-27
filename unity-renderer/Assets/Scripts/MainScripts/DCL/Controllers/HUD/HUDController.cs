@@ -65,9 +65,6 @@ public class HUDController : IHUDController
     public SettingsPanelHUDController settingsPanelHud =>
         GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
 
-    public EmotesHUDController emotesHUD =>
-        GetHUDElement(HUDElementID.EMOTES) as EmotesHUDController;
-
     public PlayerInfoCardHUDController playerInfoCardHud =>
         GetHUDElement(HUDElementID.PLAYER_INFO_CARD) as PlayerInfoCardHUDController;
 
@@ -138,9 +135,7 @@ public class HUDController : IHUDController
                                        (!worldChatWindowHud.IsInputFieldFocused || !worldChatWindowHud.IsPreview);
 
         if (anyInputFieldIsSelected ||
-            settingsPanelHud.view.isOpen ||
-            avatarEditorHud.view.isOpen ||
-            DataStore.i.HUDs.navmapVisible.Get() ||
+            DataStore.i.exploreV2.isOpen.Get() ||
             CommonScriptableObjects.tutorialActive)
             return;
 
@@ -201,10 +196,6 @@ public class HUDController : IHUDController
                 CreateHudElement(configuration, hudElementId);
                 if (settingsPanelHud != null)
                     settingsPanelHud.Initialize();
-                break;
-            case HUDElementID.EXPRESSIONS:
-            case HUDElementID.EMOTES:
-                CreateHudElement(configuration, hudElementId);
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
                 CreateHudElement(configuration, hudElementId);

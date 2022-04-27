@@ -1,11 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using DCL.Builder;
 using UnityEngine;
 
 public interface INewProjectFlowView
 {
+    /// <summary>
+    /// Called when the view has hide
+    /// </summary>
+    event Action OnViewHide;
+    
     /// <summary>
     /// This will set the title and description of the new project. Order param: Title - Description
     /// </summary>
@@ -42,6 +48,7 @@ public interface INewProjectFlowView
 
 public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
 {
+    public event Action OnViewHide;
     public event Action<string, string> OnTittleAndDescriptionSet;
     public event Action<int, int> OnSizeSet;
 
@@ -61,6 +68,8 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
 
         newProjectFirstStepView.OnNextPressed += SetTittleAndDescription;
         newProjectSecondStepView.OnNextPressed += SetSize;
+
+        modal.OnCloseAction += () => OnViewHide?.Invoke();
     }
 
     private void OnDestroy()
@@ -71,6 +80,7 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
     public void ShowNewProjectTitleAndDescrition()
     {
         gameObject.SetActive(true);
+        newProjectFirstStepView.ResetInputs();
         modal.Show();
     }
     
@@ -123,7 +133,10 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
     internal void BackPressed()
     {
         if (currentStep == 0)
+        {
             Hide();
+            DataStore.i.builderInWorld.areShortcutsBlocked.Set(false);
+        }
         else
         {
             currentStep--;

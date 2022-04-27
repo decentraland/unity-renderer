@@ -19,6 +19,9 @@ public class SceneObject
     }
 
     public string id;
+    
+    // This legacyId is not used for anything, but it is needed for the current builder, we can safely delete it when the web builder is no longer compatible
+    public string legacyId = "";
     public string asset_pack_id;
     public string name;
     public string model;
