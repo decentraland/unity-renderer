@@ -561,8 +561,8 @@ public class AvatarEditorHUDController : IHUD
 
     public void RandomizeWearables()
     {
-        view.SelectRandomEyeColor();
-        view.SelectRandomHairColor();
+        EquipHairColor(view.GetRandomColor());
+        EquipEyesColor(view.GetRandomColor());
 
         List<WearableItem> wearablesToRemove = model.wearables.Where(x => !x.IsEmote()).ToList();
         foreach (var wearable in wearablesToRemove)

@@ -302,14 +302,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         hairColorPicker.UpdateSliderValues(hairColor);
     }
 
-    public void SelectRandomHairColor()
-    {
-        hairColorPicker.SetRandomColor();
-    }
-
-    public void SelectRandomEyeColor()
-    {
-        eyeColorPicker.SetRandomColor();
+    public Color GetRandomColor()
+    { 
+        return Color.HSVToRGB(UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f));
     }
 
     public void SelectSkinColor(Color skinColor) 

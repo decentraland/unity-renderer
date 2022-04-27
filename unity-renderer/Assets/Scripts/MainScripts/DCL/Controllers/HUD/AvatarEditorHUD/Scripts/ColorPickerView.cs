@@ -88,13 +88,6 @@ public class ColorPickerView : MonoBehaviour
         value.propSlider.SetValueWithoutNotify(v);
     }
 
-    public void SetRandomColor()
-    {
-        Color newColor = Color.HSVToRGB(UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f));
-        colorPreviewImage.color = newColor;
-        OnColorChanged.Invoke(newColor);
-    }
-
     private void SetColor() 
     {
         Color newColor = Color.HSVToRGB(hue.propSlider.value, saturation.propSlider.value, value.propSlider.value);
