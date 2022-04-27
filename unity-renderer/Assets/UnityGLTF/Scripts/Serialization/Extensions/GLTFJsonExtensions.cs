@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DCL;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,6 +12,9 @@ namespace GLTF.Extensions
 {
     public static class JsonReaderExtensions
     {
+        // (NOTE) Kinerius: we go super aggressive on throttling since this is only used on webgl
+        private const int MAX_READ_TIME_IN_MS = 1;
+        
         public static List<string> ReadStringList(this JsonReader reader)
         {
             if (reader.Read() && reader.TokenType != JsonToken.StartArray)
@@ -61,18 +65,18 @@ namespace GLTF.Extensions
 
             return list;
         }
-
+        
         public static IEnumerator ReadListDelayed<T>(this JsonReader reader, Func<T> deserializerFunc, Action<List<T>> onComplete)
         {
             if (reader.Read() && reader.TokenType != JsonToken.StartArray)
             {
                 throw new Exception(string.Format("Invalid array at: {0}", reader.Path));
             }
-
+            var sw = new Stopwatch();
+            sw.Start();
+            
             var list = new List<T>();
             var skipFrameIfDepletedTimeBudget = new SkipFrameIfDepletedTimeBudget();
-            int throttlingCounter = 0;
-            const int throttlingCounterInterval = 100;
 
             while (reader.Read() && reader.TokenType != JsonToken.EndArray)
             {
@@ -81,15 +85,13 @@ namespace GLTF.Extensions
                 // deserializerFunc can advance to EndArray. We need to check for this case as well. 
                 if (reader.TokenType == JsonToken.EndArray)
                     break;
-
-                throttlingCounter++;
-                if ( throttlingCounter > throttlingCounterInterval )
+                
+                if ( sw.ElapsedMilliseconds > MAX_READ_TIME_IN_MS )
                 {
                     yield return skipFrameIfDepletedTimeBudget;
-                    throttlingCounter = 0;
+                    sw.Restart();
                 }
             }
-
             onComplete.Invoke(list);
             yield break;
         }
