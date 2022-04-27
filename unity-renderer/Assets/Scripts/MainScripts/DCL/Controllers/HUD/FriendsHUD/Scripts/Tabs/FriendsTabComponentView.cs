@@ -205,7 +205,6 @@ public class FriendsTabComponentView : BaseComponentView
     {
         if (string.IsNullOrEmpty(search) && !string.IsNullOrEmpty(lastSearch))
         {
-            searchResultsFriendList.list.Filter(search);
             searchResultsFriendList.Hide();
 
             foreach (var pair in entries)
@@ -235,6 +234,8 @@ public class FriendsTabComponentView : BaseComponentView
         }
 
         searchResultsFriendList.list.Filter(search);
+        offlineFriendsList.list.Filter(search);
+        onlineFriendsList.list.Filter(search);
         lastSearch = search;
         UpdateCounterLabel();
     }

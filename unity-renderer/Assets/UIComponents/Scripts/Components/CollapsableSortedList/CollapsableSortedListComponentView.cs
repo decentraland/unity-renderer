@@ -92,7 +92,7 @@ namespace UIComponents.CollapsableSortedList
             if (!entries.ContainsKey(key)) return default;
             var entry = entries[key];
             entries.Remove(key);
-            sortedEntries.RemoveAll(model => model.Equals(entry));
+            sortedEntries.RemoveAll(k => k.Equals(key));
             UpdateEmptyState();
             UpdateLayout();
             return entry;
