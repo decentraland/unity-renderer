@@ -1,6 +1,8 @@
 using DCL.Controllers;
 using DCL.Helpers;
 using System.Collections.Generic;
+using DCL.Components;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL
@@ -71,6 +73,41 @@ namespace DCL
             }
 
             return allLoadedParcelCoords;
+        }
+
+        private readonly Dictionary<GameObject, LoadWrapper>
+            attachedLoaders = new Dictionary<GameObject, LoadWrapper>();
+
+        public LoadWrapper GetLoaderForEntity(IDCLEntity entity)
+        {
+            if (entity.meshRootGameObject == null)
+            {
+                Debug.LogWarning("NULL meshRootGameObject at GetLoaderForEntity()");
+                return null;
+            }
+
+            attachedLoaders.TryGetValue(entity.meshRootGameObject, out LoadWrapper result);
+            return result;
+        }
+
+        public T GetOrAddLoaderForEntity<T>(IDCLEntity entity)
+            where T : LoadWrapper, new()
+        {
+            if (!attachedLoaders.TryGetValue(entity.meshRootGameObject, out LoadWrapper result))
+            {
+                result = new T();
+                attachedLoaders.Add(entity.meshRootGameObject, result);
+            }
+
+            return result as T;
+        }
+
+        public void RemoveLoaderForEntity(IDCLEntity entity)
+        {
+            if (entity == null || entity.meshRootGameObject == null)
+                return;
+            
+            attachedLoaders.Remove(entity.meshRootGameObject);
         }
 
         public void Dispose()

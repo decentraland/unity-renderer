@@ -24,11 +24,12 @@ namespace Tests
 
         private ISceneController sceneController => DCL.Environment.i.world.sceneController;
         private ParcelScene scene;
-
+        private CoreComponentsPlugin coreComponentsPlugin;
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
 
+            coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene() as ParcelScene;
             IVideoPluginWrapper pluginWrapper = new VideoPluginWrapper_Mock();
             originalVideoPluginBuilder = DCLVideoTexture.videoPluginWrapperBuilder;
@@ -38,6 +39,7 @@ namespace Tests
         protected override IEnumerator TearDown()
         {
             DCLVideoTexture.videoPluginWrapperBuilder = originalVideoPluginBuilder;
+            coreComponentsPlugin.Dispose();
             sceneController.enabled = true;
             return base.TearDown();
         }

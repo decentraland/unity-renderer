@@ -45,8 +45,7 @@ namespace DCL
 
             SetupDeferredRunners();
 
-            DCLCharacterController.OnCharacterMoved += SetPositionDirty;
-
+            CommonScriptableObjects.playerWorldPosition.OnChange += SetPositionDirty;
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneIdChange;
 
             // TODO(Brian): Move this later to Main.cs
@@ -111,7 +110,7 @@ namespace DCL
             PoolManager.i.OnGet -= Environment.i.platform.physicsSyncController.MarkDirty;
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
 
-            DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
+            CommonScriptableObjects.playerWorldPosition.OnChange -= SetPositionDirty;
             DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
 
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneIdChange;
@@ -523,10 +522,10 @@ namespace DCL
 
         public void DeactivateBuilderInWorldEditScene() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple()); }
 
-        private void SetPositionDirty(DCLCharacterPosition character)
+        private void SetPositionDirty(Vector3 worldPosition, Vector3 previous)
         {
-            var currentX = (int) Math.Floor(character.worldPosition.x / ParcelSettings.PARCEL_SIZE);
-            var currentY = (int) Math.Floor(character.worldPosition.z / ParcelSettings.PARCEL_SIZE);
+            var currentX = (int) Math.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE);
+            var currentY = (int) Math.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE);
 
             positionDirty = currentX != currentGridSceneCoordinate.x || currentY != currentGridSceneCoordinate.y;
 
@@ -548,8 +547,8 @@ namespace DCL
 
         public void SortScenesByDistance()
         {
-            if (DCLCharacterController.i == null)
-                return;
+            // if (DCLCharacterController.i == null)
+            //     return;
 
             IWorldState worldState = Environment.i.world.state;
 

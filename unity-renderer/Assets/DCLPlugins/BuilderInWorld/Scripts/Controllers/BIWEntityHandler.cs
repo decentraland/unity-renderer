@@ -501,7 +501,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public BIWEntity DuplicateEntity(BIWEntity entityToDuplicate)
     {
-        IDCLEntity entity = SceneUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
+        IDCLEntity entity = BIWUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
         //Note: If the entity contains the name component or DCLLockedOnEdit, we don't want to copy them 
         sceneToEdit.componentsManagerLegacy.RemoveSharedComponent(entity, typeof(DCLName), false);
         sceneToEdit.componentsManagerLegacy.RemoveSharedComponent(entity, typeof(DCLLockedOnEdit), false);

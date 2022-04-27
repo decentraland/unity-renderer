@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
 using DCL.Camera;
 using DCL.Components;
 using DCL.Controllers;
@@ -16,15 +17,26 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
     private FreeCameraMovement freeCameraMovement;
     private GameObject gameObject;
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
         scene = TestUtils.CreateTestScene();
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
+        coreComponentsPlugin = new CoreComponentsPlugin();
 
         freeCameraMovement = Resources.FindObjectsOfTypeAll<FreeCameraMovement>().FirstOrDefault();
         gameObject = freeCameraMovement.gameObject;
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
+        freeCameraMovement.gameObject.SetActive(false);
+        yield return base.TearDown();
     }
 
     [UnityTest]
@@ -46,7 +58,7 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
 
@@ -57,11 +69,5 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.IsTrue(Vector3.Distance(currentPosition, gameObject.transform.position) >= 0.001f);
-    }
-
-    protected override IEnumerator TearDown()
-    {
-        freeCameraMovement.gameObject.SetActive(false);
-        yield return base.TearDown();
     }
 }
