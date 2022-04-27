@@ -12,6 +12,7 @@ using UnityEngine.TestTools;
 public class IntegrationTestSuite_SceneMetricsCounter : IntegrationTestSuite
 {
     protected ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected readonly string[] texturePaths =
     {
@@ -24,7 +25,7 @@ public class IntegrationTestSuite_SceneMetricsCounter : IntegrationTestSuite
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
         serviceLocator.Register<IWorldState>(() => new WorldState());
-        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory));
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
         serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
         serviceLocator.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
     }
@@ -34,6 +35,7 @@ public class IntegrationTestSuite_SceneMetricsCounter : IntegrationTestSuite
     {
         yield return base.SetUp();
 
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
         scene.contentProvider = new ContentProvider_Dummy();
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
@@ -47,6 +49,7 @@ public class IntegrationTestSuite_SceneMetricsCounter : IntegrationTestSuite
     [UnityTearDown]
     protected override IEnumerator TearDown()
     {
+        coreComponentsPlugin.Dispose();
         scene.Cleanup(true);
         yield return base.TearDown();
     }

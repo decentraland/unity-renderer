@@ -20,17 +20,25 @@ namespace SceneBoundariesCheckerTests
     public class SceneBoundariesCheckerTests : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
 
+            coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene() as ParcelScene;
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
             TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
         }
-        
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
+        }
+
         protected override ServiceLocator InitializeServiceLocator()
         {
             ServiceLocator result = base.InitializeServiceLocator();
@@ -108,7 +116,7 @@ namespace SceneBoundariesCheckerTests
             scene.isPersistent = false;
 
             TestUtils.CreateEntityWithGLTFShape(scene, new Vector3(8, 1, 8), TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out var entity);
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
             yield return TestUtils.CreateAudioSourceWithClipForEntity(entity);

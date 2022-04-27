@@ -208,7 +208,7 @@ namespace DCL.Controllers
                 return;
             }
 
-            var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
+            var loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
 
