@@ -518,6 +518,10 @@ namespace DCL.Skybox
                 timeOfTheDay = Mathf.Clamp(newTime, 0, 24);
                 configuration.ApplyOnMaterial(selectedMat, (float)timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
                 ApplyAvatarColor(GetNormalizedDayTime());
+
+                // Update satellites
+                skybox3DElements.ResetObjects();
+                configuration.ApplyOnSatelliteLayer(timeOfTheDay, skybox3DElements.GetSatelliteAllActiveSatelliteRefs(configuration.satelliteLayers));
             }
             timeReporter.ReportTime(timeOfTheDay);
         }
