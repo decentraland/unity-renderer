@@ -8,8 +8,8 @@ namespace DCL.ECSRuntime
 {
     public class ECSComponent<ModelType> : IECSComponent
     {
-        internal Dictionary<string, ECSComponentData<ModelType>> entities = new Dictionary<string, ECSComponentData<ModelType>>();
-        internal Dictionary<string, IECSComponentHandler<ModelType>> handlers = new Dictionary<string, IECSComponentHandler<ModelType>>();
+        internal Dictionary<long, ECSComponentData<ModelType>> entities = new Dictionary<long, ECSComponentData<ModelType>>();
+        internal Dictionary<long, IECSComponentHandler<ModelType>> handlers = new Dictionary<long, IECSComponentHandler<ModelType>>();
 
         private readonly Func<IECSComponentHandler<ModelType>> handlerBuilder;
         private readonly Func<object, ModelType> deserializer;

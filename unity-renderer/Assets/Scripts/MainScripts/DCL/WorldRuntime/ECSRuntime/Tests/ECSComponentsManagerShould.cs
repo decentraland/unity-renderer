@@ -49,7 +49,7 @@ namespace Tests
         public void GetOrCreateComponent()
         {
             IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns("1");
+            entity.entityId.Returns(1);
 
             IECSComponent comp0 = componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, entity);
             IECSComponent comp1 = componentsManager.GetOrCreateComponent((int)ComponentsID.Component1, entity);
@@ -89,7 +89,7 @@ namespace Tests
         public void GetCreatedComponent()
         {
             IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns("1");
+            entity.entityId.Returns(1);
 
             IECSComponent comp0 = componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, entity);
             IECSComponent comp1 = componentsManager.GetComponent((int)ComponentsID.Component0);
@@ -101,7 +101,7 @@ namespace Tests
         public void DeserializeComponent()
         {
             IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns("1");
+            entity.entityId.Returns(1);
 
             var newComponentModel = new TestingComponent()
             {
@@ -127,7 +127,7 @@ namespace Tests
         public void RemoveComponent()
         {
             IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns("1");
+            entity.entityId.Returns(1);
 
             componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, entity);
             componentsManager.GetOrCreateComponent((int)ComponentsID.Component1, entity);

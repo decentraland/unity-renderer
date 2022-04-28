@@ -28,7 +28,7 @@ namespace Tests
         public void CreateComponent()
         {
             IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns("1");
+            entity.entityId.Returns(1);
 
             component.Create(entity);
 
@@ -42,7 +42,7 @@ namespace Tests
         public void RemoveComponent()
         {
             IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns("1");
+            entity.entityId.Returns(1);
 
             component.Create(entity);
             component.Remove(entity);
@@ -56,7 +56,7 @@ namespace Tests
         public void UpdateComponent()
         {
             IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns("1");
+            entity.entityId.Returns(1);
 
             var newComponentModel = new TestingComponent()
             {
@@ -84,7 +84,7 @@ namespace Tests
             for (int i = 0; i < entitiesCount; i++)
             {
                 IDCLEntity entity = Substitute.For<IDCLEntity>();
-                entity.entityId.Returns($"{i}");
+                entity.entityId.Returns(i);
 
                 var entityModel = new TestingComponent()
                 {
