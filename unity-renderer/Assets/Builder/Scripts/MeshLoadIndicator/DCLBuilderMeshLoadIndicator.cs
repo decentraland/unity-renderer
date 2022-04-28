@@ -6,7 +6,7 @@ namespace Builder.MeshLoadIndicator
     {
         [SerializeField] private Camera builderCamera = null;
 
-        public string loadingEntityId { set; get; }
+        public long loadingEntityId { set; get; }
 
         private const float RELATIVE_SCALE_RATIO = 0.032f;
 

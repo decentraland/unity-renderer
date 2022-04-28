@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using DCL;
 using TMPro;
 using UnityEngine;
@@ -47,9 +48,10 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     internal void OnNamesVisibleChanged(bool current, bool previous) { canvas.enabled = current || forceShow; }
 
-    public void SetName(string name)
+    public void SetName(string name) { AsyncSetName(name).Forget(); }
+    private async UniTaskVoid AsyncSetName(string name)
     {
-        name = ProfanityFilterSharedInstances.regexFilter.Filter(name);
+        name = await ProfanityFilterSharedInstances.regexFilter.Filter(name);
         nameText.text = name;
         background.rectTransform.sizeDelta = new Vector2(nameText.GetPreferredValues().x + BACKGROUND_EXTRA_WIDTH, BACKGROUND_HEIGHT);
     }

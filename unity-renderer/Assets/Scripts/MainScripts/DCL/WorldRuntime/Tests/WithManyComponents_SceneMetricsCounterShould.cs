@@ -64,8 +64,8 @@ public class WithManyComponents_SceneMetricsCounterShould : IntegrationTestSuite
 
         yield return TestUtils.WaitForGLTFLoad(shapeEntity2);
 
-        TestUtils.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
-        TestUtils.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.SPHERE_SHAPE, new Vector3(8, 1, 8));
+        TestUtils.InstantiateEntityWithShape(scene, 1, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
+        TestUtils.InstantiateEntityWithShape(scene, 2, DCL.Models.CLASS_ID.SPHERE_SHAPE, new Vector3(8, 1, 8));
 
         yield return null;
 
@@ -77,8 +77,8 @@ public class WithManyComponents_SceneMetricsCounterShould : IntegrationTestSuite
             bodies: 4,
             textures: 1);
 
-        TestUtils.RemoveSceneEntity(scene, "1");
-        TestUtils.RemoveSceneEntity(scene, "2");
+        TestUtils.RemoveSceneEntity(scene, 1);
+        TestUtils.RemoveSceneEntity(scene, 2);
         TestUtils.RemoveSceneEntity(scene, shapeEntity2);
 
         AssertMetricsModel(scene,

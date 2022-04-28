@@ -12,17 +12,25 @@ using UnityEngine.TestTools;
 public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
+        coreComponentsPlugin = new CoreComponentsPlugin();
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     [UnityTest]
     public IEnumerator BoxShapeUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
@@ -33,7 +41,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator SphereShapeUpdate()
     {
-        string entityId = "2";
+        long entityId = 2;
         TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.SPHERE_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
@@ -44,7 +52,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator CylinderShapeUpdate()
     {
-        string entityId = "5";
+        long entityId = 5;
         TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CYLINDER_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
@@ -55,7 +63,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator ConeShapeUpdate()
     {
-        string entityId = "4";
+        long entityId = 5;
         TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CONE_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
@@ -67,7 +75,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator BoxShapeComponentMissingValuesGetDefaultedOnUpdate()
     {
-        string entityId = "1";
+        long entityId = 5;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         // 1. Create component with non-default configs
@@ -163,7 +171,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator CollisionProperty()
     {
-        string entityId = "entityId";
+        long entityId = 5;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
 
@@ -240,7 +248,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator VisiblePropertyWithRenderers()
     {
-        string entityId = "entityId";
+        long entityId = 5;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
 
@@ -321,7 +329,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         // Add UUID plugin to enable OnPointerEvent components for this integration test.
         UUIDEventsPlugin eventsPlugin = new UUIDEventsPlugin();
 
-        string entityId = "entityId";
+        long entityId = 2134;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
 
@@ -416,7 +424,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         List<IDCLEntity> entities = new List<IDCLEntity>();
         for (int i = 0; i < entitiesCount; i++)
         {
-            IDCLEntity entity = TestUtils.CreateSceneEntity(scene, $"entity{i}");
+            IDCLEntity entity = TestUtils.CreateSceneEntity(scene, i);
             TestUtils.SharedComponentAttach(shapeComponent, entity);
             entities.Add(entity);
         }
@@ -449,7 +457,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         List<IDCLEntity> entities = new List<IDCLEntity>();
         for (int i = 0; i < entitiesCount; i++)
         {
-            IDCLEntity entity = TestUtils.CreateSceneEntity(scene, $"entity{i}");
+            IDCLEntity entity = TestUtils.CreateSceneEntity(scene, i);
             TestUtils.SharedComponentAttach(shapeComponent, entity);
             entities.Add(entity);
         }

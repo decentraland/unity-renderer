@@ -40,7 +40,7 @@ public class MinimapHUDView : MonoBehaviour
         sceneOptionsPanel.SetActive(false);
 
         optionsButton.onClick.AddListener(controller.ToggleOptions);
-        toggleSceneUI.onToggleChange.AddListener(controller.ToggleSceneUI);
+        toggleSceneUI.OnSelectedChanged += (isOn, id, name) => controller.ToggleSceneUI(isOn);
         addBookmarkButton.onClick.AddListener(controller.AddBookmark);
         reportSceneButton.onClick.AddListener(controller.ReportScene);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);

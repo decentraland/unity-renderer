@@ -21,6 +21,8 @@ namespace Tests
         private Camera mainCamera;
         private CursorController cursorController;
         private UUIDEventsPlugin uuidEventsPlugin;
+        private CoreComponentsPlugin coreComponentsPlugin;
+        private UIComponentsPlugin uiComponentsPlugin;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
@@ -57,6 +59,9 @@ namespace Tests
 
             yield return base.SetUp();
 
+            coreComponentsPlugin = new CoreComponentsPlugin();
+            uuidEventsPlugin = new UUIDEventsPlugin();
+            uiComponentsPlugin = new UIComponentsPlugin();
             scene = TestUtils.CreateTestScene();
 
             Physics.autoSyncTransforms = true;
@@ -68,12 +73,14 @@ namespace Tests
 
             DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
 
-            uuidEventsPlugin = new UUIDEventsPlugin();
 
         }
 
         protected override IEnumerator TearDown()
         {
+            coreComponentsPlugin.Dispose();
+            uuidEventsPlugin.Dispose();
+            uiComponentsPlugin.Dispose();
             Object.Destroy(cursorController.normalCursor);
             Object.Destroy(cursorController.hoverCursor);
             Object.Destroy(cursorController.gameObject);

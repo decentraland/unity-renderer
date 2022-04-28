@@ -49,7 +49,7 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
         dropDown.AddOptions(optionsList);
 
 
-        string value = (string)GetParameterValue();
+        long value = (long) GetParameterValue();
 
         for (int i = 0; i < entitiesList.Count; i++)
         {
