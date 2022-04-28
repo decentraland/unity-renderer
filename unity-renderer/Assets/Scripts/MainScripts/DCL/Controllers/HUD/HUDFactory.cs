@@ -1,6 +1,5 @@
 using DCL;
 using DCL.HelpAndSupportHUD;
-using DCL.Helpers;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.SettingsPanelHUD;

@@ -39,6 +39,47 @@ public class ChatController : MonoBehaviour, IChatController
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
 
     public List<ChatMessage> GetEntries() { return new List<ChatMessage>(entries); }
+    
+    [ContextMenu("Fake Public Message")]
+    public void FakePublicMessage()
+    {
+        UserProfile ownProfile = UserProfile.GetOwnUserProfile();
+
+        var model = new UserProfileModel()
+        {
+            userId = "test user 1",
+            name = "test user 1",
+        };
+
+        UserProfileController.i.AddUserProfileToCatalog(model);
+
+        var model2 = new UserProfileModel()
+        {
+            userId = "test user 2",
+            name = "test user 2",
+        };
+
+        UserProfileController.i.AddUserProfileToCatalog(model2);
+
+        var msg = new ChatMessage()
+        {
+            body = "test message",
+            sender = model.userId,
+            messageType = ChatMessage.Type.PUBLIC,
+            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+        };
+
+        var msg2 = new ChatMessage()
+        {
+            body = "test message 2",
+            sender = ownProfile.userId,
+            messageType = ChatMessage.Type.PRIVATE,
+            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+        };
+
+        AddMessageToChatWindow(JsonUtility.ToJson(msg));
+        AddMessageToChatWindow(JsonUtility.ToJson(msg2));
+    }
 
     [ContextMenu("Fake Private Message")]
     public void FakePrivateMessage()
