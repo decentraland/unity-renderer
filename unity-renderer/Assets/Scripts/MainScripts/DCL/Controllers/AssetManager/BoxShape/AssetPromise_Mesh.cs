@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class AssetPromise_BoxShape: AssetPromise<Asset_BoxShape>
+    public class AssetPromise_Mesh: AssetPromise<Asset_Mesh>
     {
         public ECSBoxShape model;
 
-        public AssetPromise_BoxShape(ECSBoxShape model)
+        public AssetPromise_Mesh(ECSBoxShape model)
         {
             this.model = model;
         }
@@ -25,9 +25,9 @@ namespace DCL
             try
             {
                 Mesh currentMesh = GenerateGeometry();
-                Asset_BoxShape assetBoxShape = new Asset_BoxShape();
-                assetBoxShape.cubeMesh = currentMesh;
-                asset = assetBoxShape;
+                Asset_Mesh assetMesh = new Asset_Mesh();
+                assetMesh.cubeMesh = currentMesh;
+                asset = assetMesh;
                 OnSuccess?.Invoke();
             }
             catch(Exception e)
@@ -40,7 +40,7 @@ namespace DCL
 
         private Mesh GenerateGeometry()
         {
-            Mesh  cubeMesh = PrimitiveMeshBuilder.BuildCube(1f);
+            Mesh cubeMesh = PrimitiveMeshBuilder.BuildCube(1f);
 
             if (model.uvs != null && model.uvs.Length > 0)
             {

@@ -32,6 +32,7 @@ namespace DCL.Models
         public Renderer[] renderers;
         public MeshFilter[] meshFilters;
         public List<Collider> colliders = new List<Collider>();
+        public Rendereable rendereable;
         public Animation animation { get; private set; }
 
         Vector3 lastBoundsCalculationPosition;

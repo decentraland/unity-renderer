@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class Asset_BoxShape : Asset
+    public class Asset_Mesh : Asset
     {      
         public Mesh cubeMesh = null;
         

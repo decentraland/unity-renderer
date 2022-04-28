@@ -1,19 +1,34 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
+using DCL.Configuration;
+using DCL.Models;
 using UnityEngine;
 
 public static class ECSComponentsUtils
 {
-    public static void UpdateRenderer(IDCLEntity entity, Model model = null)
+    public static MeshesInfo GenerateMeshesInfo(IDCLEntity entity,string sceneId, int componentId, Mesh mesh, GameObject gameObject,bool visible, bool withCollisions, bool isPointerBlocker)
     {
-        ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
-        
-        CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, false, entity, CalculateCollidersLayer(model));
+        MeshesInfo meshesInfo = new MeshesInfo();
+        meshesInfo.innerGameObject = gameObject;
+        MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
 
-        if (entity.meshesInfo.meshFilters.Length > 0 && entity.meshesInfo.meshFilters[0].sharedMesh != currentMesh)
-        {
-            entity.meshesInfo.UpdateExistingMeshAtIndex(currentMesh, 0);
-        }
+        Renderer[] renderers = new Renderer[] { meshRenderer };
+        
+        meshFilter.sharedMesh = mesh;
+        
+        UpdateRenderer(entity,gameObject, renderers, visible, withCollisions, isPointerBlocker);
+        meshesInfo.rendereable = AddRendereableToDataStore(sceneId,componentId,mesh,gameObject);
+        meshesInfo.UpdateRenderersCollection();
+        return meshesInfo;
+    }
+    
+    public static void UpdateRenderer(IDCLEntity entity,GameObject meshGameObject, Renderer[] renderers,bool visible, bool withCollisions, bool isPointerBlocker)
+    {
+        ConfigureVisibility(meshGameObject, visible,renderers);
+        
+        CollidersManager.i.ConfigureColliders(meshGameObject, withCollisions, false, entity, CalculateCollidersLayer(withCollisions,isPointerBlocker));
     }
     
     public static void ConfigureVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
@@ -48,5 +63,43 @@ public static class ECSComponentsUtils
                     onPointerEventCollider.enabled = shouldBeVisible;
             }
         }
+    }
+    
+    public static void RemoveRendereableFromDataStore(string sceneId, Rendereable rendereable)
+    {
+        DataStore.i.sceneWorldObjects.RemoveRendereable(sceneId, rendereable);
+    }
+
+    private static Rendereable AddRendereableToDataStore(string sceneId, int componentId, Mesh mesh, GameObject gameObject)
+    {
+        int triangleCount = mesh.triangles.Length;
+
+        var newRendereable =
+            new Rendereable()
+            {
+                container = gameObject,
+                totalTriangleCount = triangleCount,
+                meshes = new HashSet<Mesh>() { mesh },
+                meshToTriangleCount = new Dictionary<Mesh, int>() { { mesh, triangleCount } }
+            };
+
+        newRendereable.renderers = MeshesInfoUtils.ExtractUniqueRenderers(gameObject);
+        // Note: When the old ECS has been disabled, we should make this as intenger instead of string
+        newRendereable.ownerId = componentId.ToString();
+        
+        
+        DataStore.i.sceneWorldObjects.AddRendereable(sceneId, newRendereable);
+        return newRendereable;
+    }
+    
+    private static int CalculateCollidersLayer(bool withCollisions, bool isPointerBlocker)
+    {
+        if (!withCollisions && isPointerBlocker)
+            return PhysicsLayers.onPointerEventLayer;
+        else 
+        if (withCollisions && !isPointerBlocker)
+            return PhysicsLayers.characterOnlyLayer;
+
+        return PhysicsLayers.defaultLayer;
     }
 }
