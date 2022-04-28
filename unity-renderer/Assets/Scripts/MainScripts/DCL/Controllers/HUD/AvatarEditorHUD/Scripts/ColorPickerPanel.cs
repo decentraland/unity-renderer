@@ -17,6 +17,13 @@ public class ColorPickerPanel : MonoBehaviour
         [SerializeField] internal Slider propSlider;
         [SerializeField] internal Button increaseButton;
         [SerializeField] internal Button decreaseButton;
+
+        public void RemoveAllListeners()
+        {
+            propSlider.onValueChanged.RemoveAllListeners();
+            increaseButton.onClick.RemoveAllListeners();
+            decreaseButton.onClick.RemoveAllListeners();
+        }
     }
 
     [Header("Prefab References")]
@@ -106,5 +113,9 @@ public class ColorPickerPanel : MonoBehaviour
     private void OnDestroy()
     {
         DataStore.i.HUDs.avatarEditorVisible.OnChange -= CloseOnAvatarEditorClose;
+        toggleButton.onClick.RemoveAllListeners();
+        hue.RemoveAllListeners();
+        saturation.RemoveAllListeners();
+        value.RemoveAllListeners();
     }
 }
