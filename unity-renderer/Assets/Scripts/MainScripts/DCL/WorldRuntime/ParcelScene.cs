@@ -4,6 +4,7 @@ using DCL.Helpers;
 using DCL.Models;
 using DCL.Controllers.ParcelSceneDebug;
 using System.Collections.Generic;
+using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -116,7 +117,14 @@ namespace DCL.Controllers
                     return CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE;
             }
 
-            return entityId.GetHashCode() << 9;
+            long entityIdLong = entityId.GetHashCode() << 9;
+
+            if (!WebInterface.entityIdToLegacyId.ContainsKey(entityIdLong))
+            {
+                WebInterface.entityIdToLegacyId[entityIdLong] = entityId;
+            }
+
+            return entityIdLong;
         }
 
         void OnWorldReposition(Vector3 current, Vector3 previous)

@@ -962,7 +962,7 @@ namespace Tests
             onPointerDownEvent.uuid = onPointerId;
             onPointerDownEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerDownEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
-            onPointerDownEvent.payload.hit.entityId = component.entity.entityId;
+            onPointerDownEvent.payload.hit.entityId = ""; //component.entity.entityId;
             onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
@@ -1029,7 +1029,7 @@ namespace Tests
             onPointerUpEvent.uuid = onPointerId;
             onPointerUpEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerUpEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
-            onPointerUpEvent.payload.hit.entityId = component.entity.entityId;
+            onPointerUpEvent.payload.hit.entityId = ""; //component.entity.entityId;
             onPointerUpEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>();
@@ -1202,7 +1202,7 @@ namespace Tests
             onPointerUpEvent.uuid = onPointerId;
             onPointerUpEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerUpEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
-            onPointerUpEvent.payload.hit.entityId = component.entity.entityId;
+            onPointerUpEvent.payload.hit.entityId = ""; //component.entity.entityId;
             onPointerUpEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>();
@@ -1397,7 +1397,7 @@ namespace Tests
             onPointerDownEvent.uuid = onPointerId;
             onPointerDownEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerDownEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
-            onPointerDownEvent.payload.hit.entityId = component.entity.entityId;
+            onPointerDownEvent.payload.hit.entityId = ""; //component.entity.entityId;
             onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
@@ -1417,7 +1417,7 @@ namespace Tests
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
                         pointerEvent.payload.uuid == onPointerId &&
-                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId)
+                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId.ToString())
                     {
                         targetEntityHit = true;
                     }
@@ -1446,7 +1446,7 @@ namespace Tests
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
                         pointerEvent.payload.uuid == onPointerId &&
-                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId)
+                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId.ToString())
                     {
                         targetEntityHit = true;
                     }
@@ -1598,7 +1598,7 @@ namespace Tests
             onPointerDownEvent.uuid = onPointerId;
             onPointerDownEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerDownEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
-            onPointerDownEvent.payload.hit.entityId = component.entity.entityId;
+            onPointerDownEvent.payload.hit.entityId = ""; //component.entity.entityId;
             onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
@@ -1618,7 +1618,7 @@ namespace Tests
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
                         pointerEvent.payload.uuid == onPointerId &&
-                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId)
+                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId.ToString())
                     {
                         targetEntityHit = true;
                     }
@@ -1646,7 +1646,7 @@ namespace Tests
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
                         pointerEvent.payload.uuid == onPointerId &&
-                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId)
+                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId.ToString())
                     {
                         targetEntityHit = true;
                     }
@@ -1800,7 +1800,7 @@ namespace Tests
             onPointerDownEvent.uuid = onPointerId;
             onPointerDownEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerDownEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
-            onPointerDownEvent.payload.hit.entityId = component.entity.entityId;
+            onPointerDownEvent.payload.hit.entityId = component.entity.entityId.ToString();
             onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
@@ -1820,7 +1820,7 @@ namespace Tests
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
                         pointerEvent.payload.uuid == onPointerId &&
-                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId)
+                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId.ToString())
                     {
                         targetEntityHit = true;
                     }
@@ -1848,7 +1848,7 @@ namespace Tests
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
                         pointerEvent.payload.uuid == onPointerId &&
-                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId)
+                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId.ToString())
                     {
                         targetEntityHit = true;
                     }
