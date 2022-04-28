@@ -35,7 +35,7 @@ public class UUIDEventsPlugin : IPlugin
         factory.createOverrides.Add((int) CLASS_ID_COMPONENT.UUID_CALLBACK, OnUUIDCallbackIsAdded);
     }
 
-    private void OnUUIDCallbackIsAdded(string sceneid, string entityid, ref int classId, object data)
+    private void OnUUIDCallbackIsAdded(string sceneid, long entityid, ref int classId, object data)
     {
         OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(data as string);
         classId = (int) model.GetClassIdFromType();

@@ -87,7 +87,7 @@ namespace Builder.MeshLoadIndicator
             }
         }
 
-        public DCLBuilderMeshLoadIndicator ShowIndicator(Vector3 position, string entityId)
+        public DCLBuilderMeshLoadIndicator ShowIndicator(Vector3 position, long entityId)
         {
             DCLBuilderMeshLoadIndicator ret;
 
@@ -110,7 +110,7 @@ namespace Builder.MeshLoadIndicator
             return ret;
         }
 
-        public void HideIndicator(string entityId)
+        public void HideIndicator(long entityId)
         {
             if (indicatorsInUse == null)
                 return;

@@ -154,8 +154,7 @@ public class SmartItemActionEventAdapter : MonoBehaviour
                 item.image = entitySpriteDict[entity];
             optionsList.Add(item);
 
-            if (!string.IsNullOrEmpty(actionEvent.smartItemActionable.entityId) &&
-                entity.rootEntity.entityId == actionEvent.smartItemActionable.entityId)
+            if (entity.rootEntity.entityId == actionEvent.smartItemActionable.entityId)
                 indexToUse = index;
 
             index++;

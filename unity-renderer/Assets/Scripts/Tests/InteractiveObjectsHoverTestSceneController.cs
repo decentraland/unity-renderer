@@ -18,7 +18,7 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
     {
         yield return InitScene();
 
-        string entityId = "1";
+        long entityId = 1;
 
         var entity = TestUtils.CreateSceneEntity(scene, entityId);
 

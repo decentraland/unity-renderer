@@ -164,7 +164,7 @@ namespace DCL.Builder
             // We iterate all the entities to create the entity in the scene
             foreach (BuilderEntity builderEntity in sceneToEdit.manifest.scene.entities.Values)
             {
-                var entity = sceneToEdit.scene.CreateEntity(builderEntity.id);
+                var entity = sceneToEdit.scene.CreateEntity(builderEntity.id.GetHashCode());
 
                 bool nameComponentFound = false;
                 // We iterate all the id of components in the entity, to add the component 

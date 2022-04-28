@@ -6,7 +6,7 @@ using static ProtocolV2;
 [System.Serializable]
 public class EntityData
 {
-    public string entityId;
+    public long entityId;
     public TransformComponent transformComponent;
     public NFTComponent nftComponent;
 

@@ -31,7 +31,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OBJShapeUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         Material placeholderLoadingMaterial = Resources.Load<Material>("Materials/AssetLoading");
@@ -63,7 +63,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator PreExistentShapeUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
 
