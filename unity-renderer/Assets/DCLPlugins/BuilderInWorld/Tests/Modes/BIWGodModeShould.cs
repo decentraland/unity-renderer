@@ -84,7 +84,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
-        var rootEntity = TestUtils.CreateSceneEntity(scene, "testId");
+        var rootEntity = TestUtils.CreateSceneEntity(scene, 1);
         entity.Initialize(rootEntity, null);
         yield return TestUtils.CreateShapeForEntity(scene, rootEntity);
         rootEntity.gameObject.transform.position = Vector3.zero;
@@ -195,7 +195,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
-        var rootEntity = TestUtils.CreateSceneEntity(scene, "testId");
+        var rootEntity = TestUtils.CreateSceneEntity(scene, 2);
         entity.Initialize(rootEntity, null);
         yield return TestUtils.CreateShapeForEntity(scene, rootEntity);
         rootEntity.gameObject.transform.position = Vector3.zero;

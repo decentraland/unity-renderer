@@ -225,7 +225,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnClickComponentInitializesWithGLTFShape()
         {
-            string entityId = "1";
+            long entityId = 1;
 
             TestUtils.CreateSceneEntity(scene, entityId);
 
@@ -272,7 +272,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerDownInitializesWithGLTFShape()
         {
-            string entityId = "1";
+            long entityId = 1;
 
             TestUtils.CreateSceneEntity(scene, entityId);
 
@@ -318,7 +318,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerUpComponentInitializesWithGLTFShape()
         {
-            string entityId = "1";
+            long entityId = 1;
 
             TestUtils.CreateSceneEntity(scene, entityId);
 
@@ -364,7 +364,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverEnterInitializesWithGLTFShape()
         {
-            string entityId = "1";
+            long entityId = 1;
 
             TestUtils.CreateSceneEntity(scene, entityId);
 
@@ -409,7 +409,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverExitInitializesWithGLTFShape()
         {
-            string entityId = "1";
+            long entityId = 1;
 
             TestUtils.CreateSceneEntity(scene, entityId);
 
@@ -454,7 +454,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnClickComponentInitializesWithGLTFShapeAsynchronously()
         {
-            string entityId = "1";
+            long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
@@ -498,7 +498,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerDownInitializesWithGLTFShapeAsynchronously()
         {
-            string entityId = "1";
+            long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
@@ -541,7 +541,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerUpComponentInitializesWithGLTFShapeAsynchronously()
         {
-            string entityId = "1";
+            long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
@@ -586,7 +586,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverEnterInitializesWithGLTFShapeAsynchronously()
         {
-            string entityId = "1";
+            long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
@@ -630,7 +630,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverExitInitializesWithGLTFShapeAsynchronously()
         {
-            string entityId = "1";
+            long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
@@ -674,7 +674,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnClickComponentInitializesAfterBasicShapeIsAdded()
         {
-            string entityId = "1";
+            long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
 
             string clickUuid = "pointerevent-1";
@@ -713,7 +713,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerDownInitializesAfterBasicShapeIsAdded()
         {
-            string entityId = "1";
+            long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
 
             string clickUuid = "pointerevent-1";
@@ -752,7 +752,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerUpComponentInitializesAfterBasicShapeIsAdded()
         {
-            string entityId = "1";
+            long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
 
             string clickUuid = "pointerevent-1";
@@ -791,7 +791,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverEnterComponentInitializesAfterBasicShapeIsAdded()
         {
-            string entityId = "1";
+            long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
 
             string clickUuid = "pointerevent-1";
@@ -830,7 +830,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverExitComponentInitializesAfterBasicShapeIsAdded()
         {
-            string entityId = "1";
+            long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
 
             string clickUuid = "pointerevent-1";
