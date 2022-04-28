@@ -598,6 +598,7 @@ namespace DCL.Interface
             public string ownedByUser;
             public string[] wearableIds;
             public string[] collectionIds;
+            public string thirdPartyId;
         }
 
         [System.Serializable]
@@ -1376,6 +1377,24 @@ namespace DCL.Interface
             killPortableExperiencePayload.portableExperienceId = portableExperienceId;
             SendMessage("KillPortableExperience", killPortableExperiencePayload);
         }
+        
+        public static void RequestThirdPartyWearables(
+            string ownedByUser,
+            string thirdPartyCollectionId,
+            string context)
+        {
+            requestWearablesPayload.filters = new WearablesRequestFiltersPayload
+            {
+                ownedByUser = ownedByUser,
+                thirdPartyId = thirdPartyCollectionId,
+                collectionIds = null,
+                wearableIds = null
+            };
+
+            requestWearablesPayload.context = context;
+
+            SendMessage("RequestWearables", requestWearablesPayload);
+        }
 
         public static void SetDisabledPortableExperiences(string[] idsToDisable)
         {
@@ -1393,7 +1412,8 @@ namespace DCL.Interface
             {
                 ownedByUser = ownedByUser,
                 wearableIds = wearableIds,
-                collectionIds = collectionIds
+                collectionIds = collectionIds,
+                thirdPartyId = null
             };
 
             requestWearablesPayload.context = context;
