@@ -9,7 +9,7 @@ public class MissingAsset : MonoBehaviour
 
     public void Configure(BIWEntity entity)
     {
-        boxCollider.gameObject.name = entity.rootEntity.entityId;
+        boxCollider.gameObject.name = entity.rootEntity.entityId.ToString();
         boxCollider.gameObject.layer = BIWSettings.COLLIDER_SELECTION_LAYER_INDEX;
     }
 }

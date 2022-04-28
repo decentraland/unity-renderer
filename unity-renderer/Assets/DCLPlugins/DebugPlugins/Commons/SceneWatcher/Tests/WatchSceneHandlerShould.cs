@@ -47,7 +47,7 @@ namespace Tests
         public void TriggerEntityAddedWhenEntityExistBeforeHandler()
         {
             IDCLEntity entity = CreateEntity();
-            var sceneEntities = new Dictionary<string, IDCLEntity>() { { "1", entity } };
+            var sceneEntities = new Dictionary<long, IDCLEntity>() { { 1, entity } };
             scene.entities.Returns(sceneEntities);
 
             WatchSceneHandler handler = new WatchSceneHandler(scene, listener);

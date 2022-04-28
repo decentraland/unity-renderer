@@ -22,7 +22,7 @@ using UnityEngine.TestTools;
 /// </summary>
 public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
 {
-    private const string ENTITY_ID = "1";
+    private const long ENTITY_ID = 1;
     private BIWEntity entity;
     private BIWEntityHandler entityHandler;
     private IContext context;

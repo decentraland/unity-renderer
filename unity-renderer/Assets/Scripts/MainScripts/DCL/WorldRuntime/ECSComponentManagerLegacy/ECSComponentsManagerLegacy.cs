@@ -14,11 +14,11 @@ namespace DCL
     {
         private readonly Dictionary<string, ISharedComponent> disposableComponents = new Dictionary<string, ISharedComponent>();
 
-        private readonly Dictionary<string, Dictionary<Type, ISharedComponent>> entitiesSharedComponents =
-            new Dictionary<string, Dictionary<Type, ISharedComponent>>();
+        private readonly Dictionary<long, Dictionary<Type, ISharedComponent>> entitiesSharedComponents =
+            new Dictionary<long, Dictionary<Type, ISharedComponent>>();
 
-        private readonly Dictionary<string, Dictionary<CLASS_ID_COMPONENT, IEntityComponent>> entitiesComponents =
-            new Dictionary<string, Dictionary<CLASS_ID_COMPONENT, IEntityComponent>>();
+        private readonly Dictionary<long, Dictionary<CLASS_ID_COMPONENT, IEntityComponent>> entitiesComponents =
+            new Dictionary<long, Dictionary<CLASS_ID_COMPONENT, IEntityComponent>>();
 
         private readonly IParcelScene scene;
         private readonly IRuntimeComponentFactory componentFactory;
@@ -374,7 +374,7 @@ namespace DCL
         /**
           * This method is called when we need to attach a disposable component to the entity
           */
-        public void SceneSharedComponentAttach(string entityId, string componentId)
+        public void SceneSharedComponentAttach(long entityId, string componentId)
         {
             IDCLEntity entity = scene.GetEntityById(entityId);
 
@@ -387,7 +387,7 @@ namespace DCL
             }
         }
 
-        public IEntityComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, object data)
+        public IEntityComponent EntityComponentCreateOrUpdate(long entityId, CLASS_ID_COMPONENT classId, object data)
         {
             IDCLEntity entity = scene.GetEntityById(entityId);
 
@@ -512,7 +512,7 @@ namespace DCL
             return null;
         }
 
-        public void EntityComponentRemove(string entityId, string componentName)
+        public void EntityComponentRemove(long entityId, string componentName)
         {
             IDCLEntity entity = scene.GetEntityById(entityId);
 
