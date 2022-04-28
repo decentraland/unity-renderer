@@ -39,16 +39,15 @@ namespace Builder
         public static System.Action<KeyCode> OnSetKeyDown;
         public static event SetGridResolutionDelegate OnSetGridResolution;
         public static System.Action<ParcelScene> OnSceneChanged;
-        public static System.Action<string[]> OnBuilderSelectEntity;
+        public static System.Action<long[]> OnBuilderSelectEntity;
 
         private MouseCatcher mouseCatcher;
         private ParcelScene currentScene;
         private CameraController cameraController;
-        private CursorController cursorController;
         private Vector3 defaultCharacterPosition;
 
         private bool isPreviewMode = false;
-        private List<string> outOfBoundariesEntitiesId = new List<string>();
+        private List<long> outOfBoundariesEntitiesId = new List<long>();
         private int lastEntitiesOutOfBoundariesCount = 0;
         private List<EditableEntity> selectedEntities;
         private bool entitiesMoved = false;
@@ -78,7 +77,7 @@ namespace Builder
         [System.Serializable]
         private class SelectedEntitiesPayload
         {
-            public string[] entities = null;
+            public long[] entities = null;
         };
 
         #region "Messages from Explorer"
@@ -358,7 +357,6 @@ namespace Builder
             SetupRendererPipeline();
 
             cameraController = Object.FindObjectOfType<CameraController>();
-            cursorController = Object.FindObjectOfType<CursorController>();
             mouseCatcher = SceneReferences.i.mouseCatcher;
             var playerAvatarController = Object.FindObjectOfType<PlayerAvatarController>();
 
@@ -380,10 +378,7 @@ namespace Builder
                 cameraController.gameObject.SetActive(false);
             }
 
-            if (cursorController)
-            {
-                cursorController.gameObject.SetActive(false);
-            }
+            DataStore.i.Get<DataStore_Cursor>().cursorVisible.Set(false);
 
             // NOTE: no third person camera in builder yet, so avoid rendering being locked waiting for avatar.
             if (playerAvatarController)
@@ -547,7 +542,7 @@ namespace Builder
             }
 
             cameraController?.gameObject.SetActive(isPreviewMode);
-            cursorController?.gameObject.SetActive(isPreviewMode);
+            DataStore.i.Get<DataStore_Cursor>().cursorVisible.Set(isPreviewMode);
 
             if (!isPreview)
             {
@@ -625,7 +620,7 @@ namespace Builder
 
         private void ProcessEntityBoundaries(DCLBuilderEntity entity)
         {
-            string entityId = entity.rootEntity.entityId;
+            long entityId = entity.rootEntity.entityId;
             int entityIndexInList = outOfBoundariesEntitiesId.IndexOf(entityId);
 
             bool wasInsideSceneBoundaries = entityIndexInList == -1;

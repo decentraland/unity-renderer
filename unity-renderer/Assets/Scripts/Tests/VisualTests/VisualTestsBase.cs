@@ -13,6 +13,8 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
     protected ParcelScene scene;
     protected Camera camera;
     private AnisotropicFiltering originalAnisoSetting;
+    private CoreComponentsPlugin coreComponentsPlugin;
+    private UIComponentsPlugin uiComponentsPlugin;
 
     protected override ServiceLocator InitializeServiceLocator()
     {
@@ -39,6 +41,8 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
 
         VisualTestUtils.SetSSAOActive(false);
         scene = TestUtils.CreateTestScene();
+        coreComponentsPlugin = new CoreComponentsPlugin();
+        uiComponentsPlugin = new UIComponentsPlugin();
 
         DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
 
@@ -64,8 +68,9 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        coreComponentsPlugin.Dispose();
+        uiComponentsPlugin.Dispose();   
         Object.Destroy(camera.gameObject);
-        Object.Destroy(scene.gameObject);
         QualitySettings.anisotropicFiltering = originalAnisoSetting;
         yield return base.TearDown();
     }

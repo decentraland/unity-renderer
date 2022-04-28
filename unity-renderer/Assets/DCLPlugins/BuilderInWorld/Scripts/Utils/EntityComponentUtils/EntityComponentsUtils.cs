@@ -13,16 +13,16 @@ namespace DCL.Builder
     {
         public static void AddTransformComponent(IParcelScene scene, IDCLEntity entity, DCLTransform.Model model)
         {
-            scene.EntityComponentCreateOrUpdateWithModel(entity.entityId, CLASS_ID_COMPONENT.TRANSFORM, model);
+            scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entity.entityId, CLASS_ID_COMPONENT.TRANSFORM, model);
         }
 
         public static NFTShape AddNFTShapeComponent(IParcelScene scene, IDCLEntity entity, NFTShape.Model model, string id = "")
         {
             id = EnsureId(id);
             
-            NFTShape nftShape = (NFTShape) scene.SharedComponentCreate(id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));
+            NFTShape nftShape = (NFTShape) scene.componentsManagerLegacy.SceneSharedComponentCreate(id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));
             nftShape.model = model;
-            scene.SharedComponentAttach(entity.entityId, nftShape.id);
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(entity.entityId, nftShape.id);
             return nftShape;
         }
         
@@ -30,9 +30,9 @@ namespace DCL.Builder
         {
             id = EnsureId(id);
             
-            GLTFShape gltfComponent = (GLTFShape) scene.SharedComponentCreate(id, Convert.ToInt32(CLASS_ID.GLTF_SHAPE));
+            GLTFShape gltfComponent = (GLTFShape) scene.componentsManagerLegacy.SceneSharedComponentCreate(id, Convert.ToInt32(CLASS_ID.GLTF_SHAPE));
             gltfComponent.model = model;
-            scene.SharedComponentAttach(entity.entityId, gltfComponent.id);
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(entity.entityId, gltfComponent.id);
             return gltfComponent;
         }
 
@@ -40,9 +40,9 @@ namespace DCL.Builder
         {
             id = EnsureId(id);
             
-            DCLName name = (DCLName) scene.SharedComponentCreate(id, Convert.ToInt32(CLASS_ID.NAME));
+            DCLName name = (DCLName) scene.componentsManagerLegacy.SceneSharedComponentCreate(id, Convert.ToInt32(CLASS_ID.NAME));
             name.UpdateFromModel(model);
-            scene.SharedComponentAttach(entity.entityId, name.id);
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(entity.entityId, name.id);
             return name;
         }
         
@@ -50,9 +50,9 @@ namespace DCL.Builder
         {
             id = EnsureId(id);
             
-            DCLLockedOnEdit lockedOnEditComponent = (DCLLockedOnEdit) scene.SharedComponentCreate(id, Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
+            DCLLockedOnEdit lockedOnEditComponent = (DCLLockedOnEdit) scene.componentsManagerLegacy.SceneSharedComponentCreate(id, Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
             lockedOnEditComponent.UpdateFromModel(model);
-            scene.SharedComponentAttach(entity.entityId, lockedOnEditComponent.id);
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(entity.entityId, lockedOnEditComponent.id);
             return lockedOnEditComponent;
         }
 

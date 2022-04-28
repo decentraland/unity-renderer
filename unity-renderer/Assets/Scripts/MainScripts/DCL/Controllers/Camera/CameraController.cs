@@ -137,7 +137,7 @@ namespace DCL.Camera
 
         private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
         {
-            if (value > -mouseWheelThreshold && value < mouseWheelThreshold) return;
+            if ((value > -mouseWheelThreshold && value < mouseWheelThreshold) || CommonScriptableObjects.cameraModeInputLocked.Get()) return;
             if (Utils.IsPointerOverUIElement()) return;
 
             if (CommonScriptableObjects.cameraMode == CameraMode.ModeId.FirstPerson && value < -mouseWheelThreshold)
@@ -184,6 +184,7 @@ namespace DCL.Camera
             cameraForward.Set(cameraTransform.forward);
             cameraRight.Set(cameraTransform.right);
             DataStore.i.camera.rotation.Set(cameraTransform.rotation);
+            DataStore.i.camera.transform.Set(cameraTransform);
             cameraPosition.Set(cameraTransform.position);
             cameraIsBlending.Set(cameraBrain.IsBlending);
 

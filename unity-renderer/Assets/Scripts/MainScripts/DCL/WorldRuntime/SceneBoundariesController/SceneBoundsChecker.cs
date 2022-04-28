@@ -159,6 +159,12 @@ namespace DCL.Controllers
             persistentEntities.Add(entity);
         }
 
+        public void RemovePersistent(IDCLEntity entity)
+        {
+            if (persistentEntities.Contains(entity))
+                persistentEntities.Remove(entity);
+        }
+
         /// <summary>
         /// Returns whether an entity was added to be consistently checked
         /// </summary>
@@ -202,7 +208,7 @@ namespace DCL.Controllers
                 return;
             }
 
-            var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
+            var loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
 

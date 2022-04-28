@@ -15,6 +15,8 @@ public class MinimapHUDView : MonoBehaviour
     private TextMeshProUGUI sceneNameText;
 
     [SerializeField] private TextMeshProUGUI playerPositionText;
+    [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
+    [SerializeField] private Button openNavmapButton;
 
     [Header("Options")] [SerializeField] private Button optionsButton;
     [SerializeField] private GameObject sceneOptionsPanel;
@@ -25,15 +27,15 @@ public class MinimapHUDView : MonoBehaviour
 
     [Header("Map Renderer")] public RectTransform mapRenderContainer;
     public RectTransform mapViewport;
-    [SerializeField] private Button openNavmapButton;
 
     public static System.Action<MinimapHUDModel> OnUpdateData;
     public static System.Action OnOpenNavmapClicked;
     public InputAction_Trigger toggleNavMapAction;
-    [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
+    private IMouseCatcher mouseCatcher;
 
     public void Initialize(MinimapHUDController controller)
     {
+        mouseCatcher = SceneReferences.i?.mouseCatcher;
         gameObject.name = VIEW_OBJECT_NAME;
         sceneOptionsPanel.SetActive(false);
 
@@ -42,6 +44,9 @@ public class MinimapHUDView : MonoBehaviour
         addBookmarkButton.onClick.AddListener(controller.AddBookmark);
         reportSceneButton.onClick.AddListener(controller.ReportScene);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
+
+        if (mouseCatcher != null)
+            mouseCatcher.OnMouseLock += OnMouseLocked;
 
         var renderer = MapRenderer.i;
 
@@ -52,6 +57,11 @@ public class MinimapHUDView : MonoBehaviour
             renderer.transform.SetAsFirstSibling();
         }
         usersAroundListHudButton.gameObject.SetActive(false);
+    }
+
+    internal void OnMouseLocked() 
+    {
+        sceneOptionsPanel.SetActive(false);
     }
 
     internal static MinimapHUDView Create(MinimapHUDController controller)
@@ -75,5 +85,11 @@ public class MinimapHUDView : MonoBehaviour
             mainShowHideAnimator.Show();
         else if (!visible && mainShowHideAnimator.isVisible)
             mainShowHideAnimator.Hide();
+    }
+
+    private void OnDestroy()
+    {
+        if(mouseCatcher != null)
+            mouseCatcher.OnMouseLock -= OnMouseLocked;
     }
 }

@@ -31,7 +31,7 @@ namespace DCL
         /// <param name="sceneId"></param>
         /// <param name="ownerId"></param>
         [Obsolete("This feature is only used by the SmartItem component and will have to be deprecated on the future. Please don't use it.")]
-        public static void AddExcludedOwner(this DataStore_WorldObjects self, string sceneId, string ownerId)
+        public static void AddExcludedOwner(this DataStore_WorldObjects self, string sceneId, long ownerId)
         {
             if (!self.sceneData.ContainsKey(sceneId))
                 return;
@@ -41,7 +41,7 @@ namespace DCL
         }
 
         [Obsolete("This feature is only used by the SmartItem component and will have to be deprecated on the future. Please don't use it.")]
-        public static void RemoveExcludedOwner(this DataStore_WorldObjects self, string sceneId, string ownerId)
+        public static void RemoveExcludedOwner(this DataStore_WorldObjects self, string sceneId, long ownerId)
         {
             if (!self.sceneData.ContainsKey(sceneId))
                 return;
@@ -49,7 +49,7 @@ namespace DCL
             self.sceneData[sceneId].ignoredOwners.Remove(ownerId);
         }
 
-        public static void AddTexture(this DataStore_WorldObjects self, string sceneId, string ownerId, Texture texture)
+        public static void AddTexture(this DataStore_WorldObjects self, string sceneId, long ownerId, Texture texture)
         {
             var r = new Rendereable();
             r.textures.Add(texture);
@@ -57,7 +57,7 @@ namespace DCL
             AddRendereable(self, sceneId, r);
         }
 
-        public static void RemoveTexture(this DataStore_WorldObjects self, string sceneId, string ownerId, Texture texture )
+        public static void RemoveTexture(this DataStore_WorldObjects self, string sceneId, long ownerId, Texture texture )
         {
             var r = new Rendereable();
             r.textures.Add(texture);
@@ -65,7 +65,7 @@ namespace DCL
             RemoveRendereable(self, sceneId, r);
         }
 
-        public static void AddMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId,
+        public static void AddMaterial(this DataStore_WorldObjects self, string sceneId, long ownerId,
             Material material)
         {
             var r = new Rendereable();
@@ -74,7 +74,7 @@ namespace DCL
             AddRendereable(self, sceneId, r);
         }
 
-        public static void RemoveMaterial(this DataStore_WorldObjects self, string sceneId, string ownerId,
+        public static void RemoveMaterial(this DataStore_WorldObjects self, string sceneId, long ownerId,
             Material material)
         {
             var r = new Rendereable();
@@ -124,13 +124,6 @@ namespace DCL
                 return;
             }
 
-            if (string.IsNullOrEmpty(rendereable.ownerId))
-            {
-                logger.Log($"AddRendereable",
-                    $"invalid ownerId! Make sure to assign ownerId to the given rendereable (hint: it's the entityId)");
-                return;
-            }
-
             var sceneData = self.sceneData[sceneId];
 
             if ( sceneData.ignoredOwners.Contains(rendereable.ownerId))
@@ -161,13 +154,6 @@ namespace DCL
             if ( string.IsNullOrEmpty(sceneId) || !self.sceneData.ContainsKey(sceneId) )
             {
                 logger.Log($"RemoveRendereable", $"invalid sceneId! (id: {sceneId})");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(rendereable.ownerId))
-            {
-                logger.Log($"AddRendereable",
-                    $"invalid ownerId! Make sure to assign ownerId to the given rendereable (hint: it's the entityId)");
                 return;
             }
 

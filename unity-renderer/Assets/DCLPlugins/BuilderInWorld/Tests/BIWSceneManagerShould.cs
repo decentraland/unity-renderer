@@ -34,7 +34,6 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         result.Add(MainSceneFactory.CreateMouseCatcher());
         result.Add(MainSceneFactory.CreateSettingsController());
         result.Add(MainSceneFactory.CreateEventSystem());
-        result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
         return result;
     }
 
@@ -80,12 +79,12 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         // Arrange
         mainController.sceneToEdit = builderScene;
         mainController.CatalogLoaded();
-        scene.CreateEntity("Test");
+        scene.CreateEntity(1);
         mainController.sceneToEditId = scene.sceneData.id;
 
         // Act
         mainController.StartFlow(builderScene, "source");
-        scene.CreateEntity("TestEntity");
+        scene.CreateEntity(2);
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         // Assert
@@ -98,10 +97,10 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         // Arrange
         mainController.sceneToEdit = builderScene;
         mainController.CatalogLoaded();
-        scene.CreateEntity("Test");
+        scene.CreateEntity(1);
 
         mainController.StartFlowFromLandWithPermission(scene, "Test");
-        scene.CreateEntity("TestEntity");
+        scene.CreateEntity(2);
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         // Act
@@ -115,7 +114,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void FindSceneToEdit()
     {
         // Arrange
-        scene.CreateEntity("TestEntity");
+        scene.CreateEntity(1);
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
         CommonScriptableObjects.playerWorldPosition.Set(new Vector3(scene.sceneData.basePosition.x, 0, scene.sceneData.basePosition.y));
 
