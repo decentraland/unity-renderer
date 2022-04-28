@@ -106,19 +106,19 @@ MonoBehaviour:
   horizonMaskValues: {x: -0.98, y: 0, z: -1.77}
   horizonPlaneColor:
     serializedVersion: 2
-    key0: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
-    key1: {r: 0.13157704, g: 0.4534561, b: 0.9056604, a: 1}
-    key2: {r: 0.74311143, g: 0.7635418, b: 0.7924528, a: 0}
-    key3: {r: 0.8584906, g: 0.77661604, b: 0.124724075, a: 0}
-    key4: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 0}
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 1, g: 1, b: 1, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 13651
-    ctime2: 32768
-    ctime3: 46420
-    ctime4: 65535
+    ctime1: 65535
+    ctime2: 65535
+    ctime3: 0
+    ctime4: 0
     ctime5: 0
     ctime6: 0
     ctime7: 0
@@ -131,11 +131,9 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 5
+    m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  horizonPlaneHeight:
-  - percentage: 0.041666664
-    value: -1
+  horizonPlaneHeight: []
   ambientTrilight: 1
   ambientSkyColor:
     serializedVersion: 2
@@ -410,9 +408,9 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
   layers:
   - slotID: 4
-    renderType: 1
+    renderType: 0
     layerType: 4
-    enabled: 0
+    enabled: 1
     nameInEditor: Mountains
     expandedInEditor: 0
     timeSpan_start: 0
@@ -486,9 +484,9 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 0
-    renderType: 1
+    renderType: 0
     layerType: 1
-    enabled: 0
+    enabled: 1
     nameInEditor: Stars
     expandedInEditor: 0
     timeSpan_start: 18
@@ -568,7 +566,7 @@ MonoBehaviour:
   - slotID: 1
     renderType: 1
     layerType: 2
-    enabled: 0
+    enabled: 1
     nameInEditor: Big Sun
     expandedInEditor: 0
     timeSpan_start: 5
@@ -653,7 +651,7 @@ MonoBehaviour:
     movementTypeCubemap: 0
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
-  - slotID: 0
+  - slotID: 1
     renderType: 1
     layerType: 2
     enabled: 0
@@ -738,7 +736,7 @@ MonoBehaviour:
   - slotID: 1
     renderType: 1
     layerType: 2
-    enabled: 0
+    enabled: 1
     nameInEditor: Moon
     expandedInEditor: 0
     timeSpan_start: 21
@@ -826,9 +824,9 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 2
-    renderType: 1
+    renderType: 0
     layerType: 4
-    enabled: 0
+    enabled: 1
     nameInEditor: Far Clouds
     expandedInEditor: 0
     timeSpan_start: 0
@@ -900,9 +898,9 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 3
-    renderType: 1
+    renderType: 0
     layerType: 4
-    enabled: 0
+    enabled: 1
     nameInEditor: Near Clouds
     expandedInEditor: 0
     timeSpan_start: 0
@@ -992,536 +990,3 @@ MonoBehaviour:
     startTime: 20.7
     endTime: 8
     isTrigger: 0
-  additional3Dconfig:
-  - configType: 0
-    enabled: 1
-    expandedInEditor: 0
-    nameInEditor: 
-    layers:
-      slotID: 0
-      renderType: 1
-      layerType: 1
-      enabled: 0
-      nameInEditor: Stars
-      expandedInEditor: 0
-      timeSpan_start: 18
-      timeSpan_End: 5
-      fadingInTime: 5
-      fadingOutTime: 5
-      tintPercentage: 0
-      renderDistance: []
-      texture: {fileID: 2800000, guid: 1f19dbb2b85e7a94987d2b6cb4687dde, type: 3}
-      textureNormal: {fileID: 0}
-      cubemap: {fileID: 0}
-      color:
-        serializedVersion: 2
-        key0: {r: 383.49805, g: 383.49805, b: 383.49805, a: 0}
-        key1: {r: 383.49805, g: 383.49805, b: 383.49805, a: 0.20784314}
-        key2: {r: 0, g: 0, b: 0, a: 0.36862746}
-        key3: {r: 0, g: 0, b: 0, a: 0}
-        key4: {r: 0, g: 0, b: 0, a: 0}
-        key5: {r: 0, g: 0, b: 0, a: 0}
-        key6: {r: 0, g: 0, b: 0, a: 0}
-        key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 0
-        ctime1: 65535
-        ctime2: 0
-        ctime3: 0
-        ctime4: 0
-        ctime5: 0
-        ctime6: 0
-        ctime7: 0
-        atime0: 0
-        atime1: 31611
-        atime2: 65535
-        atime3: 0
-        atime4: 0
-        atime5: 0
-        atime6: 0
-        atime7: 0
-        m_Mode: 0
-        m_NumColorKeys: 2
-        m_NumAlphaKeys: 3
-      tiling: {x: 27.3, y: 4}
-      flipbookRowsAndColumns: {x: 2.43, y: -9.78}
-      flipbookAnimSpeed: 0
-      offset: []
-      satelliteWidthHeight: []
-      rotations_float: []
-      rotations_Vector3: []
-      speed_Vector3: {x: 0, y: 0, z: 0}
-      speed_Vector2: {x: 0.01, y: 0}
-      speed_float: 0
-      normalIntensity: 0
-      particleExpanded: 0
-      particleTiling: {x: 1, y: 1}
-      particlesOffset: {x: 0, y: 0}
-      particleRotation:
-      - percentage: 0
-        value: {x: 0, y: 0, z: 0}
-      - percentage: 0
-        value: {x: 0, y: 0, z: 0}
-      - percentage: 0
-        value: {x: 0, y: 0, z: 0}
-      particlesAmount: 1
-      particleMinSize: 1
-      particleMaxSize: 1
-      particlesHorizontalSpread: 1
-      particlesVerticalSpread: 1
-      particleMinFade: 1
-      particleMaxFade: 1
-      distortionExpanded: 0
-      distortIntensity: []
-      distortSize: []
-      distortSpeed: []
-      distortSharpness: []
-      movementTypeCubemap: 0
-      movementTypePlanar_Radial: 0
-      movementTypeSatellite: 0
-  - configType: 0
-    enabled: 1
-    expandedInEditor: 0
-    nameInEditor: 
-    layers:
-      slotID: 0
-      renderType: 0
-      layerType: 2
-      enabled: 0
-      nameInEditor: Second Sun
-      expandedInEditor: 0
-      timeSpan_start: 5
-      timeSpan_End: 20
-      fadingInTime: 1
-      fadingOutTime: 1
-      tintPercentage: 0
-      renderDistance: []
-      texture: {fileID: 2800000, guid: e115b258140375c48b22b4bdf6b4ae5b, type: 3}
-      textureNormal: {fileID: 0}
-      cubemap: {fileID: 0}
-      color:
-        serializedVersion: 2
-        key0: {r: 0.7490196, g: 0.12941177, b: 0, a: 0}
-        key1: {r: 178.90817, g: 50.581367, b: 60.884983, a: 1}
-        key2: {r: 9.066623, g: 1.3298934, b: 3.3050654, a: 1}
-        key3: {r: 0.33962262, g: 0, b: 0.09924035, a: 0}
-        key4: {r: 9.77039, g: 4.058607, b: 4.7463207, a: 0}
-        key5: {r: 12.844469, g: 10.154528, b: 8.069823, a: 0}
-        key6: {r: 25.688938, g: 2.8244383, b: 13.449706, a: 0}
-        key7: {r: 271.17407, g: 4.2592783, b: 2.839519, a: 0}
-        ctime0: 7903
-        ctime1: 13878
-        ctime2: 30069
-        ctime3: 32768
-        ctime4: 36430
-        ctime5: 44718
-        ctime6: 56090
-        ctime7: 65535
-        atime0: 0
-        atime1: 13493
-        atime2: 59945
-        atime3: 65535
-        atime4: 0
-        atime5: 0
-        atime6: 0
-        atime7: 0
-        m_Mode: 0
-        m_NumColorKeys: 8
-        m_NumAlphaKeys: 4
-      tiling: {x: 1, y: 1}
-      flipbookRowsAndColumns: {x: 1, y: 1}
-      flipbookAnimSpeed: 1
-      offset:
-      - percentage: 0
-        value: {x: -16.3, y: -120.8}
-      - percentage: 50
-        value: {x: 2.3, y: 83.8}
-      - percentage: 100
-        value: {x: 15.3, y: 190.2}
-      satelliteWidthHeight:
-      - percentage: 19.333334
-        value: {x: 6, y: 6}
-      - percentage: 19.333334
-        value: {x: 6, y: 6}
-      rotations_float: []
-      rotations_Vector3: []
-      speed_Vector3: {x: 0, y: 0, z: 0}
-      speed_Vector2: {x: 0, y: 0}
-      speed_float: 0
-      normalIntensity: 0
-      particleExpanded: 0
-      particleTiling: {x: 1, y: 1}
-      particlesOffset: {x: 0, y: 0}
-      particleRotation: []
-      particlesAmount: 1
-      particleMinSize: 1
-      particleMaxSize: 1
-      particlesHorizontalSpread: 1
-      particlesVerticalSpread: 1
-      particleMinFade: 1
-      particleMaxFade: 1
-      distortionExpanded: 0
-      distortIntensity: []
-      distortSize: []
-      distortSpeed: []
-      distortSharpness: []
-      movementTypeCubemap: 0
-      movementTypePlanar_Radial: 0
-      movementTypeSatellite: 1
-  - configType: 0
-    enabled: 1
-    expandedInEditor: 0
-    nameInEditor: 
-    layers:
-      slotID: 1
-      renderType: 0
-      layerType: 2
-      enabled: 0
-      nameInEditor: Big Sun
-      expandedInEditor: 0
-      timeSpan_start: 5
-      timeSpan_End: 20
-      fadingInTime: 0
-      fadingOutTime: 0
-      tintPercentage: 0
-      renderDistance: []
-      texture: {fileID: 2800000, guid: e115b258140375c48b22b4bdf6b4ae5b, type: 3}
-      textureNormal: {fileID: 0}
-      cubemap: {fileID: 0}
-      color:
-        serializedVersion: 2
-        key0: {r: 12.791912, g: 2.2067978, b: 0, a: 0}
-        key1: {r: 12.791909, g: 2.2101204, b: 0, a: 1}
-        key2: {r: 13.928809, g: 11.084707, b: 8.751084, a: 1}
-        key3: {r: 11.78941, g: 9.258698, b: 7.2835093, a: 0}
-        key4: {r: 9.232864, g: 3.8851292, b: 1.8727037, a: 0}
-        key5: {r: 160.52657, g: 34.605587, b: 0, a: 0}
-        key6: {r: 0, g: 0, b: 0, a: 0}
-        key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 0
-        ctime1: 13685
-        ctime2: 25636
-        ctime3: 38743
-        ctime4: 52621
-        ctime5: 65535
-        ctime6: 0
-        ctime7: 0
-        atime0: 0
-        atime1: 19661
-        atime2: 46838
-        atime3: 65535
-        atime4: 0
-        atime5: 0
-        atime6: 0
-        atime7: 0
-        m_Mode: 0
-        m_NumColorKeys: 6
-        m_NumAlphaKeys: 4
-      tiling: {x: 1, y: 1}
-      flipbookRowsAndColumns: {x: 1, y: 1}
-      flipbookAnimSpeed: 0
-      offset:
-      - percentage: 0
-        value: {x: 45, y: -12.9}
-      - percentage: 100
-        value: {x: 45, y: 178.46}
-      satelliteWidthHeight:
-      - percentage: 0
-        value: {x: 3, y: 3}
-      - percentage: 100
-        value: {x: 5, y: 5}
-      - percentage: 0
-        value: {x: 3, y: 3}
-      - percentage: 100
-        value: {x: 5, y: 5}
-      rotations_float: []
-      rotations_Vector3: []
-      speed_Vector3: {x: 0, y: 0, z: 0}
-      speed_Vector2: {x: 0, y: 0}
-      speed_float: 0
-      normalIntensity: 0
-      particleExpanded: 0
-      particleTiling: {x: 1, y: 1}
-      particlesOffset: {x: 0, y: 0}
-      particleRotation:
-      - percentage: 0
-        value: {x: 0, y: 0, z: 0}
-      - percentage: 0
-        value: {x: 0, y: 0, z: 0}
-      - percentage: 0
-        value: {x: 0, y: 0, z: 0}
-      particlesAmount: 1
-      particleMinSize: 1
-      particleMaxSize: 1
-      particlesHorizontalSpread: 1
-      particlesVerticalSpread: 1
-      particleMinFade: 1
-      particleMaxFade: 1
-      distortionExpanded: 0
-      distortIntensity: []
-      distortSize: []
-      distortSpeed: []
-      distortSharpness: []
-      movementTypeCubemap: 0
-      movementTypePlanar_Radial: 0
-      movementTypeSatellite: 1
-  - configType: 0
-    enabled: 1
-    expandedInEditor: 0
-    nameInEditor: 
-    layers:
-      slotID: 1
-      renderType: 1
-      layerType: 2
-      enabled: 0
-      nameInEditor: Moon
-      expandedInEditor: 0
-      timeSpan_start: 21
-      timeSpan_End: 2
-      fadingInTime: 1
-      fadingOutTime: 0.5
-      tintPercentage: 100
-      renderDistance: []
-      texture: {fileID: 2800000, guid: e115b258140375c48b22b4bdf6b4ae5b, type: 3}
-      textureNormal: {fileID: 0}
-      cubemap: {fileID: 0}
-      color:
-        serializedVersion: 2
-        key0: {r: 46.020054, g: 59.314735, b: 65.109856, a: 0}
-        key1: {r: 33.03661, g: 22.831585, b: 26.463882, a: 0.7058824}
-        key2: {r: 23.69832, g: 21.763763, b: 30.791695, a: 0}
-        key3: {r: 1.481145, g: 1.3602352, b: 1.9244809, a: 0}
-        key4: {r: 0, g: 0, b: 0, a: 0}
-        key5: {r: 0, g: 0, b: 0, a: 0}
-        key6: {r: 0, g: 0, b: 0, a: 0}
-        key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 8867
-        ctime1: 17733
-        ctime2: 32768
-        ctime3: 65535
-        ctime4: 0
-        ctime5: 0
-        ctime6: 0
-        ctime7: 0
-        atime0: 386
-        atime1: 31611
-        atime2: 65535
-        atime3: 0
-        atime4: 0
-        atime5: 0
-        atime6: 0
-        atime7: 0
-        m_Mode: 0
-        m_NumColorKeys: 4
-        m_NumAlphaKeys: 3
-      tiling: {x: 1, y: 1}
-      flipbookRowsAndColumns: {x: 0, y: 0}
-      flipbookAnimSpeed: 0
-      offset:
-      - percentage: 0
-        value: {x: -218.4, y: 23.3}
-      - percentage: 100
-        value: {x: -257.7, y: 50.5}
-      satelliteWidthHeight:
-      - percentage: 0
-        value: {x: 3, y: 3}
-      - percentage: 44
-        value: {x: 4, y: 4}
-      - percentage: 100
-        value: {x: 4, y: 4}
-      - percentage: 0
-        value: {x: 3, y: 3}
-      - percentage: 44
-        value: {x: 4, y: 4}
-      - percentage: 100
-        value: {x: 4, y: 4}
-      rotations_float: []
-      rotations_Vector3: []
-      speed_Vector3: {x: 0, y: 0, z: 0}
-      speed_Vector2: {x: 0, y: 0}
-      speed_float: 0
-      normalIntensity: 0
-      particleExpanded: 0
-      particleTiling: {x: 1, y: 1}
-      particlesOffset: {x: 0, y: 0}
-      particleRotation:
-      - percentage: 0
-        value: {x: 0, y: 0, z: 0}
-      - percentage: 0
-        value: {x: 0, y: 0, z: 0}
-      - percentage: 0
-        value: {x: 0, y: 0, z: 0}
-      particlesAmount: 1
-      particleMinSize: 1
-      particleMaxSize: 1
-      particlesHorizontalSpread: 1
-      particlesVerticalSpread: 1
-      particleMinFade: 1
-      particleMaxFade: 1
-      distortionExpanded: 0
-      distortIntensity: []
-      distortSize: []
-      distortSpeed: []
-      distortSharpness: []
-      movementTypeCubemap: 0
-      movementTypePlanar_Radial: 0
-      movementTypeSatellite: 1
-  - configType: 0
-    enabled: 1
-    expandedInEditor: 0
-    nameInEditor: 
-    layers:
-      slotID: 2
-      renderType: 0
-      layerType: 4
-      enabled: 0
-      nameInEditor: Far Clouds
-      expandedInEditor: 0
-      timeSpan_start: 0
-      timeSpan_End: 24
-      fadingInTime: 0
-      fadingOutTime: 0
-      tintPercentage: 100
-      renderDistance: []
-      texture: {fileID: 0}
-      textureNormal: {fileID: 0}
-      cubemap: {fileID: 8900000, guid: 0095a9bafa47e9048995bf8ca764aeee, type: 3}
-      color:
-        serializedVersion: 2
-        key0: {r: 0.5692789, g: 0.46715, b: 0.86142135, a: 0.61960787}
-        key1: {r: 0.8301887, g: 0.69191986, b: 0.6383055, a: 1}
-        key2: {r: 0.9622642, g: 0.9622642, b: 0.9622642, a: 1}
-        key3: {r: 1, g: 1, b: 1, a: 1}
-        key4: {r: 0.54901963, g: 0.4509804, b: 0.8784314, a: 0.61960787}
-        key5: {r: 0, g: 0, b: 0, a: 0}
-        key6: {r: 0, g: 0, b: 0, a: 0}
-        key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 0
-        ctime1: 14456
-        ctime2: 22166
-        ctime3: 45682
-        ctime4: 65535
-        ctime5: 0
-        ctime6: 0
-        ctime7: 0
-        atime0: 0
-        atime1: 12914
-        atime2: 32768
-        atime3: 50308
-        atime4: 65535
-        atime5: 0
-        atime6: 0
-        atime7: 0
-        m_Mode: 0
-        m_NumColorKeys: 5
-        m_NumAlphaKeys: 5
-      tiling: {x: 1, y: 1}
-      flipbookRowsAndColumns: {x: 1, y: 1}
-      flipbookAnimSpeed: 1
-      offset: []
-      satelliteWidthHeight: []
-      rotations_float: []
-      rotations_Vector3: []
-      speed_Vector3: {x: 0, y: 0.4, z: 0}
-      speed_Vector2: {x: 0, y: 0}
-      speed_float: 0
-      normalIntensity: 0
-      particleExpanded: 0
-      particleTiling: {x: 1, y: 1}
-      particlesOffset: {x: 0, y: 0}
-      particleRotation: []
-      particlesAmount: 1
-      particleMinSize: 1
-      particleMaxSize: 1
-      particlesHorizontalSpread: 1
-      particlesVerticalSpread: 1
-      particleMinFade: 1
-      particleMaxFade: 1
-      distortionExpanded: 0
-      distortIntensity: []
-      distortSize: []
-      distortSpeed: []
-      distortSharpness: []
-      movementTypeCubemap: 0
-      movementTypePlanar_Radial: 0
-      movementTypeSatellite: 0
-  - configType: 0
-    enabled: 1
-    expandedInEditor: 0
-    nameInEditor: 
-    layers:
-      slotID: 4
-      renderType: 0
-      layerType: 4
-      enabled: 0
-      nameInEditor: Mountains
-      expandedInEditor: 0
-      timeSpan_start: 0
-      timeSpan_End: 24
-      fadingInTime: 0
-      fadingOutTime: 0
-      tintPercentage: 0
-      renderDistance: []
-      texture: {fileID: 0}
-      textureNormal: {fileID: 0}
-      cubemap: {fileID: 8900000, guid: f61d7b727f05abf47bd40d677f08330d, type: 3}
-      color:
-        serializedVersion: 2
-        key0: {r: 0.17959554, g: 0.1709238, b: 0.21698111, a: 1}
-        key1: {r: 0.5471698, g: 0.5225976, b: 0.508455, a: 1}
-        key2: {r: 0.509434, g: 0.4085942, b: 0.39649343, a: 0}
-        key3: {r: 0.26415092, g: 0.22736128, b: 0.22303309, a: 0}
-        key4: {r: 0.18039216, g: 0.17254902, b: 0.21568628, a: 0}
-        key5: {r: 0, g: 0, b: 0, a: 0}
-        key6: {r: 0, g: 0, b: 0, a: 0}
-        key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 0
-        ctime1: 22745
-        ctime2: 45875
-        ctime3: 53970
-        ctime4: 65535
-        ctime5: 0
-        ctime6: 0
-        ctime7: 0
-        atime0: 0
-        atime1: 65535
-        atime2: 0
-        atime3: 0
-        atime4: 0
-        atime5: 0
-        atime6: 0
-        atime7: 0
-        m_Mode: 0
-        m_NumColorKeys: 5
-        m_NumAlphaKeys: 2
-      tiling: {x: 1, y: 1}
-      flipbookRowsAndColumns: {x: 1, y: 1}
-      flipbookAnimSpeed: 1
-      offset: []
-      satelliteWidthHeight: []
-      rotations_float: []
-      rotations_Vector3:
-      - percentage: 0
-        value: {x: -2.61, y: -17.32, z: 0}
-      speed_Vector3: {x: 0, y: 0, z: 0}
-      speed_Vector2: {x: 0, y: 0}
-      speed_float: 0
-      normalIntensity: 0
-      particleExpanded: 0
-      particleTiling: {x: 1, y: 1}
-      particlesOffset: {x: 0, y: 0}
-      particleRotation: []
-      particlesAmount: 1
-      particleMinSize: 1
-      particleMaxSize: 1
-      particlesHorizontalSpread: 1
-      particlesVerticalSpread: 1
-      particleMinFade: 1
-      particleMaxFade: 1
-      distortionExpanded: 0
-      distortIntensity: []
-      distortSize: []
-      distortSpeed: []
-      distortSharpness: []
-      movementTypeCubemap: 0
-      movementTypePlanar_Radial: 0
-      movementTypeSatellite: 0
