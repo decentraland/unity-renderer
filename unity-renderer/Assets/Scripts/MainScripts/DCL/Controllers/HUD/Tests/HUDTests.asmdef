@@ -16,14 +16,17 @@
         "GUID:fbcc413e192ef9048811d47ab0aca0c0",
         "GUID:ba9b721ce33233c4da7ff4ef30d25b59",
         "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
-        "GUID:eb95615676ca6984687c5ae7774d6309"
+        "GUID:eb95615676ca6984687c5ae7774d6309",
+      "GUID:ee6523961ef177343ad763fcd55c7c46"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+      "NSubstitute.dll",
+      "System.Threading.Tasks.Extensions.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

@@ -31,7 +31,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestCreate()
         {
-            string entityId = "e1";
+            long entityId = 1;
 
             TestUtils.CreateSceneEntity(scene, entityId);
 
@@ -104,7 +104,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
-            string entityId = "1";
+            long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
 
             // 1. Create component with non-default configs

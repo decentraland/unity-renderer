@@ -249,7 +249,7 @@ namespace DCL.ExperiencesViewer.Tests
         public void ClickOnStartStopPEXToggleCorrectly(bool isOn)
         {
             // Arrange
-            experienceRowComponent.startStopPEXToggle.SetIsOnWithoutNotify(!isOn);
+            experienceRowComponent.startStopPEXToggle.toggle.SetIsOnWithoutNotify(!isOn);
             string testId = "TestId";
             experienceRowComponent.model.id = testId;
             bool startStopPEXToggleClicked = false;
@@ -263,7 +263,7 @@ namespace DCL.ExperiencesViewer.Tests
             };
 
             // Act
-            experienceRowComponent.startStopPEXToggle.onValueChanged.Invoke(isOn);
+            experienceRowComponent.startStopPEXToggle.toggle.onValueChanged.Invoke(isOn);
 
             // Assert
             Assert.IsTrue(startStopPEXToggleClicked);

@@ -3,24 +3,25 @@ using DCL;
 using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine;
+using NSubstitute;
 using UnityEngine.TestTools;
 
 namespace Tests
 {
     public class HUDControllerShould : IntegrationTestSuite_Legacy
     {
-        private IHUDController hudController = null;
+        private IHUDController hudController;
         private FriendsController friendsController;
         private ChatController chatController;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-
+            
             friendsController = TestUtils.CreateComponentWithGameObject<FriendsController>("FriendsController");
             chatController = TestUtils.CreateComponentWithGameObject<ChatController>("ChatController");
-            hudController = Environment.i.hud.controller;
-            hudController.Cleanup();
+            hudController = new HUDController(new HUDFactory());
+            hudController.Initialize();
             yield return null;
         }
 
@@ -28,8 +29,15 @@ namespace Tests
         {
             Object.Destroy(chatController.gameObject);
             Object.Destroy(friendsController.gameObject);
-            hudController.Cleanup();
+            hudController.Dispose();
             yield return base.TearDown();
+        }
+
+        protected override ServiceLocator InitializeServiceLocator()
+        {
+            var serviceLocator = base.InitializeServiceLocator();
+            serviceLocator.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+            return serviceLocator;
         }
 
         [UnityTest]

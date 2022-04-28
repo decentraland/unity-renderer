@@ -26,7 +26,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new NotificationHUDController();
                 break;
             case HUDElementID.AVATAR_EDITOR:
-                hudElement = new AvatarEditorHUDController();
+                hudElement = new AvatarEditorHUDController(DataStore.i.featureFlags);
                 break;
             case HUDElementID.SETTINGS_PANEL:
                 hudElement = new SettingsPanelHUDController();
