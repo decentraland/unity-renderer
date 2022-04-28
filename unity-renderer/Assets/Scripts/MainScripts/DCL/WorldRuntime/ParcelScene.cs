@@ -12,12 +12,6 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene
     {
-        public const long CONST_SCENE_ROOT_ENTITY = 0;
-        public const long CONST_AVATAR_ENTITY_REFERENCE = 1;
-        public const long CONST_AVATAR_POSITION_REFERENCE = 2;
-        public const long CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 3;
-        public const long CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 4;
-        
         public Dictionary<long, IDCLEntity> entities { get; private set; } = new Dictionary<long, IDCLEntity>();
         public IECSComponentsManagerLegacy componentsManagerLegacy { get; private set; }
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
@@ -99,32 +93,6 @@ namespace DCL.Controllers
             metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
-        }
-        
-        public static long EntityFromLegacyEntityString(string entityId)
-        {
-            switch (entityId)
-            {
-                case "0":
-                    return CONST_SCENE_ROOT_ENTITY ;
-                case "FirstPersonCameraEntityReference":
-                    return CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE;
-                case "AvatarEntityReference":
-                    return CONST_AVATAR_ENTITY_REFERENCE;
-                case "AvatarPositionEntityReference":
-                    return CONST_AVATAR_POSITION_REFERENCE;
-                case "PlayerEntityReference":
-                    return CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE;
-            }
-
-            long entityIdLong = entityId.GetHashCode() << 9;
-
-            if (!WebInterface.entityIdToLegacyId.ContainsKey(entityIdLong))
-            {
-                WebInterface.entityIdToLegacyId[entityIdLong] = entityId;
-            }
-
-            return entityIdLong;
         }
 
         void OnWorldReposition(Vector3 current, Vector3 previous)
@@ -436,7 +404,8 @@ namespace DCL.Controllers
             Transform firstPersonCameraTransform = worldData.fpsTransform.Get();
 
             // CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE is for compatibility purposes
-            if (parentId == CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE || parentId == CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE)
+            if (parentId == (long) SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE ||
+                parentId == (long) SpecialEntityId.THIRD_PERSON_CAMERA_ENTITY_REFERENCE)
             {
 
                 if (firstPersonCameraTransform == null)
@@ -455,9 +424,9 @@ namespace DCL.Controllers
                 return;
             }
 
-            if (parentId == CONST_AVATAR_ENTITY_REFERENCE ||
-                parentId ==
-                CONST_AVATAR_POSITION_REFERENCE) // AvatarPositionEntityReference is for compatibility purposes
+            if (parentId == (long) SpecialEntityId.AVATAR_ENTITY_REFERENCE ||
+                parentId == (long) SpecialEntityId
+                    .AVATAR_POSITION_REFERENCE) // AvatarPositionEntityReference is for compatibility purposes
             {
                 if (avatarTransform == null)
                 {
@@ -482,7 +451,7 @@ namespace DCL.Controllers
                     Environment.i.world.sceneBoundsChecker.RemovePersistent(me);
             }
 
-            if (parentId == CONST_SCENE_ROOT_ENTITY)
+            if (parentId == (long) SpecialEntityId.SCENE_ROOT_ENTITY)
             {
                 // The entity will be child of the scene directly
                 me.SetParent(null);

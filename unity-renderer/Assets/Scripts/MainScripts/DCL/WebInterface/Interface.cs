@@ -921,11 +921,12 @@ namespace DCL.Interface
             else
                 pointerEventPayload.hit = null;
         }
-        
-        public static void ReportGlobalPointerDownEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, long entityId = 0, string meshName = null, bool isHitInfoValid = false)
+
+        public static void ReportGlobalPointerDownEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal,
+            float distance, string sceneId, string entityId = "0", string meshName = null, bool isHitInfoValid = false)
         {
             SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId,
-                entityId != 0 ? entityIdToLegacyId[entityId] : "0", meshName, ray, point, normal, distance,
+                entityId, meshName, ray, point, normal, distance,
                 isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
 
@@ -935,10 +936,11 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
         }
 
-        public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, long entityId = 0, string meshName = null, bool isHitInfoValid = false)
+        public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal,
+            float distance, string sceneId, string entityId = "0", string meshName = null, bool isHitInfoValid = false)
         {
             SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId,
-                entityId != 0 ? entityIdToLegacyId[entityId] : "0", meshName, ray, point, normal, distance,
+                entityId, meshName, ray, point, normal, distance,
                 isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.UP;
 
@@ -947,7 +949,8 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
         }
 
-        public static void ReportOnPointerDownEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, long entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
+        public static void ReportOnPointerDownEvent(ACTION_BUTTON buttonId, string sceneId, string uuid,
+            string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
         {
             if (string.IsNullOrEmpty(uuid))
             {
@@ -955,14 +958,15 @@ namespace DCL.Interface
             }
 
             onPointerDownEvent.uuid = uuid;
-            SetPointerEventPayload(onPointerEventPayload, buttonId, entityIdToLegacyId[entityId], meshName, ray, point,
+            SetPointerEventPayload(onPointerEventPayload, buttonId, entityId, meshName, ray, point,
                 normal, distance, isHitInfoValid: true);
             onPointerDownEvent.payload = onPointerEventPayload;
 
             SendSceneEvent(sceneId, "uuidEvent", onPointerDownEvent);
         }
 
-        public static void ReportOnPointerUpEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, long entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
+        public static void ReportOnPointerUpEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId,
+            string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
         {
             if (string.IsNullOrEmpty(uuid))
             {
@@ -970,7 +974,7 @@ namespace DCL.Interface
             }
 
             onPointerUpEvent.uuid = uuid;
-            SetPointerEventPayload(onPointerEventPayload, buttonId, entityIdToLegacyId[entityId], meshName, ray, point,
+            SetPointerEventPayload(onPointerEventPayload, buttonId, entityId, meshName, ray, point,
                 normal, distance, isHitInfoValid: true);
             onPointerUpEvent.payload = onPointerEventPayload;
 
