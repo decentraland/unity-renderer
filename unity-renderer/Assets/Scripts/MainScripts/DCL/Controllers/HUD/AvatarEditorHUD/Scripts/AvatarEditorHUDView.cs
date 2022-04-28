@@ -69,19 +69,19 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     internal ColorSelector skinColorSelector;
 
     [SerializeField]
-    internal ColorPickerView skinColorPicker;
+    internal ColorPickerPanel skinColorPicker;
 
     [SerializeField]
     internal ColorSelector eyeColorSelector;
 
     [SerializeField]
-    internal ColorPickerView eyeColorPicker;
+    internal ColorPickerPanel eyeColorPicker;
 
     [SerializeField]
     internal ColorSelector hairColorSelector;
 
     [SerializeField]
-    internal ColorPickerView hairColorPicker;
+    internal ColorPickerPanel hairColorPicker;
 
     [SerializeField]
     internal GameObject characterPreviewPrefab;

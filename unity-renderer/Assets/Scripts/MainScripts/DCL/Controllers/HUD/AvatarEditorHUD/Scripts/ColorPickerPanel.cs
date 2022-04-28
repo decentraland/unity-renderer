@@ -6,7 +6,7 @@ using System;
 using UnityEngine.EventSystems;
 using DCL;
 
-public class ColorPickerView : MonoBehaviour
+public class ColorPickerPanel : MonoBehaviour
 {
 
     private const float BUTTON_INCREMENT = 0.1f;
