@@ -18,6 +18,7 @@ using UnityEngine.TestTools;
 public class BIWCommonShould : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override List<GameObject> SetUp_LegacySystems()
     {
@@ -30,7 +31,16 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     [Test]
@@ -78,7 +88,7 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
     [Test]
     public void BuilderInWorldEntityComponents()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         BIWEntity biwEntity = new BIWEntity();
@@ -188,10 +198,5 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
         data.id = "scene-for-size-test";
         scene.SetData(data);
         return scene;
-    }
-
-    protected override IEnumerator TearDown()
-    {
-        yield return base.TearDown();
     }
 }

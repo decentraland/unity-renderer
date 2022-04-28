@@ -11,7 +11,13 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene
     {
-        public Dictionary<string, IDCLEntity> entities { get; private set; } = new Dictionary<string, IDCLEntity>();
+        public const long CONST_SCENE_ROOT_ENTITY = 0;
+        public const long CONST_AVATAR_ENTITY_REFERENCE = 1;
+        public const long CONST_AVATAR_POSITION_REFERENCE = 2;
+        public const long CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 3;
+        public const long CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 4;
+        
+        public Dictionary<long, IDCLEntity> entities { get; private set; } = new Dictionary<long, IDCLEntity>();
         public IECSComponentsManagerLegacy componentsManagerLegacy { get; private set; }
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
 
@@ -83,10 +89,8 @@ namespace DCL.Controllers
                 parcels.Add(sceneData.parcels[i]);
             }
 
-            if (DCLCharacterController.i != null)
-            {
-                gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
-            }
+            gameObject.transform.position =
+                PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
 
             DataStore.i.sceneWorldObjects.AddScene(sceneData.id);
 
@@ -94,6 +98,25 @@ namespace DCL.Controllers
             metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
+        }
+        
+        public static long EntityFromLegacyEntityString(string entityId)
+        {
+            switch (entityId)
+            {
+                case "0":
+                    return CONST_SCENE_ROOT_ENTITY ;
+                case "FirstPersonCameraEntityReference":
+                    return CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE;
+                case "AvatarEntityReference":
+                    return CONST_AVATAR_ENTITY_REFERENCE;
+                case "AvatarPositionEntityReference":
+                    return CONST_AVATAR_POSITION_REFERENCE;
+                case "PlayerEntityReference":
+                    return CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE;
+            }
+
+            return entityId.GetHashCode() << 9;
         }
 
         void OnWorldReposition(Vector3 current, Vector3 previous)
@@ -244,9 +267,10 @@ namespace DCL.Controllers
             return false;
         }
 
+        public IDCLEntity GetEntityById(string entityId) { throw new System.NotImplementedException(); }
         public Transform GetSceneTransform() { return transform; }
 
-        public IDCLEntity CreateEntity(string id)
+        public IDCLEntity CreateEntity(long id)
         {
             if (entities.ContainsKey(id))
             {
@@ -285,7 +309,7 @@ namespace DCL.Controllers
             return newEntity;
         }
 
-        public void RemoveEntity(string id, bool removeImmediatelyFromEntitiesList = true)
+        public void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true)
         {
             if (entities.ContainsKey(id))
             {
@@ -384,7 +408,7 @@ namespace DCL.Controllers
 
         private void RemoveAllEntitiesImmediate() { RemoveAllEntities(instant: true); }
 
-        public void SetEntityParent(string entityId, string parentId)
+        public void SetEntityParent(long entityId, long parentId)
         {
             if (entityId == parentId)
             {
@@ -403,14 +427,16 @@ namespace DCL.Controllers
             Transform avatarTransform = worldData.avatarTransform.Get();
             Transform firstPersonCameraTransform = worldData.fpsTransform.Get();
 
-            if (parentId == "FirstPersonCameraEntityReference" ||
-                parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+            // CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE is for compatibility purposes
+            if (parentId == CONST_FIRST_PERSON_CAMERA_ENTITY_REFERENCE || parentId == CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE)
             {
+
                 if (firstPersonCameraTransform == null)
                 {
                     Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.id);
                     return;
                 }
+
 
                 // In this case, the entity will attached to the first person camera
                 // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
@@ -421,9 +447,9 @@ namespace DCL.Controllers
                 return;
             }
 
-            if (parentId == "AvatarEntityReference" ||
+            if (parentId == CONST_AVATAR_ENTITY_REFERENCE ||
                 parentId ==
-                "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+                CONST_AVATAR_POSITION_REFERENCE) // AvatarPositionEntityReference is for compatibility purposes
             {
                 if (avatarTransform == null)
                 {
@@ -448,7 +474,7 @@ namespace DCL.Controllers
                     Environment.i.world.sceneBoundsChecker.RemovePersistent(me);
             }
 
-            if (parentId == "0")
+            if (parentId == CONST_SCENE_ROOT_ENTITY)
             {
                 // The entity will be child of the scene directly
                 me.SetParent(null);
@@ -472,14 +498,8 @@ namespace DCL.Controllers
                 metricsCounter.SendEvent();
         }
 
-        public IDCLEntity GetEntityById(string entityId)
+        public IDCLEntity GetEntityById(long entityId)
         {
-            if (string.IsNullOrEmpty(entityId))
-            {
-                Debug.LogError("Null or empty entityId");
-                return null;
-            }
-
             if (!entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return null;
@@ -549,7 +569,7 @@ namespace DCL.Controllers
 
                             foreach (var entity in component.GetAttachedEntities())
                             {
-                                var loader = LoadableShape.GetLoaderForEntity(entity);
+                                var loader = Environment.i.world.state.GetLoaderForEntity(entity);
 
                                 string loadInfo = "No loader";
 

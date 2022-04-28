@@ -9,7 +9,7 @@ public interface IBIWCreatorController : IBIWController
     void CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false);
     BIWEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false, Action<IDCLEntity> onFloorLoadedAction = null);
     void CreateErrorOnEntity(BIWEntity entity);
-    void RemoveLoadingObjectInmediate(string entityId);
+    void RemoveLoadingObjectInmediate(long entityId);
     bool IsAnyErrorOnEntities();
     void CreateLoadingObject(BIWEntity entity);
     void CleanUp();

@@ -6,12 +6,12 @@ namespace DCL
     {
         public class SceneData
         {
-            public readonly BaseHashSet<string> ignoredOwners = new BaseHashSet<string>();
+            public readonly BaseHashSet<long> ignoredOwners = new BaseHashSet<long>();
 
             public readonly BaseRefCounter<Mesh> meshes = new BaseRefCounter<Mesh>();
             public readonly BaseRefCounter<Material> materials = new BaseRefCounter<Material>();
             public readonly BaseRefCounter<Texture> textures = new BaseRefCounter<Texture>();
-            public readonly BaseHashSet<string> owners = new BaseHashSet<string>();
+            public readonly BaseHashSet<long> owners = new BaseHashSet<long>();
             public readonly BaseHashSet<Renderer> renderers = new BaseHashSet<Renderer>();
             public readonly BaseHashSet<AudioClip> audioClips = new BaseHashSet<AudioClip>();
             public readonly BaseRefCounter<AnimationClip> animationClips = new BaseRefCounter<AnimationClip>();
