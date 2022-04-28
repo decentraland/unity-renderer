@@ -10,6 +10,8 @@ namespace DCL.Components
     public abstract class BaseDisposable : IDelayedComponent, ISharedComponent
     {
         public virtual string componentName => GetType().Name;
+        public event Action<IDCLEntity> OnAttach;
+        public event Action<IDCLEntity> OnDetach;
         public string id { get; private set; }
         public IParcelScene scene { get; private set; }
 
@@ -26,9 +28,7 @@ namespace DCL.Components
         public Coroutine routine => updateHandler.routine;
         public bool isRoutineRunning => updateHandler.isRoutineRunning;
 
-        public event System.Action<IDCLEntity> OnAttach;
-        public event System.Action<IDCLEntity> OnDetach;
-        public event System.Action<BaseDisposable> OnDispose;
+        public event Action<BaseDisposable> OnDispose;
         public event Action<BaseDisposable> OnAppliedChanges;
 
         public HashSet<IDCLEntity> attachedEntities = new HashSet<IDCLEntity>();
@@ -57,7 +57,7 @@ namespace DCL.Components
             }
 
             System.Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
-            entity.AddSharedComponent(thisType, this);
+            scene.componentsManagerLegacy.AddSharedComponent(entity, thisType, this);
 
             attachedEntities.Add(entity);
 
@@ -76,7 +76,7 @@ namespace DCL.Components
             entity.OnRemoved -= OnEntityRemoved;
 
             System.Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
-            entity.RemoveSharedComponent(thisType, false);
+            scene.componentsManagerLegacy.RemoveSharedComponent(entity, thisType, false);
 
             attachedEntities.Remove(entity);
 

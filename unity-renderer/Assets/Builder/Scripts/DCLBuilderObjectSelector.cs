@@ -28,7 +28,7 @@ namespace Builder
 
         public Transform selectedEntitiesParent { private set; get; }
 
-        private Dictionary<string, DCLBuilderEntity> entities = new Dictionary<string, DCLBuilderEntity>();
+        private Dictionary<long, DCLBuilderEntity> entities = new Dictionary<long, DCLBuilderEntity>();
         private List<EditableEntity> selectedEntities = new List<EditableEntity>();
         private EntityPressedInfo lastPressedEntityInfo = new EntityPressedInfo();
         private bool isDirty = false;
@@ -214,7 +214,7 @@ namespace Builder
 
         private void OnSceneChanged(ParcelScene scene) { currentScene = scene; }
 
-        private void OnBuilderSelectEntity(string[] entitiesId)
+        private void OnBuilderSelectEntity(long[] entitiesId)
         {
             List<EditableEntity> entitiesToDeselect = new List<EditableEntity>(selectedEntities);
 

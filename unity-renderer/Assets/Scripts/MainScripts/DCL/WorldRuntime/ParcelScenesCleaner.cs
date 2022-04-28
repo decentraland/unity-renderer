@@ -92,7 +92,7 @@ namespace DCL
             while (disposableComponentsMarkedForCleanup.Count > 0)
             {
                 MarkedSharedComponentInfo markedSharedComponentInfo = disposableComponentsMarkedForCleanup.Dequeue();
-                markedSharedComponentInfo.scene.SharedComponentDispose(markedSharedComponentInfo.componentId);
+                markedSharedComponentInfo.scene.componentsManagerLegacy.SceneSharedComponentDispose(markedSharedComponentInfo.componentId);
 
                 if (DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET && !immediate)
                 {

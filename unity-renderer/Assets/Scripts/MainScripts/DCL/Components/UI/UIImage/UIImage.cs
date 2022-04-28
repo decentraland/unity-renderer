@@ -31,7 +31,10 @@ namespace DCL.Components
 
         DCLTexture dclTexture = null;
 
-        public UIImage() { model = new Model(); }
+        public UIImage()
+        {
+            model = new Model();
+        }
 
         public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
 

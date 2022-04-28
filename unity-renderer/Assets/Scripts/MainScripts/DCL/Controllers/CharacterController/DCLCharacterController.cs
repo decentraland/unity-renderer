@@ -8,6 +8,8 @@ public class DCLCharacterController : MonoBehaviour
 {
     public static DCLCharacterController i { get; private set; }
 
+    private const float CONTROLLER_DRIFT_OFFSET = 0.15f;
+
     [Header("Movement")]
     public float minimumYPosition = 1f;
 
@@ -76,15 +78,8 @@ public class DCLCharacterController : MonoBehaviour
     public static System.Action<DCLCharacterPosition> OnPositionSet;
     public event System.Action<float> OnUpdateFinish;
 
-    // Will allow the game objects to be set, and create the DecentralandEntity manually during the Awake
-    public DCL.Models.IDCLEntity avatarReference { get; private set; }
-    public DCL.Models.IDCLEntity firstPersonCameraReference { get; private set; }
-
-    [SerializeField]
-    private GameObject avatarGameObject;
-
-    [SerializeField]
-    private GameObject firstPersonCameraGameObject;
+    public GameObject avatarGameObject;
+    public GameObject firstPersonCameraGameObject;
 
     [SerializeField]
     private InputAction_Measurable characterYAxis;
@@ -97,11 +92,12 @@ public class DCLCharacterController : MonoBehaviour
 
     [System.NonSerialized]
     public float movingPlatformSpeed;
+    private CollisionFlags lastCharacterControllerCollision;
 
     public event System.Action OnJump;
     public event System.Action OnHitGround;
     public event System.Action<float> OnMoved;
-
+    
     void Awake()
     {
         if (i != null)
@@ -138,8 +134,9 @@ public class DCLCharacterController : MonoBehaviour
             throw new System.Exception("Both the avatar and first person camera game objects must be set.");
         }
 
-        avatarReference = new DCL.Models.DecentralandEntity { gameObject = avatarGameObject };
-        firstPersonCameraReference = new DCL.Models.DecentralandEntity { gameObject = firstPersonCameraGameObject };
+        var worldData = DataStore.i.Get<DataStore_World>();
+        worldData.avatarTransform.Set(avatarGameObject.transform);
+        worldData.fpsTransform.Set(firstPersonCameraGameObject.transform);
     }
 
     private void SubscribeToInput()
@@ -299,14 +296,14 @@ public class DCLCharacterController : MonoBehaviour
 
                 Vector3 forwardTarget = Vector3.zero;
 
-                if (characterYAxis.GetValue() > 0)
+                if (characterYAxis.GetValue() > CONTROLLER_DRIFT_OFFSET)
                     forwardTarget += xzPlaneForward;
-                if (characterYAxis.GetValue() < 0)
+                if (characterYAxis.GetValue() < -CONTROLLER_DRIFT_OFFSET)
                     forwardTarget -= xzPlaneForward;
 
-                if (characterXAxis.GetValue() > 0)
+                if (characterXAxis.GetValue() > CONTROLLER_DRIFT_OFFSET)
                     forwardTarget += xzPlaneRight;
-                if (characterXAxis.GetValue() < 0)
+                if (characterXAxis.GetValue() < -CONTROLLER_DRIFT_OFFSET)
                     forwardTarget -= xzPlaneRight;
 
 
@@ -339,7 +336,7 @@ public class DCLCharacterController : MonoBehaviour
             //NOTE(Brian): Transform has to be in sync before the Move call, otherwise this call
             //             will reset the character controller to its previous position.
             Environment.i.platform.physicsSyncController?.Sync();
-            characterController.Move(velocity * Time.deltaTime);
+            lastCharacterControllerCollision = characterController.Move(velocity * Time.deltaTime);
         }
 
         SetPosition(PositionUtils.UnityToWorldPosition(transform.position));
@@ -455,7 +452,7 @@ public class DCLCharacterController : MonoBehaviour
             groundLastRotation = groundTransform.rotation;
         }
 
-        isGrounded = groundTransform != null && groundTransform.gameObject.activeInHierarchy;
+        isGrounded = IsLastCollisionGround() || groundTransform != null && groundTransform.gameObject.activeInHierarchy;
     }
 
     public Transform CastGroundCheckingRays()
@@ -472,14 +469,20 @@ public class DCLCharacterController : MonoBehaviour
         return null;
     }
 
-    public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo) { return CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo); }
+    public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo)
+    {
+        if (CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo))
+            return true;
+
+        return IsLastCollisionGround();
+    }
 
     public bool CastGroundCheckingRay(float extraDistance, out RaycastHit hitInfo)
     {
         Bounds bounds = collider.bounds;
         float rayMagnitude = (bounds.extents.y + extraDistance);
         bool test = CastGroundCheckingRay(transform.position, out hitInfo, rayMagnitude, groundLayers);
-        return test;
+        return IsLastCollisionGround() || test;
     }
 
     // We secuentially cast rays in 4 directions (only if the previous one didn't hit anything)
@@ -551,4 +554,9 @@ public class DCLCharacterController : MonoBehaviour
     public void ResumeGravity() { gravity = originalGravity; }
 
     void OnRenderingStateChanged(bool isEnable, bool prevState) { SetEnabled(isEnable); }
+
+    bool IsLastCollisionGround()
+    {
+        return (lastCharacterControllerCollision & CollisionFlags.Below) != 0;
+    }
 }

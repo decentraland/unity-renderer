@@ -17,6 +17,7 @@ public class IsolatedBuilderConfig
 {
     public string sceneId;
     public bool recreateScene;
+    public bool killPortableExperiences;
     public ILand land;
 }
 

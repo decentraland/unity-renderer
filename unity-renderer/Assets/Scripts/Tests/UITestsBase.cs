@@ -10,6 +10,8 @@ namespace Tests
     public class UITestsBase : IntegrationTestSuite_Legacy
     {
         protected ParcelScene scene;
+        private UIComponentsPlugin uiComponentsPlugin;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
@@ -22,10 +24,19 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene();
+            uiComponentsPlugin = new UIComponentsPlugin();
+            coreComponentsPlugin = new CoreComponentsPlugin();
+            scene = TestUtils.CreateTestScene() as ParcelScene;
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
             DCLCharacterController.i.PauseGravity();
             TestUtils.SetCharacterPosition(new Vector3(8f, 0f, 8f));
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            uiComponentsPlugin.Dispose();
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         protected Vector2 CalculateAlignedAnchoredPosition(Rect parentRect, Rect elementRect, string vAlign = "center", string hAlign = "center")
