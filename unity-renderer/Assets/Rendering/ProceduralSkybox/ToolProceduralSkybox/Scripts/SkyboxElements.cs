@@ -11,7 +11,7 @@ namespace DCL.Skybox
         public bool domeInUse;
     }
 
-    public class SkyboxGameobjectsPool
+    public class SkyboxElements
     {
         const float domeDefaultSize = 50;
         const string domeResourcesPath = "SkyboxPrefabs/Dome";
@@ -23,13 +23,8 @@ namespace DCL.Skybox
         Queue<DomeReferences> domeObjects = new Queue<DomeReferences>();
         Queue<DomeReferences> activeDomeObjects = new Queue<DomeReferences>();
 
-        private SkyboxConfiguration selectedConfiguration;
-        private int numberOf3DObjects;
-
         public void Initialize3DObjects(SkyboxConfiguration configuration)
         {
-            selectedConfiguration = configuration;
-
             if (skyboxElements == null)
             {
                 skyboxElements = GameObject.Find("Skybox Elements");
@@ -37,7 +32,6 @@ namespace DCL.Skybox
                 // If Skybox element doesn't exsist make new object else find dome objects 
                 if (skyboxElements == null)
                 {
-                    Debug.Log("Making Skybox elements");
                     skyboxElements = new GameObject("Skybox Elements");
                     skyboxElements.layer = LayerMask.NameToLayer("Skybox");
                     domeElements = new GameObject("Dome Elements");
@@ -46,7 +40,6 @@ namespace DCL.Skybox
                 }
                 else
                 {
-                    Debug.Log("Fetching Skybox elements");
                     domeElements = skyboxElements.transform.Find("Dome Elements").gameObject;
                     for (int i = 0; i < domeElements.transform.childCount; i++)
                     {
@@ -64,7 +57,6 @@ namespace DCL.Skybox
 
         public void ResetObjects()
         {
-            numberOf3DObjects = 0;
             while (activeDomeObjects.Count > 0)
             {
                 DomeReferences dome = activeDomeObjects.Dequeue();
@@ -88,11 +80,9 @@ namespace DCL.Skybox
             }
 
             dome.domeGO.SetActive(true);
-            // Resize dome object
-            //dome.domeGO.transform.localScale = dome.domeGO.transform.localScale + Vector3.one * numberOf3DObjects;
+
             // Add to active objects
             activeDomeObjects.Enqueue(dome);
-            numberOf3DObjects++;
             return dome;
         }
 

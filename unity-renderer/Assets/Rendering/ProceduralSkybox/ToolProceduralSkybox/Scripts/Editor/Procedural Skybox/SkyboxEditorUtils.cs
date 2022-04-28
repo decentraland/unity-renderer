@@ -30,8 +30,7 @@ namespace DCL.Skybox
     {
         public static float GetNormalizedDayTime(float timeOfTheDay)
         {
-            float tTime = 0;
-            tTime = timeOfTheDay / 24;
+            float tTime = timeOfTheDay / 24;
             tTime = Mathf.Clamp(tTime, 0, 1);
             return tTime;
         }

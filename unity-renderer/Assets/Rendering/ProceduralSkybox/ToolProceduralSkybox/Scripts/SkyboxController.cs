@@ -40,7 +40,7 @@ namespace DCL.Skybox
         private bool probeParented = false;
         private float reflectionUpdateTime = 1;                                 // In Mins
         private ReflectionProbeRuntime runtimeReflectionObj;
-        private SkyboxGameobjectsPool skyboxObjects;
+        private SkyboxElements skyboxObjects;
         private List<DomeReferences> domeReferences;
 
         // Timer sync
@@ -143,7 +143,6 @@ namespace DCL.Skybox
 
                 RenderSettings.defaultReflectionMode = UnityEngine.Rendering.DefaultReflectionMode.Skybox;
                 RenderSettings.customReflection = null;
-                Debug.Log("Procedural Skybox :: Reflection disabled from server: " + DataStore.i.skyboxConfig.disableReflection.Get());
                 return;
             }
 
@@ -318,10 +317,9 @@ namespace DCL.Skybox
             GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
 
             // Initialize 3D objects
-            //Init3DSetup();
             if (skyboxObjects == null)
             {
-                skyboxObjects = new SkyboxGameobjectsPool();
+                skyboxObjects = new SkyboxElements();
                 skyboxObjects.Initialize3DObjects(configuration);
                 domeReferences = skyboxObjects.GetOrderedGameobjectList(configuration.additional3Dconfig);
             }
