@@ -7,12 +7,15 @@ public class FriendsController_Mock : IFriendsController
     public event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
+    public event Action OnNotInitialized;
 
     private readonly Dictionary<string, FriendsController.UserStatus> friends = new Dictionary<string, FriendsController.UserStatus>();
 
     public int friendCount => friends.Count;
 
     public bool isInitialized => true;
+
+    public bool hasInitializationFailed => false;
 
     public Dictionary<string, FriendsController.UserStatus> GetFriends() { return friends; }
     
@@ -75,4 +78,9 @@ public class FriendsController_Mock : IFriendsController
     public void RaiseOnFriendNotFound(string id) { OnFriendNotFound?.Invoke(id); }
 
     public void AddFriend(FriendsController.UserStatus newFriend) { friends.Add(newFriend.userId, newFriend); }
+
+    public void RetryInitialization()
+    {
+        
+    }
 }

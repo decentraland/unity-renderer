@@ -18,6 +18,9 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal VoiceChatButton voiceChatButton;
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
+    [SerializeField] internal GameObject friendsLoadingSpinner;
+    [SerializeField] internal GameObject friendsFailedMark;
+    [SerializeField] internal FriendsInitializationRetryTooltipComponentView friendsRetryTooltip;
     [SerializeField] internal TaskbarButton emotesButton;
 
     [SerializeField] internal GameObject experiencesContainer;
@@ -37,6 +40,7 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action OnChatToggleOff;
     public event System.Action OnFriendsToggleOn;
     public event System.Action OnFriendsToggleOff;
+    public event System.Action OnFriendsInitializationRetry;
     public event System.Action OnEmotesToggleOn;
     public event System.Action OnEmotesToggleOff;
     public event System.Action OnExperiencesToggleOn;
@@ -82,6 +86,9 @@ public class TaskbarHUDView : MonoBehaviour
 
         friendsButton.OnToggleOn += OnWindowToggleOn;
         friendsButton.OnToggleOff += OnWindowToggleOff;
+
+        friendsRetryTooltip.OnClose += OnFriendsInitializationTooltipClosed;
+        friendsRetryTooltip.OnRetry += OnFriendsInitializationRetried;
 
         emotesButton.OnToggleOn += OnWindowToggleOn;
         emotesButton.OnToggleOff += OnWindowToggleOff;
@@ -169,6 +176,12 @@ public class TaskbarHUDView : MonoBehaviour
             friendsButton.OnToggleOff -= OnWindowToggleOff;
         }
 
+        if (friendsRetryTooltip != null)
+        {
+            friendsRetryTooltip.OnClose -= OnFriendsInitializationTooltipClosed;
+            friendsRetryTooltip.OnRetry -= OnFriendsInitializationRetried;
+        }
+
         if (emotesButton != null)
         {
             emotesButton.OnToggleOn -= OnWindowToggleOn;
@@ -181,4 +194,68 @@ public class TaskbarHUDView : MonoBehaviour
             experiencesButton.OnToggleOff -= OnWindowToggleOff;
         }
     }
+
+    public void SetFiendsAsLoading(bool isLoading)
+    {
+        friendsLoadingSpinner.gameObject.SetActive(isLoading);
+
+        friendsButton.OnToggleOn -= OnWindowToggleOn;
+        friendsButton.OnToggleOff -= OnWindowToggleOff;
+
+        if (!isLoading)
+        {
+            friendsButton.OnToggleOn += OnWindowToggleOn;
+            friendsButton.OnToggleOff += OnWindowToggleOff;
+        }
+        else
+        {
+            friendsButton.SetToggleState(false);
+        }
+
+        friendsButton.toggleButton.interactable = !isLoading;
+    }
+
+    public void SetFriendsAsFailed(bool hasFailed)
+    {
+        friendsFailedMark.gameObject.SetActive(hasFailed);
+
+        friendsButton.OnToggleOn -= OnWindowToggleOn;
+        friendsButton.OnToggleOff -= OnWindowToggleOff;
+        friendsButton.OnToggleOn -= ShowRetryFriendsInitializationTooltip;
+        friendsButton.OnToggleOff -= HideRetryFriendsInitializationTooltip;
+
+        if (hasFailed)
+        {
+            friendsRetryTooltip.Show();
+            friendsButton.SetToggleState(true);
+
+            friendsButton.OnToggleOn += ShowRetryFriendsInitializationTooltip;
+            friendsButton.OnToggleOff += HideRetryFriendsInitializationTooltip;
+        }
+        else
+        {
+            friendsRetryTooltip.Hide();
+
+            friendsButton.OnToggleOn += OnWindowToggleOn;
+            friendsButton.OnToggleOff += OnWindowToggleOff;
+        }
+    }
+
+    private void ShowRetryFriendsInitializationTooltip(TaskbarButton obj)
+    {
+        friendsRetryTooltip.Show();
+    }
+
+    private void HideRetryFriendsInitializationTooltip(TaskbarButton obj)
+    {
+        friendsRetryTooltip.Hide();
+    }
+
+    private void OnFriendsInitializationTooltipClosed()
+    {
+        friendsRetryTooltip.Hide();
+        friendsButton.SetToggleState(false);
+    }
+
+    private void OnFriendsInitializationRetried() { OnFriendsInitializationRetry?.Invoke(); }
 }

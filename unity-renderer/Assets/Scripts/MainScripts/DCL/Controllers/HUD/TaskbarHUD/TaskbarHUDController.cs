@@ -1,6 +1,7 @@
 using System;
 using DCL;
 using DCL.Helpers;
+using DCL.Interface;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -71,6 +72,7 @@ public class TaskbarHUDController : IHUD
         view.OnEmotesToggleOn += View_OnEmotesToggleOn;
         view.OnExperiencesToggleOff += View_OnExperiencesToggleOff;
         view.OnExperiencesToggleOn += View_OnExperiencesToggleOn;
+        view.OnFriendsInitializationRetry += RetryFriendsInitialization;
 
         toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
         toggleFriendsTrigger.OnTriggered -= ToggleFriendsTrigger_OnTriggered;
@@ -100,6 +102,26 @@ public class TaskbarHUDController : IHUD
 
         numOfLoadedExperiences.OnChange += NumOfLoadedExperiencesChanged;
         NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
+
+        if (friendsController != null)
+        {
+            if (friendsController.isInitialized)
+            {
+                view.SetFiendsAsLoading(false);
+                view.SetFriendsAsFailed(false);
+            }
+            else
+            {
+                friendsController.OnInitialized -= FriendsController_OnInitialized;
+                friendsController.OnInitialized += FriendsController_OnInitialized;
+                friendsController.OnNotInitialized -= ShowFriendsFailedPanel;
+                friendsController.OnNotInitialized += ShowFriendsFailedPanel;
+                if (friendsController.hasInitializationFailed)
+                    ShowFriendsFailedPanel();
+                else
+                    view.SetFiendsAsLoading(true);
+            }
+        }
     }
 
     private void View_OnFriendsToggleOn()
@@ -329,6 +351,7 @@ public class TaskbarHUDController : IHUD
             view.OnEmotesToggleOn -= View_OnEmotesToggleOn;
             view.OnExperiencesToggleOff -= View_OnExperiencesToggleOff;
             view.OnExperiencesToggleOn -= View_OnExperiencesToggleOn;
+            view.OnFriendsInitializationRetry -= RetryFriendsInitialization;
 
             Object.Destroy(view.gameObject);
         }
@@ -354,6 +377,12 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
         isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
         numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;
+
+        if (friendsController != null)
+        {
+            friendsController.OnInitialized -= FriendsController_OnInitialized;
+            friendsController.OnNotInitialized -= ShowFriendsFailedPanel;
+        }
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
@@ -398,5 +427,25 @@ public class TaskbarHUDController : IHUD
         Utils.UnlockCursor();
         view.leftWindowContainerAnimator.Show();
         view.friendsButton.SetToggleState(!view.friendsButton.toggledOn);
+    }
+
+    private void FriendsController_OnInitialized()
+    {
+        friendsController.OnInitialized -= FriendsController_OnInitialized;
+        friendsController.OnNotInitialized -= ShowFriendsFailedPanel;
+        view.SetFiendsAsLoading(false);
+    }
+
+    private void ShowFriendsFailedPanel()
+    {
+        view.SetFiendsAsLoading(false);
+        view.SetFriendsAsFailed(true);
+    }
+
+    private void RetryFriendsInitialization()
+    {
+        view.SetFriendsAsFailed(false);
+        view.SetFiendsAsLoading(true);
+        WebInterface.RetryFriendsInitialization();
     }
 }

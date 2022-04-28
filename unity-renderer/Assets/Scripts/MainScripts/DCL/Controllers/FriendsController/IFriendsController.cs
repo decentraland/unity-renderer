@@ -1,15 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 public interface IFriendsController
 {
     event Action OnInitialized;
+    event Action OnNotInitialized;
     event Action<string, FriendshipAction> OnUpdateFriendship;
     event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
     event Action<string> OnFriendNotFound;
-    
+
     int friendCount { get; }
     bool isInitialized { get; }
+    bool hasInitializationFailed { get; }
     Dictionary<string, FriendsController.UserStatus> GetFriends();
     FriendsController.UserStatus GetUserStatus(string userId);
 

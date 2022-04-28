@@ -1515,5 +1515,7 @@ namespace DCL.Interface
             timeReportPayload.cycleTime = cycleTime;
             SendMessage("ReportDecentralandTime", timeReportPayload);
         }
+
+        public static void RetryFriendsInitialization() { SendMessage("RetryFriendsInitialization"); }
     }
 }

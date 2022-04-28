@@ -121,6 +121,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["RemoveWearablesFromCatalog"] = "Main";
         messageTypeToBridgeName["ClearWearableCatalog"] = "Main";
         messageTypeToBridgeName["InitializeFriends"] = "Main";
+        messageTypeToBridgeName["NotifyAboutFriendsNotInitialized"] = "Main";
         messageTypeToBridgeName["UpdateFriendshipStatus"] = "Main";
         messageTypeToBridgeName["UpdateUserPresence"] = "Main";
         messageTypeToBridgeName["FriendNotFound"] = "Main";
