@@ -57,7 +57,7 @@ public class BIWSceneBoundariesShould : IntegrationTestSuite
 
         Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple());
         var biwStyle = new SceneBoundsFeedbackStyle_BIW();
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         Assert.IsTrue(

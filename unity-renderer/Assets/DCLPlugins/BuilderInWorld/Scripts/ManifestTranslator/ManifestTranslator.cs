@@ -173,7 +173,7 @@ namespace DCL.Builder
             foreach (var entity in scene.entities.Values)
             {
                 Entity statlesEntity = new Entity();
-                statlesEntity.id = entity.entityId;
+                statlesEntity.id = entity.entityId.ToString();
 
                 foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> entityComponent in scene.componentsManagerLegacy.GetComponentsDictionary(entity))
                 {
@@ -224,7 +224,7 @@ namespace DCL.Builder
             foreach (IDCLEntity entity in scene.entities.Values)
             {
                 BuilderEntity builderEntity = new BuilderEntity();
-                builderEntity.id = entity.entityId;
+                builderEntity.id = entity.entityId.ToString();
                 string componentType = "";
                 string entityName = "";
 
@@ -448,7 +448,7 @@ namespace DCL.Builder
             // We iterate all the entities to create the entity in the scene
             foreach (BuilderEntity builderEntity in manifest.scene.entities.Values)
             {
-                var entity = scene.CreateEntity(builderEntity.id);
+                var entity = scene.CreateEntity(builderEntity.id.GetHashCode());
 
                 bool nameComponentFound = false;
                 // We iterate all the id of components in the entity, to add the component 

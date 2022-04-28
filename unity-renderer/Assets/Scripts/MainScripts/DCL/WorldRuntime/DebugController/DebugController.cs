@@ -155,7 +155,7 @@ namespace DCL
             botsController.StopRandomMovement();
         }
 
-        public void RemoveBot(string targetEntityId)
+        public void RemoveBot(long targetEntityId)
         {
             botsController.RemoveBot(targetEntityId);
         }
