@@ -67,6 +67,7 @@ namespace DCL.Skybox
         public List<TimelineTagsDuration> timelineTags = new List<TimelineTagsDuration>();
 
         private float cycleTime = 24;
+        public List<Planar3DConfig> planarLayers = new List<Planar3DConfig>();
 
         public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, Light directionalLightGO = null, float cycleTime = 24)
         {

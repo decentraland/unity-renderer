@@ -12,7 +12,10 @@ namespace DCL.Skybox
         Avatar_Layer,
         Fog_Layer,
         Directional_Light_Layer,
-        Base_Skybox
+        Base_Skybox,
+        Dome_Layer,
+        Satellite_Layer,
+        Planar_Layer
     }
 
     public class RightPanelPins
@@ -22,6 +25,7 @@ namespace DCL.Skybox
         public int baseSkyboxSelectedIndex;
         public bool pinned;
         public Vector2 scroll;
+        internal int planarLayerIndex;
     }
 
     public static class SkyboxEditorUtils

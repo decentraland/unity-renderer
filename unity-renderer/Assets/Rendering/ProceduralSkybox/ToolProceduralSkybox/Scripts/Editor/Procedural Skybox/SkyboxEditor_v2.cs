@@ -347,6 +347,11 @@ namespace DCL.Skybox
 
             RenderLeftPanelBaseSkybox();
 
+            EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
+
+            // Render 3D Layers
+            RenderLeftPanel3DLayers.Render(selectedConfiguration, toolSize, AddToRightPanel);
+
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndScrollView();
         }
@@ -447,6 +452,7 @@ namespace DCL.Skybox
             }
             EditorGUILayout.EndHorizontal();
 
+            EditorGUILayout.Space(25);
         }
 
         #endregion
@@ -481,6 +487,9 @@ namespace DCL.Skybox
                     break;
                 case SkyboxEditorToolsParts.Base_Skybox:
                     RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration.layers[obj.baseSkyboxSelectedIndex]);
+                    break;
+                case SkyboxEditorToolsParts.Planar_Layer:
+                    RenderPlanar3DLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration.planarLayers[obj.planarLayerIndex]);
                     break;
                 default:
                     break;

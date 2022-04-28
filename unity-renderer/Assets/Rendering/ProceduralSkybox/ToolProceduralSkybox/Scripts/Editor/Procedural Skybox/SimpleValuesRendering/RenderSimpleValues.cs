@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -25,6 +26,15 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             value = EditorGUILayout.FloatField(value, GUILayout.Width(90));
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
+        public static void RenderPrefabInput(string label, ref GameObject obj)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            obj = (GameObject)EditorGUILayout.ObjectField(obj, typeof(GameObject), false, GUILayout.Width(200));
+            GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
 
