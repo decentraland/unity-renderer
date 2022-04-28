@@ -89,10 +89,8 @@ namespace DCL.Controllers
                 parcels.Add(sceneData.parcels[i]);
             }
 
-            if (DCLCharacterController.i != null)
-            {
-                gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
-            }
+            gameObject.transform.position =
+                PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
 
             DataStore.i.sceneWorldObjects.AddScene(sceneData.id);
 
@@ -571,7 +569,7 @@ namespace DCL.Controllers
 
                             foreach (var entity in component.GetAttachedEntities())
                             {
-                                var loader = LoadableShape.GetLoaderForEntity(entity);
+                                var loader = Environment.i.world.state.GetLoaderForEntity(entity);
 
                                 string loadInfo = "No loader";
 

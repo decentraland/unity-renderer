@@ -12,11 +12,18 @@ namespace Tests
     public class TexturesTests : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
-
+        private CoreComponentsPlugin coreComponentsPlugin;
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use

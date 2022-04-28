@@ -143,8 +143,9 @@ namespace DCL.Helpers
             where T : BaseComponent
             where K : new()
         {
-            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
-            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            IPoolableComponentFactory poolableFactory =
+                Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+            ;
             int inferredId = (int) poolableFactory.GetIdForType<T>();
 
             int componentClassId = classId == CLASS_ID_COMPONENT.NONE
@@ -178,8 +179,9 @@ namespace DCL.Helpers
                 model = new K();
             }
 
-            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
-            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            IPoolableComponentFactory poolableFactory =
+                Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+            ;
             int inferredId = (int) poolableFactory.GetIdForType<T>();
 
             CLASS_ID_COMPONENT classId = (CLASS_ID_COMPONENT) inferredId;
@@ -347,7 +349,7 @@ namespace DCL.Helpers
                     src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
                 }));
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entity.entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entity.entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
         }
 
@@ -759,8 +761,9 @@ namespace DCL.Helpers
                 yield return component.routine;
             }
 
-            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
-            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            IPoolableComponentFactory poolableFactory =
+                Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+            ;
             int id = (int) poolableFactory.GetIdForType<TComponent>();
 
             scene.componentsManagerLegacy.EntityComponentUpdate(e, (CLASS_ID_COMPONENT) id, "{}");
@@ -1291,7 +1294,7 @@ namespace DCL.Helpers
 
         public static IEnumerator WaitForGLTFLoad(IDCLEntity entity)
         {
-            LoadWrapper_GLTF wrapper = GLTFShape.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
+            LoadWrapper_GLTF wrapper = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
             return new WaitUntil(() => wrapper.alreadyLoaded);
         }
 

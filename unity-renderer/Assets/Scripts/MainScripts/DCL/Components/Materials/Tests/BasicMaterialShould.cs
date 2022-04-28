@@ -12,11 +12,13 @@ using Assert = UnityEngine.Assertions.Assert;
 public class BasicMaterialShould : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
         Environment.i.world.sceneBoundsChecker.Stop();
     }
@@ -24,6 +26,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTearDown]
     protected override IEnumerator TearDown()
     {
+        coreComponentsPlugin.Dispose();
         yield return base.TearDown();
     }
 

@@ -18,10 +18,14 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     private ParcelScene scene;
     private AssetCatalogBridge assetCatalogBridge;
 
+    private CoreComponentsPlugin coreComponentsPlugin;
+
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
+        coreComponentsPlugin = new CoreComponentsPlugin();
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
         scene = TestUtils.CreateTestScene();
 
         biwCreatorController = new BIWCreatorController();
@@ -118,6 +122,8 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     {
         yield return new DCL.WaitUntil( () => GLTFComponent.downloadingCount == 0 );
 
+        coreComponentsPlugin.Dispose();
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
         Object.Destroy(assetCatalogBridge);
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();

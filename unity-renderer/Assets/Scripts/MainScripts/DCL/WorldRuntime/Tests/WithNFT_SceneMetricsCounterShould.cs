@@ -35,7 +35,7 @@ public class WithNFT_SceneMetricsCounterShould : IntegrationTestSuite_SceneMetri
 
         TestUtils.SharedComponentAttach(component, entity);
 
-        LoadWrapper shapeLoader = LoadableShape.GetLoaderForEntity(entity);
+        LoadWrapper shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
 
         yield return null;

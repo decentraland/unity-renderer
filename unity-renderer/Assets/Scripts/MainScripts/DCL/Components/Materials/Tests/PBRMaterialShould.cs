@@ -12,13 +12,20 @@ using UnityEngine.TestTools;
 public class PBRMaterialShould : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
-
-    [UnitySetUp]
+    private CoreComponentsPlugin coreComponentsPlugin;
+    
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         Environment.i.world.sceneBoundsChecker.Stop();
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     [UnityTest]

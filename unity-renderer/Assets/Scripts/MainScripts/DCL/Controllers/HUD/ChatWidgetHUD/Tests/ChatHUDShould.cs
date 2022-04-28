@@ -1,9 +1,11 @@
 using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
+using Cysharp.Threading.Tasks;
 using DCL;
 using NSubstitute;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class ChatHUDShould : IntegrationTestSuite_Legacy
 {
@@ -39,12 +41,13 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual("test message", lastMsgSent.body);
     }
 
-    [Test]
-    public void TrimWhenTooMuchMessagesAreInView()
+    [UnityTest]
+    public IEnumerator TrimWhenTooMuchMessagesAreInView() => UniTask.ToCoroutine(async () =>
     {
         int cacheMaxEntries = ChatHUDController.MAX_CHAT_ENTRIES;
         const int newMaxEntries = 10;
         ChatHUDController.MAX_CHAT_ENTRIES = newMaxEntries;
+
         for (int i = 0; i < ChatHUDController.MAX_CHAT_ENTRIES + 5; i++)
         {
             var msg = new ChatEntry.Model()
@@ -54,16 +57,16 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
                 bodyText = "test" + i,
             };
 
-            controller.AddChatMessage(msg);
+            await controller.AddChatMessage(msg);
         }
 
         ChatHUDController.MAX_CHAT_ENTRIES = cacheMaxEntries;
         Assert.AreEqual(newMaxEntries, controller.view.entries.Count);
         Assert.AreEqual(ChatUtils.AddNoParse("test5"), controller.view.entries[0].model.bodyText);
-    }
+    });
 
-    [Test]
-    public void AddAndClearChatEntriesProperly()
+    [UnityTest]
+    public IEnumerator AddAndClearChatEntriesProperly() => UniTask.ToCoroutine(async () =>
     {
         var msg = new ChatEntry.Model()
         {
@@ -72,7 +75,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
             bodyText = "test",
         };
 
-        controller.AddChatMessage(msg);
+        await controller.AddChatMessage(msg);
 
         Assert.AreEqual(1, controller.view.entries.Count);
         msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
@@ -81,8 +84,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         controller.view.CleanAllEntries();
 
         Assert.AreEqual(0, controller.view.entries.Count);
-
-    }
+    });
 
     [Test]
     public void CancelMessageSubmitionByEscapeKey()
@@ -98,9 +100,10 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(testMessage, controller.view.inputField.text);
     }
 
-    [TestCase("ShiT hello shithead", "**** hello shithead")]
-    [TestCase("ass hi grass", "*** hi grass")]
-    public void FilterProfanityMessageWithExplicitWords(string body, string expected)
+    [UnityTest]
+    [TestCase("ShiT hello shithead", "**** hello shithead", ExpectedResult = (IEnumerator)null)]
+    [TestCase("ass hi grass", "*** hi grass", ExpectedResult = (IEnumerator)null)]
+    public IEnumerator FilterProfanityMessageWithExplicitWords(string body, string expected) => UniTask.ToCoroutine(async () =>
     {
         var msg = new ChatEntry.Model
         {
@@ -109,14 +112,15 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
             bodyText = body
         };
 
-        controller.AddChatMessage(msg);
+        await controller.AddChatMessage(msg);
         expected = ChatUtils.AddNoParse(expected);
         Assert.AreEqual(expected, controller.view.entries[0].model.bodyText);
-    }
-    
-    [TestCase("fuck1 heh bitch", "****1 heh *****")]
-    [TestCase("assfuck bitching", "ass**** *****ing")]
-    public void FilterProfanityMessageWithNonExplicitWords(string body, string expected)
+    });
+
+    [UnityTest]
+    [TestCase("fuck1 heh bitch", "****1 heh *****", ExpectedResult = (IEnumerator)null)]
+    [TestCase("assfuck bitching", "ass**** *****ing", ExpectedResult = (IEnumerator)null)]
+    public IEnumerator FilterProfanityMessageWithNonExplicitWords(string body, string expected) => UniTask.ToCoroutine(async () =>
     {
         var msg = new ChatEntry.Model
         {
@@ -125,14 +129,15 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
             bodyText = body
         };
 
-        controller.AddChatMessage(msg);
+        await controller.AddChatMessage(msg);
         expected = ChatUtils.AddNoParse(expected);
         Assert.AreEqual(expected, controller.view.entries[0].model.bodyText);
-    }
+    });
 
-    [TestCase("fucker123", "****er123")]
-    [TestCase("goodname", "goodname")]
-    public void FilterProfanitySenderName(string originalName, string filteredName)
+    [UnityTest]
+    [TestCase("fucker123", "****er123", ExpectedResult = (IEnumerator)null)]
+    [TestCase("goodname", "goodname", ExpectedResult = (IEnumerator)null)]
+    public IEnumerator FilterProfanitySenderName(string originalName, string filteredName) => UniTask.ToCoroutine(async () =>
     {
         var msg = new ChatEntry.Model
         {
@@ -141,14 +146,15 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
             bodyText = "test"
         };
 
-        controller.AddChatMessage(msg);
+        await controller.AddChatMessage(msg);
         msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(filteredName, controller.view.entries[0].model.senderName);
-    }
-    
-    [TestCase("assholeeee", "*******eee")]
-    [TestCase("goodname", "goodname")]
-    public void FilterProfanityReceiverName(string originalName, string filteredName)
+    });
+
+    [UnityTest]
+    [TestCase("assholeeee", "*******eee", ExpectedResult = (IEnumerator)null)]
+    [TestCase("goodname", "goodname", ExpectedResult = (IEnumerator)null)]
+    public IEnumerator FilterProfanityReceiverName(string originalName, string filteredName) => UniTask.ToCoroutine(async () =>
     {
         var msg = new ChatEntry.Model
         {
@@ -158,30 +164,30 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
             bodyText = "test"
         };
 
-        controller.AddChatMessage(msg);
+        await controller.AddChatMessage(msg);
         msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(filteredName, controller.view.entries[0].model.recipientName);
-    }
+    });
 
-    [Test]
-    public void DoNotFilterProfanityMessageWhenFeatureFlagIsDisabled()
+    [UnityTest]
+    public IEnumerator DoNotFilterProfanityMessageWhenFeatureFlagIsDisabled() => UniTask.ToCoroutine(async () =>
     {
         dataStore.settings.profanityChatFilteringEnabled.Set(false);
-        
+
         var msg = new ChatEntry.Model
         {
             messageType = ChatMessage.Type.PUBLIC,
             senderName = "test",
             bodyText = "shit"
         };
-        
-        controller.AddChatMessage(msg);
+
+        await controller.AddChatMessage(msg);
         msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
-    }
+    });
 
-    [Test]
-    public void DoNotFilterProfanityMessageWhenIsPrivate()
+    [UnityTest]
+    public IEnumerator DoNotFilterProfanityMessageWhenIsPrivate() => UniTask.ToCoroutine(async () =>
     {
         var msg = new ChatEntry.Model
         {
@@ -189,11 +195,11 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
             senderName = "test",
             bodyText = "shit"
         };
-        
-        controller.AddChatMessage(msg);
+
+        await controller.AddChatMessage(msg);
         msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
-    }
+    });
     
     private RegexProfanityFilter GivenProfanityFilter()
     {

@@ -62,7 +62,7 @@ namespace SceneBoundariesCheckerTests
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
                 }));
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             yield return null;
 
@@ -85,7 +85,7 @@ namespace SceneBoundariesCheckerTests
 
             TestUtils.SharedComponentAttach(component, entity);
 
-            LoadWrapper shapeLoader = LoadableShape.GetLoaderForEntity(entity);
+            LoadWrapper shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
 
             yield return null;
@@ -123,7 +123,7 @@ namespace SceneBoundariesCheckerTests
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
                 }));
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
 
             AssertMeshIsValid(entity.meshesInfo);
@@ -153,7 +153,7 @@ namespace SceneBoundariesCheckerTests
 
             TestUtils.SharedComponentAttach(component, entity);
 
-            LoadWrapper shapeLoader = NFTShape.GetLoaderForEntity(entity);
+            LoadWrapper shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
 
             AssertMeshIsValid(entity.meshesInfo);
@@ -271,7 +271,7 @@ namespace SceneBoundariesCheckerTests
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
                 }));
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             yield return null;
 
@@ -302,7 +302,7 @@ namespace SceneBoundariesCheckerTests
 
             TestUtils.SharedComponentAttach(component, entity);
 
-            LoadWrapper shapeLoader = NFTShape.GetLoaderForEntity(entity);
+            LoadWrapper shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
 
             AssertMeshIsInvalid(entity.meshesInfo);

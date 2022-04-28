@@ -143,10 +143,10 @@ public class PlayerAvatarController : MonoBehaviour
             return;
         }
 
-        ct.ThrowIfCancellationRequested();
-        if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
+        try
         {
-            try
+            ct.ThrowIfCancellationRequested();
+            if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
             {
                 currentAvatar.CopyFrom(profile.avatar);
 
@@ -168,16 +168,16 @@ public class PlayerAvatarController : MonoBehaviour
                 if (avatar.lodLevel <= 1)
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
             }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-                WebInterface.ReportAvatarFatalError();
-                return;
-            }
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+            WebInterface.ReportAvatarFatalError();
+            return;
         }
 
         IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();

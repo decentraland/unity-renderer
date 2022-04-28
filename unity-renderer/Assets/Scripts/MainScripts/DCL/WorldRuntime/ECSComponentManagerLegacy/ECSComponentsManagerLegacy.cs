@@ -346,19 +346,12 @@ namespace DCL
             if (disposableComponents.TryGetValue(id, out ISharedComponent component))
                 return component;
 
-            if (classId == (int)CLASS_ID.UI_SCREEN_SPACE_SHAPE || classId == (int)CLASS_ID.UI_FULLSCREEN_SHAPE)
+            IRuntimeComponentFactory factory = componentFactory;
+            
+            if (factory.createConditions.ContainsKey(classId))
             {
-                using (var iterator = disposableComponents.GetEnumerator())
-                {
-                    while (iterator.MoveNext())
-                    {
-                        var compClassId = iterator.Current.Value.GetClassId();
-                        if (compClassId == (int)CLASS_ID.UI_SCREEN_SPACE_SHAPE || compClassId == (int)CLASS_ID.UI_FULLSCREEN_SHAPE)
-                        {
-                            return null;
-                        }
-                    }
-                }
+                if (!factory.createConditions[(int) classId].Invoke(scene.sceneData.id, classId))
+                    return null;
             }
 
             ISharedComponent newComponent = componentFactory.CreateComponent(classId) as ISharedComponent;
@@ -406,18 +399,13 @@ namespace DCL
 
             IEntityComponent newComponent = null;
 
-            if (classId == CLASS_ID_COMPONENT.UUID_CALLBACK)
+            var overrideCreate = Environment.i.world.componentFactory.createOverrides;
+            
+            if (overrideCreate.ContainsKey((int) classId))
             {
-                OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(data as string);
-                classId = model.GetClassIdFromType();
-            }
-            // NOTE: TRANSFORM and AVATAR_ATTACH can't be used in the same Entity at the same time.
-            // so we remove AVATAR_ATTACH (if exists) when a TRANSFORM is created.
-            else if (classId == CLASS_ID_COMPONENT.TRANSFORM
-                     && TryGetBaseComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component))
-            {
-                component.Cleanup();
-                RemoveComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH);
+                int classIdAsInt = (int) classId;
+                overrideCreate[(int) classId].Invoke(scene.sceneData.id, entityId, ref classIdAsInt, data);
+                classId = (CLASS_ID_COMPONENT) classIdAsInt;
             }
 
             if (!HasComponent(entity, classId))
@@ -543,7 +531,7 @@ namespace DCL
 
                     return;
 
-                case OnClick.NAME:
+                case ComponentNameLiterals.OnClick:
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_CLICK, out IEntityComponent component))
                         {
@@ -553,7 +541,7 @@ namespace DCL
 
                         return;
                     }
-                case OnPointerDown.NAME:
+                case ComponentNameLiterals.OnPointerDown:
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_DOWN, out IEntityComponent component))
                         {
@@ -562,7 +550,7 @@ namespace DCL
                         }
                     }
                     return;
-                case OnPointerUp.NAME:
+                case ComponentNameLiterals.OnPointerUp:
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_UP, out IEntityComponent component))
                         {
@@ -571,7 +559,7 @@ namespace DCL
                         }
                     }
                     return;
-                case OnPointerHoverEnter.NAME:
+                case ComponentNameLiterals.OnPointerHoverEnter:
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER, out IEntityComponent component))
                         {
@@ -580,7 +568,7 @@ namespace DCL
                         }
                     }
                     return;
-                case OnPointerHoverExit.NAME:
+                case ComponentNameLiterals.OnPointerHoverExit:
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT, out IEntityComponent component))
                         {
