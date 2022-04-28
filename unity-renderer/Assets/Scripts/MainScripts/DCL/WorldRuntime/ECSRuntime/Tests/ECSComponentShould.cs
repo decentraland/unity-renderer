@@ -13,14 +13,14 @@ namespace Tests
     public class ECSComponentShould
     {
         private IParcelScene scene;
-        private IComponentHandler<TestingComponent> componentHandler;
+        private IECSComponentHandler<TestingComponent> componentHandler;
         private ECSComponent<TestingComponent> component;
 
         [SetUp]
         public void SetUp()
         {
             scene = Substitute.For<IParcelScene>();
-            componentHandler = Substitute.For<IComponentHandler<TestingComponent>>();
+            componentHandler = Substitute.For<IECSComponentHandler<TestingComponent>>();
             component = new ECSComponent<TestingComponent>(scene, TestingComponentSerialization.Deserialize, () => componentHandler);
         }
 
