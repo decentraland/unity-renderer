@@ -4,18 +4,28 @@ using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using DCL;
 using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
+using WaitUntil = UnityEngine.WaitUntil;
 
 public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     [UnityTest]
@@ -37,7 +47,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/OBJ/teapot.obj"
             }));
 
-        LoadWrapper objShape = LoadableShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper objShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => objShape.alreadyLoaded);
 
         Assert.IsTrue(scene.entities[entityId].meshRootGameObject != null,
@@ -61,14 +71,14 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
 
         // Set its shape as a BOX
         var componentId = TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
-        yield return ((scene.GetSharedComponent(componentId)) as IDelayedComponent).routine;
+        yield return ((scene.componentsManagerLegacy.GetSceneSharedComponent(componentId)) as IDelayedComponent).routine;
 
         var meshName = entity.meshRootGameObject.GetComponent<MeshFilter>().mesh.name;
         Assert.AreEqual("DCL Box Instance", meshName);
 
         // Update its shape to a cylinder
         TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
-        yield return (scene.GetSharedComponent(componentId) as IDelayedComponent).routine;
+        yield return (scene.componentsManagerLegacy.GetSceneSharedComponent(componentId) as IDelayedComponent).routine;
 
         Assert.IsTrue(entity.meshRootGameObject != null, "meshGameObject should not be null");
 
@@ -87,7 +97,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
         Assert.IsTrue(entity.meshesInfo.currentShape != null, "current shape must exist 2");
@@ -103,7 +113,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
 
         // Update its shape to a sphere
         TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.SPHERE_SHAPE, "{}");
-        yield return (scene.GetSharedComponent(componentId) as IDelayedComponent).routine;
+        yield return (scene.componentsManagerLegacy.GetSceneSharedComponent(componentId) as IDelayedComponent).routine;
 
         yield return null;
 

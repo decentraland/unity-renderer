@@ -15,13 +15,21 @@ using UnityEngine.TestTools;
 public class SceneTests : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
     private ISceneController sceneController => DCL.Environment.i.world.sceneController;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         DataStore.i.debugConfig.isDebugMode.Set(true);
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     protected override ServiceLocator InitializeServiceLocator()
@@ -55,7 +63,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
             "IsInsideSceneBoundaries() should always return true.");
         Assert.IsTrue(globalScene.IsInsideSceneBoundaries(new Vector2Int(-1000, -1000)),
             "IsInsideSceneBoundaries() should always return true.");
-
+        
         yield return null;
 
         // Position character inside parcel (0,0)
@@ -70,26 +78,60 @@ public class SceneTests : IntegrationTestSuite_Legacy
             "Scene not in loaded dictionary when far! GlobalScenes must not be unloaded by distance!");
     }
 
-    [Test]
-    public void ParcelScene_TrackDisposables_AfterInitDone()
+    [UnityTest]
+    public IEnumerator UnloadGlobalScene()
     {
-        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        string sceneId = "Test Global Scene";
 
-        scene.sceneLifecycleHandler.SetInitMessagesDone();
+        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() {id = sceneId}));
 
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.IsTrue(Environment.i.world.state.Contains(sceneId), "Scene not in loaded dictionary!");
+
+        sceneController.UnloadParcelSceneExecute(sceneId);
+
+        Assert.IsFalse(Environment.i.world.state.Contains(sceneId), "Scene not unloaded correctly!");
+
+        yield break;
     }
 
-    [Test]
-    public void ParcelScene_TrackDisposables_Empty()
-    {
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
-    }
 
     [UnityTest]
-    public IEnumerator SceneLoading()
+    public IEnumerator TrackPortableExperiencesInDataStore()
+    {
+        DataStore_World worldData = DataStore.i.Get<DataStore_World>();
+        string sceneId = "Test Global Scene";
+
+        GameObject experiencesViewerMockedGo = new GameObject();
+        DataStore.i.experiencesViewer.isInitialized.Set(experiencesViewerMockedGo.transform);
+
+        // Ensure its added to DataStore when created
+        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage()
+            {id = sceneId, isPortableExperience = true}));
+        Assert.IsTrue(worldData.portableExperienceIds.Contains(sceneId));
+
+        // Ensure its removed from DataStore when unloaded
+        sceneController.UnloadParcelSceneExecute(sceneId);
+        Assert.IsFalse(worldData.portableExperienceIds.Contains(sceneId));
+
+        // If re-added when isPortableExperience is false, then it shouldn't be in the data store
+        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage()
+            {id = sceneId, isPortableExperience = false}));
+        Assert.IsFalse(worldData.portableExperienceIds.Contains(sceneId));
+
+        // Whe re-added with isPortableExperience as true, it should work again
+        sceneController.UnloadParcelSceneExecute(sceneId);
+        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage()
+            {id = sceneId, isPortableExperience = true}));
+        Assert.IsTrue(worldData.portableExperienceIds.Contains(sceneId));
+
+        Object.Destroy(experiencesViewerMockedGo);
+        DataStore.i.experiencesViewer.isInitialized.Set(null);
+        yield break;
+    }
+
+
+    [UnityTest]
+    public IEnumerator LoadScene()
     {
         sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
         yield return new WaitForAllMessagesProcessed();
@@ -101,7 +143,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
-    public IEnumerator SceneUnloading()
+    public IEnumerator UnloadScene()
     {
         sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
@@ -137,7 +179,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
-    public IEnumerator SeveralParcelsFromJSON()
+    public IEnumerator LoadManyParcelsFromJSON()
     {
         string severalParcelsJson = (Resources.Load("TestJSON/TestSceneSeveralParcels") as TextAsset).text;
 
@@ -178,6 +220,24 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         sceneController.UnloadAllScenes(includePersistent: true);
         yield return null;
+    }
+
+    [Test]
+    public void ParcelScene_TrackDisposables_AfterInitDone()
+    {
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+
+        scene.sceneLifecycleHandler.SetInitMessagesDone();
+
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+    }
+
+    [Test]
+    public void ParcelScene_TrackDisposables_Empty()
+    {
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
     }
 
     [UnityTest]

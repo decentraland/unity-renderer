@@ -20,20 +20,21 @@ namespace Tests
         private ParcelScene scene;
         private Camera mainCamera;
         private CursorController cursorController;
+        private UUIDEventsPlugin uuidEventsPlugin;
+        private CoreComponentsPlugin coreComponentsPlugin;
+        private UIComponentsPlugin uiComponentsPlugin;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
             List<GameObject> result = new List<GameObject>();
             result.Add(MainSceneFactory.CreateEnvironment());
             result.Add(MainSceneFactory.CreateEventSystem());
-            result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
             return result;
         }
 
         protected override ServiceLocator InitializeServiceLocator()
         {
             ServiceLocator result = DCL.ServiceLocatorTestFactory.CreateMocked();
-            result.Register<IPointerEventsController>( () => new PointerEventsController());
             result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
             result.Register<IWorldState>( () => new WorldState());
             result.Register<IUpdateEventHandler>( () => new UpdateEventHandler());
@@ -58,6 +59,9 @@ namespace Tests
 
             yield return base.SetUp();
 
+            coreComponentsPlugin = new CoreComponentsPlugin();
+            uuidEventsPlugin = new UUIDEventsPlugin();
+            uiComponentsPlugin = new UIComponentsPlugin();
             scene = TestUtils.CreateTestScene();
 
             Physics.autoSyncTransforms = true;
@@ -68,10 +72,15 @@ namespace Tests
             mainCamera.transform.forward = Vector3.forward;
 
             DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
+
+
         }
 
         protected override IEnumerator TearDown()
         {
+            coreComponentsPlugin.Dispose();
+            uuidEventsPlugin.Dispose();
+            uiComponentsPlugin.Dispose();
             Object.Destroy(cursorController.normalCursor);
             Object.Destroy(cursorController.hoverCursor);
             Object.Destroy(cursorController.gameObject);
@@ -274,32 +283,34 @@ namespace Tests
                 onPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
             Assert.IsTrue(component != null);
 
-            yield return null;
+            // Hover feedback is disabled by default
+            Assert.IsFalse(uuidEventsPlugin.hoverCanvas.canvas.enabled);
 
             mainCamera.transform.position = new Vector3(8, 2, 7f);
             mainCamera.transform.forward = Vector3.forward;
 
-            var hoverCanvasController = InteractionHoverCanvasController.i;
-            Assert.IsNotNull(hoverCanvasController);
+            yield return null;
 
-            // Check hover feedback is enabled
-            Assert.IsTrue(hoverCanvasController.canvas.enabled);
+            Assert.IsNotNull(uuidEventsPlugin.hoverCanvas);
+            Assert.IsTrue(uuidEventsPlugin.hoverCanvas.canvas.enabled);
 
             // Put UI in the middle
             UIScreenSpace screenSpaceShape =
                 TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+
             yield return screenSpaceShape.routine;
 
             UIContainerRect uiContainerRectShape =
                 TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT, new UIContainerRect.Model() { color = Color.white });
+            
             yield return uiContainerRectShape.routine;
 
             yield return null;
 
             // Check hover feedback is no longer enabled
-            Assert.IsFalse(hoverCanvasController.canvas.enabled);
+            Assert.IsFalse(uuidEventsPlugin.hoverCanvas.canvas.enabled);
         }
 
         [UnityTest]
@@ -334,11 +345,10 @@ namespace Tests
 
             yield return null;
 
-            var hoverCanvasController = InteractionHoverCanvasController.i;
-            Assert.IsNotNull(hoverCanvasController);
+            Assert.IsNotNull(uuidEventsPlugin.hoverCanvas);
 
             // Check hover feedback is enabled
-            Assert.IsTrue(hoverCanvasController.canvas.enabled);
+            Assert.IsTrue(uuidEventsPlugin.hoverCanvas.canvas.enabled);
 
             // Put UI in the middle
             UIScreenSpace screenSpaceShape =
@@ -354,7 +364,7 @@ namespace Tests
             yield return null;
 
             // Check hover feedback is still enabled
-            Assert.IsTrue(hoverCanvasController.canvas.enabled);
+            Assert.IsTrue(uuidEventsPlugin.hoverCanvas.canvas.enabled);
         }
     }
 }

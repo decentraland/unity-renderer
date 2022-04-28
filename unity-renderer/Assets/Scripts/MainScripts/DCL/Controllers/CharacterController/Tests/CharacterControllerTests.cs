@@ -332,7 +332,7 @@ namespace Tests
 
             // Disable shape colliders
             string platformEntityId = "movingPlatform";
-            var shapeComponent = scene.entities[platformEntityId].GetSharedComponent(typeof(BaseShape));
+            var shapeComponent = scene.componentsManagerLegacy.GetSharedComponent(scene.entities[platformEntityId], typeof(BaseShape));
             yield return TestUtils.SharedComponentUpdate(shapeComponent, new BaseShape.Model()
             {
                 withCollisions = false
@@ -353,7 +353,7 @@ namespace Tests
 
             // remove shape component
             string platformEntityId = "movingPlatform";
-            var shapeComponent = scene.entities[platformEntityId].GetSharedComponent(typeof(BaseShape));
+            var shapeComponent = scene.componentsManagerLegacy.GetSharedComponent(scene.entities[platformEntityId], typeof(BaseShape));
             TestUtils.DetachSharedComponent(scene, platformEntityId, shapeComponent.id);
 
             yield return null;
