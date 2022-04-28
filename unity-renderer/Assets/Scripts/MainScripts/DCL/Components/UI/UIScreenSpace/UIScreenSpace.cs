@@ -97,7 +97,13 @@ namespace DCL.Components
             var model = (Model) this.model;
 
             isInsideSceneBounds = scene.IsInsideSceneBoundaries(Utils.WorldToGridPosition(CommonScriptableObjects.playerWorldPosition));
-            bool shouldBeVisible = scene.isPersistent || (model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get() && isUIEnabled.Get());
+
+            if (isInsideSceneBounds)
+            {
+                DataStore.i.Get<DataStore_World>().currentRaycaster.Set(graphicRaycaster);
+            }
+            
+            bool shouldBeVisible = model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get() && isUIEnabled.Get();
 
             canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
             canvasGroup.blocksRaycasts = shouldBeVisible;
@@ -176,11 +182,8 @@ namespace DCL.Components
                 Debug.Log("Finished canvas initialization in " + id);
             }
 
-            if (!scene.isPersistent)
-            {
-                UpdateCanvasVisibility();
-                CommonScriptableObjects.allUIHidden.OnChange += AllUIHidden_OnChange;
-            }
+            UpdateCanvasVisibility();
+            CommonScriptableObjects.allUIHidden.OnChange += AllUIHidden_OnChange;
         }
     }
 }

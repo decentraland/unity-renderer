@@ -48,7 +48,7 @@ namespace DCL.Controllers
             state = State.NOT_READY;
             this.owner = ownerScene;
             owner.OnSetData += OnSceneSetData;
-            owner.OnAddSharedComponent += OnAddSharedComponent;
+            owner.componentsManagerLegacy.OnAddSharedComponent += OnAddSharedComponent;
         }
 
         private void OnAddSharedComponent(string id, ISharedComponent component)
@@ -119,7 +119,7 @@ namespace DCL.Controllers
                 //             SetSceneReady(), as the disposableNotReady count is 1 and gets to 0
                 //             in each OnDisposableReady() call.
                 //NOTE(Adrian): We 
-                List<ISharedComponent> disposableComponentts = owner.disposableComponents.Values.ToList();
+                List<ISharedComponent> disposableComponentts = owner.componentsManagerLegacy.GetSceneSharedComponentsDictionary().Values.ToList();
                 for (int i = 0; i < disposableComponentts.Count; i++)
                 {
                     disposableComponentts[i].CallWhenReady(OnDisposableReady);

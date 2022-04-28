@@ -818,7 +818,13 @@ public class AvatarEditorHUDController : IHUD
 
         featureFlagsDataStore.flags.OnChange -= OnFeatureFlagsChanged;
         emotesCustomizationComponentController = CreateEmotesController();
-        IEmotesCustomizationComponentView emotesSectionView = emotesCustomizationComponentController.Initialize(userProfile, catalog);
+        IEmotesCustomizationComponentView emotesSectionView = emotesCustomizationComponentController.Initialize(
+            DataStore.i.emotesCustomization,
+            DataStore.i.emotes,
+            DataStore.i.exploreV2,
+            DataStore.i.HUDs,
+            userProfile, 
+            catalog);
         emotesSectionView.viewTransform.SetParent(view.emotesSection.transform, false);
 
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);

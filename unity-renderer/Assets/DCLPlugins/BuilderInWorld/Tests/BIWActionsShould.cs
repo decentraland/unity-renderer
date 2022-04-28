@@ -11,16 +11,19 @@ using WaitUntil = UnityEngine.WaitUntil;
 
 public class BIWActionsShould : IntegrationTestSuite_Legacy
 {
-    private const string ENTITY_ID = "1";
+    private const long ENTITY_ID = 1;
     private IContext context;
     private ParcelScene scene;
     private AssetCatalogBridge assetCatalogBridge;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
@@ -52,6 +55,8 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
+        coreComponentsPlugin.Dispose();
         Object.Destroy( assetCatalogBridge.gameObject );
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();

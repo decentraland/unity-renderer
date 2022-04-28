@@ -128,13 +128,13 @@ namespace DCL.Helpers
             Assert.IsNotNull(scene, "Can't create entity for null scene!");
 
             entityCounter++;
-            string id = $"{entityCounter}";
+            long id = entityCounter;
             return scene.CreateEntity(id);
         }
 
-        public static IDCLEntity CreateSceneEntity(ParcelScene scene, string id) { return scene.CreateEntity(id); }
+        public static IDCLEntity CreateSceneEntity(ParcelScene scene, long id) { return scene.CreateEntity(id); }
 
-        public static void RemoveSceneEntity(ParcelScene scene, string id) { scene.RemoveEntity(id); }
+        public static void RemoveSceneEntity(ParcelScene scene, long id) { scene.RemoveEntity(id); }
 
         public static void RemoveSceneEntity(ParcelScene scene, IDCLEntity entity) { scene.RemoveEntity(entity.entityId); }
 
@@ -143,8 +143,9 @@ namespace DCL.Helpers
             where T : BaseComponent
             where K : new()
         {
-            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
-            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            IPoolableComponentFactory poolableFactory =
+                Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+            ;
             int inferredId = (int) poolableFactory.GetIdForType<T>();
 
             int componentClassId = classId == CLASS_ID_COMPONENT.NONE
@@ -163,7 +164,7 @@ namespace DCL.Helpers
                 data = JsonUtility.ToJson(model);
             }
 
-            return scene.EntityComponentCreateOrUpdate(
+            return scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
                 entity.entityId,
                 (CLASS_ID_COMPONENT) componentClassId,
                 data) as T;
@@ -178,21 +179,22 @@ namespace DCL.Helpers
                 model = new K();
             }
 
-            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
-            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            IPoolableComponentFactory poolableFactory =
+                Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+            ;
             int inferredId = (int) poolableFactory.GetIdForType<T>();
 
             CLASS_ID_COMPONENT classId = (CLASS_ID_COMPONENT) inferredId;
 
             ParcelScene scene = component.scene as ParcelScene;
-            scene.EntityComponentUpdate(component.entity, classId, JsonUtility.ToJson(model));
+            scene.componentsManagerLegacy.EntityComponentUpdate(component.entity, classId, JsonUtility.ToJson(model));
 
             return component.routine;
         }
 
         public static void SetEntityParent(ParcelScene scene, IDCLEntity child, IDCLEntity parent) { scene.SetEntityParent(child.entityId, parent.entityId); }
 
-        public static void SetEntityParent(ParcelScene scene, string childEntityId, string parentEntityId) { scene.SetEntityParent(childEntityId, parentEntityId); }
+        public static void SetEntityParent(ParcelScene scene, long childEntityId, long parentEntityId) { scene.SetEntityParent(childEntityId, parentEntityId); }
 
         public static DCLTexture CreateDCLTexture(ParcelScene scene,
             string url,
@@ -216,7 +218,7 @@ namespace DCL.Helpers
             where T : BaseDisposable
         {
             ParcelScene scene = component.scene as ParcelScene;
-            scene.SharedComponentUpdate(component.id, model);
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(component.id, model);
 
             return component.routine;
         }
@@ -231,7 +233,7 @@ namespace DCL.Helpers
             }
 
             ParcelScene scene = component.scene as ParcelScene;
-            scene.SharedComponentUpdate(component.id, JsonUtility.ToJson(model));
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(component.id, JsonUtility.ToJson(model));
 
             if (component is IDelayedComponent delayedComponent)
                 return delayedComponent.routine;
@@ -250,13 +252,13 @@ namespace DCL.Helpers
 
             disposableIdCounter++;
 
-            string uniqueId = GetComponentUniqueId(scene, "material", (int) id, "-shared-" + disposableIdCounter);
+            string uniqueId = GetComponentUniqueId(scene, "material", (int) id, disposableIdCounter);
 
-            T result = scene.SharedComponentCreate(uniqueId, (int) id) as T;
+            T result = scene.componentsManagerLegacy.SceneSharedComponentCreate(uniqueId, (int) id) as T;
 
             Assert.IsNotNull(result, "class-id mismatch!");
 
-            scene.SharedComponentUpdate(uniqueId, JsonUtility.ToJson(model));
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(uniqueId, JsonUtility.ToJson(model));
 
             return result;
         }
@@ -264,13 +266,13 @@ namespace DCL.Helpers
         public static void SharedComponentDispose(BaseDisposable component)
         {
             ParcelScene scene = component.scene as ParcelScene;
-            scene.SharedComponentDispose(component.id);
+            scene.componentsManagerLegacy.SceneSharedComponentDispose(component.id);
         }
 
         public static void SharedComponentAttach(BaseDisposable component, IDCLEntity entity)
         {
             ParcelScene scene = entity.scene as ParcelScene;
-            scene.SharedComponentAttach(
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(
                 entity.entityId,
                 component.id
             );
@@ -283,7 +285,7 @@ namespace DCL.Helpers
         public static void SetEntityTransform(ParcelScene scene, IDCLEntity entity, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
-            scene.EntityComponentCreateOrUpdate(
+            scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
                 entity.entityId,
                 CLASS_ID_COMPONENT.TRANSFORM,
                 System.Convert.ToBase64String(pB_Transform.ToByteArray())
@@ -347,7 +349,7 @@ namespace DCL.Helpers
                     src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
                 }));
 
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entity.entityId]);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entity.entityId]);
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
         }
 
@@ -472,14 +474,14 @@ namespace DCL.Helpers
 
             shapeId = CreateAndSetShape(scene, entity.entityId, classId, JsonConvert.SerializeObject(model));
 
-            T shape = scene.disposableComponents[shapeId] as T;
+            T shape = scene.componentsManagerLegacy.GetSceneSharedComponent(shapeId) as T;
 
             SetEntityTransform(scene, entity, position, Quaternion.identity, Vector3.one);
 
             return shape;
         }
 
-        public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, DCL.Models.CLASS_ID classId,
+        public static void InstantiateEntityWithShape(ParcelScene scene, long entityId, DCL.Models.CLASS_ID classId,
             Vector3 position, string remoteSrc = "")
         {
             CreateSceneEntity(scene, entityId);
@@ -499,57 +501,57 @@ namespace DCL.Helpers
             SetEntityTransform(scene, scene.entities[entityId], position, Quaternion.identity, Vector3.one);
         }
 
-        public static void DetachSharedComponent(ParcelScene scene, string fromEntityId, string sharedComponentId)
+        public static void DetachSharedComponent(ParcelScene scene, long fromEntityId, string sharedComponentId)
         {
             if (!scene.entities.TryGetValue(fromEntityId, out IDCLEntity entity))
             {
                 return;
             }
 
-            scene.GetSharedComponent(sharedComponentId).DetachFrom(entity);
+            scene.componentsManagerLegacy.GetSceneSharedComponent(sharedComponentId).DetachFrom(entity);
         }
 
-        public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position,
+        public static void InstantiateEntityWithMaterial(ParcelScene scene, long entityId, Vector3 position,
             BasicMaterial.Model basicMaterial, string materialComponentID = "a-material")
         {
             InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
-            scene.SharedComponentCreate(
+            scene.componentsManagerLegacy.SceneSharedComponentCreate(
                 materialComponentID,
                 (int) DCL.Models.CLASS_ID.BASIC_MATERIAL
             );
 
-            scene.SharedComponentUpdate(
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(
                 materialComponentID,
                 JsonUtility.ToJson(basicMaterial));
 
-            scene.SharedComponentAttach(
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(
                 entityId,
                 materialComponentID
             );
         }
 
-        public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position,
+        public static void InstantiateEntityWithMaterial(ParcelScene scene, long entityId, Vector3 position,
             PBRMaterial.Model pbrMaterial, string materialComponentID = "a-material")
         {
             InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
-            scene.SharedComponentCreate(
+            scene.componentsManagerLegacy.SceneSharedComponentCreate(
                 materialComponentID,
                 (int) CLASS_ID.PBR_MATERIAL
             );
 
-            scene.SharedComponentUpdate(
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(
                 materialComponentID,
                 JsonUtility.ToJson(pbrMaterial));
 
-            scene.SharedComponentAttach(
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(
                 entityId,
                 materialComponentID
             );
         }
 
-        public static IEnumerator CreateAudioSource(ParcelScene scene, string entityId, string audioClipId, bool playing, bool loop = true)
+        public static IEnumerator CreateAudioSource(ParcelScene scene, long entityId, string audioClipId, bool playing, bool loop = true)
         {
             var audioSourceModel = new DCLAudioSource.Model()
             {
@@ -578,16 +580,16 @@ namespace DCL.Helpers
                 volume = volume
             };
 
-            DCLAudioClip audioClip = scene.SharedComponentCreate(
+            DCLAudioClip audioClip = scene.componentsManagerLegacy.SceneSharedComponentCreate(
                 audioClipId,
                 (int) CLASS_ID.AUDIO_CLIP
             ) as DCLAudioClip;
 
-            scene.SharedComponentUpdate(audioClipId, JsonUtility.ToJson(model));
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(audioClipId, JsonUtility.ToJson(model));
 
             yield return audioClip.routine;
 
-            Assert.IsTrue(scene.disposableComponents.ContainsKey(audioClipId), "Shared component was not created correctly!");
+            Assert.IsTrue(scene.componentsManagerLegacy.HasSceneSharedComponent(audioClipId), "Shared component was not created correctly!");
 
             if (waitForLoading)
             {
@@ -616,12 +618,12 @@ namespace DCL.Helpers
                 playing: true);
         }
 
-        public static string GetComponentUniqueId(ParcelScene scene, string salt, int classId, string entityId)
+        public static string GetComponentUniqueId(ParcelScene scene, string salt, int classId, long entityId)
         {
             string baseId = salt + "-" + (int) classId + "-" + entityId;
             string finalId = baseId;
 
-            while (scene.GetSharedComponent(finalId) != null)
+            while (scene.componentsManagerLegacy.GetSceneSharedComponent(finalId) != null)
             {
                 finalId = baseId + UnityEngine.Random.Range(1, 10000);
             }
@@ -629,20 +631,20 @@ namespace DCL.Helpers
             return finalId;
         }
 
-        public static string CreateAndSetShape(ParcelScene scene, string entityId, CLASS_ID classId, string model)
+        public static string CreateAndSetShape(ParcelScene scene, long entityId, CLASS_ID classId, string model)
         {
             string componentId = GetComponentUniqueId(scene, "shape", (int) classId, entityId);
 
-            scene.SharedComponentCreate(
+            scene.componentsManagerLegacy.SceneSharedComponentCreate(
                 componentId,
                 (int) classId
             );
 
-            scene.SharedComponentUpdate(
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(
                 componentId,
                 model);
 
-            scene.SharedComponentAttach(
+            scene.componentsManagerLegacy.SceneSharedComponentAttach(
                 entityId,
                 componentId
             );
@@ -650,7 +652,10 @@ namespace DCL.Helpers
             return componentId;
         }
 
-        public static void UpdateShape(ParcelScene scene, string componentId, string model) { scene.SharedComponentUpdate(componentId, model); }
+        public static void UpdateShape(ParcelScene scene, string componentId, string model)
+        {
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(componentId, model);
+        }
 
         static object GetRandomValueForType(System.Type t)
         {
@@ -756,11 +761,12 @@ namespace DCL.Helpers
                 yield return component.routine;
             }
 
-            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
-            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            IPoolableComponentFactory poolableFactory =
+                Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+            ;
             int id = (int) poolableFactory.GetIdForType<TComponent>();
 
-            scene.EntityComponentUpdate(e, (CLASS_ID_COMPONENT) id, "{}");
+            scene.componentsManagerLegacy.EntityComponentUpdate(e, (CLASS_ID_COMPONENT) id, "{}");
 
             if (component.routine != null)
             {
@@ -796,8 +802,8 @@ namespace DCL.Helpers
             // Attach 1st component to entity
             TestUtils.SharedComponentAttach(component, entity);
 
-            Assert.IsTrue(entity.GetSharedComponent(componentType) != null);
-            Assert.AreEqual(component, entity.GetSharedComponent(componentType));
+            Assert.IsTrue(scene.componentsManagerLegacy.GetSharedComponent(entity, componentType) != null);
+            Assert.AreEqual(component, scene.componentsManagerLegacy.GetSharedComponent(entity, componentType));
 
             // Assign 2nd component to same entity
             var component2 = SharedComponentCreate<TComponent, TModel>(scene, classId);
@@ -809,8 +815,8 @@ namespace DCL.Helpers
 
             TestUtils.SharedComponentAttach(component2, entity);
 
-            Assert.IsTrue(entity.GetSharedComponent(componentType) != null);
-            Assert.AreEqual(component2, entity.GetSharedComponent(componentType));
+            Assert.IsTrue(scene.componentsManagerLegacy.GetSharedComponent(entity, componentType) != null);
+            Assert.AreEqual(component2, scene.componentsManagerLegacy.GetSharedComponent(entity, componentType));
             Assert.IsFalse(component.attachedEntities.Contains(entity));
         }
 
@@ -886,7 +892,9 @@ namespace DCL.Helpers
             }
         }
 
-        public static IEnumerator TestShapeVisibility(BaseShape shapeComponent, BaseShape.Model shapeModel, IDCLEntity entity)
+        public static IEnumerator TestRenderersWithShapeVisibleProperty(BaseShape shapeComponent,
+            BaseShape.Model shapeModel,
+            IDCLEntity entity)
         {
             // make sure the shape is visible first
             shapeModel.visible = true;
@@ -902,8 +910,6 @@ namespace DCL.Helpers
                 Assert.IsTrue(renderers[i].enabled);
             }
 
-            yield return TestShapeOnPointerEventCollider(entity);
-
             // update visibility with 'false'
             shapeModel.visible = false;
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
@@ -914,8 +920,6 @@ namespace DCL.Helpers
                 Assert.IsFalse(renderers[i].enabled);
             }
 
-            yield return TestShapeOnPointerEventCollider(entity);
-
             // update visibility with 'true'
             shapeModel.visible = true;
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
@@ -925,7 +929,24 @@ namespace DCL.Helpers
             {
                 Assert.IsTrue(renderers[i].enabled);
             }
+        }
 
+        public static IEnumerator TestOnPointerEventWithShapeVisibleProperty(BaseShape shapeComponent,
+            BaseShape.Model shapeModel, IDCLEntity entity)
+        {
+            // make sure the shape is visible first
+            shapeModel.visible = true;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
+            yield return TestShapeOnPointerEventCollider(entity);
+
+            // update visibility with 'false'
+            shapeModel.visible = false;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
+            yield return TestShapeOnPointerEventCollider(entity);
+
+            // update visibility with 'true'
+            shapeModel.visible = true;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
             yield return TestShapeOnPointerEventCollider(entity);
         }
 
@@ -959,7 +980,7 @@ namespace DCL.Helpers
                 Assert.IsTrue(onPointerEventCollider.enabled == renderers[i].enabled);
             }
 
-            scene.EntityComponentRemove(
+            scene.componentsManagerLegacy.EntityComponentRemove(
                 entity.entityId,
                 onClickComponent.name
             );
@@ -1273,13 +1294,49 @@ namespace DCL.Helpers
 
         public static IEnumerator WaitForGLTFLoad(IDCLEntity entity)
         {
-            LoadWrapper_GLTF wrapper = GLTFShape.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
+            LoadWrapper_GLTF wrapper = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
             return new WaitUntil(() => wrapper.alreadyLoaded);
         }
 
-        public static ParcelScene CreateTestScene()
+        public static ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
         {
-            return WorldStateUtils.CreateTestScene() as ParcelScene;
+            if (data == null)
+            {
+                data = new LoadParcelScenesMessage.UnityParcelScene();
+            }
+
+            if (data.parcels == null)
+            {
+                data.parcels = new Vector2Int[] {data.basePosition};
+            }
+
+            if (string.IsNullOrEmpty(data.id))
+            {
+                data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
+            }
+
+            if (Environment.i.world.state.loadedScenes != null)
+            {
+                if (Environment.i.world.state.loadedScenes.ContainsKey(data.id))
+                {
+                    Debug.LogWarning($"Scene {data.id} is already loaded.");
+                    return Environment.i.world.state.loadedScenes[data.id] as ParcelScene;
+                }
+            }
+
+            var go = new GameObject();
+            var newScene = go.AddComponent<ParcelScene>();
+            newScene.isTestScene = true;
+            newScene.isPersistent = true;
+            newScene.SetData(data);
+
+            if (DCLCharacterController.i != null)
+                newScene.InitializeDebugPlane();
+
+            Environment.i.world.state.scenesSortedByDistance?.Add(newScene);
+            Environment.i.world.state.loadedScenes?.Add(data.id, newScene);
+
+            return newScene;
         }
 
         public static T CreateComponentWithGameObject<T>(string gameObjectName) where T : Component

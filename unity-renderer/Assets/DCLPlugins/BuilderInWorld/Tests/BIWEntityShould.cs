@@ -10,10 +10,11 @@ using UnityEngine;
 
 public class BIWEntityShould : IntegrationTestSuite_Legacy
 {
-    private const string ENTITY_ID = "1";
+    private const long ENTITY_ID = 1;
     BIWEntity entity;
     BIWEntityHandler entityHandler;
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override IEnumerator SetUp()
     {
@@ -21,12 +22,21 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
         entityHandler = new BIWEntityHandler();
         entityHandler.Initialize(BIWTestUtils.CreateMockedContextForTestScene());
 
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
         var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
         entityHandler.EnterEditMode(builderScene);
         entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
+        yield return base.TearDown();
     }
 
     [Test]
@@ -111,9 +121,9 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
 
         SmartItemComponent smartItemComponent = null;
 
-        scene.EntityComponentCreateOrUpdateWithModel(ENTITY_ID, CLASS_ID_COMPONENT.SMART_ITEM, model);
+        scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(ENTITY_ID, CLASS_ID_COMPONENT.SMART_ITEM, model);
 
-        if (scene.entities[ENTITY_ID].TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent baseComponent))
+        if (scene.componentsManagerLegacy.TryGetBaseComponent(scene.entities[ENTITY_ID], CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent baseComponent))
         {
             //Note (Adrian): We can't wait to set the component 1 frame in production, so we set it like production
             smartItemComponent = ((SmartItemComponent) baseComponent);

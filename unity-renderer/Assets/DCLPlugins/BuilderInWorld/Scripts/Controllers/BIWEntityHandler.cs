@@ -455,7 +455,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         return entities;
     }
 
-    public BIWEntity GetConvertedEntity(string entityId)
+    public BIWEntity GetConvertedEntity(long entityId)
     {
         if (convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entityId)))
             return convertedEntities[GetConvertedUniqueKeyForEntity(entityId)];
@@ -501,10 +501,10 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public BIWEntity DuplicateEntity(BIWEntity entityToDuplicate)
     {
-        IDCLEntity entity = SceneUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
+        IDCLEntity entity = BIWUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
         //Note: If the entity contains the name component or DCLLockedOnEdit, we don't want to copy them 
-        entity.RemoveSharedComponent(typeof(DCLName), false);
-        entity.RemoveSharedComponent(typeof(DCLLockedOnEdit), false);
+        sceneToEdit.componentsManagerLegacy.RemoveSharedComponent(entity, typeof(DCLName), false);
+        sceneToEdit.componentsManagerLegacy.RemoveSharedComponent(entity, typeof(DCLLockedOnEdit), false);
 
         BIWUtils.CopyGameObjectStatus(entityToDuplicate.rootEntity.gameObject, entity.gameObject, false, false);
         BIWEntity convertedEntity = SetupEntityToEdit(entity);
@@ -532,12 +532,12 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         foreach (ProtocolV2.GenericComponent component in data.components)
         {
-            sceneToEdit.EntityComponentCreateOrUpdateWithModel(newEntity.entityId, (CLASS_ID_COMPONENT) component.componentId, component.data);
+            sceneToEdit.componentsManagerLegacy.EntityComponentCreateOrUpdate(newEntity.entityId, (CLASS_ID_COMPONENT) component.componentId, component.data);
         }
 
         foreach (ProtocolV2.GenericComponent component in data.sharedComponents)
         {
-            sceneToEdit.SharedComponentAttach(newEntity.entityId, component.classId);
+            sceneToEdit.componentsManagerLegacy.SceneSharedComponentAttach(newEntity.entityId, component.classId);
         }
 
         if (data.nftComponent != null)
@@ -554,11 +554,12 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         
         if(!convertedEntity.isLoaded)
             creatorController.CreateLoadingObject(convertedEntity);
-        
-        if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.GLTF_SHAPE, out var gltfComponent))
+
+        var rootEntity = convertedEntity.rootEntity;
+        if (sceneToEdit.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.GLTF_SHAPE, out var gltfComponent))
             gltfComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
 
-        if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.NFT_SHAPE, out var nftComponent))
+        if (sceneToEdit.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.NFT_SHAPE, out var nftComponent))
             nftComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
         
         EntityListChanged();
@@ -567,7 +568,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public BIWEntity CreateEmptyEntity(IParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true)
     {
-        IDCLEntity newEntity = parcelScene.CreateEntity(Guid.NewGuid().ToString());
+        IDCLEntity newEntity = parcelScene.CreateEntity(ParcelScene.EntityFromLegacyEntityString(Guid.NewGuid().ToString()));
         DCLTransform.Model transformModel = new DCLTransform.Model();
         transformModel.position = WorldStateUtils.ConvertUnityToScenePosition(entryPoint, parcelScene);
 
@@ -715,7 +716,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         saveController.TryToSave();
     }
 
-    public void DeleteEntity(string entityId)
+    public void DeleteEntity(long entityId)
     {
         BIWEntity entity = convertedEntities[GetConvertedUniqueKeyForEntity(entityId)];
         DeleteEntity(entity, true);
@@ -742,7 +743,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         RemoveConvertedEntity(entityToDelete.rootEntity);
         entityToDelete.rootEntity.OnRemoved -= RemoveConvertedEntity;
         entityToDelete.Delete();
-        string idToRemove = entityToDelete.rootEntity.entityId;
+        long idToRemove = entityToDelete.rootEntity.entityId;
         OnEntityDeleted?.Invoke(entityToDelete);
         creatorController.RemoveLoadingObjectInmediate(entityToDelete.rootEntity.entityId);
         if (sceneToEdit.entities.ContainsKey(idToRemove))
@@ -868,7 +869,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             bridge.ChangeEntityLockStatus(entityToApply, sceneToEdit);
     }
 
-    private string GetConvertedUniqueKeyForEntity(string entityID) { return sceneToEdit.sceneData.id + entityID; }
+    private string GetConvertedUniqueKeyForEntity(long entityID) { return sceneToEdit.sceneData.id + entityID; }
 
     private string GetConvertedUniqueKeyForEntity(IDCLEntity entity) { return entity.scene.sceneData.id + entity.entityId; }
 

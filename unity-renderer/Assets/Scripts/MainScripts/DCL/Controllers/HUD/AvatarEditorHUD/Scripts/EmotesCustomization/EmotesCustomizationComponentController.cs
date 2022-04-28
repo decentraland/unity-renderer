@@ -9,11 +9,7 @@ namespace DCL.EmotesCustomization
     {
         internal const int NUMBER_OF_SLOTS = 10;
 
-        internal DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
-        internal BaseDictionary<(string bodyshapeId, string emoteId), AnimationClip> emoteAnimations => DataStore.i.emotes.animations;
-        internal BaseVariable<bool> isStarMenuOpen => DataStore.i.exploreV2.isOpen;
-        internal bool isEmotesCustomizationSectionOpen => isStarMenuOpen.Get() && view.isActive;
-        internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
+        internal bool isEmotesCustomizationSectionOpen => exploreV2DataStore.isOpen.Get() && view.isActive;
 
         internal IEmotesCustomizationComponentView view;
         internal InputAction_Hold equipInputAction;
@@ -28,17 +24,34 @@ namespace DCL.EmotesCustomization
         internal InputAction_Trigger shortcut7InputAction;
         internal InputAction_Trigger shortcut8InputAction;
         internal InputAction_Trigger shortcut9InputAction;
+        internal readonly DataStore dataStore;
         internal UserProfile userProfile;
         internal BaseDictionary<string, WearableItem> catalog;
         internal BaseDictionary<string, EmoteCardComponentView> emotesInLoadingState = new BaseDictionary<string, EmoteCardComponentView>();
+
+        internal DataStore_EmotesCustomization emotesCustomizationDataStore;
+        internal DataStore_Emotes emotesDataStore;
+        internal DataStore_ExploreV2 exploreV2DataStore;
+        internal DataStore_HUDs hudsDataStore;
 
         public event Action<string> onEmotePreviewed;
         public event Action<string> onEmoteEquipped;
         public event Action<string> onEmoteUnequipped;
         public event Action<string> onEmoteSell;
 
-        public IEmotesCustomizationComponentView Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
+        public IEmotesCustomizationComponentView Initialize(
+            DataStore_EmotesCustomization emotesCustomizationDataStore, 
+            DataStore_Emotes emotesDataStore,
+            DataStore_ExploreV2 exploreV2DataStore,
+            DataStore_HUDs hudsDataStore,
+            UserProfile userProfile, 
+            BaseDictionary<string, WearableItem> catalog)
         {
+            this.emotesCustomizationDataStore = emotesCustomizationDataStore;
+            this.emotesDataStore = emotesDataStore;
+            this.exploreV2DataStore = exploreV2DataStore;
+            this.hudsDataStore = hudsDataStore;
+
             IEmotesCustomizationComponentView view = ConfigureView();
             ConfigureUserProfileAndCatalog(userProfile, catalog);
             ConfigureShortcuts();
@@ -61,12 +74,12 @@ namespace DCL.EmotesCustomization
             view.onEmoteUnequipped -= OnEmoteUnequipped;
             view.onSellEmoteClicked -= OnSellEmoteClicked;
             view.onSlotSelected -= OnSlotSelected;
-            isStarMenuOpen.OnChange -= IsStarMenuOpenChanged;
-            avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
+            exploreV2DataStore.isOpen.OnChange -= IsStarMenuOpenChanged;
+            hudsDataStore.avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
             emotesCustomizationDataStore.equippedEmotes.OnSet -= OnEquippedEmotesSet;
             catalog.OnAdded -= AddEmote;
             catalog.OnRemoved -= RemoveEmote;
-            emoteAnimations.OnAdded -= OnAnimationAdded;
+            emotesDataStore.animations.OnAdded -= OnAnimationAdded;
             userProfile.OnInventorySet -= OnUserProfileInventorySet;
             userProfile.OnUpdate -= OnUserProfileUpdated;
             equipInputAction.OnFinished -= OnEquipInputActionTriggered;
@@ -105,8 +118,8 @@ namespace DCL.EmotesCustomization
             view.onEmoteUnequipped += OnEmoteUnequipped;
             view.onSellEmoteClicked += OnSellEmoteClicked;
             view.onSlotSelected += OnSlotSelected;
-            isStarMenuOpen.OnChange += IsStarMenuOpenChanged;
-            avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
+            exploreV2DataStore.isOpen.OnChange += IsStarMenuOpenChanged;
+            hudsDataStore.avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
 
             return view;
         }
@@ -140,7 +153,9 @@ namespace DCL.EmotesCustomization
             emotesCustomizationDataStore.currentLoadedEmotes.Add(id);
             EmoteCardComponentModel emoteToAdd = ParseWearableItemIntoEmoteCardModel(wearable);
             EmoteCardComponentView newEmote = view.AddEmote(emoteToAdd);
-            newEmote.SetAsLoading(true);
+
+            if (newEmote != null)
+                newEmote.SetAsLoading(true);
 
             if (!emotesInLoadingState.ContainsKey(id))
                 emotesInLoadingState.Add(id, newEmote);
@@ -161,7 +176,7 @@ namespace DCL.EmotesCustomization
 
         internal void RefreshEmoteLoadingState(string emoteId)
         {
-            if (emoteAnimations.ContainsKey((userProfile.avatar.bodyShape, emoteId)))
+            if (emotesDataStore.animations.ContainsKey((userProfile.avatar.bodyShape, emoteId)))
             {
                 emotesInLoadingState.TryGetValue(emoteId, out EmoteCardComponentView emote);
                 if (emote != null)
@@ -210,7 +225,7 @@ namespace DCL.EmotesCustomization
             this.userProfile.OnUpdate -= OnUserProfileUpdated;
             catalog.OnAdded += AddEmote;
             catalog.OnRemoved += RemoveEmote;
-            emoteAnimations.OnAdded += OnAnimationAdded;
+            emotesDataStore.animations.OnAdded += OnAnimationAdded;
 
             ProcessCatalog();
         }
@@ -242,14 +257,18 @@ namespace DCL.EmotesCustomization
         internal void StoreEquippedEmotes()
         {
             List<EquippedEmoteData> newEquippedEmotesList = new List<EquippedEmoteData> { null, null, null, null, null, null, null, null, null, null };
-            foreach (EmoteSlotCardComponentView slot in view.currentSlots)
+
+            if (view.currentSlots != null)
             {
-                if (!string.IsNullOrEmpty(slot.model.emoteId))
-                    newEquippedEmotesList[slot.model.slotNumber] = new EquippedEmoteData
-                    {
-                        id = slot.model.emoteId,
-                        cachedThumbnail = slot.model.pictureSprite
-                    };
+                foreach (EmoteSlotCardComponentView slot in view.currentSlots)
+                {
+                    if (!string.IsNullOrEmpty(slot.model.emoteId))
+                        newEquippedEmotesList[slot.model.slotNumber] = new EquippedEmoteData
+                        {
+                            id = slot.model.emoteId,
+                            cachedThumbnail = slot.model.pictureSprite
+                        };
+                }
             }
 
             emotesCustomizationDataStore.unsavedEquippedEmotes.Set(newEquippedEmotesList);

@@ -228,8 +228,6 @@ public class InputController : MonoBehaviour
 #endif
                     break;
                 case DCLAction_Trigger.ToggleNavMap:
-                    if (allUIHidden)
-                        break;
                     InputProcessor.FromKey(action, KeyCode.M, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleFriends:
@@ -257,8 +255,6 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.P, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleStartMenu:
-                    if (allUIHidden)
-                        break;
                     InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.TogglePlacesAndEventsHud:
