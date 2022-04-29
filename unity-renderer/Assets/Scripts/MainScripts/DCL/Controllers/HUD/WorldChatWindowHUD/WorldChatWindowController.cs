@@ -144,6 +144,7 @@ public class WorldChatWindowController : IHUD
     {
         if (message.messageType != ChatMessage.Type.PRIVATE) return;
         var profile = ExtractRecipient(message);
+        if (profile == null) return;
         lastPrivateMessages[profile.userId] = message;
         recipientsFromPrivateChats[profile.userId] = profile;
         view.SetPrivateChat(new PrivateChatModel

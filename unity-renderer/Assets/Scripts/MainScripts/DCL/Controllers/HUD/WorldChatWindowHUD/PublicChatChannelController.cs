@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
 
@@ -63,16 +64,13 @@ public class PublicChatChannelController : IHUD
 
     public void Setup(string channelId)
     {
+        if (string.IsNullOrEmpty(channelId) || channelId == this.channelId) return;
         this.channelId = channelId;
 
         // TODO: retrieve data from a channel provider
         view.Setup(this.channelId, "General", "Any useful description here");
 
-        chatHudController.ClearAllEntries();
-        var messageEntries = chatController.GetEntries()
-            .ToList();
-        foreach (var v in messageEntries)
-            HandleMessageReceived(v);
+        ReloadAllChats().Forget();
     }
 
     public void Dispose()
@@ -124,6 +122,22 @@ public class PublicChatChannelController : IHUD
         }
         else
             view.Hide();
+    }
+
+    private async UniTaskVoid ReloadAllChats()
+    {
+        chatHudController.ClearAllEntries();
+
+        const int entriesPerFrame = 10;
+        // TODO: filter entries by channelId
+        var list = chatController.GetEntries();
+        
+        for (var i = 0; i < list.Count; i++)
+        {
+            var message = list[i];
+            if (i % entriesPerFrame == 0) await UniTask.NextFrame();
+            HandleMessageReceived(message);
+        }
     }
 
     private void MarkChatMessagesAsRead() => lastReadMessagesService.MarkAllRead(channelId);

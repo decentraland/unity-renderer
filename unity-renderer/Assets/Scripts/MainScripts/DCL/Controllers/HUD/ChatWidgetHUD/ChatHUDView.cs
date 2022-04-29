@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
@@ -36,6 +37,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
     private readonly Dictionary<Action, UnityAction<string>> inputFieldListeners =
         new Dictionary<Action, UnityAction<string>>();
+
+    private Coroutine updateLayoutRoutine;
 
     public event Action<string> OnMessageUpdated;
 
@@ -181,7 +184,10 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
         SortEntries();
 
-        Utils.ForceUpdateLayout(chatEntriesContainer, delayed: false);
+        if (updateLayoutRoutine != null)
+            StopCoroutine(updateLayoutRoutine);
+        if (gameObject.activeInHierarchy)
+            updateLayoutRoutine = StartCoroutine(UpdateLayoutOnNextFrame());
 
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
@@ -357,6 +363,13 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
                 entries[i].transform.SetSiblingIndex(i);
             }
         }
+    }
+
+    private IEnumerator UpdateLayoutOnNextFrame()
+    {
+        yield return null;
+        Utils.ForceUpdateLayout(chatEntriesContainer, delayed: false);
+        updateLayoutRoutine = null;
     }
 
     [Serializable]

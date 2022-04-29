@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
 
@@ -63,8 +64,7 @@ public class PrivateChatWindowController : IHUD
 
     public void Configure(string newConversationUserId)
     {
-        if (string.IsNullOrEmpty(newConversationUserId) || newConversationUserId == ConversationUserId)
-            return;
+        if (string.IsNullOrEmpty(newConversationUserId) || newConversationUserId == ConversationUserId) return;
 
         UserProfile newConversationUserProfile = userProfileBridge.Get(newConversationUserId);
 
@@ -79,11 +79,7 @@ public class PrivateChatWindowController : IHUD
 
         chatHudController.ClearAllEntries();
 
-        var messageEntries = chatController.GetEntries()
-            .Where(IsMessageFomCurrentConversation)
-            .ToList();
-        foreach (var v in messageEntries)
-            HandleMessageReceived(v);
+        ReloadAllChats().Forget();
     }
 
     public void SetVisibility(bool visible)
@@ -123,6 +119,22 @@ public class PrivateChatWindowController : IHUD
         view?.Dispose();
     }
 
+    private async UniTaskVoid ReloadAllChats()
+    {
+        chatHudController.ClearAllEntries();
+
+        const int entriesPerFrame = 10;
+        var list = chatController.GetEntries();
+        
+        for (var i = 0; i < list.Count; i++)
+        {
+            var message = list[i];
+            if (i % entriesPerFrame == 0) await UniTask.NextFrame();
+            if (!IsMessageFomCurrentConversation(message)) continue;
+            HandleMessageReceived(message);
+        }
+    }
+
     private void HandleSendChatMessage(ChatMessage message)
     {
         if (string.IsNullOrEmpty(message.body)) return;
@@ -156,7 +168,7 @@ public class PrivateChatWindowController : IHUD
 
         chatHudController.AddChatMessage(message);
 
-        if (conversationProfile.userId == ConversationUserId)
+        if (conversationProfile != null && conversationProfile.userId == ConversationUserId)
         {
             // The messages from 'conversationUserId' are marked as read if his private chat window is currently open
             MarkUserChatMessagesAsRead(ConversationUserId);
