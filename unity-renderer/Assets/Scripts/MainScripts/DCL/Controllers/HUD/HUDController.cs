@@ -294,9 +294,7 @@ public class HUDController : IHUDController
                     if (taskbarHud != null)
                     {
                         taskbarHud.Initialize(
-                            SceneReferences.i.mouseCatcher,
-                            ChatController.i,
-                            FriendsController.i);
+                            SceneReferences.i.mouseCatcher);
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
 
@@ -400,7 +398,7 @@ public class HUDController : IHUDController
 
     private void OpenPrivateChatWindow(string targetUserId)
     {
-        taskbarHud?.OpenPrivateChatTo(targetUserId);
+        taskbarHud?.OpenPrivateChat(targetUserId);
     }
 
     private void View_OnDeactivatePreview()

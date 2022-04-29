@@ -15,6 +15,7 @@ namespace DCL
         event Action OnMouseLock;
         bool isLocked { get; }
         void LockCursor();
+        void UnlockCursor();
     }
 
     public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler, IPointerUpHandler

@@ -52,29 +52,20 @@ public class TaskbarButton : MonoBehaviour
 
     public void SetToggleState(bool on, bool useCallback = true)
     {
-        if (toggledOn == on)
-            return;
+        if (toggledOn == on) return;
 
         if (on && firstTimeLabelIndicator != null)
             firstTimeLabelIndicator.SetActive(false);
 
         SetLineIndicator(on);
+        toggledOn = on;
 
-        if (!useCallback)
+        if (useCallback)
         {
-            toggledOn = on;
-            return;
-        }
-
-        if (on)
-        {
-            OnToggleOn?.Invoke(this);
-            toggledOn = on;
-        }
-        else
-        {
-            toggledOn = on;
-            OnToggleOff?.Invoke(this);
+            if (on)
+                OnToggleOn?.Invoke(this);
+            else
+                OnToggleOff?.Invoke(this);    
         }
     }
 

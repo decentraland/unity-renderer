@@ -1,12 +1,11 @@
 using System;
-using System.Linq;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
 
 public class PrivateChatWindowController : IHUD
 {
-    public IPrivateChatComponentView view;
+    public IPrivateChatComponentView View { get; private set; }
 
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
@@ -20,6 +19,7 @@ public class PrivateChatWindowController : IHUD
     private string ConversationUserId { get; set; } = string.Empty;
 
     public event Action OnPressBack;
+    public event Action OnClosed;
 
     public PrivateChatWindowController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
@@ -39,7 +39,7 @@ public class PrivateChatWindowController : IHUD
     public void Initialize(IPrivateChatComponentView view = null)
     {
         view ??= PrivateChatWindowComponentView.Create();
-        this.view = view;
+        this.View = view;
         view.OnPressBack -= View_OnPressBack;
         view.OnPressBack += View_OnPressBack;
         view.OnClose -= OnCloseView;
@@ -62,7 +62,7 @@ public class PrivateChatWindowController : IHUD
         }
     }
 
-    public void Configure(string newConversationUserId)
+    public void Setup(string newConversationUserId)
     {
         if (string.IsNullOrEmpty(newConversationUserId) || newConversationUserId == ConversationUserId) return;
 
@@ -73,7 +73,7 @@ public class PrivateChatWindowController : IHUD
 
         var userStatus = friendsController.GetUserStatus(ConversationUserId);
 
-        view.Setup(newConversationUserProfile,
+        View.Setup(newConversationUserProfile,
             userStatus.presence == PresenceStatus.ONLINE,
             userProfileBridge.GetOwn().IsBlocked(ConversationUserId));
 
@@ -84,39 +84,39 @@ public class PrivateChatWindowController : IHUD
 
     public void SetVisibility(bool visible)
     {
-        if (view.IsActive == visible) return;
+        if (View.IsActive == visible) return;
 
         if (visible)
         {
             if (conversationProfile != null)
             {
                 var userStatus = friendsController.GetUserStatus(ConversationUserId);
-                view.Setup(conversationProfile,
+                View.Setup(conversationProfile,
                     userStatus.presence == PresenceStatus.ONLINE,
                     userProfileBridge.GetOwn().IsBlocked(ConversationUserId));
             }
 
-            view.Show();
+            View.Show();
             chatHudController.FocusInputField();
             MarkUserChatMessagesAsRead();
         }
         else
         {
-            view.Hide();
+            View.Hide();
         }
     }
 
     public void Dispose()
     {
         chatHudController.OnInputFieldSelected -= HandleInputFieldSelection;
-        view.OnPressBack -= View_OnPressBack;
-        view.OnClose -= OnCloseView;
-        view.OnMinimize -= OnMinimizeView;
+        View.OnPressBack -= View_OnPressBack;
+        View.OnClose -= OnCloseView;
+        View.OnMinimize -= OnMinimizeView;
 
         if (chatController != null)
             chatController.OnAddMessage -= HandleMessageReceived;
 
-        view?.Dispose();
+        View?.Dispose();
     }
 
     private async UniTaskVoid ReloadAllChats()
@@ -126,7 +126,7 @@ public class PrivateChatWindowController : IHUD
         const int entriesPerFrame = 10;
         var list = chatController.GetEntries();
         if (list.Count == 0) return;
-        
+
         for (var i = list.Count - 1; i >= 0; i--)
         {
             var message = list[i];
@@ -140,7 +140,7 @@ public class PrivateChatWindowController : IHUD
     {
         if (string.IsNullOrEmpty(message.body)) return;
         if (string.IsNullOrEmpty(conversationProfile.userName)) return;
-        
+
         message.messageType = ChatMessage.Type.PRIVATE;
         message.recipient = conversationProfile.userName;
 
@@ -169,14 +169,18 @@ public class PrivateChatWindowController : IHUD
 
         chatHudController.AddChatMessage(message);
 
-        if (view.IsActive)
+        if (View.IsActive)
         {
             // The messages from 'conversationUserId' are marked as read if his private chat window is currently open
             MarkUserChatMessagesAsRead();
         }
     }
 
-    private void OnCloseView() => SetVisibility(false);
+    private void OnCloseView()
+    {
+        SetVisibility(false);
+        OnClosed?.Invoke();
+    }
 
     private void View_OnPressBack() => OnPressBack?.Invoke();
 
