@@ -29,7 +29,10 @@ public static partial class BIWUtils
         if (!scene.entities.ContainsKey(entity.entityId))
             return null;
 
-        IDCLEntity newEntity = scene.CreateEntity(ParcelScene.EntityFromLegacyEntityString(System.Guid.NewGuid().ToString()));
+        var sceneController = Environment.i.world.sceneController;
+        IDCLEntity newEntity =
+            scene.CreateEntity(
+                sceneController.entityIdHelper.EntityFromLegacyEntityString(System.Guid.NewGuid().ToString()));
 
         if (entity.children.Count > 0)
         {
