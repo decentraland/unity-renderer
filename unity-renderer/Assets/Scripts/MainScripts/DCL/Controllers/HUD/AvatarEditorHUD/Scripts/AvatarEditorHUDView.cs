@@ -72,16 +72,10 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     internal ColorPickerPanel skinColorPicker;
 
     [SerializeField]
-    internal ColorSelector eyeColorSelector;
+    internal ColorPickerComponentView eyeColorPickerComponent;
 
     [SerializeField]
-    internal ColorPickerPanel eyeColorPicker;
-
-    [SerializeField]
-    internal ColorSelector hairColorSelector;
-
-    [SerializeField]
-    internal ColorPickerPanel hairColorPicker;
+    internal ColorPickerComponentView hairColorPickerComponent;
 
     [SerializeField]
     internal GameObject characterPreviewPrefab;
@@ -226,14 +220,14 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         collectiblesItemSelector.OnSellClicked += controller.SellCollectible;
         collectiblesItemSelector.OnRetryClicked += controller.RetryLoadOwnedWearables;
 
-        skinColorSelector.OnColorChanged += controller.SkinColorClicked;
+        skinColorSelector.OnColorSelectorChange += controller.SkinColorClicked;
         /* UNCOMMENT TO ENABLE SKIN COLOR PICKER
          * skinColorPicker.OnColorChanged += controller.SkinColorClicked;
          */
-        eyeColorSelector.OnColorChanged += controller.EyesColorClicked;
-        eyeColorPicker.OnColorChanged += controller.EyesColorClicked;
-        hairColorSelector.OnColorChanged += controller.HairColorClicked;
-        hairColorPicker.OnColorChanged += controller.HairColorClicked;
+        //eyeColorSelector.OnColorSelectorChange += controller.EyesColorClicked;
+        //eyeColorPicker.OnColorChanged += controller.EyesColorClicked;
+        eyeColorPickerComponent.OnColorChanged += controller.EyesColorClicked;
+        hairColorPickerComponent.OnColorChanged += controller.HairColorClicked;
     }
 
     internal static AvatarEditorHUDView Create(AvatarEditorHUDController controller)
@@ -297,9 +291,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     }
 
     public void SelectHairColor(Color hairColor) 
-    { 
-        hairColorSelector.Select(hairColor);
-        hairColorPicker.UpdateSliderValues(hairColor);
+    {
+        hairColorPickerComponent.SetColorSelector(hairColor);
+        hairColorPickerComponent.UpdateSliderValues(hairColor);
     }
 
     public Color GetRandomColor()
@@ -317,15 +311,15 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
     public void SelectEyeColor(Color eyesColor) 
     {
-        eyeColorSelector.Select(eyesColor);
-        eyeColorPicker.UpdateSliderValues(eyesColor);
+        eyeColorPickerComponent.SetColorSelector(eyesColor);
+        eyeColorPickerComponent.UpdateSliderValues(eyesColor);
     }
 
     public void SetColors(List<Color> skinColors, List<Color> hairColors, List<Color> eyeColors)
     {
         skinColorSelector.Populate(skinColors);
-        eyeColorSelector.Populate(eyeColors);
-        hairColorSelector.Populate(hairColors);
+        eyeColorPickerComponent.SetColorList(eyeColors);
+        hairColorPickerComponent.SetColorList(hairColors);
     }
 
     public void UnselectAllWearables()
@@ -484,19 +478,15 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         }
 
         if (skinColorSelector != null)
-            skinColorSelector.OnColorChanged -= controller.SkinColorClicked;
+            skinColorSelector.OnColorSelectorChange -= controller.SkinColorClicked;
         /*  UNCOMMENT TO ENABLE SKIN COLOR PICKER
          * if (skinColorPicker != null)
          *  skinColorPicker.OnColorChanged -= controller.SkinColorClicked;
          */
-        if (eyeColorSelector != null)
-            eyeColorSelector.OnColorChanged -= controller.EyesColorClicked;
-        if (eyeColorPicker != null)
-            eyeColorPicker.OnColorChanged -= controller.EyesColorClicked;
-        if (hairColorSelector != null)
-            hairColorSelector.OnColorChanged -= controller.HairColorClicked;
-        if (hairColorPicker != null)
-            hairColorPicker.OnColorChanged -= controller.HairColorClicked;
+        if (eyeColorPickerComponent != null)
+            eyeColorPickerComponent.OnColorChanged -= controller.EyesColorClicked;
+        if (hairColorPickerComponent != null)
+            hairColorPickerComponent.OnColorChanged -= controller.HairColorClicked;
 
         if (this != null)
             Destroy(gameObject);
@@ -534,10 +524,10 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (eventData.pointerPressRaycast.gameObject != eyeColorPicker.gameObject && eventData.pointerPressRaycast.gameObject != hairColorPicker.gameObject)
+        if (eventData.pointerPressRaycast.gameObject != eyeColorPickerComponent.gameObject && eventData.pointerPressRaycast.gameObject != hairColorPickerComponent.gameObject)
         {
-            eyeColorPicker.SetActive(false);
-            hairColorPicker.SetActive(false);
+            eyeColorPickerComponent.SetActive(false);
+            hairColorPickerComponent.SetActive(false);
         }
     }
 
