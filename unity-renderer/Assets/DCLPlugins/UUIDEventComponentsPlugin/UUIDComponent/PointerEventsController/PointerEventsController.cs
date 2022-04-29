@@ -478,6 +478,12 @@ namespace DCL
                 CollidersManager.i.GetColliderInfo(raycastGlobalLayerHitInfo.hit.collider,
                     out ColliderInfo colliderInfo);
 
+                string entityId = SpecialEntityIdLegacyLiteral.SCENE_ROOT_ENTITY;
+
+                if (colliderInfo.entity != null)
+                    entityId =
+                        Environment.i.world.sceneController.entityIdHelper.GetOriginalId(colliderInfo.entity.entityId);
+
                 WebInterface.ReportGlobalPointerUpEvent(
                     buttonId,
                     raycastInfoGlobalLayer.ray,
@@ -485,7 +491,7 @@ namespace DCL
                     raycastGlobalLayerHitInfo.hit.normal,
                     raycastGlobalLayerHitInfo.hit.distance,
                     sceneId,
-                    colliderInfo.entity != null ? colliderInfo.entity.entityId : 0,
+                    entityId,
                     colliderInfo.meshName,
                     isHitInfoValid: true);
             }
@@ -508,6 +514,12 @@ namespace DCL
                 CollidersManager.i.GetColliderInfo(raycastGlobalLayerHitInfo.hit.collider,
                     out ColliderInfo colliderInfo);
 
+                string entityId = SpecialEntityIdLegacyLiteral.SCENE_ROOT_ENTITY;
+
+                if (colliderInfo.entity != null)
+                    entityId =
+                        Environment.i.world.sceneController.entityIdHelper.GetOriginalId(colliderInfo.entity.entityId);
+
                 WebInterface.ReportGlobalPointerDownEvent(
                     buttonId,
                     raycastInfoGlobalLayer.ray,
@@ -515,7 +527,7 @@ namespace DCL
                     raycastGlobalLayerHitInfo.hit.normal,
                     raycastGlobalLayerHitInfo.hit.distance,
                     sceneId,
-                    colliderInfo.entity != null ? colliderInfo.entity.entityId : 0,
+                    entityId,
                     colliderInfo.meshName,
                     isHitInfoValid: true);
             }
