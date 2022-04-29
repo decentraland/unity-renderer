@@ -98,7 +98,7 @@ public class PrivateChatWindowController : IHUD
 
             view.Show();
             chatHudController.FocusInputField();
-            MarkUserChatMessagesAsRead(ConversationUserId);
+            MarkUserChatMessagesAsRead();
         }
         else
         {
@@ -169,10 +169,10 @@ public class PrivateChatWindowController : IHUD
 
         chatHudController.AddChatMessage(message);
 
-        if (conversationProfile != null && conversationProfile.userId == ConversationUserId)
+        if (view.IsActive)
         {
             // The messages from 'conversationUserId' are marked as read if his private chat window is currently open
-            MarkUserChatMessagesAsRead(ConversationUserId);
+            MarkUserChatMessagesAsRead();
         }
     }
 
@@ -186,12 +186,12 @@ public class PrivateChatWindowController : IHUD
                (message.sender == ConversationUserId || message.recipient == ConversationUserId);
     }
 
-    private void MarkUserChatMessagesAsRead(string userId) =>
-        lastReadMessagesService.MarkAllRead(userId);
+    private void MarkUserChatMessagesAsRead() =>
+        lastReadMessagesService.MarkAllRead(ConversationUserId);
 
     private void HandleInputFieldSelection()
     {
         // The messages from 'conversationUserId' are marked as read if the player clicks on the input field of the private chat
-        MarkUserChatMessagesAsRead(ConversationUserId);
+        MarkUserChatMessagesAsRead();
     }
 }

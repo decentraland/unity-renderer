@@ -175,6 +175,9 @@ public class PublicChatChannelController : IHUD
         if (IsOldPrivateMessage(message)) return;
 
         chatHudController.AddChatMessage(message, view.IsActive);
+        
+        if (view.IsActive)
+            MarkChatMessagesAsRead();
 
         if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
             lastPrivateMessageRecipient = userProfileBridge.Get(message.sender).userName;
