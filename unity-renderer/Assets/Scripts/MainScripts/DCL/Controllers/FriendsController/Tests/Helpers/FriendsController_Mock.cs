@@ -79,8 +79,5 @@ public class FriendsController_Mock : IFriendsController
 
     public void AddFriend(FriendsController.UserStatus newFriend) { friends.Add(newFriend.userId, newFriend); }
 
-    public void RetryInitialization()
-    {
-        
-    }
+    public void RetryInitialization() { }
 }
