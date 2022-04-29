@@ -929,8 +929,7 @@ namespace DCL.Interface
                 entityId, meshName, ray, point, normal, distance,
                 isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
-
-            Debug.Log("Reporting global pointer down event: " + onGlobalPointerEvent);
+            
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 
             SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
