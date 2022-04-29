@@ -32,6 +32,7 @@ public class ColorPickerComponentView : BaseComponentView, IColorPickerComponent
     [SerializeField] private SliderComponentView sliderValue;
     [SerializeField] private Button toggleButton;
     [SerializeField] private GameObject container;
+    [SerializeField] private Image containerImage;
     [SerializeField] private GameObject colorSelectorObject;
     [SerializeField] private Image colorPreviewImage;
 
@@ -147,7 +148,11 @@ public class ColorPickerComponentView : BaseComponentView, IColorPickerComponent
         OnColorChanged.Invoke(newColor);
     }
 
-    public void SetActive(bool isActive) { container.SetActive(isActive); }
+    public void SetActive(bool isActive) 
+    { 
+        container.SetActive(isActive);
+        containerImage.enabled = isActive;
+    }
 
     private void OnDestroy() { toggleButton.onClick.RemoveAllListeners(); }
 
