@@ -17,13 +17,21 @@ namespace Tests
     {
         private ParcelScene scene;
         private ISceneController sceneController => DCL.Environment.i.world.sceneController;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene();
+            scene = TestUtils.CreateTestScene() as ParcelScene;
             CommonScriptableObjects.rendererState.Set(true);
+            coreComponentsPlugin = new CoreComponentsPlugin();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         public DCLAudioClip CreateAudioClip(string url, bool loop, bool shouldTryToLoad, double volume)
@@ -108,7 +116,7 @@ namespace Tests
             // 3. Update component with missing values
             componentModel = new DCLAudioClip.Model { };
 
-            scene.SharedComponentUpdate(audioClip.id, JsonUtility.ToJson(componentModel));
+            scene.componentsManagerLegacy.SceneSharedComponentUpdate(audioClip.id, JsonUtility.ToJson(componentModel));
 
             yield return audioClip.routine;
 
@@ -128,7 +136,7 @@ namespace Tests
 
             yield return TestUtils.CreateAudioSource(scene, entity.entityId, "1", true, loop: true);
 
-            DCLAudioSource dclAudioSource = entity.components.Values.FirstOrDefault(x => x is DCLAudioSource) as DCLAudioSource;
+            DCLAudioSource dclAudioSource = scene.componentsManagerLegacy.GetComponent(entity, CLASS_ID_COMPONENT.AUDIO_SOURCE) as DCLAudioSource;
 
             Assert.IsTrue(dclAudioSource.audioSource.loop);
         }
@@ -143,7 +151,7 @@ namespace Tests
 
             yield return TestUtils.CreateAudioSource(scene, entity.entityId, "1", true, loop: false);
 
-            DCLAudioSource dclAudioSource = entity.components.Values.FirstOrDefault(x => x is DCLAudioSource) as DCLAudioSource;
+            DCLAudioSource dclAudioSource = scene.componentsManagerLegacy.GetComponent(entity, CLASS_ID_COMPONENT.AUDIO_SOURCE) as DCLAudioSource;
             dclAudioSource.audioSource.time = dclAudioSource.audioSource.clip.length - 0.05f;
             yield return new WaitForSeconds(0.1f);
 

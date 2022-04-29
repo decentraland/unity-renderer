@@ -69,9 +69,6 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     internal ColorSelector skinColorSelector;
 
     [SerializeField]
-    internal ColorPickerPanel skinColorPicker;
-
-    [SerializeField]
     internal ColorPickerComponentView eyeColorPickerComponent;
 
     [SerializeField]
@@ -221,11 +218,6 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         collectiblesItemSelector.OnRetryClicked += controller.RetryLoadOwnedWearables;
 
         skinColorSelector.OnColorSelectorChange += controller.SkinColorClicked;
-        /* UNCOMMENT TO ENABLE SKIN COLOR PICKER
-         * skinColorPicker.OnColorChanged += controller.SkinColorClicked;
-         */
-        //eyeColorSelector.OnColorSelectorChange += controller.EyesColorClicked;
-        //eyeColorPicker.OnColorChanged += controller.EyesColorClicked;
         eyeColorPickerComponent.OnColorChanged += controller.EyesColorClicked;
         hairColorPickerComponent.OnColorChanged += controller.HairColorClicked;
     }
@@ -304,9 +296,6 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     public void SelectSkinColor(Color skinColor) 
     { 
         skinColorSelector.Select(skinColor);
-        /* UNCOMMENT TO ENABLE SKIN COLOR PICKER
-         * skinColorPicker.UpdateSliderValues(skinColor);
-         */
     }
 
     public void SelectEyeColor(Color eyesColor) 
@@ -479,10 +468,6 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
         if (skinColorSelector != null)
             skinColorSelector.OnColorSelectorChange -= controller.SkinColorClicked;
-        /*  UNCOMMENT TO ENABLE SKIN COLOR PICKER
-         * if (skinColorPicker != null)
-         *  skinColorPicker.OnColorChanged -= controller.SkinColorClicked;
-         */
         if (eyeColorPickerComponent != null)
             eyeColorPickerComponent.OnColorChanged -= controller.EyesColorClicked;
         if (hairColorPickerComponent != null)

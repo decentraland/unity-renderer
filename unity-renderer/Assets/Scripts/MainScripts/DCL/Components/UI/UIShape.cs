@@ -199,22 +199,22 @@ namespace DCL.Components
             GameObject uiGameObject = null;
 
             bool targetParentExists = !string.IsNullOrEmpty(model.parentComponent) &&
-                                      scene.disposableComponents.ContainsKey(model.parentComponent);
+                                      scene.componentsManagerLegacy.HasSceneSharedComponent(model.parentComponent);
 
             if (targetParentExists)
             {
-                if (scene.disposableComponents.ContainsKey(model.parentComponent))
+                if (scene.componentsManagerLegacy.HasSceneSharedComponent(model.parentComponent))
                 {
-                    parentUIComponent = (scene.disposableComponents[model.parentComponent] as UIShape);
+                    parentUIComponent = (scene.componentsManagerLegacy.GetSceneSharedComponent(model.parentComponent) as UIShape);
                 }
                 else
                 {
-                    parentUIComponent = scene.GetSharedComponent<UIScreenSpace>();
+                    parentUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
                 }
             }
             else
             {
-                parentUIComponent = scene.GetSharedComponent<UIScreenSpace>();
+                parentUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
             }
 
             uiGameObject =
@@ -379,9 +379,9 @@ namespace DCL.Components
         protected bool ReparentComponent(RectTransform targetTransform, string targetParent)
         {
             bool targetParentExists = !string.IsNullOrEmpty(targetParent) &&
-                                      scene.disposableComponents.ContainsKey(targetParent);
+                                      scene.componentsManagerLegacy.HasSceneSharedComponent(targetParent);
 
-            if (targetParentExists && parentUIComponent == scene.disposableComponents[targetParent])
+            if (targetParentExists && parentUIComponent == scene.componentsManagerLegacy.GetSceneSharedComponent(targetParent))
             {
                 return false;
             }
@@ -401,11 +401,11 @@ namespace DCL.Components
 
             if (targetParentExists)
             {
-                parentUIComponent = scene.disposableComponents[targetParent] as UIShape;
+                parentUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(targetParent) as UIShape;
             }
             else
             {
-                parentUIComponent = scene.GetSharedComponent<UIScreenSpace>();
+                parentUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
             }
 
             targetTransform.SetParent(parentUIComponent.childHookRectTransform, false);

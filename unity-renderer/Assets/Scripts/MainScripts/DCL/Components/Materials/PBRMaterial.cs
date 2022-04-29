@@ -81,7 +81,7 @@ namespace DCL.Components
                 return;
             }
 
-            entity.RemoveSharedComponent(typeof(BasicMaterial));
+            scene.componentsManagerLegacy.RemoveSharedComponent(entity, (typeof(BasicMaterial)));
             base.AttachTo(entity);
         }
 

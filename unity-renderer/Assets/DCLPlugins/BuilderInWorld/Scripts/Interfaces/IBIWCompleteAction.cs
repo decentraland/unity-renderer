@@ -10,7 +10,7 @@ public interface IBIWCompleteAction
         CHANGE_FLOOR = 5
     }
 
-    delegate void OnApplyValueDelegate(string entityId, object value, ActionType actionType, bool isUndo);
+    delegate void OnApplyValueDelegate(long entityId, object value, ActionType actionType, bool isUndo);
     event OnApplyValueDelegate OnApplyValue;
     void Undo();
     void Redo();
