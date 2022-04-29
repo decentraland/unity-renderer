@@ -1767,6 +1767,10 @@ namespace Tests
         [UnityTest]
         public IEnumerator PointerEventNotTriggeredByParent()
         {
+            EntityIdHelper idHelper = new EntityIdHelper();
+            DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
+            DCL.Environment.i.world.sceneController.Configure().entityIdHelper.Returns(idHelper);
+            
             // Create parent entity
             InstantiateEntityWithShape(out IDCLEntity blockingEntity, out BoxShape blockingShape);
             TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity,
@@ -1801,6 +1805,10 @@ namespace Tests
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(component != null);
+
+            // We simulate that entityId has come from kernel
+            DCL.Environment.i.world.sceneController.entityIdHelper.entityIdToLegacyId.Add(component.entity.entityId,component.entity.entityId.ToString());
+
 
             string targetEventType = "SceneEvent";
 
