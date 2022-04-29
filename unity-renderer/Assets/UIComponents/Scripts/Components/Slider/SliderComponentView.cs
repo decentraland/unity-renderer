@@ -72,11 +72,6 @@ public class SliderComponentView : BaseComponentView, ISliderComponentView, ICom
     public Button.ButtonClickedEvent onIncrement => incrementButton?.onClick;
     public Button.ButtonClickedEvent onDecrement => decrementButton?.onClick;
 
-    override public void Awake()
-    {
-        base.Awake();
-    }
-
     public void AddValueToSlider(float value)
     {
         slider.value += value;

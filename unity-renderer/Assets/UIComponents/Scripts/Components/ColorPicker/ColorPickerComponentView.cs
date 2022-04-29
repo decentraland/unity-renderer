@@ -154,7 +154,11 @@ public class ColorPickerComponentView : BaseComponentView, IColorPickerComponent
         containerImage.enabled = isActive;
     }
 
-    private void OnDestroy() { toggleButton.onClick.RemoveAllListeners(); }
+    override public void Dispose()
+    {
+        base.Dispose();
+        toggleButton.onClick.RemoveAllListeners();
+    }
 
     public void SetIncrementAmount(float amount) { model.incrementAmount = amount; }
 }
