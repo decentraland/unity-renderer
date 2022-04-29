@@ -19,13 +19,11 @@ public class FriendsHUDController : IHUD
     public event Action OnFriendsOpened;
     public event Action OnFriendsClosed;
 
-    public void Initialize(IFriendsController friendsController, UserProfile ownUserProfile, IChatController chatController)
+    public void Initialize(IFriendsController friendsController, UserProfile ownUserProfile, IChatController chatController,
+        IFriendsHUDComponentView view = null)
     {
-        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("social_bar_v1"))
-            view = FriendsHUDComponentView.Create();
-        else
-            view = FriendsHUDView.Create(this);
-            
+        view ??= FriendsHUDComponentView.Create();
+        this.view = view;     
         this.friendsController = friendsController;
 
         if (this.friendsController != null)
@@ -35,12 +33,12 @@ public class FriendsHUDController : IHUD
             this.friendsController.OnFriendNotFound += OnFriendNotFound;
         }
         
-        view.OnFriendRequestApproved += Entry_OnRequestAccepted;
-        view.OnCancelConfirmation += Entry_OnRequestCancelled;
-        view.OnRejectConfirmation += Entry_OnRequestRejected;
-        view.OnFriendRequestSent += Entry_OnRequestSent;
-        view.OnWhisper += Entry_OnWhisper;
-        view.OnDeleteConfirmation += Entry_OnDelete;
+        view.OnFriendRequestApproved += HandleRequestAccepted;
+        view.OnCancelConfirmation += HandleRequestCancelled;
+        view.OnRejectConfirmation += HandleRequestRejected;
+        view.OnFriendRequestSent += HandleRequestSent;
+        view.OnWhisper += HandleOpenWhisperChat;
+        view.OnDeleteConfirmation += HandleUnfriend;
         view.OnClose += HandleViewClosed;
 
         if (ownUserProfile != null)
@@ -58,8 +56,8 @@ public class FriendsHUDController : IHUD
             else
             {
                 view.ShowSpinner();
-                friendsController.OnInitialized -= FriendsController_OnInitialized;
-                friendsController.OnInitialized += FriendsController_OnInitialized;
+                friendsController.OnInitialized -= HandleFriendsInitialized;
+                friendsController.OnInitialized += HandleFriendsInitialized;
             }
         }
         
@@ -68,9 +66,9 @@ public class FriendsHUDController : IHUD
 
     private void HandleViewClosed() => SetVisibility(false);
 
-    private void FriendsController_OnInitialized()
+    private void HandleFriendsInitialized()
     {
-        friendsController.OnInitialized -= FriendsController_OnInitialized;
+        friendsController.OnInitialized -= HandleFriendsInitialized;
         view.HideSpinner();
     }
 
@@ -94,7 +92,7 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private void Entry_OnRequestSent(string userNameOrId)
+    private void HandleRequestSent(string userNameOrId)
     {
         if (AreAlreadyFriends(userNameOrId))
         {
@@ -211,9 +209,9 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private void Entry_OnWhisper(FriendEntry entry) { OnPressWhisper?.Invoke(entry.model.userId); }
+    private void HandleOpenWhisperChat(FriendEntry entry) { OnPressWhisper?.Invoke(entry.model.userId); }
 
-    private void Entry_OnDelete(string userId)
+    private void HandleUnfriend(string userId)
     {
         WebInterface.UpdateFriendshipStatus(
             new FriendsController.FriendshipUpdateStatusMessage()
@@ -223,7 +221,7 @@ public class FriendsHUDController : IHUD
             });
     }
 
-    private void Entry_OnRequestRejected(FriendRequestEntry entry)
+    private void HandleRequestRejected(FriendRequestEntry entry)
     {
         WebInterface.UpdateFriendshipStatus(
             new FriendsController.FriendshipUpdateStatusMessage
@@ -233,7 +231,7 @@ public class FriendsHUDController : IHUD
             });
     }
 
-    private void Entry_OnRequestCancelled(FriendRequestEntry entry)
+    private void HandleRequestCancelled(FriendRequestEntry entry)
     {
         WebInterface.UpdateFriendshipStatus(
             new FriendsController.FriendshipUpdateStatusMessage()
@@ -243,7 +241,7 @@ public class FriendsHUDController : IHUD
             });
     }
 
-    private void Entry_OnRequestAccepted(FriendRequestEntry entry)
+    private void HandleRequestAccepted(FriendRequestEntry entry)
     {
         WebInterface.UpdateFriendshipStatus(
             new FriendsController.FriendshipUpdateStatusMessage()
@@ -257,7 +255,7 @@ public class FriendsHUDController : IHUD
     {
         if (friendsController != null)
         {
-            friendsController.OnInitialized -= FriendsController_OnInitialized;
+            friendsController.OnInitialized -= HandleFriendsInitialized;
             friendsController.OnUpdateFriendship -= OnUpdateFriendship;
             friendsController.OnUpdateUserStatus -= OnUpdateUserStatus;
         }
