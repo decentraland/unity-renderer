@@ -5,7 +5,7 @@ namespace DCL
 {
     public class EntityIdHelper
     {
-        private Dictionary<long, string> entityIdToLegacyId = new Dictionary<long, string>();
+        internal Dictionary<long, string> entityIdToLegacyId = new Dictionary<long, string>();
 
         public string GetOriginalId(long entityId)
         {

@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using DCL.Camera;
 using DCL.Controllers;
+using NSubstitute;
+using NSubstitute.Extensions;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -56,7 +58,9 @@ namespace Tests
             mainCamera.transform.position = Vector3.zero;
             mainCamera.transform.forward = Vector3.forward;
 
+            EntityIdHelper idHelper = new EntityIdHelper();
             DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
+            DCL.Environment.i.world.sceneController.Configure().entityIdHelper.Returns(idHelper);
 
             uuidEventsPlugin = new UUIDEventsPlugin();
             coreComponentsPlugin = new CoreComponentsPlugin();
@@ -962,7 +966,7 @@ namespace Tests
             onPointerDownEvent.uuid = onPointerId;
             onPointerDownEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerDownEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
-            onPointerDownEvent.payload.hit.entityId = ""; //component.entity.entityId;
+            onPointerDownEvent.payload.hit.entityId = DCL.Environment.i.world.sceneController.entityIdHelper.GetOriginalId(component.entity.entityId);
             onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
@@ -981,9 +985,7 @@ namespace Tests
                 {
                     if (eventTriggered)
                         return true;
-
-                    //Debug.Log($"triggered? \npointerEvent {JsonUtility.ToJson(pointerEvent, true)}\nsceneEvent {JsonUtility.ToJson(sceneEvent, true)}");
-
+                    
                     if (pointerEvent.eventType == sceneEvent.eventType &&
                         pointerEvent.payload.uuid == sceneEvent.payload.uuid &&
                         pointerEvent.payload.payload.hit.entityId == sceneEvent.payload.payload.hit.entityId)
@@ -1029,7 +1031,7 @@ namespace Tests
             onPointerUpEvent.uuid = onPointerId;
             onPointerUpEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerUpEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
-            onPointerUpEvent.payload.hit.entityId = ""; //component.entity.entityId;
+            onPointerUpEvent.payload.hit.entityId = DCL.Environment.i.world.sceneController.entityIdHelper.GetOriginalId(component.entity.entityId);
             onPointerUpEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>();
@@ -1202,7 +1204,7 @@ namespace Tests
             onPointerUpEvent.uuid = onPointerId;
             onPointerUpEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerUpEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
-            onPointerUpEvent.payload.hit.entityId = ""; //component.entity.entityId;
+            onPointerUpEvent.payload.hit.entityId = DCL.Environment.i.world.sceneController.entityIdHelper.GetOriginalId(component.entity.entityId);
             onPointerUpEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>();
@@ -1375,6 +1377,7 @@ namespace Tests
                 new Vector3(1, 1, 1));
             yield return clickTargetShape.routine;
 
+            
             // Set character position and camera rotation
             mainCamera.transform.position = new Vector3(3, 3, 1);
 
@@ -1388,6 +1391,9 @@ namespace Tests
             var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene,
                 clickTargetEntity,
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+            
+            // We simulate that entityId has come from kernel
+            DCL.Environment.i.world.sceneController.entityIdHelper.entityIdToLegacyId.Add(component.entity.entityId,component.entity.entityId.ToString());
 
             Assert.IsTrue(component != null);
 
@@ -1397,7 +1403,7 @@ namespace Tests
             onPointerDownEvent.uuid = onPointerId;
             onPointerDownEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerDownEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
-            onPointerDownEvent.payload.hit.entityId = ""; //component.entity.entityId;
+            onPointerDownEvent.payload.hit.entityId = DCL.Environment.i.world.sceneController.entityIdHelper.GetOriginalId(component.entity.entityId);
             onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
@@ -1593,12 +1599,14 @@ namespace Tests
             Assert.IsTrue(component.entity != null);
 
             string targetEventType = "SceneEvent";
-
+            // We simulate that entityId has come from kernel
+            DCL.Environment.i.world.sceneController.entityIdHelper.entityIdToLegacyId.Add(component.entity.entityId,component.entity.entityId.ToString());
+            
             var onPointerDownEvent = new WebInterface.OnPointerDownEvent();
             onPointerDownEvent.uuid = onPointerId;
             onPointerDownEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerDownEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
-            onPointerDownEvent.payload.hit.entityId = ""; //component.entity.entityId;
+            onPointerDownEvent.payload.hit.entityId = DCL.Environment.i.world.sceneController.entityIdHelper.GetOriginalId(component.entity.entityId);
             onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
