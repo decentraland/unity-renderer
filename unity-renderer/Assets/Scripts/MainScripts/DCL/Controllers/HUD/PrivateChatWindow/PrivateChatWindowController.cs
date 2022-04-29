@@ -125,8 +125,9 @@ public class PrivateChatWindowController : IHUD
 
         const int entriesPerFrame = 10;
         var list = chatController.GetEntries();
+        if (list.Count == 0) return;
         
-        for (var i = 0; i < list.Count; i++)
+        for (var i = list.Count - 1; i >= 0; i--)
         {
             var message = list[i];
             if (i % entriesPerFrame == 0) await UniTask.NextFrame();
