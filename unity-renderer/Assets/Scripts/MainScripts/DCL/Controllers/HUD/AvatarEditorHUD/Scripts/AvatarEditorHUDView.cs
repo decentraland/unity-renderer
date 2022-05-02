@@ -560,6 +560,15 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         rectTransform.offsetMin = Vector2.zero;
     }
 
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (eventData.pointerPressRaycast.gameObject != eyeColorPickerComponent.gameObject && eventData.pointerPressRaycast.gameObject != hairColorPickerComponent.gameObject)
+        {
+            eyeColorPickerComponent.SetActive(false);
+            hairColorPickerComponent.SetActive(false);
+        }
+    }
+
     public void LoadCollectionsDropdown(Collection[] collections)
     {
         List<ToggleComponentModel> collectionsToAdd = new List<ToggleComponentModel>();
