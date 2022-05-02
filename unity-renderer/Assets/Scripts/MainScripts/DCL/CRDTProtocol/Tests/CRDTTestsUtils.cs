@@ -2,21 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using DCL.CRDT;
+using DCL;
+using DCL.Helpers;
 using Newtonsoft.Json;
-using UnityEditor;
 using UnityEngine;
 
 namespace Tests
 {
     public class CRDTTestsUtils
     {
-        public static string[] GetTestFilesAtThisDirectory()
+        public static string[] GetTestFilesPath()
         {
-            var g = AssetDatabase.FindAssets($"t:Script {nameof(CRDTTestsUtils)}");
-            var filePath = AssetDatabase.GUIDToAssetPath(g[0]);
-            var testDir = filePath.Substring(filePath.IndexOf('/') + 1).Replace($"{nameof(CRDTTestsUtils)}.cs", string.Empty);
-            var searchDir = $"{Application.dataPath}/{testDir}";
-            return Directory.GetFiles(searchDir, "*.test");
+            return Directory.GetFiles(TestAssetsUtils.GetPathRaw() + "/CRDT/", "*.test");
         }
 
         public static ParsedCRDTTestFile ParseTestFile(string filePath)
