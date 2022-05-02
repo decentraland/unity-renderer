@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using DCL;
+using DCL.CRDT;
 using DCL.Interface;
 using DCL.Models;
 using UnityEngine;
@@ -52,6 +53,7 @@ public class NativeBridgeCommunication : IKernelCommunication
         SetCallback_OpenNftDialog(OpenNftDialog);
 
         SetCallback_Query(Query);
+        SetCallback_CRDTMessage(CRDTMessage);
 #endif
     }
     public void Dispose()
@@ -316,6 +318,25 @@ public class NativeBridgeCommunication : IKernelCommunication
 
         return message;
     }
+    
+    [MonoPInvokeCallback(typeof(JS_Delegate_VIS))]
+    internal static void CRDTMessage(int intPtr, string sceneId)
+    {
+        using (var messageIterator = CRDTDeserializer.Deserialize(new IntPtr(intPtr)))
+        {
+            while (messageIterator.MoveNext())
+            {
+                Debug.unityLogger.logEnabled = true;
+                Debug.Log($"PATO: processing crdt");
+                QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+                queuedMessage.method = MessagingTypes.CRDT_MESSAGE;
+                queuedMessage.sceneId = sceneId;
+                queuedMessage.payload = messageIterator.Current;
+
+                queueHandler.EnqueueSceneMessage(queuedMessage);
+            }
+        }
+    }
 
     [DllImport("__Internal")]
     private static extern void SetCallback_CreateEntity(JS_Delegate_V callback);
@@ -364,4 +385,7 @@ public class NativeBridgeCommunication : IKernelCommunication
 
     [DllImport("__Internal")]
     private static extern void SetCallback_Query(JS_Delegate_Query callback);
+    
+    [DllImport("__Internal")]
+    private static extern void SetCallback_CRDTMessage(JS_Delegate_VIS callback);
 }
