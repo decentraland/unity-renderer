@@ -27,6 +27,8 @@ namespace DCL.Skybox
         private bool creatingNewConfig;
         private string newConfigName;
         private bool overridingController;
+        private SkyboxElements skyboxElements;
+        private float cycleTime = 24;
 
         private MaterialReferenceContainer.Mat_Layer matLayer = null;
 
@@ -552,21 +554,24 @@ namespace DCL.Skybox
                 }
             }
 
-            if (directionalLight != null)
-            {
-                return;
-            }
-
-            // Cache directional light reference
-            directionalLight = GameObject.FindObjectsOfType<Light>(true).Where(s => s.type == LightType.Directional).FirstOrDefault();
-
-            // Make a directional light object if can't find
             if (directionalLight == null)
             {
-                GameObject temp = new GameObject(SkyboxEditorLiterals.sunObjectName);
-                // Add the light component
-                directionalLight = temp.AddComponent<Light>();
-                directionalLight.type = LightType.Directional;
+                // Cache directional light reference
+                directionalLight = GameObject.FindObjectsOfType<Light>(true).Where(s => s.type == LightType.Directional).FirstOrDefault();
+
+                // Make a directional light object if can't find
+                if (directionalLight == null)
+                {
+                    GameObject temp = new GameObject(SkyboxEditorLiterals.sunObjectName);
+                    // Add the light component
+                    directionalLight = temp.AddComponent<Light>();
+                    directionalLight.type = LightType.Directional;
+                }
+            }
+
+            if (skyboxElements == null)
+            {
+                skyboxElements = new SkyboxElements();
             }
         }
 
@@ -579,6 +584,7 @@ namespace DCL.Skybox
                 selectedConfiguration = SkyboxController.i.GetCurrentConfiguration();
                 overridingController = SkyboxController.i.SetOverrideController(true);
                 timeOfTheDay = SkyboxController.i.GetCurrentTimeOfTheDay();
+                skyboxElements = SkyboxController.i.GetSkyboxElements();
                 UpdateConfigurationsList();
             }
         }
@@ -659,6 +665,8 @@ namespace DCL.Skybox
         {
             EnsureDependencies();
             selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, SkyboxEditorUtils.GetNormalizedDayTime(timeOfTheDay), matLayer.numberOfSlots, directionalLight);
+
+            skyboxElements.ApplySkyboxElements(selectedConfiguration, timeOfTheDay, cycleTime, true);
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)

@@ -33,6 +33,7 @@ namespace DCL.Skybox
         private float timeNormalizationFactor;
         private int slotCount;
         private bool overrideByEditor = false;
+        private SkyboxElements skyboxElements;
 
         // Reflection probe//
         private ReflectionProbe skyboxProbe;
@@ -451,6 +452,12 @@ namespace DCL.Skybox
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, cycleTime);
             ApplyAvatarColor(normalizedDayTime);
 
+            if (skyboxElements == null)
+            {
+                skyboxElements = new SkyboxElements();
+            }
+            skyboxElements.ApplySkyboxElements(configuration, timeOfTheDay, cycleTime, false);
+
             // Cycle resets
             if (timeOfTheDay >= cycleTime)
             {
@@ -484,6 +491,12 @@ namespace DCL.Skybox
                 timeOfTheDay = Mathf.Clamp(newTime, 0, 24);
                 configuration.ApplyOnMaterial(selectedMat, (float)timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
                 ApplyAvatarColor(GetNormalizedDayTime());
+
+                if (skyboxElements == null)
+                {
+                    skyboxElements = new SkyboxElements();
+                }
+                skyboxElements.ApplySkyboxElements(configuration, timeOfTheDay, cycleTime, false);
             }
             timeReporter.ReportTime(timeOfTheDay);
         }
@@ -577,5 +590,6 @@ namespace DCL.Skybox
             return result;
         }
 
+        public SkyboxElements GetSkyboxElements() { return skyboxElements; }
     }
 }
