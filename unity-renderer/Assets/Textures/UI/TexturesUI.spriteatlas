@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 5466921
+    totalSpriteSurfaceArea: 5476985
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -218,6 +218,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7b4468575e3ab49e1aec3edd88298137, type: 3}
   - {fileID: 21300000, guid: 5f5d6367f6d5ebc4ab5480df6fb70c5f, type: 3}
   - {fileID: 21300000, guid: 87a25a674771b42209ef0ae9b6b6bce7, type: 3}
+  - {fileID: 21300000, guid: b22119773231a487caa76e1b94ae9af5, type: 3}
   - {fileID: 21300000, guid: f5f102872b9fb41c6a606b3f038538aa, type: 3}
   - {fileID: 21300000, guid: 058e0097872914023991446b014562ef, type: 3}
   - {fileID: 21300000, guid: c319fd971d09e1745b925fff3aa3012a, type: 3}
@@ -551,6 +552,7 @@ SpriteAtlas:
   - ContainerRadius11Shadow
   - WalletConnectLogo
   - CameraIconSmall
+  - SliderHightlightWhite
   - BuilderIcon
   - VoiceChatDisable
   - ShowIcon
