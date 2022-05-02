@@ -34,8 +34,5 @@ namespace DCL.Helpers
             EditorUtility.FocusProjectWindow();
             Selection.activeObject = asset;
         }
-
-        [MenuItem("Assets/Create/Decentraland/DCLComponentFactory")]
-        public static void CreateAsset() { ScriptableObjectUtility.CreateAsset<PoolableComponentFactory>(); }
     }
 }

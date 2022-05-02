@@ -18,7 +18,7 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
     {
         yield return InitScene();
 
-        string entityId = "1";
+        long entityId = 1;
 
         var entity = TestUtils.CreateSceneEntity(scene, entityId);
 
@@ -28,7 +28,7 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
                 src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-        LoadWrapper_GLTF gltfShape = GLTFShape.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
+        LoadWrapper_GLTF gltfShape = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
         TestUtils.SetEntityTransform(scene, entity, new Vector3(8, -1, 8), Quaternion.identity, new Vector3(0.5f, 0.5f, 0.5f));

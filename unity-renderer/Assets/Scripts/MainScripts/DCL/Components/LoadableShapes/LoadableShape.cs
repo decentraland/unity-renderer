@@ -25,39 +25,7 @@ namespace DCL.Components
         public Action<LoadableShape> OnLoaded;
 
         protected Model previousModel = new Model();
-
-        private static readonly Dictionary<GameObject, LoadWrapper> attachedLoaders = new Dictionary<GameObject, LoadWrapper>();
-
-        public static LoadWrapper GetLoaderForEntity(IDCLEntity entity)
-        {
-            if (entity.meshRootGameObject == null)
-            {
-                Debug.LogWarning("NULL meshRootGameObject at GetLoaderForEntity()");
-                return null;
-            }
-
-            attachedLoaders.TryGetValue(entity.meshRootGameObject, out LoadWrapper result);
-            return result;
-        }
-
-        protected static T GetOrAddLoaderForEntity<T>(IDCLEntity entity)
-            where T : LoadWrapper, new()
-        {
-            if (!attachedLoaders.TryGetValue(entity.meshRootGameObject, out LoadWrapper result))
-            {
-                result = new T();
-                attachedLoaders.Add(entity.meshRootGameObject, result);
-            }
-
-            return result as T;
-        }
-
-        protected static void RemoveLoaderForEntity(IDCLEntity entity)
-        {
-            if (entity.meshRootGameObject != null)
-                attachedLoaders.Remove(entity.meshRootGameObject);
-        }
-
+        
         protected LoadableShape() { model = new Model(); }
 
         public override int GetClassId() { return -1; }
@@ -187,7 +155,8 @@ namespace DCL.Components
                 isLoaded = false;
                 entity.EnsureMeshGameObject(componentName + " mesh");
 
-                LoadWrapperType loadableShape = GetOrAddLoaderForEntity<LoadWrapperType>(entity);
+                LoadWrapperType loadableShape =
+                    Environment.i.world.state.GetOrAddLoaderForEntity<LoadWrapperType>(entity);
 
                 if (loadableShape is LoadWrapper_GLTF gltfLoadWrapper)
                     gltfLoadWrapper.customContentProvider = provider;
@@ -210,7 +179,7 @@ namespace DCL.Components
 
         void ConfigureVisibility(IDCLEntity entity)
         {
-            var loadable = GetLoaderForEntity(entity);
+            var loadable = Environment.i.world.state.GetLoaderForEntity(entity);
 
             if (loadable != null)
                 loadable.initialVisibility = model.visible;
@@ -287,9 +256,9 @@ namespace DCL.Components
             if (entity == null || entity.meshRootGameObject == null)
                 return;
 
-            LoadWrapper loadWrapper = GetLoaderForEntity(entity);
+            LoadWrapper loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
             loadWrapper?.Unload();
-            RemoveLoaderForEntity(entity);
+            Environment.i.world.state.RemoveLoaderForEntity(entity);
             entity.meshesInfo.CleanReferences();
         }
 

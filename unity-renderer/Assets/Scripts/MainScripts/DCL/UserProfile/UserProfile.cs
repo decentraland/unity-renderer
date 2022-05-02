@@ -116,6 +116,18 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         OnInventorySet?.Invoke(inventory);
     }
 
+    public void AddToInventory(string wearableId)
+    {
+        if (inventory.ContainsKey(wearableId))
+            inventory[wearableId]++;
+        else
+            inventory.Add(wearableId, 1);
+    }
+
+    public void RemoveFromInventory(string wearableId) { inventory.Remove(wearableId); }
+    
+    public bool ContainsInInventory(string wearableId) => inventory.ContainsKey(wearableId);
+
     public string[] GetInventoryItemsIds() { return inventory.Keys.ToArray(); }
 
     internal static UserProfile ownUserProfile;
@@ -140,8 +152,10 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             return;
         blocked.Add(userId);
     }
-
+    
     public void Unblock(string userId) { blocked.Remove(userId); }
+    
+    public bool HasEquipped(string wearableId) => avatar.wearables.Contains(wearableId);
 
 #if UNITY_EDITOR
     private void OnEnable()

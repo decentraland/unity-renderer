@@ -116,9 +116,7 @@ public class HUDController : IHUDController
                                        (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
 
         if (anyInputFieldIsSelected ||
-            settingsPanelHud.view.isOpen ||
-            avatarEditorHud.view.isOpen ||
-            DataStore.i.HUDs.navmapVisible.Get() ||
+            DataStore.i.exploreV2.isOpen.Get() ||
             CommonScriptableObjects.tutorialActive)
             return;
 

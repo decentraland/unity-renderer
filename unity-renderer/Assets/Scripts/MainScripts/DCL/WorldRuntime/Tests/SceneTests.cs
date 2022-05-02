@@ -15,13 +15,21 @@ using UnityEngine.TestTools;
 public class SceneTests : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
     private ISceneController sceneController => DCL.Environment.i.world.sceneController;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         DataStore.i.debugConfig.isDebugMode.Set(true);
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     protected override ServiceLocator InitializeServiceLocator()
@@ -147,7 +155,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         var loadedScene = Environment.i.world.state.loadedScenes[loadedSceneID] as ParcelScene;
         // Add 1 entity to the loaded scene
-        TestUtils.CreateSceneEntity(loadedScene, "6");
+        TestUtils.CreateSceneEntity(loadedScene, 6);
 
         var sceneEntities = loadedScene.entities;
 
@@ -333,8 +341,8 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [Test]
     public void ParcelScene_SetEntityParent()
     {
-        var entityId = "entityId";
-        var entityId2 = "entityId_2";
+        var entityId = 1134;
+        var entityId2 = 3124;
         var entity = TestUtils.CreateSceneEntity(scene, entityId);
         var entity2 = TestUtils.CreateSceneEntity(scene, entityId2);
 
@@ -343,7 +351,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set player reference as parent
-        TestUtils.SetEntityParent(scene, entityId, "FirstPersonCameraEntityReference");
+        TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
         Assert.AreEqual(entity.gameObject.transform.parent,
             DCLCharacterController.i.firstPersonCameraGameObject.transform);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
@@ -353,13 +361,113 @@ public class SceneTests : IntegrationTestSuite_Legacy
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set avatar position reference as parent
-        TestUtils.SetEntityParent(scene, entityId, "AvatarEntityReference");
+        TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.AVATAR_ENTITY_REFERENCE);
         Assert.AreEqual(entity.gameObject.transform.parent, DCLCharacterController.i.avatarGameObject.transform);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Remove all parents
-        TestUtils.SetEntityParent(scene, entityId, "0");
+        TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.SCENE_ROOT_ENTITY);
         Assert.IsNull(entity.parent);
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
+    }
+
+    [Test]
+    public void ConvertLegacyEntityIdsCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "Eed";
+        
+        // Act
+        EntityIdHelper helper = new EntityIdHelper();
+        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreEqual(result,885819392);
+        Assert.AreEqual(result,legacyEntityId.GetHashCode() << 9);
+    }
+    
+    [Test]
+    public void ReserveThe512FirstEntitiesCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "Eed";
+        
+        // Act
+        EntityIdHelper helper = new EntityIdHelper();
+        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreNotEqual(result,-1273338300);
+        Assert.AreNotEqual(result,legacyEntityId.GetHashCode());
+    }
+
+    [Test]
+    public void EntityLegacyGiveRootCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "0";
+        
+        // Act
+        EntityIdHelper helper = new EntityIdHelper();
+        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreEqual(result, (long) SpecialEntityId.SCENE_ROOT_ENTITY);
+    }
+    
+    [Test]
+    public void EntityLegacyGiveThirdPersonCameraEntityCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "PlayerEntityReference";
+        
+        // Act
+        EntityIdHelper helper = new EntityIdHelper();
+        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreEqual(result, (long) SpecialEntityId.THIRD_PERSON_CAMERA_ENTITY_REFERENCE);
+    }
+        
+    [Test]
+    public void EntityLegacyGiveFirstPersonCameraEntityCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "FirstPersonCameraEntityReference";
+        
+        // Act
+        EntityIdHelper helper = new EntityIdHelper();
+        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreEqual(result, (long) SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
+    }
+    
+    [Test]
+    public void EntityLegacyGiveAvatarPositionEntityCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "AvatarPositionEntityReference";
+        
+        // Act
+        EntityIdHelper helper = new EntityIdHelper();
+        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreEqual(result, (long) SpecialEntityId.AVATAR_POSITION_REFERENCE);
+    }
+    
+    [Test]
+    public void EntityLegacyGiveAvatarEntityCorrectly()
+    {
+        // Arrange
+        string legacyEntityId = "AvatarEntityReference";
+        
+        // Act
+        EntityIdHelper helper = new EntityIdHelper();
+        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
+        
+        // Assert
+        Assert.AreEqual(result, (long) SpecialEntityId.AVATAR_ENTITY_REFERENCE);
     }
 }

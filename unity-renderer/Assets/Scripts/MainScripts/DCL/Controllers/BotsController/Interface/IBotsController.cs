@@ -10,7 +10,7 @@ namespace DCL.Bots
         void StartRandomMovement(CoordsRandomMovementConfig config);
         void StopRandomMovement();
         void ClearBots();
-        void RemoveBot(string targetEntityId);
+        void RemoveBot(long targetEntityId);
     }
 
     public class WorldPosInstantiationConfig

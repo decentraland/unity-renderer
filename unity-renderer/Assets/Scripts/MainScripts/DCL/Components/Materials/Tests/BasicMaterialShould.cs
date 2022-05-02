@@ -12,11 +12,13 @@ using Assert = UnityEngine.Assertions.Assert;
 public class BasicMaterialShould : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
         Environment.i.world.sceneBoundsChecker.Stop();
     }
@@ -24,6 +26,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTearDown]
     protected override IEnumerator TearDown()
     {
+        coreComponentsPlugin.Dispose();
         yield return base.TearDown();
     }
 
@@ -106,7 +109,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator BeDetachedCorrectly()
     {
-        string entityId = "1";
+        long entityId = 1;
         string materialID = "a-material";
 
         TestUtils.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
@@ -138,8 +141,8 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator BeDetachedOnDispose()
     {
-        string firstEntityId = "1";
-        string secondEntityId = "2";
+        long firstEntityId = 1;
+        long secondEntityId = 2;
         string materialID = "a-material";
 
         // Instantiate entity with material
@@ -185,7 +188,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator EntityBasicMaterialUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         string materialID = "a-material";
 
         Assert.IsFalse(scene.componentsManagerLegacy.HasSceneSharedComponent(materialID));
