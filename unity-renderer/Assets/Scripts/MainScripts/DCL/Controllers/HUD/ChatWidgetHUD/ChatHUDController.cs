@@ -47,7 +47,7 @@ public class ChatHUDController : IDisposable
 
     public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false)
     {
-        AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom);
+        AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom).Forget();
     }
 
     public async UniTask AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false)

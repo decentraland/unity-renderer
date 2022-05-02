@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
@@ -54,7 +53,6 @@ public class PublicChatChannelController : IHUD
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnSendMessage += SendChatMessage;
         chatHudController.OnMessageUpdated += HandleMessageInputUpdated;
-        chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
@@ -153,12 +151,6 @@ public class PublicChatChannelController : IHUD
     {
         if (!string.IsNullOrEmpty(lastPrivateMessageRecipient) && message == "/r ")
             chatHudController.SetInputFieldText($"/w {lastPrivateMessageRecipient} ");
-    }
-
-    private void HandleInputFieldSelected()
-    {
-        if (string.IsNullOrEmpty(lastPrivateMessageRecipient)) return;
-        chatHudController.SetInputFieldText($"/w {lastPrivateMessageRecipient} ");
     }
 
     private bool IsOldPrivateMessage(ChatMessage message)
