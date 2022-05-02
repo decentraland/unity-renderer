@@ -68,9 +68,9 @@ public class TaskbarHUDView : MonoBehaviour
         emotesButton.OnToggleOn += ToggleOn;
         experiencesButton.OnToggleOn += ToggleOn;
         chatButton.OnToggleOff += ToggleOff;
-        friendsButton.OnToggleOff += ToggleOn;
-        emotesButton.OnToggleOff += ToggleOn;
-        experiencesButton.OnToggleOff += ToggleOn;
+        friendsButton.OnToggleOff += ToggleOff;
+        emotesButton.OnToggleOff += ToggleOff;
+        experiencesButton.OnToggleOff += ToggleOff;
 
         friendsRetryTooltip.OnClose += OnFriendsInitializationTooltipClosed;
         friendsRetryTooltip.OnRetry += OnFriendsInitializationRetried;
@@ -79,13 +79,28 @@ public class TaskbarHUDView : MonoBehaviour
     private void OnDestroy()
     {
         if (chatButton != null)
+        {
             chatButton.OnToggleOn -= ToggleOn;
+            chatButton.OnToggleOff -= ToggleOff;
+        }
+
         if (friendsButton != null)
+        {
             friendsButton.OnToggleOn -= ToggleOn;
+            friendsButton.OnToggleOff -= ToggleOff;
+        }
+
         if (emotesButton != null)
+        {
             emotesButton.OnToggleOn -= ToggleOn;
+            emotesButton.OnToggleOff -= ToggleOff;
+        }
+
         if (experiencesButton != null)
+        {
             experiencesButton.OnToggleOn -= ToggleOn;
+            experiencesButton.OnToggleOff -= ToggleOff;
+        }
 
         if (friendsRetryTooltip != null)
         {
