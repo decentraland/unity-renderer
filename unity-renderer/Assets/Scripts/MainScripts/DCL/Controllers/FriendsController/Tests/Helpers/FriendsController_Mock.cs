@@ -14,8 +14,6 @@ public class FriendsController_Mock : IFriendsController
 
     public bool isInitialized => true;
 
-    public bool hasInitializationFailed => false;
-
     public Dictionary<string, FriendsController.UserStatus> GetFriends() { return friends; }
     
     public void RejectFriendship(string friendUserId)
@@ -77,6 +75,4 @@ public class FriendsController_Mock : IFriendsController
     public void RaiseOnFriendNotFound(string id) { OnFriendNotFound?.Invoke(id); }
 
     public void AddFriend(FriendsController.UserStatus newFriend) { friends.Add(newFriend.userId, newFriend); }
-
-    public void RetryInitialization() { }
 }
