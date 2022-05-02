@@ -2,5 +2,5 @@
 
 public interface IProfanityFilter
 {
-    public UniTask<string> Filter(string message);
+    UniTask<string> Filter(string message);
 }

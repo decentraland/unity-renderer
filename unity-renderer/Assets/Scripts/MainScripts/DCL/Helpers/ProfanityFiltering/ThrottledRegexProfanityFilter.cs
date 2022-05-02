@@ -44,12 +44,7 @@ public class ThrottledRegexProfanityFilter : IProfanityFilter
         foreach (Regex regexStep in regexSteps)
         {
             await CheckTimerAndSkipFrame(stopwatch);
-
-            if (regexStep.IsMatch(message))
-            {
-
-                message = regexStep.Replace(message, match => new StringBuilder().Append('*', match.Value.Length).ToString());
-            }
+            message = regexStep.Replace(message, match => new StringBuilder().Append('*', match.Value.Length).ToString());
         }
 
         return message;
