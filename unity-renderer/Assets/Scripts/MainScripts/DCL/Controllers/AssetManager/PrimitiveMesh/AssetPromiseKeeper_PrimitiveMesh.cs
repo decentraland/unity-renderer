@@ -8,6 +8,5 @@ namespace DCL
         public static AssetPromiseKeeper_PrimitiveMesh i { get { return instance ??= new AssetPromiseKeeper_PrimitiveMesh(); } }
         
         public AssetPromiseKeeper_PrimitiveMesh() : base(new AssetLibrary_RefCounted<Asset_PrimitiveMesh>()) { }
-        public AssetPromiseKeeper_PrimitiveMesh(AssetLibrary_RefCounted<Asset_PrimitiveMesh> library) : base(library) { }
     }
 }

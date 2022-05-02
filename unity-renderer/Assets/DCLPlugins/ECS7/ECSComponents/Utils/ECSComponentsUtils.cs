@@ -2,21 +2,26 @@
 using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
+using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
 public static class ECSComponentsUtils
 {
-    public static MeshesInfo GenerateMeshesInfo(IDCLEntity entity, Mesh mesh, GameObject gameObject,bool visible, bool withCollisions, bool isPointerBlocker)
+    public static MeshesInfo GenerateMesh(IDCLEntity entity, Mesh mesh, GameObject gameObject,bool visible, bool withCollisions, bool isPointerBlocker)
     {
         MeshesInfo meshesInfo = new MeshesInfo();
         meshesInfo.innerGameObject = gameObject;
+        meshesInfo.meshRootGameObject = gameObject;
         MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
-
+        meshRenderer.sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
         Renderer[] renderers = new Renderer[] { meshRenderer };
         
         meshFilter.sharedMesh = mesh;
+
+        // We should remove this relation in the future, the entity shouldn't know about the mesh
+        entity.meshesInfo = meshesInfo;
         
         UpdateRenderer(entity,gameObject, renderers, visible, withCollisions, isPointerBlocker);
         meshesInfo.UpdateRenderersCollection();

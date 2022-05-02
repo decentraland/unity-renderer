@@ -13,6 +13,12 @@ namespace DCL.Models
         public const string OnPointerHoverExit = "pointerHoverExit";
     }
 
+    public enum ECS7_CLASS_ID
+    {
+        BOX_SHAPE = 1016,
+        SPHERE_SHAPE = 1017,
+    }
+    
     public enum CLASS_ID_COMPONENT
     {
         NONE = 0,

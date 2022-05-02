@@ -10,20 +10,20 @@ using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class ECSBoxShapeShould 
+public class ECSSphereShapeShould 
 {
     private IDCLEntity entity;
     private IParcelScene scene;
-    private ECSBoxShapeComponentHandler boxShapeComponentHandler;
     private GameObject gameObject;
-    
+    private ECSSphereShapeComponentHandler sphereShapeComponentHandler;
+
     [SetUp]
     protected void SetUp()
     {
         gameObject = new GameObject();
         entity = Substitute.For<IDCLEntity>();
         scene = Substitute.For<IParcelScene>();
-        boxShapeComponentHandler = new ECSBoxShapeComponentHandler();
+        sphereShapeComponentHandler = new ECSSphereShapeComponentHandler();
 
         entity.entityId.Returns(1);
         entity.gameObject.Returns(gameObject);
@@ -35,7 +35,7 @@ public class ECSBoxShapeShould
     [TearDown]
     protected void TearDown()
     {
-        boxShapeComponentHandler.OnComponentRemoved(scene,entity);
+        sphereShapeComponentHandler.OnComponentRemoved(scene,entity);
         GameObject.Destroy(gameObject);
     }
         
@@ -43,26 +43,26 @@ public class ECSBoxShapeShould
     public void UpdateComponentCorrectly()
     {
         // Arrange
-        ECSBoxShape model = new ECSBoxShape();
+        ECSShpereShape model = new ECSShpereShape();
 
         // Act
-        boxShapeComponentHandler.OnComponentModelUpdated(scene,entity,model);
+        sphereShapeComponentHandler.OnComponentModelUpdated(scene,entity,model);
         
         // Assert
-        Assert.IsNotNull(boxShapeComponentHandler.meshesInfo);
+        Assert.IsNotNull(sphereShapeComponentHandler.meshesInfo);
     }
 
     [Test]
     public void DisposeComponentCorrectly()
     {
         // Arrange
-        ECSBoxShape model = new ECSBoxShape();
-        boxShapeComponentHandler.OnComponentModelUpdated(scene,entity,model);
+        ECSShpereShape model = new ECSShpereShape();
+        sphereShapeComponentHandler.OnComponentModelUpdated(scene,entity,model);
         
         // Act
-        boxShapeComponentHandler.OnComponentRemoved(scene,entity);
+        sphereShapeComponentHandler.OnComponentRemoved(scene,entity);
         
         // Assert
-        Assert.IsNull(boxShapeComponentHandler.meshesInfo);
+        Assert.IsNull(sphereShapeComponentHandler.meshesInfo);
     }
 }

@@ -1,5 +1,5 @@
 {
-    "name": "DCL.Components.ECSBoxShapeShould",
+    "name": "RendererUtilsTest",
     "rootNamespace": "",
     "references": [
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
@@ -19,7 +19,13 @@
         "GUID:3c42479e53c24ab098ea7aa54c818b2e",
         "GUID:3f9bd7dfada994a3ca114055e53e2c1f",
         "GUID:f8a3a0af3ed28474c885e04c605a7962",
-        "GUID:37d2c04574c1d480d8c817e2a7c578e7"
+        "GUID:37d2c04574c1d480d8c817e2a7c578e7",
+        "GUID:8af21c3a612af2645a9953d4b9b3f6d5",
+        "GUID:c9fbb75c15a4cd042b731877ede4a5c1",
+        "GUID:46951180f4d84b25a1619640aa317e5b",
+        "GUID:0b3e983b6c2fed54ebecf9d146c251ba",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
