@@ -7,6 +7,7 @@ public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
     public event Action OnPressBack;
     public event Action OnMinimize;
     public event Action OnClose;
+    public event Action<string> OnUnfriend;
 
     public IChatHUDComponentView ChatHUD => Substitute.For<IChatHUDComponentView>();
     public bool IsActive => gameObject.activeSelf;

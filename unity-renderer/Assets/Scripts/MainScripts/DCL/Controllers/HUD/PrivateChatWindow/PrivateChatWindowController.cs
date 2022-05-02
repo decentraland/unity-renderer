@@ -40,11 +40,12 @@ public class PrivateChatWindowController : IHUD
     {
         view ??= PrivateChatWindowComponentView.Create();
         this.View = view;
-        view.OnPressBack -= View_OnPressBack;
-        view.OnPressBack += View_OnPressBack;
-        view.OnClose -= OnCloseView;
-        view.OnClose += OnCloseView;
-        view.OnMinimize += OnMinimizeView;
+        view.OnPressBack -= HandlePressBack;
+        view.OnPressBack += HandlePressBack;
+        view.OnClose -= Hide;
+        view.OnClose += Hide;
+        view.OnMinimize += MinimizeView;
+        view.OnUnfriend += Unfriend;
         closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
         closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
 
@@ -109,9 +110,10 @@ public class PrivateChatWindowController : IHUD
     public void Dispose()
     {
         chatHudController.OnInputFieldSelected -= HandleInputFieldSelection;
-        View.OnPressBack -= View_OnPressBack;
-        View.OnClose -= OnCloseView;
-        View.OnMinimize -= OnMinimizeView;
+        View.OnPressBack -= HandlePressBack;
+        View.OnClose -= Hide;
+        View.OnMinimize -= MinimizeView;
+        View.OnUnfriend -= Unfriend;
 
         if (chatController != null)
             chatController.OnAddMessage -= HandleMessageReceived;
@@ -159,9 +161,9 @@ public class PrivateChatWindowController : IHUD
         chatController.Send(message);
     }
 
-    private void HandleCloseInputTriggered(DCLAction_Trigger action) => OnCloseView();
+    private void HandleCloseInputTriggered(DCLAction_Trigger action) => Hide();
 
-    private void OnMinimizeView() => SetVisibility(false);
+    private void MinimizeView() => SetVisibility(false);
 
     private void HandleMessageReceived(ChatMessage message)
     {
@@ -176,13 +178,19 @@ public class PrivateChatWindowController : IHUD
         }
     }
 
-    private void OnCloseView()
+    private void Hide()
     {
         SetVisibility(false);
         OnClosed?.Invoke();
     }
 
-    private void View_OnPressBack() => OnPressBack?.Invoke();
+    private void HandlePressBack() => OnPressBack?.Invoke();
+
+    private void Unfriend(string friendId)
+    {
+        friendsController.RemoveFriend(friendId);
+        Hide();
+    }
 
     private bool IsMessageFomCurrentConversation(ChatMessage message)
     {

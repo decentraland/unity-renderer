@@ -45,6 +45,7 @@ public class WorldChatWindowController : IHUD
         view.OnClose += HandleViewCloseRequest;
         view.OnOpenPrivateChat += OpenPrivateChat;
         view.OnOpenPublicChannel += OpenPublicChannel;
+        view.OnUnfriend += HandleUnfriend;
         ownUserProfile = userProfileBridge.GetOwn();
         // TODO: this data should come from the chat service when channels are implemented
         view.SetPublicChannel(new PublicChatChannelModel
@@ -68,6 +69,7 @@ public class WorldChatWindowController : IHUD
         view.OnClose -= HandleViewCloseRequest;
         view.OnOpenPrivateChat -= OpenPrivateChat;
         view.OnOpenPublicChannel -= OpenPublicChannel;
+        view.OnUnfriend -= HandleUnfriend;
         view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
@@ -99,6 +101,11 @@ public class WorldChatWindowController : IHUD
             OpenPrivateChat(userId);
         else
             OpenPublicChannel(GENERAL_CHANNEL_ID);
+    }
+
+    private void HandleUnfriend(string friendId)
+    {
+        friendsController.RemoveFriend(friendId);
     }
 
     private void HandleFriendsControllerInitialization()

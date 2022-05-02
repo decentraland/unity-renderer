@@ -19,6 +19,11 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
     private bool releaseEntriesFromPool = true;
 
     public event Action<PrivateChatEntry> OnOpenChat;
+    public event Action<string> OnUnfriend
+    {
+        add => userContextMenu.OnUnfriend += value;
+        remove => userContextMenu.OnUnfriend -= value;
+    }
 
     public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService)
     {

@@ -6,6 +6,7 @@ public interface IWorldChatWindowView
     event Action OnClose;
     event Action<string> OnOpenPrivateChat;
     event Action<string> OnOpenPublicChannel;
+    event Action<string> OnUnfriend;
     
     RectTransform Transform { get; }
     bool IsActive { get; }

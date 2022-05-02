@@ -80,6 +80,15 @@ public class FriendsController : MonoBehaviour, IFriendsController
     }
 
     public bool IsFriend(string userId) => friends.ContainsKey(userId);
+    
+    public void RemoveFriend(string friendId)
+    {
+        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        {
+            action = FriendshipAction.DELETED,
+            userId = friendId
+        });
+    }
 
     public void RequestFriendship(string friendUserId)
     {

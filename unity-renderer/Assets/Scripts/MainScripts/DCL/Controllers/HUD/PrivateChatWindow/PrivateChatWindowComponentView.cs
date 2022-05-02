@@ -20,6 +20,11 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     public event Action OnPressBack;
     public event Action OnMinimize;
     public event Action OnClose;
+    public event Action<string> OnUnfriend
+    {
+        add => userContextMenu.OnUnfriend += value;
+        remove => userContextMenu.OnUnfriend -= value;
+    }
 
     public IChatHUDComponentView ChatHUD => chatView;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -42,7 +47,10 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     public override void Dispose()
     {
         if (userContextMenu != null)
+        {
             userContextMenu.OnBlock -= HandleBlockFromContextMenu;
+        }
+            
         base.Dispose();
     }
 
