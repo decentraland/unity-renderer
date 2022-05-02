@@ -337,14 +337,10 @@ namespace DCL
 
                     case MessagingTypes.CRDT_MESSAGE:
                         {
-                            Debug.unityLogger.logEnabled = true;
-                            Debug.Log($"PATO: CRDT llega");
-                            
-                            if (msgPayload is CRDTMessage crdtMessage)
-                            {
-                                Debug.unityLogger.logEnabled = true;
-                                Debug.Log($"PATO: CRDT key: {crdtMessage.key} timestamp: {crdtMessage.timestamp}");
-                            }
+                            // TODO: implement CRDT
+                            // if (msgPayload is CRDTMessage crdtMessage)
+                            // {
+                            // }
                             break;
                         }
 

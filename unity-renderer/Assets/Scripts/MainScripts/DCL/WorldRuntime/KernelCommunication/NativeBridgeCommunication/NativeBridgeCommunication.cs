@@ -326,10 +326,9 @@ public class NativeBridgeCommunication : IKernelCommunication
         {
             while (messageIterator.MoveNext())
             {
-                Debug.unityLogger.logEnabled = true;
-                Debug.Log($"PATO: processing crdt");
                 QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
                 queuedMessage.method = MessagingTypes.CRDT_MESSAGE;
+                queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
                 queuedMessage.sceneId = sceneId;
                 queuedMessage.payload = messageIterator.Current;
 
