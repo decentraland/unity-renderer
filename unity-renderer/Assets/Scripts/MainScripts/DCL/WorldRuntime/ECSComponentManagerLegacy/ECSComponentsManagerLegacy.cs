@@ -410,7 +410,7 @@ namespace DCL
 
             if (!HasComponent(entity, classId))
             {
-                newComponent = Environment.i.world.componentFactory.CreateComponent((int)classId) as IEntityComponent;
+                newComponent = componentFactory.CreateComponent((int) classId) as IEntityComponent;
 
                 if (newComponent != null)
                 {

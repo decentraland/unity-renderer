@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
@@ -24,6 +25,7 @@ namespace AvatarEditorHUD_Tests
 
             Setup_AvatarEditorHUDController();
 
+            controller.collectionsAlreadyLoaded = true;
             controller.UnequipAllWearables();
             controller.SetVisibility(true);
         }
@@ -51,7 +53,8 @@ namespace AvatarEditorHUD_Tests
 
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock();
+            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags);
+            controller.collectionsAlreadyLoaded = true;
             controller.Initialize(userProfile, catalog);
         }
 

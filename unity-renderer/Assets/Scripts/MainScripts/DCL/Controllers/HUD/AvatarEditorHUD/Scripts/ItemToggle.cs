@@ -35,6 +35,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     private Func<WearableItem, bool> getEquippedWearablesReplacedByFunc;
     private Func<WearableItem, bool> getEquippedWearablesHiddenBy;
 
+    public string collectionId { get; set; }
+
     public bool selected
     {
         get { return selectedValue; }

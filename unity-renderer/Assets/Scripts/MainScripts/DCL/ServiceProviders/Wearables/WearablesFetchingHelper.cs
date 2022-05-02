@@ -9,9 +9,9 @@ namespace DCL.Helpers
 {
     public static class WearablesFetchingHelper
     {
-        // TODO: dinamically use ICatalyst.contentUrl, content server is not a const
-        public const string WEARABLES_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections/wearables?";
+        public const string WEARABLES_FETCH_URL = "collections/wearables?";
         public const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
+        public const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "third-party-integrations";
 
         // TODO: change fetching logic to allow for auto-pagination
         // The https://nft-api.decentraland.org/v1/ endpoint doesn't fetch L1 wearables right now, if those need to be re-converted we should use that old endpoint again and change the WearablesAPIData structure again for that response.
@@ -105,8 +105,31 @@ namespace DCL.Helpers
             {
                 // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
                 // batches sequentially
-                yield return GetWearableItems(WEARABLES_FETCH_URL + nextPageParams, finalWearableItemsList);
+                yield return GetWearableItems(
+                    $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{WEARABLES_FETCH_URL}{nextPageParams}", 
+                    finalWearableItemsList);
             }
+        }
+
+        public static Promise<Collection[]> GetThirdPartyCollections()
+        {
+            Promise<Collection[]> promiseResult = new Promise<Collection[]>();
+
+            Environment.i.platform.webRequest.Get(
+                url: $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{THIRD_PARTY_COLLECTIONS_FETCH_URL}",
+                downloadHandler: new DownloadHandlerBuffer(),
+                timeout: 5000,
+                OnFail: (webRequest) =>
+                {
+                    promiseResult.Reject($"Request error! third party collections couldn't be fetched! -- {webRequest.webRequest.error}");
+                },
+                OnSuccess: (webRequest) =>
+                {
+                    var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(webRequest.webRequest.downloadHandler.text);
+                    promiseResult.Resolve(collectionsApiData.data);
+                });
+
+            return promiseResult;
         }
     }
 }
