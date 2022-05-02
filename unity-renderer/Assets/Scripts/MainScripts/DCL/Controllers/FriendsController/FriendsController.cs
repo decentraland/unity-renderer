@@ -14,7 +14,6 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     private const bool KERNEL_CAN_REMOVE_ENTRIES = false;
     public bool isInitialized { get; private set; } = false;
-    public bool hasInitializationFailed { get; private set; } = false;
     public Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
     [System.Serializable]
@@ -165,12 +164,6 @@ public class FriendsController : MonoBehaviour, IFriendsController
         }
 
         OnInitialized?.Invoke(true);
-    }
-
-    public void NotifyAboutFriendsNotInitialized() 
-    {
-        hasInitializationFailed = true;
-        OnInitialized?.Invoke(false); 
     }
 
     public void UpdateUserStatus(UserStatus newUserStatus)

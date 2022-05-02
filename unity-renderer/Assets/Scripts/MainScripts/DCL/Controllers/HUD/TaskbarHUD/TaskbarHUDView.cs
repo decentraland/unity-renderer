@@ -19,8 +19,6 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
     [SerializeField] internal GameObject friendsLoadingSpinner;
-    [SerializeField] internal GameObject friendsFailedMark;
-    [SerializeField] internal FriendsInitializationRetryTooltipComponentView friendsRetryTooltip;
     [SerializeField] internal TaskbarButton emotesButton;
     [SerializeField] internal GameObject experiencesContainer;
     [SerializeField] internal TaskbarButton experiencesButton;
@@ -34,6 +32,8 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action<bool> OnEmotesToggle;
     public event System.Action<bool> OnExperiencesToggle;
     public event System.Action OnFriendsInitializationRetry;
+
+    public bool isFriendsLoading => friendsLoadingSpinner.gameObject.activeSelf;
 
     internal static TaskbarHUDView Create()
     {
@@ -71,9 +71,6 @@ public class TaskbarHUDView : MonoBehaviour
         friendsButton.OnToggleOff += ToggleOff;
         emotesButton.OnToggleOff += ToggleOff;
         experiencesButton.OnToggleOff += ToggleOff;
-
-        friendsRetryTooltip.OnClose += OnFriendsInitializationTooltipClosed;
-        friendsRetryTooltip.OnRetry += OnFriendsInitializationRetried;
     }
 
     private void OnDestroy()
@@ -100,12 +97,6 @@ public class TaskbarHUDView : MonoBehaviour
         {
             experiencesButton.OnToggleOn -= ToggleOn;
             experiencesButton.OnToggleOff -= ToggleOff;
-        }
-
-        if (friendsRetryTooltip != null)
-        {
-            friendsRetryTooltip.OnClose -= OnFriendsInitializationTooltipClosed;
-            friendsRetryTooltip.OnRetry -= OnFriendsInitializationRetried;
         }
     }
 
@@ -225,47 +216,19 @@ public class TaskbarHUDView : MonoBehaviour
 
     public void SetFriendsAsFailed(bool hasFailed)
     {
-        friendsFailedMark.gameObject.SetActive(hasFailed);
-
         friendsButton.OnToggleOn -= ToggleOn;
         friendsButton.OnToggleOff -= ToggleOff;
-        friendsButton.OnToggleOn -= ShowRetryFriendsInitializationTooltip;
-        friendsButton.OnToggleOff -= HideRetryFriendsInitializationTooltip;
 
         if (hasFailed)
         {
-            friendsRetryTooltip.Show();
             friendsButton.SetToggleState(true);
-
-            friendsButton.OnToggleOn += ShowRetryFriendsInitializationTooltip;
-            friendsButton.OnToggleOff += HideRetryFriendsInitializationTooltip;
         }
         else
         {
-            friendsRetryTooltip.Hide();
-
             friendsButton.OnToggleOn += ToggleOn;
             friendsButton.OnToggleOff += ToggleOff;
         }
     }
-
-    private void ShowRetryFriendsInitializationTooltip(TaskbarButton obj)
-    {
-        friendsRetryTooltip.Show();
-    }
-
-    private void HideRetryFriendsInitializationTooltip(TaskbarButton obj)
-    {
-        friendsRetryTooltip.Hide();
-    }
-
-    private void OnFriendsInitializationTooltipClosed()
-    {
-        friendsRetryTooltip.Hide();
-        friendsButton.SetToggleState(false);
-    }
-
-    private void OnFriendsInitializationRetried() { OnFriendsInitializationRetry?.Invoke(); }
 
     public enum TaskbarButtonType
     {

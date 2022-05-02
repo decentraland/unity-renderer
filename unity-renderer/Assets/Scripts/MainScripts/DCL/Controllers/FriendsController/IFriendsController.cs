@@ -10,7 +10,6 @@ public interface IFriendsController
 
     int friendCount { get; }
     bool isInitialized { get; }
-    bool hasInitializationFailed { get; }
     Dictionary<string, FriendsController.UserStatus> GetFriends();
     FriendsController.UserStatus GetUserStatus(string userId);
 
