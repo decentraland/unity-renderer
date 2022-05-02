@@ -9,7 +9,7 @@ namespace Tests
         [Test]
         public void MessagesProcessedCorrectly()
         {
-            string[] filesPath = CRDTTestsUtils.GetTestFilesAtThisDirectory();
+            string[] filesPath = CRDTTestsUtils.GetTestFilesPath();
 
             for (int i = 0; i < filesPath.Length; i++)
             {
