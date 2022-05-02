@@ -8,16 +8,20 @@ public class UILoadingSpinner : MonoBehaviour
     Material _material;
     Image _img;
 
-
     public Color color;
     public float head;
     public float tail;
 
     void Start()
     {
+        GetMaterial();
+    }
+
+    void GetMaterial()
+    {
         _img = GetComponent<Image>();
 
-        if(_img.maskable)
+        if (_img.maskable)
         {
             _material = _img.materialForRendering;
         }
@@ -26,12 +30,22 @@ public class UILoadingSpinner : MonoBehaviour
             _material = new Material(_img.material);
             _img.material = _material;
         }
-
     }
-    void Update()
+
+
+    public void SetValues()
     {
-        _material.SetColor("_color01", color);
-        _material.SetFloat("_fillHead", head);
-        _material.SetFloat("_fillTail", tail);
+        if(_material)
+        {
+            _material.SetColor("_color01", color);
+            _material.SetFloat("_fillHead", head);
+            _material.SetFloat("_fillTail", tail);
+        }
+        else
+        {
+            GetMaterial();
+            SetValues();
+        }
+        
     }
 }
