@@ -25,16 +25,16 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
-            // try
-            // {
+            try
+            {
                 Mesh currentMesh = primitiveMeshFactory.CreateMesh(model);
                 asset.mesh = currentMesh;
                 OnSuccess?.Invoke();
-            // }
-            // catch(Exception e)
-            // {
-                // OnFail?.Invoke(e);
-            // }
+            }
+            catch(Exception e)
+            {
+                OnFail?.Invoke(e);
+            }
         }
 
         public override object GetId() {  return model; }
