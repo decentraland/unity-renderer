@@ -4,6 +4,24 @@ using UnityEngine;
 
 namespace DCL.Models
 {
+    public static class SpecialEntityIdLegacyLiteral
+    {
+        public const string SCENE_ROOT_ENTITY = "0";
+        public const string AVATAR_ENTITY_REFERENCE = "AvatarEntityReference";
+        public const string AVATAR_POSITION_REFERENCE = "AvatarPositionEntityReference";
+        public const string FIRST_PERSON_CAMERA_ENTITY_REFERENCE = "FirstPersonCameraEntityReference";
+        public const string THIRD_PERSON_CAMERA_ENTITY_REFERENCE = "PlayerEntityReference";
+    }
+
+    public enum SpecialEntityId
+    {
+        SCENE_ROOT_ENTITY = 0,
+        AVATAR_ENTITY_REFERENCE = 1,
+        AVATAR_POSITION_REFERENCE = 2,
+        FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 3,
+        THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 4
+    }
+
     public static class ComponentNameLiterals
     {
         public const string OnClick = "onClick";
