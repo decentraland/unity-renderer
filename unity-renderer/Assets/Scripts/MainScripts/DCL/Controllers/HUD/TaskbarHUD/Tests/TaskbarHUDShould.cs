@@ -29,7 +29,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         controller = new TaskbarHUDController();
-        controller.Initialize(null);
+        controller.Initialize(null, null);
         view = controller.view;
 
         Assert.IsTrue(view != null, "Taskbar view is null?");

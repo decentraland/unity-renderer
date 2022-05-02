@@ -22,6 +22,7 @@ public class TaskbarHUDController : IHUD
     public FriendsHUDController friendsHud;
 
     private IMouseCatcher mouseCatcher;
+    private IFriendsController friendsController;
     private InputAction_Trigger toggleFriendsTrigger;
     private InputAction_Trigger closeWindowTrigger;
     private InputAction_Trigger toggleWorldChatTrigger;
@@ -39,9 +40,10 @@ public class TaskbarHUDController : IHUD
 
     protected virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(); }
 
-    public void Initialize(IMouseCatcher mouseCatcher)
+    public void Initialize(IMouseCatcher mouseCatcher, IFriendsController friendsController)
     {
         this.mouseCatcher = mouseCatcher;
+        this.friendsController = friendsController;
 
         view = CreateView();
 
