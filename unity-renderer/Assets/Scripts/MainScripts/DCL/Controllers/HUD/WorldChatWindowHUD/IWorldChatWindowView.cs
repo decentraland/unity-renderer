@@ -14,6 +14,7 @@ public interface IWorldChatWindowView
     void Show();
     void Hide();
     void SetPrivateChat(PrivateChatModel model);
+    void RemovePrivateChat(string userId);
     void SetPublicChannel(PublicChatChannelModel model);
     void ShowPrivateChatsLoading();
     void HidePrivateChatsLoading();

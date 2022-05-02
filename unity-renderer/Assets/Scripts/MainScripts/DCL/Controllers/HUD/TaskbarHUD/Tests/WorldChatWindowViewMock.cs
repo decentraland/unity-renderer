@@ -26,6 +26,10 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
+    public void RemovePrivateChat(string userId)
+    {
+    }
+
     public void SetPublicChannel(PublicChatChannelModel model)
     {
     }

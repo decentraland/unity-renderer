@@ -21,7 +21,9 @@ public class FriendsController_Mock : IFriendsController
         friends.Remove(friendUserId);
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.NONE);
     }
-    
+
+    public bool IsFriend(string userId) => friends.ContainsKey(userId);
+
     public FriendsController.UserStatus GetUserStatus(string userId)
     {
         return friends.ContainsKey(userId) ? friends[userId] : default;

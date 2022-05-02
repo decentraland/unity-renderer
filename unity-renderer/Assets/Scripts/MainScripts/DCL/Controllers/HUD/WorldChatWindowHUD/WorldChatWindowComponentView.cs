@@ -69,6 +69,12 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         UpdateHeaders();
     }
 
+    public void RemovePrivateChat(string userId)
+    {
+        directChatList.Remove(userId);
+        UpdateHeaders();
+    }
+
     public void SetPublicChannel(PublicChatChannelModel model)
     {
         publicChannelList.Set(model.channelId, new PublicChannelEntry.PublicChannelEntryModel

@@ -101,7 +101,15 @@ public class WorldChatWindowController : IHUD
             OpenPublicChannel(GENERAL_CHANNEL_ID);
     }
 
-    private void HandleFriendsControllerInitialization() => view.HidePrivateChatsLoading();
+    private void HandleFriendsControllerInitialization()
+    {
+        view.HidePrivateChatsLoading();
+        
+        // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
+        foreach(var userId in recipientsFromPrivateChats.Keys)
+            if (!friendsController.IsFriend(userId))
+                view.RemovePrivateChat(userId);
+    }
 
     private void OpenPrivateChat(string userId) => OnOpenPrivateChat?.Invoke(userId);
 
@@ -113,14 +121,22 @@ public class WorldChatWindowController : IHUD
     {
         if (!recipientsFromPrivateChats.ContainsKey(userId)) return;
         if (!lastPrivateMessages.ContainsKey(userId)) return;
-        var profile = recipientsFromPrivateChats[userId];
-        view.SetPrivateChat(new PrivateChatModel
+        if (status.friendshipStatus == FriendshipStatus.FRIEND)
         {
-            user = profile,
-            recentMessage = lastPrivateMessages[userId],
-            isBlocked = ownUserProfile.IsBlocked(userId),
-            isOnline = status.presence == PresenceStatus.ONLINE
-        });
+            var profile = recipientsFromPrivateChats[userId];
+            view.SetPrivateChat(new PrivateChatModel
+            {
+                user = profile,
+                recentMessage = lastPrivateMessages[userId],
+                isBlocked = ownUserProfile.IsBlocked(userId),
+                isOnline = status.presence == PresenceStatus.ONLINE
+            });
+        }
+        else if (status.friendshipStatus == FriendshipStatus.NOT_FRIEND)
+        {
+            // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
+            view.RemovePrivateChat(userId);
+        }
     }
 
     private void ShowPrivateChats(Dictionary<UserProfile, ChatMessage> privateChatsByRecipient)
@@ -145,6 +161,7 @@ public class WorldChatWindowController : IHUD
         if (message.messageType != ChatMessage.Type.PRIVATE) return;
         var profile = ExtractRecipient(message);
         if (profile == null) return;
+        if (friendsController.isInitialized && !friendsController.IsFriend(profile.userId)) return;
         lastPrivateMessages[profile.userId] = message;
         recipientsFromPrivateChats[profile.userId] = profile;
         view.SetPrivateChat(new PrivateChatModel
