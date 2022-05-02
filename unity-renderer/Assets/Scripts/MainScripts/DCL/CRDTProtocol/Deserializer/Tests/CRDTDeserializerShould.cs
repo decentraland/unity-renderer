@@ -76,7 +76,7 @@ namespace Tests
         }
 
         [Test]
-        public void ParseUnmanagedMemory()
+        public unsafe void ParseUnmanagedMemory()
         {
             byte[] bytes =
             {
@@ -104,14 +104,14 @@ namespace Tests
             IntPtr unmanagedArray = Marshal.AllocHGlobal(bytes.Length);
             Marshal.Copy(bytes, 0, unmanagedArray, bytes.Length);
 
-            TestInput(new UnmanagedMemoryReader(unmanagedArray, bytes.Length),
+            TestInput(new UnmanagedMemoryReader((byte*)unmanagedArray.ToPointer(), bytes.Length),
                 new[] { expectedMsgHeader }, new[] { expectedComponentHeader });
 
             Marshal.FreeHGlobal(unmanagedArray);
         }
 
         [Test]
-        public void ParseTwoMessagesInSameUnmanagedMemory()
+        public unsafe void ParseTwoMessagesInSameUnmanagedMemory()
         {
             byte[] bytes =
             {
@@ -145,7 +145,7 @@ namespace Tests
             IntPtr unmanagedArray = Marshal.AllocHGlobal(bytes.Length);
             Marshal.Copy(bytes, 0, unmanagedArray, bytes.Length);
 
-            TestInput(new UnmanagedMemoryReader(unmanagedArray, bytes.Length), new[] { expectedMsgHeader, expectedMsgHeader },
+            TestInput(new UnmanagedMemoryReader((byte*)unmanagedArray.ToPointer(), bytes.Length), new[] { expectedMsgHeader, expectedMsgHeader },
                 new[] { expectedComponentHeader, expectedComponentHeader });
 
             Marshal.FreeHGlobal(unmanagedArray);
@@ -179,7 +179,7 @@ namespace Tests
         }
 
         [Test]
-        public void CopyUnmanagedDataCorrectly()
+        public unsafe void CopyUnmanagedDataCorrectly()
         {
             byte[] binaryMessage =
             {
@@ -199,7 +199,7 @@ namespace Tests
             Marshal.Copy(binaryMessage, 0, unmanagedArray, binaryMessage.Length);
 
             using (var iterator =
-                CRDTDeserializer.Deserialize(new UnmanagedMemoryReader(unmanagedArray, binaryMessage.Length)))
+                CRDTDeserializer.Deserialize(new UnmanagedMemoryReader((byte*)unmanagedArray.ToPointer(), binaryMessage.Length)))
             {
                 while (iterator.MoveNext())
                 {

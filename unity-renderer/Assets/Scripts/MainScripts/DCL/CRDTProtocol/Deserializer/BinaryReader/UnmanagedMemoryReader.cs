@@ -10,9 +10,9 @@ namespace DCL.CRDT.BinaryReader
 
         private readonly int dataLenght;
 
-        public unsafe UnmanagedMemoryReader(IntPtr intPtr, int dataLenght)
+        public unsafe UnmanagedMemoryReader(byte* ptr, int dataLenght)
         {
-            this.ptr = (byte*)intPtr.ToPointer();
+            this.ptr = ptr;
             this.currentOffset = 0;
             this.dataLenght = dataLenght;
         }
