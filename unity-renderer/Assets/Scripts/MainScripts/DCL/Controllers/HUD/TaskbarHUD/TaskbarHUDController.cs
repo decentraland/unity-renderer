@@ -114,8 +114,6 @@ public class TaskbarHUDController : IHUD
             {
                 friendsController.OnInitialized -= FriendsController_OnInitialized;
                 friendsController.OnInitialized += FriendsController_OnInitialized;
-                friendsController.OnNotInitialized -= ShowFriendsFailedPanel;
-                friendsController.OnNotInitialized += ShowFriendsFailedPanel;
                 if (friendsController.hasInitializationFailed)
                     ShowFriendsFailedPanel();
                 else
@@ -379,10 +377,7 @@ public class TaskbarHUDController : IHUD
         numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;
 
         if (friendsController != null)
-        {
             friendsController.OnInitialized -= FriendsController_OnInitialized;
-            friendsController.OnNotInitialized -= ShowFriendsFailedPanel;
-        }
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
@@ -429,11 +424,17 @@ public class TaskbarHUDController : IHUD
         view.friendsButton.SetToggleState(!view.friendsButton.toggledOn);
     }
 
-    private void FriendsController_OnInitialized()
+    private void FriendsController_OnInitialized(bool isInitialized)
     {
-        friendsController.OnInitialized -= FriendsController_OnInitialized;
-        friendsController.OnNotInitialized -= ShowFriendsFailedPanel;
-        view.SetFiendsAsLoading(false);
+        if (isInitialized)
+        {
+            friendsController.OnInitialized -= FriendsController_OnInitialized;
+            view.SetFiendsAsLoading(false);
+        }
+        else
+        {
+            ShowFriendsFailedPanel();
+        }
     }
 
     private void ShowFriendsFailedPanel()

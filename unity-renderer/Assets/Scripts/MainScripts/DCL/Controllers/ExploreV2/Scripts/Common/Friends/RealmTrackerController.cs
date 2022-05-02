@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
@@ -111,8 +111,11 @@ public class RealmTrackerController : IDisposable
         }
     }
 
-    void OnFriendsInitialized()
+    void OnFriendsInitialized(bool isInitialized)
     {
+        if (!isInitialized)
+            return;
+
         friendsController.OnInitialized -= OnFriendsInitialized;
 
         using (var friendsIterator = friendsController.GetFriends().GetEnumerator())

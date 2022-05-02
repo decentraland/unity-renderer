@@ -64,8 +64,11 @@ internal class UsersSearchFriendsHandler : IDisposable
         friendListPromise = null;
     }
 
-    private void OnFriendsInitialized()
+    private void OnFriendsInitialized(bool isInitialized)
     {
+        if (!isInitialized)
+            return;
+
         friendsController.OnInitialized -= OnFriendsInitialized;
         isFriendlistDirty = false;
         friendListPromise?.Resolve(friendsController.GetFriends());

@@ -111,8 +111,11 @@ public class FriendTrackerController : IDisposable
         }
     }
 
-    void OnFriendsInitialized()
+    void OnFriendsInitialized(bool isInitialized)
     {
+        if (!isInitialized)
+            return;
+
         friendsController.OnInitialized -= OnFriendsInitialized;
 
         using (var friendsIterator = friendsController.GetFriends().GetEnumerator())

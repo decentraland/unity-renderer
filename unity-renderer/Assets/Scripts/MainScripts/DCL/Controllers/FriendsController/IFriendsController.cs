@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 public interface IFriendsController
 {
-    event Action OnInitialized;
-    event Action OnNotInitialized;
+    event Action<bool> OnInitialized;
     event Action<string, FriendshipAction> OnUpdateFriendship;
     event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
     event Action<string> OnFriendNotFound;

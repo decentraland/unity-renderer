@@ -67,8 +67,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public event Action<string, UserStatus> OnUpdateUserStatus;
     public event Action<string, FriendshipAction> OnUpdateFriendship;
     public event Action<string> OnFriendNotFound;
-    public event Action OnInitialized;
-    public event Action OnNotInitialized;
+    public event Action<bool> OnInitialized;
 
     public Dictionary<string, UserStatus> GetFriends() { return new Dictionary<string, UserStatus>(friends); }
 
@@ -165,13 +164,13 @@ public class FriendsController : MonoBehaviour, IFriendsController
                 friends.Remove(userId);
         }
 
-        OnInitialized?.Invoke();
+        OnInitialized?.Invoke(true);
     }
 
     public void NotifyAboutFriendsNotInitialized() 
     {
         hasInitializationFailed = true;
-        OnNotInitialized?.Invoke(); 
+        OnInitialized?.Invoke(false); 
     }
 
     public void UpdateUserStatus(UserStatus newUserStatus)

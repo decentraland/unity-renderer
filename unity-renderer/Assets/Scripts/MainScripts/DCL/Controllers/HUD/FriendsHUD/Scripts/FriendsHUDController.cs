@@ -68,8 +68,11 @@ public class FriendsHUDController : IHUD
 
     private void HandleViewClosed() => SetVisibility(false);
 
-    private void FriendsController_OnInitialized()
+    private void FriendsController_OnInitialized(bool isInitialized)
     {
+        if (!isInitialized)
+            return;
+
         friendsController.OnInitialized -= FriendsController_OnInitialized;
         view.HideSpinner();
     }
