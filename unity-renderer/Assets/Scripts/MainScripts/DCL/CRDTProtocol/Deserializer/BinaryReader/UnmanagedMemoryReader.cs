@@ -55,6 +55,11 @@ namespace DCL.CRDT.BinaryReader
 
         unsafe byte[] IBinaryReader.ReadBytes(int length)
         {
+            if (ptr == null)
+                throw new NullReferenceException("pointer == null");
+            if ((long)(uint)currentOffset > (long)dataLenght - length)
+                throw new IndexOutOfRangeException($"data lenght is not large enough to read {length} bytes");
+
             byte[] data = new byte[length];
             Marshal.Copy(new IntPtr(ptr), data, 0, length);
             currentOffset += length;

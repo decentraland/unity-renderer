@@ -198,7 +198,6 @@ namespace Tests
             IntPtr unmanagedArray = Marshal.AllocHGlobal(binaryMessage.Length);
             Marshal.Copy(binaryMessage, 0, unmanagedArray, binaryMessage.Length);
 
-            Marshal.FreeHGlobal(unmanagedArray);
             using (var iterator =
                 CRDTDeserializer.Deserialize(new UnmanagedMemoryReader(unmanagedArray, binaryMessage.Length)))
             {
