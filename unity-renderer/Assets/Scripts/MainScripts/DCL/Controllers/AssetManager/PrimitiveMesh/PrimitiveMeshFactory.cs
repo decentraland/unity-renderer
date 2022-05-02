@@ -16,7 +16,6 @@ public class PrimitiveMeshFactory : IPrimitiveMeshFactory
         Mesh mesh = null;
         switch (meshModelModel.type)
         {
-
             case PrimitiveMeshModel.Type.Box:
                 mesh = PrimitiveMeshBuilder.BuildCube(1f);
                 if (meshModelModel.uvs != null && meshModelModel.uvs.Length > 0)
