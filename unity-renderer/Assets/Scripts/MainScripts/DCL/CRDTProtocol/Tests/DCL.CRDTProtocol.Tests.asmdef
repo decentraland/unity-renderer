@@ -2,7 +2,8 @@
     "name": "DCL.CRDTProtocol.Tests",
     "rootNamespace": "",
     "references": [
-        "GUID:80f579cff5cf4136aa8969bf6fa1098c"
+        "GUID:80f579cff5cf4136aa8969bf6fa1098c",
+        "GUID:b308ae946900fa04080222d7daf47d9a"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
