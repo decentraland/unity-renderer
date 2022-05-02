@@ -10,9 +10,10 @@ namespace DCL.CRDT
         internal static readonly CRDTMessageHeader messageHeader = new CRDTMessageHeader();
         internal static readonly CRDTComponentMessageHeader componentHeader = new CRDTComponentMessageHeader();
 
-        public static IEnumerator<CRDTMessage> Deserialize(IntPtr ptr, int length)
+        public static unsafe IEnumerator<CRDTMessage> Deserialize(IntPtr intPtr)
         {
-            return Deserialize(new UnmanagedMemoryReader(ptr, length));
+            byte* ptr = (byte*)intPtr.ToPointer();
+            return Deserialize(new UnmanagedMemoryReader(ptr, ByteUtils.PointerToInt32(ptr)));
         }
 
         public static IEnumerator<CRDTMessage> Deserialize(byte[] bytes)
