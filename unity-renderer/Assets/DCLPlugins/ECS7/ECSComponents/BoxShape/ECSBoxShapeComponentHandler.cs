@@ -5,9 +5,7 @@ using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
-using Palmmedia.ReportGenerator.Core.Parser.Analysis;
 using UnityEngine;
-using UnityEngine.XR;
 
 public class ECSBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>
 {
