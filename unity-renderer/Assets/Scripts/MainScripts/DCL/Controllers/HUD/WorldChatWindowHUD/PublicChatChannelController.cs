@@ -6,7 +6,7 @@ using DCL.Interface;
 
 public class PublicChatChannelController : IHUD
 {
-    public IChannelChatWindowView view;
+    public IChannelChatWindowView View { get; private set; }
     public event Action OnBack;
     public event Action OnClosed;
 
@@ -41,7 +41,7 @@ public class PublicChatChannelController : IHUD
     public void Initialize(IChannelChatWindowView view = null)
     {
         view ??= PublicChatChannelComponentView.Create();
-        this.view = view;
+        this.View = view;
         view.OnClose += HandleViewClosed;
         view.OnBack += HandleViewBacked;
         closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
@@ -68,15 +68,15 @@ public class PublicChatChannelController : IHUD
         this.channelId = channelId;
 
         // TODO: retrieve data from a channel provider
-        view.Setup(this.channelId, "General", "Any useful description here");
+        View.Setup(this.channelId, "General", "Any useful description here");
 
         ReloadAllChats().Forget();
     }
 
     public void Dispose()
     {
-        view.OnClose -= HandleViewClosed;
-        view.OnBack -= HandleViewBacked;
+        View.OnClose -= HandleViewClosed;
+        View.OnBack -= HandleViewBacked;
 
         if (chatController != null)
             chatController.OnAddMessage -= HandleMessageReceived;
@@ -84,7 +84,7 @@ public class PublicChatChannelController : IHUD
         chatHudController.OnSendMessage -= SendChatMessage;
         chatHudController.OnMessageUpdated -= HandleMessageInputUpdated;
 
-        view?.Dispose();
+        View?.Dispose();
     }
 
     public void SendChatMessage(ChatMessage message)
@@ -116,12 +116,12 @@ public class PublicChatChannelController : IHUD
     {
         if (visible)
         {
-            view.Show();
+            View.Show();
             MarkChatMessagesAsRead();
             chatHudController.FocusInputField();
         }
         else
-            view.Hide();
+            View.Hide();
     }
 
     private async UniTaskVoid ReloadAllChats()
@@ -142,8 +142,6 @@ public class PublicChatChannelController : IHUD
     }
 
     private void MarkChatMessagesAsRead() => lastReadMessagesService.MarkAllRead(channelId);
-
-    public void ResetInputField() => chatHudController.ResetInputField();
 
     private void HandleCloseInputTriggered(DCLAction_Trigger action) => HandleViewClosed();
 
@@ -174,7 +172,10 @@ public class PublicChatChannelController : IHUD
     {
         if (IsOldPrivateMessage(message)) return;
 
-        chatHudController.AddChatMessage(message, view.IsActive);
+        chatHudController.AddChatMessage(message, View.IsActive);
+        
+        if (View.IsActive)
+            MarkChatMessagesAsRead();
 
         if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
             lastPrivateMessageRecipient = userProfileBridge.Get(message.sender).userName;

@@ -107,7 +107,8 @@ public class ChatController : MonoBehaviour, IChatController
             body = "test message",
             sender = model.userId,
             recipient = ownProfile.userId,
-            messageType = ChatMessage.Type.PRIVATE
+            messageType = ChatMessage.Type.PRIVATE,
+            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };
 
         var msg2 = new ChatMessage()
@@ -115,7 +116,8 @@ public class ChatController : MonoBehaviour, IChatController
             body = "test message 2",
             recipient = model2.userId,
             sender = ownProfile.userId,
-            messageType = ChatMessage.Type.PRIVATE
+            messageType = ChatMessage.Type.PRIVATE,
+            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };
 
         AddMessageToChatWindow(JsonUtility.ToJson(msg));

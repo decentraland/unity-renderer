@@ -38,7 +38,9 @@ namespace DCL
             result.Register<IHUDController>(() => new HUDController());
             result.Register<ILastReadMessagesService>(() => new LastReadMessagesService(
                 CommonScriptableObjects.lastReadChatMessages,
-                ChatController.i, new DefaultPlayerPrefs()));
+                ChatController.i,
+                new DefaultPlayerPrefs(),
+                new UserProfileWebInterfaceBridge()));
 
             return result;
         }

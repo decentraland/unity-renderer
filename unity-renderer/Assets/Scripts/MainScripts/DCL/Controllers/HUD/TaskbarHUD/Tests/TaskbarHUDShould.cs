@@ -29,7 +29,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         controller = new TaskbarHUDController();
-        controller.Initialize(null, chatController, null);
+        controller.Initialize(null);
         view = controller.view;
 
         Assert.IsTrue(view != null, "Taskbar view is null?");
@@ -117,19 +117,19 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.chatButton.lineOnIndicator.isVisible);
-        Assert.IsTrue(controller.privateChatWindow.view.IsActive);
+        Assert.IsTrue(controller.privateChatWindow.View.IsActive);
 
         //NOTE(Brian): Toggle friends window on and test all other windows are untoggled
         view.friendsButton.toggleButton.onClick.Invoke();
 
-        Assert.IsFalse(controller.privateChatWindow.view.IsActive);
+        Assert.IsFalse(controller.privateChatWindow.View.IsActive);
         Assert.IsTrue(view.friendsButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.chatButton.lineOnIndicator.isVisible);
 
         //NOTE(Brian): Toggle friends window off and test all other windows are untoggled
         view.friendsButton.toggleButton.onClick.Invoke();
 
-        Assert.IsFalse(controller.privateChatWindow.view.IsActive);
+        Assert.IsFalse(controller.privateChatWindow.View.IsActive);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
 
         //NOTE(Brian): Toggle friends on, and then chat button on. Then check if world chat window is showing up.

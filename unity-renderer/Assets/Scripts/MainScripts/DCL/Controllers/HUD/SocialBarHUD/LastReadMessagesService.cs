@@ -13,19 +13,28 @@ public class LastReadMessagesService : ILastReadMessagesService
     private readonly ReadMessagesDictionary memoryRepository;
     private readonly IChatController chatController;
     private readonly IPlayerPrefs persistentRepository;
-    
+    private readonly IUserProfileBridge userProfileBridge;
+    private readonly Dictionary<string, int> channelUnreadCount = new Dictionary<string, int>();
+
     public event Action<string> OnUpdated;
-    
+
     public LastReadMessagesService(ReadMessagesDictionary memoryRepository,
         IChatController chatController,
-        IPlayerPrefs persistentRepository)
+        IPlayerPrefs persistentRepository,
+        IUserProfileBridge userProfileBridge)
     {
         this.memoryRepository = memoryRepository;
         this.chatController = chatController;
         this.persistentRepository = persistentRepository;
+        this.userProfileBridge = userProfileBridge;
     }
 
-    public void Initialize() => Load();
+    public void Initialize()
+    {
+        chatController.OnAddMessage += HandleMessageReceived;
+        LoadLastReadTimestamps();
+        LoadChannelsUnreadCount();
+    }
 
     public void MarkAllRead(string chatId)
     {
@@ -34,9 +43,11 @@ public class LastReadMessagesService : ILastReadMessagesService
             Debug.LogWarning("Trying to clear last read messages for an empty chatId");
             return;
         }
+
         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         memoryRepository.Remove(chatId);
         memoryRepository.Add(chatId, timestamp);
+        channelUnreadCount.Remove(chatId);
         Persist();
         OnUpdated?.Invoke(chatId);
     }
@@ -48,21 +59,18 @@ public class LastReadMessagesService : ILastReadMessagesService
             Debug.LogWarning("Trying to get unread messages count for an empty chatId");
             return 0;
         }
-        
-        var timestamp = Get(chatId);
 
-        return chatController.GetEntries()
-            .Count(
-                msg => msg.messageType == ChatMessage.Type.PRIVATE &&
-                       msg.sender == chatId &&
-                       msg.timestamp >= timestamp);
+        return channelUnreadCount.ContainsKey(chatId) ? channelUnreadCount[chatId] : 0;
     }
+
+    public int GetAllUnreadCount() => channelUnreadCount.Sum(pair => pair.Value);
 
     public void Dispose()
     {
+        chatController.OnAddMessage -= HandleMessageReceived;
     }
 
-    private void Load()
+    private void LoadLastReadTimestamps()
     {
         var lastReadChatMessagesList =
             JsonConvert.DeserializeObject<List<KeyValuePair<string, long>>>(
@@ -72,7 +80,55 @@ public class LastReadMessagesService : ILastReadMessagesService
             memoryRepository.Add(item.Key, item.Value);
     }
 
-    private ulong Get(string chatId) =>
+    private void LoadChannelsUnreadCount()
+    {
+        using var iterator = memoryRepository.GetEnumerator();
+        while (iterator.MoveNext())
+        {
+            var channelId = iterator.Current.Key;
+            var timestamp = GetLastReadTimestamp(channelId);
+            var ownUserId = userProfileBridge.GetOwn().userId;
+            channelUnreadCount[channelId] = chatController.GetEntries()
+                .Count(message =>
+                {
+                    var messageChannelId = GetChannelId(message);
+                    if (string.IsNullOrEmpty(messageChannelId)) return false;
+                    if (messageChannelId == ownUserId) return false;
+                    return messageChannelId == channelId
+                           && message.timestamp >= timestamp;
+                });;
+        }
+    }
+
+    private void HandleMessageReceived(ChatMessage message)
+    {
+        var channelId = GetChannelId(message);
+        if (string.IsNullOrEmpty(channelId)) return;
+        if (channelId == userProfileBridge.GetOwn().userId) return;
+        
+        var timestamp = GetLastReadTimestamp(channelId);
+        if (message.timestamp >= timestamp)
+        {
+            if (!channelUnreadCount.ContainsKey(channelId))
+                channelUnreadCount[channelId] = 0;
+            channelUnreadCount[channelId]++;
+        }
+
+        OnUpdated?.Invoke(channelId);
+    }
+
+    private string GetChannelId(ChatMessage message)
+    {
+        return message.messageType switch
+        {
+            ChatMessage.Type.PRIVATE => message.sender,
+            // TODO: solve public channelId from chatMessage information when is done from catalyst side
+            ChatMessage.Type.PUBLIC => "general",
+            _ => null
+        };
+    }
+
+    private ulong GetLastReadTimestamp(string chatId) =>
         (ulong) (memoryRepository.ContainsKey(chatId) ? memoryRepository.Get(chatId) : 0);
 
     private void Persist()
