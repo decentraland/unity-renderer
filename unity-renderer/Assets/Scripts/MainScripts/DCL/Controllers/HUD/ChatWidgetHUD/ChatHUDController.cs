@@ -74,6 +74,8 @@ public class ChatHUDController : IDisposable
                 chatEntryModel.recipientName = await profanityFilter.Filter(chatEntryModel.recipientName);
         }
 
+        await UniTask.SwitchToMainThread();
+        
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (view.entries.Count > MAX_CHAT_ENTRIES)
