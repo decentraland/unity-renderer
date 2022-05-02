@@ -1,0 +1,22 @@
+{
+    "name": "DCL.CRDTProtocol.Deserializer.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:80f579cff5cf4136aa8969bf6fa1098c",
+        "GUID:561c0622fe6f4025ae33ed99ed7d3fc8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
