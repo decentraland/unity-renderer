@@ -293,8 +293,7 @@ public class HUDController : IHUDController
 
                     if (taskbarHud != null)
                     {
-                        taskbarHud.Initialize(
-                            SceneReferences.i.mouseCatcher);
+                        taskbarHud.Initialize(SceneReferences.i.mouseCatcher, FriendsController.i);
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
 

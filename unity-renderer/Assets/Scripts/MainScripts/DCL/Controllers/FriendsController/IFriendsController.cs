@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 public interface IFriendsController
@@ -7,7 +7,7 @@ public interface IFriendsController
     event Action<string, FriendshipAction> OnUpdateFriendship;
     event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
     event Action<string> OnFriendNotFound;
-    
+
     int friendCount { get; }
     bool isInitialized { get; }
     Dictionary<string, FriendsController.UserStatus> GetFriends();

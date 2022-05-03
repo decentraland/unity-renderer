@@ -18,6 +18,7 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal VoiceChatButton voiceChatButton;
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
+    [SerializeField] internal GameObject friendsLoadingSpinner;
     [SerializeField] internal TaskbarButton emotesButton;
     [SerializeField] internal GameObject experiencesContainer;
     [SerializeField] internal TaskbarButton experiencesButton;
@@ -30,6 +31,7 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action<bool> OnFriendsToggle;
     public event System.Action<bool> OnEmotesToggle;
     public event System.Action<bool> OnExperiencesToggle;
+    public event System.Action OnFriendsInitializationRetry;
 
     internal static TaskbarHUDView Create()
     {
@@ -64,21 +66,36 @@ public class TaskbarHUDView : MonoBehaviour
         emotesButton.OnToggleOn += ToggleOn;
         experiencesButton.OnToggleOn += ToggleOn;
         chatButton.OnToggleOff += ToggleOff;
-        friendsButton.OnToggleOff += ToggleOn;
-        emotesButton.OnToggleOff += ToggleOn;
-        experiencesButton.OnToggleOff += ToggleOn;
+        friendsButton.OnToggleOff += ToggleOff;
+        emotesButton.OnToggleOff += ToggleOff;
+        experiencesButton.OnToggleOff += ToggleOff;
     }
 
     private void OnDestroy()
     {
         if (chatButton != null)
+        {
             chatButton.OnToggleOn -= ToggleOn;
+            chatButton.OnToggleOff -= ToggleOff;
+        }
+
         if (friendsButton != null)
+        {
             friendsButton.OnToggleOn -= ToggleOn;
+            friendsButton.OnToggleOff -= ToggleOff;
+        }
+
         if (emotesButton != null)
+        {
             emotesButton.OnToggleOn -= ToggleOn;
+            emotesButton.OnToggleOff -= ToggleOff;
+        }
+
         if (experiencesButton != null)
+        {
             experiencesButton.OnToggleOn -= ToggleOn;
+            experiencesButton.OnToggleOff -= ToggleOff;
+        }
     }
 
     public void Destroy() => Destroy(gameObject);
@@ -173,6 +190,42 @@ public class TaskbarHUDView : MonoBehaviour
             taskbarAnimator.Show(instant);
         else
             taskbarAnimator.Hide(instant);
+    }
+
+    public void SetFiendsAsLoading(bool isLoading)
+    {
+        friendsLoadingSpinner.gameObject.SetActive(isLoading);
+
+        friendsButton.OnToggleOn -= ToggleOn;
+        friendsButton.OnToggleOff -= ToggleOff;
+
+        if (!isLoading)
+        {
+            friendsButton.OnToggleOn += ToggleOn;
+            friendsButton.OnToggleOff += ToggleOff;
+        }
+        else
+        {
+            friendsButton.SetToggleState(false);
+        }
+
+        friendsButton.toggleButton.interactable = !isLoading;
+    }
+
+    public void SetFriendsAsFailed(bool hasFailed)
+    {
+        friendsButton.OnToggleOn -= ToggleOn;
+        friendsButton.OnToggleOff -= ToggleOff;
+
+        if (hasFailed)
+        {
+            friendsButton.SetToggleState(true);
+        }
+        else
+        {
+            friendsButton.OnToggleOn += ToggleOn;
+            friendsButton.OnToggleOff += ToggleOff;
+        }
     }
 
     public enum TaskbarButtonType
