@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using DCL.CRDT;
-using DCL.CRDT.BinaryReader;
+using KernelCommunication;
 using NUnit.Framework;
 
 namespace Tests
@@ -21,12 +21,7 @@ namespace Tests
                 64, 73, 15, 219, 64, 73, 15, 219, 64, 73, 15, 219,
                 64, 73, 15, 219, 64, 73, 15, 219
             };
-
-            CRDTMessageHeader expectedMsgHeader = new CRDTMessageHeader()
-            {
-                length = bytes.Length,
-                type = 1
-            };
+            
             CRDTComponentMessageHeader expectedComponentHeader = new CRDTComponentMessageHeader()
             {
                 entityId = 666,
@@ -35,8 +30,7 @@ namespace Tests
                 dataLength = 40
             };
 
-            TestInput(new ByteArrayReader(bytes),
-                new[] { expectedMsgHeader }, new[] { expectedComponentHeader });
+            TestInput(new ByteArrayReader(bytes), new[] { expectedComponentHeader });
         }
 
         [Test]
@@ -57,12 +51,7 @@ namespace Tests
                 64, 73, 15, 219, 64, 73, 15, 219, 64, 73, 15, 219,
                 64, 73, 15, 219, 64, 73, 15, 219
             };
-
-            CRDTMessageHeader expectedMsgHeader = new CRDTMessageHeader()
-            {
-                length = 68,
-                type = 1
-            };
+            
             CRDTComponentMessageHeader expectedComponentHeader = new CRDTComponentMessageHeader()
             {
                 entityId = 666,
@@ -71,12 +60,11 @@ namespace Tests
                 dataLength = 40
             };
 
-            TestInput(new ByteArrayReader(bytes), new[] { expectedMsgHeader, expectedMsgHeader },
-                new[] { expectedComponentHeader, expectedComponentHeader });
+            TestInput(new ByteArrayReader(bytes), new[] { expectedComponentHeader, expectedComponentHeader });
         }
 
         [Test]
-        public unsafe void ParseUnmanagedMemory()
+        public void ParseUnmanagedMemory()
         {
             byte[] bytes =
             {
@@ -87,12 +75,7 @@ namespace Tests
                 64, 73, 15, 219, 64, 73, 15, 219, 64, 73, 15, 219,
                 64, 73, 15, 219, 64, 73, 15, 219
             };
-
-            CRDTMessageHeader expectedMsgHeader = new CRDTMessageHeader()
-            {
-                length = bytes.Length,
-                type = 1
-            };
+            
             CRDTComponentMessageHeader expectedComponentHeader = new CRDTComponentMessageHeader()
             {
                 entityId = 666,
@@ -104,14 +87,14 @@ namespace Tests
             IntPtr unmanagedArray = Marshal.AllocHGlobal(bytes.Length);
             Marshal.Copy(bytes, 0, unmanagedArray, bytes.Length);
 
-            TestInput(new UnmanagedMemoryReader((byte*)unmanagedArray.ToPointer(), bytes.Length),
-                new[] { expectedMsgHeader }, new[] { expectedComponentHeader });
+            TestInput(new UnmanagedMemoryReader(unmanagedArray, bytes.Length),
+                new[] { expectedComponentHeader });
 
             Marshal.FreeHGlobal(unmanagedArray);
         }
 
         [Test]
-        public unsafe void ParseTwoMessagesInSameUnmanagedMemory()
+        public void ParseTwoMessagesInSameUnmanagedMemory()
         {
             byte[] bytes =
             {
@@ -129,11 +112,6 @@ namespace Tests
                 64, 73, 15, 219, 64, 73, 15, 219
             };
 
-            CRDTMessageHeader expectedMsgHeader = new CRDTMessageHeader()
-            {
-                length = 68,
-                type = 1
-            };
             CRDTComponentMessageHeader expectedComponentHeader = new CRDTComponentMessageHeader()
             {
                 entityId = 666,
@@ -145,7 +123,7 @@ namespace Tests
             IntPtr unmanagedArray = Marshal.AllocHGlobal(bytes.Length);
             Marshal.Copy(bytes, 0, unmanagedArray, bytes.Length);
 
-            TestInput(new UnmanagedMemoryReader((byte*)unmanagedArray.ToPointer(), bytes.Length), new[] { expectedMsgHeader, expectedMsgHeader },
+            TestInput(new UnmanagedMemoryReader(unmanagedArray, bytes.Length),
                 new[] { expectedComponentHeader, expectedComponentHeader });
 
             Marshal.FreeHGlobal(unmanagedArray);
@@ -168,18 +146,18 @@ namespace Tests
             byte[] data = new byte[binaryMessage.Length - dataStart];
             Buffer.BlockCopy(binaryMessage, dataStart, data, 0, data.Length);
 
-            using (var iterator = CRDTDeserializer.Deserialize(new ByteArrayReader(binaryMessage)))
+            using (var iterator = KernelBinaryMessageDeserializer.Deserialize(binaryMessage))
             {
                 while (iterator.MoveNext())
                 {
-                    Assert.IsTrue(AreEqual(data, (byte[])iterator.Current.data),
+                    Assert.IsTrue(AreEqual(data, (byte[])((CRDTMessage)iterator.Current).data),
                         "messages data are not equal");
                 }
             }
         }
 
         [Test]
-        public unsafe void CopyUnmanagedDataCorrectly()
+        public void CopyUnmanagedDataCorrectly()
         {
             byte[] binaryMessage =
             {
@@ -199,40 +177,33 @@ namespace Tests
             Marshal.Copy(binaryMessage, 0, unmanagedArray, binaryMessage.Length);
 
             using (var iterator =
-                CRDTDeserializer.Deserialize(new UnmanagedMemoryReader((byte*)unmanagedArray.ToPointer(), binaryMessage.Length)))
+                KernelBinaryMessageDeserializer.Deserialize(unmanagedArray, binaryMessage.Length))
             {
                 while (iterator.MoveNext())
                 {
-                    Assert.IsTrue(AreEqual(data, (byte[])iterator.Current.data),
+                    Assert.IsTrue(AreEqual(data, (byte[])((CRDTMessage)iterator.Current).data),
                         "messages data are not equal");
                 }
             }
             Marshal.FreeHGlobal(unmanagedArray);
         }
 
-        static void TestInput(IBinaryReader reader, CRDTMessageHeader[] expectedMsgHeader, CRDTComponentMessageHeader[] expectedComponentHeader)
+        static void TestInput(IBinaryReader reader, CRDTComponentMessageHeader[] expectedComponentHeader)
         {
             int count = 0;
-            using (var iterator = CRDTDeserializer.Deserialize(reader))
+            using (var iterator = KernelBinaryMessageDeserializer.Deserialize(reader))
             {
                 while (iterator.MoveNext())
                 {
-                    Assert.IsTrue(AreEqual(expectedMsgHeader[count], CRDTDeserializer.messageHeader),
-                        "messages header are not equal");
                     Assert.IsTrue(AreEqual(expectedComponentHeader[count], CRDTDeserializer.componentHeader),
                         "component header are not equal");
 
                     count++;
                 }
             }
-            Assert.AreEqual(expectedMsgHeader.Length, count);
+            Assert.AreEqual(expectedComponentHeader.Length, count);
         }
-
-        static bool AreEqual(CRDTMessageHeader a, CRDTMessageHeader b)
-        {
-            return a.length == b.length && a.type == b.type;
-        }
-
+        
         static bool AreEqual(CRDTComponentMessageHeader a, CRDTComponentMessageHeader b)
         {
             return a.entityId == b.entityId
