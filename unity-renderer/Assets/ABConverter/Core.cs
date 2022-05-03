@@ -485,8 +485,6 @@ namespace DCL.ABConverter
         /// <returns>gltf AssetPath if dump succeeded, null if don't</returns>
         internal AssetPath DumpGltf(AssetPath gltfPath, List<AssetPath> texturePaths, List<AssetPath> bufferPaths)
         {
-            PersistentAssetCache.StreamCacheByUri.Clear();
-
             log.Verbose("Start injecting stuff into " + gltfPath.hash);
 
             //NOTE(Brian): Prepare gltfs gathering its dependencies first and filling the importer's static cache.
