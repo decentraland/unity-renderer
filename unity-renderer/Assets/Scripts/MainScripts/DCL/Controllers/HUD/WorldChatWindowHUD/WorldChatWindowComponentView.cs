@@ -24,6 +24,11 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChannel;
+    public event Action<string> OnUnfriend
+    {
+        add => directChatList.OnUnfriend += value;
+        remove => directChatList.OnUnfriend -= value;
+    }
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -66,6 +71,12 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             model.isOnline,
             model.recentMessage.timestamp));
         directChatList.Sort();
+        UpdateHeaders();
+    }
+
+    public void RemovePrivateChat(string userId)
+    {
+        directChatList.Remove(userId);
         UpdateHeaders();
     }
 

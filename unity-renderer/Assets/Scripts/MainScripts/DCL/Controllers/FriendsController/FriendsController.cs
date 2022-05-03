@@ -79,6 +79,17 @@ public class FriendsController : MonoBehaviour, IFriendsController
         });
     }
 
+    public bool IsFriend(string userId) => friends.ContainsKey(userId);
+    
+    public void RemoveFriend(string friendId)
+    {
+        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        {
+            action = FriendshipAction.DELETED,
+            userId = friendId
+        });
+    }
+
     public void RequestFriendship(string friendUserId)
     {
         UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
@@ -255,5 +266,19 @@ public class FriendsController : MonoBehaviour, IFriendsController
         }
 
         return FriendshipStatus.NOT_FRIEND;
+    }
+    
+    [ContextMenu("Change user stats to online")]
+    public void FakeOnlineFriend()
+    {
+        var friend = friends.Values.First();
+        UpdateUserStatus(new UserStatus
+        {
+            userId = friend.userId,
+            position = friend.position,
+            presence = PresenceStatus.ONLINE,
+            friendshipStatus = friend.friendshipStatus,
+            friendshipStartedTime = friend.friendshipStartedTime
+        });
     }
 }

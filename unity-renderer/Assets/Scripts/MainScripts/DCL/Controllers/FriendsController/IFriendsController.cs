@@ -18,4 +18,6 @@ public interface IFriendsController
     void CancelRequest(string friendUserId);
     void AcceptFriendship(string friendUserId);
     void RejectFriendship(string friendUserId);
+    bool IsFriend(string userId);
+    void RemoveFriend(string friendId);
 }

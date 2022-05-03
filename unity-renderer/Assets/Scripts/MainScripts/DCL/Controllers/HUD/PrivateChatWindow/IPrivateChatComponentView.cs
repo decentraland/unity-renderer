@@ -6,6 +6,7 @@ public interface IPrivateChatComponentView
     event Action OnPressBack;
     event Action OnMinimize;
     event Action OnClose;
+    event Action<string> OnUnfriend;
     
     IChatHUDComponentView ChatHUD { get; }
     bool IsActive { get; }

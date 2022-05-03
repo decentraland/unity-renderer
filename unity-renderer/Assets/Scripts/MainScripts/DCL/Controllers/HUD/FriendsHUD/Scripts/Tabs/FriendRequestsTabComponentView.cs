@@ -53,7 +53,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         searchBar.OnSubmit += SendFriendRequest;
         searchBar.OnSearchText += OnSearchInputValueChanged;
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
-        ((RectTransform) filledStateContainer.transform).ForceUpdateLayout();
+        UpdateLayout();
     }
 
     public override void OnDisable()
@@ -64,13 +64,13 @@ public class FriendRequestsTabComponentView : BaseComponentView
         contextMenuPanel.OnBlock -= HandleFriendBlockRequest;
         NotificationsController.i?.DismissAllNotifications(NOTIFICATIONS_ID);
     }
-    
+
     public void Expand()
     {
         receivedRequestsList.Expand();
         sentRequestsList.Expand();
     }
-    
+
     public void Show()
     {
         gameObject.SetActive(true);
@@ -120,6 +120,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
+        UpdateLayout();
     }
 
     public void Clear()
@@ -130,7 +131,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
     }
-    
+
     public FriendRequestEntry Get(string userId) => entries.ContainsKey(userId) ? entries[userId] : null;
 
     public void Populate(string userId, FriendEntryBase.Model model)
@@ -144,8 +145,11 @@ public class FriendRequestsTabComponentView : BaseComponentView
     public void Set(string userId, FriendEntryBase.Model model, bool isReceived)
     {
         if (!entries.ContainsKey(userId))
+        {
             CreateEntry(userId);
-        
+            UpdateLayout();
+        }
+
         var entry = entries[userId];
         entry.Populate(model);
         entry.SetReceived(isReceived);
@@ -165,6 +169,8 @@ public class FriendRequestsTabComponentView : BaseComponentView
         friendSearchFailedNotification.model.groupID = NOTIFICATIONS_ID;
         NotificationsController.i?.ShowNotification(friendSearchFailedNotification);
     }
+
+    private void UpdateLayout() => ((RectTransform) filledStateContainer.transform).ForceUpdateLayout();
 
     private void CreateEntry(string userId)
     {
