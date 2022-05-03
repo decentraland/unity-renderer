@@ -229,6 +229,8 @@ namespace DCL
                 player = new Player();
             }
 
+            bool isNameDirty = player.name != model.name;
+
             player.id = model.id;
             player.name = model.name;
             player.isTalking = model.talking;
@@ -240,7 +242,6 @@ namespace DCL
             if (isNew)
             {
                 player.playerName = playerName;
-                player.playerName.SetName(player.name);
                 player.playerName.Show();
                 player.anchorPoints = anchorPoints;
                 if (isGlobalSceneAvatar)
@@ -258,6 +259,8 @@ namespace DCL
 
             player.playerName.SetIsTalking(model.talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));
+            if (isNameDirty)
+                player.playerName.SetName(model.name);
         }
 
         private void Update()
