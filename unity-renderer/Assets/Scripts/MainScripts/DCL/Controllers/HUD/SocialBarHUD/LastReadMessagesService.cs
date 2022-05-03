@@ -67,7 +67,8 @@ public class LastReadMessagesService : ILastReadMessagesService
 
     public void Dispose()
     {
-        chatController.OnAddMessage -= HandleMessageReceived;
+        if (chatController != null)
+            chatController.OnAddMessage -= HandleMessageReceived;
     }
 
     private void LoadLastReadTimestamps()
