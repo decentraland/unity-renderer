@@ -8,29 +8,9 @@ namespace DCL.Skybox
     {
         private TextureLayer copiedLayer;
 
-        public bool IsTextureLayerAvailable()
-        {
-            if (copiedLayer == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+        public bool IsTextureLayerAvailable() { return copiedLayer != null; }
 
-        public bool IsDomeAvailable()
-        {
-            if (copiedLayer == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+        public bool IsDomeAvailable() { return copiedLayer != null; }
 
         public void SetTextureLayer(TextureLayer layer) { copiedLayer = layer; }
 

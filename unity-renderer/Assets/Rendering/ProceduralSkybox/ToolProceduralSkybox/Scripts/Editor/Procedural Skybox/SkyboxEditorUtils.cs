@@ -28,12 +28,6 @@ namespace DCL.Skybox
 
     public static class SkyboxEditorUtils
     {
-        public static float GetNormalizedDayTime(float timeOfTheDay)
-        {
-            float tTime = timeOfTheDay / 24;
-            tTime = Mathf.Clamp(tTime, 0, 1);
-            return tTime;
-        }
 
         public static float GetNormalizedLayerCurrentTime(float timeOfTheDay, float startTime, float endTime)
         {
@@ -41,10 +35,10 @@ namespace DCL.Skybox
             float editedDayTime = timeOfTheDay;
             if (endTime < startTime)
             {
-                editedEndTime = 24 + endTime;
+                editedEndTime = SkyboxUtils.CYCLE_TIME + endTime;
                 if (timeOfTheDay < startTime)
                 {
-                    editedDayTime = 24 + timeOfTheDay;
+                    editedDayTime = SkyboxUtils.CYCLE_TIME + timeOfTheDay;
                 }
             }
             return Mathf.InverseLerp(startTime, editedEndTime, editedDayTime);
@@ -55,18 +49,18 @@ namespace DCL.Skybox
             float editedEndTime = endTime;
             if (endTime < startTime)
             {
-                editedEndTime = 24 + endTime;
+                editedEndTime = SkyboxUtils.CYCLE_TIME + endTime;
             }
             float time = Mathf.Lerp(startTime, editedEndTime, normalizeTime);
 
-            if (time > 24)
+            if (time > SkyboxUtils.CYCLE_TIME)
             {
-                time -= 24;
+                time -= SkyboxUtils.CYCLE_TIME;
             }
 
             return time;
         }
 
-        public static void ClampToDayTime(ref float value) { value = Mathf.Clamp(value, 0, 24); }
+        public static void ClampToDayTime(ref float value) { value = Mathf.Clamp(value, 0, SkyboxUtils.CYCLE_TIME); }
     }
 }

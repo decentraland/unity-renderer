@@ -13,8 +13,8 @@ namespace DCL.Skybox
 
     public class SkyboxElements
     {
-        const float domeDefaultSize = 50;
-        const string domeResourcesPath = "SkyboxPrefabs/Dome";
+        private const float DOME_DEFAULT_SIZE = 50;
+        private const string DOME_RESOURCES_PATH = "SkyboxPrefabs/Dome";
 
         private GameObject skyboxElements;
         private GameObject domeElements;
@@ -90,7 +90,7 @@ namespace DCL.Skybox
         {
             if (domePrefab == null)
             {
-                domePrefab = Resources.Load<GameObject>(domeResourcesPath);
+                domePrefab = Resources.Load<GameObject>(DOME_RESOURCES_PATH);
             }
 
             GameObject obj = GameObject.Instantiate<GameObject>(domePrefab);
@@ -123,7 +123,7 @@ namespace DCL.Skybox
                 DomeReferences dome = GetDomeReference();
 
                 // resize
-                dome.domeGO.transform.localScale = domeDefaultSize * Vector3.one + Vector3.one * i;
+                dome.domeGO.transform.localScale = DOME_DEFAULT_SIZE * Vector3.one + Vector3.one * i;
                 orderedList.Insert(0, dome);
             }
 

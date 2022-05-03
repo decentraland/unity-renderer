@@ -855,6 +855,5 @@ namespace DCL.Skybox
             selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesSecondaryParameters_" + slotCount), new Vector4(0, 0, 0, 0));
         }
 
-        Quaternion Vector4ToQuaternion(Vector4 val) { return new Quaternion(val.x, val.y, val.z, val.w); }
     }
 }

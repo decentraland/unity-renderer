@@ -20,8 +20,6 @@ namespace DCL.Skybox
         public const string DEFAULT_SKYBOX_ID = "Generic_Skybox";
 
         public string loadedConfig;
-        //Time for one complete circle. In Hours. default 24
-        public float cycleTime = 24;
         public float lifecycleDuration = 2;
 
         private float timeOfTheDay;                            // (Nishant.K) Time will be provided from outside, So remove this variable
@@ -311,8 +309,8 @@ namespace DCL.Skybox
             }
 
             // Convert minutes in seconds and then normalize with cycle time
-            timeNormalizationFactor = lifecycleDuration * 60 / cycleTime;
-            timeReporter.Configure(timeNormalizationFactor, cycleTime);
+            timeNormalizationFactor = lifecycleDuration * 60 / SkyboxUtils.CYCLE_TIME;
+            timeReporter.Configure(timeNormalizationFactor, SkyboxUtils.CYCLE_TIME);
 
             GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
 
@@ -346,7 +344,7 @@ namespace DCL.Skybox
             float timeInCycle = (totalTimeInMins / lifecycleDuration) + 1;
             float percentageSkyboxtime = timeInCycle - (int)timeInCycle;
 
-            timeOfTheDay = percentageSkyboxtime * cycleTime;
+            timeOfTheDay = percentageSkyboxtime * SkyboxUtils.CYCLE_TIME;
         }
 
         /// <summary>
@@ -447,17 +445,17 @@ namespace DCL.Skybox
                 syncCounter = 0;
             }
 
-            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
+            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, SkyboxUtils.CYCLE_TIME);
             DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
             timeReporter.ReportTime(timeOfTheDay);
 
-            float normalizedDayTime = GetNormalizedDayTime();
-            configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, cycleTime);
-            configuration.ApplyDomeConfigurations(domeReferences, timeOfTheDay, GetNormalizedDayTime(), 1, directionalLight);
+            float normalizedDayTime = SkyboxUtils.GetNormalizedDayTime(timeOfTheDay);
+            configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, SkyboxUtils.CYCLE_TIME);
+            configuration.ApplyDomeConfigurations(domeReferences, timeOfTheDay, SkyboxUtils.GetNormalizedDayTime(timeOfTheDay), 1, directionalLight);
             ApplyAvatarColor(normalizedDayTime);
 
             // Cycle resets
-            if (timeOfTheDay >= cycleTime)
+            if (timeOfTheDay >= SkyboxUtils.CYCLE_TIME)
             {
                 timeOfTheDay = 0.01f;
                 configuration.CycleResets();
@@ -486,10 +484,11 @@ namespace DCL.Skybox
             isPaused = true;
             if (overrideTime)
             {
-                timeOfTheDay = Mathf.Clamp(newTime, 0, 24);
-                configuration.ApplyOnMaterial(selectedMat, (float)timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
-                configuration.ApplyDomeConfigurations(domeReferences, timeOfTheDay, GetNormalizedDayTime(), 1, directionalLight);
-                ApplyAvatarColor(GetNormalizedDayTime());
+                timeOfTheDay = Mathf.Clamp(newTime, 0, SkyboxUtils.CYCLE_TIME);
+                float normalizedDayTime = SkyboxUtils.GetNormalizedDayTime(timeOfTheDay);
+                configuration.ApplyOnMaterial(selectedMat, (float)timeOfTheDay, normalizedDayTime, slotCount, directionalLight, SkyboxUtils.CYCLE_TIME);
+                configuration.ApplyDomeConfigurations(domeReferences, timeOfTheDay, normalizedDayTime, 1, directionalLight);
+                ApplyAvatarColor(normalizedDayTime);
             }
             timeReporter.ReportTime(timeOfTheDay);
         }
@@ -504,17 +503,6 @@ namespace DCL.Skybox
         }
 
         public bool IsPaused() { return isPaused; }
-
-        private float GetNormalizedDayTime()
-        {
-            double tTime = 0;
-
-            tTime = timeOfTheDay / cycleTime;
-
-            tTime = ClampDouble(tTime, 0, 1);
-
-            return (float)tTime;
-        }
 
         public SkyboxConfiguration GetCurrentConfiguration() { return configuration; }
 
@@ -567,22 +555,6 @@ namespace DCL.Skybox
             {
                 configuration.ApplyEditorAvatarColor();
             }
-        }
-
-        private double ClampDouble(double timeOfTheDay, double min, float max)
-        {
-            double result = timeOfTheDay;
-            if (timeOfTheDay < min)
-            {
-                result = min;
-            }
-
-            if (timeOfTheDay > max)
-            {
-                result = max;
-            }
-
-            return result;
         }
     }
 }

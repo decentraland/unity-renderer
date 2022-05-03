@@ -56,13 +56,13 @@ namespace DCL.Skybox
                 return;
             }
 
-            float timeNormalizationFactor = lifecycleDuration * 60 / 24;
+            float timeNormalizationFactor = lifecycleDuration * 60 / SkyboxUtils.CYCLE_TIME;
             timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
-            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, 24);
+            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, SkyboxUtils.CYCLE_TIME);
 
             ApplyOnMaterial();
 
-            if (timeOfTheDay >= 24)
+            if (timeOfTheDay >= SkyboxUtils.CYCLE_TIME)
             {
                 timeOfTheDay = 0.01f;
                 selectedConfiguration.CycleResets();
@@ -211,7 +211,7 @@ namespace DCL.Skybox
             EditorGUILayout.BeginVertical();
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Time : " + timeOfTheDay.ToString("f2"));
-            timeOfTheDay = EditorGUILayout.Slider(timeOfTheDay, 0.01f, 24.00f);
+            timeOfTheDay = EditorGUILayout.Slider(timeOfTheDay, 0.01f, SkyboxUtils.CYCLE_TIME);
             if (isPaused)
             {
                 if (GUILayout.Button(SkyboxEditorLiterals.play))
@@ -588,13 +588,14 @@ namespace DCL.Skybox
         private void ApplyOnMaterial()
         {
             EnsureDependencies();
-            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, SkyboxEditorUtils.GetNormalizedDayTime(timeOfTheDay), MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
-            selectedConfiguration.ApplyDomeConfigurations(skyboxObjects.GetOrderedGameobjectList(selectedConfiguration.additional3Dconfig), timeOfTheDay, SkyboxEditorUtils.GetNormalizedDayTime(timeOfTheDay), 1, directionalLight);
+            float normalizedDayTime = SkyboxUtils.GetNormalizedDayTime(timeOfTheDay);
+            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
+            selectedConfiguration.ApplyDomeConfigurations(skyboxObjects.GetOrderedGameobjectList(selectedConfiguration.additional3Dconfig), timeOfTheDay, normalizedDayTime, 1, directionalLight);
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)
             {
-                SkyboxController.i.ApplyAvatarColor(SkyboxEditorUtils.GetNormalizedDayTime(timeOfTheDay));
+                SkyboxController.i.ApplyAvatarColor(normalizedDayTime);
             }
         }
     }
