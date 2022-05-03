@@ -27,16 +27,16 @@ namespace Tests
             trackerLegacyEcs.OnResourcesLoaded += loadedSubscriber.React;
             trackerLegacyEcs.OnStatusUpdate += updateSubscriber.React;
 
-            var component0 = new MockedSharedComponent("temptation0");
-            var component1 = new MockedSharedComponent("temptation1");
-            var component2 = new MockedSharedComponent("temptation2");
+            var component0 = MockedSharedComponentHelper.Create("temptation0");
+            var component1 = MockedSharedComponentHelper.Create("temptation1");
+            var component2 = MockedSharedComponentHelper.Create("temptation2");
 
-            componentsManager.AddSceneSharedComponent(component0.id, component0);
+            componentsManager.AddSceneSharedComponent(component0.id, component0.component);
 
             Assert.AreEqual(1, trackerLegacyEcs.pendingResourcesCount);
 
-            componentsManager.AddSceneSharedComponent(component1.id, component1);
-            componentsManager.AddSceneSharedComponent(component2.id, component2);
+            componentsManager.AddSceneSharedComponent(component1.id, component1.component);
+            componentsManager.AddSceneSharedComponent(component2.id, component2.component);
 
             Assert.IsTrue(trackerLegacyEcs.CheckPendingResources());
             Assert.AreEqual(3, trackerLegacyEcs.pendingResourcesCount);

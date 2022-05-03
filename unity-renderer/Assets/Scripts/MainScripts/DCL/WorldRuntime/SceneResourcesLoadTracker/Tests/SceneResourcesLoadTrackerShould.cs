@@ -29,14 +29,14 @@ namespace Tests
             resourcesLoadTracker.OnResourcesLoaded += loadedSubscriber.React;
             resourcesLoadTracker.OnResourcesStatusUpdate += updateSubscriber.React;
 
-            var component0 = new MockedSharedComponent("temptation0");
-            var component1 = new MockedSharedComponent("temptation1");
+            var component0 = MockedSharedComponentHelper.Create("temptation0");
+            var component1 = MockedSharedComponentHelper.Create("temptation1");
 
-            componentsManager.AddSceneSharedComponent(component0.id, component0);
+            componentsManager.AddSceneSharedComponent(component0.id, component0.component);
 
             Assert.AreEqual(1, resourcesLoadTracker.pendingResourcesCount);
 
-            componentsManager.AddSceneSharedComponent(component1.id, component1);
+            componentsManager.AddSceneSharedComponent(component1.id, component1.component);
 
             Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
             Assert.AreEqual(2, resourcesLoadTracker.pendingResourcesCount);
@@ -77,10 +77,10 @@ namespace Tests
 
             resourcesLoadTracker.OnResourcesLoaded += loadedSubscriber.React;
 
-            var component0 = new MockedSharedComponent("temptation0");
-            var component1 = new MockedSharedComponent("temptation1");
+            var component0 = MockedSharedComponentHelper.Create("temptation0");
+            var component1 = MockedSharedComponentHelper.Create("temptation1");
 
-            componentsManager.AddSceneSharedComponent(component0.id, component0);
+            componentsManager.AddSceneSharedComponent(component0.id, component0.component);
 
             Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
             component0.SetAsReady();
@@ -89,7 +89,7 @@ namespace Tests
             Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
 
             resourcesLoadTracker.Dispose();
-            componentsManager.AddSceneSharedComponent(component1.id, component1);
+            componentsManager.AddSceneSharedComponent(component1.id, component1.component);
 
             Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
             Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
