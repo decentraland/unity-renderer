@@ -25,7 +25,7 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly InputAction_Trigger toggleWorldChatTrigger;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IWearableCatalogBridge wearableCatalogBridge;
-    private readonly RegexProfanityFilter profanityFilter;
+    private readonly IProfanityFilter profanityFilter;
     private readonly DataStore dataStore;
     private readonly List<string> loadedWearables = new List<string>();
 
@@ -33,7 +33,7 @@ public class PlayerInfoCardHUDController : IHUD
         StringVariable currentPlayerIdData,
         IUserProfileBridge userProfileBridge,
         IWearableCatalogBridge wearableCatalogBridge,
-        RegexProfanityFilter profanityFilter,
+        IProfanityFilter profanityFilter,
         DataStore dataStore)
     {
         this.friendsController = friendsController;

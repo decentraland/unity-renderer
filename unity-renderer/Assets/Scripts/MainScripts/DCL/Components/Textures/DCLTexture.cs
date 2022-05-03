@@ -32,8 +32,8 @@ namespace DCL
 
         AssetPromise_Texture texturePromise = null;
 
-        private Dictionary<ISharedComponent, HashSet<string>> attachedEntitiesByComponent =
-            new Dictionary<ISharedComponent, HashSet<string>>();
+        private Dictionary<ISharedComponent, HashSet<long>> attachedEntitiesByComponent =
+            new Dictionary<ISharedComponent, HashSet<long>>();
 
         public TextureWrapMode unityWrap;
         public FilterMode unitySamplingMode;
@@ -166,7 +166,7 @@ namespace DCL
             if (attachedEntitiesByComponent.ContainsKey(component))
                 return;
 
-            attachedEntitiesByComponent.Add(component, new HashSet<string>());
+            attachedEntitiesByComponent.Add(component, new HashSet<long>());
 
             foreach (var entity in component.GetAttachedEntities())
             {

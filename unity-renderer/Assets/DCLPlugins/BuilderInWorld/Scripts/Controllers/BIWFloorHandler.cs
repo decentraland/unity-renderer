@@ -25,8 +25,8 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private int numberOfParcelsLoaded;
 
     private CatalogItem lastFloorCalalogItemUsed;
-    public Dictionary<string, GameObject> floorPlaceHolderDict { get; set; } = new Dictionary<string, GameObject>();
-    private readonly List<string> loadedFloorEntities = new List<string>();
+    public Dictionary<long, GameObject> floorPlaceHolderDict { get; set; } = new Dictionary<long, GameObject>();
+    private readonly List<long> loadedFloorEntities = new List<long>();
     private Camera mainCamera;
 
     public override void Initialize(IContext context)
@@ -72,7 +72,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
     public void CleanUp() { RemoveAllPlaceHolders(); }
 
-    public bool ExistsFloorPlaceHolderForEntity(string entityId) { return floorPlaceHolderDict.ContainsKey(entityId); }
+    public bool ExistsFloorPlaceHolderForEntity(long entityId) { return floorPlaceHolderDict.ContainsKey(entityId); }
 
     public void ChangeFloor(CatalogItem newFloorObject)
     {
@@ -133,7 +133,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
                 true,
                 OnFloorLoaded);
 
-            string rootEntityId = entity.rootEntity.entityId;
+            long rootEntityId = entity.rootEntity.entityId;
 
             // It may happen that when you get here, the floor entity is already loaded and it wouldn't be necessary to show its loading indicator.
             if (!loadedFloorEntities.Contains(rootEntityId))
@@ -166,7 +166,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
             OnAllParcelsFloorLoaded?.Invoke();
     }
 
-    private void RemovePlaceHolder(string entityId)
+    private void RemovePlaceHolder(long entityId)
     {
         if (!floorPlaceHolderDict.ContainsKey(entityId))
             return;

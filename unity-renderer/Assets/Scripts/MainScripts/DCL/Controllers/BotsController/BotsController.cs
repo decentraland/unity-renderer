@@ -20,7 +20,7 @@ namespace DCL.Bots
     {
         private IParcelScene globalScene;
         private List<string> randomizedCollections = new List<string>();
-        private List<string> instantiatedBots = new List<string>();
+        private List<long> instantiatedBots = new List<long>();
         private List<string> eyesWearableIds = new List<string>();
         private List<string> eyebrowsWearableIds = new List<string>();
         private List<string> mouthWearableIds = new List<string>();
@@ -209,12 +209,12 @@ namespace DCL.Bots
         /// <param name="position">The world position of the randomized bot</param>
         void InstantiateBot(Vector3 position)
         {
-            string entityId = "BOT-" + instantiatedBots.Count;
+            long entityId = instantiatedBots.Count;
 
             AvatarModel avatarModel = new AvatarModel()
             {
-                id = entityId,
-                name = entityId,
+                id = entityId.ToString(),
+                name = entityId.ToString(),
                 hairColor = Random.ColorHSV(0, 1, 0, 1, 0.25f, 0.9f),
                 eyeColor = Random.ColorHSV(0, 1, 0, 1, 0f, 0.2f),
                 skinColor = Random.ColorHSV(0, 1, 0.3f, 1, 0.4f, 0.9f),
@@ -233,7 +233,7 @@ namespace DCL.Bots
         ///Removes an instantiated bot. Every bot has its ID as its avatar name.
         /// </summary>
         /// <param name="targetEntityId">The target bot ID. Every bot has its ID as its avatar name.</param>
-        public void RemoveBot(string targetEntityId)
+        public void RemoveBot(long targetEntityId)
         {
             if (!instantiatedBots.Contains(targetEntityId))
                 return;
@@ -410,7 +410,7 @@ namespace DCL.Bots
             }
         }
 
-        void UpdateEntityTransform(IParcelScene scene, string entityId, Vector3 position, Quaternion rotation, Vector3 scale)
+        void UpdateEntityTransform(IParcelScene scene, long entityId, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
             scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(

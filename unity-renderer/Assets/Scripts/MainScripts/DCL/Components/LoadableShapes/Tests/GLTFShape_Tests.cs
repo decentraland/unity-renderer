@@ -31,7 +31,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator ShapeUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         Assert.IsTrue(
@@ -55,7 +55,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [Test]
     public void CustomContentProvider()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         string mockupAssetId = "cdd5a4ea94388dd21babdecd26dd560f739dce2fbb8c99cc10a45bb8306b6076";
@@ -100,7 +100,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator PreExistentShapeUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -140,7 +140,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator PreExistentShapeImmediateUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -205,7 +205,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [Category("Explicit")]
     public IEnumerator CollisionProperty()
     {
-        string entityId = "entityId";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;
@@ -230,7 +230,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [Category("Explicit")]
     public IEnumerator VisibleProperty()
     {
-        string entityId = "entityId";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;

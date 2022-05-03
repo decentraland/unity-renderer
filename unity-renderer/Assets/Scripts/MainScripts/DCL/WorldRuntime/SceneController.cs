@@ -31,6 +31,8 @@ namespace DCL
         private CancellationTokenSource tokenSource;
         private IMessagingControllersManager messagingControllersManager => Environment.i.messaging.manager;
 
+        public EntityIdHelper entityIdHelper { get; } = new EntityIdHelper();
+
         public void Initialize()
         {
             tokenSource = new CancellationTokenSource();
@@ -225,14 +227,15 @@ namespace DCL
                     case MessagingTypes.ENTITY_CREATE:
                         {
                             if (msgPayload is Protocol.CreateEntity payload)
-                                scene.CreateEntity(payload.entityId);
+                                scene.CreateEntity(entityIdHelper.EntityFromLegacyEntityString(payload.entityId));
 
                             break;
                         }
                     case MessagingTypes.ENTITY_REPARENT:
                         {
                             if (msgPayload is Protocol.SetEntityParent payload)
-                                scene.SetEntityParent(payload.entityId, payload.parentId);
+                                scene.SetEntityParent(entityIdHelper.EntityFromLegacyEntityString(payload.entityId),
+                                    entityIdHelper.EntityFromLegacyEntityString(payload.parentId));
 
                             break;
                         }
@@ -241,7 +244,8 @@ namespace DCL
                         {
                             if (msgPayload is Protocol.EntityComponentCreateOrUpdate payload)
                             {
-                                delayedComponent = scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(payload.entityId,
+                                delayedComponent = scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
+                                    entityIdHelper.EntityFromLegacyEntityString(payload.entityId),
                                     (CLASS_ID_COMPONENT) payload.classId, payload.json) as IDelayedComponent;
                             }
 
@@ -251,7 +255,8 @@ namespace DCL
                     case MessagingTypes.ENTITY_COMPONENT_DESTROY:
                         {
                             if (msgPayload is Protocol.EntityComponentDestroy payload)
-                                scene.componentsManagerLegacy.EntityComponentRemove(payload.entityId, payload.name);
+                                scene.componentsManagerLegacy.EntityComponentRemove(
+                                    entityIdHelper.EntityFromLegacyEntityString(payload.entityId), payload.name);
 
                             break;
                         }
@@ -259,7 +264,8 @@ namespace DCL
                     case MessagingTypes.SHARED_COMPONENT_ATTACH:
                         {
                             if (msgPayload is Protocol.SharedComponentAttach payload)
-                                scene.componentsManagerLegacy.SceneSharedComponentAttach(payload.entityId, payload.id);
+                                scene.componentsManagerLegacy.SceneSharedComponentAttach(
+                                    entityIdHelper.EntityFromLegacyEntityString(payload.entityId), payload.id);
 
                             break;
                         }
@@ -291,7 +297,7 @@ namespace DCL
                     case MessagingTypes.ENTITY_DESTROY:
                         {
                             if (msgPayload is Protocol.RemoveEntity payload)
-                                scene.RemoveEntity(payload.entityId);
+                                scene.RemoveEntity(entityIdHelper.EntityFromLegacyEntityString(payload.entityId));
 
                             break;
                         }

@@ -17,7 +17,7 @@ namespace DCL
         void InstantiateBotsAtCoords(string config);
         void StartBotsRandomizedMovement(string configJson);
         void StopBotsMovement();
-        public void RemoveBot(string targetEntityId);
+        public void RemoveBot(long targetEntityId);
         public void ClearBots();
         List<Vector3> GetTrackedTeleportPositions();
         List<Vector3> GetTrackedMovements();

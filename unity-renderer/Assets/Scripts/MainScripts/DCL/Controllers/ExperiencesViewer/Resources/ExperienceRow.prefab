@@ -371,7 +371,7 @@ MonoBehaviour:
   showHideUIButtonsContainerAnimator: {fileID: 7472436082438651865}
   showPEXUIButton: {fileID: 6765296413345856022}
   hidePEXUIButton: {fileID: 8116933839271937913}
-  startStopPEXToggle: {fileID: 1977692354995799973}
+  startStopPEXToggle: {fileID: 323935475523278433}
   stopPEXButton: {fileID: 3315308486466811519}
   backgroundImage: {fileID: 7325696701227709463}
   model:
@@ -713,12 +713,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4849d2ed3b5a18948bf3cd46256869a4, type: 3}
---- !u!224 &7198288569384838537 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 6302203761313059702, guid: 4849d2ed3b5a18948bf3cd46256869a4,
-    type: 3}
-  m_PrefabInstance: {fileID: 3787696332232341247}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8075548206987090928 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4936655407855709455, guid: 4849d2ed3b5a18948bf3cd46256869a4,
@@ -731,6 +725,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0aaf5a1daa0c8548ba499d4a0332eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &7198288569384838537 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6302203761313059702, guid: 4849d2ed3b5a18948bf3cd46256869a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 3787696332232341247}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6627407361186138903
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1022,16 +1022,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: StartStopPEXToggle
       objectReference: {fileID: 0}
-    - target: {fileID: 7225474628005434785, guid: 4768a7605f725514d85fba8acf39f83e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9008524825783389075, guid: 4768a7605f725514d85fba8acf39f83e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4768a7605f725514d85fba8acf39f83e, type: 3}
 --- !u!224 &2892441486643698399 stripped
@@ -1040,16 +1030,16 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8261345961546164341}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1977692354995799973 stripped
+--- !u!114 &323935475523278433 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7625753975028379600, guid: 4768a7605f725514d85fba8acf39f83e,
+  m_CorrespondingSourceObject: {fileID: -659517891130458604, guid: 4768a7605f725514d85fba8acf39f83e,
     type: 3}
   m_PrefabInstance: {fileID: 8261345961546164341}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Script: {fileID: 11500000, guid: 49868df02d62a428c8aa5b2dd1a1ce20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &8556639788891764344

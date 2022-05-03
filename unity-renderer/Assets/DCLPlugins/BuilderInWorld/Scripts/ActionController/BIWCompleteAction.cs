@@ -35,7 +35,7 @@ public class BIWCompleteAction : IBIWCompleteAction
 
     }
 
-    private void ApplyValue(string entityToApply, object value, bool isUndo) { OnApplyValue?.Invoke(entityToApply, value, actionType, isUndo); }
+    private void ApplyValue(long entityToApply, object value, bool isUndo) { OnApplyValue?.Invoke(entityToApply, value, actionType, isUndo); }
 
     public void CreateChangeFloorAction(CatalogItem oldFloor, CatalogItem newFloor)
     {

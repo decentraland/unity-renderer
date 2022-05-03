@@ -8,7 +8,7 @@ namespace DCL.Models
     public interface IDCLEntity : ICleanable, ICleanableEventDispatcher
     {
         GameObject gameObject { get; }
-        string entityId { get; set; }
+        long entityId { get; set; }
         MeshesInfo meshesInfo { get; set; }
         GameObject meshRootGameObject { get; }
         Renderer[] renderers { get; }
@@ -20,7 +20,7 @@ namespace DCL.Models
         IParcelScene scene { get; set; }
         bool markedForCleanup { get; set; }
         bool isInsideBoundaries { get; set; }
-        Dictionary<string, IDCLEntity> children { get; }
+        Dictionary<long, IDCLEntity> children { get; }
         IDCLEntity parent { get; }
         Action<IDCLEntity> OnShapeUpdated { get; set; }
         Action<IDCLEntity> OnShapeLoaded { get; set; }

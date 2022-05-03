@@ -192,7 +192,7 @@ namespace DCL
             debugController.StopBotsMovement();
         }
 
-        public void RemoveBot(string targetEntityId)
+        public void RemoveBot(long targetEntityId)
         {
             debugController.RemoveBot(targetEntityId);
         }

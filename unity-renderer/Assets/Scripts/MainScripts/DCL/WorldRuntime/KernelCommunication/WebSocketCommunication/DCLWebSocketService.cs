@@ -1,11 +1,6 @@
-using System;
-using DCL.Interface;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Threading;
 using DCL;
-using UnityEditor;
+using DCL.Interface;
+using Newtonsoft.Json;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -25,7 +20,9 @@ public class DCLWebSocketService : WebSocketBehavior
 
         if (ConnectionState == WebSocketState.Open)
         {
-            Send(Newtonsoft.Json.JsonConvert.SerializeObject(x));
+            var serializeObject = JsonConvert.SerializeObject(x);
+            
+            Send(serializeObject);
         
             if (VERBOSE)
             {

@@ -10,7 +10,7 @@ using UnityEngine;
 
 public class BIWEntityShould : IntegrationTestSuite_Legacy
 {
-    private const string ENTITY_ID = "1";
+    private const long ENTITY_ID = 1;
     BIWEntity entity;
     BIWEntityHandler entityHandler;
     private ParcelScene scene;
