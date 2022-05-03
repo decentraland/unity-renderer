@@ -7,35 +7,30 @@ public class BIWPublishController : BIWController, IBIWPublishController
 {
     private IBIWEntityHandler entityHandler;
     private IBIWCreatorController creatorController;
-
-    private BuilderInWorldBridge builderInWorldBridge;
+    private IBIWActionController actionController;
 
     private int checkerSceneLimitsOptimizationCounter = 0;
+    private bool hasUnpublishedChanges = false;
 
     private const int FRAMES_BEETWEN_UPDATES = 10;
     private const string FEEDBACK_MESSAGE_ENTITY_ERROR = "Some entities have errors (marked as pink cubes).";
     private const string FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES = "Some entities are outside of the Scene boundaries.";
     private const string FEEDBACK_MESSAGE_TOO_MANY_ENTITIES = "Too many entities in the scene. Check scene limits.";
 
-    private float startPublishingTimestamp = 0;
-
+    internal float publishTimeStamp = 0;
+    
     public override void Initialize(IContext context)
     {
         base.Initialize(context);
 
         entityHandler = context.editorContext.entityHandler;
         creatorController = context.editorContext.creatorController;
+        actionController = context.editorContext.actionController;
 
         if (context.editorContext.editorHUD != null)
-        {
             context.editorContext.editorHUD.OnPublishAction += StartPublishFlow;
-            context.editorContext.editorHUD.OnConfirmPublishAction += StartPublishScene;
-        }
 
-        builderInWorldBridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
-
-        if (builderInWorldBridge != null)
-            builderInWorldBridge.OnPublishEnd += PublishEnd;
+        context.publisher.OnPublishFinish += PublishFinish;
     }
 
     public override void Update()
@@ -56,21 +51,43 @@ public class BIWPublishController : BIWController, IBIWPublishController
     {
         base.Dispose();
 
+        context.publisher.OnPublishFinish -= PublishFinish;
         if ( context.editorContext.editorHUD != null)
-        {
             context.editorContext.editorHUD.OnPublishAction -= StartPublishFlow;
-            context.editorContext.editorHUD.OnConfirmPublishAction -= StartPublishScene;
-        }
-
-        if (builderInWorldBridge != null)
-            builderInWorldBridge.OnPublishEnd -= PublishEnd;
     }
 
+    public override void EnterEditMode(IBuilderScene scene)
+    {
+        base.EnterEditMode(scene);
+        publishTimeStamp = 0;
+    }
+
+    public override void ExitEditMode()
+    {
+        base.ExitEditMode();
+        CheckIfThereAreUnpublishChanges();
+    }
+    
+    public bool HasUnpublishChanges()
+    {
+        CheckIfThereAreUnpublishChanges();
+        return hasUnpublishedChanges;
+    }
+
+    internal void CheckIfThereAreUnpublishChanges()
+    {
+        hasUnpublishedChanges = actionController.HasApplyAnyActionThisSession();
+        if (hasUnpublishedChanges)
+        {
+            hasUnpublishedChanges = actionController.GetLastActionTimestamp() > publishTimeStamp;
+        }
+    }
+    
     public bool CanPublish()
     {
         if (creatorController.IsAnyErrorOnEntities())
             return false;
-
+        
         if (!sceneToEdit.metricsCounter.IsInsideTheLimits())
             return false;
 
@@ -110,29 +127,35 @@ public class BIWPublishController : BIWController, IBIWPublishController
     {
         if (!CanPublish())
             return;
-
-        if (DataStore.i.builderInWorld.isDevBuild.Get())
+        
+        // We update the manifest with the current scene to send the last state to publish
+        builderScene.UpdateManifestFromScene();
+        
+        context.cameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {
-            //TODO: Implement project publish
-        }
-        else
-        {
-            context.editorContext.editorHUD.PublishStart();
-        }
+            builderScene.sceneScreenshotTexture = sceneSnapshot;
+            if (builderScene.sceneType == IBuilderScene.SceneType.PROJECT)
+            {
+                //If it is a project, we took an aerial view of the scene too for the rotation of the scene
+                context.cameraController.TakeSceneAerialScreenshot( sceneToEdit, (aerialSceenshot) =>
+                {
+                    builderScene.aerialScreenshotTexture = aerialSceenshot;
+                    context.publisher.StartPublish(builderScene);
+                });
+            }
+            else
+            {
+                context.publisher.StartPublish(builderScene);
+            }
+        });
     }
 
-    private void StartPublishScene(string sceneName, string sceneDescription, string sceneScreenshot)
+    private void PublishFinish(bool isOk)
     {
-        startPublishingTimestamp = Time.realtimeSinceStartup;
-        BIWAnalytics.StartScenePublish(sceneToEdit.metricsCounter.currentCount);
-        builderInWorldBridge.PublishScene(sceneToEdit, sceneName, sceneDescription, sceneScreenshot);
-    }
+        if(!isEditModeActive)
+            return;
 
-    private void PublishEnd(bool isOk, string message)
-    {
-        if ( context.editorContext.editorHUD != null)
-            context.editorContext.editorHUD.PublishEnd(isOk, message);
-        string successString = isOk ? "Success" : message;
-        BIWAnalytics.EndScenePublish(sceneToEdit.metricsCounter.currentCount, successString, Time.realtimeSinceStartup - startPublishingTimestamp);
+        hasUnpublishedChanges = false;
+        publishTimeStamp = Time.unscaledTime;
     }
 }

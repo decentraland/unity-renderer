@@ -17,11 +17,13 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     private IContext context;
     private ParcelScene scene;
     private AssetCatalogBridge assetCatalogBridge;
-
+    private CoreComponentsPlugin coreComponentsPlugin;
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
 
         biwCreatorController = new BIWCreatorController();
@@ -32,12 +34,13 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
             entityHandler,
             biwCreatorController
         );
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
 
         biwCreatorController.Initialize(context);
         entityHandler.Initialize(context);
 
-        entityHandler.EnterEditMode(scene);
-        biwCreatorController.EnterEditMode(scene);
+        entityHandler.EnterEditMode(builderScene);
+        biwCreatorController.EnterEditMode(builderScene);
     }
 
     [Test]
@@ -197,6 +200,9 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         }
 
         context.Dispose();
+
+        coreComponentsPlugin.Dispose();
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
 
         yield return base.TearDown();
     }

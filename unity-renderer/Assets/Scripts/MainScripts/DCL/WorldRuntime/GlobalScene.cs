@@ -26,9 +26,9 @@ namespace DCL.Controllers
             contentProvider.baseUrl = data.baseUrl;
             contentProvider.contents = data.contents;
             contentProvider.BakeHashes();
-            
-            if (DCLCharacterController.i != null)
-                gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
+
+            gameObject.transform.position =
+                PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
 
             DataStore.i.sceneWorldObjects.AddScene(sceneData.id);
         }

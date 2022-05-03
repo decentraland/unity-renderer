@@ -42,18 +42,18 @@ public class UIVisualTestsBase : VisualTestsBase
             model = new SharedComponentModel();
 
         // Creation
-        var component = scene.SharedComponentCreate(
+        var component = scene.componentsManagerLegacy.SceneSharedComponentCreate(
             componentId,
             (int) classId
         ) as SharedComponentType;
         yield return component.routine;
 
         // "fake" update (triggers 1st ApplyChanges() call)
-        scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new SharedComponentModel()));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(componentId, JsonUtility.ToJson(new SharedComponentModel()));
         yield return component.routine;
 
         // "real" update
-        scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(model));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(componentId, JsonUtility.ToJson(model));
         yield return component.routine;
     }
 }

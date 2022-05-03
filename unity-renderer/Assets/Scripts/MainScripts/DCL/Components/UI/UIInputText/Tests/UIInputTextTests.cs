@@ -20,6 +20,8 @@ namespace Tests
         Camera mockCamera;
 
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
+        private UIComponentsPlugin uiComponentsPlugin;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
@@ -32,7 +34,16 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            coreComponentsPlugin = new CoreComponentsPlugin();
+            uiComponentsPlugin = new UIComponentsPlugin();
             scene = TestUtils.CreateTestScene();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            uiComponentsPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         public IEnumerator InputTextCreate()

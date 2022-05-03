@@ -1,3 +1,4 @@
+using DCL.Builder;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -21,7 +22,6 @@ namespace Tests.BuildModeHUDViews
                 entityInformationController = Substitute.For<IEntityInformationController>(),
                 firstPersonModeController = Substitute.For<IFirstPersonModeController>(),
                 shortcutsController = Substitute.For<IShortcutsController>(),
-                publishPopupController = Substitute.For<IPublishPopupController>(),
                 dragAndDropSceneObjectController = Substitute.For<IDragAndDropSceneObjectController>(),
                 publishBtnController = Substitute.For<IPublishBtnController>(),
                 inspectorBtnController = Substitute.For<IInspectorBtnController>(),
@@ -30,8 +30,7 @@ namespace Tests.BuildModeHUDViews
                 buildModeConfirmationModalController = Substitute.For<IBuildModeConfirmationModalController>(),
                 topActionsButtonsController = Substitute.For<ITopActionsButtonsController>(),
                 saveHUDController =  Substitute.For<ISaveHUDController>(),
-                newProjectDetailsController = Substitute.For<IPublicationDetailsController>(),
-                publicationDetailsController = Substitute.For<IPublicationDetailsController>()
+                newProjectDetailsController = Substitute.For<INewProjectDetailController>()
             };
 
             buildModeHUDView = BuildModeHUDView.Create();
@@ -57,8 +56,6 @@ namespace Tests.BuildModeHUDViews
             testControllers.firstPersonModeController.Received(1).Initialize(buildModeHUDView.firstPersonModeView, testControllers.tooltipController);
             Assert.AreEqual(testControllers.shortcutsController, buildModeHUDView.controllers.shortcutsController, "The shortcutsController does not match!");
             testControllers.shortcutsController.Received(1).Initialize(buildModeHUDView.shortcutsView);
-            Assert.AreEqual(testControllers.publishPopupController, buildModeHUDView.controllers.publishPopupController, "The publishPopupController does not match!");
-            testControllers.publishPopupController.Received(1).Initialize(buildModeHUDView.publishPopupView);
             Assert.AreEqual(testControllers.dragAndDropSceneObjectController, buildModeHUDView.controllers.dragAndDropSceneObjectController, "The dragAndDropSceneObjectController does not match!");
             testControllers.dragAndDropSceneObjectController.Received(1).Initialize(testControllers.sceneCatalogController, buildModeHUDView.dragAndDropSceneObjectView);
             Assert.AreEqual(testControllers.publishBtnController, buildModeHUDView.controllers.publishBtnController, "The publishBtnController does not match!");
@@ -77,9 +74,7 @@ namespace Tests.BuildModeHUDViews
             Assert.AreEqual(testControllers.saveHUDController, buildModeHUDView.controllers.saveHUDController, "The SaveHUDController does not match!");
             testControllers.saveHUDController.Received(1).Initialize(buildModeHUDView.saveView);
             Assert.AreEqual(testControllers.newProjectDetailsController, buildModeHUDView.controllers.newProjectDetailsController, "The newProjectDetailsController does not match!");
-            testControllers.newProjectDetailsController.Received(1).Initialize(buildModeHUDView.newProjectDetailsView);
-            Assert.AreEqual(testControllers.publicationDetailsController, buildModeHUDView.controllers.publicationDetailsController, "The publicationDetailsController does not match!");
-            testControllers.publicationDetailsController.Received(1).Initialize(buildModeHUDView.publicationDetailsView);
+            testControllers.newProjectDetailsController.Received(1).Initialize(buildModeHUDView.newLandProjectDetailsView);
         }
 
         [Test]

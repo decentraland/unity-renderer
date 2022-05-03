@@ -45,7 +45,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     [SerializeField]
     AudioEvent eventBuilderMusic;
 
-    private List<string> entitiesOutOfBounds = new List<string>();
+    private List<long> entitiesOutOfBounds = new List<long>();
     private int entityCount;
     bool playPlacementSoundOnDeselect;
     private IBIWModeController.EditModeState state = IBIWModeController.EditModeState.Inactive;
@@ -258,7 +258,8 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         entityHandler.OnDeleteSelectedEntities -= OnAssetDelete;
         modeController.OnChangedEditModeState -= OnChangedEditModeState;
 
-        DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= OnEntityBoundsCheckerStatusChanged;
+        if(DCL.Environment.i.world.sceneBoundsChecker != null)
+            DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= OnEntityBoundsCheckerStatusChanged;
 
         if (DCL.Tutorial.TutorialController.i != null)
         {

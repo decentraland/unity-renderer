@@ -31,6 +31,8 @@ public class InspectorBtnController : IInspectorBtnController
 
     public void Dispose()
     {
+        if (inspectorBtnView == null)
+            return;
         inspectorBtnView.OnInspectorButtonClick -= Click;
         inspectorBtnView.OnShowTooltip -= ShowTooltip;
         inspectorBtnView.OnHideTooltip -= HideTooltip;

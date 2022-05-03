@@ -1,12 +1,12 @@
+using DCL;
+using DCL.EmotesCustomization;
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using EmotesCustomization;
 
 public class NFTItemInfo : MonoBehaviour
 {

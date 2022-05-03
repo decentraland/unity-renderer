@@ -1,3 +1,4 @@
+using System;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
@@ -6,21 +7,53 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Helpers.NFT;
+using DCL.Helpers.NFT.Markets;
+using NFTShape_Internal;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
 
 namespace SceneBoundariesCheckerTests
 {
     public class SceneBoundariesCheckerTests : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene();
+
+            coreComponentsPlugin = new CoreComponentsPlugin();
+            scene = TestUtils.CreateTestScene() as ParcelScene;
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
+            TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
+        }
+
+        protected override ServiceLocator InitializeServiceLocator()
+        {
+            ServiceLocator result = base.InitializeServiceLocator();
+
+            result.Register<IServiceProviders>(
+                () =>
+                {
+                    var mockedProviders = Substitute.For<IServiceProviders>();
+                    mockedProviders.theGraph.Returns(Substitute.For<ITheGraph>());
+                    mockedProviders.analytics.Returns(Substitute.For<IAnalytics>());
+                    mockedProviders.catalyst.Returns(Substitute.For<ICatalyst>());
+                    mockedProviders.openSea.Returns(Substitute.For<INFTMarket>());
+                    return mockedProviders;
+                });
+            return result;
         }
 
         [UnityTest]
@@ -42,13 +75,9 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator PShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
-        [Explicit]
-        [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
@@ -72,6 +101,7 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator AudioSourceIsMuted()
         {
             var entity = TestUtils.CreateSceneEntity(scene);
+            scene.isPersistent = false;
 
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
             yield return TestUtils.CreateAudioSourceWithClipForEntity(entity);
@@ -83,8 +113,10 @@ namespace SceneBoundariesCheckerTests
         [UnityTest]
         public IEnumerator AudioSourceWithMeshIsDisabled()
         {
+            scene.isPersistent = false;
+
             TestUtils.CreateEntityWithGLTFShape(scene, new Vector3(8, 1, 8), TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out var entity);
-            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
             yield return TestUtils.CreateAudioSourceWithClipForEntity(entity);

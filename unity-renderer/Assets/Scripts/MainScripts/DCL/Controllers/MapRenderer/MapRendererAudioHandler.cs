@@ -12,5 +12,5 @@ public class MapRendererAudioHandler : MonoBehaviour
 
     private void Awake() { mapRenderer.OnMovedParcelCursor += OnMovedParcelCursor; }
 
-    public void OnMovedParcelCursor() { eventMapParcelHighlight.Play(true); }
+    public void OnMovedParcelCursor(float x, float y) { eventMapParcelHighlight.Play(true); }
 }

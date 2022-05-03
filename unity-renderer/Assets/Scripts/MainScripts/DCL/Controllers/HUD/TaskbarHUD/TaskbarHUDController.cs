@@ -37,7 +37,7 @@ public class TaskbarHUDController : IHUD
 
     public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
 
-    internal BaseVariable<Transform> isEmotesSectionInitialized => DataStore.i.emotesCustomization.isInitialized;
+    internal BaseVariable<bool> isEmotesWheelInitialized => DataStore.i.emotesCustomization.isWheelInitialized;
     internal BaseVariable<bool> isEmotesVisible => DataStore.i.HUDs.emotesVisible;
     internal BaseVariable<Transform> isExperiencesViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
@@ -90,8 +90,8 @@ public class TaskbarHUDController : IHUD
         toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
         toggleWorldChatTrigger.OnTriggered += ToggleWorldChatTrigger_OnTriggered;
 
-        isEmotesSectionInitialized.OnChange += InitializeEmotesSelector;
-        InitializeEmotesSelector(isEmotesSectionInitialized.Get(), null);
+        isEmotesWheelInitialized.OnChange += InitializeEmotesSelector;
+        InitializeEmotesSelector(isEmotesWheelInitialized.Get(), false);
         isEmotesVisible.OnChange += IsEmotesVisibleChanged;
         
         isExperiencesViewerOpen.OnChange += IsExperiencesViewerOpenChanged;
@@ -305,9 +305,9 @@ public class TaskbarHUDController : IHUD
         friendsHud.view.friendsList.OnDeleteConfirmation += (userIdToRemove) => { view.chatHeadsGroup.RemoveChatHead(userIdToRemove); };
     }
 
-    private void InitializeEmotesSelector(Transform current, Transform previous) 
+    private void InitializeEmotesSelector(bool current, bool previous) 
     {
-        if (current == null)
+        if (!current)
             return;
 
         view.OnAddEmotesWindow(); 
@@ -407,7 +407,7 @@ public class TaskbarHUDController : IHUD
             chatController.OnAddMessage -= OnAddMessage;
 
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
-        isEmotesSectionInitialized.OnChange -= InitializeEmotesSelector;
+        isEmotesWheelInitialized.OnChange -= InitializeEmotesSelector;
         isEmotesVisible.OnChange -= IsEmotesVisibleChanged;
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
         isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
