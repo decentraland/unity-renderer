@@ -39,19 +39,10 @@ namespace DCL
                     return (long) SpecialEntityId.THIRD_PERSON_CAMERA_ENTITY_REFERENCE;
             }
 
-            
             long entityIdLong = DecodeBase36(entityId) << 9;
-
+            
             if (!entityIdToLegacyId.ContainsKey(entityIdLong))
                 entityIdToLegacyId[entityIdLong] = entityId;
-            else
-            {
-                if (entityId != entityIdToLegacyId[entityIdLong])
-                {
-                    // long result = Convert.ToInt64(entityId, 32);
-                    Debug.Log("Entity already exist " + entityId + "   colliding with " + entityIdToLegacyId[entityIdLong] + "   converted ");
-                }
-            }
 
             return entityIdLong;
         }

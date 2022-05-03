@@ -382,8 +382,8 @@ public class SceneTests : IntegrationTestSuite_Legacy
         long result = helper.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
-        Assert.AreEqual(result,885819392);
-        Assert.AreEqual(result,legacyEntityId.GetHashCode() << 9);
+        Assert.AreEqual(result,9554432);
+        Assert.AreEqual(result,helper.DecodeBase36(legacyEntityId) << 9);
     }
     
     [Test]
@@ -398,7 +398,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         
         // Assert
         Assert.AreNotEqual(result,-1273338300);
-        Assert.AreNotEqual(result,legacyEntityId.GetHashCode());
+        Assert.AreNotEqual(result,helper.DecodeBase36(legacyEntityId));
     }
 
     [Test]
