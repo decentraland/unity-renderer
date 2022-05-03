@@ -15,13 +15,10 @@ namespace DCL.CRDT
 
         private KernelBinaryMessageProcessor binaryMessageProcessor;
 
-        private void Awake()
+        public void BinaryMessage(string message)
         {
-            binaryMessageProcessor = new KernelBinaryMessageProcessor(Environment.i.world.sceneController);
-        }
+            binaryMessageProcessor ??= new KernelBinaryMessageProcessor(Environment.i.world.sceneController);
 
-        public void CRDTMessage(string message)
-        {
             Message msg = JsonUtility.FromJson<Message>(message);
 
             byte[] bytes = Convert.FromBase64String(msg.data);
