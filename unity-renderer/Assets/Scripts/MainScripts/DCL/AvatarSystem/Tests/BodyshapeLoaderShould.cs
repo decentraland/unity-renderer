@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -65,8 +66,8 @@ namespace Test.AvatarSystem
             AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         }
 
-        [UnityTest]
-        public IEnumerator LoadBodyshape() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task LoadBodyshape()
         {
             //Arrange
             BodyParts bodyParts = GetBodyshapeMock(container.transform);
@@ -115,10 +116,10 @@ namespace Test.AvatarSystem
             Assert.AreEqual(Texture2D.whiteTexture, bodyParts.eyebrows.material.GetTexture(ShaderUtils.BaseMap));
             Assert.AreEqual(skinColor, bodyParts.mouth.material.GetColor(ShaderUtils.BaseColor));
             Assert.AreEqual(Texture2D.whiteTexture, bodyParts.mouth.material.GetTexture(ShaderUtils.BaseMap));
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowsIfCanceledTokenIsPassed() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowsIfCanceledTokenIsPassed()
         {
             //Arrange
             var cts = new CancellationTokenSource();
@@ -126,10 +127,10 @@ namespace Test.AvatarSystem
 
             // Act & Assert
             await TestUtils.ThrowsAsync<OperationCanceledException>(bodyshapeLoader.Load(container, new AvatarSettings(), cts.Token));
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowWhenBodyshapeRetrieverFails() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowWhenBodyshapeRetrieverFails()
         {
             //Arrange
             bodyshapeLoader.bodyshapeRetriever.Configure()
@@ -142,10 +143,10 @@ namespace Test.AvatarSystem
             bodyshapeLoader.eyesRetriever.Received().Dispose();
             bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
             bodyshapeLoader.mouthRetriever.Received().Dispose();
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowWhenBodyshapeRetrieverReturnsNull() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowWhenBodyshapeRetrieverReturnsNull()
         {
             //Arrange
             bodyshapeLoader.bodyshapeRetriever.rendereable.Returns(x => null);
@@ -159,10 +160,10 @@ namespace Test.AvatarSystem
             bodyshapeLoader.eyesRetriever.Received().Dispose();
             bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
             bodyshapeLoader.mouthRetriever.Received().Dispose();
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowWhenEyesRetrieverFails() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowWhenEyesRetrieverFails()
         {
             //Arrange
             bodyshapeLoader.eyesRetriever.Configure()
@@ -175,10 +176,10 @@ namespace Test.AvatarSystem
             bodyshapeLoader.eyesRetriever.Received().Dispose();
             bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
             bodyshapeLoader.mouthRetriever.Received().Dispose();
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowWhenEyebrowsRetrieverFails() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowWhenEyebrowsRetrieverFails()
         {
             //Arrange
             bodyshapeLoader.eyebrowsRetriever.Configure()
@@ -191,10 +192,10 @@ namespace Test.AvatarSystem
             bodyshapeLoader.eyesRetriever.Received().Dispose();
             bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
             bodyshapeLoader.mouthRetriever.Received().Dispose();
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowWhenMouthRetrieverFails() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowWhenMouthRetrieverFails()
         {
             //Arrange
             bodyshapeLoader.mouthRetriever.Configure()
@@ -207,10 +208,10 @@ namespace Test.AvatarSystem
             bodyshapeLoader.eyesRetriever.Received().Dispose();
             bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
             bodyshapeLoader.mouthRetriever.Received().Dispose();
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowWhenEyesRetrieverReturnsNull() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowWhenEyesRetrieverReturnsNull()
         {
             //Arrange
             bodyshapeLoader.eyesRetriever.Configure()
@@ -223,10 +224,10 @@ namespace Test.AvatarSystem
             bodyshapeLoader.eyesRetriever.Received().Dispose();
             bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
             bodyshapeLoader.mouthRetriever.Received().Dispose();
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowWhenEyebrowsRetrieverReturnsNull() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowWhenEyebrowsRetrieverReturnsNull()
         {
             //Arrange
             bodyshapeLoader.eyebrowsRetriever.Configure()
@@ -239,10 +240,10 @@ namespace Test.AvatarSystem
             bodyshapeLoader.eyesRetriever.Received().Dispose();
             bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
             bodyshapeLoader.mouthRetriever.Received().Dispose();
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowWhenMouthRetrieverReturnsNull() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowWhenMouthRetrieverReturnsNull()
         {
             //Arrange
             bodyshapeLoader.mouthRetriever.Configure()
@@ -255,7 +256,7 @@ namespace Test.AvatarSystem
             bodyshapeLoader.eyesRetriever.Received().Dispose();
             bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
             bodyshapeLoader.mouthRetriever.Received().Dispose();
-        });
+        }
 
         private Rendereable PrepareRendereable(BodyParts bodyparts)
         {

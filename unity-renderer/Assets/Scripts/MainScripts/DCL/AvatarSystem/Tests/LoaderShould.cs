@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -214,8 +215,8 @@ namespace Test.AvatarSystem
             Assert.AreEqual(ILoader.Status.Failed_Major, result);
         }
 
-        [UnityTest]
-        public IEnumerator LoadCorrectly() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task LoadCorrectly()
         {
             wearableLoaderFactory.Configure()
                                  .GetBodyshapeLoader(Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>())
@@ -278,10 +279,10 @@ namespace Test.AvatarSystem
             {
                 Assert.IsTrue(renderersReceivedByCombiner.Contains(allRenderers[i]));
             }
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowWithFailedBodyshape() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowWithFailedBodyshape()
         {
             wearableLoaderFactory.Configure()
                                  .GetBodyshapeLoader(Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>())
@@ -309,10 +310,10 @@ namespace Test.AvatarSystem
                         skinColor = Color.green
                     }
                 ));
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator LoadCorrectlyWithFailedNotRequiredWearables() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task LoadCorrectlyWithFailedNotRequiredWearables()
         {
             wearableLoaderFactory.Configure()
                                  .GetBodyshapeLoader(Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>())
@@ -375,10 +376,10 @@ namespace Test.AvatarSystem
             {
                 Assert.IsTrue(renderersReceivedByCombiner.Contains(allRenderers[i]));
             }
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowIfFailedRequiredWearable() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowIfFailedRequiredWearable()
         {
             wearableLoaderFactory.Configure()
                                  .GetBodyshapeLoader(Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>())
@@ -414,7 +415,7 @@ namespace Test.AvatarSystem
                         skinColor = Color.green
                     }
                 ));
-        });
+        }
 
         private IWearableLoader GetMockedWearableLoader(WearableItem wearable, IWearableLoader.Status status = IWearableLoader.Status.Succeeded)
         {

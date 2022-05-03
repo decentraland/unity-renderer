@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
@@ -55,36 +56,36 @@ namespace Test.AvatarSystem
             );
         }
 
-        [UnityTest]
-        public IEnumerator ThrowIfLoadWithCancelledToken() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowIfLoadWithCancelledToken()
         {
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
 
             await TestUtils.ThrowsAsync<OperationCanceledException>(avatar.Load(new List<string>(), new AvatarSettings(), cts.Token));
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowIfCuratorFails() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowIfCuratorFails()
         {
             var settings = new AvatarSettings();
             curator.Configure()
                    .Curate(Arg.Any<AvatarSettings>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
                    .Returns(x => throw new Exception("Curator failed"));
 
-
             var wearableIds = new List<string>();
 
             await TestUtils.ThrowsAsync<Exception>(avatar.Load(wearableIds, settings));
+
             visibility.Received().AddGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             visibility.DidNotReceive().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             curator.Received().Curate(settings, wearableIds, Arg.Any<CancellationToken>());
             loader.DidNotReceiveWithAnyArgs()
                   .Load(default, default, default, default, default, default);
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowIfLoaderFails() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowIfLoaderFails()
         {
             var settings = new AvatarSettings();
             WearableItem bodyshape = new WearableItem();
@@ -111,10 +112,10 @@ namespace Test.AvatarSystem
 
             loader.Received()
                   .Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, Arg.Any<CancellationToken>());
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator FinishSuccessfully() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task FinishSuccessfully()
         {
             var settings = new AvatarSettings { bodyshapeId = "bodyshapeId" };
             SkinnedMeshRenderer combinedRenderer = CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>();
@@ -138,7 +139,7 @@ namespace Test.AvatarSystem
             lod.Received().Bind(gpuSkinnedRenderer);
             gpuSkinningThrottler.Received().Start();
             Assert.AreEqual(IAvatar.Status.Loaded, avatar.status);
-        });
+        }
 
         private GameObject CreatePrimitive(Transform parent)
         {

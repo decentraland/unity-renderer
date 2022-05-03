@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
@@ -55,8 +56,8 @@ namespace Test.AvatarSystem
         [TearDown]
         public void TearDown() { curator.Dispose(); }
 
-        [UnityTest]
-        public IEnumerator CurateAProperConstructedModel() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task CurateAProperConstructedModel()
         {
             (WearableItem bodyshape,
                     WearableItem eyes,
@@ -83,10 +84,10 @@ namespace Test.AvatarSystem
             Assert.NotNull(wearables);
             Assert.IsTrue(wearables.Contains(catalog["ubody_id"]));
             Assert.IsTrue(wearables.Contains(catalog["lbody_id"]));
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator FallbackToADefaultSetOfWearables() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task FallbackToADefaultSetOfWearables()
         {
             (WearableItem bodyshape,
                 WearableItem eyes,
@@ -110,17 +111,17 @@ namespace Test.AvatarSystem
             Assert.NotNull(wearables);
             Assert.IsTrue(wearables.Contains(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.UPPER_BODY)]));
             Assert.IsTrue(wearables.Contains(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.LOWER_BODY)]));
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator ThrowOnCurateIfCancellationTokenIsCancelled() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ThrowOnCurateIfCancellationTokenIsCancelled()
         {
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
 
             //Assert
             TestUtils.ThrowsAsync<OperationCanceledException>(curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE }, null, cts.Token));
-        });
+        }
 
         [Test]
         public void DisposeResolver()

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -40,8 +41,8 @@ namespace Test.AvatarSystem
             AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         }
 
-        [UnityTest]
-        public IEnumerator LoadWearable() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task LoadWearable()
         {
             //Arrange
             loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
@@ -69,10 +70,10 @@ namespace Test.AvatarSystem
             Assert.AreEqual(Color.gray, normalRenderer.material.color);
             Assert.AreEqual(Color.red, hairRenderer.material.color);
             Assert.AreEqual(Color.blue, skinRenderer.material.color);
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator FallbackIfFailsWithRequiredCategory() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task FallbackIfFailsWithRequiredCategory()
         {
             //Arrange
             WearableItem wearable = CatalogController.wearableCatalog[HOODIE_ID]; //Use a wearable with required category
@@ -119,10 +120,10 @@ namespace Test.AvatarSystem
             Assert.AreEqual(Color.gray, normalRenderer.material.color);
             Assert.AreEqual(Color.red, hairRenderer.material.color);
             Assert.AreEqual(Color.blue, skinRenderer.material.color);
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator FallbackIfThrowsWithRequiredCategory() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task FallbackIfThrowsWithRequiredCategory()
         {
             //Arrange
             WearableItem wearable = CatalogController.wearableCatalog[HOODIE_ID]; //Use a wearable with required category
@@ -168,10 +169,10 @@ namespace Test.AvatarSystem
             Assert.AreEqual(Color.gray, normalRenderer.material.color);
             Assert.AreEqual(Color.red, hairRenderer.material.color);
             Assert.AreEqual(Color.blue, skinRenderer.material.color);
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator NotFallbackIfFailsWithNoRequiredCategory() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task NotFallbackIfFailsWithNoRequiredCategory()
         {
             //Arrange
             //Use a wearable with no required category
@@ -190,10 +191,10 @@ namespace Test.AvatarSystem
             //Assert
             retriever.Received(1).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
             Assert.AreEqual(IWearableLoader.Status.Failed, loader.status);
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator NotFallbackIfThrowsWithNoRequiredCategory() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task NotFallbackIfThrowsWithNoRequiredCategory()
         {
             //Arrange
             //Use a wearable with no required category
@@ -214,10 +215,10 @@ namespace Test.AvatarSystem
             //Assert
             retriever.Received(1).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
             Assert.AreEqual(IWearableLoader.Status.Failed, loader.status);
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator CancelLoadIfACancelledTokenProvided() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task CancelLoadIfACancelledTokenProvided()
         {
             //Arrange
             loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
@@ -226,10 +227,10 @@ namespace Test.AvatarSystem
 
             retriever.ClearReceivedCalls();
             await TestUtils.ThrowsAsync<OperationCanceledException>(loader.Load(container, new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.MALE }, cts.Token));
-        });
+        }
 
-        [UnityTest]
-        public IEnumerator DisposeWhenCancellingOnRetrieving() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task DisposeWhenCancellingOnRetrieving()
         {
             //Arrange
             loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
@@ -242,7 +243,7 @@ namespace Test.AvatarSystem
 
             await TestUtils.ThrowsAsync<OperationCanceledException>(loader.Load(container, new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.MALE }, cts.Token));
             retriever.Received().Dispose();
-        });
+        }
 
         private Renderer GetPrimitiveWithAvatarMaterial(Transform parent, string materialName)
         {

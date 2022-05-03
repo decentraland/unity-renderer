@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Threading;
+using System.Threading.Tasks;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
@@ -53,8 +54,8 @@ namespace DCL.Emotes
             TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(container, new WearableItem(), "female", cts.Token));
         }
 
-        [UnityTest]
-        public IEnumerator ProvideTheRetrieverAnimation() => UniTask.ToCoroutine(async () =>
+        [Test]
+        public async Task ProvideTheRetrieverAnimation()
         {
             Animation animation = container.AddComponent<Animation>();
             AnimationClip clip = Resources.Load<AnimationClip>("tik");
@@ -87,7 +88,7 @@ namespace DCL.Emotes
                 "female");
 
             Assert.AreEqual(clip, loader.animation);
-        });
+        }
 
     }
 }

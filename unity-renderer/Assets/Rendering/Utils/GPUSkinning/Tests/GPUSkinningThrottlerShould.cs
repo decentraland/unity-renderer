@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using GPUSkinning;
 using NSubstitute;
@@ -19,11 +20,11 @@ public class GPUSkinningThrottlerShould
         throttler.Bind(gpuSkinning);
     }
 
-    [UnityTest]
-    [TestCase(1, 10, 10, ExpectedResult = null)]
-    [TestCase(2, 10, 5, ExpectedResult = null)]
-    [TestCase(4, 10, 2, ExpectedResult = null)]
-    public IEnumerator CallWaitForFramesProperly(int framesBetweenUpdates, int framesToCheck, int expectedCalls) => UniTask.ToCoroutine(async () =>
+    [Test]
+    [TestCase(1, 10, 10)]
+    [TestCase(2, 10, 5)]
+    [TestCase(4, 10, 2)]
+    public async Task CallWaitForFramesProperly(int framesBetweenUpdates, int framesToCheck, int expectedCalls)
     {
         throttler.SetThrottling(framesBetweenUpdates);
 
@@ -32,10 +33,10 @@ public class GPUSkinningThrottlerShould
             await UniTask.WaitForEndOfFrame();
 
         gpuSkinning.Received(expectedCalls).Update();
-    });
+    }
 
-    [UnityTest]
-    public IEnumerator StopProperly() => UniTask.ToCoroutine(async () =>
+    [Test]
+    public async Task StopProperly()
     {
         throttler.SetThrottling(1);
 
@@ -48,10 +49,10 @@ public class GPUSkinningThrottlerShould
             await UniTask.WaitForEndOfFrame();
 
         gpuSkinning.Received(3).Update();
-    });
+    }
 
-    [UnityTest]
-    public IEnumerator StopWhenDisposed() => UniTask.ToCoroutine(async () =>
+    [Test]
+    public async Task StopWhenDisposed()
     {
         throttler.SetThrottling(1);
 
@@ -64,7 +65,7 @@ public class GPUSkinningThrottlerShould
             await UniTask.WaitForEndOfFrame();
 
         gpuSkinning.Received(3).Update();
-    });
+    }
 
     [TearDown]
     public void TearDown() { throttler.Dispose(); }

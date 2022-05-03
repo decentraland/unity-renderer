@@ -6,6 +6,7 @@ using DCL;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
+using System.Threading.Tasks;
 
 public class ChatHUDShould : IntegrationTestSuite_Legacy
 {
@@ -41,8 +42,8 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual("test message", lastMsgSent.body);
     }
 
-    [UnityTest]
-    public IEnumerator TrimWhenTooMuchMessagesAreInView() => UniTask.ToCoroutine(async () =>
+    [Test]
+    public async Task TrimWhenTooMuchMessagesAreInView()
     {
         int cacheMaxEntries = ChatHUDController.MAX_CHAT_ENTRIES;
         const int newMaxEntries = 10;
@@ -63,10 +64,10 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         ChatHUDController.MAX_CHAT_ENTRIES = cacheMaxEntries;
         Assert.AreEqual(newMaxEntries, controller.view.entries.Count);
         Assert.AreEqual(ChatUtils.AddNoParse("test5"), controller.view.entries[0].model.bodyText);
-    });
+    }
 
-    [UnityTest]
-    public IEnumerator AddAndClearChatEntriesProperly() => UniTask.ToCoroutine(async () =>
+    [Test]
+    public async Task AddAndClearChatEntriesProperly()
     {
         var msg = new ChatEntry.Model()
         {
@@ -84,7 +85,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         controller.view.CleanAllEntries();
 
         Assert.AreEqual(0, controller.view.entries.Count);
-    });
+    }
 
     [Test]
     public void CancelMessageSubmitionByEscapeKey()
@@ -100,10 +101,10 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(testMessage, controller.view.inputField.text);
     }
 
-    [UnityTest]
-    [TestCase("ShiT hello shithead", "**** hello shithead", ExpectedResult = (IEnumerator)null)]
-    [TestCase("ass hi grass", "*** hi grass", ExpectedResult = (IEnumerator)null)]
-    public IEnumerator FilterProfanityMessageWithExplicitWords(string body, string expected) => UniTask.ToCoroutine(async () =>
+    [Test]
+    [TestCase("ShiT hello shithead", "**** hello shithead")]
+    [TestCase("ass hi grass", "*** hi grass")]
+    public async Task FilterProfanityMessageWithExplicitWords(string body, string expected)
     {
         var msg = new ChatEntry.Model
         {
@@ -115,12 +116,12 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         await controller.AddChatMessage(msg);
         expected = ChatUtils.AddNoParse(expected);
         Assert.AreEqual(expected, controller.view.entries[0].model.bodyText);
-    });
+    }
 
-    [UnityTest]
-    [TestCase("fuck1 heh bitch", "****1 heh *****", ExpectedResult = (IEnumerator)null)]
-    [TestCase("assfuck bitching", "ass**** *****ing", ExpectedResult = (IEnumerator)null)]
-    public IEnumerator FilterProfanityMessageWithNonExplicitWords(string body, string expected) => UniTask.ToCoroutine(async () =>
+    [Test]
+    [TestCase("fuck1 heh bitch", "****1 heh *****")]
+    [TestCase("assfuck bitching", "ass**** *****ing")]
+    public async Task FilterProfanityMessageWithNonExplicitWords(string body, string expected)
     {
         var msg = new ChatEntry.Model
         {
@@ -132,12 +133,12 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         await controller.AddChatMessage(msg);
         expected = ChatUtils.AddNoParse(expected);
         Assert.AreEqual(expected, controller.view.entries[0].model.bodyText);
-    });
+    }
 
-    [UnityTest]
-    [TestCase("fucker123", "****er123", ExpectedResult = (IEnumerator)null)]
-    [TestCase("goodname", "goodname", ExpectedResult = (IEnumerator)null)]
-    public IEnumerator FilterProfanitySenderName(string originalName, string filteredName) => UniTask.ToCoroutine(async () =>
+    [Test]
+    [TestCase("fucker123", "****er123")]
+    [TestCase("goodname", "goodname")]
+    public async Task FilterProfanitySenderName(string originalName, string filteredName)
     {
         var msg = new ChatEntry.Model
         {
@@ -149,12 +150,12 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         await controller.AddChatMessage(msg);
         msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(filteredName, controller.view.entries[0].model.senderName);
-    });
+    }
 
-    [UnityTest]
-    [TestCase("assholeeee", "*******eee", ExpectedResult = (IEnumerator)null)]
-    [TestCase("goodname", "goodname", ExpectedResult = (IEnumerator)null)]
-    public IEnumerator FilterProfanityReceiverName(string originalName, string filteredName) => UniTask.ToCoroutine(async () =>
+    [Test]
+    [TestCase("assholeeee", "*******eee")]
+    [TestCase("goodname", "goodname")]
+    public async Task FilterProfanityReceiverName(string originalName, string filteredName)
     {
         var msg = new ChatEntry.Model
         {
@@ -167,10 +168,10 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         await controller.AddChatMessage(msg);
         msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(filteredName, controller.view.entries[0].model.recipientName);
-    });
+    }
 
-    [UnityTest]
-    public IEnumerator DoNotFilterProfanityMessageWhenFeatureFlagIsDisabled() => UniTask.ToCoroutine(async () =>
+    [Test]
+    public async Task DoNotFilterProfanityMessageWhenFeatureFlagIsDisabled()
     {
         dataStore.settings.profanityChatFilteringEnabled.Set(false);
 
@@ -184,10 +185,10 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         await controller.AddChatMessage(msg);
         msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
-    });
+    }
 
-    [UnityTest]
-    public IEnumerator DoNotFilterProfanityMessageWhenIsPrivate() => UniTask.ToCoroutine(async () =>
+    [Test]
+    public async Task DoNotFilterProfanityMessageWhenIsPrivate()
     {
         var msg = new ChatEntry.Model
         {
@@ -199,7 +200,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         await controller.AddChatMessage(msg);
         msg.bodyText = ChatUtils.AddNoParse(msg.bodyText);
         Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
-    });
+    }
     
     private RegexProfanityFilter GivenProfanityFilter()
     {
