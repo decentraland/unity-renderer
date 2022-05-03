@@ -31,7 +31,8 @@ public class LastReadMessagesService : ILastReadMessagesService
 
     public void Initialize()
     {
-        chatController.OnAddMessage += HandleMessageReceived;
+        if (chatController != null)
+            chatController.OnAddMessage += HandleMessageReceived;
         LoadLastReadTimestamps();
         LoadChannelsUnreadCount();
     }
@@ -83,6 +84,7 @@ public class LastReadMessagesService : ILastReadMessagesService
 
     private void LoadChannelsUnreadCount()
     {
+        if (chatController == null) return;
         using var iterator = memoryRepository.GetEnumerator();
         while (iterator.MoveNext())
         {
