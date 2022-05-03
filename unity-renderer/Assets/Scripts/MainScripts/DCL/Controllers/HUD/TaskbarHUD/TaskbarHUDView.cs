@@ -33,8 +33,6 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action<bool> OnExperiencesToggle;
     public event System.Action OnFriendsInitializationRetry;
 
-    public bool isFriendsLoading => friendsLoadingSpinner.gameObject.activeSelf;
-
     internal static TaskbarHUDView Create()
     {
         var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<TaskbarHUDView>();

@@ -156,7 +156,7 @@ public class TaskbarHUDController : IHUD
 
     private void ToggleFriendsTrigger_OnTriggered(DCLAction_Trigger action)
     {
-        if (view.isFriendsLoading)
+        if (!friendsController.isInitialized)
             return;
 
         // ??????
@@ -449,21 +449,6 @@ public class TaskbarHUDController : IHUD
     public void SetVoiceChatRecording(bool recording) { view?.voiceChatButton.SetOnRecording(recording); }
 
     public void SetVoiceChatEnabledByScene(bool enabled) { view?.voiceChatButton.SetEnabledByScene(enabled); }
-
-    private void OnFriendsToggleInputPress()
-    {
-        bool anyInputFieldIsSelected = EventSystem.current != null &&
-                                       EventSystem.current.currentSelectedGameObject != null &&
-                                       EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null &&
-                                       (!worldChatWindowHud.IsInputFieldFocused || !worldChatWindowHud.IsPreview);
-
-        if (anyInputFieldIsSelected)
-            return;
-
-        Utils.UnlockCursor();
-        view.leftWindowContainerAnimator.Show();
-        view.friendsButton.SetToggleState(!view.friendsButton.toggledOn);
-    }
 
     private void HandleFriendsInitialization()
     {
