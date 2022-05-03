@@ -111,11 +111,8 @@ public class RealmTrackerController : IDisposable
         }
     }
 
-    void OnFriendsInitialized(bool isInitialized)
+    void OnFriendsInitialized()
     {
-        if (!isInitialized)
-            return;
-
         friendsController.OnInitialized -= OnFriendsInitialized;
 
         using (var friendsIterator = friendsController.GetFriends().GetEnumerator())

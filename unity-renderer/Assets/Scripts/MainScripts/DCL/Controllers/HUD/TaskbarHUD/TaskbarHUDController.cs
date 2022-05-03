@@ -465,11 +465,8 @@ public class TaskbarHUDController : IHUD
         view.friendsButton.SetToggleState(!view.friendsButton.toggledOn);
     }
 
-    private void HandleFriendsInitialization(bool isInitialized)
+    private void HandleFriendsInitialization()
     {
-        if (!isInitialized)
-            return;
-
         friendsController.OnInitialized -= HandleFriendsInitialization;
         view.SetFiendsAsLoading(false);
     }

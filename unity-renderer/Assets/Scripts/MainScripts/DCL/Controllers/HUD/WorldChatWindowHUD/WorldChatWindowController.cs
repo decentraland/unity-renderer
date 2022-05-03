@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Interface;
@@ -101,13 +101,7 @@ public class WorldChatWindowController : IHUD
             OpenPublicChannel(GENERAL_CHANNEL_ID);
     }
 
-    private void HandleFriendsControllerInitialization(bool isInitialize)
-    {
-        if (!isInitialize)
-            return;
-
-        view.HidePrivateChatsLoading();
-    }
+    private void HandleFriendsControllerInitialization() => view.HidePrivateChatsLoading();
 
     private void OpenPrivateChat(string userId) => OnOpenPrivateChat?.Invoke(userId);
 
