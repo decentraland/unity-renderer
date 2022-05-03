@@ -1,9 +1,9 @@
 using System;
 using System.Runtime.InteropServices;
 using DCL;
-using DCL.CRDT;
 using DCL.Interface;
 using DCL.Models;
+using KernelCommunication;
 using UnityEngine;
 using Ray = DCL.Models.Ray;
 
@@ -14,6 +14,7 @@ public class NativeBridgeCommunication : IKernelCommunication
     private static string currentTag;
 
     private static IMessageQueueHandler queueHandler;
+    private static KernelBinaryMessageProcessor binaryMessageProcessor;
 
     delegate void JS_Delegate_VIS(int a, string b);
 
@@ -26,10 +27,13 @@ public class NativeBridgeCommunication : IKernelCommunication
     delegate void JS_Delegate_Query(Protocol.QueryPayload a);
 
     delegate void JS_Delegate_V();
+    
+    delegate void JS_Delegate_VIIS(int a, int b, string c);
 
     public NativeBridgeCommunication(IMessageQueueHandler queueHandler)
     {
         NativeBridgeCommunication.queueHandler = queueHandler;
+        binaryMessageProcessor = new KernelBinaryMessageProcessor(queueHandler);
 #if UNITY_WEBGL && !UNITY_EDITOR
         SetCallback_CreateEntity(CreateEntity);
         SetCallback_RemoveEntity(RemoveEntity);
@@ -53,7 +57,7 @@ public class NativeBridgeCommunication : IKernelCommunication
         SetCallback_OpenNftDialog(OpenNftDialog);
 
         SetCallback_Query(Query);
-        SetCallback_CRDTMessage(CRDTMessage);
+        SetCallback_BinaryMessage(BinaryMessage);
 #endif
     }
     public void Dispose()
@@ -319,22 +323,10 @@ public class NativeBridgeCommunication : IKernelCommunication
         return message;
     }
     
-    [MonoPInvokeCallback(typeof(JS_Delegate_VIS))]
-    internal static void CRDTMessage(int intPtr, string sceneId)
+    [MonoPInvokeCallback(typeof(JS_Delegate_VIIS))]
+    internal static void BinaryMessage(int intPtr, int length, string sceneId)
     {
-        using (var messageIterator = CRDTDeserializer.Deserialize(new IntPtr(intPtr)))
-        {
-            while (messageIterator.MoveNext())
-            {
-                QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
-                queuedMessage.method = MessagingTypes.CRDT_MESSAGE;
-                queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
-                queuedMessage.sceneId = sceneId;
-                queuedMessage.payload = messageIterator.Current;
-
-                queueHandler.EnqueueSceneMessage(queuedMessage);
-            }
-        }
+        binaryMessageProcessor.Process(sceneId, new IntPtr(intPtr), length);
     }
 
     [DllImport("__Internal")]
@@ -386,5 +378,5 @@ public class NativeBridgeCommunication : IKernelCommunication
     private static extern void SetCallback_Query(JS_Delegate_Query callback);
     
     [DllImport("__Internal")]
-    private static extern void SetCallback_CRDTMessage(JS_Delegate_VIS callback);
+    private static extern void SetCallback_BinaryMessage(JS_Delegate_VIIS callback);
 }
