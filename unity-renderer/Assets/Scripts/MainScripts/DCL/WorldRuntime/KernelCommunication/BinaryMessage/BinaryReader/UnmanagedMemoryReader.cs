@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace DCL.CRDT.BinaryReader
+namespace KernelCommunication
 {
     public class UnmanagedMemoryReader : IBinaryReader
     {
@@ -10,9 +10,9 @@ namespace DCL.CRDT.BinaryReader
 
         private readonly int dataLenght;
 
-        public unsafe UnmanagedMemoryReader(byte* ptr, int dataLenght)
+        public unsafe UnmanagedMemoryReader(IntPtr intPtr, int dataLenght)
         {
-            this.ptr = ptr;
+            this.ptr = (byte*)intPtr.ToPointer();
             this.currentOffset = 0;
             this.dataLenght = dataLenght;
         }
@@ -65,6 +65,12 @@ namespace DCL.CRDT.BinaryReader
             currentOffset += length;
             ptr += length;
             return data;
+        }
+
+        unsafe void IBinaryReader.Skip(int bytesCount)
+        {
+            currentOffset += bytesCount;
+            ptr += bytesCount;
         }
     }
 }

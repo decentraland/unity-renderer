@@ -1,4 +1,4 @@
-namespace DCL.CRDT.BinaryReader
+namespace KernelCommunication
 {
     public static class ByteUtils
     {

@@ -1,51 +1,31 @@
-using System;
-using System.Collections.Generic;
-using DCL.CRDT.BinaryReader;
+using KernelCommunication;
 
 namespace DCL.CRDT
 {
     // Deserialize CRDT binary messages (BigEndian)
     public static class CRDTDeserializer
     {
-        internal static readonly CRDTMessageHeader messageHeader = new CRDTMessageHeader();
         internal static readonly CRDTComponentMessageHeader componentHeader = new CRDTComponentMessageHeader();
 
-        public static unsafe IEnumerator<CRDTMessage> Deserialize(IntPtr intPtr)
+        public static CRDTMessage Deserialize(IBinaryReader dataReader)
         {
-            byte* ptr = (byte*)intPtr.ToPointer();
-            return Deserialize(new UnmanagedMemoryReader(ptr, ByteUtils.PointerToInt32(ptr)));
-        }
+            componentHeader.entityId = dataReader.ReadInt32();
+            componentHeader.componentClassId = dataReader.ReadInt32();
+            componentHeader.timestamp = dataReader.ReadInt64();
+            componentHeader.dataLength = dataReader.ReadInt32();
 
-        public static IEnumerator<CRDTMessage> Deserialize(byte[] bytes)
-        {
-            return Deserialize(new ByteArrayReader(bytes));
-        }
-
-        public static IEnumerator<CRDTMessage> Deserialize(IBinaryReader dataReader)
-        {
-            while (dataReader.CanRead())
+            byte[] data = null;
+            if (componentHeader.dataLength > 0)
             {
-                messageHeader.length = dataReader.ReadInt32();
-                messageHeader.type = dataReader.ReadInt32();
-
-                componentHeader.entityId = dataReader.ReadInt32();
-                componentHeader.componentClassId = dataReader.ReadInt32();
-                componentHeader.timestamp = dataReader.ReadInt64();
-                componentHeader.dataLength = dataReader.ReadInt32();
-
-                byte[] data = null;
-                if (componentHeader.dataLength > 0)
-                {
-                    data = dataReader.ReadBytes(componentHeader.dataLength);
-                }
-
-                yield return new CRDTMessage()
-                {
-                    key = $"{componentHeader.entityId}.{componentHeader.componentClassId}",
-                    timestamp = componentHeader.timestamp,
-                    data = data
-                };
+                data = dataReader.ReadBytes(componentHeader.dataLength);
             }
+
+            return new CRDTMessage()
+            {
+                key = $"{componentHeader.entityId}.{componentHeader.componentClassId}",
+                timestamp = componentHeader.timestamp,
+                data = data
+            };
         }
     }
 }

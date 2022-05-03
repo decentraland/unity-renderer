@@ -1,10 +1,10 @@
 using System;
 
-namespace DCL.CRDT.BinaryReader
+namespace KernelCommunication
 {
     public class ByteArrayReader : IBinaryReader
     {
-        private byte[] bytes;
+        private readonly byte[] bytes;
         private int currentOffset;
 
         public ByteArrayReader(byte[] bytes)
@@ -60,6 +60,11 @@ namespace DCL.CRDT.BinaryReader
             byte[] data = new byte[length];
             Buffer.BlockCopy(bytes, ofs, data, 0, length);
             return data;
+        }
+
+        void IBinaryReader.Skip(int bytesCount)
+        {
+            currentOffset += bytesCount;
         }
     }
 }

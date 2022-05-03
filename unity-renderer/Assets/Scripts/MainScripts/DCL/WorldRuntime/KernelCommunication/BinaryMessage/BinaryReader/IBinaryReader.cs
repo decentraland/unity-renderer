@@ -1,4 +1,4 @@
-namespace DCL.CRDT.BinaryReader
+namespace KernelCommunication
 {
     public interface IBinaryReader
     {
@@ -7,5 +7,6 @@ namespace DCL.CRDT.BinaryReader
         int ReadInt32();
         long ReadInt64();
         byte[] ReadBytes(int size);
+        void Skip(int bytesCount);
     }
 }
