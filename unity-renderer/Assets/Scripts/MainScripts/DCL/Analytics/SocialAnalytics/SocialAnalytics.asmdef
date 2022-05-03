@@ -1,0 +1,16 @@
+{
+    "name": "SocialAnalytics",
+    "rootNamespace": "",
+    "references": [
+        "GUID:2fe81fa47ac9ca345860b544ce917241"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
