@@ -77,13 +77,6 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         internalChatView.Received(3).AddEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == ChatMessage.Type.PRIVATE
             && model.senderId == testProfileModel.userId));
-
-        Received.InOrder(() =>
-        {
-            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message1</noparse>"));
-            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message2</noparse>"));
-            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message3</noparse>"));
-        });
     }
 
     [Test]
@@ -103,13 +96,6 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         internalChatView.Received(3).AddEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == ChatMessage.Type.PRIVATE
             && model.senderId == testProfileModel.userId));
-
-        Received.InOrder(() =>
-        {
-            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message1</noparse>"));
-            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message2</noparse>"));
-            internalChatView.AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == "<noparse>message3</noparse>"));
-        });
     }
 
     [Test]

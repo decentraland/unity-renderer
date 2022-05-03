@@ -78,8 +78,6 @@ public class PrivateChatWindowController : IHUD
             userStatus.presence == PresenceStatus.ONLINE,
             userProfileBridge.GetOwn().IsBlocked(ConversationUserId));
 
-        chatHudController.ClearAllEntries();
-
         ReloadAllChats().Forget();
     }
 
@@ -132,7 +130,7 @@ public class PrivateChatWindowController : IHUD
         for (var i = list.Count - 1; i >= 0; i--)
         {
             var message = list[i];
-            if (i % entriesPerFrame == 0) await UniTask.NextFrame();
+            if (i != 0 && i % entriesPerFrame == 0) await UniTask.NextFrame();
             if (!IsMessageFomCurrentConversation(message)) continue;
             HandleMessageReceived(message);
         }
