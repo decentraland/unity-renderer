@@ -19,36 +19,50 @@ namespace DCL.Skybox
         public float satelliteSize;
         public float radius;                    // Need to initialize with particle system prefab's radius
         public float yPos = 0;
+        public bool followCamera;
+        public bool renderWithMainCamera;
         public bool validPrefab;
+
+        private ParticleSystem particles;
+        [NonSerialized] public string inValidStr = "";
 
         public Planar3DConfig(string name) { this.nameInEditor = name; }
 
-        public void CheckPrefabValidity(GameObject tempPrefab)
+        public void AssignNewPrefab(GameObject tempPrefab)
         {
             if (tempPrefab == prefab)
             {
                 return;
             }
 
+            if (tempPrefab == null)
+            {
+                prefab = tempPrefab;
+                return;
+            }
+
             // Check if prefab contains particle system
-            ParticleSystem particles = tempPrefab.GetComponent<ParticleSystem>();
+            particles = tempPrefab.GetComponent<ParticleSystem>();
             if (particles == null)
             {
                 validPrefab = false;
+                inValidStr = "Particle system not present";
             }
             else
             {
                 // Check if particle system is of type circle
                 var shape = particles.shape;
-                if (shape.shapeType == ParticleSystemShapeType.Circle)
+                if (shape.shapeType == ParticleSystemShapeType.Circle || shape.shapeType == ParticleSystemShapeType.Hemisphere)
                 {
                     validPrefab = true;
                     radius = shape.radius;
                     prefab = tempPrefab;
+                    inValidStr = "valid!";
                 }
                 else
                 {
                     validPrefab = false;
+                    inValidStr = "Particle system not of type Circle or Hemisphere";
                 }
 
             }

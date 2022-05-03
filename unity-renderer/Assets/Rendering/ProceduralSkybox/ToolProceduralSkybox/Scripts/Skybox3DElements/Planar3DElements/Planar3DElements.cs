@@ -13,8 +13,11 @@ namespace DCL.Skybox
 
     public class Planar3DElements
     {
-        public GameObject skyboxElementsGO;
-        public Transform planarElementsGO;
+        private GameObject skyboxElementsGO;
+        private Transform planarElementsGO;
+        private Transform planarCameraFollowingElements;
+        private Transform planarStaticElements;
+        private FollowMainCamera followObj;
 
         private Dictionary<GameObject, Queue<PlanarRefs>> planarReferences = new Dictionary<GameObject, Queue<PlanarRefs>>();
         private List<PlanarRefs> usedPlanes = new List<PlanarRefs>();
@@ -38,7 +41,22 @@ namespace DCL.Skybox
             planarElementsGO = new GameObject("Planar Elements").transform;
             planarElementsGO.parent = skyboxElementsGO.transform;
             planarElementsGO.gameObject.layer = LayerMask.NameToLayer("Skybox");
+
+            planarCameraFollowingElements = new GameObject("Camera Following").transform;
+            planarCameraFollowingElements.parent = planarElementsGO.transform;
+            planarCameraFollowingElements.gameObject.layer = LayerMask.NameToLayer("Skybox");
+
+            planarStaticElements = new GameObject("Static").transform;
+            planarStaticElements.parent = planarElementsGO.transform;
+            planarStaticElements.gameObject.layer = LayerMask.NameToLayer("Skybox");
+
+            // Add follow script
+            followObj = planarCameraFollowingElements.gameObject.AddComponent<FollowMainCamera>();
+            followObj.ignoreYPos = true;
+            followObj.followPos = true;
         }
+
+        internal void AssignCameraInstance(Transform cameraTransform) { followObj.target = cameraTransform.gameObject; }
 
         internal void ApplyConfig(List<Planar3DConfig> planarLayers, float timeOfTheDay, float cycleTime, bool isEditor)
         {
@@ -62,13 +80,43 @@ namespace DCL.Skybox
 
                 ApplyParticleProperties(planarLayers[i], tempRef);
 
-                // if this layer is not active at present time, disbale the object
+                // Parent with the moving or static parent
+                ParentPlanarLayer(planarLayers[i], tempRef);
+
+                // Change layer mask
+                ChangeRenderingCamera(planarLayers[i], tempRef);
+
+                // if this layer is not active at present time, disable the object
                 if (!IsLayerActiveInCurrentTime(timeOfTheDay, planarLayers[i], cycleTime))
                 {
                     planarLayers[i].renderType = LayerRenderType.NotRendering;
                     tempRef.planarObject.SetActive(false);
                     continue;
                 }
+            }
+        }
+
+        private void ChangeRenderingCamera(Planar3DConfig config, PlanarRefs tempRef)
+        {
+            if (config.renderWithMainCamera)
+            {
+                tempRef.planarObject.layer = 0;
+            }
+            else
+            {
+                tempRef.planarObject.layer = LayerMask.NameToLayer("Skybox");
+            }
+        }
+
+        private void ParentPlanarLayer(Planar3DConfig config, PlanarRefs tempRef)
+        {
+            if (config.followCamera)
+            {
+                tempRef.planarObject.transform.parent = planarCameraFollowingElements;
+            }
+            else
+            {
+                tempRef.planarObject.transform.parent = planarStaticElements;
             }
         }
 

@@ -36,5 +36,11 @@ namespace DCL.Skybox
         }
 
         public void ApplySkyboxElements(SkyboxConfiguration config, float timeOfTheDay, float cycleTime, bool isEditor) { planarElements.ApplyConfig(config.planarLayers, timeOfTheDay, cycleTime, isEditor); }
+
+        /// <summary>
+        /// Assign Main Camera reference to follow
+        /// </summary>
+        /// <param name="currentTransform"></param>
+        internal void AssignCameraInstance(Transform cameraTransform) { planarElements.AssignCameraInstance(cameraTransform); }
     }
 }

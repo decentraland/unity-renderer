@@ -72,6 +72,8 @@ namespace DCL.Skybox
 
             GetOrCreateEnvironmentProbe();
 
+            skyboxElements = new SkyboxElements();
+
             // Get current time from the server
             GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
             DataStore.i.worldTimer.OnTimeChanged += GetTimeFromTheServer;
@@ -94,6 +96,10 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.useDynamicSkybox.OnChange += UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange += ReflectionResolution_OnChange;
+
+            // Register for camera references
+            DataStore.i.camera.transform.OnChange += AssignCameraReferences;
+            AssignCameraReferences(DataStore.i.camera.transform.Get(), null);
         }
 
         private void FixedTime_OnChange(float current, float previous)
@@ -194,6 +200,8 @@ namespace DCL.Skybox
                 probeParented = true;
             }
         }
+
+        private void AssignCameraReferences(Transform currentTransform, Transform prevTransform) { skyboxElements.AssignCameraInstance(currentTransform); }
 
         private void KernelConfig_OnChange(KernelConfigModel current, KernelConfigModel previous)
         {
@@ -451,11 +459,6 @@ namespace DCL.Skybox
             float normalizedDayTime = GetNormalizedDayTime();
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, cycleTime);
             ApplyAvatarColor(normalizedDayTime);
-
-            if (skyboxElements == null)
-            {
-                skyboxElements = new SkyboxElements();
-            }
             skyboxElements.ApplySkyboxElements(configuration, timeOfTheDay, cycleTime, false);
 
             // Cycle resets
@@ -479,6 +482,7 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.useDynamicSkybox.OnChange -= UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange -= FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange -= ReflectionResolution_OnChange;
+            DataStore.i.camera.transform.OnChange -= AssignCameraReferences;
 
             timeReporter.Dispose();
         }
@@ -491,11 +495,6 @@ namespace DCL.Skybox
                 timeOfTheDay = Mathf.Clamp(newTime, 0, 24);
                 configuration.ApplyOnMaterial(selectedMat, (float)timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
                 ApplyAvatarColor(GetNormalizedDayTime());
-
-                if (skyboxElements == null)
-                {
-                    skyboxElements = new SkyboxElements();
-                }
                 skyboxElements.ApplySkyboxElements(configuration, timeOfTheDay, cycleTime, false);
             }
             timeReporter.ReportTime(timeOfTheDay);

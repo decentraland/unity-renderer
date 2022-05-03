@@ -31,21 +31,22 @@ namespace DCL.Skybox
 
             GameObject tempPrefab = config.prefab;
             RenderSimpleValues.RenderPrefabInput("Prefab", ref tempPrefab);
-            config.CheckPrefabValidity(tempPrefab);
+            config.AssignNewPrefab(tempPrefab);
 
 
             if (!config.validPrefab)
             {
                 Color color = GUI.color;
                 GUI.color = Color.red;
-                EditorGUILayout.LabelField("Need particle system on prefab", GUILayout.Width(400), GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField(config.inValidStr, GUILayout.Width(400), GUILayout.ExpandWidth(false));
                 GUI.color = color;
                 config.prefab = null;
             }
 
-            //RenderSimpleValues.RenderFloatField("Width", ref config.satelliteSize);
             RenderSimpleValues.RenderFloatField("Radius", ref config.radius);
             RenderSimpleValues.RenderFloatField("Y-Pos", ref config.yPos);
+            RenderSimpleValues.RenderBoolField("Follow Camera", ref config.followCamera);
+            RenderSimpleValues.RenderBoolField("Render In Main Camera", ref config.renderWithMainCamera);
         }
     }
 }
