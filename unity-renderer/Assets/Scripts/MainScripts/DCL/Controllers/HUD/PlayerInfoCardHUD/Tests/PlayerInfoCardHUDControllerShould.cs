@@ -4,6 +4,7 @@ using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using SocialFeaturesAnalytics.TestHelpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
 
         friendsController = new FriendsController_Mock();
 
-        socialAnalytics = SocialAnalytics.CreateMockedSocialAnalytics();
+        socialAnalytics = SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics();
 
         controller = new PlayerInfoCardHUDController(friendsController,
             currentPlayerIdData,

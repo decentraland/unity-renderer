@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using SocialFeaturesAnalytics;
+using SocialFeaturesAnalytics.TestHelpers;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -15,7 +15,7 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         controller = new FriendsHUDController();
-        controller.Initialize(null, SocialAnalytics.CreateMockedSocialAnalytics(), null);
+        controller.Initialize(null, SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics(), null);
         this.view = controller.view;
 
         Assert.IsTrue(view != null, "Friends hud view is null?");

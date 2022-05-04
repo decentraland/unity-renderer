@@ -1,11 +1,11 @@
-using DCL.SettingsPanelHUD;
-using NUnit.Framework;
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
-using UnityEngine;
+using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using SocialFeaturesAnalytics.TestHelpers;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 {
@@ -40,7 +40,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         controller.Initialize(null, chatController, null);
         view = controller.view;
 
-        socialAnalytics = SocialAnalytics.CreateMockedSocialAnalytics();
+        socialAnalytics = SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics();
 
         Assert.IsTrue(view != null, "Taskbar view is null?");
         Assert.IsTrue(CommonScriptableObjects.isTaskbarHUDInitialized, "Taskbar controller is not initialized?");

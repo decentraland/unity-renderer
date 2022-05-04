@@ -2,6 +2,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using SocialFeaturesAnalytics.TestHelpers;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -28,7 +29,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         controller = new FriendsHUDController();
         friendsController = new FriendsController_Mock();
 
-        socialAnalytics = SocialAnalytics.CreateMockedSocialAnalytics();
+        socialAnalytics = SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics();
 
         controller.Initialize(friendsController, socialAnalytics, UserProfile.GetOwnUserProfile());
         this.view = controller.view;
