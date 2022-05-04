@@ -64,7 +64,7 @@ namespace DCL
                 {
                     entityIdLong = negativeCounter;
                     negativeValues.Add(entityId,negativeCounter);
-                    negativeCounter++;
+                    negativeCounter--;
                 }
             }
             else
@@ -78,7 +78,7 @@ namespace DCL
             return entityIdLong;
         }
         
-        public Int64 DecodeBase36(string input)
+        public long DecodeBase36(string input)
         {
             const string charList = "0123456789abcdefghijklmnopqrstuvwxyz";
             var reversed = input;
@@ -89,37 +89,6 @@ namespace DCL
                 result += charList.IndexOf(reversed[i]) * (long)Math.Pow(36, pos);
                 pos++;
             }
-            return result;
-        }
-        
-        public string ToBase36(long decimalNumber, int radix)
-        {
-            const int bitsInLong = 64;
-            const string digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-            if (radix < 2 || radix > digits.Length)
-                throw new ArgumentException("The radix must be >= 2 and <= " + digits.Length);
-
-            if (decimalNumber == 0)
-                return "0";
-
-            int index = bitsInLong - 1;
-            long currentNumber = Math.Abs(decimalNumber);
-            char[] charArray = new char[bitsInLong];
-
-            while (currentNumber != 0)
-            {
-                int remainder = (int)(currentNumber % radix);
-                charArray[index--] = digits[remainder];
-                currentNumber = currentNumber / radix;
-            }
-
-            string result = new String(charArray, index + 1, bitsInLong - index - 1);
-            if (decimalNumber < 0)
-            {
-                result = "-" + result;
-            }
-
             return result;
         }
     }

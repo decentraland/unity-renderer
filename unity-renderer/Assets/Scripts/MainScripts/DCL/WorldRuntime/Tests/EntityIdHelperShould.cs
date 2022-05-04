@@ -21,13 +21,13 @@ public class EntityIdHelperShould
     {
         // Arrange
         string legacyEntityId = "Eed";
-        
+
         // Act
         long result = helper.EntityFromLegacyEntityString(legacyEntityId);
         
         // Assert
         Assert.AreEqual(result,264704);
-        Assert.AreEqual(result,helper.DecodeBase36(legacyEntityId) << 9);
+        Assert.AreEqual(result,helper.DecodeBase36(legacyEntityId.Substring(1)) << 9);
     }
     
     [Test]
@@ -154,26 +154,5 @@ public class EntityIdHelperShould
         
         // Assert
         Assert.AreEqual(result, (long) SpecialEntityId.AVATAR_ENTITY_REFERENCE);
-    }
-    
-    [Test]
-    public void TestUntilWhatId()
-    {
-        EntityIdHelper entityIdHelper = new EntityIdHelper();
-        string lastEntityId = null;
-        int numberOfEntities = 0;
-        try
-        {
-            while(true)
-            {
-                numberOfEntities++;
-                lastEntityId = entityIdHelper.ToBase36(numberOfEntities, 36);
-                entityIdHelper.EntityFromLegacyEntityString(lastEntityId);
-            }
-        }
-        catch(Exception e)
-        {
-            Debug.Log("Found! " + numberOfEntities + " lastENtityId "+ lastEntityId);
-        }
     }
 }
