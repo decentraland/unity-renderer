@@ -236,12 +236,8 @@ public class FriendsHUDController : IHUD
 
     private void Entry_OnRequestAccepted(FriendRequestEntry entry)
     {
-        WebInterface.UpdateFriendshipStatus(
-            new FriendsController.FriendshipUpdateStatusMessage()
-            {
-                action = FriendshipAction.APPROVED,
-                userId = entry.userId
-            });
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { action = FriendshipAction.APPROVED, userId = entry.userId });
+        socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.userId, FriendActionSource.FriendsHUD);
     }
 
     public void Dispose()
