@@ -77,5 +77,40 @@ namespace DCL.ECSRuntime
             }
             return false;
         }
+
+        /// <summary>
+        /// remove all components of a given entity
+        /// </summary>
+        /// <param name="entity"></param>
+        public void RemoveAllComponents(IDCLEntity entity)
+        {
+            using (var iterator = sceneComponents.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    iterator.Current.Value.Remove(entity);
+                }
+            }
+        }
+
+        /// <summary>
+        /// get if entity has any component
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool HasAnyComponent(IDCLEntity entity)
+        {
+            using (var iterator = sceneComponents.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    if (iterator.Current.Value.HasComponent(entity))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 }
