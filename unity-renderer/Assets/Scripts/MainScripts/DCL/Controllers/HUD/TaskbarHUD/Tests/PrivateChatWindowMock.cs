@@ -13,9 +13,16 @@ public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
     public bool IsActive => gameObject.activeSelf;
     public RectTransform Transform => (RectTransform) transform;
 
+    private bool isDestroyed;
+
     private void Awake()
     {
         gameObject.AddComponent<RectTransform>();
+    }
+
+    private void OnDestroy()
+    {
+        isDestroyed = true;
     }
 
     public void Setup(UserProfile profile, bool isOnline, bool isBlocked)
@@ -26,5 +33,9 @@ public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
 
     public void Hide() => gameObject.SetActive(false);
 
-    public void Dispose() => Destroy(gameObject);
+    public void Dispose()
+    {
+        if (isDestroyed) return;
+        Destroy(gameObject);
+    }
 }

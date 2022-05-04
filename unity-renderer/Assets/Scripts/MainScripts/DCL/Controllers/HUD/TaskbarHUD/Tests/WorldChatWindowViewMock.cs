@@ -10,9 +10,16 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeSelf;
 
+    private bool isDestroyed;
+
     private void Awake()
     {
         gameObject.AddComponent<RectTransform>();
+    }
+
+    private void OnDestroy()
+    {
+        isDestroyed = true;
     }
 
     public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService)
@@ -43,5 +50,9 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
-    public void Dispose() => Destroy(gameObject);
+    public void Dispose()
+    {
+        if (isDestroyed) return;
+        Destroy(gameObject);
+    }
 }

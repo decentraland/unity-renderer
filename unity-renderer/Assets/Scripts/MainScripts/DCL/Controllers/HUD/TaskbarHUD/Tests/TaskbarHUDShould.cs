@@ -43,7 +43,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         privateChatController?.Dispose();
         worldChatWindowController?.Dispose();
         friendsHudController?.Dispose();
-
         controller.Dispose();
 
         yield return base.TearDown();
@@ -57,7 +56,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IFriendsController>(),
             chatController,
             Substitute.For<ILastReadMessagesService>());
-        worldChatWindowController.Initialize(new GameObject("WorldChatWindowComponentView").AddComponent<WorldChatWindowViewMock>());
+        worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
         Assert.IsTrue(worldChatWindowController.View.Transform.parent == view.leftWindowContainer,
@@ -69,7 +68,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddFriendWindowProperly()
     {
         friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(null, UserProfile.GetOwnUserProfile(), chatController);
+        friendsHudController.Initialize(null, UserProfile.GetOwnUserProfile(), chatController,
+            new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 
         Assert.IsTrue(friendsHudController.view.Transform.parent == view.leftWindowContainer,
