@@ -173,12 +173,8 @@ public class UserContextMenu : MonoBehaviour
                     action = FriendshipAction.DELETED
                 });
 
-                WebInterface.UpdateFriendshipStatus(
-                    new FriendsController.FriendshipUpdateStatusMessage()
-                    {
-                        action = FriendshipAction.DELETED,
-                        userId = userId
-                    });
+                WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { action = FriendshipAction.DELETED, userId = userId });
+                socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, FriendActionSource.ProfileContextMenu);
             });
         }
         Hide();
