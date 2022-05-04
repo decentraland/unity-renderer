@@ -14,9 +14,6 @@ namespace DCL.Camera
         [SerializeField]
         internal new UnityEngine.Camera camera;
 
-        [SerializeField]
-        internal new UnityEngine.Camera skyboxCamera;
-
         private Transform cameraTransform;
 
         [SerializeField]
@@ -229,7 +226,11 @@ namespace DCL.Camera
 
         private void SetInvertYAxis(bool current, bool previous) { thirdPersonCamera.m_YAxis.m_InvertInput = !current; }
 
-        private void SetCameraEnabledState(bool enabled) { camera.enabled = skyboxCamera.enabled = enabled; }
+        private void SetCameraEnabledState(bool enabled)
+        {
+            camera.enabled = enabled;
+            DataStore.i.camera.mainCamEnabled.Set(enabled);
+        }
 
         private void OnDestroy()
         {
