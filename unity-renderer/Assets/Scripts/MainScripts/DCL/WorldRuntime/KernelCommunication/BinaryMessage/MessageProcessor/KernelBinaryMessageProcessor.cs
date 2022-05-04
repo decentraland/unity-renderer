@@ -32,13 +32,13 @@ namespace KernelCommunication
                 {
                     if (iterator.Current is CRDTMessage crdtMessage)
                     {
-                        ProcessCRDTMessage(sceneId, crdtMessage);
+                        OnCRDTMessage(sceneId, crdtMessage);
                     }
                 }
             }
         }
 
-        private void ProcessCRDTMessage(string sceneId, CRDTMessage message)
+        private void OnCRDTMessage(string sceneId, CRDTMessage message)
         {
             var sceneMessagesPool = messageQueueHanlder.sceneMessagesPool;
             if (!sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene queuedMessage))
