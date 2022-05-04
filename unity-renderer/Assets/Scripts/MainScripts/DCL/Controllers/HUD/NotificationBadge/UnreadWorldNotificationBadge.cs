@@ -52,7 +52,8 @@ public class UnreadWorldNotificationBadge : MonoBehaviour
 
     private void OnDestroy()
     {
-        lastReadMessagesService.OnUpdated -= UpdateUnreadMessages;
+        if (lastReadMessagesService != null)
+            lastReadMessagesService.OnUpdated -= UpdateUnreadMessages;
     }
 
     private void UpdateUnreadMessages(string channelId) => UpdateUnreadMessages();

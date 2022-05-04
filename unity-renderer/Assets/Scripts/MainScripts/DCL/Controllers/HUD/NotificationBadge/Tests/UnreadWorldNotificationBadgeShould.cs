@@ -66,10 +66,12 @@ public class UnreadWorldNotificationBadgeShould : IntegrationTestSuite_Legacy
     {
         ReceiveOneUnreadNotification();
         ReadLastMessages();
+        
+        lastReadMessagesService.OnUpdated += Raise.Event<Action<string>>("general");
 
         Assert.AreEqual(0, unreadWorldNotificationBadge.CurrentUnreadMessages, "There shouldn't be any unread notification");
         Assert.AreEqual(false, unreadWorldNotificationBadge.notificationContainer.activeSelf, "Notificaton container should be deactivated");
     }
 
-    private static void ReadLastMessages() { CommonScriptableObjects.lastReadWorldChatMessages.Set(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()); }
+    private void ReadLastMessages() { lastReadMessagesService.GetAllUnreadCount().Returns(0); }
 }
