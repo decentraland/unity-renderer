@@ -20,7 +20,6 @@ namespace SocialFeaturesAnalytics.TestHelpers
             mockedSocialAnalytics.When(x => x.SendFriendRequestApproved(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<FriendActionSource>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendFriendRequestRejected(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<FriendActionSource>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendFriendRequestCancelled(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<FriendActionSource>())).Do(x => { });
-            mockedSocialAnalytics.When(x => x.SendFriendRequestReceived(Arg.Any<string>(), Arg.Any<string>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendFriendDeleted(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<FriendActionSource>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendPassportOpen()).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendPassportClose(Arg.Any<double>())).Do(x => { });

@@ -13,7 +13,6 @@ namespace SocialFeaturesAnalytics
         void SendFriendRequestApproved(string fromUserId, string toUserId, FriendActionSource source);
         void SendFriendRequestRejected(string fromUserId, string toUserId, FriendActionSource source);
         void SendFriendRequestCancelled(string fromUserId, string toUserId, FriendActionSource source);
-        void SendFriendRequestReceived(string fromUserId, string toUserId);
         void SendFriendDeleted(string fromUserId, string toUserId, FriendActionSource source);
         void SendPassportOpen();
         void SendPassportClose(double timeSpent);

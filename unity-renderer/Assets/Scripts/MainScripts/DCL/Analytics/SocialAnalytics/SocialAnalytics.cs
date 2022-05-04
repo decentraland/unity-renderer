@@ -15,7 +15,6 @@ namespace SocialFeaturesAnalytics
         private const string FRIEND_REQUEST_APPROVED = "friend_request_approved";
         private const string FRIEND_REQUEST_REJECTED = "friend_request_rejected";
         private const string FRIEND_REQUEST_CANCELLED = "friend_request_cancelled";
-        private const string FRIEND_REQUEST_RECEIVED = "friend_request_received";
         private const string FRIEND_DELETED = "friend_deleted";
         private const string PASSPORT_OPEN = "passport_open";
         private const string PASSPORT_CLOSE = "passport_close";
@@ -158,21 +157,6 @@ namespace SocialFeaturesAnalytics
             data.Add("source", source.ToString());
 
             GenericAnalytics.SendAnalytic(FRIEND_REQUEST_CANCELLED, data);
-        }
-
-        public void SendFriendRequestReceived(string fromUserId, string toUserId)
-        {
-            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
-            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
-
-            if (fromPlayerType == null || toPlayerType == null)
-                return;
-
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("to", toPlayerType.ToString());
-
-            GenericAnalytics.SendAnalytic(FRIEND_REQUEST_RECEIVED, data);
         }
 
         public void SendFriendDeleted(string fromUserId, string toUserId, FriendActionSource source)
