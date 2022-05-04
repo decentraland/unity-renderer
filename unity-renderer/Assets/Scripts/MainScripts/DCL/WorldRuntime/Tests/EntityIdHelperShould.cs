@@ -75,20 +75,23 @@ public class EntityIdHelperShould
     public void ConvertSeveralNotBase36EntityIdsCorrectly()
     {
         // Arrange
-        string legacyEntityId = "EFDE";
-        string legacyEntityId2 = "EFDEFG";
-        string legacyEntityId3 = "EFDEEE";
+        string legacyEntityId = "GEFDE";
+        string legacyEntityId2 = "GEFDEFG";
+        string legacyEntityId3 = "GEFDEEE";
+        string legacyEntityId4 = "noBase36-d|";
         long result = helper.EntityFromLegacyEntityString(legacyEntityId);
         
         // Act
         result = helper.EntityFromLegacyEntityString(legacyEntityId);
         long result2 = helper.EntityFromLegacyEntityString(legacyEntityId2);
         long result3 = helper.EntityFromLegacyEntityString(legacyEntityId3);
+        long result4 = helper.EntityFromLegacyEntityString(legacyEntityId4);
         
         // Assert
         Assert.AreEqual(-1,result);
         Assert.AreEqual(-2,result2);
         Assert.AreEqual(-3,result3);
+        Assert.AreEqual(-4,result4);
     }
     
     [Test]
