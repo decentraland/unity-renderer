@@ -225,10 +225,8 @@ public class UserContextMenu : MonoBehaviour
             action = FriendshipAction.CANCELLED
         });
 
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId, action = FriendshipAction.CANCELLED
-        });
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = userId, action = FriendshipAction.CANCELLED });
+        socialAnalytics.SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId, FriendActionSource.ProfileContextMenu);
     }
 
     private void OnMessageButtonPressed()

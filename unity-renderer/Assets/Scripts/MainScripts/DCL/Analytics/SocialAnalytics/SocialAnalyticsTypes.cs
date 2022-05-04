@@ -25,7 +25,7 @@ namespace SocialFeaturesAnalytics
     {
         Passport,
         ProfileContextMenu,
-        AddFriendInput,
+        FriendsHUD,
         Conversation
     }
 
