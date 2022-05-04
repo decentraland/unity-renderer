@@ -17,10 +17,10 @@ public class ChatHUDController : IDisposable
     public event UnityAction<string> OnPressPrivateMessage;
 
     private readonly DataStore dataStore;
-    private readonly RegexProfanityFilter profanityFilter;
+    private readonly IProfanityFilter profanityFilter;
     private InputAction_Trigger closeWindowTrigger;
 
-    public ChatHUDController(DataStore dataStore, RegexProfanityFilter profanityFilter = null)
+    public ChatHUDController(DataStore dataStore, IProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
         this.profanityFilter = profanityFilter;
@@ -74,6 +74,8 @@ public class ChatHUDController : IDisposable
                 chatEntryModel.recipientName = await profanityFilter.Filter(chatEntryModel.recipientName);
         }
 
+        await UniTask.SwitchToMainThread();
+        
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (view.entries.Count > MAX_CHAT_ENTRIES)
