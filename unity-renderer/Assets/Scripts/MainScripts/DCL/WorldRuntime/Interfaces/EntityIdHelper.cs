@@ -14,6 +14,11 @@ namespace DCL
         internal Dictionary<string, long> negativeValues = new Dictionary<string, long>();
 
         private int negativeCounter = -1;
+        private Regex regex;
+        public EntityIdHelper()
+        {
+            regex = new Regex("^*[A-Z]",RegexOptions.Compiled);
+        }
         
         public string GetOriginalId(long entityId)
         {
@@ -50,7 +55,7 @@ namespace DCL
         public long GetConvertedEntityId(string entityId)
         {
             long entityIdLong = 0;
-            var regex = new Regex("^*[A-Z]");
+  
             string entityIdExtracted = entityId.Substring(1);
             
             // It is not base 36, so we assign a negative number for it
