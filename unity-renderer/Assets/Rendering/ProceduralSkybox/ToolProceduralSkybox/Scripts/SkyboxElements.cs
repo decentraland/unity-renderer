@@ -97,7 +97,7 @@ namespace DCL.Skybox
             obj.layer = LayerMask.NameToLayer("Skybox");
             obj.name = "Dome";
             obj.transform.parent = domeElements.transform;
-            obj.transform.localPosition = Vector3.zero;
+            obj.transform.localPosition = new Vector3(0, -0.7f, 0);
             obj.GetComponent<Renderer>().material = Object.Instantiate<Material>(MaterialReferenceContainer.i.domeMat);
 
             DomeReferences dome = new DomeReferences();

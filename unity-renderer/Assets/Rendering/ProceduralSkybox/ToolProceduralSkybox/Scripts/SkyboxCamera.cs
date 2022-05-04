@@ -26,9 +26,7 @@ namespace DCL.Skybox
             cameraData.renderShadows = false;
             skyboxCamera.useOcclusionCulling = false;
             skyboxCamera.depth = -5;
-            //skyboxCamera.cullingMask = skyboxCamera.cullingMask - (1 << LayerMask.NameToLayer("Skybox"));
             skyboxCamera.cullingMask = (1 << LayerMask.NameToLayer("Skybox"));
-            //skyboxCamera.clearFlags = CameraClearFlags.Nothing;
 
             // Attach follow script
             camBehavior = skyboxCameraGO.AddComponent<SkyboxCameraBehavior>();
