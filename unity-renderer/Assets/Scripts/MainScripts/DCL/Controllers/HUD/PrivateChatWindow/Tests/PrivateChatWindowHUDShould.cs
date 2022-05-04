@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using DCL.Helpers;
 using NSubstitute;
 using UnityEngine.TestTools;
+using SocialFeaturesAnalytics;
 
 public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 {
@@ -185,7 +186,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         notificationsController.Initialize(new NotificationHUDController());
 
         FriendsHUDController friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(new FriendsController_Mock(), null, UserProfile.GetOwnUserProfile());
+        friendsHudController.Initialize(new FriendsController_Mock(), SocialAnalytics.CreateMockedSocialAnalytics(), UserProfile.GetOwnUserProfile());
 
         Assert.IsTrue(view != null, "Friends hud view is null?");
         Assert.IsTrue(controller != null, "Friends hud controller is null?");

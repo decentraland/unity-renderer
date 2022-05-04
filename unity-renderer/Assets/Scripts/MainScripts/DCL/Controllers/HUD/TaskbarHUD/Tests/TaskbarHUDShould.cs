@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
 using UnityEngine;
+using SocialFeaturesAnalytics;
 
 public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 {
@@ -19,6 +20,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private FriendsHUDController friendsHudController;
     private WorldChatWindowHUDController worldChatWindowController;
     private UserProfileController userProfileController;
+    private ISocialAnalytics socialAnalytics;
 
     protected override List<GameObject> SetUp_LegacySystems()
     {
@@ -37,6 +39,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         controller = new TaskbarHUDController();
         controller.Initialize(null, chatController, null);
         view = controller.view;
+
+        socialAnalytics = SocialAnalytics.CreateMockedSocialAnalytics();
 
         Assert.IsTrue(view != null, "Taskbar view is null?");
         Assert.IsTrue(CommonScriptableObjects.isTaskbarHUDInitialized, "Taskbar controller is not initialized?");
@@ -73,7 +77,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddFriendWindowProperly()
     {
         friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(null, null, null);
+        friendsHudController.Initialize(null, socialAnalytics, null);
         controller.AddFriendsWindow(friendsHudController);
 
         Assert.IsTrue(friendsHudController.view.transform.parent == view.leftWindowContainer,
@@ -105,7 +109,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
         friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(friendsController, null, UserProfile.GetOwnUserProfile());
+        friendsHudController.Initialize(friendsController, socialAnalytics, UserProfile.GetOwnUserProfile());
         controller.AddFriendsWindow(friendsHudController);
 
         rt = friendsHudController.view.transform as RectTransform;
