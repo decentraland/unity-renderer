@@ -162,8 +162,12 @@ public class PlayerInfoCardHUDController : IHUD
     }
     private async UniTask AsyncSetUserProfile(UserProfile userProfile)
     {
-        view.SetName(await FilterName(userProfile));
-        view.SetDescription(await FilterDescription(userProfile));
+        string filterName = await FilterName(userProfile);
+        string filterDescription = await FilterDescription(userProfile);
+        await UniTask.SwitchToMainThread();
+
+        view.SetName(filterName);
+        view.SetDescription(filterDescription);
         view.ClearCollectibles();
         view.SetIsBlocked(IsBlocked(userProfile.userId));
         LoadAndShowWearables(userProfile);
