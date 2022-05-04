@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_AvatarHologram
-  m_Shader: {fileID: -6465566751694194690, guid: ba07ebb2cb7276c49bb567a1e99e4a86,
+  m_Name: M_Ghost
+  m_Shader: {fileID: -6465566751694194690, guid: 55a561343c1e7ca4c9c8e8588f81d131,
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -33,10 +33,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _FresnelPower: 1.23
-    - _IntensitySpeed: 0
-    - _LinesDensity: 300
-    - _MoveSpeed: 0.21
+    - EdgeThickness: 1.87
+    - _InnerThickness: 0.01
     m_Colors:
-    - _Color: {r: 0.06100529, g: 0.77088505, b: 1.0592737, a: 0.43137255}
+    - Color_0679a06095a34b1dbe5a595111800b38: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 0, g: 3.9999995, b: 3.4547899, a: 0.7294118}
+    - _SecondaryColor: {r: 3.194459, g: 33.89676, b: 15.663916, a: 0.8862745}
   m_BuildTextureStacks: []

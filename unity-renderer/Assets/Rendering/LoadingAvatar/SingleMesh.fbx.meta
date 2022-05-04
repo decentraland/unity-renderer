@@ -3,9 +3,14 @@ guid: 18e60635634535c488798c0a64c69ee1
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AvatarSkin_MAT
+    second: {fileID: 2100000, guid: bc30e6d95a2837b40a362e3eb3c1cc2c, type: 2}
   materials:
-    materialImportMode: 2
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1
