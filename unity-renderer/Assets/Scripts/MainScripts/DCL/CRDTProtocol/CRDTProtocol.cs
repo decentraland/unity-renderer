@@ -38,24 +38,11 @@ namespace DCL
             return UpdateState(message.key, message.data, message.timestamp);
         }
 
-        // private CRDTMessage UpdateState(long key, object data, double remoteTimestamp)
-        // {
-        //     double stateTimeStamp = 0;
-        //     if (state.TryGetValue(key, out CRDTMessage storedMessage))
-        //     {
-        //         stateTimeStamp = storedMessage.timestamp;
-        //     }
-        //     else
-        //     {
-        //         storedMessage = new CRDTMessage() { key = key };
-        //         state.Add(key, storedMessage);
-        //     }
-        //     double timestamp = Math.Max(remoteTimestamp, stateTimeStamp);
-        //
-        //     storedMessage.timestamp = timestamp;
-        //     storedMessage.data = data;
-        //     return storedMessage;
-        // }
+        public CRDTMessage GetSate(long key)
+        {
+            state.TryGetValue(key, out CRDTMessage storedMessage);
+            return storedMessage;
+        }
 
         private CRDTMessage UpdateState(long key, object data, double remoteTimestamp)
         {
@@ -64,7 +51,7 @@ namespace DCL
             {
                 stateTimeStamp = storedMessage.timestamp;
             }
-        
+
             double timestamp = Math.Max(remoteTimestamp, stateTimeStamp);
             var newMessageState = new CRDTMessage()
             {
@@ -72,9 +59,9 @@ namespace DCL
                 timestamp = timestamp,
                 data = data
             };
-        
+
             state[key] = newMessageState;
-        
+
             return newMessageState;
         }
 
