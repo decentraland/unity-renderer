@@ -92,7 +92,9 @@ public class FriendsHUDController : IHUD
     private void Entry_OnRequestSent(string userId) 
     {
         WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = userId, action = FriendshipAction.REQUESTED_TO });
-        socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userId, 0, FriendActionSource.FriendsHUD);
+        
+        if (ownUserProfile != null)
+            socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userId, 0, FriendActionSource.FriendsHUD);
     }
 
     private void OnUpdateUserStatus(string userId, FriendsController.UserStatus newStatus)
@@ -219,25 +221,33 @@ public class FriendsHUDController : IHUD
     private void Entry_OnDelete(string userId)
     {
         WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { action = FriendshipAction.DELETED, userId = userId });
-        socialAnalytics.SendFriendDeleted(ownUserProfile.userId, userId, FriendActionSource.FriendsHUD);
+
+        if (ownUserProfile != null)
+            socialAnalytics.SendFriendDeleted(ownUserProfile.userId, userId, FriendActionSource.FriendsHUD);
     }
 
     private void Entry_OnRequestRejected(FriendRequestEntry entry)
     {
         WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { action = FriendshipAction.REJECTED, userId = entry.userId });
-        socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, entry.userId, FriendActionSource.FriendsHUD);
+
+        if (ownUserProfile != null)
+            socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, entry.userId, FriendActionSource.FriendsHUD);
     }
 
     private void Entry_OnRequestCancelled(FriendRequestEntry entry)
     {
         WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { action = FriendshipAction.CANCELLED, userId = entry.userId });
-        socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, entry.userId, FriendActionSource.FriendsHUD);
+
+        if (ownUserProfile != null)
+            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, entry.userId, FriendActionSource.FriendsHUD);
     }
 
     private void Entry_OnRequestAccepted(FriendRequestEntry entry)
     {
         WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { action = FriendshipAction.APPROVED, userId = entry.userId });
-        socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.userId, FriendActionSource.FriendsHUD);
+
+        if (ownUserProfile != null)
+            socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.userId, FriendActionSource.FriendsHUD);
     }
 
     public void Dispose()
