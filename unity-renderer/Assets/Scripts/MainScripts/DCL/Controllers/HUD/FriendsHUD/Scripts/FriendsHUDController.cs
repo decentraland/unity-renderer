@@ -218,12 +218,8 @@ public class FriendsHUDController : IHUD
 
     private void Entry_OnDelete(string userId)
     {
-        WebInterface.UpdateFriendshipStatus(
-            new FriendsController.FriendshipUpdateStatusMessage()
-            {
-                action = FriendshipAction.DELETED,
-                userId = userId
-            });
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { action = FriendshipAction.DELETED, userId = userId });
+        socialAnalytics.SendFriendDeleted(ownUserProfile.userId, userId, FriendActionSource.AddFriendInput);
     }
 
     private void Entry_OnRequestRejected(FriendRequestEntry entry)
