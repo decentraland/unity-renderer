@@ -334,6 +334,15 @@ namespace DCL
                             break;
                         }
 
+                    case MessagingTypes.CRDT_MESSAGE:
+                        {
+                            if (msgPayload is CRDTMessage crdtMessage)
+                            {
+                                scene.crdtExecutor.Execute(crdtMessage);
+                            }
+                            break;
+                        }
+
                     default:
                         Debug.LogError($"Unknown method {method}");
 
