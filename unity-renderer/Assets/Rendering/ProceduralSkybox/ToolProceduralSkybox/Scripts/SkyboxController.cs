@@ -40,6 +40,8 @@ namespace DCL.Skybox
         private float reflectionUpdateTime = 1;                                 // In Mins
         private ReflectionProbeRuntime runtimeReflectionObj;
 
+        private SkyboxCamera skyboxCam;
+
         // Timer sync
         private int syncCounter = 0;
         private int syncAfterCount = 10;
@@ -71,6 +73,9 @@ namespace DCL.Skybox
 
             GetOrCreateEnvironmentProbe();
 
+            // Create skybox Camera
+            skyboxCam = new SkyboxCamera();
+
             // Get current time from the server
             GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
             DataStore.i.worldTimer.OnTimeChanged += GetTimeFromTheServer;
@@ -93,7 +98,16 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.useDynamicSkybox.OnChange += UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange += ReflectionResolution_OnChange;
+
+            // Register for camera references
+            DataStore.i.camera.transform.OnChange += AssignCameraReferences;
+            DataStore.i.camera.mainCamEnabled.OnChange += SkyboxCameraEnabled;
+            AssignCameraReferences(DataStore.i.camera.transform.Get(), null);
         }
+
+        private void SkyboxCameraEnabled(bool current, bool previous) { skyboxCam.SetCameraEnabledState(current); }
+
+        private void AssignCameraReferences(Transform currentTransform, Transform prevTransform) { skyboxCam.AssignTargetCamera(currentTransform); }
 
         private void FixedTime_OnChange(float current, float previous)
         {
@@ -472,6 +486,8 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.useDynamicSkybox.OnChange -= UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange -= FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange -= ReflectionResolution_OnChange;
+            DataStore.i.camera.transform.OnChange -= AssignCameraReferences;
+            DataStore.i.camera.mainCamEnabled.OnChange -= SkyboxCameraEnabled;
 
             timeReporter.Dispose();
         }
