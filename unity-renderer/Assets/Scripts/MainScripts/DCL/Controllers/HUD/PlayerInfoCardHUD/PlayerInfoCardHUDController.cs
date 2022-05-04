@@ -120,10 +120,8 @@ public class PlayerInfoCardHUDController : IHUD
         // Add fake action to avoid waiting for kernel
         friendsController.RejectFriendship(currentPlayerId);
 
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = currentPlayerId, action = FriendshipAction.REJECTED
-        });
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = currentPlayerId, action = FriendshipAction.REJECTED });
+        socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, currentPlayerId, FriendActionSource.Passport);
     }
 
     private void OnCurrentPlayerIdChanged(string current, string previous)

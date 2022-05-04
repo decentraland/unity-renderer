@@ -224,12 +224,8 @@ public class FriendsHUDController : IHUD
 
     private void Entry_OnRequestRejected(FriendRequestEntry entry)
     {
-        WebInterface.UpdateFriendshipStatus(
-            new FriendsController.FriendshipUpdateStatusMessage()
-            {
-                action = FriendshipAction.REJECTED,
-                userId = entry.userId
-            });
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { action = FriendshipAction.REJECTED, userId = entry.userId });
+        socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, entry.userId, FriendActionSource.AddFriendInput);
     }
 
     private void Entry_OnRequestCancelled(FriendRequestEntry entry)
