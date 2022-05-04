@@ -81,12 +81,11 @@ namespace DCL
         public long DecodeBase36(string input)
         {
             const string charList = "0123456789abcdefghijklmnopqrstuvwxyz";
-            var reversed = input;
             long result = 0;
             int pos = 0;
-            for(int i = reversed.Length-1;i >= 0; i--)
+            for(int i = input.Length-1;i >= 0; i--)
             {
-                result += charList.IndexOf(reversed[i]) * (long)Math.Pow(36, pos);
+                result += charList.IndexOf(input[i]) * (long)Math.Pow(36, pos);
                 pos++;
             }
             return result;
