@@ -40,7 +40,7 @@ namespace Tests
             }
         }
 
-        static bool AreStatesEqual(CRDTProtocol crdt, Dictionary<string, CRDTMessage> inputDictionary)
+        static bool AreStatesEqual(CRDTProtocol crdt, Dictionary<long, CRDTMessage> inputDictionary)
         {
             if (inputDictionary.Count != crdt.state.Count)
             {

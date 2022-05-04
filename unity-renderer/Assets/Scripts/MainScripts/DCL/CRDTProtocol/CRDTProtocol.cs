@@ -5,7 +5,7 @@ namespace DCL
 {
     public class CRDTProtocol
     {
-        internal readonly Dictionary<string, CRDTMessage> state = new Dictionary<string, CRDTMessage>();
+        internal readonly Dictionary<long, CRDTMessage> state = new Dictionary<long, CRDTMessage>();
 
         public CRDTMessage ProcessMessage(CRDTMessage message)
         {
@@ -38,22 +38,44 @@ namespace DCL
             return UpdateState(message.key, message.data, message.timestamp);
         }
 
-        private CRDTMessage UpdateState(string key, object data, double remoteTimestamp)
+        // private CRDTMessage UpdateState(long key, object data, double remoteTimestamp)
+        // {
+        //     double stateTimeStamp = 0;
+        //     if (state.TryGetValue(key, out CRDTMessage storedMessage))
+        //     {
+        //         stateTimeStamp = storedMessage.timestamp;
+        //     }
+        //     else
+        //     {
+        //         storedMessage = new CRDTMessage() { key = key };
+        //         state.Add(key, storedMessage);
+        //     }
+        //     double timestamp = Math.Max(remoteTimestamp, stateTimeStamp);
+        //
+        //     storedMessage.timestamp = timestamp;
+        //     storedMessage.data = data;
+        //     return storedMessage;
+        // }
+
+        private CRDTMessage UpdateState(long key, object data, double remoteTimestamp)
         {
             double stateTimeStamp = 0;
             if (state.TryGetValue(key, out CRDTMessage storedMessage))
             {
                 stateTimeStamp = storedMessage.timestamp;
             }
-            else
-            {
-                storedMessage = new CRDTMessage() { key = key };
-                state.Add(key, storedMessage);
-            }
+        
             double timestamp = Math.Max(remoteTimestamp, stateTimeStamp);
-            storedMessage.timestamp = timestamp;
-            storedMessage.data = data;
-            return storedMessage;
+            var newMessageState = new CRDTMessage()
+            {
+                key = key,
+                timestamp = timestamp,
+                data = data
+            };
+        
+            state[key] = newMessageState;
+        
+            return newMessageState;
         }
 
         internal static bool IsSameData(object a, object b)
