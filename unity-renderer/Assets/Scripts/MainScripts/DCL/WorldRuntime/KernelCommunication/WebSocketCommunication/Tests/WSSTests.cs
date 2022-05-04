@@ -10,6 +10,7 @@ using Environment = DCL.Environment;
 namespace Tests
 {
     [Explicit]
+    [Category("Explicit")]
     public class WSSTests : IntegrationTestSuite
     {
         protected override IEnumerator SetUp()

@@ -9,6 +9,7 @@ using UnityEngine.TestTools;
 namespace Tests
 {
     [Explicit]
+    [Category("Explicit")]
     public class FPSDisplayTests : IntegrationTestSuite_Legacy
     {
         [Test]

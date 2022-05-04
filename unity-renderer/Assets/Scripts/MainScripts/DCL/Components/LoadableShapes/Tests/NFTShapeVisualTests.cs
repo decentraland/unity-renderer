@@ -16,9 +16,8 @@ public class NFTShapeVisualTests : VisualTestsBase
     public IEnumerator NFTShapeVisualTests1_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(NFTShapeVisualTests1()); }
 
     [UnityTest]
-    [VisualTest]
-    [Explicit("Works locally but breaks in CI")]
-    [Category("Visual Tests")]
+    [Explicit]
+    [Category("Explicit")]
     public IEnumerator NFTShapeVisualTests1()
     {
         yield return SpawnNFTShapes(0, 6, 3);
@@ -35,7 +34,7 @@ public class NFTShapeVisualTests : VisualTestsBase
     [UnityTest]
     [VisualTest]
     [Explicit("Works locally but breaks in CI")]
-    [Category("Visual Tests")]
+    [Category("Explicit")]
     public IEnumerator NFTShapeVisualTests2()
     {
         yield return SpawnNFTShapes(6, 6, 3);
@@ -52,7 +51,7 @@ public class NFTShapeVisualTests : VisualTestsBase
     [UnityTest]
     [VisualTest]
     [Explicit("Works locally but breaks in CI")]
-    [Category("Visual Tests")]
+    [Category("Explicit")]
     public IEnumerator NFTShapeVisualTests3()
     {
         yield return SpawnNFTShapes(12, 6, 3);
@@ -69,7 +68,7 @@ public class NFTShapeVisualTests : VisualTestsBase
     [UnityTest]
     [VisualTest]
     [Explicit("Works locally but breaks in CI")]
-    [Category("Visual Tests")]
+    [Category("Explicit")]
     public IEnumerator NFTShapeVisualTests4()
     {
         yield return SpawnNFTShapes(18, 5, 3);
