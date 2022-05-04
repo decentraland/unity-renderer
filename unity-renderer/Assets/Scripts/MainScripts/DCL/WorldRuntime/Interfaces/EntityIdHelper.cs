@@ -51,25 +51,25 @@ namespace DCL
         {
             long entityIdLong = 0;
             var regex = new Regex("^*[A-Z]");
-            entityId = entityId.Substring(1);
+            string entityIdExtracted = entityId.Substring(1);
             
             // It is not base 36, so we assign a negative number for it
-            if (regex.IsMatch(entityId))
+            if (regex.IsMatch(entityIdExtracted))
             {
-                if (negativeValues.ContainsKey(entityId))
+                if (negativeValues.ContainsKey(entityIdExtracted))
                 {
-                    entityIdLong = negativeValues[entityId];
+                    entityIdLong = negativeValues[entityIdExtracted];
                 }
                 else
                 {
                     entityIdLong = negativeCounter;
-                    negativeValues.Add(entityId,negativeCounter);
+                    negativeValues.Add(entityIdExtracted,negativeCounter);
                     negativeCounter--;
                 }
             }
             else
             {
-                entityIdLong = DecodeBase36(entityId) << 9;
+                entityIdLong = DecodeBase36(entityIdExtracted) << 9;
             }
 
             if (!entityIdToLegacyId.ContainsKey(entityIdLong))
