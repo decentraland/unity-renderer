@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using DCL.Models;
 using UnityEngine;
 
@@ -10,7 +11,10 @@ namespace DCL
     public class EntityIdHelper
     {
         internal Dictionary<long, string> entityIdToLegacyId = new Dictionary<long, string>();
+        internal Dictionary<string, long> negativeValues = new Dictionary<string, long>();
 
+        private int negativeCounter = -1;
+        
         public string GetOriginalId(long entityId)
         {
             if (!entityIdToLegacyId.ContainsKey(entityId))
@@ -38,9 +42,36 @@ namespace DCL
                 case SpecialEntityIdLegacyLiteral.THIRD_PERSON_CAMERA_ENTITY_REFERENCE:
                     return (long) SpecialEntityId.THIRD_PERSON_CAMERA_ENTITY_REFERENCE;
             }
-
-            long entityIdLong = DecodeBase36(entityId) << 9;
             
+            long entityIdLong = GetConvertedEntityId(entityId);
+            return entityIdLong;
+        }
+
+        public long GetConvertedEntityId(string entityId)
+        {
+            long entityIdLong = 0;
+            var regex = new Regex("^*[A-Z]");
+            entityId = entityId.Substring(1);
+            
+            // It is not base 36, so we assign a negative number for it
+            if (regex.IsMatch(entityId))
+            {
+                if (negativeValues.ContainsKey(entityId))
+                {
+                    entityIdLong = negativeValues[entityId];
+                }
+                else
+                {
+                    entityIdLong = negativeCounter;
+                    negativeValues.Add(entityId,negativeCounter);
+                    negativeCounter++;
+                }
+            }
+            else
+            {
+                entityIdLong = DecodeBase36(entityId) << 9;
+            }
+
             if (!entityIdToLegacyId.ContainsKey(entityIdLong))
                 entityIdToLegacyId[entityIdLong] = entityId;
 
@@ -49,13 +80,13 @@ namespace DCL
         
         public Int64 DecodeBase36(string input)
         {
-            string charList = "0123456789abcdefghijklmnopqrstuvwxyz";
-            var reversed = input.ToLower().Reverse();
+            const string charList = "0123456789abcdefghijklmnopqrstuvwxyz";
+            var reversed = input;
             long result = 0;
             int pos = 0;
-            foreach (char c in reversed)
+            for(int i = reversed.Length-1;i >= 0; i--)
             {
-                result += charList.IndexOf(c) * (long)Math.Pow(36, pos);
+                result += charList.IndexOf(reversed[i]) * (long)Math.Pow(36, pos);
                 pos++;
             }
             return result;
@@ -67,7 +98,7 @@ namespace DCL
             const string digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
             if (radix < 2 || radix > digits.Length)
-                throw new ArgumentException("The radix must be >= 2 and <= " + digits.Length.ToString());
+                throw new ArgumentException("The radix must be >= 2 and <= " + digits.Length);
 
             if (decimalNumber == 0)
                 return "0";

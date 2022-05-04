@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using DCL.Components;
 using DCL.Configuration;
@@ -11,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
+using Object = UnityEngine.Object;
 
 public class SceneTests : IntegrationTestSuite_Legacy
 {
@@ -369,105 +372,5 @@ public class SceneTests : IntegrationTestSuite_Legacy
         TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.SCENE_ROOT_ENTITY);
         Assert.IsNull(entity.parent);
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
-    }
-
-    [Test]
-    public void ConvertLegacyEntityIdsCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "Eed";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result,9554432);
-        Assert.AreEqual(result,helper.DecodeBase36(legacyEntityId) << 9);
-    }
-    
-    [Test]
-    public void ReserveThe512FirstEntitiesCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "Eed";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreNotEqual(result,-1273338300);
-        Assert.AreNotEqual(result,helper.DecodeBase36(legacyEntityId));
-    }
-
-    [Test]
-    public void EntityLegacyGiveRootCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "0";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result, (long) SpecialEntityId.SCENE_ROOT_ENTITY);
-    }
-    
-    [Test]
-    public void EntityLegacyGiveThirdPersonCameraEntityCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "PlayerEntityReference";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result, (long) SpecialEntityId.THIRD_PERSON_CAMERA_ENTITY_REFERENCE);
-    }
-        
-    [Test]
-    public void EntityLegacyGiveFirstPersonCameraEntityCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "FirstPersonCameraEntityReference";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result, (long) SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
-    }
-    
-    [Test]
-    public void EntityLegacyGiveAvatarPositionEntityCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "AvatarPositionEntityReference";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result, (long) SpecialEntityId.AVATAR_POSITION_REFERENCE);
-    }
-    
-    [Test]
-    public void EntityLegacyGiveAvatarEntityCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "AvatarEntityReference";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result, (long) SpecialEntityId.AVATAR_ENTITY_REFERENCE);
     }
 }
