@@ -14,7 +14,7 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         controller = new FriendsHUDController();
-        controller.Initialize(null, null);
+        controller.Initialize(null, null, null);
         this.view = controller.view;
 
         Assert.IsTrue(view != null, "Friends hud view is null?");

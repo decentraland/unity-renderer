@@ -1,4 +1,4 @@
-namespace SocialAnalytics
+namespace SocialFeaturesAnalytics
 {
     public enum PlayerType
     {

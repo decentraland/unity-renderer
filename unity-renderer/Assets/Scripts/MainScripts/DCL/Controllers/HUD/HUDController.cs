@@ -1,16 +1,15 @@
-using System;
 using DCL;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.QuestsController;
 using DCL.SettingsPanelHUD;
-using System.Collections.Generic;
-using LoadingHUD;
 using SignupHUD;
+using SocialFeaturesAnalytics;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Environment = System.Environment;
 
 public class HUDController : IHUDController
 {
@@ -22,6 +21,7 @@ public class HUDController : IHUDController
     public IHUDFactory hudFactory = null;
 
     private InputAction_Trigger toggleUIVisibilityTrigger;
+    private ISocialAnalytics socialAnalytics;
 
     private readonly DCL.NotificationModel.Model hiddenUINotification = new DCL.NotificationModel.Model()
     {
@@ -33,6 +33,7 @@ public class HUDController : IHUDController
     public HUDController (IHUDFactory hudFactory = null)
     {
         this.hudFactory = hudFactory;
+        socialAnalytics = new SocialAnalytics();
     }
 
     public void Initialize()
@@ -214,7 +215,7 @@ public class HUDController : IHUDController
 
                     if (friendsHud != null)
                     {
-                        friendsHud.Initialize(FriendsController.i, UserProfile.GetOwnUserProfile());
+                        friendsHud.Initialize(FriendsController.i, socialAnalytics, UserProfile.GetOwnUserProfile());
                         friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
                         friendsHud.OnPressWhisper += OpenPrivateChatWindow;
 

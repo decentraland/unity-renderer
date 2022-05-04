@@ -1,8 +1,9 @@
+using DCL.Helpers;
 using DCL.Interface;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
-using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -13,6 +14,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
     FriendsHUDController controller;
     FriendsHUDView view;
     FriendsController_Mock friendsController;
+    ISocialAnalytics socialAnalytics;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
@@ -25,7 +27,10 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
         controller = new FriendsHUDController();
         friendsController = new FriendsController_Mock();
-        controller.Initialize(friendsController, UserProfile.GetOwnUserProfile());
+
+        socialAnalytics = SocialAnalytics.CreateMockedSocialAnalytics();
+
+        controller.Initialize(friendsController, socialAnalytics, UserProfile.GetOwnUserProfile());
         this.view = controller.view;
 
         Assert.IsTrue(view != null, "Friends hud view is null?");

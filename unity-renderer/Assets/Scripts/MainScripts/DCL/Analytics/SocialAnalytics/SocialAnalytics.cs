@@ -1,6 +1,7 @@
+using NSubstitute;
 using System.Collections.Generic;
 
-namespace SocialAnalytics
+namespace SocialFeaturesAnalytics
 {
     public class SocialAnalytics : ISocialAnalytics
     {
@@ -11,13 +12,12 @@ namespace SocialAnalytics
         private const string CHANNEL_MESSAGE_RECEIVED = "chat message received";
         private const string DIRECT_MESSAGE_SENT = "send_direct_message";
         private const string DIRECT_MESSAGE_RECEIVED = "direct_message_received";
-        private const string RELOAD_DIRECT_MESSAGES = "reload_direct_messages";
         private const string FRIEND_REQUEST_SENT = "friend_request_sent";
         private const string FRIEND_REQUEST_APPROVED = "friend_request_approved";
         private const string FRIEND_REQUEST_REJECTED = "friend_request_rejected";
         private const string FRIEND_REQUEST_CANCELLED = "friend_request_cancelled";
         private const string FRIEND_REQUEST_RECEIVED = "friend_request_received";
-        private const string RELOAD_FRIENDS = "reload_friends";
+        private const string FRIEND_DELETED = "friend_deleted";
         private const string PASSPORT_OPEN = "passport_open";
         private const string PASSPORT_CLOSE = "passport_close";
         private const string PLAYER_BLOCKED = "user_blocked";
@@ -96,13 +96,14 @@ namespace SocialAnalytics
             GenericAnalytics.SendAnalytic(DIRECT_MESSAGE_RECEIVED, data);
         }
 
-        public void SendReloadDirectMessages()
+        public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, FriendActionSource source)
         {
-            GenericAnalytics.SendAnalytic(RELOAD_DIRECT_MESSAGES);
-        }
+            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
+            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
 
-        public void SendFriendRequestSent(PlayerType fromPlayerType, PlayerType toPlayerType, double messageLength, FriendActionSource source)
-        {
+            if (fromPlayerType == null || toPlayerType == null)
+                return;
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
@@ -112,8 +113,14 @@ namespace SocialAnalytics
             GenericAnalytics.SendAnalytic(FRIEND_REQUEST_SENT, data);
         }
 
-        public void SendFriendRequestApproved(PlayerType fromPlayerType, PlayerType toPlayerType, FriendActionSource source)
+        public void SendFriendRequestApproved(string fromUserId, string toUserId, FriendActionSource source)
         {
+            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
+            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
+
+            if (fromPlayerType == null || toPlayerType == null)
+                return;
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
@@ -122,8 +129,14 @@ namespace SocialAnalytics
             GenericAnalytics.SendAnalytic(FRIEND_REQUEST_APPROVED, data);
         }
 
-        public void SendFriendRequestRejected(PlayerType fromPlayerType, PlayerType toPlayerType, FriendActionSource source)
+        public void SendFriendRequestRejected(string fromUserId, string toUserId, FriendActionSource source)
         {
+            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
+            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
+
+            if (fromPlayerType == null || toPlayerType == null)
+                return;
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
@@ -132,8 +145,14 @@ namespace SocialAnalytics
             GenericAnalytics.SendAnalytic(FRIEND_REQUEST_REJECTED, data);
         }
 
-        public void SendFriendRequestCancelled(PlayerType fromPlayerType, PlayerType toPlayerType, FriendActionSource source)
+        public void SendFriendRequestCancelled(string fromUserId, string toUserId, FriendActionSource source)
         {
+            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
+            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
+
+            if (fromPlayerType == null || toPlayerType == null)
+                return;
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
@@ -142,8 +161,14 @@ namespace SocialAnalytics
             GenericAnalytics.SendAnalytic(FRIEND_REQUEST_CANCELLED, data);
         }
 
-        public void SendFriendRequestReceived(PlayerType fromPlayerType, PlayerType toPlayerType)
+        public void SendFriendRequestReceived(string fromUserId, string toUserId)
         {
+            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
+            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
+
+            if (fromPlayerType == null || toPlayerType == null)
+                return;
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
@@ -151,9 +176,20 @@ namespace SocialAnalytics
             GenericAnalytics.SendAnalytic(FRIEND_REQUEST_RECEIVED, data);
         }
 
-        public void SendReloadFriends()
+        public void SendFriendDeleted(string fromUserId, string toUserId, FriendActionSource source)
         {
-            GenericAnalytics.SendAnalytic(RELOAD_FRIENDS);
+            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
+            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
+
+            if (fromPlayerType == null || toPlayerType == null)
+                return;
+
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("from", fromPlayerType.ToString());
+            data.Add("to", toPlayerType.ToString());
+            data.Add("source", source.ToString());
+
+            GenericAnalytics.SendAnalytic(FRIEND_DELETED, data);
         }
 
         public void SendPassportOpen()
@@ -212,6 +248,45 @@ namespace SocialAnalytics
             data.Add("source", source.ToString());
 
             GenericAnalytics.SendAnalytic(PLAY_EMOTE, data);
+        }
+
+        private PlayerType? GetPlayerTypeByUserId(string userId)
+        {
+            UserProfile userProfile = UserProfileController.GetProfileByUserId(userId);
+
+            if (userProfile == null)
+                return null;
+            else
+                return userProfile.isGuest ? PlayerType.Guest : PlayerType.Wallet;
+        }
+
+        public static ISocialAnalytics CreateMockedSocialAnalytics()
+        {
+            ISocialAnalytics mockedSocialAnalytics = Substitute.For<ISocialAnalytics>();
+
+            mockedSocialAnalytics.When(x => x.SendPlayerMuted(Arg.Any<PlayerType>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPlayerUnmuted(Arg.Any<PlayerType>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendVoiceMessageSent(Arg.Any<double>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendChannelMessageSent(Arg.Any<PlayerType>(), Arg.Any<double>(), Arg.Any<string>(), Arg.Any<ChatMessageType>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendChannelMessageReceived(Arg.Any<PlayerType>(), Arg.Any<double>(), Arg.Any<string>(), Arg.Any<ChatMessageType>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendDirectMessageSent(Arg.Any<PlayerType>(), Arg.Any<PlayerType>(), Arg.Any<double>(), Arg.Any<bool>(), Arg.Any<ChatContentType>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendDirectMessageReceived(Arg.Any<PlayerType>(), Arg.Any<PlayerType>(), Arg.Any<double>(), Arg.Any<bool>(), Arg.Any<ChatContentType>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendDirectMessageReceived(Arg.Any<PlayerType>(), Arg.Any<PlayerType>(), Arg.Any<double>(), Arg.Any<bool>(), Arg.Any<ChatContentType>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendFriendRequestSent(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<double>(), Arg.Any<FriendActionSource>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendFriendRequestApproved(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<FriendActionSource>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendFriendRequestRejected(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<FriendActionSource>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendFriendRequestCancelled(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<FriendActionSource>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendFriendRequestReceived(Arg.Any<string>(), Arg.Any<string>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendFriendDeleted(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<FriendActionSource>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPassportOpen()).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPassportClose(Arg.Any<double>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPlayerBlocked(Arg.Any<bool>(), Arg.Any<FriendActionSource>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPlayerUnblocked(Arg.Any<bool>(), Arg.Any<FriendActionSource>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPlayerReport(Arg.Any<PlayerReportIssueType>(), Arg.Any<double>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPlayerJoin(Arg.Any<FriendActionSource>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPlayEmote(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<EmoteSource>())).Do(x => { });
+
+            return mockedSocialAnalytics;
         }
     }
 }

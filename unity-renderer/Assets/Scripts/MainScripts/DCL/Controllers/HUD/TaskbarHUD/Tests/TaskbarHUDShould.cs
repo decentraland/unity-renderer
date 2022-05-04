@@ -73,7 +73,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddFriendWindowProperly()
     {
         friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(null, null);
+        friendsHudController.Initialize(null, null, null);
         controller.AddFriendsWindow(friendsHudController);
 
         Assert.IsTrue(friendsHudController.view.transform.parent == view.leftWindowContainer,
@@ -105,7 +105,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
         friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(friendsController, UserProfile.GetOwnUserProfile());
+        friendsHudController.Initialize(friendsController, null, UserProfile.GetOwnUserProfile());
         controller.AddFriendsWindow(friendsHudController);
 
         rt = friendsHudController.view.transform as RectTransform;

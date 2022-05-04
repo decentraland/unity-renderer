@@ -1,4 +1,5 @@
 using DCL.Interface;
+using SocialFeaturesAnalytics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -75,6 +76,7 @@ public class UserContextMenu : MonoBehaviour
     private bool isBlocked;
     private MenuConfigFlags currentConfigFlags;
     private IConfirmationDialog currentConfirmationDialog;
+    private ISocialAnalytics socialAnalytics;
 
     /// <summary>
     /// Show context menu
@@ -127,6 +129,8 @@ public class UserContextMenu : MonoBehaviour
         addFriendButton.onClick.AddListener(OnAddFriendButtonPressed);
         cancelFriendButton.onClick.AddListener(OnCancelFriendRequestButtonPressed);
         messageButton.onClick.AddListener(OnMessageButtonPressed);
+
+        socialAnalytics = new SocialAnalytics();
     }
 
     private void Update() { HideIfClickedOutside(); }
@@ -202,10 +206,8 @@ public class UserContextMenu : MonoBehaviour
             action = FriendshipAction.REQUESTED_TO
         });
 
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId, action = FriendshipAction.REQUESTED_TO
-        });
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = userId, action = FriendshipAction.REQUESTED_TO });
+        socialAnalytics.SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, FriendActionSource.ProfileContextMenu);
     }
 
     private void OnCancelFriendRequestButtonPressed()

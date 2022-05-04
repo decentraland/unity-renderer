@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using DCL.Interface;
+using SocialFeaturesAnalytics;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,16 +10,21 @@ public class FriendsHUDController : IHUD
     public FriendsHUDView view { get; private set; }
 
     IFriendsController friendsController;
+    ISocialAnalytics socialAnalytics;
     public event System.Action<string> OnPressWhisper;
     public event System.Action OnFriendsOpened;
     public event System.Action OnFriendsClosed;
 
     UserProfile ownUserProfile;
 
-    public void Initialize(IFriendsController friendsController, UserProfile ownUserProfile)
+    public void Initialize(
+        IFriendsController friendsController,
+        ISocialAnalytics socialAnalytics,
+        UserProfile ownUserProfile)
     {
         view = FriendsHUDView.Create(this);
         this.friendsController = friendsController;
+        this.socialAnalytics = socialAnalytics;
 
         if (this.friendsController != null)
         {
@@ -83,7 +89,11 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private void Entry_OnRequestSent(string userId) { WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = userId, action = FriendshipAction.REQUESTED_TO }); }
+    private void Entry_OnRequestSent(string userId) 
+    {
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = userId, action = FriendshipAction.REQUESTED_TO });
+        socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userId, 0, FriendActionSource.AddFriendInput);
+    }
 
     private void OnUpdateUserStatus(string userId, FriendsController.UserStatus newStatus)
     {

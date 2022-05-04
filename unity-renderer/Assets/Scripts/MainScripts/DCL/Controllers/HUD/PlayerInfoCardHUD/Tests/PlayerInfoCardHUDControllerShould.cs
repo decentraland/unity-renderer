@@ -1,12 +1,13 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using DCL;
 using DCL.Helpers;
 using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -22,6 +23,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     private FriendsController_Mock friendsController;
     private IUserProfileBridge userProfileBridge;
     private RegexProfanityFilter profanityFilter;
+    private ISocialAnalytics socialAnalytics;
     private StringVariable currentPlayerIdData;
 
     protected override IEnumerator SetUp()
@@ -44,11 +46,14 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
 
         friendsController = new FriendsController_Mock();
 
+        socialAnalytics = SocialAnalytics.CreateMockedSocialAnalytics();
+
         controller = new PlayerInfoCardHUDController(friendsController,
             currentPlayerIdData,
             userProfileBridge,
             wearableCatalogBridge,
             profanityFilter,
+            socialAnalytics,
             dataStore);
     }
 

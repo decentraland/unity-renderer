@@ -31,11 +31,13 @@ public class HUDFactory : IHUDFactory
                 hudElement = new SettingsPanelHUDController();
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
-                hudElement = new PlayerInfoCardHUDController(FriendsController.i,
+                hudElement = new PlayerInfoCardHUDController(
+                    FriendsController.i,
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
                     new WearablesCatalogControllerBridge(),
                     ProfanityFilterSharedInstances.regexFilter,
+                    new SocialFeaturesAnalytics.SocialAnalytics(),
                     DataStore.i);
                 break;
             case HUDElementID.AIRDROPPING:

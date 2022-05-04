@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -26,6 +27,7 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IWearableCatalogBridge wearableCatalogBridge;
     private readonly IProfanityFilter profanityFilter;
+    private readonly ISocialAnalytics socialAnalytics;
     private readonly DataStore dataStore;
     private readonly List<string> loadedWearables = new List<string>();
 
@@ -34,6 +36,7 @@ public class PlayerInfoCardHUDController : IHUD
         IUserProfileBridge userProfileBridge,
         IWearableCatalogBridge wearableCatalogBridge,
         IProfanityFilter profanityFilter,
+        ISocialAnalytics socialAnalytics,
         DataStore dataStore)
     {
         this.friendsController = friendsController;
@@ -45,6 +48,7 @@ public class PlayerInfoCardHUDController : IHUD
         this.userProfileBridge = userProfileBridge;
         this.wearableCatalogBridge = wearableCatalogBridge;
         this.profanityFilter = profanityFilter;
+        this.socialAnalytics = socialAnalytics;
         this.dataStore = dataStore;
         currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
         OnCurrentPlayerIdChanged(currentPlayerId, null);
@@ -85,10 +89,8 @@ public class PlayerInfoCardHUDController : IHUD
         });
         friendsController.RequestFriendship(currentPlayerId);
 
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
-        {
-            userId = currentPlayerId, action = FriendshipAction.REQUESTED_TO
-        });
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage { userId = currentPlayerId, action = FriendshipAction.REQUESTED_TO });
+        socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, FriendActionSource.Passport);
     }
 
     private void CancelInvitation()
