@@ -169,7 +169,7 @@ namespace Tests
             IParcelScene scene = CreateScene("temptation");
             CRDTExecutor executor = new CRDTExecutor(scene);
 
-            CRDTMessage addComponentMessage = new CRDTMessage()
+            CRDTMessage addComponentString = new CRDTMessage()
             {
                 key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
                 data = "",
@@ -182,7 +182,7 @@ namespace Tests
                 timestamp = 0
             };
 
-            executor.Execute(addComponentMessage);
+            executor.Execute(addComponentString);
             executor.Execute(addComponentInt);
 
             IDCLEntity createdEntity = scene.GetEntityById(ENTITY_ID);
