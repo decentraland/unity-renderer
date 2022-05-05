@@ -4,6 +4,7 @@ namespace SocialFeaturesAnalytics
     {
         void SendPlayerMuted(string toUserId);
         void SendPlayerUnmuted(string toUserId);
+        void SendVoiceMessageStartedByFirstTime();
         void SendVoiceMessageSent(double messageLength);
         void SendChannelMessageSent(string fromUserId, double messageLength, string channel, ChatMessageType messageType);
         void SendChannelMessageReceived(string fromUserId, double messageLength, string channel, ChatMessageType messageType);

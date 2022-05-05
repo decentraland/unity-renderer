@@ -6,7 +6,8 @@ namespace SocialFeaturesAnalytics
     {
         private const string PLAYER_MUTED = "user_muted";
         private const string PLAYER_UNMUTED = "user_unmuted";
-        private const string VOICE_MESSAGE_SENT = "voice_message_sent";
+        private const string VOICE_MESSAGE_STARTED_BY_FIRST_TIME = "voice_chat_start_recording";
+        private const string VOICE_MESSAGE_SENT = "voice_chat_sent_recording";
         private const string CHANNEL_MESSAGE_SENT = "send_chat_message";
         private const string CHANNEL_MESSAGE_RECEIVED = "chat message received";
         private const string DIRECT_MESSAGE_SENT = "send_direct_message";
@@ -43,6 +44,8 @@ namespace SocialFeaturesAnalytics
 
             GenericAnalytics.SendAnalytic(PLAYER_UNMUTED, data);
         }
+
+        public void SendVoiceMessageStartedByFirstTime() { GenericAnalytics.SendAnalytic(VOICE_MESSAGE_STARTED_BY_FIRST_TIME); }
 
         public void SendVoiceMessageSent(double messageLength)
         {
