@@ -207,7 +207,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         controller.currentPlayerId.Set(null);
         controller.currentPlayerId.Set(IDS[4]);
 
-        Environment.i.platform.serviceProviders.analytics.Received(5).SendAnalytic(PlayerInfoCardHUDController.PASSPORT_OPENED_EVENT, Arg.Any<Dictionary<string, string>>());
+        socialAnalytics.Received(5).SendPassportOpen();
     }
 
     private void PrepareUsers()

@@ -17,8 +17,8 @@ namespace SocialFeaturesAnalytics
         private const string FRIEND_REQUEST_REJECTED = "friend_request_rejected";
         private const string FRIEND_REQUEST_CANCELLED = "friend_request_cancelled";
         private const string FRIEND_DELETED = "friend_deleted";
-        private const string PASSPORT_OPEN = "passport_open";
-        private const string PASSPORT_CLOSE = "passport_close";
+        private const string PASSPORT_OPENED = "passport_opened";
+        private const string PASSPORT_CLOSED = "passport_closed";
         private const string PLAYER_BLOCKED = "user_blocked";
         private const string PLAYER_UNBLOCKED = "user_unblocked";
         private const string PLAYER_REPORT = "player_report";
@@ -194,7 +194,7 @@ namespace SocialFeaturesAnalytics
 
         public void SendPassportOpen()
         {
-            GenericAnalytics.SendAnalytic(PASSPORT_OPEN);
+            GenericAnalytics.SendAnalytic(PASSPORT_OPENED);
         }
 
         public void SendPassportClose(double timeSpent)
@@ -202,7 +202,7 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("time_spent", timeSpent.ToString());
 
-            GenericAnalytics.SendAnalytic(PASSPORT_CLOSE, data);
+            GenericAnalytics.SendAnalytic(PASSPORT_CLOSED, data);
         }
 
         public void SendPlayerBlocked(bool isFriend, FriendActionSource source)

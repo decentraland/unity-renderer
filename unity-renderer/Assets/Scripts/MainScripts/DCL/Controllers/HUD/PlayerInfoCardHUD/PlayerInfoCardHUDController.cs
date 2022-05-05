@@ -11,8 +11,6 @@ using UnityEngine.Assertions;
 
 public class PlayerInfoCardHUDController : IHUD
 {
-    internal const string PASSPORT_OPENED_EVENT = "passport_opened";
-
     internal readonly PlayerInfoCardHUDView view;
     internal readonly StringVariable currentPlayerId;
     internal UserProfile currentUserProfile;
@@ -30,6 +28,7 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly DataStore dataStore;
     private readonly List<string> loadedWearables = new List<string>();
     private readonly ISocialAnalytics socialAnalytics;
+    private double passportOpenStartTime = 0;
 
     public PlayerInfoCardHUDController(IFriendsController friendsController,
         StringVariable currentPlayerIdData,
@@ -162,7 +161,8 @@ public class PlayerInfoCardHUDController : IHUD
                      })
                      .Forget();
 
-            GenericAnalytics.SendAnalytic(PASSPORT_OPENED_EVENT);
+            passportOpenStartTime = Time.realtimeSinceStartup;
+            socialAnalytics.SendPassportOpen();
         }
     }
 
@@ -199,6 +199,10 @@ public class PlayerInfoCardHUDController : IHUD
         {
             if (viewingUserProfile != null)
                 viewingUserProfile.snapshotObserver.AddListener(view.SetFaceSnapshot);
+        }
+        else
+        {
+            socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
         }
     }
 
