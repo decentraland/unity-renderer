@@ -296,7 +296,7 @@ public class AvatarEditorHUDController : IHUD
 
         EnsureWearablesCategoriesNotEmpty();
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
         isAvatarPreviewReady = true;
     }
 
@@ -367,31 +367,31 @@ public class AvatarEditorHUDController : IHUD
             }
         }
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(false);
     }
 
     public void HairColorClicked(Color color)
     {
         EquipHairColor(color);
         view.SelectHairColor(model.hairColor);
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
     public void SkinColorClicked(Color color)
     {
         EquipSkinColor(color);
         view.SelectSkinColor(model.skinColor);
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
     public void EyesColorClicked(Color color)
     {
         EquipEyesColor(color);
         view.SelectEyeColor(model.eyesColor);
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
-    protected virtual void UpdateAvatarPreview()
+    protected virtual void UpdateAvatarPreview(bool skipAudio)
     {
         if (bypassUpdateAvatarPreview)
             return;
@@ -405,7 +405,7 @@ public class AvatarEditorHUDController : IHUD
                 modelToUpdate.wearables.Add(emoteId);
         }
 
-        view.UpdateAvatarPreview(modelToUpdate);
+        view.UpdateAvatarPreview(modelToUpdate, skipAudio);
     }
 
     private void EquipHairColor(Color color)
@@ -601,7 +601,7 @@ public class AvatarEditorHUDController : IHUD
             }
         }
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(false);
     }
 
     private List<WearableItem> GetWearablesReplacedBy(WearableItem wearableItem)
@@ -941,7 +941,7 @@ public class AvatarEditorHUDController : IHUD
         if (!isAvatarPreviewReady)
             return;
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
     private void OnPreviewEmote(string emoteId) { view.PlayPreviewEmote(emoteId); }

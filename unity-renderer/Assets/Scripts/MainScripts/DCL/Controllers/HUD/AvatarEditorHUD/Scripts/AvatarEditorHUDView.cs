@@ -346,7 +346,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         collectiblesItemSelector.UnselectAll();
     }
 
-    public void UpdateAvatarPreview(AvatarModel avatarModel)
+    public void UpdateAvatarPreview(AvatarModel avatarModel, bool skipAudio)
     {
         if (avatarModel?.wearables == null)
             return;
@@ -360,7 +360,10 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
                     doneButton.interactable = true;
 
                 loadingSpinnerGameObject?.SetActive(false);
-                OnAvatarAppear?.Invoke(avatarModel);
+                
+                if(!skipAudio)
+                    OnAvatarAppear?.Invoke(avatarModel);
+                
                 ClearWearablesLoadingSpinner();
                 randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
             });
