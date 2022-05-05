@@ -1410,6 +1410,7 @@ namespace Tests
             sceneEvent.sceneId = scene.sceneData.id;
             sceneEvent.payload = onPointerDownEvent;
             sceneEvent.eventType = "uuidEvent";
+            EntityIdHelper idHelper = new EntityIdHelper();
 
             // Check if target entity is hit behind other entity
             bool targetEntityHit = false;
@@ -1423,7 +1424,7 @@ namespace Tests
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
                         pointerEvent.payload.uuid == onPointerId &&
-                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId.ToString())
+                        pointerEvent.payload.payload.hit.entityId == idHelper.GetOriginalId(clickTargetEntity.entityId))
                     {
                         targetEntityHit = true;
                     }
@@ -1613,7 +1614,7 @@ namespace Tests
             sceneEvent.sceneId = scene.sceneData.id;
             sceneEvent.payload = onPointerDownEvent;
             sceneEvent.eventType = "uuidEvent";
-
+            EntityIdHelper idHelper = new EntityIdHelper();
             // Check the target entity is not hit behind the 'isPointerBlocker' shape
             bool targetEntityHit = false;
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
@@ -1626,7 +1627,7 @@ namespace Tests
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
                         pointerEvent.payload.uuid == onPointerId &&
-                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId.ToString())
+                        pointerEvent.payload.payload.hit.entityId == idHelper.GetOriginalId(clickTargetEntity.entityId))
                     {
                         targetEntityHit = true;
                     }
