@@ -76,7 +76,7 @@ public class UserContextMenu : MonoBehaviour
     private bool isBlocked;
     private MenuConfigFlags currentConfigFlags;
     private IConfirmationDialog currentConfirmationDialog;
-    private ISocialAnalytics socialAnalytics;
+    internal ISocialAnalytics socialAnalytics;
 
     /// <summary>
     /// Show context menu
@@ -255,10 +255,12 @@ public class UserContextMenu : MonoBehaviour
         if (blockUser)
         {
             WebInterface.SendBlockPlayer(userId);
+            socialAnalytics.SendPlayerBlocked(FriendsController.i.IsFriend(userId), FriendActionSource.ProfileContextMenu);
         }
         else
         {
             WebInterface.SendUnblockPlayer(userId);
+            socialAnalytics.SendPlayerUnblocked(FriendsController.i.IsFriend(userId), FriendActionSource.ProfileContextMenu);
         }
         Hide();
     }

@@ -1,9 +1,9 @@
 using NUnit.Framework;
+using System;
 using System.Collections;
 using UnityEngine;
-using UnityEditor;
-using System;
 using UnityEngine.TestTools;
+using SocialFeaturesAnalytics.TestHelpers;
 
 public class UserContextMenuShould
 {
@@ -18,6 +18,7 @@ public class UserContextMenuShould
     {
         var prefab = Resources.Load<UserContextMenu>("UserContextMenuPanel");
         contextMenu = UnityEngine.Object.Instantiate(prefab);
+        contextMenu.socialAnalytics = SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics();
 
         friendsController = (new GameObject()).AddComponent<FriendsController>();
         profileController = (new GameObject()).AddComponent<UserProfileController>();

@@ -212,6 +212,7 @@ public class PlayerInfoCardHUDController : IHUD
         ownUserProfile.Block(currentUserProfile.userId);
         view.SetIsBlocked(true);
         WebInterface.SendBlockPlayer(currentUserProfile.userId);
+        socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), FriendActionSource.Passport);
     }
 
     private void UnblockPlayer()
@@ -220,6 +221,7 @@ public class PlayerInfoCardHUDController : IHUD
         ownUserProfile.Unblock(currentUserProfile.userId);
         view.SetIsBlocked(false);
         WebInterface.SendUnblockPlayer(currentUserProfile.userId);
+        socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(currentUserProfile.userId), FriendActionSource.Passport);
     }
 
     private void ReportPlayer()
