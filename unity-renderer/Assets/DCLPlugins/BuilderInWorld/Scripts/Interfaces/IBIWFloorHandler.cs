@@ -9,6 +9,6 @@ public interface IBIWFloorHandler : IBIWController
     bool IsCatalogItemFloor(CatalogItem floorSceneObject);
     void ChangeFloor(CatalogItem newFloorObject);
     event Action OnAllParcelsFloorLoaded;
-    Dictionary<string, GameObject> floorPlaceHolderDict { get; set; }
+    Dictionary<long, GameObject> floorPlaceHolderDict { get; set; }
     void CleanUp();
 }

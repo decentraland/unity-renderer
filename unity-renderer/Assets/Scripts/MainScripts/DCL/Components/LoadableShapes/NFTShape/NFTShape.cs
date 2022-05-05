@@ -54,7 +54,7 @@ namespace DCL.Components
             
             entity.OnShapeUpdated += UpdateBackgroundColor;
 
-            var loadableShape = GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
+            var loadableShape = Environment.i.world.state.GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
 
             loadableShape.entity = entity;
             loadableShape.initialVisibility = model.visible;
@@ -71,7 +71,7 @@ namespace DCL.Components
                 return;
 
             entity.OnShapeUpdated -= UpdateBackgroundColor;
-            RemoveLoaderForEntity(entity);
+            Environment.i.world.state.RemoveLoaderForEntity(entity);
 
             base.DetachShape(entity);
         }
@@ -83,7 +83,7 @@ namespace DCL.Components
             if (previousModel is NFTShape.Model && model.color == previousModel.color)
                 return;
 
-            var loadableShape = GetLoaderForEntity(entity) as LoadWrapper_NFT;
+            var loadableShape = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_NFT;
             loadableShape?.loaderController.UpdateBackgroundColor(model.color);
         }
 

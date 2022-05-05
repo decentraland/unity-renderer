@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using DCL.Components;
 using DCL.Configuration;
@@ -11,17 +12,27 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
+using Object = UnityEngine.Object;
 
 public class SceneTests : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
     private ISceneController sceneController => DCL.Environment.i.world.sceneController;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         DataStore.i.debugConfig.isDebugMode.Set(true);
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     protected override ServiceLocator InitializeServiceLocator()
@@ -147,7 +158,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         var loadedScene = Environment.i.world.state.loadedScenes[loadedSceneID] as ParcelScene;
         // Add 1 entity to the loaded scene
-        TestUtils.CreateSceneEntity(loadedScene, "6");
+        TestUtils.CreateSceneEntity(loadedScene, 6);
 
         var sceneEntities = loadedScene.entities;
 
@@ -333,8 +344,8 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [Test]
     public void ParcelScene_SetEntityParent()
     {
-        var entityId = "entityId";
-        var entityId2 = "entityId_2";
+        var entityId = 1134;
+        var entityId2 = 3124;
         var entity = TestUtils.CreateSceneEntity(scene, entityId);
         var entity2 = TestUtils.CreateSceneEntity(scene, entityId2);
 
@@ -343,7 +354,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set player reference as parent
-        TestUtils.SetEntityParent(scene, entityId, "FirstPersonCameraEntityReference");
+        TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
         Assert.AreEqual(entity.gameObject.transform.parent,
             DCLCharacterController.i.firstPersonCameraGameObject.transform);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
@@ -353,12 +364,12 @@ public class SceneTests : IntegrationTestSuite_Legacy
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set avatar position reference as parent
-        TestUtils.SetEntityParent(scene, entityId, "AvatarEntityReference");
+        TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.AVATAR_ENTITY_REFERENCE);
         Assert.AreEqual(entity.gameObject.transform.parent, DCLCharacterController.i.avatarGameObject.transform);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Remove all parents
-        TestUtils.SetEntityParent(scene, entityId, "0");
+        TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.SCENE_ROOT_ENTITY);
         Assert.IsNull(entity.parent);
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
     }

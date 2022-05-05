@@ -12,10 +12,10 @@ namespace DCL.Controllers
         event Action<IDCLEntity> OnEntityAdded;
         event Action<IDCLEntity> OnEntityRemoved;
 
-        IDCLEntity CreateEntity(string id);
-        IDCLEntity GetEntityById(string entityId);
+        IDCLEntity CreateEntity(long id);
+        IDCLEntity GetEntityById(long entityId);
         Transform GetSceneTransform();
-        Dictionary<string, IDCLEntity> entities { get; }
+        Dictionary<long, IDCLEntity> entities { get; }
         IECSComponentsManagerLegacy componentsManagerLegacy { get; }
         LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
         ContentProvider contentProvider { get; }
@@ -29,7 +29,7 @@ namespace DCL.Controllers
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);
         void CalculateSceneLoadingState();
         void GetWaitingComponentsDebugInfo();
-        void SetEntityParent(string entityId, string parentId);
-        void RemoveEntity(string id, bool removeImmediatelyFromEntitiesList = true);
+        void SetEntityParent(long entityId, long parentId);
+        void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true);
     }
 }

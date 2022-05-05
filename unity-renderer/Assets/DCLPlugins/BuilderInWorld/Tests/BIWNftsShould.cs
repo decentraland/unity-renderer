@@ -15,7 +15,7 @@ using Environment = DCL.Environment;
 public class BIWNftsShould : IntegrationTestSuite
 {
     private ParcelScene scene;
-    private const string ENTITY_ID = "1";
+    private const long ENTITY_ID = 1;
 
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {

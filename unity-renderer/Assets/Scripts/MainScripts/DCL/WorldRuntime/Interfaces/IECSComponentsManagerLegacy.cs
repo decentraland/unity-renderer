@@ -35,13 +35,13 @@ namespace DCL
         bool RemoveSceneSharedComponent(string component);
         ISharedComponent SceneSharedComponentCreate(string id, int classId);
         T GetSceneSharedComponent<T>() where T : class;
-        void SceneSharedComponentAttach(string entityId, string componentId);
-        IEntityComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, object data);
+        void SceneSharedComponentAttach(long entityId, string componentId);
+        IEntityComponent EntityComponentCreateOrUpdate(long entityId, CLASS_ID_COMPONENT classId, object data);
         IEntityComponent EntityComponentUpdate(IDCLEntity entity, CLASS_ID_COMPONENT classId, string componentJson);
         void SceneSharedComponentDispose(string id);
         ISharedComponent SceneSharedComponentUpdate(string id, BaseModel model);
         ISharedComponent SceneSharedComponentUpdate(string id, string json);
-        void EntityComponentRemove(string entityId, string name);
+        void EntityComponentRemove(long entityId, string name);
         void DisposeAllSceneComponents();
     }
 }

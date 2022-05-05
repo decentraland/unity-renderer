@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
@@ -88,7 +89,7 @@ public class WorldChatWindowHUDController : IHUD
         if (IsOldPrivateMessage(message))
             return;
 
-        view.chatHudView.controller.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message), view.isInPreview);
+        TaskUtils.Run(() => view.chatHudView.controller.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message), view.isInPreview)).Forget();
 
         if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
             lastPrivateMessageReceivedSender = UserProfileController.userProfilesCatalog.Get(message.sender).userName;
