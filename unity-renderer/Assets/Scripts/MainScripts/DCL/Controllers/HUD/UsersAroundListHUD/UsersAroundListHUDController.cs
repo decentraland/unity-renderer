@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Interface;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 public class UsersAroundListHUDController : IHUD
@@ -10,6 +11,7 @@ public class UsersAroundListHUDController : IHUD
 
     internal IUsersAroundListHUDButtonView usersButtonView;
     internal IUsersAroundListHUDListView usersListView;
+    internal ISocialAnalytics socialAnalytics;
 
     private bool isVisible = false;
     private readonly HashSet<string> trackedUsersHashSet = new HashSet<string>();
@@ -24,15 +26,15 @@ public class UsersAroundListHUDController : IHUD
 
     public event System.Action OnOpen;
 
-    public UsersAroundListHUDController()
+    public UsersAroundListHUDController(ISocialAnalytics socialAnalytics)
     {
         UsersAroundListHUDListView view = Object.Instantiate(Resources.Load<GameObject>("UsersAroundListHUD")).GetComponent<UsersAroundListHUDListView>();
         view.name = "_UsersAroundListHUD";
         view.gameObject.SetActive(false);
-        Initialize(view);
+        Initialize(view, socialAnalytics);
     }
 
-    public UsersAroundListHUDController(IUsersAroundListHUDListView usersListView) { Initialize(usersListView); }
+    public UsersAroundListHUDController(IUsersAroundListHUDListView usersListView, ISocialAnalytics socialAnalytics) { Initialize(usersListView, socialAnalytics); }
 
     /// <summary>
     /// Dispose HUD controller
@@ -108,9 +110,10 @@ public class UsersAroundListHUDController : IHUD
     /// <param name="isRecording">Set user status as "talking" or "not talking"</param>
     public void SetUserRecording(string userId, bool isRecording) { usersListView.SetUserRecording(userId, isRecording); }
 
-    void Initialize(IUsersAroundListHUDListView view)
+    void Initialize(IUsersAroundListHUDListView view, ISocialAnalytics socialAnalytics)
     {
         usersListView = view;
+        this.socialAnalytics = socialAnalytics;
 
         usersListView.OnRequestMuteUser += OnMuteUser;
         usersListView.OnRequestMuteGlobal += OnMuteAll;
@@ -172,6 +175,11 @@ public class UsersAroundListHUDController : IHUD
         {
             updateMuteStatusRoutine = CoroutineStarter.Start(MuteStateUpdateRoutine());
         }
+
+        if (mute)
+            socialAnalytics.SendPlayerMuted(userId);
+        else
+            socialAnalytics.SendPlayerUnmuted(userId);
     }
 
     void OnMuteUsers(IEnumerable<string> usersId, bool mute)

@@ -5,6 +5,7 @@ using DCL.Huds.QuestsTracker;
 using DCL.Interface;
 using DCL.SettingsPanelHUD;
 using SignupHUD;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 public class HUDFactory : IHUDFactory
@@ -90,7 +91,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new HelpAndSupportHUDController();
                 break;
             case HUDElementID.USERS_AROUND_LIST_HUD:
-                hudElement = new UsersAroundListHUDController();
+                hudElement = new UsersAroundListHUDController(new SocialAnalytics());
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();

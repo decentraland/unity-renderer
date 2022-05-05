@@ -24,16 +24,20 @@ namespace SocialFeaturesAnalytics
         private const string PLAYER_JOIN = "player_join";
         private const string PLAY_EMOTE = "play_emote";
 
-        public void SendPlayerMuted(PlayerType toPlayerType)
+        public void SendPlayerMuted(string toUserId)
         {
+            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("to", toPlayerType.ToString());
 
             GenericAnalytics.SendAnalytic(PLAYER_MUTED, data);
         }
 
-        public void SendPlayerUnmuted(PlayerType toPlayerType)
+        public void SendPlayerUnmuted(string toUserId)
         {
+            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("to", toPlayerType.ToString());
 
@@ -240,7 +244,7 @@ namespace SocialFeaturesAnalytics
             if (userProfile == null)
                 return null;
             else
-                return userProfile.isGuest ? PlayerType.Guest : PlayerType.Wallet;
+                return userProfile.hasClaimedName ? PlayerType.Wallet : PlayerType.Guest;
         }
     }
 }

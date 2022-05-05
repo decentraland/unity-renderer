@@ -8,8 +8,8 @@ namespace SocialFeaturesAnalytics.TestHelpers
         {
             ISocialAnalytics mockedSocialAnalytics = Substitute.For<ISocialAnalytics>();
 
-            mockedSocialAnalytics.When(x => x.SendPlayerMuted(Arg.Any<PlayerType>())).Do(x => { });
-            mockedSocialAnalytics.When(x => x.SendPlayerUnmuted(Arg.Any<PlayerType>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPlayerMuted(Arg.Any<string>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPlayerUnmuted(Arg.Any<string>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendVoiceMessageSent(Arg.Any<double>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendChannelMessageSent(Arg.Any<PlayerType>(), Arg.Any<double>(), Arg.Any<string>(), Arg.Any<ChatMessageType>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendChannelMessageReceived(Arg.Any<PlayerType>(), Arg.Any<double>(), Arg.Any<string>(), Arg.Any<ChatMessageType>())).Do(x => { });

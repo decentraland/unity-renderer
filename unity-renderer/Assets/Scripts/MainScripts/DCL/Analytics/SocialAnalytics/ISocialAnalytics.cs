@@ -2,8 +2,8 @@ namespace SocialFeaturesAnalytics
 {
     public interface ISocialAnalytics
     {
-        void SendPlayerMuted(PlayerType toPlayerType);
-        void SendPlayerUnmuted(PlayerType toPlayerType);
+        void SendPlayerMuted(string toUserId);
+        void SendPlayerUnmuted(string toUserId);
         void SendVoiceMessageSent(double messageLength);
         void SendChannelMessageSent(PlayerType fromPlayerType, double messageLength, string channel, ChatMessageType messageType);
         void SendChannelMessageReceived(PlayerType fromPlayerType, double messageLength, string channel, ChatMessageType messageType);
