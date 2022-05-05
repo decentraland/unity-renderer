@@ -26,7 +26,7 @@ namespace KernelCommunication
                 int messageLength = reader.ReadInt32();
                 int messageType = reader.ReadInt32();
 
-                if (messageLength == 0)
+                if (messageLength <= headerLength)
                 {
                     continue;
                 }
