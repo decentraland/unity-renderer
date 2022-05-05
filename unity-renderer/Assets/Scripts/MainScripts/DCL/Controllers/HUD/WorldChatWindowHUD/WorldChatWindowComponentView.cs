@@ -52,6 +52,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService)
     {
         directChatList.Initialize(chatController, lastReadMessagesService);
+        publicChannelList.Initialize(chatController, lastReadMessagesService);
         searchResultsList.Initialize(chatController, lastReadMessagesService);
     }
 
