@@ -8,6 +8,9 @@ public class PublicChannelEntry : BaseComponentView
     [SerializeField] private Button openChatButton;
     [SerializeField] private TMP_Text nameLabel;
     [SerializeField] private PublicChannelEntryModel model;
+    [SerializeField] private UnreadNotificationBadge unreadNotifications;
+    private IChatController chatController;
+    private ILastReadMessagesService lastReadMessagesService;
 
     public PublicChannelEntryModel Model => model;
 
@@ -17,6 +20,13 @@ public class PublicChannelEntry : BaseComponentView
     {
         base.Awake();
         openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke());
+    }
+    
+    public void Initialize(IChatController chatController,
+        ILastReadMessagesService lastReadMessagesService)
+    {
+        this.chatController = chatController;
+        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Set(PublicChannelEntryModel model)
@@ -28,6 +38,7 @@ public class PublicChannelEntry : BaseComponentView
     public override void RefreshControl()
     {
         nameLabel.text = $"#{model.name}";
+        unreadNotifications.Initialize(chatController, model.channelId, lastReadMessagesService);
     }
 
     [Serializable]

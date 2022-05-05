@@ -74,12 +74,7 @@ public class UnreadNotificationBadge : MonoBehaviour
             lastReadMessagesService.OnUpdated -= HandleUnreadMessagesUpdated;
     }
 
-    private void HandleMessageAdded(ChatMessage newMessage)
-    {
-        if (newMessage.messageType == ChatMessage.Type.PRIVATE &&
-            newMessage.sender == currentUserId)
-            UpdateUnreadMessages();
-    }
+    private void HandleMessageAdded(ChatMessage newMessage) => UpdateUnreadMessages();
 
     private void HandleUnreadMessagesUpdated(string userId)
     {

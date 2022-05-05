@@ -14,8 +14,16 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private Pool entryPool;
     private bool releaseEntriesFromPool = true;
+    private IChatController chatController;
+    private ILastReadMessagesService lastReadMessagesService;
 
     public event Action<PublicChannelEntry> OnOpenChat;
+    
+    public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService)
+    {
+        this.chatController = chatController;
+        this.lastReadMessagesService = lastReadMessagesService;
+    }
 
     public void Filter(string search)
     {
@@ -58,6 +66,7 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         pooleableEntries.Add(channelId, newFriendEntry);
         var entry = newFriendEntry.gameObject.GetComponent<PublicChannelEntry>();
         Add(channelId, entry);
+        entry.Initialize(chatController, lastReadMessagesService);
         entry.OnOpenChat += () => OnOpenChat?.Invoke(entry);
     }
     
