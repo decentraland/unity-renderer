@@ -23,6 +23,7 @@ public class UILoadingSpinner : MonoBehaviour
 
         if (_img.maskable)
         {
+            _material = new Material(_img.material);
             _material = _img.materialForRendering;
         }
         else
@@ -30,6 +31,11 @@ public class UILoadingSpinner : MonoBehaviour
             _material = new Material(_img.material);
             _img.material = _material;
         }
+    }
+
+    void Update()
+    {
+        SetValues();
     }
 
 
