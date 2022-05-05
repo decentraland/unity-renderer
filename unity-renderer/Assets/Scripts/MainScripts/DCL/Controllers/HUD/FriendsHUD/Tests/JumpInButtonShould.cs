@@ -1,5 +1,6 @@
 using DCL.Interface;
 using NUnit.Framework;
+using SocialFeaturesAnalytics.TestHelpers;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -35,7 +36,7 @@ public class JumpInButtonShould : IntegrationTestSuite_Legacy
 
         GameObject go = Object.Instantiate((GameObject)Resources.Load(JUMP_IN_BUTTON_RESOURCE_NAME));
         jumpInButton = go.GetComponent<JumpInButton>();
-        jumpInButton.Initialize(friendsController, TEST_USER_ID);
+        jumpInButton.Initialize(friendsController, TEST_USER_ID, SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics());
 
         Assert.AreEqual(testCoords, jumpInButton.currentCoords, "Position coords should match with [testCoords]");
         Assert.AreEqual(PresenceStatus.ONLINE, jumpInButton.currentPresenceStatus, "Presence status should be ONLINE");
