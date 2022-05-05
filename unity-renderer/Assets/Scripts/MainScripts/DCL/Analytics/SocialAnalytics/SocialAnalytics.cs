@@ -23,7 +23,7 @@ namespace SocialFeaturesAnalytics
         private const string PLAYER_UNBLOCKED = "user_unblocked";
         private const string PLAYER_REPORT = "player_report";
         private const string PLAYER_JOIN = "player_join";
-        private const string PLAY_EMOTE = "play_emote";
+        private const string PLAY_EMOTE = "used_emote";
 
         public void SendPlayerMuted(string toUserId)
         {
@@ -241,12 +241,13 @@ namespace SocialFeaturesAnalytics
             GenericAnalytics.SendAnalytic(PLAYER_JOIN, data);
         }
 
-        public void SendPlayEmote(string emoteName, string rarity, EmoteSource source)
+        public void SendPlayEmote(string emoteName, string rarity, EmoteSource source, string parcelLocation)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("emote_name", emoteName);
+            data.Add("id", emoteName);
             data.Add("rarity", rarity);
             data.Add("source", source.ToString());
+            data.Add("parcel_location", parcelLocation);
 
             GenericAnalytics.SendAnalytic(PLAY_EMOTE, data);
         }

@@ -10,6 +10,7 @@ using DCL.FatalErrorReporter;
 using DCL.Interface;
 using DCL.NotificationModel;
 using GPUSkinning;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using Type = DCL.NotificationModel.Type;
 
@@ -32,15 +33,15 @@ public class PlayerAvatarController : MonoBehaviour
 
     private bool enableCameraCheck = false;
     private Camera mainCamera;
-    private PlayerAvatarAnalytics playerAvatarAnalytics;
     private IFatalErrorReporter fatalErrorReporter; // TODO?
     private string VISIBILITY_CONSTRAIN;
+
+    internal ISocialAnalytics socialAnalytics;
 
     private void Start()
     {
         DataStore.i.common.isPlayerRendererLoaded.Set(false);
-        IAnalytics analytics = DCL.Environment.i.platform.serviceProviders.analytics;
-        playerAvatarAnalytics = new PlayerAvatarAnalytics(analytics, CommonScriptableObjects.playerCoords);
+        socialAnalytics = new SocialAnalytics();
 
         AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
         avatar = new AvatarSystem.Avatar(
@@ -121,10 +122,20 @@ public class PlayerAvatarController : MonoBehaviour
         userProfile.OnAvatarEmoteSet += OnAvatarEmote;
     }
 
-    private void OnAvatarEmote(string id, long timestamp)
+    private void OnAvatarEmote(string id, long timestamp, UserProfile.EmoteSource source)
     {
         avatar.PlayEmote(id, timestamp);
-        playerAvatarAnalytics.ReportExpression(id);
+
+        DataStore.i.common.wearables.TryGetValue(id, out WearableItem emoteItem);
+
+        if (emoteItem != null)
+        {
+            socialAnalytics.SendPlayEmote(
+                emoteItem.GetName(),
+                emoteItem.rarity, 
+                (EmoteSource)source,
+                $"{CommonScriptableObjects.playerCoords.Get().x},{CommonScriptableObjects.playerCoords.Get().y}");
+        }
     }
 
     private void OnUserProfileOnUpdate(UserProfile profile)
