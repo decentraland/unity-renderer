@@ -1824,7 +1824,7 @@ namespace Tests
             sceneEvent.sceneId = scene.sceneData.id;
             sceneEvent.payload = onPointerDownEvent;
             sceneEvent.eventType = "uuidEvent";
-
+            
             // Check if target entity is triggered by hitting the parent entity
             bool targetEntityHit = false;
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEvent,
@@ -1837,7 +1837,7 @@ namespace Tests
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
                         pointerEvent.payload.uuid == onPointerId &&
-                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId.ToString())
+                        pointerEvent.payload.payload.hit.entityId == idHelper.GetOriginalId(clickTargetEntity.entityId))
                     {
                         targetEntityHit = true;
                     }
