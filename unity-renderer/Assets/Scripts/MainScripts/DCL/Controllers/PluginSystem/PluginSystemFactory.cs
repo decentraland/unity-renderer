@@ -1,9 +1,11 @@
 using AvatarSystem;
 using DCL.Emotes;
-using DCL.Tutorial;
-using DCL.Skybox;
-using EmotesCustomization;
+using DCL.EmotesCustomization;
+using DCL.EmotesWheel;
+using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
+using DCL.Skybox;
+using DCL.Tutorial;
 
 namespace DCL
 {
@@ -16,21 +18,28 @@ namespace DCL
             // Ideally the Plugin class itself should be a really small entry point with a parameterless constructor
             // the heavy lifting should be done by another class (following the Humble Object Pattern)
 
-            pluginSystem.Register(() => new DebugPluginFeature());
-            pluginSystem.Register(() => new ShortcutsFeature());
-            pluginSystem.Register(() => new ExploreV2Feature());
-            pluginSystem.Register(() => new DebugShapesBoundingBoxDisplayer());
-            pluginSystem.Register(() => new TransactionFeature());
-            pluginSystem.Register(() => new PreviewMenuPlugin());
-            pluginSystem.Register(() => new SkyboxController());
-            pluginSystem.Register(() => new GotoPanelPlugin());
-            pluginSystem.Register(() => new ExperiencesViewerFeature());
-            pluginSystem.Register(() => new EmoteAnimationsPlugin());
-            pluginSystem.RegisterWithFlag(() => new BuilderInWorldPlugin(), "builder_in_world");
-            pluginSystem.RegisterWithFlag(() => new TutorialController(), "tutorial");
-            pluginSystem.RegisterWithFlag(() => new PlacesAndEventsFeature(), "explorev2");
-            pluginSystem.RegisterWithFlag(() => new EmotesCustomizationFeature(), "emotes_customization");
-            pluginSystem.Register(() => new EmotesWheelFeature());
+            pluginSystem.Register<DebugPluginFeature>(() => new DebugPluginFeature());
+            pluginSystem.Register<ShortcutsFeature>(() => new ShortcutsFeature());
+            pluginSystem.Register<ExploreV2Feature>(() => new ExploreV2Feature());
+            pluginSystem.Register<DebugShapesBoundingBoxDisplayer>(() => new DebugShapesBoundingBoxDisplayer());
+            pluginSystem.Register<TransactionFeature>(() => new TransactionFeature());
+            pluginSystem.Register<PreviewMenuPlugin>(() => new PreviewMenuPlugin());
+            pluginSystem.Register<SkyboxController>(() => new SkyboxController());
+            pluginSystem.Register<GotoPanelPlugin>(() => new GotoPanelPlugin());
+            pluginSystem.Register<ExperiencesViewerFeature>(() => new ExperiencesViewerFeature());
+            pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
+            pluginSystem.Register<EquippedEmotesInitializerPlugin>(() => new EquippedEmotesInitializerPlugin());
+            pluginSystem.Register<EmotesWheelUIPlugin>(() => new EmotesWheelUIPlugin());
+            pluginSystem.Register<NFTShapePlugin>(() => new NFTShapePlugin());
+            pluginSystem.Register<UUIDEventsPlugin>(() => new UUIDEventsPlugin());
+            pluginSystem.Register<UIComponentsPlugin>(() => new UIComponentsPlugin());
+            pluginSystem.Register<CoreComponentsPlugin>(() => new CoreComponentsPlugin());
+
+            pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
+            pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
+            pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
+            pluginSystem.RegisterWithFlag<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature(), "explorev2");
+            pluginSystem.RegisterWithFlag<SkyboxController>(() => new SkyboxController(), "procedural_skybox");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

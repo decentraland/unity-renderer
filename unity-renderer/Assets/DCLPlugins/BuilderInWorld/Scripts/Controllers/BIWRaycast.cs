@@ -53,7 +53,7 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
 
         if (Physics.Raycast(ray, out hit, distanceToSelect, BIWSettings.COLLIDER_SELECTION_LAYER))
         {
-            string entityID = hit.collider.gameObject.name;
+            long entityID = long.Parse(hit.collider.gameObject.name);
 
             if (sceneToEdit.entities.ContainsKey(entityID))
             {
@@ -106,7 +106,7 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
 
         foreach (RaycastHit hit in hits)
         {
-            string entityID = hit.collider.gameObject.name;
+            long entityID = long.Parse(hit.collider.gameObject.name);
 
             if (sceneToEdit.entities.ContainsKey(entityID))
             {

@@ -12,13 +12,20 @@ using UnityEngine.TestTools;
 public class PBRMaterialShould : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
-
-    [UnitySetUp]
+    private CoreComponentsPlugin coreComponentsPlugin;
+    
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         Environment.i.world.sceneBoundsChecker.Stop();
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     [UnityTest]
@@ -92,14 +99,14 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator BeUpdatedProperly()
     {
-        string entityId = "1";
+        long entityId = 1;
         string materialID = "a-material";
 
         // Instantiate entity with default PBR Material
         TestUtils.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
             new PBRMaterial.Model(), materialID);
 
-        var materialComponent = scene.disposableComponents[materialID] as DCL.Components.PBRMaterial;
+        var materialComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(materialID) as DCL.Components.PBRMaterial;
 
         yield return materialComponent.routine;
 
@@ -152,7 +159,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         ColorUtility.TryParseHtmlString("#42f4aa", out color2);
         ColorUtility.TryParseHtmlString("#601121", out color3);
 
-        scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
         {
             albedoTexture = texture.id,
             albedoColor = color1,
@@ -198,7 +205,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
     public IEnumerator BeSharedProperly()
     {
         // Create first entity with material
-        string firstEntityID = "1";
+        long firstEntityID = 1;
         string firstMaterialID = "a-material";
 
         TestUtils.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero,
@@ -211,7 +218,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
         // Create second entity with material
-        string secondEntityID = "2";
+        long secondEntityID = 2;
         string secondMaterialID = "b-material";
 
         TestUtils.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero,
@@ -224,10 +231,10 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
         // Create third entity and assign 1st material
-        string thirdEntityID = "3";
+        long thirdEntityID = 3;
 
         TestUtils.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
-        scene.SharedComponentAttach(
+        scene.componentsManagerLegacy.SceneSharedComponentAttach(
             thirdEntityID,
             firstMaterialID
         );
@@ -274,7 +281,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         var boxShape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero);
         var entity3 = boxShape.attachedEntities.First();
 
-        scene.SharedComponentAttach(
+        scene.componentsManagerLegacy.SceneSharedComponentAttach(
             entity3.entityId,
             material1.id
         );
@@ -297,7 +304,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         Assert.AreApproximatelyEqual(0.66f, secondRenderer.sharedMaterial.GetFloat("_Metallic"));
 
         // Update material properties
-        scene.SharedComponentUpdate(material1.id, JsonUtility.ToJson(new PBRMaterial.Model
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(material1.id, JsonUtility.ToJson(new PBRMaterial.Model
         {
             metallic = 0.95f
         }));
@@ -378,7 +385,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(3f, PBRMaterialComponent.GetModel().specularIntensity);
 
         // 3. Update component with missing values
-        scene.SharedComponentUpdate(PBRMaterialComponent.id, JsonUtility.ToJson(new PBRMaterial.Model { }));
+        scene.componentsManagerLegacy.SceneSharedComponentUpdate(PBRMaterialComponent.id, JsonUtility.ToJson(new PBRMaterial.Model { }));
 
         yield return PBRMaterialComponent.routine;
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -53,7 +54,7 @@ public class WithNftShape_SceneMetricsCounterShould : IntegrationTestSuite_Scene
         Debug.Log(scene.metricsCounter.currentCount);
         TestUtils.SharedComponentAttach(component, entity);
 
-        LoadWrapper_NFT wrapper = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
+        LoadWrapper_NFT wrapper = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_NFT;
         yield return new WaitUntil(() => wrapper.alreadyLoaded);
 
         Debug.Log(scene.metricsCounter.currentCount);

@@ -18,6 +18,7 @@ namespace DCL.Builder
         [SerializeField] private Color colorBackgroundSelected;
         [SerializeField] private Color colorTextDefault;
         [SerializeField] private Color colorTextSelected;
+        [SerializeField] private Color colorTextDisabled;
 
         [Header("References")]
         [SerializeField] private Image imageBackground;
@@ -27,7 +28,7 @@ namespace DCL.Builder
         {
             set
             {
-                if (isToggleOn == value)
+                if (isToggleOn == value || isDisabled)
                     return;
 
                 SetIsOnWithoutNotify(value);
@@ -42,6 +43,7 @@ namespace DCL.Builder
 
         private bool isToggleOn = false;
         private bool isSetup = false;
+        private bool isDisabled = false;
 
         public void Setup()
         {
@@ -52,25 +54,38 @@ namespace DCL.Builder
             OnToggleOn += OnReceiveToggleOn;
         }
 
+        public void Enable()
+        {
+            isDisabled = false;
+            if(isToggleOn)
+                SetSelectColor();
+            else
+                SetDefaultColor();
+        }
+
+        public void Disable()
+        {
+            isDisabled = true;
+            SetDisableColor();
+        }
+
         public void SetIsOnWithoutNotify(bool value)
         {
             isToggleOn = value;
 
-            if (isToggleOn)
-            {
+            if (isDisabled)
+                SetDisableColor();
+            else if (isToggleOn)
                 SetSelectColor();
-            }
             else
-            {
                 SetDefaultColor();
-            }
         }
 
         private void OnDestroy() { OnToggleOn -= OnReceiveToggleOn; }
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            if (isOn)
+            if (isOn || isDisabled)
                 return;
 
             SetSelectColor();
@@ -78,7 +93,7 @@ namespace DCL.Builder
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            if (isOn)
+            if (isOn || isDisabled)
                 return;
 
             SetDefaultColor();
@@ -88,7 +103,7 @@ namespace DCL.Builder
         {
             AudioScriptableObjects.buttonClick.Play(true);
 
-            if (isOn)
+            if (isOn || isDisabled)
                 return;
 
             isOn = true;
@@ -100,6 +115,12 @@ namespace DCL.Builder
             text.color = colorTextSelected;
         }
 
+        private void SetDisableColor()
+        {
+            imageBackground.color = colorBackgroundSelected;
+            text.color = colorTextDisabled;
+        }
+
         private void SetDefaultColor()
         {
             imageBackground.color = colorBackgroundDefault;
@@ -108,7 +129,7 @@ namespace DCL.Builder
 
         private void OnReceiveToggleOn(LeftMenuButtonToggleView toggle)
         {
-            if (!isOn)
+            if (!isOn || isDisabled)
                 return;
 
             if (toggle != this)

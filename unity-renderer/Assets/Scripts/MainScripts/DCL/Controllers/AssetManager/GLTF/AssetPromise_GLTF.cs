@@ -57,9 +57,6 @@ namespace DCL
 
         protected override void OnBeforeLoadOrReuse()
         {
-#if UNITY_EDITOR
-            asset.container.name = "GLTF: " + this.id;
-#endif
             settings.ApplyBeforeLoad(asset.container.transform);
         }
 
@@ -80,7 +77,7 @@ namespace DCL
             {
                 gltfComponent = asset.container.AddComponent<GLTFComponent>();
 
-                gltfComponent.Initialize(webRequestController);
+                gltfComponent.Initialize(webRequestController, AssetPromiseKeeper_GLTF.i.throttlingCounter);
                 gltfComponent.RegisterCallbacks(MeshCreated, RendererCreated);
 
                 GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings

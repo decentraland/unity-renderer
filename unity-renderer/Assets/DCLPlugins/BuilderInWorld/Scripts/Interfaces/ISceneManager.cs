@@ -6,23 +6,17 @@ namespace DCL.Builder
 {
     public interface ISceneManager
     {
-        public enum SceneType
-        {
-            PROJECT = 0,
-            DEPLOYED = 1,
-        }
-        
         /// <summary>
         /// Initialize the system
         /// </summary>
         /// <param name="context"></param>
         void Initialize(IContext context);
-        
+
         /// <summary>
         /// Dispose the system
         /// </summary>
         void Dispose();
-        
+
         /// <summary>
         /// Update call from unity
         /// </summary>
@@ -32,6 +26,22 @@ namespace DCL.Builder
         /// This start the flow of the editor from a manifest 
         /// </summary>
         /// <param name="manifest"></param>
-        void StartEditorFromManifest(Manifest.Manifest manifest);
+        void StartFlowFromProject(Manifest.Manifest manifest);
+
+        /// <summary>
+        /// This will start the flow to edit a land where you are currently
+        /// </summary>
+        /// <param name="coords"></param>
+        void StartFlowFromLandCoords(Vector2Int coords);
+
+        /// <summary>
+        /// This will show the loading screen of the builder with 0%
+        /// </summary>
+        void ShowBuilderLoading();
+
+        /// <summary>
+        /// Hide the builder loading
+        /// </summary>
+        void HideBuilderLoading();
     }
 }

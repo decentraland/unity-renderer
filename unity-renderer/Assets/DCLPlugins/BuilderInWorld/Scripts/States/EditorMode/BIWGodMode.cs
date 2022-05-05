@@ -3,12 +3,13 @@ using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using System;
 using System.Collections.Generic;
 using DCL.Builder;
 using DCL.Camera;
+using UnityEngine;
 using CameraController = DCL.Camera.CameraController;
 using Environment = DCL.Environment;
-using UnityEngine;
 
 public class BIWGodMode : BIWMode
 {
@@ -17,7 +18,6 @@ public class BIWGodMode : BIWMode
 
     private Transform lookAtTransform;
     private MouseCatcher mouseCatcher;
-    private PlayerAvatarController avatarRenderer;
     private IBIWGizmosController gizmoManager;
     private IBIWOutlinerController outlinerController;
 
@@ -73,9 +73,7 @@ public class BIWGodMode : BIWMode
 
         if (context.sceneReferences.cameraController.GetComponent<CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
             freeCameraController = (FreeCameraMovement) cameraState;
-
         mouseCatcher = context.sceneReferences.mouseCatcher.GetComponent<MouseCatcher>();
-        avatarRenderer = context.sceneReferences.playerAvatarController.GetComponent<PlayerAvatarController>();
 
         BIWInputWrapper.OnMouseDown += OnInputMouseDown;
         BIWInputWrapper.OnMouseUp += OnInputMouseUp;
@@ -90,7 +88,7 @@ public class BIWGodMode : BIWMode
         multiSelectionInputAction.OnStarted += MultiSelectionInputStart;
         multiSelectionInputAction.OnFinished += MultiSelectionInputEnd;
 
-        gizmoManager.OnChangeTransformValue += EntitiesTransformByGizmos;
+        gizmoManager.OnChangeTransformValue += EntitiesTransfromByGizmos;
         gizmoManager.OnGizmoTransformObjectEnd += OnGizmosTransformEnd;
         gizmoManager.OnGizmoTransformObjectStart += OnGizmosTransformStart;
     }
@@ -112,10 +110,10 @@ public class BIWGodMode : BIWMode
         BIWInputWrapper.OnMouseUpOnUI -= OnInputMouseUpOnUi;
         BIWInputWrapper.OnMouseDrag -= OnInputMouseDrag;
 
-        gizmoManager.OnChangeTransformValue -= EntitiesTransformByGizmos;
+        gizmoManager.OnChangeTransformValue -= EntitiesTransfromByGizmos;
 
         if (lookAtTransform.gameObject != null)
-            Object.Destroy(lookAtTransform.gameObject);
+            GameObject.Destroy(lookAtTransform.gameObject);
 
         if ( context.editorContext.editorHUD == null)
             return;
@@ -137,6 +135,7 @@ public class BIWGodMode : BIWMode
             SetEditObjectAtMouse();
         else if (isSquareMultiSelectionInputActive && isMouseDragging)
             CheckOutlineEntitiesInSquareSelection(Input.mousePosition);
+
     }
 
     public override void OnGUI()
@@ -150,15 +149,9 @@ public class BIWGodMode : BIWMode
         }
     }
 
-    private void MultiSelectionInputStart(DCLAction_Hold action)
-    {
-        ChangeSnapTemporaryActivated();
-    }
+    private void MultiSelectionInputStart(DCLAction_Hold action) { ChangeSnapTemporaryActivated(); }
 
-    private void MultiSelectionInputEnd(DCLAction_Hold action)
-    {
-        ChangeSnapTemporaryDeactivated();
-    }
+    private void MultiSelectionInputEnd(DCLAction_Hold action) { ChangeSnapTemporaryDeactivated(); }
 
     internal void CheckOutlineEntitiesInSquareSelection(Vector3 mousePosition)
     {
@@ -196,7 +189,7 @@ public class BIWGodMode : BIWMode
         SetSnapActive(!isSnapActiveValue);
     }
 
-    internal void EntitiesTransformByGizmos(Vector3 transformValue)
+    internal void EntitiesTransfromByGizmos(Vector3 transformValue)
     {
         if (gizmoManager.GetSelectedGizmo() != BIWSettings.ROTATE_GIZMO_NAME)
             return;
@@ -497,7 +490,6 @@ public class BIWGodMode : BIWMode
 
         gizmoManager.HideGizmo();
         editionGO.transform.SetParent(null);
-        avatarRenderer.SetAvatarVisibility(false);
 
         context.editorContext.editorHUD?.ActivateGodModeUI();
     }
@@ -508,16 +500,12 @@ public class BIWGodMode : BIWMode
         SetLookAtObject(parcelScene);
 
         freeCameraController.LookAt(lookAtTransform);
-
-        Camera camera = context.sceneReferences.mainCamera;
-        Vector3 cameraPosition = camera != null ? camera.transform.position : Vector3.zero;
-        freeCameraController.SetResetConfiguration(cameraPosition, lookAtTransform);
+        freeCameraController.SetResetConfiguration(Camera.main.transform.position, lookAtTransform);
     }
 
     public override void OnDeleteEntity(BIWEntity entity)
     {
         base.OnDeleteEntity(entity);
-        saveController.TryToSave();
 
         if (selectedEntities.Count == 0)
             gizmoManager.HideGizmo();
@@ -539,7 +527,6 @@ public class BIWGodMode : BIWMode
 
         gizmoManager.HideGizmo();
         RenderSettings.fog = true;
-        avatarRenderer.SetAvatarVisibility(true);
     }
 
     public override void StartMultiSelection()
@@ -704,7 +691,7 @@ public class BIWGodMode : BIWMode
             if (selectedEntities.Count > 0 )
                 gizmoManager.ShowGizmo();
         }
-        //TODO: Free-Movement tool, This could be re-enabled in the future so let the code there 
+        // Note: Free-Movement tool, This could be re-enabled in the future so let the code there 
         // else
         // {
         //     gizmoManager.HideGizmo(true);

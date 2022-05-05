@@ -76,6 +76,8 @@ public class BIWEntity
         }
     }
 
+    public bool isLoaded { get; internal set; } = false;
+    
     public bool isVoxel { get; set; } = false;
 
     private CatalogItem associatedCatalogItem;
@@ -123,8 +125,12 @@ public class BIWEntity
         if (rootEntity.gameObject != null)
             isVisible = rootEntity.gameObject.activeSelf;
 
+        isLoaded = false;
         isShapeComponentSet = false;
         InitRotation();
+        
+        isFloor = IsEntityAFloor();
+        isNFT = IsEntityNFT();
 
         if (rootEntity.meshRootGameObject && rootEntity.meshesInfo.renderers.Length > 0)
         {
@@ -141,7 +147,7 @@ public class BIWEntity
             return null;
 
         //We get the catalog reference  
-        IAssetCatalogReferenceHolder catalogHolder = rootEntity.TryGetComponent<IAssetCatalogReferenceHolder>();
+        IAssetCatalogReferenceHolder catalogHolder = rootEntity.scene.componentsManagerLegacy.TryGetComponent<IAssetCatalogReferenceHolder>(rootEntity);
         if (catalogHolder == null)
             return null;
 
@@ -191,11 +197,11 @@ public class BIWEntity
         if (isInsideBoundariesError)
             isCurrentlyWithError = true;
 
-        bool hasErrorPreviously = hasError;
-        hasError = isCurrentlyWithError;
-
-        if (isCurrentlyWithError != hasErrorPreviously)
+        if (isCurrentlyWithError != hasError)
+        {
+            hasError = isCurrentlyWithError;
             OnErrorStatusChange?.Invoke(this);
+        }
     }
 
     public void SetEntityBoundariesError(bool isInsideBoundaries)
@@ -257,13 +263,9 @@ public class BIWEntity
 
             if (isNFT)
             {
-                foreach (KeyValuePair<Type, ISharedComponent> kvp in rootEntity.sharedComponents)
+                if (rootEntity.scene.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.NFT_SHAPE, out ISharedComponent component))
                 {
-                    if (kvp.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
-                    {
-                        BIWNFTController.i.StopUsingNFT(((NFTShape.Model) kvp.Value.GetModel()).assetId);
-                        break;
-                    }
+                    BIWNFTController.i.StopUsingNFT(((NFTShape.Model) component.GetModel()).assetId);
                 }
             }
 
@@ -280,7 +282,7 @@ public class BIWEntity
     {
         foreach (List<GameObject> entityColliderGameObject in collidersGameObjectDictionary.Values)
         {
-            for (int i = entityColliderGameObject.Count - 1; i > 0; i--)
+            for (int i = 0; i < entityColliderGameObject.Count; i++)
             {
                 GameObject.Destroy(entityColliderGameObject[i]);
             }
@@ -315,7 +317,7 @@ public class BIWEntity
         if (rootEntity == null)
             return false;
 
-        return rootEntity.components.ContainsKey(CLASS_ID_COMPONENT.SMART_ITEM);
+        return rootEntity.scene.componentsManagerLegacy.HasComponent(rootEntity, CLASS_ID_COMPONENT.SMART_ITEM);
     }
 
     public bool HasSmartItemActions() { return GetCatalogItemAssociated().HasActions(); }
@@ -330,31 +332,21 @@ public class BIWEntity
 
     public bool GetIsLockedValue()
     {
-        foreach (KeyValuePair<Type, ISharedComponent> kvp in rootEntity.sharedComponents)
+        if (rootEntity.scene.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.LOCKED_ON_EDIT, out ISharedComponent component))
         {
-            if (kvp.Value.GetClassId() == (int) CLASS_ID.LOCKED_ON_EDIT)
-            {
-                return ((DCLLockedOnEdit.Model) kvp.Value.GetModel()).isLocked;
-            }
+            return ((DCLLockedOnEdit.Model) component.GetModel()).isLocked;
         }
-
+ 
         return isFloor;
     }
 
     public void SetIsLockedValue(bool isLocked)
     {
-        bool foundComponent = false;
-
-        foreach (KeyValuePair<Type, ISharedComponent> kvp in rootEntity.sharedComponents)
+        if (rootEntity.scene.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.LOCKED_ON_EDIT, out ISharedComponent component))
         {
-            if (kvp.Value.GetClassId() == (int) CLASS_ID.LOCKED_ON_EDIT)
-            {
-                ((DCLLockedOnEdit) kvp.Value).SetIsLocked(isLocked);
-                foundComponent = true;
-            }
+            ((DCLLockedOnEdit) component).SetIsLocked(isLocked);
         }
-
-        if (!foundComponent)
+        else
         {
             DCLLockedOnEdit.Model model = new DCLLockedOnEdit.Model();
             model.isLocked = isLocked;
@@ -369,7 +361,7 @@ public class BIWEntity
 
     public void SetDescriptiveName(string newName)
     {
-        if (rootEntity.TryGetSharedComponent(CLASS_ID.NAME, out ISharedComponent nameComponent))
+        if (rootEntity.scene.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.NAME, out ISharedComponent nameComponent))
         {
             ((DCLName) nameComponent).SetNewName(newName);
         }
@@ -385,7 +377,7 @@ public class BIWEntity
 
     public string GetDescriptiveName()
     {
-        if (rootEntity != null && rootEntity.TryGetSharedComponent(CLASS_ID.NAME, out ISharedComponent nameComponent))
+        if (rootEntity != null && rootEntity.scene.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.NAME, out ISharedComponent nameComponent))
         {
             return ((DCLName.Model) nameComponent.GetModel()).value;
         }
@@ -409,9 +401,6 @@ public class BIWEntity
     {
         isShapeComponentSet = true;
 
-        isFloor = IsEntityAFloor();
-        isNFT = IsEntityNFT();
-
         CreateCollidersForEntity(rootEntity);
 
         if (isFloor)
@@ -424,13 +413,9 @@ public class BIWEntity
 
         if (isNFT)
         {
-            foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in rootEntity.sharedComponents)
+            if (rootEntity.scene.componentsManagerLegacy.TryGetSharedComponent(rootEntity, CLASS_ID.NFT_SHAPE, out ISharedComponent component))
             {
-                if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
-                {
-                    BIWNFTController.i.UseNFT(((NFTShape.Model) keyValuePairBaseDisposable.Value.GetModel()).assetId);
-                    break;
-                }
+                BIWNFTController.i.UseNFT(((NFTShape.Model) component.GetModel()).assetId);
             }
         }
 
@@ -438,6 +423,8 @@ public class BIWEntity
 
         DCL.Environment.i.world.sceneBoundsChecker.AddPersistent(rootEntity);
         SetEntityBoundariesError(DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(rootEntity));
+
+        isLoaded = true;
     }
 
     private void HandleAnimation()
@@ -639,7 +626,7 @@ public class BIWEntity
         {
             if (meshInfo.renderers[i] == null)
                 continue;
-            GameObject entityColliderChildren = new GameObject(entity.entityId);
+            GameObject entityColliderChildren = new GameObject(entity.entityId.ToString());
             entityColliderChildren.layer = BIWSettings.COLLIDER_SELECTION_LAYER_INDEX;
 
             Transform t = entityColliderChildren.transform;
@@ -680,18 +667,12 @@ public class BIWEntity
 
     public bool IsEntityNFT()
     {
-        foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in rootEntity.sharedComponents)
-        {
-            if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
-                return true;
-        }
-
-        return false;
+        return rootEntity.scene.componentsManagerLegacy.HasSharedComponent(rootEntity, CLASS_ID.NFT_SHAPE);
     }
 
-    bool IsEntityAFloor() { return GetCatalogItemAssociated()?.category == BIWSettings.FLOOR_CATEGORY; }
+    private bool IsEntityAFloor() { return GetCatalogItemAssociated()?.category == BIWSettings.FLOOR_CATEGORY; }
 
-    bool IsEntityAVoxel()
+    private bool IsEntityAVoxel()
     {
         if (rootEntity.meshesInfo?.currentShape == null)
             return false;

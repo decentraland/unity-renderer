@@ -6,6 +6,7 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
+using DCLPlugins.DebugPlugins.Commons;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -18,9 +19,10 @@ namespace Tests
     {
         private IWorldState worldState;
         private ISceneController sceneController;
+        private IUpdateEventHandler updateEventHandler;
 
         private Dictionary<string, IParcelScene> loadedScenes = new Dictionary<string, IParcelScene>();
-        private Dictionary<string, Dictionary<string, IDCLEntity>> entities = new Dictionary<string, Dictionary<string, IDCLEntity>>();
+        private Dictionary<string, Dictionary<long, IDCLEntity>> entities = new Dictionary<string, Dictionary<long, IDCLEntity>>();
 
         private BaseDictionary<string, bool> isBoundingBoxEnabledVariable = new BaseDictionary<string, bool>();
 
@@ -31,6 +33,7 @@ namespace Tests
             worldState.loadedScenes.Returns(loadedScenes);
 
             sceneController = Substitute.For<ISceneController>();
+            updateEventHandler = Substitute.For<IUpdateEventHandler>();
         }
 
         [TearDown]
@@ -54,7 +57,7 @@ namespace Tests
             CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController, updateEventHandler);
             Assert.AreEqual(1, controller.scenesWatcher.Count);
 
             controller.Dispose();
@@ -65,7 +68,7 @@ namespace Tests
         {
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController, updateEventHandler);
             Assert.AreEqual(1, controller.pendingScenesId.Count);
             Assert.AreEqual(0, controller.scenesWatcher.Count);
 
@@ -82,7 +85,7 @@ namespace Tests
             CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController, updateEventHandler);
             Assert.AreEqual(1, controller.scenesWatcher.Count);
 
             isBoundingBoxEnabledVariable.AddOrSet("temptation", false);
@@ -97,7 +100,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController, updateEventHandler);
             var entity = CreateEntityWithShape("temptationEntity");
 
             AddEntity(scene, entity);
@@ -112,7 +115,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController, updateEventHandler);
             var entity = CreateEntityWithoutShape("temptationEntity");
 
             AddEntity(scene, entity);
@@ -130,7 +133,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController, updateEventHandler);
             var entity = CreateEntityWithShape("temptationEntity");
 
             AddEntity(scene, entity);
@@ -147,7 +150,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController, updateEventHandler);
             var entity = CreateEntityWithShape("temptationEntity");
 
             AddEntity(scene, entity);
@@ -164,7 +167,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController, updateEventHandler);
             var sceneEntities = new[]
             {
                 CreateEntityWithShape("temptationEntity1"),
@@ -203,7 +206,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController, updateEventHandler);
             var sceneEntities = new[]
             {
                 CreateEntityWithShape("temptationEntity1"),
@@ -242,7 +245,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController, updateEventHandler);
             var sceneEntities = new[]
             {
                 CreateEntityWithShape("temptationEntity1"),
@@ -273,13 +276,57 @@ namespace Tests
             Assert.AreEqual(0, allWireframes);
         }
 
+        [Test]
+        public void UpdateWireframeCorrectly()
+        {
+            var entity = CreateEntityWithShape("temptationEntity");
+            var shape = entity.meshesInfo.meshRootGameObject;
+            var shapeRenderer = shape.GetComponent<Renderer>();
+
+            var wireFrame = Object.Instantiate(Resources.Load<GameObject>(SceneEntitiesTracker.WIREFRAME_PREFAB_NAME));
+            var controller = new EntityWireframe(wireFrame, updateEventHandler);
+
+            Vector3 rendererPosition = shapeRenderer.bounds.center;
+            Vector3 rendererSize = shapeRenderer.bounds.size;
+
+            ((IShapeListener)controller).OnShapeUpdated(entity);
+            updateEventHandler.Received().RemoveListener(IUpdateEventHandler.EventType.LateUpdate, Arg.Any<Action>());
+            updateEventHandler.Received().AddListener(IUpdateEventHandler.EventType.LateUpdate, Arg.Any<Action>());
+            updateEventHandler.ClearReceivedCalls();
+
+            controller.LateUpdate();
+
+            AreVectorEqual(rendererPosition, controller.entityWireframes[0].transform.position);
+            AreVectorEqual(rendererSize * EntityWireframe.WIREFRAME_SIZE_MULTIPLIER, controller.entityWireframes[0].transform.localScale);
+
+            shape.transform.position = new Vector3(10, 3, 7);
+            shape.transform.localScale = new Vector3(0.5f, 2, 1);
+
+            Vector3 newRendererPosition = shapeRenderer.bounds.center;
+            Vector3 newRendererSize = shapeRenderer.bounds.size;
+
+            controller.LateUpdate();
+
+            AreVectorEqual(newRendererPosition, controller.entityWireframes[0].transform.position);
+            AreVectorEqual(newRendererSize * EntityWireframe.WIREFRAME_SIZE_MULTIPLIER, controller.entityWireframes[0].transform.localScale);
+
+            ((IDisposable)controller).Dispose();
+            Object.DestroyImmediate(wireFrame);
+            updateEventHandler.Received().RemoveListener(IUpdateEventHandler.EventType.LateUpdate, Arg.Any<Action>());
+        }
+
+        private void AreVectorEqual(Vector3 v1, Vector3 v2)
+        {
+            Assert.AreEqual(v1.ToString(), v2.ToString());
+        }
+
         private IParcelScene CreateAndAddScene(string id)
         {
             IParcelScene scene = Substitute.For<IParcelScene>();
             scene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene() { id = id });
 
             loadedScenes.Add(id, scene);
-            entities[id] = new Dictionary<string, IDCLEntity>();
+            entities[id] = new Dictionary<long, IDCLEntity>();
 
             scene.entities.Returns(entities[id]);
 
@@ -300,7 +347,7 @@ namespace Tests
         private IDCLEntity CreateEntityWithoutShape(string id)
         {
             IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns(id);
+            entity.entityId.Returns(id.GetHashCode());
 
             var gameObject = new GameObject(id);
             entity.gameObject.Returns(gameObject);
@@ -352,8 +399,8 @@ namespace Tests
         private int GetWireframesCount(bool includeInactive = false)
         {
             return Object
-                .FindObjectsOfType<GameObject>(includeInactive)
-                .Count(go => go.name.StartsWith(SceneEntitiesTracker.WIREFRAME_GAMEOBJECT_NAME));
+                   .FindObjectsOfType<GameObject>(includeInactive)
+                   .Count(go => go.name.StartsWith(SceneEntitiesTracker.WIREFRAME_GAMEOBJECT_NAME));
         }
     }
 }

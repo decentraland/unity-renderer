@@ -9,14 +9,15 @@ public class BIWSaveController : BIWController, IBIWSaveController
 {
     private const float MS_BETWEEN_SAVES = 5000f;
 
-    public int numberOfSaves { get; set; } = 0;
+    public int saveAttemptsSinceLastSave { get; set; } = 0;
+    public int timesSaved { get; set; } = 0;
 
     private BuilderInWorldBridge bridge;
-    private Manifest sceneManifest;
-    
+
     private float nextTimeToSave;
     private bool canActivateSave = true;
-    public int GetSaveTimes() { return numberOfSaves; }
+    public int GetSaveAttempsSinceLastSave() { return saveAttemptsSinceLastSave; }
+    public int GetTimesSaved() { return timesSaved; }
 
     public override void Initialize(IContext context)
     {
@@ -28,7 +29,6 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
         if ( context.editorContext.editorHUD != null)
         {
-            context.editorContext.editorHUD.OnSaveSceneInfoAction += SaveSceneInfo;
             context.editorContext.editorHUD.OnConfirmPublishAction += ConfirmPublishScene;
         }
     }
@@ -42,16 +42,19 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
         if ( context.editorContext.editorHUD != null)
         {
-            context.editorContext.editorHUD.OnSaveSceneInfoAction -= SaveSceneInfo;
             context.editorContext.editorHUD.OnConfirmPublishAction -= ConfirmPublishScene;
         }
     }
 
     public void ResetSaveTime() { nextTimeToSave = 0; }
 
-    public void ResetNumberOfSaves() { numberOfSaves = 0; }
+    public void ResetNumberOfSaves()
+    {
+        saveAttemptsSinceLastSave = 0;
+        timesSaved = 0;
+    }
 
-    public override void EnterEditMode(IParcelScene scene)
+    public override void EnterEditMode(IBuilderScene scene)
     {
         base.EnterEditMode(scene);
         nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
@@ -60,9 +63,9 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
     public override void ExitEditMode()
     {
-        if (numberOfSaves > 0)
+        if (saveAttemptsSinceLastSave > 0 && context.editorContext.publishController.HasUnpublishChanges())
         {
-            ForceSave();
+            ForceSave();    
             ResetNumberOfSaves();
         }
 
@@ -80,6 +83,11 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
     public void TryToSave()
     {
+        if(!isEditModeActive)
+            return;
+        
+        saveAttemptsSinceLastSave++;
+        
         if (CanSave())
             ForceSave();
     }
@@ -89,27 +97,17 @@ public class BIWSaveController : BIWController, IBIWSaveController
         if (!isEditModeActive || !canActivateSave)
             return;
 
-        if (DataStore.i.builderInWorld.isDevBuild.Get() && sceneManifest != null)
-        {
-            sceneManifest.scene = ManifestTranslator.TranslateSceneToManifest(sceneToEdit);
-            context.builderAPIController.SetManifest(sceneManifest);
-        }
-        else
-        {
-            bridge.SaveSceneState(sceneToEdit);
-        }
-        
+        // We update the manifest with the current state
+        builderScene.UpdateManifestFromScene();
+
+        //We set the manifest on the builder server
+        context.builderAPIController.SetManifest(builderScene.manifest);
+
         nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
         context.editorContext.editorHUD?.SceneSaved();
-        numberOfSaves++;
+        saveAttemptsSinceLastSave = 0;
+        timesSaved++;
     }
-
-    public void SetManifest(Manifest manifest)
-    {
-        sceneManifest = manifest;
-    }
-
-    public void SaveSceneInfo(string sceneName, string sceneDescription, string sceneScreenshot) { bridge.SaveSceneInfo(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }
 
     internal void ConfirmPublishScene(string sceneName, string sceneDescription, string sceneScreenshot) { ResetNumberOfSaves(); }
 }

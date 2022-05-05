@@ -33,6 +33,7 @@ namespace AvatarSystem
         private CancellationTokenSource billboardLookAtCameraCTS;
         private string VISIBILITY_CONSTRAIN_IN_IMPOSTOR = "in_impostor";
         private string VISIBILITY_CONSTRAIN_IN_LOD1 = "in_LOD1";
+        BaseVariable<Transform> cameraTransform = DataStore.i.camera.transform;
 
         public LOD(GameObject impostorContainer, IVisibility visibility, IAvatarMovementController avatarMovementController)
         {
@@ -214,16 +215,9 @@ namespace AvatarSystem
 
         private async UniTaskVoid BillboardLookAtCamera(CancellationToken ct)
         {
-            Camera camera = Camera.main;
-            while (camera == null)
-            {
-                await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
-                camera = Camera.main;
-            }
-
             while (true)
             {
-                SetBillboardRotation(camera.transform);
+                SetBillboardRotation(cameraTransform.Get());
                 await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
             }
         }
@@ -231,9 +225,8 @@ namespace AvatarSystem
         internal void SetBillboardRotation(Transform lookAt)
         {
             EnsureImpostor();
-
             impostorRenderer.transform.LookAt(lookAt);
-            impostorRenderer.transform.eulerAngles = Vector3.Scale(impostorContainer.transform.eulerAngles, Vector3.up);
+            impostorRenderer.transform.eulerAngles = Vector3.Scale(impostorRenderer.transform.eulerAngles, Vector3.up);
         }
 
         public void Dispose()

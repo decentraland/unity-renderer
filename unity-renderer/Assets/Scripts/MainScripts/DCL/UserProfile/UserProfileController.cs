@@ -66,7 +66,9 @@ public class UserProfileController : MonoBehaviour
 
     public void AddUserProfileToCatalog(UserProfileModel model)
     {
-        var userProfile = ScriptableObject.CreateInstance<UserProfile>();
+        if (!userProfilesCatalog.TryGetValue(model.userId, out UserProfile userProfile))
+            userProfile = ScriptableObject.CreateInstance<UserProfile>();
+
         userProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, userProfile);
     }

@@ -12,6 +12,8 @@ using Environment = DCL.Environment;
 
 public class BuilderInWorldEditor : IBIWEditor
 {
+    internal const string AVATAR_HIDE_CONSTRAINT = "BuilderInWorld_Avatar_Invisible";
+    
     private GameObject cursorGO;
     private GameObject[] groundVisualsGO;
 
@@ -30,6 +32,8 @@ public class BuilderInWorldEditor : IBIWEditor
 
     private BuilderInWorldBridge builderInWorldBridge;
     private BuilderInWorldAudioHandler biwAudioHandler;
+    private DCL.Camera.CameraController mainCameraController;
+
     internal IContext context;
 
     private readonly List<IBIWController> controllers = new List<IBIWController>();
@@ -39,9 +43,10 @@ public class BuilderInWorldEditor : IBIWEditor
 
     private bool isInit = false;
     private Material previousSkyBoxMaterial;
+    private PlayerAvatarController avatarRenderer;
 
     private float startEditorTimeStamp = 0;
-    internal IParcelScene sceneToEdit;
+    internal IBuilderScene sceneToEdit;
 
     public void Initialize(IContext context)
     {
@@ -54,9 +59,6 @@ public class BuilderInWorldEditor : IBIWEditor
 
         InitReferences(SceneReferences.i);
 
-        if (builderInWorldBridge != null)
-            builderInWorldBridge.OnBuilderProjectInfo += BuilderProjectPanelInfo;
-
         BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
         InitHUD(context);
@@ -65,9 +67,14 @@ public class BuilderInWorldEditor : IBIWEditor
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
 
+        mainCameraController = context.sceneReferences.cameraController.GetComponent<DCL.Camera.CameraController>();
         biwAudioHandler = UnityEngine.Object.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
         biwAudioHandler.Initialize(context);
         biwAudioHandler.gameObject.SetActive(false);
+
+        floorHandler.OnAllParcelsFloorLoaded += NewSceneFloorLoaded;
+        
+        avatarRenderer = context.sceneReferences.playerAvatarController.GetComponent<PlayerAvatarController>();
     }
 
     public void InitReferences(SceneReferences sceneReferences)
@@ -93,18 +100,20 @@ public class BuilderInWorldEditor : IBIWEditor
     {
         context.editorContext.editorHUD.Initialize(context);
         context.editorContext.editorHUD.OnTutorialAction += StartTutorial;
+        context.editorContext.editorHUD.OnProjectNameAndDescriptionChanged += ChangeProjectNameAndDescription;
     }
 
     public void Dispose()
     {
         if (context.editorContext.editorHUD != null)
+        {
+            context.editorContext.editorHUD.OnProjectNameAndDescriptionChanged -= ChangeProjectNameAndDescription;
             context.editorContext.editorHUD.OnTutorialAction -= StartTutorial;
-
-
+        }
+        
+        floorHandler.OnAllParcelsFloorLoaded -= NewSceneFloorLoaded;
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
-
         BIWNFTController.i.Dispose();
-        builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
 
         CleanItems();
 
@@ -154,8 +163,6 @@ public class BuilderInWorldEditor : IBIWEditor
         context.editorContext.editorHUD.RefreshCatalogContent();
     }
 
-    private void BuilderProjectPanelInfo(string title, string description) {  context.editorContext.editorHUD.SetBuilderProjectInfo(title, description); }
-
     private void InitControllers()
     {
         InitController(entityHandler);
@@ -165,11 +172,11 @@ public class BuilderInWorldEditor : IBIWEditor
         InitController(outlinerController);
         InitController(floorHandler);
         InitController(inputHandler);
-        InitController(saveController);
         InitController(actionController);
         InitController(inputWrapper);
         InitController(raycastController);
         InitController(gizmosController);
+        InitController(saveController);
     }
 
     public void InitController(IBIWController controller)
@@ -197,25 +204,39 @@ public class BuilderInWorldEditor : IBIWEditor
         creatorController?.CleanUp();
     }
 
-    public void EnterEditMode(IParcelScene sceneToEdit)
+    private void ChangeProjectNameAndDescription(string name, string description)
     {
-        this.sceneToEdit = sceneToEdit;
+        sceneToEdit.manifest.project.title = name;
+        sceneToEdit.manifest.project.description = description;
+
+        saveController.ForceSave();
+    }
+
+    public void EnterEditMode(IBuilderScene builderScene)
+    {
+        sceneToEdit = builderScene;
 
         BIWNFTController.i.StartEditMode();
+        ParcelSettings.VISUAL_LOADING_ENABLED = false;
+
         if (biwAudioHandler != null && biwAudioHandler.gameObject != null)
             biwAudioHandler.gameObject.SetActive(true);
 
-        ParcelSettings.VISUAL_LOADING_ENABLED = false;
         cursorGO.SetActive(false);
 
         if ( context.editorContext.editorHUD != null)
         {
-            context.editorContext.editorHUD.SetParcelScene(sceneToEdit);
+            context.editorContext.editorHUD.SetParcelScene(sceneToEdit.scene);
             context.editorContext.editorHUD.RefreshCatalogContent();
             context.editorContext.editorHUD.RefreshCatalogAssetPack();
             context.editorContext.editorHUD.SetVisibilityOfCatalog(true);
             context.editorContext.editorHUD.SetVisibilityOfInspector(true);
+            if (sceneToEdit.HasBeenCreatedThisSession() && sceneToEdit.sceneType == IBuilderScene.SceneType.LAND)
+                context.editorContext.editorHUD.NewSceneForLand(sceneToEdit);
         }
+
+        var culling = mainCameraController.GetCulling();
+        mainCameraController.SetCulling(  BIWUtils.GetBIWCulling(culling));
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
         DataStore.i.builderInWorld.showTaskBar.Set(true);
@@ -230,15 +251,19 @@ public class BuilderInWorldEditor : IBIWEditor
 
         previousSkyBoxMaterial = RenderSettings.skybox;
         RenderSettings.skybox = skyBoxMaterial;
+        
+        DeactivateAvatars();
 
         foreach (var groundVisual in groundVisualsGO)
         {
             groundVisual.SetActive(false);
         }
 
+        DataStore.i.player.otherPlayers.OnAdded += DeactivatePlayerAvatar;
+        
         startEditorTimeStamp = Time.realtimeSinceStartup;
 
-        BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit).ToString(), BIWUtils.GetSceneSize(sceneToEdit));
+        BIWAnalytics.AddSceneInfo(sceneToEdit.scene.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit.scene).ToString(), BIWUtils.GetSceneSize(sceneToEdit.scene));
     }
 
     public void ExitEditMode()
@@ -251,11 +276,13 @@ public class BuilderInWorldEditor : IBIWEditor
 
         ParcelSettings.VISUAL_LOADING_ENABLED = true;
 
+        var culling = mainCameraController.GetCulling();
+        culling -= BIWSettings.FX_LAYER;
+        mainCameraController.SetCulling(culling);
+
         outlinerController.CancelAllOutlines();
 
         cursorGO.SetActive(true);
-
-        InmediateExit();
 
         if ( context.editorContext.editorHUD != null)
         {
@@ -280,10 +307,43 @@ public class BuilderInWorldEditor : IBIWEditor
             biwAudioHandler.gameObject.SetActive(false);
         DataStore.i.common.appMode.Set(AppMode.DEFAULT);
         DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
+
+        ActivateAvatars();
+        
         BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
     }
 
-    public void InmediateExit() { builderInWorldBridge.ExitKernelEditMode(sceneToEdit); }
+    internal void ActivateAvatars()
+    {
+        avatarRenderer.SetAvatarVisibility(true);
+
+        foreach (Player player in DataStore.i.player.otherPlayers.GetValues())
+        {
+            ActivatePlayerAvatar(null,player);
+        }
+    }
+
+    internal void ActivatePlayerAvatar(string id,Player player)
+    {
+        player.avatar.RemoveVisibilityConstrain(AVATAR_HIDE_CONSTRAINT);
+        player.playerName.RemoveVisibilityConstaint(AVATAR_HIDE_CONSTRAINT);
+    }    
+    
+    internal void DeactivatePlayerAvatar(string id,Player player)
+    {
+        player.avatar.AddVisibilityConstrain(AVATAR_HIDE_CONSTRAINT);
+        player.playerName.AddVisibilityConstaint(AVATAR_HIDE_CONSTRAINT);
+    }
+
+    internal void DeactivateAvatars()
+    {
+        avatarRenderer.SetAvatarVisibility(false);
+
+        foreach (Player player in DataStore.i.player.otherPlayers.GetValues())
+        {
+            DeactivatePlayerAvatar(null, player);
+        }
+    }
 
     public void EnterBiwControllers()
     {
@@ -293,7 +353,7 @@ public class BuilderInWorldEditor : IBIWEditor
         }
 
         //Note: This audio should inside the controllers, it is here because it is still a monobehaviour
-        biwAudioHandler.EnterEditMode(sceneToEdit);
+        biwAudioHandler.EnterEditMode(sceneToEdit.scene);
     }
 
     public void ExitBiwControllers()
@@ -307,7 +367,19 @@ public class BuilderInWorldEditor : IBIWEditor
             biwAudioHandler.ExitEditMode();
     }
 
-    public bool IsNewScene() { return sceneToEdit.entities.Count <= 0; }
+    public bool IsNewScene() { return sceneToEdit.scene.entities.Count <= 0; }
 
     public void SetupNewScene() { floorHandler.CreateDefaultFloor(); }
+
+    private void NewSceneFloorLoaded()
+    {
+        if (!sceneToEdit.HasBeenCreatedThisSession())
+            return;
+        
+        context.cameraController.TakeSceneScreenshotFromResetPosition(snapshot =>
+            {
+                context.builderAPIController.SetThumbnail(sceneToEdit.manifest.project.id, snapshot);
+            }
+        );
+    }
 }

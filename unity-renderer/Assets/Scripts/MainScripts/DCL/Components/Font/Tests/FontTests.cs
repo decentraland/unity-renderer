@@ -16,6 +16,7 @@ namespace Tests
         const string TEST_BUILTIN_FONT_NAME = "builtin:SF-UI-Text-Regular SDF";
 
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override void InitializeServices(ServiceLocator serviceLocator)
         {
@@ -24,11 +25,17 @@ namespace Tests
             serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
         }
 
-        [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            coreComponentsPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         [UnityTest]
@@ -66,7 +73,7 @@ namespace Tests
                 TestUtils.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() { src = "no-valid-font" });
             yield return font.routine;
 
-            scene.EntityComponentUpdate(entity, CLASS_ID_COMPONENT.TEXT_SHAPE,
+            scene.componentsManagerLegacy.EntityComponentUpdate(entity, CLASS_ID_COMPONENT.TEXT_SHAPE,
                 JsonUtility.ToJson(new TextShape.Model { font = font.id }));
             yield return textShape.routine;
 
@@ -87,7 +94,7 @@ namespace Tests
                 TestUtils.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() { src = TEST_BUILTIN_FONT_NAME });
             yield return font.routine;
 
-            scene.EntityComponentUpdate(entity, CLASS_ID_COMPONENT.TEXT_SHAPE,
+            scene.componentsManagerLegacy.EntityComponentUpdate(entity, CLASS_ID_COMPONENT.TEXT_SHAPE,
                 JsonUtility.ToJson(new TextShape.Model { font = font.id }));
             yield return textShape.routine;
 

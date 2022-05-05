@@ -91,7 +91,7 @@ namespace DCL.Helpers
             t.sizeDelta = Vector2.zero;
             t.anchoredPosition = Vector2.zero;
         }
-
+        
         public static void SetToCentered(this RectTransform t)
         {
             t.anchorMin = Vector2.one * 0.5f;
@@ -282,7 +282,7 @@ namespace DCL.Helpers
         {
             if (obj is Transform)
                 return;
-            
+
 #if UNITY_EDITOR
             if (Application.isPlaying)
                 Object.Destroy(obj);
@@ -554,6 +554,9 @@ namespace DCL.Helpers
 
         public static bool IsPointerOverUIElement(Vector3 mousePosition)
         {
+            if (EventSystem.current == null)
+                return false;
+
             var eventData = new PointerEventData(EventSystem.current);
             eventData.position = mousePosition;
             var results = new List<RaycastResult>();

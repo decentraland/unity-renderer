@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace EmotesCustomization
+namespace DCL.EmotesCustomization
 {
     public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView, IComponentModelConfig
     {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace DCL.Skybox
     [System.Serializable]
     public class TextureLayer
     {
-        public int slotID;                              // Slot ID
+        public int slotID = 0;                              // Slot ID
         public LayerRenderType renderType;
         public LayerType layerType;
         public bool enabled;
@@ -100,6 +101,99 @@ namespace DCL.Skybox
 
             particleRotation = new List<TransitioningVector3>();
         }
+
+        // Copy details of present layer on the passed layer
+        public TextureLayer DeepCopy()
+        {
+            TextureLayer layer = (TextureLayer)this.MemberwiseClone();
+
+            layer.color = this.color.GetCopy();
+
+            layer.renderDistance = new List<TransitioningFloat>();
+            for (int i = 0; i < this.renderDistance.Count; i++)
+            {
+                layer.renderDistance.Add(this.renderDistance[i].GetCopy());
+            }
+
+            layer.offset = new List<TransitioningVector2>();
+            for (int i = 0; i < this.offset.Count; i++)
+            {
+                layer.offset.Add(this.offset[i].GetCopy());
+            }
+
+            layer.satelliteWidthHeight = new List<TransitioningVector2>(this.satelliteWidthHeight);
+            for (int i = 0; i < this.satelliteWidthHeight.Count; i++)
+            {
+                layer.satelliteWidthHeight.Add(this.satelliteWidthHeight[i].GetCopy());
+            }
+
+            layer.rotations_float = new List<TransitioningFloat>();
+            for (int i = 0; i < this.rotations_float.Count; i++)
+            {
+                layer.rotations_float.Add(this.rotations_float[i].GetCopy());
+            }
+
+            layer.rotations_Vector3 = new List<TransitioningVector3>();
+            for (int i = 0; i < this.rotations_Vector3.Count; i++)
+            {
+                layer.rotations_Vector3.Add(this.rotations_Vector3[i].GetCopy());
+            }
+
+            layer.particleRotation = new List<TransitioningVector3>();
+            for (int i = 0; i < this.particleRotation.Count; i++)
+            {
+                layer.particleRotation.Add(this.particleRotation[i].GetCopy());
+            }
+
+            layer.distortIntensity = new List<TransitioningFloat>();
+            for (int i = 0; i < this.distortIntensity.Count; i++)
+            {
+                layer.distortIntensity.Add(this.distortIntensity[i].GetCopy());
+            }
+
+            layer.distortSize = new List<TransitioningFloat>();
+            for (int i = 0; i < this.distortSize.Count; i++)
+            {
+                layer.distortSize.Add(this.distortSize[i].GetCopy());
+            }
+
+            layer.distortSpeed = new List<TransitioningVector2>();
+            for (int i = 0; i < this.distortSpeed.Count; i++)
+            {
+                layer.distortSpeed.Add(this.distortSpeed[i].GetCopy());
+            }
+
+            layer.distortSharpness = new List<TransitioningVector2>();
+            for (int i = 0; i < this.distortSharpness.Count; i++)
+            {
+                layer.distortSharpness.Add(this.distortSharpness[i].GetCopy());
+            }
+
+            return layer;
+        }
+
+    }
+
+    static class ExtensionMethods
+    {
+        public static Gradient GetCopy(this Gradient gradient)
+        {
+            Gradient obj = new Gradient();
+
+            GradientColorKey[] colorKeys = new GradientColorKey[gradient.colorKeys.Length];
+            for (int i = 0; i < gradient.colorKeys.Length; i++)
+            {
+                colorKeys[i] = gradient.colorKeys[i];
+            }
+
+            GradientAlphaKey[] alphaKeys = new GradientAlphaKey[gradient.alphaKeys.Length];
+            for (int i = 0; i < gradient.alphaKeys.Length; i++)
+            {
+                alphaKeys[i] = gradient.alphaKeys[i];
+            }
+            obj.SetKeys(colorKeys, alphaKeys);
+            return obj;
+        }
     }
 
     public enum LayerType
@@ -161,6 +255,8 @@ namespace DCL.Skybox
             this.percentage = percentage;
             this.value = value;
         }
+
+        internal TransitioningFloat GetCopy() { return (TransitioningFloat)this.MemberwiseClone(); }
     }
 
     [System.Serializable]
@@ -174,6 +270,8 @@ namespace DCL.Skybox
             this.percentage = percentage;
             this.value = value;
         }
+
+        internal TransitioningVector3 GetCopy() { return (TransitioningVector3)this.MemberwiseClone(); }
     }
 
     [System.Serializable]
@@ -187,6 +285,8 @@ namespace DCL.Skybox
             this.percentage = percentage;
             this.value = value;
         }
+
+        internal TransitioningVector2 GetCopy() { return (TransitioningVector2)this.MemberwiseClone(); }
     }
 
     [System.Serializable]
@@ -200,6 +300,8 @@ namespace DCL.Skybox
             this.percentage = percentage;
             this.value = value;
         }
+
+        internal TransitioningVector4 GetCopy() { return new TransitioningVector4(this.percentage, this.value); }
     }
 
     [System.Serializable]
@@ -213,6 +315,8 @@ namespace DCL.Skybox
             this.percentage = percentage;
             this.value = value;
         }
+
+        internal TransitioningQuaternion GetCopy() { return new TransitioningQuaternion(this.percentage, this.value); }
     }
 
     [System.Serializable]

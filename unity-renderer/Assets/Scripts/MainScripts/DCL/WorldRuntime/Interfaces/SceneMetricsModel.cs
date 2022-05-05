@@ -1,7 +1,10 @@
-﻿namespace DCL
+﻿using System;
+using UnityEngine;
+
+namespace DCL
 {
     [System.Serializable]
-    public class SceneMetricsModel
+    public class SceneMetricsModel: IEquatable<SceneMetricsModel>
     {
         public int meshes;
         public int bodies;
@@ -28,6 +31,15 @@
             textureMemoryProfiler + meshMemoryProfiler + audioClipMemoryProfiler + animationClipMemoryProfiler;
 
         public SceneMetricsModel Clone() { return (SceneMetricsModel) MemberwiseClone(); }
+
+        public bool Equals(SceneMetricsModel obj)
+        {
+            if (obj == null)
+                return false;
+
+            return obj.meshes == meshes && obj.bodies == bodies && obj.materials == materials &&
+                   obj.textures == textures && obj.triangles == triangles && obj.entities == entities && Mathf.Abs(obj.sceneHeight - sceneHeight) < 0.001f;
+        }
 
         public static bool operator >(SceneMetricsModel lhs, SceneMetricsModel rhs)
         {

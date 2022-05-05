@@ -14,7 +14,7 @@ namespace NFTShape_Internal
         private AssetPromise_Texture hqTexture;
         public event Action<Texture2D> OnTextureUpdate;
 
-        public NFTAsset_Image(Asset_Texture previewTexture)
+        public NFTAsset_Image(Asset_Texture previewTexture = null)
         {
             previewAsset = previewTexture;
         }
@@ -55,6 +55,9 @@ namespace NFTShape_Internal
                 AssetPromiseKeeper_Texture.i.Forget(hqTexture);
                 hqTexture = null;
             }
+
+            if (previewAsset == null)
+                return;
 
             OnTextureUpdate?.Invoke(previewAsset.texture);
         }

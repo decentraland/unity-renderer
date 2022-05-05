@@ -7,15 +7,12 @@ namespace DCL.Skybox
     [CreateAssetMenu(fileName = "SkyboxMaterialData", menuName = "ScriptableObjects/SkyboxMaterialData", order = 1)]
     public class MaterialReferenceContainer : ScriptableObject
     {
-        [System.Serializable]
-        public class Mat_Layer
-        {
-            public int numberOfSlots;
-            public Material material;
-        }
-
         private static MaterialReferenceContainer instance;
         public static MaterialReferenceContainer i => GetOrLoad(ref instance, "Skybox Materials/SkyboxMaterialData");
+
+        public Material skyboxMat;
+        public int skyboxMatSlots = 5;
+        public Material domeMat;
 
         private static T GetOrLoad<T>(ref T variable, string path) where T : Object
         {
@@ -27,30 +24,8 @@ namespace DCL.Skybox
             return variable;
         }
 
-        public Mat_Layer[] materials;
+        public Material GetSkyboxMaterial() { return skyboxMat; }
 
-        public Material GetMaterialForLayers(int numOfLayer)
-        {
-            for (int i = 0; i < materials.Length; i++)
-            {
-                if (numOfLayer <= materials[i].numberOfSlots)
-                {
-                    return materials[i].material;
-                }
-            }
-            return null;
-        }
-
-        public Mat_Layer GetMat_LayerForLayers(int numOfSlots)
-        {
-            for (int i = 0; i < materials.Length; i++)
-            {
-                if (numOfSlots <= materials[i].numberOfSlots)
-                {
-                    return materials[i];
-                }
-            }
-            return null;
-        }
+        public Material GetDomeMaterial() { return domeMat; }
     }
 }

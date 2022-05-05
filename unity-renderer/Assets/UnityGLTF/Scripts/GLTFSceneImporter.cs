@@ -116,6 +116,9 @@ namespace UnityGLTF
 
         public bool forceGPUOnlyMesh = true;
         public bool forceGPUOnlyTex = true;
+        
+        // this setting forces coroutines to be ran in a single call
+        public bool forceSyncCoroutines = false;
 
         private bool useMaterialTransitionValue = true;
 
@@ -215,7 +218,7 @@ namespace UnityGLTF
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
-            
+
             //NOTE(Brian): If the coroutine is interrupted and the local streaming list contains something,
             //             we must clean the static list or other GLTFSceneImporter instances might get stuck.
             int streamingImagesLocalListCount = streamingImagesLocalList.Count;
@@ -251,7 +254,7 @@ namespace UnityGLTF
         /// <param name="onLoadComplete">Callback function for when load is completed</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        public async UniTask LoadScene(CancellationToken token, int sceneIndex = -1, bool showSceneObj = true)
+        public async Task LoadScene(CancellationToken token, int sceneIndex = -1, bool showSceneObj = true)
         {
             try
             {
@@ -513,7 +516,7 @@ namespace UnityGLTF
         {
 
             await _loader.LoadStream(_gltfFileName, token);
-            
+
             token.ThrowIfCancellationRequested();
 
             if (_loader.LoadedStream == null)
@@ -537,9 +540,16 @@ namespace UnityGLTF
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await TaskUtils.RunThrottledCoroutine(GLTFParser.ParseJsonDelayed(_gltfStream.Stream, _gltfRoot, _gltfStream.StartPosition),
-                    exception => throw exception,
-                    throttlingCounter.EvaluateTimeBudget);
+                IEnumerator coroutine = GLTFParser.ParseJsonDelayed(_gltfStream.Stream, _gltfRoot, _gltfStream.StartPosition);
+
+                if (forceSyncCoroutines)
+                {
+                    CoroutineUtils.RunCoroutineSync(coroutine);
+                }
+                else
+                {
+                    await TaskUtils.RunThrottledCoroutine(coroutine, exception => throw exception, throttlingCounter.EvaluateTimeBudget);
+                }
             }
 
             if (_gltfRoot == null)
@@ -572,7 +582,7 @@ namespace UnityGLTF
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            
+
             CreatedObject = new GameObject(string.IsNullOrEmpty(scene.Name) ? ("GLTFScene") : scene.Name);
             _lastLoadedScene = CreatedObject;
 
@@ -690,7 +700,7 @@ namespace UnityGLTF
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
-            
+
             // Resizing must be the last step to avoid breaking the texture when copying with Graphics.CopyTexture()
             _assetCache.ImageCache[imageCacheIndex] = CheckAndReduceTextureSize(texture, settings.linear);
         }
@@ -930,7 +940,7 @@ namespace UnityGLTF
         }
 
         async UniTask ProcessCurves(Transform root, GameObject[] nodes, AnimationClip clip, GLTFAnimation animation, AnimationCacheData animationCache, CancellationToken cancellationToken)
-        {            
+        {
             foreach (AnimationChannel channel in animation.Channels)
             {
                 AnimationSamplerCacheData samplerCache = animationCache.Samplers[channel.Sampler.Id];
@@ -943,7 +953,7 @@ namespace UnityGLTF
                     // Model 08
                     continue;
                 }
-                
+
                 var node = nodes[channel.Target.Node.Id];
                 string relativePath = RelativePathFrom(node.transform, root);
 
@@ -1307,7 +1317,7 @@ namespace UnityGLTF
 
                 NodeId_Like nodeId = nodesWithMeshes[i];
                 Node node = nodeId.Value;
-                
+
                 await ConstructMesh(mesh: node.Mesh.Value,
                     parent: _assetCache.NodeCache[nodeId.Id].transform,
                     meshId: node.Mesh.Id,
@@ -1345,7 +1355,7 @@ namespace UnityGLTF
                     AnimationClip clip = ConstructClip(i, out gltfAnimation, out animationCache);
 
                     await ProcessCurves(CreatedObject.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache, token);
-                    
+
                     clip.wrapMode = WrapMode.Loop;
 
                     animation.AddClip(clip, clip.name);
@@ -1661,15 +1671,11 @@ namespace UnityGLTF
 
             _assetCache.MeshCache[meshId] ??= new MeshCacheData[mesh.Primitives.Count];
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
             for (int i = 0; i < mesh.Primitives.Count; ++i)
             {
                 var primitive = mesh.Primitives[i];
 
                 await ConstructMeshPrimitive(primitive, meshId, i, cancellationToken);
-                await ThrottleWatch(stopwatch, 5);
 
                 cancellationToken.ThrowIfCancellationRequested();
                 var primitiveObj = new GameObject("Primitive");
@@ -1697,7 +1703,6 @@ namespace UnityGLTF
                         if (HasBones(skin))
                         {
                             await SetupBones(skin, primitive, skinnedMeshRenderer, primitiveObj, curMesh, cancellationToken);
-                            await ThrottleWatch(stopwatch, 5);
                         }
 
                         OnRendererCreated?.Invoke(skinnedMeshRenderer);
@@ -1712,7 +1717,6 @@ namespace UnityGLTF
                     }
 
                     await ConstructPrimitiveMaterials(mesh, meshId, i, cancellationToken);
-                    await ThrottleWatch(stopwatch, 5);
                 }
                 else
                 {
@@ -1739,8 +1743,6 @@ namespace UnityGLTF
 
                         break;
                 }
-
-                stopwatch.Restart();
             }
         }
 
@@ -1800,13 +1802,17 @@ namespace UnityGLTF
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                /*await TaskUtils.RunThrottledCoroutine(
-                                   ConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData),
-                                   exception => throw exception,
-                                   throttlingCounter.EvaluateTimeBudget)
-                               .AttachExternalCancellation(cancellationToken);*/
+                IEnumerator coroutine = ConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData);
 
-                await AsyncConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData);
+                if (forceSyncCoroutines)
+                {
+                    CoroutineUtils.RunCoroutineSync(coroutine);
+                }
+                else
+                {
+                    await TaskUtils.RunThrottledCoroutine(coroutine, exception => throw exception, throttlingCounter.EvaluateTimeBudget)
+                                   .AttachExternalCancellation(cancellationToken);
+                }
             }
         }
 
@@ -1957,6 +1963,8 @@ namespace UnityGLTF
 
             _assetCache.MeshCache[meshId][primitiveIndex].LoadedMesh = mesh;
 
+            meshesEstimatedSize += GLTFSceneImporterUtils.ComputeEstimatedMeshSize(unityMeshData);
+
             mesh.vertices = unityMeshData.Vertices;
 
             yield return skipFrameIfDepletedTimeBudget;
@@ -2008,81 +2016,6 @@ namespace UnityGLTF
             mesh.boneWeights = unityMeshData.BoneWeights;
 
             yield return skipFrameIfDepletedTimeBudget;
-
-            if (!hasNormals)
-                mesh.RecalculateNormals();
-
-            if ( !Application.isPlaying )
-                mesh.Optimize();
-
-            OnMeshCreated?.Invoke(mesh);
-
-            if (forceGPUOnlyMesh)
-            {
-                Physics.BakeMesh(mesh.GetInstanceID(), false);
-                mesh.UploadMeshData(true);
-            }
-        }
-
-        private async UniTask ThrottleWatch(Stopwatch watch, long limit)
-        {
-            if (watch.ElapsedMilliseconds > limit)
-            {
-                watch.Restart();
-                await  UniTask.Yield();
-            }
-        }
-
-        private async UniTask AsyncConstructUnityMesh(MeshConstructionData meshConstructionData, int meshId, int primitiveIndex, UnityMeshData unityMeshData)
-        {
-            var stopwatch = new Stopwatch();
-            MeshPrimitive primitive = meshConstructionData.Primitive;
-            int vertexCount = (int) primitive.Attributes[SemanticProperties.POSITION].Value.Count;
-            bool hasNormals = unityMeshData.Normals != null;
-
-            Mesh mesh = new Mesh
-            {
-#if UNITY_2017_3_OR_NEWER
-                indexFormat = vertexCount > 65535 ? IndexFormat.UInt32 : IndexFormat.UInt16,
-#endif
-            };
-
-            _assetCache.MeshCache[meshId][primitiveIndex].LoadedMesh = mesh;
-
-            meshesEstimatedSize += GLTFSceneImporterUtils.ComputeEstimatedMeshSize(unityMeshData);
-            
-            mesh.vertices = unityMeshData.Vertices;
-            await ThrottleWatch(stopwatch, 1);
-            mesh.normals = unityMeshData.Normals;
-            await ThrottleWatch(stopwatch, 1);
-            mesh.uv = unityMeshData.Uv1;
-            await ThrottleWatch(stopwatch, 1);
-            mesh.uv2 = unityMeshData.Uv2;
-            await ThrottleWatch(stopwatch, 1);
-            mesh.uv3 = unityMeshData.Uv3;
-            await ThrottleWatch(stopwatch, 1);
-            mesh.uv4 = unityMeshData.Uv4;
-            await ThrottleWatch(stopwatch, 1);
-            mesh.colors = unityMeshData.Colors;
-
-            if ( !Application.isPlaying )
-            {
-                if (AreMeshTrianglesValid(unityMeshData.Triangles, vertexCount)) // Some scenes contain broken meshes that can trigger a fatal error
-                {
-                    mesh.triangles = unityMeshData.Triangles;
-                }
-                else
-                {
-                    Debug.Log("GLTFSceneImporter - ERROR - ConstructUnityMesh - Couldn't assign triangles to mesh as there are indices pointing to vertices out of bounds");
-                }
-            }
-            else
-            {
-                mesh.triangles = unityMeshData.Triangles;
-            }
-
-            mesh.tangents = unityMeshData.Tangents;
-            mesh.boneWeights = unityMeshData.BoneWeights;
 
             if (!hasNormals)
                 mesh.RecalculateNormals();
@@ -2381,7 +2314,7 @@ namespace UnityGLTF
             else
             {
                 await ConstructImage(settings, image, sourceId, cancellationToken);
-                
+
                 if (_assetCache.ImageCache[sourceId] == null)
                 {
                     Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {image.Uri} / {id}, applying invalid-tex texture...");

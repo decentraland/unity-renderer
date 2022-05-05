@@ -49,7 +49,7 @@ namespace DCL.Components
         {
             entity.OnShapeLoaded -= OnEntityShapeLoaded;
 
-            var animationShape = entity.GetSharedComponent(typeof(BaseShape)) as LoadableShape;
+            var animationShape = scene.componentsManagerLegacy.GetSharedComponent(entity, (typeof(BaseShape))) as LoadableShape;
 
             if (animationShape != null)
                 animationShape.OnLoaded -= OnShapeLoaded;
@@ -73,7 +73,7 @@ namespace DCL.Components
 
         private bool IsEntityShapeLoaded()
         {
-            var animationShape = entity.GetSharedComponent(typeof(BaseShape)) as LoadableShape;
+            var animationShape = scene.componentsManagerLegacy.GetSharedComponent(entity, (typeof(BaseShape))) as LoadableShape;
 
             if (animationShape == null)
                 return false;
@@ -83,7 +83,7 @@ namespace DCL.Components
 
         private void OnEntityShapeLoaded(IDCLEntity shapeEntity)
         {
-            var animationShape = shapeEntity.GetSharedComponent(typeof(BaseShape)) as LoadableShape;
+            var animationShape = scene.componentsManagerLegacy.GetSharedComponent(entity, (typeof(BaseShape))) as LoadableShape;
 
             if (animationShape == null)
                 return;
