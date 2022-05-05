@@ -19,7 +19,7 @@ namespace SocialFeaturesAnalytics
         void SendPassportClose(double timeSpent);
         void SendPlayerBlocked(bool isFriend, FriendActionSource source);
         void SendPlayerUnblocked(bool isFriend, FriendActionSource source);
-        void SendPlayerReport(PlayerReportIssueType issueType, double messageLength);
+        void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, FriendActionSource source);
         void SendPlayerJoin(FriendActionSource source);
         void SendPlayEmote(string emoteName, string rarity, EmoteSource source);
     }

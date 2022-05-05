@@ -158,6 +158,7 @@ public class UserContextMenu : MonoBehaviour
     {
         OnReport?.Invoke(userId);
         WebInterface.SendReportPlayer(userId);
+        socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, FriendActionSource.ProfileContextMenu);
         Hide();
     }
 

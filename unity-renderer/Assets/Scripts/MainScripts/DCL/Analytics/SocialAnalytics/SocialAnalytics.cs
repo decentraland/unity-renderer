@@ -223,11 +223,12 @@ namespace SocialFeaturesAnalytics
             GenericAnalytics.SendAnalytic(PLAYER_UNBLOCKED, data);
         }
 
-        public void SendPlayerReport(PlayerReportIssueType issueType, double messageLength)
+        public void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, FriendActionSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("issue_type", issueType.ToString());
             data.Add("text_length", messageLength.ToString());
+            data.Add("source", source.ToString());
 
             GenericAnalytics.SendAnalytic(PLAYER_REPORT, data);
         }

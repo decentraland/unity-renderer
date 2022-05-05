@@ -25,7 +25,7 @@ namespace SocialFeaturesAnalytics.TestHelpers
             mockedSocialAnalytics.When(x => x.SendPassportClose(Arg.Any<double>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendPlayerBlocked(Arg.Any<bool>(), Arg.Any<FriendActionSource>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendPlayerUnblocked(Arg.Any<bool>(), Arg.Any<FriendActionSource>())).Do(x => { });
-            mockedSocialAnalytics.When(x => x.SendPlayerReport(Arg.Any<PlayerReportIssueType>(), Arg.Any<double>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPlayerReport(Arg.Any<PlayerReportIssueType>(), Arg.Any<double>(), Arg.Any<FriendActionSource>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendPlayerJoin(Arg.Any<FriendActionSource>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendPlayEmote(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<EmoteSource>())).Do(x => { });
 

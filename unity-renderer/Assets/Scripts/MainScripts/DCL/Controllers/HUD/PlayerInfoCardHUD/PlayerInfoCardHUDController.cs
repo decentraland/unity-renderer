@@ -227,6 +227,7 @@ public class PlayerInfoCardHUDController : IHUD
     private void ReportPlayer()
     {
         WebInterface.SendReportPlayer(currentPlayerId);
+        socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, FriendActionSource.Passport);
     }
 
     public void Dispose()
