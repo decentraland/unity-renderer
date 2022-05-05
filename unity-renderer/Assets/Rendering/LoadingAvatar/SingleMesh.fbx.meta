@@ -8,9 +8,9 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: AvatarSkin_MAT
-    second: {fileID: 2100000, guid: bc30e6d95a2837b40a362e3eb3c1cc2c, type: 2}
+    second: {fileID: 331628755318917064, guid: a2bef76a06b4b46d493bc336897ad827, type: 3}
   materials:
-    materialImportMode: 0
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1

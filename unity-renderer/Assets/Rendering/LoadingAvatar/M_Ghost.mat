@@ -34,6 +34,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - EdgeThickness: 1.87
+    - Vector1_96514d915b7e465a919e3def245705cb: 0.3
     - _InnerThickness: 0.01
     m_Colors:
     - Color_0679a06095a34b1dbe5a595111800b38: {r: 0, g: 0, b: 0, a: 0}
