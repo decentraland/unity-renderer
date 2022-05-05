@@ -1865,7 +1865,7 @@ namespace Tests
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
                         pointerEvent.payload.uuid == onPointerId &&
-                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId.ToString())
+                        pointerEvent.payload.payload.hit.entityId == idHelper.GetOriginalId(clickTargetEntity.entityId))
                     {
                         targetEntityHit = true;
                     }
