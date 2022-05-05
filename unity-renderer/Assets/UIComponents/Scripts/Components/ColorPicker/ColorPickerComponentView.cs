@@ -41,6 +41,7 @@ public class ColorPickerComponentView : BaseComponentView, IColorPickerComponent
 
     private IColorSelector colorSelector;
     public event Action<Color> OnColorChanged;
+    private bool isAudioPlaying = false;
 
     override public void Awake()
     {
@@ -63,6 +64,7 @@ public class ColorPickerComponentView : BaseComponentView, IColorPickerComponent
         sliderValue.onDecrement.AddListener(() => ChangeProperty("val", -model.incrementAmount));
 
         toggleButton.onClick.AddListener(() => SetActive(!container.activeInHierarchy));
+        
         SetActive(false);
     }
 
@@ -145,7 +147,18 @@ public class ColorPickerComponentView : BaseComponentView, IColorPickerComponent
         CheckButtonInteractability(sliderHue);
         CheckButtonInteractability(sliderSaturation);
         CheckButtonInteractability(sliderValue);
+        if (!isAudioPlaying)
+            StartCoroutine(PlaySound());
+
         OnColorChanged.Invoke(newColor);
+    }
+
+    private IEnumerator PlaySound() 
+    {
+        isAudioPlaying = true;
+        AudioScriptableObjects.buttonRelease.Play(true);
+        yield return new WaitForSeconds(0.05f);
+        isAudioPlaying = false;
     }
 
     public void SetActive(bool isActive) 
