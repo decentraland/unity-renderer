@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using DCL;
 using NSubstitute;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
+using SocialFeaturesAnalytics.TestHelpers;
 using UnityEngine;
 
 public class TaskbarHUDShould : IntegrationTestSuite_Legacy
@@ -16,6 +18,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private PrivateChatWindowController privateChatController;
     private FriendsHUDController friendsHudController;
     private WorldChatWindowController worldChatWindowController;
+    private ISocialAnalytics socialAnalytics;
 
     protected override List<GameObject> SetUp_LegacySystems()
     {
@@ -31,6 +34,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         controller = new TaskbarHUDController();
         controller.Initialize(null, null);
         view = controller.view;
+
+        socialAnalytics = SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics();
 
         Assert.IsTrue(view != null, "Taskbar view is null?");
         Assert.IsTrue(CommonScriptableObjects.isTaskbarHUDInitialized, "Taskbar controller is not initialized?");
@@ -68,7 +73,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddFriendWindowProperly()
     {
         friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(null, UserProfile.GetOwnUserProfile(), chatController,
+        friendsHudController.Initialize(null, UserProfile.GetOwnUserProfile(), chatController, socialAnalytics,
             new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 
@@ -110,7 +115,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         controller.AddPublicChatChannel(publicChatChannelController);
 
         friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(friendsController, UserProfile.GetOwnUserProfile(), chatController);
+        friendsHudController.Initialize(friendsController, UserProfile.GetOwnUserProfile(), chatController, socialAnalytics);
         controller.AddFriendsWindow(friendsHudController);
 
         Assert.IsFalse(view.chatButton.toggledOn);

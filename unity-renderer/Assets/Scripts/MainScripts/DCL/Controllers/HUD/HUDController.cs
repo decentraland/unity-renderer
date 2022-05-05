@@ -11,6 +11,7 @@ using SignupHUD;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Environment = System.Environment;
+using SocialFeaturesAnalytics;
 
 public class HUDController : IHUDController
 {
@@ -22,6 +23,7 @@ public class HUDController : IHUDController
     public IHUDFactory hudFactory = null;
 
     private InputAction_Trigger toggleUIVisibilityTrigger;
+    private ISocialAnalytics socialAnalytics;
 
     private readonly DCL.NotificationModel.Model hiddenUINotification = new DCL.NotificationModel.Model()
     {
@@ -33,6 +35,7 @@ public class HUDController : IHUDController
     public HUDController(IHUDFactory hudFactory = null)
     {
         this.hudFactory = hudFactory;
+        socialAnalytics = new SocialAnalytics();
     }
 
     public void Initialize()
@@ -270,7 +273,7 @@ public class HUDController : IHUDController
 
                     if (friendsHud != null)
                     {
-                        friendsHud.Initialize(FriendsController.i, UserProfile.GetOwnUserProfile(), ChatController.i);
+                        friendsHud.Initialize(FriendsController.i, UserProfile.GetOwnUserProfile(), ChatController.i, socialAnalytics);
                         friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
                         friendsHud.OnPressWhisper += OpenPrivateChatWindow;
 

@@ -36,6 +36,7 @@ public class HUDFactory : IHUDFactory
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
                     new WearablesCatalogControllerBridge(),
+                    new SocialFeaturesAnalytics.SocialAnalytics(),
                     ProfanityFilterSharedInstances.regexFilter,
                     DataStore.i);
                 break;

@@ -7,6 +7,8 @@ using DCL.Helpers;
 using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
+using SocialFeaturesAnalytics.TestHelpers;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -21,6 +23,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     private WearableItem[] wearables;
     private FriendsController_Mock friendsController;
     private IUserProfileBridge userProfileBridge;
+    private ISocialAnalytics socialAnalytics;
     private RegexProfanityFilter profanityFilter;
     private StringVariable currentPlayerIdData;
 
@@ -43,11 +46,13 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         GivenProfanityFilteringAvailability(true);
 
         friendsController = new FriendsController_Mock();
+        socialAnalytics = SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics();
 
         controller = new PlayerInfoCardHUDController(friendsController,
             currentPlayerIdData,
             userProfileBridge,
             wearableCatalogBridge,
+            socialAnalytics,
             profanityFilter,
             dataStore);
     }

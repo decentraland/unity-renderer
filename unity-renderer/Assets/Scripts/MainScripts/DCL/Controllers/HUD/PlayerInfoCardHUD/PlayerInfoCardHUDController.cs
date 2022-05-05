@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -28,11 +29,13 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly RegexProfanityFilter profanityFilter;
     private readonly DataStore dataStore;
     private readonly List<string> loadedWearables = new List<string>();
+    private readonly ISocialAnalytics socialAnalytics;
 
     public PlayerInfoCardHUDController(IFriendsController friendsController,
         StringVariable currentPlayerIdData,
         IUserProfileBridge userProfileBridge,
         IWearableCatalogBridge wearableCatalogBridge,
+        ISocialAnalytics socialAnalytics,
         RegexProfanityFilter profanityFilter,
         DataStore dataStore)
     {
@@ -44,6 +47,7 @@ public class PlayerInfoCardHUDController : IHUD
         currentPlayerId = currentPlayerIdData;
         this.userProfileBridge = userProfileBridge;
         this.wearableCatalogBridge = wearableCatalogBridge;
+        this.socialAnalytics = socialAnalytics;
         this.profanityFilter = profanityFilter;
         this.dataStore = dataStore;
         currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
@@ -89,6 +93,8 @@ public class PlayerInfoCardHUDController : IHUD
         {
             userId = currentPlayerId, action = FriendshipAction.REQUESTED_TO
         });
+
+        socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, FriendActionSource.Passport);
     }
 
     private void CancelInvitation()
@@ -100,6 +106,8 @@ public class PlayerInfoCardHUDController : IHUD
         {
             userId = currentPlayerId, action = FriendshipAction.CANCELLED
         });
+
+        socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, FriendActionSource.Passport);
     }
 
     private void AcceptFriendRequest()
@@ -111,6 +119,8 @@ public class PlayerInfoCardHUDController : IHUD
         {
             userId = currentPlayerId, action = FriendshipAction.APPROVED
         });
+
+        socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, FriendActionSource.Passport);
     }
 
     private void RejectFriendRequest()
@@ -122,6 +132,8 @@ public class PlayerInfoCardHUDController : IHUD
         {
             userId = currentPlayerId, action = FriendshipAction.REJECTED
         });
+
+        socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, currentPlayerId, FriendActionSource.Passport);
     }
 
     private void OnCurrentPlayerIdChanged(string current, string previous)
