@@ -50,7 +50,7 @@ namespace DCL
             return ToBase36EntityId(entityId);
         }
         
-        private static string ToBase36EntityId(long value)
+        private string ToBase36EntityId(long value)
         {
             // TODO(mendez): the string builder approach can be better. It does use more allocations
             //               than the optimal. The ideal scenario would use a `stackalloc char[13]` instead 
@@ -100,8 +100,15 @@ namespace DCL
 
                     power *= 36;
                 }
+                
                 // reserve 512 entity ids (<<9)
-                return result << 9;
+                long newEntityIdLong = result << 9;
+                
+                // // store the mapping from newEntityIdLong->original
+                // if (!entityIdToLegacyId.ContainsKey(newEntityIdLong))
+                //     entityIdToLegacyId[newEntityIdLong] = entityId;
+                
+                return newEntityIdLong;
             }
             
             // non standard entity, fallback to entityIdFromDictionary
