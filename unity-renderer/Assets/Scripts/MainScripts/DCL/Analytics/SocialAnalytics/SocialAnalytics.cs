@@ -52,8 +52,10 @@ namespace SocialFeaturesAnalytics
             GenericAnalytics.SendAnalytic(VOICE_MESSAGE_SENT, data);
         }
 
-        public void SendChannelMessageSent(PlayerType fromPlayerType, double messageLength, string channel, ChatMessageType messageType)
+        public void SendChannelMessageSent(string fromUserId, double messageLength, string channel, ChatMessageType messageType)
         {
+            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("length", messageLength.ToString());
@@ -63,8 +65,10 @@ namespace SocialFeaturesAnalytics
             GenericAnalytics.SendAnalytic(CHANNEL_MESSAGE_SENT, data);
         }
 
-        public void SendChannelMessageReceived(PlayerType fromPlayerType, double messageLength, string channel, ChatMessageType messageType)
+        public void SendChannelMessageReceived(string fromUserId, double messageLength, string channel, ChatMessageType messageType)
         {
+            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("length", messageLength.ToString());
@@ -74,8 +78,11 @@ namespace SocialFeaturesAnalytics
             GenericAnalytics.SendAnalytic(CHANNEL_MESSAGE_RECEIVED, data);
         }
 
-        public void SendDirectMessageSent(PlayerType fromPlayerType, PlayerType toPlayerType, double messageLength, bool areFriends, ChatContentType contentType)
+        public void SendDirectMessageSent(string fromUserId, string toUserId, double messageLength, bool areFriends, ChatContentType contentType)
         {
+            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
+            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
@@ -86,8 +93,11 @@ namespace SocialFeaturesAnalytics
             GenericAnalytics.SendAnalytic(DIRECT_MESSAGE_SENT, data);
         }
 
-        public void SendDirectMessageReceived(PlayerType fromPlayerType, PlayerType toPlayerType, double messageLength, bool areFriends, ChatContentType contentType)
+        public void SendDirectMessageReceived(string fromUserId, string toUserId, double messageLength, bool areFriends, ChatContentType contentType)
         {
+            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
+            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
@@ -244,7 +254,7 @@ namespace SocialFeaturesAnalytics
             if (userProfile == null)
                 return null;
             else
-                return userProfile.hasClaimedName ? PlayerType.Wallet : PlayerType.Guest;
+                return userProfile.isGuest ? PlayerType.Guest : PlayerType.Wallet;
         }
     }
 }
