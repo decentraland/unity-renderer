@@ -18,7 +18,8 @@ namespace DCL
         public string GetOriginalId(long entityId)
         {
             // if the entityId is less than 512, then it is considered well-known.
-            if (entityId < 512) {
+            if (entityId < 512) 
+            {
                 switch (entityId)
                 {
                     case (long)SpecialEntityId.SCENE_ROOT_ENTITY:
@@ -39,7 +40,8 @@ namespace DCL
             }
             
             // if it has the 0x8000_0000 mask, then it *should* be stored in the entityIdToLegacyId map
-            if ((entityId & 0x80000000) != 0 && entityIdToLegacyId.ContainsKey(entityId)) {
+            if ((entityId & 0x80000000) != 0 && entityIdToLegacyId.ContainsKey(entityId)) 
+            {
                 // the entity has the 0x80000000 mask signaling it was an invalid ID
                 return entityIdToLegacyId[entityId];
             }
@@ -68,7 +70,7 @@ namespace DCL
             // E prefix for entities
             sb.Insert(0, "E");
 
-	          return sb.ToString();
+            return sb.ToString();
         }
         
         public long EntityFromLegacyEntityString(string entityId)
@@ -77,7 +79,8 @@ namespace DCL
             return entityIdLong;
         }
 
-        long GetConvertedEntityId(string entityId) {
+        private long GetConvertedEntityId(string entityId)
+        {
             // entity Ids in base36 start with E
             if (entityId[0] == 'E')
             {
@@ -86,29 +89,27 @@ namespace DCL
                 for (var i = entityId.Length - 1; i > 0; i--)
                 {
                     char charCode = entityId[i];
-                    bool isBase36Number = charCode >= '0' && charCode <= '9';
+                    bool isNumber = charCode >= '0' && charCode <= '9';
                     bool isBase36Letter = charCode >= 'a' && charCode <= 'z';
-                    if (isBase36Number)
-                    {
+                    if (isNumber)
                         result += (charCode - '0') * power;
-                    } else if (isBase36Letter)
-                    {
+                    else if (isBase36Letter)
                         result += (10 + (charCode - 'a')) * power;
-                    } else {
-                        // non base36, fallback to entityIdFromDictionary
+                    else // non base36, fallback to entityIdFromDictionary
                         return entityIdFromDictionary(entityId);
-                    }
+
                     power *= 36;
                 }
                 // reserve 512 entity ids (<<9)
                 return result << 9;
-            } else {
-                // non standard entity, fallback to entityIdFromDictionary
-                return entityIdFromDictionary(entityId);
             }
+            
+            // non standard entity, fallback to entityIdFromDictionary
+            return entityIdFromDictionary(entityId);
         }
 
-        long entityIdFromDictionary(string entityId) {
+        private long entityIdFromDictionary(string entityId)
+        {
             // first we try against well known and lesser used entities
             switch (entityId)
             {
@@ -129,9 +130,12 @@ namespace DCL
             }
 
             // secondly, test if it was already seen in invalidEntities
-            if (invalidEntities.ContainsKey(entityId)) {
+            if (invalidEntities.ContainsKey(entityId)) 
+            {
                 return invalidEntities[entityId];
-            } else {
+            }
+            else 
+            {
                 // generate the new ID, uses the mask 0x8000_0000
                 var newEntityIdLong = ++invalidEntityCounter | 0x80000000;
 				
@@ -146,45 +150,4 @@ namespace DCL
             }
         }
     }
-    /*
-    // test cases
-    
-	public void test(string s, long expected) {
-		Console.WriteLine("For string {0}", s);
-		var	r = GetConvertedEntityId(s);
-		if (r != expected) 
-			Console.WriteLine("  ERROR! Num expected={0} (0x{0:X}) given={1} (0x{1:X})", expected, r);
-		else
-			Console.WriteLine("  OK     Num expected={0} (0x{0:X}) given={1} (0x{1:X})", expected, r);
-
-		var gen = GetOriginalId(r);
-		if (gen != s) 
-			Console.WriteLine("  ERROR! Gen expected={0} given={1}", s, gen);
-		else
-			Console.WriteLine("  OK     Gen expected={0} given={1}", s, gen);
-	}
-    
-    t.test("0", 0);
-		t.test("AvatarEntityReference", 1);
-		t.test("AvatarPositionEntityReference", 2);
-		t.test("FirstPersonCameraEntityReference", 3);
-		t.test("PlayerEntityReference", 4);
-		t.test("1", 0x80000000);
-		t.test("2", 0x80000001);
-		t.test("1", 0x80000000);
-		t.test("E0", 1 << 9);		
-		t.test("E1", 2 << 9);
-		t.test("Eb", 12 << 9);
-		t.test("E33", 112 << 9);
-		t.test("Euv", 1112 << 9);
-		t.test("E8kn", 11112 << 9);
-		t.test("E2dqf",111112 << 9);
-		t.test("Ea", 11 << 9);
-		t.test("Eaa", 371 << 9);
-		t.test("Eaaa", 13331 << 9);
-		//repeated:
-        t.test("E1", 2 << 9);
-		t.test("Eijealm", 0x85A1505600);
-    
-    */
 }
