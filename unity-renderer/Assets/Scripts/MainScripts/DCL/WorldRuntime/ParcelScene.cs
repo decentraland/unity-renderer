@@ -31,9 +31,6 @@ namespace DCL.Controllers
         public ISceneMetricsCounter metricsCounter { get; set; }
         public event System.Action<IDCLEntity> OnEntityAdded;
         public event System.Action<IDCLEntity> OnEntityRemoved;
-        public event System.Action<IComponent> OnComponentAdded;
-        public event System.Action<IComponent> OnComponentRemoved;
-        public event System.Action OnChanged;
         public event System.Action<LoadParcelScenesMessage.UnityParcelScene> OnSetData;
         public event System.Action<string, ISharedComponent> OnAddSharedComponent;
         public event System.Action<float> OnLoadingStateUpdated;
@@ -570,7 +567,7 @@ namespace DCL.Controllers
                 if (newComponent != null)
                 {
                     entity.components.Add(classId, newComponent);
-                    OnComponentAdded?.Invoke(newComponent);
+                    entity.OnBaseComponentAdded?.Invoke(classId, entity);
 
                     newComponent.Initialize(this, entity);
 
@@ -589,10 +586,9 @@ namespace DCL.Controllers
                 newComponent = EntityComponentUpdate(entity, classId, data as string);
             }
 
-            // if (newComponent != null && newComponent is IOutOfSceneBoundariesHandler)
+            if (newComponent != null && newComponent is IOutOfSceneBoundariesHandler)
                 Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
 
-            OnChanged?.Invoke();
             Environment.i.platform.physicsSyncController.MarkDirty();
             Environment.i.platform.cullingController.MarkDirty();
             return newComponent;
@@ -653,7 +649,6 @@ namespace DCL.Controllers
             {
                 sharedComponent?.Dispose();
                 disposableComponents.Remove(id);
-                OnComponentRemoved?.Invoke(sharedComponent);
             }
         }
 

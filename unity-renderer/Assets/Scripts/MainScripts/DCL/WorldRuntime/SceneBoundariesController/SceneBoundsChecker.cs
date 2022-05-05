@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using System;
-using DCL.Helpers;
 
 namespace DCL.Controllers
 {
@@ -92,10 +91,11 @@ namespace DCL.Controllers
                     {
                         while (iterator.MoveNext())
                         {
-                            if (!persistentEntities.Contains(iterator.Current))
+                            IDCLEntity entity = iterator.Current;
+                            if (!persistentEntities.Contains(entity))
                             {
-                                entitiesToCheck.Remove(iterator.Current);
-                                highPrioEntitiesToCheck.Remove(iterator.Current);
+                                entitiesToCheck.Remove(entity);
+                                highPrioEntitiesToCheck.Remove(entity);
                             }
                         }
                     }
@@ -195,7 +195,7 @@ namespace DCL.Controllers
                 }
             }
 
-            // If it has a mesh we don't evaluate its position due to artists 'pivot point sloppiness', we just evaluate its merged bounds position
+            // If it has a mesh we don't evaluate its position due to artists 'pivot point sloppiness', we just evaluate its merged bounds
             if (HasMesh(entity))
                 EvaluateMeshBounds(entity, onlyOuterBoundsCheck);
             else
@@ -204,6 +204,7 @@ namespace DCL.Controllers
         
         void EvaluateMeshBounds(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
         {
+            // TODO: Can we cache the MaterialTransitionController somewhere to avoid this GetComponent() call?
             // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
             if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
                 return;
@@ -211,16 +212,14 @@ namespace DCL.Controllers
             var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
+
+            if (!entity.components.ContainsKey(CLASS_ID_COMPONENT.TRANSFORM))
+                return;
             
             // entity.meshesInfo.RecalculateBounds();
             bool isInsideOuterBounds = entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds);
             if (!isInsideOuterBounds)
-            {
-                if (!entity.gameObject.name.Contains("."))
-                    entity.gameObject.name += ".";
-                    
                 SetMeshesAndComponentsInsideBoundariesState(entity, false);
-            }
             
             if (!onlyOuterBoundsCheck)
                 SetMeshesAndComponentsInsideBoundariesState(entity, IsEntityMeshInsideSceneBoundaries(entity));
@@ -232,12 +231,7 @@ namespace DCL.Controllers
             bool isInsideOuterBounds = entity.scene.IsInsideSceneOuterBoundaries(entityGOPosition);
 
             if (!isInsideOuterBounds)
-            {
-                if (!entity.gameObject.name.Contains("."))
-                    entity.gameObject.name += ".";
-                    
                 UpdateComponents(entity, false);
-            }
                     
             if (!onlyOuterBoundsCheck)
                 UpdateComponents(entity, entity.scene.IsInsideSceneBoundaries(entityGOPosition + CommonScriptableObjects.worldOffset.Get()));
@@ -285,9 +279,6 @@ namespace DCL.Controllers
         {
             if (entity.isInsideBoundaries != isInsideBoundaries)
             {
-                if(isInsideBoundaries)
-                    entity.gameObject.name = entity.gameObject.name.Replace(".", "");
-                
                 entity.isInsideBoundaries = isInsideBoundaries;
                 OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBoundaries);
             }
@@ -334,9 +325,6 @@ namespace DCL.Controllers
 
         protected void OnAddEntity(IDCLEntity entity)
         {
-            if (entity.gameObject != null && !entity.gameObject.name.Contains("$"))
-                entity.gameObject.name += "$";
-
             // The outer bounds check is way cheaper than the regular check
             RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
             
@@ -345,9 +333,6 @@ namespace DCL.Controllers
 
         protected void OnRemoveEntity(IDCLEntity entity)
         {
-            if(entity.gameObject != null)
-                entity.gameObject.name = entity.gameObject.name.Replace("$", "");
-            
             highPrioEntitiesToCheck.Remove(entity);
             entitiesToCheck.Remove(entity);
             persistentEntities.Remove(entity);

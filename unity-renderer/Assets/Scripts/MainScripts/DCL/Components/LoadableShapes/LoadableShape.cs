@@ -137,7 +137,7 @@ namespace DCL.Components
                     AttachShape(entity);
 
                 if (updateVisibility)
-                    ConfigureVisibility(entity);
+                    ConfigureVisibility(entity, setInitialVisibility: true);
 
                 if (updateCollisions)
                     ConfigureColliders(entity);
@@ -202,14 +202,39 @@ namespace DCL.Components
             }
         }
 
-        void ConfigureVisibility(IDCLEntity entity)
+        void ConfigureVisibility(IDCLEntity entity, bool setInitialVisibility = false)
         {
-            var loadable = GetLoaderForEntity(entity);
+            if (setInitialVisibility)
+            {
+                var loadable = GetLoaderForEntity(entity);
 
-            if (loadable != null)
-                loadable.initialVisibility = model.visible;
-
+                if (loadable != null)
+                    loadable.initialVisibility = model.visible;
+            }
+            
+            // We don't show shapes on entities that don't have a transform, otherwise they appear outside the scene bounds
+            if (entity.components.ContainsKey(CLASS_ID_COMPONENT.TRANSFORM))
+            {
+                var shapeModel = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
+                ConfigureVisibility(entity.meshRootGameObject, shapeModel.visible, entity.meshesInfo.renderers);
+            }
+            else
+            {
+                ConfigureVisibility(entity.meshRootGameObject, false, entity.meshesInfo.renderers);
+                entity.OnBaseComponentAdded -= OnEntityBaseComponentAttached;
+                entity.OnBaseComponentAdded += OnEntityBaseComponentAttached;
+            }
+        }
+        
+        void OnEntityBaseComponentAttached(CLASS_ID_COMPONENT classId, IDCLEntity entity)
+        {
+            if (classId != CLASS_ID_COMPONENT.TRANSFORM)
+                return;
+            
+            var model = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
             ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
+            
+            entity.OnBaseComponentAdded -= OnEntityBaseComponentAttached;
         }
 
         protected virtual void ConfigureColliders(IDCLEntity entity) { CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model)); }
@@ -261,10 +286,8 @@ namespace DCL.Components
             OnLoaded?.Invoke(this);
 
             entity.meshesInfo.renderers = entity.meshRootGameObject.GetComponentsInChildren<Renderer>();
-
-            var model = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
-
-            ConfigureVisibility(entity.meshRootGameObject, model.visible, loadWrapper.entity.meshesInfo.renderers);
+            
+            ConfigureVisibility(entity);
             ConfigureColliders(entity);
             RaiseOnShapeUpdated(entity);
             RaiseOnShapeLoaded(entity);

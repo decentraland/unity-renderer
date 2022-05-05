@@ -34,6 +34,7 @@ namespace DCL.Models
         public System.Action<IDCLEntity> OnRemoved { get; set; }
         public System.Action<IDCLEntity> OnMeshesInfoUpdated { get; set; }
         public System.Action<IDCLEntity> OnMeshesInfoCleaned { get; set; }
+        public System.Action<CLASS_ID_COMPONENT, IDCLEntity> OnBaseComponentAdded { get; set; }
 
         public System.Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
 

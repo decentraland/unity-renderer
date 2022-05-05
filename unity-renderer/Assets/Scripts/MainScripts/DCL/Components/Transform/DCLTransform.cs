@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    public class DCLTransform : IEntityComponent
+    public class DCLTransform : IEntityComponent, IOutOfSceneBoundariesHandler
     {
         [System.Serializable]
         public class Model : BaseModel
@@ -68,5 +68,6 @@ namespace DCL.Components
         public bool IsValid() => true;
         public BaseModel GetModel() => DCLTransform.model;
         public int GetClassId() => (int) CLASS_ID_COMPONENT.TRANSFORM;
+        public void UpdateOutOfBoundariesState(bool enable) { }
     }
 }
