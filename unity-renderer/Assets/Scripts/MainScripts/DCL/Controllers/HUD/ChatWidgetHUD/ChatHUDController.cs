@@ -17,14 +17,14 @@ public class ChatHUDController : IDisposable
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly bool detectWhisper;
-    private readonly RegexProfanityFilter profanityFilter;
+    private readonly IProfanityFilter profanityFilter;
     private readonly Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private IChatHUDComponentView view;
 
     public ChatHUDController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
         bool detectWhisper,
-        RegexProfanityFilter profanityFilter = null)
+        IProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
@@ -65,6 +65,8 @@ public class ChatHUDController : IDisposable
                 chatEntryModel.recipientName = await profanityFilter.Filter(chatEntryModel.recipientName);
         }
 
+        await UniTask.SwitchToMainThread();
+        
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (view.EntryCount > MAX_CHAT_ENTRIES)

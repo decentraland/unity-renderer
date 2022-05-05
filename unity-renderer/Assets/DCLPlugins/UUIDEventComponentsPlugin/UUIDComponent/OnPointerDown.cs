@@ -19,9 +19,9 @@ namespace DCL.Components
             if (ShouldReportEvent(buttonId, hit))
             {
                 string meshName = pointerEventHandler.GetMeshName(hit.collider);
-
+                string entityId = Environment.i.world.sceneController.entityIdHelper.GetOriginalId(entity.entityId);
                 DCL.Interface.WebInterface.ReportOnPointerDownEvent(buttonId, scene.sceneData.id, model.uuid,
-                    entity.entityId, meshName, ray, hit.point, hit.normal, hit.distance);
+                    entityId, meshName, ray, hit.point, hit.normal, hit.distance);
             }
         }
 
