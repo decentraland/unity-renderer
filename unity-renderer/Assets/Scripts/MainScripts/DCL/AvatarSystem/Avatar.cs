@@ -11,6 +11,8 @@ namespace AvatarSystem
     // [ADR 65 - https://github.com/decentraland/adr]
     public class Avatar : IAvatar
     {
+        public bool disposeOnCancellation = true;
+
         private const float RESCALING_BOUNDS_FACTOR = 100f;
         internal const string LOADING_VISIBILITY_CONSTRAIN = "Loading";
         private readonly IAvatarCurator avatarCurator;
@@ -56,7 +58,6 @@ namespace AvatarSystem
 
             try
             {
-                visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
                 WearableItem bodyshape = null;
                 WearableItem eyes = null;
                 WearableItem eyebrows = null;
@@ -65,6 +66,11 @@ namespace AvatarSystem
                 List<WearableItem> emotes = null;
 
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
+
+                if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
+                {
+                    visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
+                }
 
                 await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
 
@@ -88,7 +94,9 @@ namespace AvatarSystem
             }
             catch (OperationCanceledException)
             {
-                Dispose();
+                if(disposeOnCancellation)
+                    Dispose();
+
                 throw;
             }
             catch (Exception e)
