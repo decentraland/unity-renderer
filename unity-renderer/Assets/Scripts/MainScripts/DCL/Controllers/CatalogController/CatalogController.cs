@@ -1,8 +1,9 @@
-using System;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Configuration;
 using DCL.Emotes;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ public class CatalogController : MonoBehaviour
     public static bool VERBOSE = false;
     private const string OWNED_WEARABLES_CONTEXT = "OwnedWearables";
     private const string BASE_WEARABLES_CONTEXT = "BaseWearables";
+    private const string THIRD_PARTY_WEARABLES_CONTEXT = "ThirdPartyWearables";
     private const int FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS = 1;
     private const float TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10f;
     private const float REQUESTS_TIME_OUT_SECONDS = 45;
@@ -28,6 +30,8 @@ public class CatalogController : MonoBehaviour
     private static Dictionary<string, float> pendingWearablesByContextRequestedTimes = new Dictionary<string, float>();
     private static List<string> pendingRequestsToSend = new List<string>();
     private float timeSinceLastUnusedWearablesCheck = 0f;
+    
+    public BaseDictionary<string, WearableItem> Wearables => DataStore.i.common.wearables;
 
     public void Awake() { i = this; }
 
@@ -127,6 +131,7 @@ public class CatalogController : MonoBehaviour
         WearablesRequestFailed requestFailedResponse = JsonUtility.FromJson<WearablesRequestFailed>(payload);
 
         if (requestFailedResponse.context == BASE_WEARABLES_CONTEXT ||
+            requestFailedResponse.context.Contains(THIRD_PARTY_WEARABLES_CONTEXT) ||
             requestFailedResponse.context.Contains(OWNED_WEARABLES_CONTEXT))
         {
             ResolvePendingWearablesByContextPromise(
@@ -247,6 +252,33 @@ public class CatalogController : MonoBehaviour
         else
         {
             awaitingWearablesByContextPromises.TryGetValue(BASE_WEARABLES_CONTEXT, out promiseResult);
+        }
+
+        return promiseResult;
+    }
+
+    public static Promise<WearableItem[]> RequestThirdPartyWearablesByCollection(string userId, string collectionId)
+    {
+        Promise<WearableItem[]> promiseResult;
+
+        if (!awaitingWearablesByContextPromises.ContainsKey($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}"))
+        {
+            promiseResult = new Promise<WearableItem[]>();
+
+            awaitingWearablesByContextPromises.Add($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", promiseResult);
+
+            if (!pendingWearablesByContextRequestedTimes.ContainsKey($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}"))
+                pendingWearablesByContextRequestedTimes.Add($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", Time.realtimeSinceStartup);
+
+            WebInterface.RequestThirdPartyWearables(
+                userId,
+                collectionId,
+                $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}"
+            );
+        }
+        else
+        {
+            awaitingWearablesByContextPromises.TryGetValue($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", out promiseResult);
         }
 
         return promiseResult;
@@ -379,5 +411,11 @@ public class CatalogController : MonoBehaviour
                 wearablesInUseCounters.Remove(wearableToDestroy);
             }
         }
+    }
+
+    public void Remove(IEnumerable<string> wearableIds)
+    {
+        foreach (var wearableId in wearableIds)
+            wearableCatalog.Remove(wearableId);
     }
 }

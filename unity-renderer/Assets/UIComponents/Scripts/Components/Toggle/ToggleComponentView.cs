@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,9 +6,24 @@ using UnityEngine.UI;
 public interface IToggleComponentView
 {
     /// <summary>
-    /// Event that will be triggered when the toggle is clicked.
+    /// Event that will be triggered when the toggle changes.
     /// </summary>
-    Toggle.ToggleEvent onToggleChange { get; }
+    event Action<bool, string, string> OnSelectedChanged;
+
+    /// <summary>
+    /// Id associated to the toogle.
+    /// </summary>
+    string id { get; }
+
+    /// <summary>
+    /// On/Off state of the toggle.
+    /// </summary>
+    bool isOn { get; set; }
+
+    /// <summary>
+    /// Text (if exists) associated to the toggle.
+    /// </summary>
+    string title { get; }
 
     /// <summary>
     /// Set the toggle text.
@@ -35,7 +51,6 @@ public interface IToggleComponentView
 
 public class ToggleComponentView : BaseComponentView, IToggleComponentView, IComponentModelConfig
 {
-
     [Header("Prefab References")]
     [SerializeField] internal Toggle toggle;
     [SerializeField] internal TMP_Text text;
@@ -45,20 +60,51 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
     [Header("Configuration")]
     [SerializeField] internal ToggleComponentModel model;
 
-    public Toggle.ToggleEvent onToggleChange => toggle?.onValueChanged;
+    public event Action<bool, string, string> OnSelectedChanged;
 
-    override public void Awake()
+    public string id
     {
-        base.Awake();
-        toggle.onValueChanged.AddListener(ToggleChanged);
+        get => model.id;
+        set => model.id = value;
     }
 
-    private void ToggleChanged(bool isOn) 
+    public bool isOn 
+    { 
+        get => toggle.isOn;
+        set
+        {
+            model.isOn = value;
+
+            if (toggle == null)
+                return;
+
+            toggle.isOn = value;
+            RefreshActiveStatus();
+        }
+    }
+
+    public string title => text.text;
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        toggle.onValueChanged.AddListener(ToggleChanged);
+        RefreshActiveStatus();
+    }
+
+    private void RefreshActiveStatus()
     {
         if (activeOn)
             activeOn.gameObject.SetActive(isOn);
         if (activeOff)
             activeOff.gameObject.SetActive(!isOn);
+    }
+
+    private void ToggleChanged(bool isOn) 
+    {
+        this.isOn = isOn;
+        OnSelectedChanged?.Invoke(isOn, model.id, model.text);
     }
 
     public void Configure(BaseComponentModel newModel)
@@ -72,18 +118,10 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
         if (model == null)
             return;
 
-        SetTextActive(model.isTextActive);
+        id = model.id;
+        isOn = model.isOn;
         SetText(model.text);
-    }
-
-    public bool IsInteractable() { return toggle.interactable; }
-
-    public void SetInteractable(bool isActive) { toggle.interactable = isActive; }
-
-    public void SetTextActive(bool isActive) 
-    {
-        model.isTextActive = isActive;
-        text.gameObject.SetActive(isActive); 
+        SetTextActive(model.isTextActive);
     }
 
     public void SetText(string newText)
@@ -94,5 +132,22 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
             return;
 
         text.text = newText;
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        toggle.onValueChanged.RemoveAllListeners();
+    }
+
+    public bool IsInteractable() { return toggle.interactable; }
+
+    public void SetInteractable(bool isActive) { toggle.interactable = isActive; }
+
+    public void SetTextActive(bool isActive) 
+    {
+        model.isTextActive = isActive;
+        text.gameObject.SetActive(isActive); 
     }
 }

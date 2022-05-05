@@ -568,7 +568,10 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public BIWEntity CreateEmptyEntity(IParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true)
     {
-        IDCLEntity newEntity = parcelScene.CreateEntity(ParcelScene.EntityFromLegacyEntityString(Guid.NewGuid().ToString()));
+        var sceneController = Environment.i.world.sceneController;
+        IDCLEntity newEntity =
+            parcelScene.CreateEntity(
+                sceneController.entityIdHelper.EntityFromLegacyEntityString(Guid.NewGuid().ToString()));
         DCLTransform.Model transformModel = new DCLTransform.Model();
         transformModel.position = WorldStateUtils.ConvertUnityToScenePosition(entryPoint, parcelScene);
 

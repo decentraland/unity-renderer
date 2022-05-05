@@ -7,6 +7,7 @@ namespace DCL
 {
     public interface ISceneController : IMessageProcessHandler, IMessageQueueHandler, IService
     {
+        EntityIdHelper entityIdHelper { get; }
         bool enabled { get; set; }
         void Update();
         void LateUpdate();

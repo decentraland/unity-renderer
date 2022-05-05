@@ -160,7 +160,7 @@ namespace DCL
             Cleanup();
         }
 
-        public void Cleanup()
+        public virtual void Cleanup()
         {
             if (state == AssetPromiseState.LOADING)
             {

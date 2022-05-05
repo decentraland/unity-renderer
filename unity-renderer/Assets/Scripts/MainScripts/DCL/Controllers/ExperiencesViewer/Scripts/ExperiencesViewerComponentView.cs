@@ -47,6 +47,12 @@ namespace DCL.ExperiencesViewer
         void RemoveAvailableExperience(string id);
 
         /// <summary>
+        /// Get all experiences.
+        /// </summary>
+        /// <returns>A list of experiences.</returns>
+        List<ExperienceRowComponentView> GetAllAvailableExperiences();
+
+        /// <summary>
         /// Get a specific experience.
         /// </summary>
         /// <param name="id">Id of the experience to search.</param>
@@ -139,6 +145,13 @@ namespace DCL.ExperiencesViewer
 
             if (experienceToRemove != null)
                 availableExperiences.RemoveItem(experienceToRemove);
+        }
+
+        public List<ExperienceRowComponentView> GetAllAvailableExperiences()
+        {
+            return availableExperiences.GetItems()
+                .Select(x => x as ExperienceRowComponentView)
+                .ToList();
         }
 
         public ExperienceRowComponentView GetAvailableExperienceById(string id)
