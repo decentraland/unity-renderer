@@ -11,8 +11,7 @@ GameObject:
   - component: {fileID: 2056930331560427621}
   - component: {fileID: 9041583829247474825}
   - component: {fileID: 6666904516593322056}
-  - component: {fileID: 8086434860794800168}
-  m_Layer: 24
+  m_Layer: 25
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -82,18 +81,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &8086434860794800168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2750283750646521751}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da99bd7a2d19e9f44932793c1018ab84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6438672508873746031
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,8 +92,7 @@ GameObject:
   - component: {fileID: 6438672508873746035}
   - component: {fileID: 6438672508873746032}
   - component: {fileID: 6438672508873746033}
-  - component: {fileID: 1662446459652809134}
-  m_Layer: 24
+  m_Layer: 25
   m_Name: Satellite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,15 +163,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1662446459652809134
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6438672508873746031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da99bd7a2d19e9f44932793c1018ab84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

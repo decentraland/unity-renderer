@@ -9,7 +9,7 @@ namespace DCL.Skybox
 
     public class SatelliteLayerBehavior : MonoBehaviour
     {
-        Satellite3DLayer layerProperties;
+        Config3DSatellite layerProperties;
         public GameObject satelliteOrbit;
         public GameObject satellite;
 
@@ -46,7 +46,7 @@ namespace DCL.Skybox
             }
         }
 
-        internal void AssignValues(Satellite3DLayer properties, float timeOfTheDay, float cycleTime)
+        internal void AssignValues(Config3DSatellite properties, float timeOfTheDay, float cycleTime)
         {
             // Check and assign Materials
             CheckAndAssignMats();

@@ -5,9 +5,9 @@ using UnityEngine;
 namespace DCL.Skybox
 {
     [System.Serializable]
-    public class Satellite3DLayer
+    public class Config3DSatellite
     {
-        public bool enabled;
+        public bool enabled = true;
         public string nameInEditor;
         public float timeSpan_start;
         public float timeSpan_End;
@@ -33,11 +33,17 @@ namespace DCL.Skybox
         public float rotateSpeed = 25;
         public LayerRenderType renderType;
 
-        public Satellite3DLayer(string name = "Noname")
+        public Config3DSatellite(string name = "Noname")
         {
             nameInEditor = name;
             timeSpan_start = 0;
             timeSpan_End = 24;
+        }
+
+        public Config3DSatellite DeepCopy()
+        {
+            Config3DSatellite satellite = (Config3DSatellite)this.MemberwiseClone();
+            return satellite;
         }
     }
 }

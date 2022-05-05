@@ -68,6 +68,7 @@ namespace DCL.Skybox
 
         // 3D Components
         public List<Config3DDome> additional3Dconfig = new List<Config3DDome>();
+        public List<Config3DSatellite> satelliteLayers = new List<Config3DSatellite>();
 
         private float cycleTime = 24;
 
@@ -85,12 +86,12 @@ namespace DCL.Skybox
 
             // Apply Horizon Values
             selectedMat.SetColor(SkyboxShaderUtils.HorizonColor, horizonColor.Evaluate(normalizedDayTime));
-            selectedMat.SetFloat(SkyboxShaderUtils.HorizonHeight, GetTransitionValue(horizonHeight, percentage, 0f));
-            selectedMat.SetFloat(SkyboxShaderUtils.HorizonWidth, GetTransitionValue(horizonWidth, percentage, 0f));
+            selectedMat.SetFloat(SkyboxShaderUtils.HorizonHeight, TransitioningValues.GetTransitionValue(horizonHeight, percentage, 0f));
+            selectedMat.SetFloat(SkyboxShaderUtils.HorizonWidth, TransitioningValues.GetTransitionValue(horizonWidth, percentage, 0f));
             selectedMat.SetTexture(SkyboxShaderUtils.HorizonMask, horizonMask);
             selectedMat.SetVector(SkyboxShaderUtils.HorizonMaskValues, horizonMaskValues);
             selectedMat.SetColor(SkyboxShaderUtils.HorizonPlaneColor, horizonPlaneColor.Evaluate(normalizedDayTime));
-            selectedMat.SetFloat(SkyboxShaderUtils.HorizonPlaneHeight, GetTransitionValue(horizonPlaneHeight, percentage, -1f));
+            selectedMat.SetFloat(SkyboxShaderUtils.HorizonPlaneHeight, TransitioningValues.GetTransitionValue(horizonPlaneHeight, percentage, -1f));
 
 
             // Apply Ambient colors to the rendering settings
@@ -187,38 +188,6 @@ namespace DCL.Skybox
             Shader.SetGlobalColor(ShaderUtils.LightColor, avatarEditorLightColor);
         }
 
-        public void ApplyDomeConfigurations(List<DomeReferences> domeReferences, float dayTime, float normalizedDayTime, int slotCount, Light directionalLightGO = null, float cycleTime = 24)
-        {
-            float percentage = normalizedDayTime * 100;
-            int domeCount = 0;
-
-            for (int i = 0; i < additional3Dconfig.Count; i++)
-            {
-                if (!additional3Dconfig[i].enabled)
-                {
-                    // Change all texture layer rendering to NotRendering
-                    continue;
-                }
-
-                // If dome is not active due to time, Increment dome number, close dome GO and continue
-                if (!additional3Dconfig[i].IsConfigActive(dayTime, cycleTime))
-                {
-                    domeReferences[domeCount].domeGO.SetActive(false);
-                    domeCount++;
-                    continue;
-                }
-
-                domeReferences[domeCount].domeGO.SetActive(true);
-
-                //Apply config
-                //General Values
-                domeReferences[domeCount].domeMat.SetColor(SkyboxShaderUtils.LightTint, directionalLightLayer.tintColor.Evaluate(normalizedDayTime));
-                domeReferences[domeCount].domeMat.SetVector(SkyboxShaderUtils.LightDirection, directionalLightGO.transform.rotation.eulerAngles);
-                ApplyTextureLayer(domeReferences[domeCount].domeMat, dayTime, normalizedDayTime, 0, additional3Dconfig[i].layers, cycleTime);
-                domeCount++;
-            }
-        }
-
         void ApplyAllSlots(Material selectedMat, List<TextureLayer> layers, float dayTime, float normalizedDayTime, int slotCount, float cycleTime = 24)
         {
             for (int i = 0; i < slotCount; i++)
@@ -231,7 +200,7 @@ namespace DCL.Skybox
                     continue;
                 }
 
-                ApplyTextureLayer(selectedMat, dayTime, normalizedDayTime, i, layer, cycleTime);
+                TextureLayerFunctionality.ApplyTextureLayer(selectedMat, dayTime, normalizedDayTime, i, layer, cycleTime);
             }
         }
 
@@ -387,7 +356,7 @@ namespace DCL.Skybox
             }
 
 
-            lightGO.intensity = GetTransitionValue(directionalLightLayer.intensity, normalizedDayTime * 100);
+            lightGO.intensity = TransitioningValues.GetTransitionValue(directionalLightLayer.intensity, normalizedDayTime * 100);
         }
 
         void ApplyDLDirection(float normalizedDayTime, Light lightGO)
@@ -429,399 +398,6 @@ namespace DCL.Skybox
 
             float t = Mathf.InverseLerp(min.percentage, max.percentage, percentage);
             lightGO.transform.rotation = Quaternion.Lerp(min.value, max.value, t);
-        }
-
-        #endregion
-
-        #region Apply texture layers
-
-        void ApplyTextureLayer(Material selectedMat, float dayTime, float normalizedDayTime, int slotNum, TextureLayer layer, float cycleTime = 24, bool changeAlllValues = true)
-        {
-            float endTimeEdited = layer.timeSpan_End;
-            float dayTimeEdited = dayTime;
-            if (layer.timeSpan_End < layer.timeSpan_start)
-            {
-                endTimeEdited = cycleTime + layer.timeSpan_End;
-                if (dayTime < layer.timeSpan_start)
-                {
-                    dayTimeEdited = cycleTime + dayTime;
-                }
-            }
-            float normalizedLayerTime = Mathf.InverseLerp(layer.timeSpan_start, endTimeEdited, dayTimeEdited);
-
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_layerType_" + slotNum), (int)layer.layerType);
-
-            bool fadeInChange = CheckFadingIn(selectedMat, dayTime, normalizedDayTime, slotNum, layer, cycleTime);
-
-            bool fadeOutChange = CheckFadingOut(selectedMat, dayTime, normalizedDayTime, slotNum, layer, cycleTime);
-
-            if (!fadeInChange && !fadeOutChange)
-            {
-                selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_fadeTime_" + slotNum), 1);
-            }
-
-            switch (layer.layerType)
-            {
-                case LayerType.Planar:
-                case LayerType.Radial:
-                    ApplyPlanarTextureLayer(selectedMat, dayTime, normalizedLayerTime, slotNum, layer, true);
-                    break;
-                case LayerType.Satellite:
-                    ApplySatelliteTextureLayer(selectedMat, dayTime, normalizedLayerTime, slotNum, layer, true);
-                    break;
-                case LayerType.Cubemap:
-                    ApplyCubemapTextureLayer(selectedMat, dayTime, normalizedLayerTime, slotNum, layer, true);
-                    break;
-                case LayerType.Particles:
-                    ApplyParticleTextureLayer(selectedMat, dayTime, normalizedLayerTime, slotNum, layer, true);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private bool CheckFadingIn(Material selectedMat, float dayTime, float normalizedDayTime, int slotNum, TextureLayer layer, float cycleTime = 24, bool changeAlllValues = true)
-        {
-            bool fadeChanged = false;
-            float fadeInCompletionTime = layer.timeSpan_start + layer.fadingInTime;
-            float dayTimeEdited = dayTime;
-            if (dayTime < layer.timeSpan_start)
-            {
-                dayTimeEdited = 24 + dayTime;
-            }
-
-            if (dayTimeEdited < fadeInCompletionTime)
-            {
-                float percentage = Mathf.InverseLerp(layer.timeSpan_start, fadeInCompletionTime, dayTimeEdited);
-                fadeChanged = true;
-                selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_fadeTime_" + slotNum), percentage);
-            }
-
-            return fadeChanged;
-        }
-
-        private bool CheckFadingOut(Material selectedMat, float dayTime, float normalizedDayTime, int slotNum, TextureLayer layer, float cycleTime = 24, bool changeAlllValues = true)
-        {
-            bool fadeChanged = false;
-            float endTimeEdited = layer.timeSpan_End;
-            float dayTimeEdited = dayTime;
-
-            if (layer.timeSpan_End < layer.timeSpan_start)
-            {
-                endTimeEdited = cycleTime + layer.timeSpan_End;
-            }
-
-            if (dayTime < layer.timeSpan_start)
-            {
-                dayTimeEdited = cycleTime + dayTime;
-            }
-
-
-            float fadeOutStartTime = endTimeEdited - layer.fadingOutTime;
-
-            if (dayTimeEdited > fadeOutStartTime)
-            {
-                float percentage = Mathf.InverseLerp(endTimeEdited, fadeOutStartTime, dayTimeEdited);
-                fadeChanged = true;
-                selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_fadeTime_" + slotNum), percentage);
-            }
-
-            return fadeChanged;
-        }
-
-        void ApplyCubemapTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
-        {
-            if (changeAlllValues)
-            {
-                selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_RenderDistance_" + layerNum), 0);
-                selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_tex_" + layerNum), null);
-                selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_cubemap_" + layerNum), layer.cubemap);
-                selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_normals_" + layerNum), null);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_timeFrame_" + layerNum), new Vector4(layer.timeSpan_start, layer.timeSpan_End));
-                selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_lightIntensity_" + layerNum), layer.tintPercentage / 100);
-                selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_normalIntensity_" + layerNum), 0);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortIntAndSize_" + layerNum), Vector2.zero);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortSpeedAndSharp_" + layerNum), Vector4.zero);
-                // Particles
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_rowAndCollumns_" + layerNum), Vector2.zero);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesMainParameters_" + layerNum), Vector4.zero);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesSecondaryParameters_" + layerNum), Vector4.zero);
-            }
-
-
-            selectedMat.SetColor(SkyboxShaderUtils.GetLayerProperty("_color_" + layerNum), layer.color.Evaluate(normalizedLayerTime));
-
-            // Set cubemap rotation. (Shader variable reused)   
-            if (layer.movementTypeCubemap == MovementType.PointBased)
-            {
-                Vector3 currentRotation = GetTransitionValue(layer.rotations_Vector3, normalizedLayerTime * 100);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_tilingAndOffset_" + layerNum), new Vector4(currentRotation.x, currentRotation.y, currentRotation.z, 0));
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_speedAndRotation_" + layerNum), new Vector4(0, 0, 0, 0));
-            }
-            else
-            {
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_tilingAndOffset_" + layerNum), new Vector4(0, 0, 0, 0));
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_speedAndRotation_" + layerNum), new Vector4(layer.speed_Vector3.x, layer.speed_Vector3.y, layer.speed_Vector3.z, 0));
-            }
-
-        }
-
-        void ApplyPlanarTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
-        {
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_RenderDistance_" + layerNum), GetTransitionValue(layer.renderDistance, normalizedLayerTime * 100, 3.4f));
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_tex_" + layerNum), layer.texture);
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_normals_" + layerNum), layer.textureNormal);
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_cubemap_" + layerNum), null);
-
-            selectedMat.SetColor(SkyboxShaderUtils.GetLayerProperty("_color_" + layerNum), layer.color.Evaluate(normalizedLayerTime));
-
-
-            if (layer.movementTypePlanar_Radial == MovementType.Speed)
-            {
-                // speed and Rotation
-                float rot = 0;
-                if (layer.layerType == LayerType.Planar)
-                {
-                    rot = GetTransitionValue(layer.rotations_float, normalizedLayerTime * 100);
-                }
-
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_speedAndRotation_" + layerNum), new Vector4(layer.speed_Vector2.x, layer.speed_Vector2.y, rot));
-
-                // Tiling and Offset
-                Vector4 t = new Vector4(layer.tiling.x, layer.tiling.y, 0, 0);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_tilingAndOffset_" + layerNum), t);
-            }
-            else
-            {
-                // speed and Rotation
-                float rot = 0;
-                if (layer.layerType == LayerType.Planar)
-                {
-                    rot = GetTransitionValue(layer.rotations_float, normalizedLayerTime * 100);
-                }
-
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_speedAndRotation_" + layerNum), new Vector4(0, 0, rot));
-
-                // Tiling and Offset
-                Vector2 currentOffset = GetTransitionValue(layer.offset, normalizedLayerTime * 100);
-                Vector4 t = new Vector4(layer.tiling.x, layer.tiling.y, currentOffset.x, currentOffset.y);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_tilingAndOffset_" + layerNum), t);
-            }
-
-
-            // Time frame
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_timeFrame_" + layerNum), new Vector4(layer.timeSpan_start, layer.timeSpan_End));
-            // normal intensity
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_normalIntensity_" + layerNum), layer.normalIntensity);
-            // Tint
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_lightIntensity_" + layerNum), layer.tintPercentage / 100);
-
-            // Reset Particle related Params
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_rowAndCollumns_" + layerNum), layer.flipbookRowsAndColumns);
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesMainParameters_" + layerNum), new Vector4(layer.flipbookAnimSpeed, 0, 0, 0));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesSecondaryParameters_" + layerNum), Vector4.zero);
-
-            // Apply Distortion Values
-            Vector2 distortIntAndSize = new Vector2(GetTransitionValue(layer.distortIntensity, normalizedLayerTime * 100), GetTransitionValue(layer.distortSize, normalizedLayerTime * 100));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortIntAndSize_" + layerNum), distortIntAndSize);
-
-            Vector2 distortSpeed = GetTransitionValue(layer.distortSpeed, normalizedLayerTime * 100);
-            Vector2 distortSharpness = GetTransitionValue(layer.distortSharpness, normalizedLayerTime * 100);
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortSpeedAndSharp_" + layerNum), new Vector4(distortSpeed.x, distortSpeed.y, distortSharpness.x, distortSharpness.y));
-        }
-
-        void ApplySatelliteTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
-        {
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_tex_" + layerNum), layer.texture);
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_normals_" + layerNum), layer.textureNormal);
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_cubemap_" + layerNum), null);
-
-            selectedMat.SetColor(SkyboxShaderUtils.GetLayerProperty("_color_" + layerNum), layer.color.Evaluate(normalizedLayerTime));
-
-            if (layer.movementTypeSatellite == MovementType.Speed)
-            {
-                // Tiling and Offset
-                Vector2 currentWidthHeight = GetTransitionValue(layer.satelliteWidthHeight, normalizedLayerTime * 100, new Vector2(1, 1));
-                Vector4 t = new Vector4(currentWidthHeight.x, currentWidthHeight.y, 0, 0);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_tilingAndOffset_" + layerNum), t);
-
-
-                // speed and Rotation
-                float rot = GetTransitionValue(layer.rotations_float, normalizedLayerTime * 100);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_speedAndRotation_" + layerNum), new Vector4(layer.speed_Vector2.x, layer.speed_Vector2.y, rot));
-            }
-            else
-            {
-                // Tiling and Offset
-                Vector2 currentOffset = GetTransitionValue(layer.offset, normalizedLayerTime * 100);
-                Vector2 currentWidthHeight = GetTransitionValue(layer.satelliteWidthHeight, normalizedLayerTime * 100, new Vector2(1, 1));
-                Vector4 t = new Vector4(currentWidthHeight.x, currentWidthHeight.y, currentOffset.x, currentOffset.y);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_tilingAndOffset_" + layerNum), t);
-
-                // speed and Rotation
-                float rot = GetTransitionValue(layer.rotations_float, normalizedLayerTime * 100);
-                selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_speedAndRotation_" + layerNum), new Vector4(0, 0, rot));
-            }
-
-            // Time frame
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_timeFrame_" + layerNum), new Vector4(layer.timeSpan_start, layer.timeSpan_End));
-            // normal intensity
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_normalIntensity_" + layerNum), layer.normalIntensity);
-            // Tint
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_lightIntensity_" + layerNum), layer.tintPercentage / 100);
-
-            // Reset Particle related Params
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_rowAndCollumns_" + layerNum), layer.flipbookRowsAndColumns);
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesMainParameters_" + layerNum), new Vector4(layer.flipbookAnimSpeed, 0, 0, 0));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesSecondaryParameters_" + layerNum), Vector4.zero);
-
-            // Reset Distortion values
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortIntAndSize_" + layerNum), Vector2.zero);
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortSpeedAndSharp_" + layerNum), Vector4.zero);
-
-        }
-
-        void ApplyParticleTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
-        {
-            // Reset Unused params
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_RenderDistance_" + layerNum), 0);
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_cubemap_" + layerNum), null);
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortIntAndSize_" + layerNum), Vector2.zero);
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortSpeedAndSharp_" + layerNum), Vector4.zero);
-
-
-            // Time frame
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_timeFrame_" + layerNum), new Vector4(layer.timeSpan_start, layer.timeSpan_End));
-            // Tint
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_lightIntensity_" + layerNum), layer.tintPercentage / 100);
-
-            // Particles
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_tex_" + layerNum), layer.texture);
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_normals_" + layerNum), layer.textureNormal);
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_normalIntensity_" + layerNum), layer.normalIntensity);
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_rowAndCollumns_" + layerNum), layer.flipbookRowsAndColumns);
-            selectedMat.SetColor(SkyboxShaderUtils.GetLayerProperty("_color_" + layerNum), layer.color.Evaluate(normalizedLayerTime));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_tilingAndOffset_" + layerNum), new Vector4(layer.particleTiling.x, layer.particleTiling.y, layer.particlesOffset.x, layer.particlesOffset.y));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_speedAndRotation_" + layerNum), GetTransitionValue(layer.particleRotation, normalizedLayerTime * 100));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesMainParameters_" + layerNum), new Vector4(layer.flipbookAnimSpeed, layer.particlesAmount, layer.particleMinSize, layer.particleMaxSize));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesSecondaryParameters_" + layerNum), new Vector4(layer.particlesHorizontalSpread, layer.particlesVerticalSpread, layer.particleMinFade, layer.particleMaxFade));
-
-
-        }
-
-        #endregion
-
-        #region Transition Values Utility Methods
-
-        float GetTransitionValue(List<TransitioningFloat> list, float percentage, float defaultVal = 0)
-        {
-            if (list == null || list.Count < 1)
-            {
-                return defaultVal;
-            }
-
-            if (list.Count == 1)
-            {
-                return list[0].value;
-            }
-
-            TransitioningFloat min = list[0], max = list[0];
-
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (percentage <= list[i].percentage)
-                {
-                    max = list[i];
-
-                    if ((i - 1) > 0)
-                    {
-                        min = list[i - 1];
-                    }
-
-                    break;
-                }
-            }
-
-            float t = Mathf.InverseLerp(min.percentage, max.percentage, percentage);
-            return Mathf.Lerp(min.value, max.value, t);
-        }
-
-        Vector2 GetTransitionValue(List<TransitioningVector2> list, float percentage, Vector2 defaultVal = default(Vector2))
-        {
-            Vector2 offset = defaultVal;
-
-            if (list == null || list.Count == 0)
-            {
-                return offset;
-            }
-
-            if (list.Count == 1)
-            {
-                offset = list[0].value;
-                return offset;
-            }
-
-
-            TransitioningVector2 min = list[0], max = list[0];
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (percentage <= list[i].percentage)
-                {
-                    max = list[i];
-
-                    if ((i - 1) > 0)
-                    {
-                        min = list[i - 1];
-                    }
-
-                    break;
-                }
-            }
-            float t = Mathf.InverseLerp(min.percentage, max.percentage, percentage);
-            offset = Vector2.Lerp(min.value, max.value, t);
-
-            return offset;
-        }
-
-        Vector3 GetTransitionValue(List<TransitioningVector3> list, float percentage)
-        {
-            Vector3 offset = new Vector3(0, 0, 0);
-
-            if (list == null || list.Count == 0)
-            {
-                return offset;
-            }
-
-            if (list.Count == 1)
-            {
-                offset = list[0].value;
-                return offset;
-            }
-
-
-            TransitioningVector3 min = list[0], max = list[0];
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (percentage <= list[i].percentage)
-                {
-                    max = list[i];
-
-                    if ((i - 1) > 0)
-                    {
-                        min = list[i - 1];
-                    }
-
-                    break;
-                }
-            }
-
-            float t = Mathf.InverseLerp(min.percentage, max.percentage, percentage);
-            offset = Vector3.Lerp(min.value, max.value, t);
-
-            return offset;
         }
 
         #endregion

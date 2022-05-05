@@ -7,7 +7,7 @@ public class FollowBehavior : MonoBehaviour
     public GameObject target;
     public bool followRot;
     public bool followPos;
-    public bool ignoreYAxis = true;
+    public bool ignoreYAxis = false;
 
     private void LateUpdate()
     {

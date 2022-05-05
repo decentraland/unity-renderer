@@ -4,13 +4,6 @@ using UnityEngine;
 
 namespace DCL.Skybox
 {
-    public class DomeReferences
-    {
-        public GameObject domeGO;
-        public Material domeMat;
-        public bool domeInUse;
-    }
-
     public class SatelliteReferences
     {
         public GameObject satelliteParent;
@@ -20,45 +13,69 @@ namespace DCL.Skybox
         public SatelliteLayerBehavior satelliteBehavior;
     }
 
-    public class SkyboxGameobjectsPool
+    public class SkyboxSatelliteElements
     {
-        const float domeDefaultSize = 50;
-        const string domeResourcesPath = "SkyboxPrefabs/Dome";
         const string satelliteParentResourcePath = "SkyboxPrefabs/Satellite Parent";
 
         private GameObject skyboxElements;
         private GameObject satelliteElements;
         private GameObject satelliteParentPrefab;
+        private FollowBehavior followBehavior;
 
         Dictionary<GameObject, Queue<SatelliteReferences>> satelliteReferences = new Dictionary<GameObject, Queue<SatelliteReferences>>();
         List<SatelliteReferences> usedSatellites = new List<SatelliteReferences>();
 
-        public void Initialize3DObjects(SkyboxConfiguration configuration)
+        public SkyboxSatelliteElements(GameObject skyboxElements)
         {
-            skyboxElements = GameObject.Find("Skybox Elements");
-
-            if (skyboxElements != null)
-            {
-                Object.DestroyImmediate(skyboxElements);
-            }
-
-            skyboxElements = new GameObject("Skybox Elements");
-            skyboxElements.layer = LayerMask.NameToLayer("Skybox");
-
-            MakeElementObject();
+            this.skyboxElements = skyboxElements;
+            // Get or instantiate Skybox elements GameObject
+            GetOrInstantiatePlanarElements();
         }
 
-        void MakeElementObject()
+        private void GetOrInstantiatePlanarElements()
         {
+            Transform satelliteParentTransform = skyboxElements.transform.Find("Satellite Elements");
+
+            if (satelliteParentTransform != null)
+            {
+                Object.DestroyImmediate(satelliteParentTransform.gameObject);
+            }
+
             satelliteElements = new GameObject("Satellite Elements");
             satelliteElements.layer = LayerMask.NameToLayer("Skybox");
             satelliteElements.transform.parent = skyboxElements.transform;
 
-            FollowBehavior followObj = satelliteElements.AddComponent<FollowBehavior>();
-            followObj.followPos = true;
+            followBehavior = satelliteElements.AddComponent<FollowBehavior>();
+            followBehavior.followPos = true;
+            followBehavior.ignoreYAxis = true;
         }
 
-        public void ResetObjects()
+        internal void ApplySatelliteConfigurations(SkyboxConfiguration config, float dayTime, float normalizedDayTime, Light directionalLightGO, float cycleTime)
+        {
+            ResetObjects();
+            List<SatelliteReferences> satelliteRefs = GetSatelliteAllActiveSatelliteRefs(config.satelliteLayers);
+
+            if (satelliteRefs.Count != config.satelliteLayers.Count)
+            {
+                Debug.LogError("Satellite not working!, cause of difference of count in config and 3D pool");
+                return;
+            }
+
+            for (int i = 0; i < satelliteRefs.Count; i++)
+            {
+                // If satellite is disabled, disable the 3D object too.
+                if (!config.satelliteLayers[i].enabled)
+                {
+                    satelliteRefs[i].satelliteParent.SetActive(false);
+                    satelliteRefs[i].satelliteBehavior.ChangeRenderType(LayerRenderType.NotRendering);
+                    continue;
+                }
+
+                satelliteRefs[i].satelliteBehavior.AssignValues(config.satelliteLayers[i], dayTime, cycleTime);
+            }
+        }
+
+        private void ResetObjects()
         {
             if (usedSatellites != null)
             {
@@ -72,9 +89,7 @@ namespace DCL.Skybox
             }
         }
 
-        #region Satellite
-
-        public List<SatelliteReferences> GetSatelliteAllActiveSatelliteRefs(List<Satellite3DLayer> satelliteLayers)
+        private List<SatelliteReferences> GetSatelliteAllActiveSatelliteRefs(List<Config3DSatellite> satelliteLayers)
         {
             for (int i = 0; i < satelliteLayers.Count; i++)
             {
@@ -83,7 +98,7 @@ namespace DCL.Skybox
             return usedSatellites;
         }
 
-        public SatelliteReferences GetSatelliteObject(Satellite3DLayer config)
+        private SatelliteReferences GetSatelliteObject(Config3DSatellite config)
         {
             SatelliteReferences tempSatellite = null;
 
@@ -117,7 +132,7 @@ namespace DCL.Skybox
             return tempSatellite;
         }
 
-        SatelliteReferences InstantiateNewSatelliteReference(Satellite3DLayer config)
+        private SatelliteReferences InstantiateNewSatelliteReference(Config3DSatellite config)
         {
             if (satelliteParentPrefab == null)
             {
@@ -148,15 +163,12 @@ namespace DCL.Skybox
             return satellite;
         }
 
-        internal void ResolveCameraDependency()
+        public void ResolveCameraDependency(Transform currentTransform)
         {
-            if (satelliteElements != null)
+            if (followBehavior != null)
             {
-                satelliteElements.GetComponent<FollowBehavior>().target = Camera.main.gameObject;
+                followBehavior.target = currentTransform.gameObject;
             }
         }
-
-        #endregion
-
     }
 }

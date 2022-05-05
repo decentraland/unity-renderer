@@ -34,6 +34,7 @@ namespace DCL.Skybox
         private List<RightPanelPins> rightPanelPins = new List<RightPanelPins>() { new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = "Background Layer" } };
 
         private CopyFunctionality copyPasteObj;
+        private SkyboxElements skyboxElements;
 
         [MenuItem("Window/Skybox Editor")]
         static void Init()
@@ -282,12 +283,21 @@ namespace DCL.Skybox
 
             RenderLeftPanelBaseSkyboxLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, renderingOrderList, copyPasteObj);
 
-            // Render 3D layers
-            EditorGUILayout.LabelField(SkyboxEditorLiterals.threeDLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
+            // Render Domes List
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.RenderDomeLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
 
-            RenderLeftPanel3DLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, copyPasteObj);
+            RenderLeftPanelDomeLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, copyPasteObj);
+
+            EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
+
+            // Render Satellite list
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.RenderSatelliteLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
+
+            EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
+
+            RenderLeftPanelSatelliteLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, copyPasteObj);
 
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndScrollView();
@@ -413,7 +423,10 @@ namespace DCL.Skybox
                     RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.baseSkyboxTargetLayer);
                     break;
                 case SkyboxEditorToolsParts.Elements3D_Dome:
-                    RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.targetDomeElement.layers);
+                    RenderDome3DLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.targetDomeElement);
+                    break;
+                case SkyboxEditorToolsParts.Elements3D_Satellite:
+                    RenderSatellite3DLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.targetSatelliteElement);
                     break;
                 default:
                     break;
@@ -498,11 +511,9 @@ namespace DCL.Skybox
                 directionalLight.type = LightType.Directional;
             }
 
-            // Init 3D
-            if (skyboxObjects == null)
+            if (skyboxElements == null)
             {
-                skyboxObjects = new SkyboxElements();
-                skyboxObjects.Initialize3DObjects(selectedConfiguration);
+                skyboxElements = new SkyboxElements();
             }
         }
 
@@ -515,6 +526,7 @@ namespace DCL.Skybox
                 selectedConfiguration = SkyboxController.i.GetCurrentConfiguration();
                 overridingController = SkyboxController.i.SetOverrideController(true);
                 timeOfTheDay = SkyboxController.i.GetCurrentTimeOfTheDay();
+                skyboxElements = SkyboxController.i.GetSkyboxElements();
                 UpdateConfigurationsList();
             }
         }
@@ -584,13 +596,13 @@ namespace DCL.Skybox
 
         void PauseTime() { isPaused = true; }
 
-        private SkyboxElements skyboxObjects;
         private void ApplyOnMaterial()
         {
             EnsureDependencies();
             float normalizedDayTime = SkyboxUtils.GetNormalizedDayTime(timeOfTheDay);
             selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
-            selectedConfiguration.ApplyDomeConfigurations(skyboxObjects.GetOrderedGameobjectList(selectedConfiguration.additional3Dconfig), timeOfTheDay, normalizedDayTime, 1, directionalLight);
+
+            skyboxElements.ApplyConfigTo3DElements(selectedConfiguration, timeOfTheDay, normalizedDayTime, directionalLight, SkyboxUtils.CYCLE_TIME, true);
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)

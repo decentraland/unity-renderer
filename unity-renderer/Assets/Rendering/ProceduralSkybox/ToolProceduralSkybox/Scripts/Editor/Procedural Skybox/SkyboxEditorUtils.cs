@@ -13,7 +13,8 @@ namespace DCL.Skybox
         Fog_Layer,
         Directional_Light_Layer,
         Base_Skybox,
-        Elements3D_Dome
+        Elements3D_Dome,
+        Elements3D_Satellite
     }
 
     public class RightPanelPins
@@ -22,6 +23,7 @@ namespace DCL.Skybox
         public SkyboxEditorToolsParts part;
         public TextureLayer baseSkyboxTargetLayer = null;
         public Config3DDome targetDomeElement;
+        public Config3DSatellite targetSatelliteElement;
         public bool pinned;
         public Vector2 scroll;
     }

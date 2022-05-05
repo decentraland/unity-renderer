@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DCL.Skybox
 {
-    public class RenderLeftPanel3DLayers
+    public class RenderLeftPanelDomeLayers
     {
         public static void Render(ref float timeOfTheDay, EditorToolMeasurements toolSize, SkyboxConfiguration config, Action<RightPanelPins> AddToRightPanel, CopyFunctionality copyPasteObj)
         {
