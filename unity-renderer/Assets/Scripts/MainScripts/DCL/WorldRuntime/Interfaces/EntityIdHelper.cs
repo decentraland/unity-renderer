@@ -103,11 +103,7 @@ namespace DCL
                 
                 // reserve 512 entity ids (<<9)
                 long newEntityIdLong = result << 9;
-                
-                // // store the mapping from newEntityIdLong->original
-                // if (!entityIdToLegacyId.ContainsKey(newEntityIdLong))
-                //     entityIdToLegacyId[newEntityIdLong] = entityId;
-                
+
                 return newEntityIdLong;
             }
             
