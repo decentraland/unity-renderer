@@ -14,7 +14,7 @@ public class PublicChatChannelController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly InputAction_Trigger closeWindowTrigger;
     private readonly DataStore dataStore;
-    private readonly RegexProfanityFilter regexProfanityFilter;
+    private readonly IProfanityFilter profanityFilter;
     private ChatHUDController chatHudController;
     private double initTimeInSeconds;
     private string channelId;
@@ -27,14 +27,14 @@ public class PublicChatChannelController : IHUD
         IUserProfileBridge userProfileBridge,
         InputAction_Trigger closeWindowTrigger,
         DataStore dataStore,
-        RegexProfanityFilter regexProfanityFilter)
+        IProfanityFilter profanityFilter)
     {
         this.chatController = chatController;
         this.lastReadMessagesService = lastReadMessagesService;
         this.userProfileBridge = userProfileBridge;
         this.closeWindowTrigger = closeWindowTrigger;
         this.dataStore = dataStore;
-        this.regexProfanityFilter = regexProfanityFilter;
+        this.profanityFilter = profanityFilter;
     }
 
     public void Initialize(IChannelChatWindowView view = null)
@@ -49,7 +49,7 @@ public class PublicChatChannelController : IHUD
         chatHudController = new ChatHUDController(dataStore,
             userProfileBridge,
             true,
-            regexProfanityFilter);
+            profanityFilter);
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnSendMessage += SendChatMessage;
         chatHudController.OnMessageUpdated += HandleMessageInputUpdated;
@@ -66,7 +66,7 @@ public class PublicChatChannelController : IHUD
         this.channelId = channelId;
 
         // TODO: retrieve data from a channel provider
-        View.Setup(this.channelId, "General", "Any useful description here");
+        View.Setup(this.channelId, "nearby", "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.");
 
         ReloadAllChats().Forget();
     }
