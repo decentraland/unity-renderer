@@ -9,8 +9,7 @@ namespace DCL
     public class MessagingControllersManager : IMessagingControllersManager
     {
         public static bool VERBOSE = false;
-
-        // Note(Adrian): This value was on 0.006f before the perfomance regresion
+        
         private const float MAX_GLOBAL_MSG_BUDGET = 0.006f;
         private const float MAX_SYSTEM_MSG_BUDGET_FOR_FAR_SCENES = 0.003f;
 
