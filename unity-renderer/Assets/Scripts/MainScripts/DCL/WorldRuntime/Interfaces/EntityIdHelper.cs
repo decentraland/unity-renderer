@@ -17,6 +17,7 @@ namespace DCL
         
         public string GetOriginalId(long entityId)
         {
+            // if the entityId is less than 512, then it is considered well-known.
             if (entityId < 512) {
                 switch (entityId)
                 {
@@ -37,29 +38,37 @@ namespace DCL
                 }
             }
             
+            // if it has the 0x8000_0000 mask, then it *should* be stored in the entityIdToLegacyId map
             if ((entityId & 0x80000000) != 0 && entityIdToLegacyId.ContainsKey(entityId)) {
                 // the entity has the 0x80000000 mask signaling it was an invalid ID
                 return entityIdToLegacyId[entityId];
             }
 
+            // lastly, fallback to generating the entityId based on the number.
             return ToBase36EntityId(entityId);
         }
         
         private static string ToBase36EntityId(long value)
         {
+            // TODO(mendez): the string builder approach can be better. It does use more allocations
+            //               than the optimal. The ideal scenario would use a `stackalloc char[13]` instead 
+            //               of StringBuilder but my knowledge and tools for C# are limited at the moment
             const string base36 = "0123456789abcdefghijklmnopqrstuvwxyz";
-            // this can be static in the class
             var sb = new StringBuilder(13);
 
-            value = value >> 9;
-            value -= 1;
+            value = value >> 9; // recover from bit-shift
+            value -= 1; // recover the added 1
+
             do
             {
                 sb.Insert(0, base36[(byte)(value % 36)]);
                 value /= 36;
             } while (value != 0);
-            sb.Insert(0, "E"); // E prefix for entities
-			return sb.ToString();
+
+            // E prefix for entities
+            sb.Insert(0, "E");
+
+	          return sb.ToString();
         }
         
         public long EntityFromLegacyEntityString(string entityId)
@@ -100,6 +109,7 @@ namespace DCL
         }
 
         long entityIdFromDictionary(string entityId) {
+            // first we try against well known and lesser used entities
             switch (entityId)
             {
                 case SpecialEntityIdLegacyLiteral.SCENE_ROOT_ENTITY:
@@ -117,17 +127,21 @@ namespace DCL
                 case SpecialEntityIdLegacyLiteral.THIRD_PERSON_CAMERA_ENTITY_REFERENCE:
                     return (long) SpecialEntityId.THIRD_PERSON_CAMERA_ENTITY_REFERENCE;
             }
-            
-            // It is not base 36, so we assign a negative number for it
+
+            // secondly, test if it was already seen in invalidEntities
             if (invalidEntities.ContainsKey(entityId)) {
                 return invalidEntities[entityId];
             } else {
+                // generate the new ID, uses the mask 0x8000_0000
                 var newEntityIdLong = ++invalidEntityCounter | 0x80000000;
 				
+                // store the mapping from newEntityIdLong->original
                 if (!entityIdToLegacyId.ContainsKey(newEntityIdLong))
                     entityIdToLegacyId[newEntityIdLong] = entityId;
 					
+                // store the mapping original->newEntityIdLong
                 invalidEntities.Add(entityId, newEntityIdLong);
+
                 return newEntityIdLong;
             }
         }
