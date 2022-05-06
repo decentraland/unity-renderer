@@ -131,8 +131,10 @@ public class PlayerAvatarController : MonoBehaviour
         if (emoteItem != null)
         {
             socialAnalytics.SendPlayEmote(
+                emoteItem.id,
                 emoteItem.GetName(),
-                emoteItem.rarity, 
+                emoteItem.rarity,
+                emoteItem.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE),
                 source,
                 $"{CommonScriptableObjects.playerCoords.Get().x},{CommonScriptableObjects.playerCoords.Get().y}");
         }

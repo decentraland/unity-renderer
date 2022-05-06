@@ -23,6 +23,6 @@ namespace SocialFeaturesAnalytics
         void SendPlayerUnblocked(bool isFriend, FriendActionSource source);
         void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, FriendActionSource source);
         void SendPlayerJoin(FriendActionSource source);
-        void SendPlayEmote(string emoteName, string rarity, UserProfile.EmoteSource source, string parcelLocation);
+        void SendPlayEmote(string emoteId, string emoteName, string rarity, bool isBaseEmote, UserProfile.EmoteSource source, string parcelLocation);
     }
 }

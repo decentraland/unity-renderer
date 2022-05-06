@@ -28,7 +28,7 @@ namespace SocialFeaturesAnalytics.TestHelpers
             mockedSocialAnalytics.When(x => x.SendPlayerUnblocked(Arg.Any<bool>(), Arg.Any<FriendActionSource>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendPlayerReport(Arg.Any<PlayerReportIssueType>(), Arg.Any<double>(), Arg.Any<FriendActionSource>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendPlayerJoin(Arg.Any<FriendActionSource>())).Do(x => { });
-            mockedSocialAnalytics.When(x => x.SendPlayEmote(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<UserProfile.EmoteSource>(), Arg.Any<string>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendPlayEmote(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<UserProfile.EmoteSource>(), Arg.Any<string>())).Do(x => { });
 
             return mockedSocialAnalytics;
         }

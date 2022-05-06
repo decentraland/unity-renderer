@@ -241,11 +241,13 @@ namespace SocialFeaturesAnalytics
             GenericAnalytics.SendAnalytic(PLAYER_JOIN, data);
         }
 
-        public void SendPlayEmote(string emoteName, string rarity, UserProfile.EmoteSource source, string parcelLocation)
+        public void SendPlayEmote(string emoteId, string emoteName, string rarity, bool isBaseEmote, UserProfile.EmoteSource source, string parcelLocation)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("id", emoteName);
+            data.Add("id", emoteId);
+            data.Add("name", emoteName);
             data.Add("rarity", rarity);
+            data.Add("isBase", isBaseEmote.ToString());
             data.Add("source", source.ToString());
             data.Add("parcel_location", parcelLocation);
 
