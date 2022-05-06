@@ -4,6 +4,23 @@ using UnityEngine;
 
 namespace DCL.Skybox
 {
+    public static class SkyboxUtils
+    {
+        /// <summary>
+        /// Time for one complete circle. In Hours. default 24
+        /// </summary>
+        public const float CYCLE_TIME = 24;
+
+        public static float GetNormalizedDayTime(float timeOfTheDay)
+        {
+            float tTime = timeOfTheDay / SkyboxUtils.CYCLE_TIME;
+            tTime = Mathf.Clamp(tTime, 0, 1);
+            return tTime;
+        }
+
+        public static Quaternion Vector4ToQuaternion(Vector4 val) { return new Quaternion(val.x, val.y, val.z, val.w); }
+    }
+
     public static class SkyboxShaderUtils
     {
         public static Dictionary<string, int> shaderLayersProperties;

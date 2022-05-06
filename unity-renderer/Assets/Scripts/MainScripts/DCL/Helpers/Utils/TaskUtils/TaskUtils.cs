@@ -24,7 +24,6 @@ namespace DCL.Helpers
             }
             else
             {
-                await UniTask.Yield(cancellationToken);
                 action();
             }
         }
@@ -74,8 +73,6 @@ namespace DCL.Helpers
             {
                 return await UniTask.RunOnThreadPool(action, returnToMainThread, cancellationToken);
             }
-
-            await UniTask.Yield(cancellationToken);
 
             return action();
         }

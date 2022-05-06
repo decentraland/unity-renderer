@@ -129,6 +129,7 @@ namespace DCL.ABConverter
             bool shouldGenerateAssetBundles = generateAssetBundles;
             bool assetsAlreadyDumped = false;
 
+            GLTFImporter.ShouldWaitForPreloadedGLTF = true;
             GLTFImporter.PreloadedGLTFObjects.Clear();
             string currentLoadingGLTF = "";
             
@@ -149,7 +150,7 @@ namespace DCL.ABConverter
                         {
                             if (!value.IsCompleted && string.IsNullOrEmpty(currentLoadingGLTF))
                             {
-                                value.LoadScene(CancellationToken.None).Preserve().Forget();
+                                value.LoadScene(CancellationToken.None).Wait(TimeSpan.FromSeconds(1));
                                 currentLoadingGLTF = key;
                             }
                             

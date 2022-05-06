@@ -75,6 +75,9 @@ namespace DCL.Skybox
         // Timeline Tags
         public List<TimelineTagsDuration> timelineTags = new List<TimelineTagsDuration>();
 
+        // 3D Components
+        public List<Config3DDome> additional3Dconfig = new List<Config3DDome>();
+
         private float cycleTime = 24;
 
         public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, Light directionalLightGO = null, float cycleTime = 24)
@@ -160,7 +163,7 @@ namespace DCL.Skybox
             // Check and Fire timeline events
             CheckAndFireTimelineEvents(dayTime);
 
-            ApplyAllSlots(selectedMat, dayTime, normalizedDayTime, slotCount, cycleTime);
+            ApplyAllSlots(selectedMat, layers, dayTime, normalizedDayTime, slotCount, cycleTime);
         }
 
         public void ApplyInWorldAvatarColor(float normalizedDayTime, GameObject directionalLightGO)
@@ -203,11 +206,43 @@ namespace DCL.Skybox
             Shader.SetGlobalColor(ShaderUtils.LightColor, avatarEditorLightColor);
         }
 
-        void ApplyAllSlots(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, float cycleTime = 24)
+        public void ApplyDomeConfigurations(List<DomeReferences> domeReferences, float dayTime, float normalizedDayTime, int slotCount, Light directionalLightGO = null, float cycleTime = 24)
+        {
+            float percentage = normalizedDayTime * 100;
+            int domeCount = 0;
+
+            for (int i = 0; i < additional3Dconfig.Count; i++)
+            {
+                if (!additional3Dconfig[i].enabled)
+                {
+                    // Change all texture layer rendering to NotRendering
+                    continue;
+                }
+
+                // If dome is not active due to time, Increment dome number, close dome GO and continue
+                if (!additional3Dconfig[i].IsConfigActive(dayTime, cycleTime))
+                {
+                    domeReferences[domeCount].domeGO.SetActive(false);
+                    domeCount++;
+                    continue;
+                }
+
+                domeReferences[domeCount].domeGO.SetActive(true);
+
+                //Apply config
+                //General Values
+                domeReferences[domeCount].domeMat.SetColor(SkyboxShaderUtils.LightTint, directionalLightLayer.tintColor.Evaluate(normalizedDayTime));
+                domeReferences[domeCount].domeMat.SetVector(SkyboxShaderUtils.LightDirection, directionalLightGO.transform.rotation.eulerAngles);
+                ApplyTextureLayer(domeReferences[domeCount].domeMat, dayTime, normalizedDayTime, 0, additional3Dconfig[i].layers, cycleTime);
+                domeCount++;
+            }
+        }
+
+        void ApplyAllSlots(Material selectedMat, List<TextureLayer> layers, float dayTime, float normalizedDayTime, int slotCount, float cycleTime = 24)
         {
             for (int i = 0; i < slotCount; i++)
             {
-                TextureLayer layer = GetActiveLayer(dayTime, i);
+                TextureLayer layer = GetActiveLayer(layers, dayTime, i);
 
                 if (layer == null || !layer.enabled)
                 {
@@ -219,7 +254,7 @@ namespace DCL.Skybox
             }
         }
 
-        public TextureLayer GetActiveLayer(float currentTime, int slotID)
+        public TextureLayer GetActiveLayer(List<TextureLayer> layers, float currentTime, int slotID)
         {
             TextureLayer temp = null;
 
@@ -819,6 +854,5 @@ namespace DCL.Skybox
             selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesSecondaryParameters_" + slotCount), new Vector4(0, 0, 0, 0));
         }
 
-        Quaternion Vector4ToQuaternion(Vector4 val) { return new Quaternion(val.x, val.y, val.z, val.w); }
     }
 }
