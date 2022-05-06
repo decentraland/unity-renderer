@@ -22,8 +22,7 @@ namespace DCL.Skybox
         public static void RenderFloatField(string label, ref float value)
         {
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
-            value = EditorGUILayout.FloatField(value, GUILayout.Width(90));
+            value = EditorGUILayout.FloatField(label, value, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
@@ -90,6 +89,25 @@ namespace DCL.Skybox
                 EditorGUILayout.LabelField(endTime + SkyboxEditorLiterals.short_Hour, GUILayout.Width(65), GUILayout.ExpandWidth(false));
             }
             GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
+        public static void RenderPrefabInput(string label, ref GameObject obj)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            obj = (GameObject)EditorGUILayout.ObjectField(obj, typeof(GameObject), false, GUILayout.Width(200));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
+        public static void RenderEnumPopup<T>(string label, ref T enumVar) where T : System.Enum
+        {
+            // Layer Type
+            EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            enumVar = (T)EditorGUILayout.EnumPopup(enumVar, GUILayout.Width(200));
+            EditorGUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
     }
