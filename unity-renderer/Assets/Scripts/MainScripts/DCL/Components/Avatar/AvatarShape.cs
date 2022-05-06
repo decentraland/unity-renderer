@@ -248,7 +248,9 @@ namespace DCL
                 {
                     // TODO: Note: This is having a problem, sometimes the users has been detected as new 2 times and it shouldn't happen
                     // we should investigate this 
-                    otherPlayers[player.id] = player;
+                    if (otherPlayers.ContainsKey(player.id))
+                        otherPlayers.Remove(player.id);
+                    otherPlayers.Add(player.id, player);
                 }
                 avatarReporterController.ReportAvatarRemoved();
             }
