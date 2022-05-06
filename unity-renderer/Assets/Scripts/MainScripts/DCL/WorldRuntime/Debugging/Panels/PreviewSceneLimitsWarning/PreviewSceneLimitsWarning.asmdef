@@ -1,0 +1,23 @@
+{
+  "name": "PreviewSceneLimitsWarning",
+  "rootNamespace": "",
+  "references": [
+    "GUID:c44f6fd10d3d94432a107d581e0096b5",
+    "GUID:760a1d365aad58044916992b072cf2a6",
+    "GUID:97d8897529779cb49bebd400c7f402a6",
+    "GUID:3f4c1b4f55716479ea104c4254afe172",
+    "GUID:70aa308435753374584c7061e4b89ef2",
+    "GUID:e6f5b34eba99b4ed9836f899578ee258",
+    "GUID:029e05fd02d6c49d5ac9dd7e3725a35b",
+    "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -21,7 +21,7 @@ namespace Builder
             {
                 if (rootEntity != null)
                 {
-                    return rootEntity.components.ContainsKey(CLASS_ID_COMPONENT.GIZMOS);
+                    return rootEntity.scene.componentsManagerLegacy.HasComponent(rootEntity, CLASS_ID_COMPONENT.GIZMOS);
                 }
                 else
                 {
@@ -36,7 +36,7 @@ namespace Builder
             {
                 if (rootEntity != null)
                 {
-                    return rootEntity.components.ContainsKey(CLASS_ID_COMPONENT.SMART_ITEM);
+                    return rootEntity.scene.componentsManagerLegacy.HasComponent(rootEntity, CLASS_ID_COMPONENT.SMART_ITEM);
                 }
                 else
                 {

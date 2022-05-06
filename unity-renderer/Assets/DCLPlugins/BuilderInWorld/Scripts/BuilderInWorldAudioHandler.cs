@@ -45,7 +45,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     [SerializeField]
     AudioEvent eventBuilderMusic;
 
-    private List<string> entitiesOutOfBounds = new List<string>();
+    private List<long> entitiesOutOfBounds = new List<long>();
     private int entityCount;
     bool playPlacementSoundOnDeselect;
     private IBIWModeController.EditModeState state = IBIWModeController.EditModeState.Inactive;

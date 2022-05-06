@@ -12,7 +12,6 @@ namespace DCL
         private ServiceLocator serviceLocator;
         public IWorldState state => serviceLocator.Get<IWorldState>();
         public ISceneController sceneController => serviceLocator.Get<ISceneController>();
-        public IPointerEventsController pointerEventsController => serviceLocator.Get<IPointerEventsController>();
         public ISceneBoundsChecker sceneBoundsChecker => serviceLocator.Get<ISceneBoundsChecker>();
         public IWorldBlockersController blockersController => serviceLocator.Get<IWorldBlockersController>();
         public IRuntimeComponentFactory componentFactory => serviceLocator.Get<IRuntimeComponentFactory>();

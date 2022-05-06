@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
@@ -11,6 +12,13 @@ using UnityEngine.TestTools;
 
 public class PluginSystemShould
 {
+    public interface Plugin1 : IPlugin {}
+    public interface Plugin2 : IPlugin {}
+    public interface Plugin3 : Plugin2 {}
+    public interface Plugin4 : Plugin3 {}
+    public interface Plugin5 : Plugin4 {}
+    public interface Plugin6 : Plugin5 {}
+    
     [Test]
     public void EnablePluginWhenFlagIsSetBeforeAddingIt()
     {
@@ -21,14 +29,14 @@ public class PluginSystemShould
         flagData.Set(featureFlags);
 
         var pluginSystem = new PluginSystem();
-        PluginBuilder pluginBuilder = () => Substitute.For<IPlugin>();
+        PluginBuilder pluginBuilder = () => Substitute.For<Plugin1>();
 
-        pluginSystem.RegisterWithFlag(pluginBuilder, "test-flag");
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder), Is.False);
+        pluginSystem.RegisterWithFlag<Plugin1>(pluginBuilder, "test-flag");
+        Assert.That(pluginSystem.IsEnabled<Plugin1>(), Is.False);
 
         pluginSystem.SetFeatureFlagsData(flagData);
 
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder), Is.True);
+        Assert.That(pluginSystem.IsEnabled<Plugin1>(), Is.True);
         pluginSystem.Dispose();
     }
 
@@ -38,10 +46,10 @@ public class PluginSystemShould
         var flagData = new BaseVariable<FeatureFlag>(new FeatureFlag());
 
         var pluginSystem = new PluginSystem();
-        PluginBuilder pluginBuilder = () => Substitute.For<IPlugin>();
+        PluginBuilder pluginBuilder = () => Substitute.For<Plugin1>();
 
-        pluginSystem.RegisterWithFlag(pluginBuilder, "test-flag");
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder), Is.False);
+        pluginSystem.RegisterWithFlag<Plugin1>(pluginBuilder, "test-flag");
+        Assert.That(pluginSystem.IsEnabled<Plugin1>(), Is.False);
 
         pluginSystem.SetFeatureFlagsData(flagData);
 
@@ -49,7 +57,7 @@ public class PluginSystemShould
         newFF.flags.Add("test-flag", true);
         flagData.Set(newFF);
 
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder), Is.True);
+        Assert.That(pluginSystem.IsEnabled<Plugin1>(), Is.True);
         pluginSystem.Dispose();
     }
 
@@ -57,10 +65,11 @@ public class PluginSystemShould
     public void EnablePluginWhenIsAddedWithoutFlag()
     {
         var pluginSystem = new PluginSystem();
-        PluginBuilder pluginBuilder = () => Substitute.For<IPlugin>();
+        PluginBuilder pluginBuilder = () => Substitute.For<Plugin1>();
 
-        pluginSystem.Register(pluginBuilder);
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder), Is.True);
+        pluginSystem.Register<Plugin1>(pluginBuilder);
+        pluginSystem.Initialize();
+        Assert.That(pluginSystem.IsEnabled<Plugin1>(), Is.True);
         pluginSystem.Dispose();
     }
 
@@ -73,36 +82,38 @@ public class PluginSystemShould
         var flagData = new BaseVariable<FeatureFlag>(featureFlags);
 
         var pluginSystem = new PluginSystem();
-        PluginBuilder pluginBuilder1 = () => Substitute.For<IPlugin>();
-        PluginBuilder pluginBuilder2 = () => Substitute.For<IPlugin>();
-        PluginBuilder pluginBuilder3 = () => Substitute.For<IPlugin>();
-        PluginBuilder pluginBuilder4 = () => Substitute.For<IPlugin>();
-        PluginBuilder pluginBuilder5 = () => Substitute.For<IPlugin>();
-        PluginBuilder pluginBuilder6 = () => Substitute.For<IPlugin>();
 
-        pluginSystem.RegisterWithFlag(pluginBuilder1, "test-flag-1");
-        pluginSystem.RegisterWithFlag(pluginBuilder2, "test-flag-1");
-        pluginSystem.RegisterWithFlag(pluginBuilder3, "test-flag-1");
-        pluginSystem.RegisterWithFlag(pluginBuilder4, "test-flag-2");
-        pluginSystem.RegisterWithFlag(pluginBuilder5, "test-flag-2");
-        pluginSystem.RegisterWithFlag(pluginBuilder6, "test-flag-2");
+        PluginBuilder pluginBuilder1 = () => Substitute.For<Plugin1>();
+        PluginBuilder pluginBuilder2 = () => Substitute.For<Plugin2>();
+        PluginBuilder pluginBuilder3 = () => Substitute.For<Plugin3>();
+        PluginBuilder pluginBuilder4 = () => Substitute.For<Plugin4>();
+        PluginBuilder pluginBuilder5 = () => Substitute.For<Plugin5>();
+        PluginBuilder pluginBuilder6 = () => Substitute.For<Plugin6>();
+
+        pluginSystem.RegisterWithFlag<Plugin1>(pluginBuilder1, "test-flag-1");
+        pluginSystem.RegisterWithFlag<Plugin2>(pluginBuilder2, "test-flag-1");
+        pluginSystem.RegisterWithFlag<Plugin3>(pluginBuilder3, "test-flag-1");
+        pluginSystem.RegisterWithFlag<Plugin4>(pluginBuilder4, "test-flag-2");
+        pluginSystem.RegisterWithFlag<Plugin5>(pluginBuilder5, "test-flag-2");
+        pluginSystem.RegisterWithFlag<Plugin6>(pluginBuilder6, "test-flag-2");
+        pluginSystem.Initialize();
 
         pluginSystem.SetFeatureFlagsData(flagData);
 
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder1), Is.True);
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder2), Is.True);
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder3), Is.True);
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder4), Is.False);
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder5), Is.False);
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder6), Is.False);
+        Assert.That(pluginSystem.IsEnabled<Plugin1>(), Is.True);
+        Assert.That(pluginSystem.IsEnabled<Plugin2>(), Is.True);
+        Assert.That(pluginSystem.IsEnabled<Plugin3>(), Is.True);
+        Assert.That(pluginSystem.IsEnabled<Plugin4>(), Is.False);
+        Assert.That(pluginSystem.IsEnabled<Plugin5>(), Is.False);
+        Assert.That(pluginSystem.IsEnabled<Plugin6>(), Is.False);
 
         var newFF = new FeatureFlag();
         newFF.flags.Add("test-flag-2", true);
         flagData.Set(newFF);
 
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder4), Is.True);
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder5), Is.True);
-        Assert.That(pluginSystem.IsEnabled(pluginBuilder6), Is.True);
+        Assert.That(pluginSystem.IsEnabled<Plugin4>(), Is.True);
+        Assert.That(pluginSystem.IsEnabled<Plugin5>(), Is.True);
+        Assert.That(pluginSystem.IsEnabled<Plugin6>(), Is.True);
         pluginSystem.Dispose();
     }
 
@@ -130,6 +141,27 @@ public class PluginSystemShould
     public void BeDisposedProperly()
     {
         var pluginSystem = new PluginSystem();
+        pluginSystem.Dispose();
+    }
+
+    [Test]
+    public void OverrideRegister()
+    {
+        var pluginSystem = new PluginSystem();
+
+        PluginBuilder pluginBuilder1 = () => Substitute.For<Plugin1>();
+        PluginBuilder pluginBuilder2 = () => Substitute.For<Plugin2>();
+
+        pluginSystem.Register<Plugin1>(pluginBuilder1);
+        pluginSystem.Register<Plugin1>(pluginBuilder2);
+        pluginSystem.Initialize();
+
+        Type type = typeof(Plugin1);
+        PluginInfo pluginInfo;
+        bool hasValue = pluginSystem.allPlugins.plugins.TryGetValue(type, out pluginInfo);
+        Assert.That(hasValue, Is.True);
+        Assert.That(pluginInfo != null, Is.True);
+        Assert.That(pluginInfo.builder == pluginBuilder2, Is.True);
         pluginSystem.Dispose();
     }
 }

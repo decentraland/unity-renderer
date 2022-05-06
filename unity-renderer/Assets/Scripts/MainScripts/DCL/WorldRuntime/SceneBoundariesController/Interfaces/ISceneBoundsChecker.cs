@@ -25,6 +25,8 @@ namespace DCL.Controllers
         /// </summary>
         void AddPersistent(IDCLEntity entity);
 
+        void RemovePersistent(IDCLEntity entity);
+
         /// <summary>
         /// Returns whether an entity was added to be consistently checked
         /// </summary>

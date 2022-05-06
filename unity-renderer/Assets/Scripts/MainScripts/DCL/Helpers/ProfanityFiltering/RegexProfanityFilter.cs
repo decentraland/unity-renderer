@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using Cysharp.Threading.Tasks;
 
-public class RegexProfanityFilter
+public class RegexProfanityFilter : IProfanityFilter
 {
     private readonly Regex regex;
 
@@ -13,7 +14,7 @@ public class RegexProfanityFilter
         regex = new Regex(@$"\b({explicitWords})\b|({nonExplicitWords})", RegexOptions.IgnoreCase);
     }
 
-    public string Filter(string message)
+    public async UniTask<string> Filter(string message)
     {
         if (string.IsNullOrEmpty(message)) return message;
         return regex.Replace(message,

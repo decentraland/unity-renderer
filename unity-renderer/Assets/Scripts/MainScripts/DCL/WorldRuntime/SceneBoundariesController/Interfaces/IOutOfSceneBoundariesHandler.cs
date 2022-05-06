@@ -2,6 +2,6 @@
 {
     public interface IOutOfSceneBoundariesHandler
     {
-        void UpdateOutOfBoundariesState(bool enable);
+        void UpdateOutOfBoundariesState(bool isInsideBoundaries);
     }
 }

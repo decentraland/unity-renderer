@@ -17,7 +17,7 @@ namespace DCL.Camera
         private Transform cameraTransform;
 
         [SerializeField]
-        internal CinemachineFreeLook thirdPersonCamera; 
+        internal CinemachineFreeLook thirdPersonCamera;
 
         [Header("Virtual Cameras")]
         [SerializeField]
@@ -102,13 +102,10 @@ namespace DCL.Camera
             if (visibleState == prevVisibleState)
                 return;
 
-            camera.enabled = !visibleState && CommonScriptableObjects.rendererState.Get();
+            SetCameraEnabledState(!visibleState && CommonScriptableObjects.rendererState.Get());
         }
 
-        void OnOutputTextureChange(RenderTexture current, RenderTexture previous)
-        {
-            camera.targetTexture = current;
-        }
+        void OnOutputTextureChange(RenderTexture current, RenderTexture previous) { camera.targetTexture = current; }
 
         public bool TryGetCameraStateByType<T>(out CameraStateBase searchedCameraState)
         {
@@ -125,7 +122,7 @@ namespace DCL.Camera
             return false;
         }
 
-        private void OnRenderingStateChanged(bool enabled, bool prevState) { camera.enabled = enabled && !CommonScriptableObjects.isFullscreenHUDOpen; }
+        private void OnRenderingStateChanged(bool enabled, bool prevState) { SetCameraEnabledState(enabled && !CommonScriptableObjects.isFullscreenHUDOpen); }
 
         private void CameraBlocked_OnChange(bool current, bool previous)
         {
@@ -137,11 +134,13 @@ namespace DCL.Camera
 
         private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
         {
-            if (value > -mouseWheelThreshold && value < mouseWheelThreshold) return;
-            if (Utils.IsPointerOverUIElement()) return;
+            if ((value > -mouseWheelThreshold && value < mouseWheelThreshold) || CommonScriptableObjects.cameraModeInputLocked.Get())
+                return;
+            if (Utils.IsPointerOverUIElement())
+                return;
 
             if (CommonScriptableObjects.cameraMode == CameraMode.ModeId.FirstPerson && value < -mouseWheelThreshold)
-                SetCameraMode(CameraMode.ModeId.ThirdPerson);   
+                SetCameraMode(CameraMode.ModeId.ThirdPerson);
 
             if (CommonScriptableObjects.cameraMode == CameraMode.ModeId.ThirdPerson && value > mouseWheelThreshold)
                 SetCameraMode(CameraMode.ModeId.FirstPerson);
@@ -184,6 +183,7 @@ namespace DCL.Camera
             cameraForward.Set(cameraTransform.forward);
             cameraRight.Set(cameraTransform.right);
             DataStore.i.camera.rotation.Set(cameraTransform.rotation);
+            DataStore.i.camera.transform.Set(cameraTransform);
             cameraPosition.Set(cameraTransform.position);
             cameraIsBlending.Set(cameraBrain.IsBlending);
 
@@ -224,9 +224,12 @@ namespace DCL.Camera
 
         public UnityEngine.Camera GetCamera() { return camera; }
 
-        private void SetInvertYAxis(bool current, bool previous)
+        private void SetInvertYAxis(bool current, bool previous) { thirdPersonCamera.m_YAxis.m_InvertInput = !current; }
+
+        private void SetCameraEnabledState(bool enabled)
         {
-            thirdPersonCamera.m_YAxis.m_InvertInput = !current;
+            camera.enabled = enabled;
+            DataStore.i.camera.mainCamEnabled.Set(enabled);
         }
 
         private void OnDestroy()

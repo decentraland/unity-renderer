@@ -52,7 +52,7 @@ namespace DCL.Components
             if (visibilityDirty)
             {
                 // We shouldn't show shapes on entities that don't have a transform, otherwise they apear outside the scene bounds almost always
-                if (entity.components.ContainsKey(CLASS_ID_COMPONENT.TRANSFORM))
+                if (entity.scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TRANSFORM))
                 {
                     ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
                     visibilityDirty = false;

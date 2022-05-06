@@ -119,7 +119,7 @@ public class NFTShapeVisualTests : VisualTestsBase
         TestUtils.SharedComponentAttach(component, entity);
 
         // Override texture with a local test one
-        var nftShape = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
+        var nftShape = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_NFT;
         nftShape.loaderController.UpdateTexture(Resources.Load<Texture2D>("TestTexture"));
         nftShape.loaderController.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
     }

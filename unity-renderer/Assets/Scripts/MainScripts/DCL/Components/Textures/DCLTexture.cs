@@ -32,12 +32,13 @@ namespace DCL
 
         AssetPromise_Texture texturePromise = null;
 
+        private Dictionary<ISharedComponent, HashSet<long>> attachedEntitiesByComponent =
+            new Dictionary<ISharedComponent, HashSet<long>>();
+
         public TextureWrapMode unityWrap;
         public FilterMode unitySamplingMode;
         public Texture2D texture;
         protected bool isDisposed;
-
-        public Dictionary<ISharedComponent, HashSet<string>> attachedComponents = new Dictionary<ISharedComponent, HashSet<string>>();
 
         public override int GetClassId() { return (int) CLASS_ID.TEXTURE; }
 
@@ -52,13 +53,13 @@ namespace DCL
         public static IEnumerator FetchTextureComponent(IParcelScene scene, string componentId,
             System.Action<DCLTexture> OnFinish)
         {
-            if (!scene.disposableComponents.ContainsKey(componentId))
+            if (!scene.componentsManagerLegacy.HasSceneSharedComponent(componentId))
             {
                 Debug.Log($"couldn't fetch texture, the DCLTexture component with id {componentId} doesn't exist");
                 yield break;
             }
 
-            DCLTexture textureComponent = scene.disposableComponents[componentId] as DCLTexture;
+            DCLTexture textureComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(componentId) as DCLTexture;
 
             if (textureComponent == null)
             {
@@ -107,7 +108,9 @@ namespace DCL
 
                     // The used texture variable can't be null for the ImageConversion.LoadImage to work
                     if (texture == null)
+                    {
                         texture = new Texture2D(1, 1);
+                    }
 
                     if (!ImageConversion.LoadImage(texture, Convert.FromBase64String(base64Data)))
                     {
@@ -124,7 +127,7 @@ namespace DCL
                 }
                 else
                 {
-                    string contentsUrl;
+                    string contentsUrl = string.Empty;
                     bool isExternalURL = model.src.Contains("http://") || model.src.Contains("https://");
 
                     if (isExternalURL)
@@ -137,7 +140,6 @@ namespace DCL
                         if (texturePromise != null)
                             AssetPromiseKeeper_Texture.i.Forget(texturePromise);
 
-                        texture = null;
                         texturePromise = new AssetPromise_Texture(contentsUrl, unityWrap, unitySamplingMode, storeDefaultTextureInAdvance: true);
                         texturePromise.OnSuccessEvent += (x) => texture = x.texture;
                         texturePromise.OnFailEvent += (x, error) => { texture = null; };
@@ -149,55 +151,53 @@ namespace DCL
             }
         }
 
-        public virtual void AttachTo(PBRMaterial component) => AddReference(component);
-
-        public virtual void AttachTo(BasicMaterial component) => AddReference(component);
-
-        public virtual void AttachTo(UIImage component) => AddReference(component);
-
-        public virtual void DetachFrom(PBRMaterial component) => RemoveReference(component);
-
-        public virtual void DetachFrom(BasicMaterial component) => RemoveReference(component);
-
-        public virtual void DetachFrom(UIImage component) => RemoveReference(component);
-
-        void AddReference(ISharedComponent component)
+        public virtual void AttachTo(ISharedComponent component)
         {
-            if (attachedComponents.ContainsKey(component))
+            AddReference(component);
+        }
+
+        public virtual void DetachFrom(ISharedComponent component)
+        {
+            RemoveReference(component);
+        }
+
+        public void AddReference(ISharedComponent component)
+        {
+            if (attachedEntitiesByComponent.ContainsKey(component))
                 return;
 
-            attachedComponents.Add(component, new HashSet<string>());
+            attachedEntitiesByComponent.Add(component, new HashSet<long>());
 
-            foreach ( var entity in component.GetAttachedEntities() )
+            foreach (var entity in component.GetAttachedEntities())
             {
-                attachedComponents[component].Add(entity.entityId);
+                attachedEntitiesByComponent[component].Add(entity.entityId);
                 DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, entity.entityId, texture);
             }
         }
 
-        void RemoveReference(ISharedComponent component)
+        public void RemoveReference(ISharedComponent component)
         {
-            if (!attachedComponents.ContainsKey(component))
+            if (!attachedEntitiesByComponent.ContainsKey(component))
                 return;
 
-            foreach ( var entityId in attachedComponents[component] )
+            foreach (var entityId in attachedEntitiesByComponent[component])
             {
                 DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, entityId, texture);
             }
 
-            attachedComponents.Remove(component);
+            attachedEntitiesByComponent.Remove(component);
         }
 
         public override void Dispose()
         {
-            if ( isDisposed )
+            if (isDisposed)
                 return;
-
+            
             isDisposed = true;
 
-            while ( attachedComponents.Count > 0 )
+            while (attachedEntitiesByComponent.Count > 0)
             {
-                RemoveReference(attachedComponents.First().Key);
+                RemoveReference(attachedEntitiesByComponent.First().Key);
             }
 
             if (texturePromise != null)

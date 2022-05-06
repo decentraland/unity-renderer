@@ -51,13 +51,13 @@ namespace DCL.Components
             if ( string.IsNullOrEmpty(componentId))
                 return true;
 
-            if (!scene.disposableComponents.ContainsKey(componentId))
+            if (!scene.componentsManagerLegacy.HasSceneSharedComponent(componentId))
             {
                 Debug.Log($"couldn't fetch font, the DCLFont component with id {componentId} doesn't exist");
                 return false;
             }
 
-            DCLFont fontComponent = scene.disposableComponents[componentId] as DCLFont;
+            DCLFont fontComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(componentId) as DCLFont;
 
             if (fontComponent == null)
             {
@@ -73,7 +73,7 @@ namespace DCL.Components
             if ( string.IsNullOrEmpty(componentId))
                 yield break;
 
-            DCLFont fontComponent = scene.disposableComponents[componentId] as DCLFont;
+            DCLFont fontComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(componentId) as DCLFont;
 
             while (!fontComponent.loaded && !fontComponent.error)
             {
@@ -86,7 +86,7 @@ namespace DCL.Components
             if ( string.IsNullOrEmpty(componentId))
                 return;
 
-            DCLFont fontComponent = scene.disposableComponents[componentId] as DCLFont;
+            DCLFont fontComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(componentId) as DCLFont;
 
             if (!fontComponent.error)
             {

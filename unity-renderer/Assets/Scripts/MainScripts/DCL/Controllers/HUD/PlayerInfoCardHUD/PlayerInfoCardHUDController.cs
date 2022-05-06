@@ -1,12 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 public class PlayerInfoCardHUDController : IHUD
 {
+    internal const string PASSPORT_OPENED_EVENT = "passport_opened";
+
     internal readonly PlayerInfoCardHUDView view;
     internal readonly StringVariable currentPlayerId;
     internal UserProfile currentUserProfile;
@@ -20,7 +25,7 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly InputAction_Trigger toggleWorldChatTrigger;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IWearableCatalogBridge wearableCatalogBridge;
-    private readonly RegexProfanityFilter profanityFilter;
+    private readonly IProfanityFilter profanityFilter;
     private readonly DataStore dataStore;
     private readonly List<string> loadedWearables = new List<string>();
 
@@ -28,7 +33,7 @@ public class PlayerInfoCardHUDController : IHUD
         StringVariable currentPlayerIdData,
         IUserProfileBridge userProfileBridge,
         IWearableCatalogBridge wearableCatalogBridge,
-        RegexProfanityFilter profanityFilter,
+        IProfanityFilter profanityFilter,
         DataStore dataStore)
     {
         this.friendsController = friendsController;
@@ -137,8 +142,15 @@ public class PlayerInfoCardHUDController : IHUD
         else
         {
             currentUserProfile.OnUpdate += SetUserProfile;
-            SetUserProfile(currentUserProfile);
-            view.SetCardActive(true);
+
+            TaskUtils.Run(async () =>
+                     {
+                         await AsyncSetUserProfile(currentUserProfile);
+                         view.SetCardActive(true);
+                     })
+                     .Forget();
+
+            GenericAnalytics.SendAnalytic(PASSPORT_OPENED_EVENT);
         }
     }
 
@@ -146,8 +158,16 @@ public class PlayerInfoCardHUDController : IHUD
     {
         Assert.IsTrue(userProfile != null, "userProfile can't be null");
 
-        view.SetName(FilterName(userProfile));
-        view.SetDescription(FilterDescription(userProfile));
+        TaskUtils.Run(async () => await AsyncSetUserProfile(userProfile)).Forget();
+    }
+    private async UniTask AsyncSetUserProfile(UserProfile userProfile)
+    {
+        string filterName = await FilterName(userProfile);
+        string filterDescription = await FilterDescription(userProfile);
+        await UniTask.SwitchToMainThread();
+
+        view.SetName(filterName);
+        view.SetDescription(filterDescription);
         view.ClearCollectibles();
         view.SetIsBlocked(IsBlocked(userProfile.userId));
         LoadAndShowWearables(userProfile);
@@ -155,6 +175,7 @@ public class PlayerInfoCardHUDController : IHUD
 
         if (viewingUserProfile != null)
             viewingUserProfile.snapshotObserver.RemoveListener(view.SetFaceSnapshot);
+
         userProfile.snapshotObserver.AddListener(view.SetFaceSnapshot);
         viewingUserProfile = userProfile;
     }
@@ -162,7 +183,7 @@ public class PlayerInfoCardHUDController : IHUD
     public void SetVisibility(bool visible)
     {
         view.SetVisibility(visible);
-        
+
         if (viewingUserProfile != null)
             viewingUserProfile.snapshotObserver.RemoveListener(view.SetFaceSnapshot);
 
@@ -213,7 +234,7 @@ public class PlayerInfoCardHUDController : IHUD
 
         if (toggleFriendsTrigger != null)
             toggleFriendsTrigger.OnTriggered -= OnCloseButtonPressed;
-        
+
         if (viewingUserProfile != null)
             viewingUserProfile.snapshotObserver.RemoveListener(view.SetFaceSnapshot);
 
@@ -249,17 +270,17 @@ public class PlayerInfoCardHUDController : IHUD
     private void LoadAndShowWearables(UserProfile userProfile)
     {
         wearableCatalogBridge.RequestOwnedWearables(userProfile.userId)
-            .Then(wearables =>
-            {
-                var wearableIds = wearables.Select(x => x.id).ToArray();
-                userProfile.SetInventory(wearableIds);
-                loadedWearables.AddRange(wearableIds);
-                var containedWearables = wearables
-                    // this makes any sense?
-                    .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
-                view.SetWearables(containedWearables);
-            })
-            .Catch(Debug.LogError);
+                             .Then(wearables =>
+                             {
+                                 var wearableIds = wearables.Select(x => x.id).ToArray();
+                                 userProfile.SetInventory(wearableIds);
+                                 loadedWearables.AddRange(wearableIds);
+                                 var containedWearables = wearables
+                                     // this makes any sense?
+                                     .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
+                                 view.SetWearables(containedWearables);
+                             })
+                             .Catch(Debug.LogError);
     }
 
     private bool IsBlocked(string userId)
@@ -267,17 +288,17 @@ public class PlayerInfoCardHUDController : IHUD
         return ownUserProfile != null && ownUserProfile.IsBlocked(userId);
     }
 
-    private string FilterName(UserProfile userProfile)
+    private async UniTask<string> FilterName(UserProfile userProfile)
     {
         return IsProfanityFilteringEnabled()
-            ? profanityFilter.Filter(userProfile.userName)
+            ? await profanityFilter.Filter(userProfile.userName)
             : userProfile.userName;
     }
 
-    private string FilterDescription(UserProfile userProfile)
+    private async UniTask<string> FilterDescription(UserProfile userProfile)
     {
         return IsProfanityFilteringEnabled()
-            ? profanityFilter.Filter(userProfile.description)
+            ? await profanityFilter.Filter(userProfile.description)
             : userProfile.description;
     }
 

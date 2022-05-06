@@ -77,10 +77,11 @@ public class SmartItemActionEventAdapter : MonoBehaviour
 
     private void SelectedEntity(int number)
     {
-        if (!filteredList[number].rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent component))
+        var rootEntity = filteredList[number].rootEntity;
+        if (!rootEntity.scene.componentsManagerLegacy.TryGetBaseComponent(rootEntity, CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent component))
         {
             return;
-        }
+        }        
 
         actionEvent.smartItemActionable.entityId = filteredList[number].rootEntity.entityId;
         selectedEntity = filteredList[number];
@@ -153,8 +154,7 @@ public class SmartItemActionEventAdapter : MonoBehaviour
                 item.image = entitySpriteDict[entity];
             optionsList.Add(item);
 
-            if (!string.IsNullOrEmpty(actionEvent.smartItemActionable.entityId) &&
-                entity.rootEntity.entityId == actionEvent.smartItemActionable.entityId)
+            if (entity.rootEntity.entityId == actionEvent.smartItemActionable.entityId)
                 indexToUse = index;
 
             index++;

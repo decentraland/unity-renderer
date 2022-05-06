@@ -159,6 +159,12 @@ namespace DCL.Controllers
             persistentEntities.Add(entity);
         }
 
+        public void RemovePersistent(IDCLEntity entity)
+        {
+            if (persistentEntities.Contains(entity))
+                persistentEntities.Remove(entity);
+        }
+
         /// <summary>
         /// Returns whether an entity was added to be consistently checked
         /// </summary>
@@ -209,11 +215,11 @@ namespace DCL.Controllers
             if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
                 return;
 
-            var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
+            var loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
 
-            if (!entity.components.ContainsKey(CLASS_ID_COMPONENT.TRANSFORM))
+            if (!entity.scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TRANSFORM))
                 return;
             
             // entity.meshesInfo.RecalculateBounds();

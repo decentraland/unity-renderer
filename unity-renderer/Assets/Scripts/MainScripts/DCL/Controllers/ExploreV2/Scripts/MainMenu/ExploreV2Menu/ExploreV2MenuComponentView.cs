@@ -256,6 +256,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public void OnAfterShowAnimationCompleted()
     {
+        if(!DataStore.i.exploreV2.isOpen.Get())
+            return;
+
         DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
         OnAfterShowAnimation?.Invoke();
     }

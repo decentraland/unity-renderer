@@ -430,6 +430,7 @@ GameObject:
   - component: {fileID: 3774863987792430947}
   - component: {fileID: 5126883592997258683}
   - component: {fileID: 2827894067568205290}
+  - component: {fileID: 5297831391194203415}
   m_Layer: 5
   m_Name: Options
   m_TagString: Untagged
@@ -550,6 +551,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+--- !u!114 &5297831391194203415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1235273549235105683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &1406223747237966313
 GameObject:
   m_ObjectHideFlags: 0
@@ -1481,6 +1498,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneNameText: {fileID: 6701802903851004131}
   playerPositionText: {fileID: 7327527275377472240}
+  mainShowHideAnimator: {fileID: 4227713636645781401}
+  openNavmapButton: {fileID: 5098086527300088398}
   optionsButton: {fileID: 2827894067568205290}
   sceneOptionsPanel: {fileID: 4120991257912842633}
   toggleSceneUI: {fileID: 5161752188019229323}
@@ -1489,9 +1508,7 @@ MonoBehaviour:
   usersAroundListHudButton: {fileID: 2386856197401756260}
   mapRenderContainer: {fileID: 1347496358759656025}
   mapViewport: {fileID: 7368721439090438775}
-  openNavmapButton: {fileID: 5098086527300088398}
   toggleNavMapAction: {fileID: 11400000, guid: fc656e28ef52546e6a82e7ae7f5570b5, type: 2}
-  mainShowHideAnimator: {fileID: 4227713636645781401}
 --- !u!222 &269540385008896160
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2596,6 +2613,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -659517891130458604, guid: 4768a7605f725514d85fba8acf39f83e,
         type: 3}
+      propertyPath: model.isOn
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -659517891130458604, guid: 4768a7605f725514d85fba8acf39f83e,
+        type: 3}
       propertyPath: model.text
       value: Scene UI
       objectReference: {fileID: 0}
@@ -2733,6 +2755,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsOn
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8806659310530846726, guid: 4768a7605f725514d85fba8acf39f83e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008524825783389075, guid: 4768a7605f725514d85fba8acf39f83e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4768a7605f725514d85fba8acf39f83e, type: 3}

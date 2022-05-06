@@ -57,6 +57,7 @@ namespace DCL.ABConverter
         internal readonly string finalDownloadedAssetDbPath;
         public Dictionary<string, string> hashLowercaseToHashProper = new Dictionary<string, string>();
         internal bool generateAssetBundles = true;
+        internal bool cleanAndExitOnFinish = true;
 
         public ClientSettings settings;
 
@@ -114,7 +115,8 @@ namespace DCL.ABConverter
         public void Convert(ContentServerUtils.MappingPair[] rawContents, Action<ErrorCodes> OnFinish = null)
         {
             OnFinish -= CleanAndExit;
-            OnFinish += CleanAndExit;
+            if (cleanAndExitOnFinish)
+                OnFinish += CleanAndExit;
 
             startTime = Time.realtimeSinceStartup;
 
@@ -127,6 +129,7 @@ namespace DCL.ABConverter
             bool shouldGenerateAssetBundles = generateAssetBundles;
             bool assetsAlreadyDumped = false;
 
+            GLTFImporter.ShouldWaitForPreloadedGLTF = true;
             GLTFImporter.PreloadedGLTFObjects.Clear();
             string currentLoadingGLTF = "";
             
@@ -147,7 +150,7 @@ namespace DCL.ABConverter
                         {
                             if (!value.IsCompleted && string.IsNullOrEmpty(currentLoadingGLTF))
                             {
-                                value.LoadScene(CancellationToken.None).Preserve().Forget();
+                                value.LoadScene(CancellationToken.None).Wait(TimeSpan.FromSeconds(1));
                                 currentLoadingGLTF = key;
                             }
                             
@@ -299,9 +302,9 @@ namespace DCL.ABConverter
         {
             if (!BuildAssetBundles(out AssetBundleManifest manifest))
                 return;
-
+            
             CleanAssetBundleFolder(manifest.GetAllAssetBundles());
-
+            
             EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets(
                 env: env,
                 OnFinish: (skippedAssetsCount) =>
@@ -833,7 +836,7 @@ namespace DCL.ABConverter
         /// Clean all working folders and end the batch process.
         /// </summary>
         /// <param name="errorCode">final errorCode of the conversion process</param>
-        private void CleanAndExit(ErrorCodes errorCode)
+        public void CleanAndExit(ErrorCodes errorCode)
         {
             float conversionTime = Time.realtimeSinceStartup - startTime;
             logBuffer = $"Conversion finished!. last error code = {errorCode}";
@@ -853,6 +856,7 @@ namespace DCL.ABConverter
             log.Info(logBuffer);
 
             CleanupWorkingFolders();
+            
             Utils.Exit((int) errorCode);
         }
 

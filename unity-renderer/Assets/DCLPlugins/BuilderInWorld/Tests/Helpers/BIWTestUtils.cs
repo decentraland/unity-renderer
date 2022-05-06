@@ -239,7 +239,7 @@ public static class BIWTestUtils
 
         BIWEntity entity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
-        scene.EntityComponentCreateOrUpdateWithModel(entity.rootEntity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, model);
+        scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entity.rootEntity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, model);
 
         return entity;
     }
