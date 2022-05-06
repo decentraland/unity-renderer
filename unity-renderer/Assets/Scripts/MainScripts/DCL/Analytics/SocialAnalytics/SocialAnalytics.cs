@@ -122,7 +122,7 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
-            data.Add("length", messageLength.ToString());
+            data.Add("text_length", messageLength.ToString());
             data.Add("source", source.ToString());
 
             GenericAnalytics.SendAnalytic(FRIEND_REQUEST_SENT, data);
