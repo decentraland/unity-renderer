@@ -22,7 +22,7 @@ namespace DCL
             socialAnalytics = new SocialAnalytics();
 
             voiceChatStartedDelegate = (action) => StartVoiceChatRecording();
-            voiceChatFinishedDelegate = (action) => FinishVoiceChatRecording();
+            voiceChatFinishedDelegate = (action) => DCL.Interface.WebInterface.SendSetVoiceChatRecording(false);
             voiceChatToggleDelegate = (action) => DCL.Interface.WebInterface.ToggleVoiceChatRecording();
             voiceChatAction.OnStarted += voiceChatStartedDelegate;
             voiceChatAction.OnFinished += voiceChatFinishedDelegate;
@@ -52,12 +52,6 @@ namespace DCL
                 socialAnalytics.SendVoiceMessageStartedByFirstTime();
                 firstTimeVoiceRecorded = false;
             }
-        }
-
-        private void FinishVoiceChatRecording()
-        {
-            DCL.Interface.WebInterface.SendSetVoiceChatRecording(false);
-            socialAnalytics.SendVoiceMessageSent(Time.realtimeSinceStartup - currentVoiceMessageStartTime);
         }
     }
 }
