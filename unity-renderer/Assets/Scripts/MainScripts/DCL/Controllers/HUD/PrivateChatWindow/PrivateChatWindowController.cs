@@ -174,9 +174,6 @@ public class PrivateChatWindowController : IHUD
 
         chatHudController.AddChatMessage(message);
 
-        if (message.sender != userProfileBridge.GetOwn().userId)
-            socialAnalytics.SendDirectMessageReceived(message.sender, message.recipient, message.body.Length, friendsController.IsFriend(message.sender), ChatContentType.Text);
-
         if (View.IsActive)
         {
             // The messages from 'conversationUserId' are marked as read if his private chat window is currently open

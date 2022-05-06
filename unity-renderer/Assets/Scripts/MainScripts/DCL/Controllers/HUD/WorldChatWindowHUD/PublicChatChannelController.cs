@@ -173,9 +173,6 @@ public class PublicChatChannelController : IHUD
 
         chatHudController.AddChatMessage(message, View.IsActive);
 
-        if (sendAnalytics && message.sender != ownProfile.userId)
-            socialAnalytics.SendChannelMessageReceived(message.sender, message.body.Length, message.messageType == ChatMessage.Type.SYSTEM ? String.Empty : View.channel, message.messageType);
-
         if (View.IsActive)
             MarkChatMessagesAsRead();
 

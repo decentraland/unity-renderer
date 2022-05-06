@@ -10,9 +10,7 @@ namespace SocialFeaturesAnalytics
         private const string VOICE_MESSAGE_STARTED_BY_FIRST_TIME = "voice_chat_start_recording";
         private const string VOICE_MESSAGE_SENT = "voice_chat_sent_recording";
         private const string CHANNEL_MESSAGE_SENT = "send_chat_message";
-        private const string CHANNEL_MESSAGE_RECEIVED = "chat_message_received";
         private const string DIRECT_MESSAGE_SENT = "send_direct_message";
-        private const string DIRECT_MESSAGE_RECEIVED = "direct_message_received";
         private const string FRIEND_REQUEST_SENT = "friend_request_sent";
         private const string FRIEND_REQUEST_APPROVED = "friend_request_approved";
         private const string FRIEND_REQUEST_REJECTED = "friend_request_rejected";
@@ -68,19 +66,6 @@ namespace SocialFeaturesAnalytics
             GenericAnalytics.SendAnalytic(CHANNEL_MESSAGE_SENT, data);
         }
 
-        public void SendChannelMessageReceived(string fromUserId, double messageLength, string channel, ChatMessage.Type messageType)
-        {
-            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
-
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("length", messageLength.ToString());
-            data.Add("channel", channel);
-            data.Add("message_type", messageType.ToString());
-
-            GenericAnalytics.SendAnalytic(CHANNEL_MESSAGE_RECEIVED, data);
-        }
-
         public void SendDirectMessageSent(string fromUserId, string toUserId, double messageLength, bool areFriends, ChatContentType contentType)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
@@ -94,21 +79,6 @@ namespace SocialFeaturesAnalytics
             data.Add("content_type", contentType.ToString());
 
             GenericAnalytics.SendAnalytic(DIRECT_MESSAGE_SENT, data);
-        }
-
-        public void SendDirectMessageReceived(string fromUserId, string toUserId, double messageLength, bool areFriends, ChatContentType contentType)
-        {
-            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
-            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
-
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("to", toPlayerType.ToString());
-            data.Add("length", messageLength.ToString());
-            data.Add("friends", areFriends.ToString());
-            data.Add("content_type", contentType.ToString());
-
-            GenericAnalytics.SendAnalytic(DIRECT_MESSAGE_RECEIVED, data);
         }
 
         public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, FriendActionSource source)

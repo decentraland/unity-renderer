@@ -11,12 +11,10 @@ namespace SocialFeaturesAnalytics.TestHelpers
 
             mockedSocialAnalytics.When(x => x.SendPlayerMuted(Arg.Any<string>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendPlayerUnmuted(Arg.Any<string>())).Do(x => { });
+            mockedSocialAnalytics.When(x => x.SendVoiceMessageStartedByFirstTime()).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendVoiceMessageSent(Arg.Any<double>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendChannelMessageSent(Arg.Any<string>(), Arg.Any<double>(), Arg.Any<string>())).Do(x => { });
-            mockedSocialAnalytics.When(x => x.SendChannelMessageReceived(Arg.Any<string>(), Arg.Any<double>(), Arg.Any<string>(), Arg.Any<ChatMessage.Type>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendDirectMessageSent(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<double>(), Arg.Any<bool>(), Arg.Any<ChatContentType>())).Do(x => { });
-            mockedSocialAnalytics.When(x => x.SendDirectMessageReceived(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<double>(), Arg.Any<bool>(), Arg.Any<ChatContentType>())).Do(x => { });
-            mockedSocialAnalytics.When(x => x.SendDirectMessageReceived(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<double>(), Arg.Any<bool>(), Arg.Any<ChatContentType>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendFriendRequestSent(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<double>(), Arg.Any<FriendActionSource>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendFriendRequestApproved(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<FriendActionSource>())).Do(x => { });
             mockedSocialAnalytics.When(x => x.SendFriendRequestRejected(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<FriendActionSource>())).Do(x => { });
