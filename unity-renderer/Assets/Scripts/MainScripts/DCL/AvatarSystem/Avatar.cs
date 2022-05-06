@@ -94,7 +94,7 @@ namespace AvatarSystem
             }
             catch (OperationCanceledException)
             {
-                if(disposeOnCancellation)
+                //if(disposeOnCancellation)
                     Dispose();
 
                 throw;
