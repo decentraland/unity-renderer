@@ -41,7 +41,6 @@ GameObject:
   - component: {fileID: 2842120016485600253}
   - component: {fileID: 5523974814614327640}
   - component: {fileID: 122622683908687435}
-  - component: {fileID: 1133411967100239370}
   m_Layer: 23
   m_Name: AvatarShape
   m_TagString: Untagged
@@ -86,6 +85,7 @@ MonoBehaviour:
   onloadParticlePrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
     type: 3}
   onPointerDown: {fileID: 3865137627712764486}
+  playerNameContainer: {fileID: 7213221244455466960}
   everythingIsLoaded: 0
 --- !u!114 &122622683908687435
 MonoBehaviour:
@@ -99,22 +99,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b2e184f0ec373f4e807d927e1f8aef3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1133411967100239370
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3389185268529299172}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b406a70a47bd49728656d3954da3b476, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameObjectsToToggle:
-  - {fileID: 5854254909640412467}
-  - {fileID: 5582000225371496597}
-  - {fileID: 7213221244455466960}
 --- !u!1 &5582000225371496597
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,18 +145,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 703a54a14152d5746a40188f469a0c8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maleLocomotions:
-    idle: {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
-    walk: {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
-    run: {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
-    jump: {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
-    fall: {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
   femaleLocomotions:
     idle: {fileID: 7400000, guid: 62d81b2041d701b4381d66d17f7e246e, type: 2}
     walk: {fileID: 7400000, guid: db8c33ed0888f7b44af0b2acde9bd2b5, type: 2}
     run: {fileID: 7400000, guid: 1e3081b9c1f466743bc7602362784e93, type: 2}
     jump: {fileID: 7400000, guid: ec6a6c2a81a2b984f986fd6cbc8279d3, type: 2}
     fall: {fileID: 7400000, guid: 5e5b5c340739da142b767937144ef10b, type: 2}
+  maleLocomotions:
+    idle: {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
+    walk: {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
+    run: {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
+    jump: {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
+    fall: {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
   animation: {fileID: 0}
   blackboard:
     walkSpeedFactor: 0.5
@@ -273,6 +257,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collider: {fileID: 1314168606903342224}
+  hoverCanvas: {fileID: 0}
 --- !u!65 &1314168606903342224
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -13,9 +13,11 @@ using GPUSkinning;
 using UnityEngine;
 using Type = DCL.NotificationModel.Type;
 
-public class PlayerAvatarController : MonoBehaviour
+public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
 {
     private const string LOADING_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
+    private const string IN_HIDE_AREA = "IN_HIDE_AREA";
+    private const string INSIDE_CAMERA = "INSIDE_CAMERA";
 
     private AvatarSystem.Avatar avatar;
     private CancellationTokenSource avatarLoadingCts = null;
@@ -23,7 +25,6 @@ public class PlayerAvatarController : MonoBehaviour
     private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
 
     public Collider avatarCollider;
-    public AvatarVisibility avatarVisibility;
     [SerializeField] private GameObject loadingParticlesPrefab;
     public float cameraDistanceToDeactivate = 1.0f;
 
@@ -102,8 +103,10 @@ public class PlayerAvatarController : MonoBehaviour
                 return;
         }
 
-        bool shouldBeVisible = Vector3.Distance(mainCamera.transform.position, transform.position) > cameraDistanceToDeactivate;
-        avatarVisibility.SetVisibility("PLAYER_AVATAR_CONTROLLER", shouldBeVisible);
+        if (Vector3.Distance(mainCamera.transform.position, transform.position) > cameraDistanceToDeactivate)
+            avatar.RemoveVisibilityConstrain(INSIDE_CAMERA);
+        else
+            avatar.AddVisibilityConstrain(INSIDE_CAMERA);
     }
 
     public void SetAvatarVisibility(bool isVisible)
@@ -198,6 +201,9 @@ public class PlayerAvatarController : MonoBehaviour
         CommonScriptableObjects.rendererState.RemoveLock(this);
         DataStore.i.common.isPlayerRendererLoaded.Set(true);
     }
+
+    public void ApplyHideModifier() { avatar.AddVisibilityConstrain(IN_HIDE_AREA); }
+    public void RemoveHideModifier() { avatar.RemoveVisibilityConstrain(IN_HIDE_AREA); }
 
     private void OnDisable()
     {
