@@ -201,6 +201,8 @@ namespace DCL
             {
                 entityComponents = new Dictionary<CLASS_ID_COMPONENT, IEntityComponent>();
                 entitiesComponents.Add(entity.entityId, entityComponents);
+                
+                entity.OnBaseComponentAdded?.Invoke(componentId, entity);
             }
             entityComponents.Add(componentId, component);
         }
