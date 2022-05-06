@@ -140,7 +140,7 @@ public class PublicChatChannelController : IHUD
         {
             var message = list[i];
             if (i % entriesPerFrame == 0) await UniTask.NextFrame();
-            HandleMessageReceived(message);
+            HandleMessageReceived(message, false);
         }
     }
 
@@ -165,14 +165,16 @@ public class PublicChatChannelController : IHUD
         return timestampInSeconds < initTimeInSeconds;
     }
 
-    private void HandleMessageReceived(ChatMessage message)
+    private void HandleMessageReceived(ChatMessage message) { HandleMessageReceived(message, true); }
+
+    private void HandleMessageReceived(ChatMessage message, bool sendAnalytics)
     {
         if (IsOldPrivateMessage(message)) return;
 
         chatHudController.AddChatMessage(message, View.IsActive);
 
-        if (message.sender != ownProfile.userId)
-            socialAnalytics.SendChannelMessageReceived(message.sender, message.body.Length, View.channel, message.messageType);
+        if (sendAnalytics && message.sender != ownProfile.userId)
+            socialAnalytics.SendChannelMessageReceived(message.sender, message.body.Length, message.messageType == ChatMessage.Type.SYSTEM ? String.Empty : View.channel, message.messageType);
 
         if (View.IsActive)
             MarkChatMessagesAsRead();
