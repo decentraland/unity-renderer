@@ -250,11 +250,7 @@ public class AvatarEditorHUDController : IHUD
         if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
             return;
 
-        /*TODO: this has to be refactored, currently there is no other way of understanding if the user is a regular or a guest
-        *       due to the execution order of things. The init cannot be done below because that would mean to do it when the
-        *       menu is firstly opened
-        */
-        view.InitializeNavigationEvents(string.IsNullOrEmpty(userProfile.userName));
+        view.InitializeNavigationEvents(!userProfile.hasConnectedWeb3);
 
         CatalogController.wearableCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
 
