@@ -147,7 +147,7 @@ namespace DCL.Skybox
 
             GameObject orbit = obj.transform.GetChild(0).gameObject;
             GameObject satelliteObj = GameObject.Instantiate(config.satellite);
-            satelliteObj.transform.parent = orbit.transform;
+            satelliteObj.transform.parent = obj.transform;
 
             // Get satellite behavior and assign satellite 
             SatelliteLayerBehavior satelliteBehavior = obj.GetComponent<SatelliteLayerBehavior>();

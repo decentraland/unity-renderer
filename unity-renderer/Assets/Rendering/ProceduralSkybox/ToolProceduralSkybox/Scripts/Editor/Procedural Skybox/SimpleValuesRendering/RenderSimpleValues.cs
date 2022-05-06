@@ -22,8 +22,7 @@ namespace DCL.Skybox
         public static void RenderFloatField(string label, ref float value)
         {
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
-            value = EditorGUILayout.FloatField(value, GUILayout.Width(90));
+            value = EditorGUILayout.FloatField(label, value, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }

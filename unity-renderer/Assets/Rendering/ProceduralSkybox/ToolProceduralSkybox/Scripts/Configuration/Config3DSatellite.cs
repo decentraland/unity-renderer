@@ -14,7 +14,7 @@ namespace DCL.Skybox
         public float fadeInTime = 0;
         public float fadeOutTime = 0;
 
-        // Satellite orbit properties
+        // Satellite properties
         public GameObject satellite;
         public float satelliteSize = 50;
         public float radius = 300;
@@ -25,6 +25,7 @@ namespace DCL.Skybox
         [Range(0, 180)]
         public float inclination = 0;
         public float movementSpeed = 25;
+        public float orbitYOffset = 0;
 
         // Satellite Properties
         public RotationType satelliteRotation;

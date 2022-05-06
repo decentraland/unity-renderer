@@ -42,10 +42,14 @@ namespace DCL.Skybox
                 domeElements = new GameObject("Dome Elements");
                 domeElements.layer = LayerMask.NameToLayer("Skybox");
                 domeElements.transform.parent = skyboxElements.transform;
-
-                followBehavior = domeElements.AddComponent<FollowBehavior>();
-                followBehavior.followPos = true;
             }
+
+            followBehavior = domeElements.GetComponent<FollowBehavior>();
+            if (followBehavior == null)
+            {
+                followBehavior = domeElements.AddComponent<FollowBehavior>();
+            }
+            followBehavior.followPos = true;
 
             for (int i = 0; i < domeElements.transform.childCount; i++)
             {

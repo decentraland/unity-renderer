@@ -11,6 +11,7 @@ namespace DCL.Skybox
     {
         Config3DSatellite layerProperties;
         public GameObject satelliteOrbit;
+        public GameObject dummyObj;
         public GameObject satellite;
 
         public float thickness = 1;
@@ -46,7 +47,7 @@ namespace DCL.Skybox
             }
         }
 
-        internal void AssignValues(Config3DSatellite properties, float timeOfTheDay, float cycleTime)
+        internal void AssignValues(Config3DSatellite properties, float timeOfTheDay, float cycleTime, bool isEditor = false)
         {
             // Check and assign Materials
             CheckAndAssignMats();
@@ -70,10 +71,9 @@ namespace DCL.Skybox
             ApplyFade(timeOfTheDay);
 
             // Update orbit rotation
-            UpdateOrbitRotation();
+            UpdateOrbit();
             // Change satellite size
             UpdateSatelliteSize();
-
 
             // Update SatellitePosition
             UpdateSatellitePos(timeOfTheDay);
@@ -119,7 +119,8 @@ namespace DCL.Skybox
             float diff = timeOfDayEdited - layerProperties.timeSpan_start;
             currentAngle = layerProperties.initialAngle + (diff * layerProperties.movementSpeed);
 
-            satellite.transform.localPosition = GetSatellitePosition(layerProperties.radius, currentAngle);
+            dummyObj.transform.localPosition = GetSatellitePosition(layerProperties.radius, currentAngle);
+            satellite.transform.position = dummyObj.transform.position;
         }
 
         private void UpdateSatelliteSize()
@@ -132,13 +133,21 @@ namespace DCL.Skybox
             satellite.transform.localScale = Vector3.one * layerProperties.satelliteSize;
         }
 
-        private void UpdateOrbitRotation()
+        /// <summary>
+        /// Update Rotation and position
+        /// </summary>
+        private void UpdateOrbit()
         {
             if (satelliteOrbit == null)
             {
                 Debug.LogError("Satellite Orbit not assigned");
                 return;
             }
+
+            // Orbit vertical placement
+            Vector3 pos = satelliteOrbit.transform.localPosition;
+            pos.y = layerProperties.orbitYOffset;
+            satelliteOrbit.transform.localPosition = pos;
 
             //  Rotate orbit plane along horizon line
             Vector3 rot = satelliteOrbit.transform.localRotation.eulerAngles;
@@ -275,6 +284,7 @@ namespace DCL.Skybox
             {
                 return;
             }
+            position = satelliteOrbit.transform.position;
             // Draw wire disc of green color for orbit orthogonal to y = 1
             Handles.color = Color.green;
             Handles.DrawWireDisc(position, satelliteOrbit.transform.forward, layerProperties.radius, thickness);
