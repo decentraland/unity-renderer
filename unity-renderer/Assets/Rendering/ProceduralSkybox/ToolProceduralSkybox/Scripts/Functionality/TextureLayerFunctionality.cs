@@ -141,6 +141,7 @@ namespace DCL.Skybox
         {
             selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_RenderDistance_" + layerNum), TransitioningValues.GetTransitionValue(layer.renderDistance, normalizedLayerTime * 100, 3.4f));
             selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_tex_" + layerNum), layer.texture);
+            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_normals_" + layerNum), layer.textureNormal);
             selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_cubemap_" + layerNum), null);
 
             selectedMat.SetColor(SkyboxShaderUtils.GetLayerProperty("_color_" + layerNum), layer.color.Evaluate(normalizedLayerTime));
@@ -181,6 +182,8 @@ namespace DCL.Skybox
 
             // Time frame
             selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_timeFrame_" + layerNum), new Vector4(layer.timeSpan_start, layer.timeSpan_End));
+            // normal intensity
+            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_normalIntensity_" + layerNum), layer.normalIntensity);
             // Tint
             selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_lightIntensity_" + layerNum), layer.tintPercentage / 100);
 
@@ -201,6 +204,7 @@ namespace DCL.Skybox
         private static void ApplySatelliteTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
         {
             selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_tex_" + layerNum), layer.texture);
+            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_normals_" + layerNum), layer.textureNormal);
             selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_cubemap_" + layerNum), null);
 
             selectedMat.SetColor(SkyboxShaderUtils.GetLayerProperty("_color_" + layerNum), layer.color.Evaluate(normalizedLayerTime));
@@ -232,6 +236,8 @@ namespace DCL.Skybox
 
             // Time frame
             selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_timeFrame_" + layerNum), new Vector4(layer.timeSpan_start, layer.timeSpan_End));
+            // normal intensity
+            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_normalIntensity_" + layerNum), layer.normalIntensity);
             // Tint
             selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_lightIntensity_" + layerNum), layer.tintPercentage / 100);
 
@@ -262,6 +268,8 @@ namespace DCL.Skybox
 
             // Particles
             selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_tex_" + layerNum), layer.texture);
+            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_normals_" + layerNum), layer.textureNormal);
+            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_normalIntensity_" + layerNum), layer.normalIntensity);
             selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_rowAndCollumns_" + layerNum), layer.flipbookRowsAndColumns);
             selectedMat.SetColor(SkyboxShaderUtils.GetLayerProperty("_color_" + layerNum), layer.color.Evaluate(normalizedLayerTime));
             selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_tilingAndOffset_" + layerNum), new Vector4(layer.particleTiling.x, layer.particleTiling.y, layer.particlesOffset.x, layer.particlesOffset.y));

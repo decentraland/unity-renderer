@@ -40,6 +40,10 @@ Material:
         m_Texture: {fileID: 8900000, guid: b5e77d527d64dd64f8dc715126915af7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SGHorizonLayer_9dcdf3fddc1845bc807a77201c0bdfe3_Texture2Da24ed8a2f1904f70bac443eee594d114_2197795060:
+        m_Texture: {fileID: 2800000, guid: 48fea5cb8b115de4088a6d237efc7d13, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SGLayerParticles_1c423f4cd0624eca9ef3b77eef2eb8d3_Texture2Dfc450b2db7f54977a54b88410e0e641d_756302754:
         m_Texture: {fileID: 2800000, guid: 42cc058140f798e46bde1006aab6fa8b, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -49,6 +53,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SGMaskBelowHorizon_3d4e203c16834f55b743bb2bfd9c6efa_Texture2Deb2aa013de1c4a479e65e87000495e42_219932305:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SGMaskBelowHorizon_43e66ba7303f4e96a3d169f7c62d4a93_Texture2Deb2aa013de1c4a479e65e87000495e42_219932305:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -110,10 +118,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _horizonMask_:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _horizonPlane:
-        m_Texture: {fileID: 2800000, guid: c8820e55845908f4fa4b73648aff2fe4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _normals:
@@ -229,7 +233,6 @@ Material:
     - _fadeTime_2: 1
     - _fadeTime_3: 1
     - _fadeTime_4: 1
-    - _fogIntesity: 0
     - _hasFade00: 0
     - _hasFade01: 1
     - _hasFade02: 0
@@ -237,8 +240,7 @@ Material:
     - _hasFade_1: 0
     - _hasFade_2: 0
     - _horizonHeight: 0
-    - _horizonLigthIntesity: 0
-    - _horizonPlaneHeight: 0
+    - _horizonPlaneHeight: -1
     - _horizonWidth: 0
     - _isRadial00: 0
     - _isRadial01: 1
@@ -324,13 +326,11 @@ Material:
     - _distortSpeedAndSharp_2: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_3: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_4: {r: 0, g: 0, b: 0, a: 0}
-    - _groundColor: {r: 0.13344544, g: 0.17616989, b: 0.27342635, a: 1}
-    - _horizonColor: {r: 0.90365356, g: 0.43798083, b: 0.10713148, a: 1}
-    - _horizonMaskValues: {r: 0, g: 0, b: 0, a: 0}
-    - _horizonPlaneColor: {r: 0.7161477, g: 0.6847968, b: 0.7531432, a: 1}
-    - _horizonPlaneValues: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _lightDirection: {r: 356.695, g: 135, b: 90, a: 0}
-    - _lightTint: {r: 0.9588425, g: 0.72617996, b: 0.53366387, a: 1}
+    - _groundColor: {r: 0.112717226, g: 0.10462708, b: 0.23883569, a: 1}
+    - _horizonColor: {r: 0.72849286, g: 0.35044962, b: 0.30189973, a: 1}
+    - _horizonMaskValues: {r: -0.98, g: 0, b: -1.77, a: 0}
+    - _lightDirection: {r: 356.18976, g: 134.99998, b: 90, a: 0}
+    - _lightTint: {r: 0.95769656, g: 0.8415648, b: 0.79813373, a: 1}
     - _particlesMainParameters_0: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_1: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_2: {r: 0, g: 0, b: 0, a: 0}
@@ -346,8 +346,7 @@ Material:
     - _rowAndCollumns_2: {r: 1, g: 1, b: 0, a: 0}
     - _rowAndCollumns_3: {r: 1, g: 1, b: 0, a: 0}
     - _rowAndCollumns_4: {r: 1, g: 1, b: 0, a: 0}
-    - _skyColor: {r: 0.3184474, g: 0.3225233, b: 0.5057597, a: 1}
-    - _smoothRange: {r: 0, g: 0, b: 0, a: 0}
+    - _skyColor: {r: 0.23312426, g: 0.17628431, b: 0.32756034, a: 1}
     - _speedAndRotation_0: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_1: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_2: {r: 0, g: 0, b: 0, a: 0}
