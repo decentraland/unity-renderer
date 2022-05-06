@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -33,6 +34,17 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             value = EditorGUILayout.Slider(value, min, max, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
+        internal static void RenderMinMaxSlider(string label, ref float minVal, ref float maxVal, float minLimit, float maxLimit)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(minVal.ToString("f3"), GUILayout.Width(55), GUILayout.ExpandWidth(false));
+            EditorGUILayout.MinMaxSlider(ref minVal, ref maxVal, minLimit, maxLimit, GUILayout.Width(150));
+            EditorGUILayout.LabelField(maxVal.ToString("f3"), GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
 

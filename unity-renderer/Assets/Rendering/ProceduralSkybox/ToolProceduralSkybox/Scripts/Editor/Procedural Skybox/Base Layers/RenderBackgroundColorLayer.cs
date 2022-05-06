@@ -26,16 +26,21 @@ namespace DCL.Skybox
             EditorGUILayout.Separator();
 
             // Horizon Mask
-            RenderSimpleValues.RenderTexture(SkyboxEditorLiterals.texture, ref selectedConfiguration.horizonMask);
+            EditorGUILayout.LabelField("Horizon Mask", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
 
-            // Horizon mask values
-            RenderSimpleValues.RenderVector3Field(SkyboxEditorLiterals.horizonMaskValues, ref selectedConfiguration.horizonMaskValues);
+            RenderSimpleValues.RenderTexture("Texture", ref selectedConfiguration.horizonMask);
 
-            // Horizon Plane color
-            RenderSimpleValues.RenderColorGradientField(selectedConfiguration.horizonPlaneColor, SkyboxEditorLiterals.horizonPlaneColor, 0, 24);
+            // Horizon Mask values
+            EditorGUILayout.LabelField("Horizon Mask Values", EditorStyles.boldLabel);
 
-            // Horizon Height
-            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, selectedConfiguration.horizonPlaneHeight, SkyboxEditorLiterals.horizonPlaneHeight, SkyboxEditorLiterals.percentage, SkyboxEditorLiterals.value, true, -1, 0);
+            EditorGUI.indentLevel++;
+            // Tiling
+            RenderSimpleValues.RenderVector2Field("Tiling", ref selectedConfiguration.horizonMaskTiling);
+            // Offset
+            RenderSimpleValues.RenderVector2Field("Offset", ref selectedConfiguration.horizonMaskOffset);
+            EditorGUI.indentLevel--;
+            EditorGUI.indentLevel--;
         }
     }
 }

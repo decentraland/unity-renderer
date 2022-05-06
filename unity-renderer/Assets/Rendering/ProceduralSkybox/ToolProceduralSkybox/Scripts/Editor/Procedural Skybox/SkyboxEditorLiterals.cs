@@ -31,6 +31,7 @@ namespace DCL.Skybox
         public const string RenderPlanarLayers = "Planar Layers";
         public const string domeName = "Dome Name";
         public const string domeSize = "Dome Size";
+        public const string horizonPlane = "Horizon Plane";
 
         // Labels and ButtonNames
         public const string timeLineTags = "Timeline Tags";
