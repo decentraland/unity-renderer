@@ -19,14 +19,22 @@ namespace DCL.Skybox
         private float currentAngle;
         private float cycleTime = 24;
         private List<Material> materials;
+        private Transform camTransform;
 
-        public void UpdateRotation()
+        private void UpdateRotation()
         {
             if (satellite == null)
             {
                 return;
             }
 
+            if (camTransform == null)
+            {
+                if (Camera.main != null)
+                {
+                    camTransform = Camera.main.transform;
+                }
+            }
 
             switch (layerProperties.satelliteRotation)
             {
@@ -37,9 +45,9 @@ namespace DCL.Skybox
                     satellite.transform.Rotate(layerProperties.rotateAroundAxis, layerProperties.rotateSpeed * Time.deltaTime, Space.Self);
                     break;
                 case RotationType.LookAtOrbit:
-                    if (Camera.main != null)
+                    if (camTransform != null)
                     {
-                        satellite.transform.LookAt(Camera.main.transform);
+                        satellite.transform.LookAt(camTransform);
                     }
                     break;
                 default:
@@ -158,7 +166,7 @@ namespace DCL.Skybox
             satelliteOrbit.transform.localRotation = Quaternion.Euler(rot);
         }
 
-        Vector3 GetSatellitePosition(float radius, float angle)
+        private Vector3 GetSatellitePosition(float radius, float angle)
         {
             angle = angle % 360;
             float angleEdited = (90 - angle) * Mathf.Deg2Rad;
