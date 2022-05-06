@@ -19,14 +19,22 @@ namespace DCL.Skybox
         public Gradient skyColor = new Gradient();
         public Gradient horizonColor = new Gradient();
         public Gradient groundColor = new Gradient();
-
-        // Horizon Layer
         public List<TransitioningFloat> horizonWidth = new List<TransitioningFloat>();
         public List<TransitioningFloat> horizonHeight = new List<TransitioningFloat>();
+
+        // Horizon Layer
         public Texture2D horizonMask;
-        public Vector3 horizonMaskValues = new Vector3(0, 0, 0);
+        public Vector2 horizonMaskTiling = new Vector2(0, 0);
+        public Vector2 horizonMaskOffset = new Vector2(0, 0);
+
+        // Horizon Plane Layer
+        public Texture2D horizonPlaneTexture;
+        public Vector2 horizonPlaneTiling = new Vector2(0, 0);
+        public Vector2 horizonPlaneOffset = new Vector2(0, 0);
         public Gradient horizonPlaneColor = new Gradient();
         public List<TransitioningFloat> horizonPlaneHeight = new List<TransitioningFloat>();
+        public Vector2 horizonPlaneSmoothRange = new Vector2(0, 0);
+        public float horizonLightIntensity = 0;
 
         // Ambient Color
         public bool ambientTrilight = true;
@@ -90,9 +98,13 @@ namespace DCL.Skybox
             selectedMat.SetFloat(SkyboxShaderUtils.HorizonHeight, TransitioningValues.GetTransitionValue(horizonHeight, percentage, 0f));
             selectedMat.SetFloat(SkyboxShaderUtils.HorizonWidth, TransitioningValues.GetTransitionValue(horizonWidth, percentage, 0f));
             selectedMat.SetTexture(SkyboxShaderUtils.HorizonMask, horizonMask);
-            selectedMat.SetVector(SkyboxShaderUtils.HorizonMaskValues, horizonMaskValues);
+            selectedMat.SetVector(SkyboxShaderUtils.HorizonMaskValues, new Vector4(horizonMaskTiling.x, horizonMaskTiling.y, horizonMaskOffset.x, horizonMaskOffset.y));
+            selectedMat.SetTexture(SkyboxShaderUtils.HorizonPlane, horizonPlaneTexture);
+            selectedMat.SetVector(SkyboxShaderUtils.HorizonPlaneValues, new Vector4(horizonPlaneTiling.x, horizonPlaneTiling.y, horizonPlaneOffset.x, horizonPlaneOffset.y));
             selectedMat.SetColor(SkyboxShaderUtils.HorizonPlaneColor, horizonPlaneColor.Evaluate(normalizedDayTime));
-            selectedMat.SetFloat(SkyboxShaderUtils.HorizonPlaneHeight, TransitioningValues.GetTransitionValue(horizonPlaneHeight, percentage, -1f));
+            selectedMat.SetFloat(SkyboxShaderUtils.HorizonPlaneHeight, TransitioningValues.GetTransitionValue(horizonPlaneHeight, percentage, 0.0f));
+            selectedMat.SetVector(SkyboxShaderUtils.PlaneSmoothRange, horizonPlaneSmoothRange);
+            selectedMat.SetFloat(SkyboxShaderUtils.HorizonLightIntensity, horizonLightIntensity);
 
 
             // Apply Ambient colors to the rendering settings
