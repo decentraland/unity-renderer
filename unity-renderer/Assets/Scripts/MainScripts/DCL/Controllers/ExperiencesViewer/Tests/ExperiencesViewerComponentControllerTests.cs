@@ -1,6 +1,7 @@
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace DCL.ExperiencesViewer.Tests
 {
@@ -14,6 +15,7 @@ namespace DCL.ExperiencesViewer.Tests
         public void SetUp()
         {
             experiencesViewerComponentView = Substitute.For<IExperiencesViewerComponentView>();
+            experiencesViewerComponentView.Configure().GetAllAvailableExperiences().Returns(info => new List<ExperienceRowComponentView>());
             sceneController = Substitute.For<ISceneController>();
             experiencesViewerComponentController = Substitute.ForPartsOf<ExperiencesViewerComponentController>();
             experiencesViewerComponentController.Configure().CreateView().Returns(info => experiencesViewerComponentView);

@@ -5,42 +5,37 @@ using UnityEngine;
 
 namespace DCL.Skybox
 {
-    /// <summary>
-    /// This class Initialize and maintain 3D elements for Procedural skybox
-    /// </summary>
+
     public class SkyboxElements
     {
-        private GameObject skyboxElementGO;
-        private Planar3DElements planarElements;
+        private GameObject skyboxElementsGO;
+        public SkyboxDomeElements domeElements;
+        public SkyboxSatelliteElements satelliteElements;
 
         public SkyboxElements()
         {
-            // Get or instantiate Skybox elements GameObject
-            GetOrInstantiateSkyboxElements();
-
-            // Initialize Planar 3D Layer Object
-            planarElements = new Planar3DElements(skyboxElementGO);
-        }
-
-        private void GetOrInstantiateSkyboxElements()
-        {
-            skyboxElementGO = GameObject.Find("Skybox Elements");
-
-            if (skyboxElementGO != null)
+            skyboxElementsGO = GameObject.Find("Skybox Elements");
+            if (skyboxElementsGO == null)
             {
-                return;
+                skyboxElementsGO = new GameObject("Skybox Elements");
+                skyboxElementsGO.layer = LayerMask.NameToLayer("Skybox");
+                skyboxElementsGO.transform.position = Vector3.zero;
             }
 
-            skyboxElementGO = new GameObject("Skybox Elements");
-            skyboxElementGO.layer = LayerMask.NameToLayer("Skybox");
+            domeElements = new SkyboxDomeElements(skyboxElementsGO);
+            satelliteElements = new SkyboxSatelliteElements(skyboxElementsGO);
         }
 
-        public void ApplySkyboxElements(SkyboxConfiguration config, float timeOfTheDay, float cycleTime, bool isEditor) { planarElements.ApplyConfig(config.planarLayers, timeOfTheDay, cycleTime, isEditor); }
+        public void ApplyConfigTo3DElements(SkyboxConfiguration config, float dayTime, float normalizedDayTime, Light directionalLightGO = null, float cycleTime = 24, bool isEditor = false)
+        {
+            domeElements.ApplyDomeConfigurations(config, dayTime, normalizedDayTime, directionalLightGO, cycleTime);
+            satelliteElements.ApplySatelliteConfigurations(config, dayTime, normalizedDayTime, directionalLightGO, cycleTime);
+        }
 
-        /// <summary>
-        /// Assign Main Camera reference to follow
-        /// </summary>
-        /// <param name="currentTransform"></param>
-        internal void AssignCameraInstance(Transform cameraTransform) { planarElements.AssignCameraInstance(cameraTransform); }
+        internal void AssignCameraInstance(Transform currentTransform)
+        {
+            domeElements.ResolveCameraDependency(currentTransform);
+            satelliteElements.ResolveCameraDependency(currentTransform);
+        }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -23,18 +22,8 @@ namespace DCL.Skybox
         public static void RenderFloatField(string label, ref float value)
         {
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
-            value = EditorGUILayout.FloatField(value, GUILayout.Width(90));
+            value = EditorGUILayout.FloatField(label, value, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
-            EditorGUILayout.Separator();
-        }
-
-        public static void RenderPrefabInput(string label, ref GameObject obj)
-        {
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
-            obj = (GameObject)EditorGUILayout.ObjectField(obj, typeof(GameObject), false, GUILayout.Width(200));
-            GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
 
@@ -103,11 +92,21 @@ namespace DCL.Skybox
             EditorGUILayout.Separator();
         }
 
-        public static void RenderBoolField(string label, ref bool value)
+        public static void RenderPrefabInput(string label, ref GameObject obj)
         {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            obj = (GameObject)EditorGUILayout.ObjectField(obj, typeof(GameObject), false, GUILayout.Width(200));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
+        public static void RenderEnumPopup<T>(string label, ref T enumVar) where T : System.Enum
+        {
+            // Layer Type
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
-            value = EditorGUILayout.Toggle(value, GUILayout.Width(90));
+            enumVar = (T)EditorGUILayout.EnumPopup(enumVar, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
