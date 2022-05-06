@@ -20,20 +20,20 @@ namespace DCL
             raycastHandler = new RaycastHandler();
         }
 
-        public void Query(RaycastQuery query)
+        public void Query(RaycastQuery query, EntityIdHelper helper)
         {
             switch (query.raycastType)
             {
                 case RaycastType.HIT_FIRST:
-                    HitFirst(query);
+                    HitFirst(query, helper);
                     break;
                 case RaycastType.HIT_ALL:
-                    HitAll(query);
+                    HitAll(query, helper);
                     break;
             }
         }
 
-        private void HitFirst(RaycastQuery query)
+        private void HitFirst(RaycastQuery query,EntityIdHelper helper)
         {
             WebInterface.RaycastHitEntity hitEntity;
 
@@ -55,7 +55,7 @@ namespace DCL
                     ray = rayInfo,
                     entity = new WebInterface.HitEntityInfo()
                     {
-                        entityId = colliderInfo.entity != null ?  EntityIdHelper.i.GetOriginalId(colliderInfo.entity.entityId) : "",
+                        entityId = colliderInfo.entity != null ?  helper.GetOriginalId(colliderInfo.entity.entityId) : "",
                         meshName = colliderInfo.meshName
                     }
                 };
@@ -72,7 +72,7 @@ namespace DCL
             WebInterface.ReportRaycastHitFirstResult(query.sceneId, query.id, query.raycastType, hitEntity);
         }
 
-        private void HitAll(RaycastQuery query)
+        private void HitAll(RaycastQuery query, EntityIdHelper helper)
         {
             WebInterface.RaycastHitEntities raycastHitEntities = new WebInterface.RaycastHitEntities();
 
@@ -102,7 +102,7 @@ namespace DCL
                         hitEntity.hitPoint = hitInfo.hit.point;
                         hitEntity.hitNormal = hitInfo.hit.normal;
                         hitEntity.entity = new WebInterface.HitEntityInfo();
-                        hitEntity.entity.entityId = colliderInfo.entity != null ? EntityIdHelper.i.GetOriginalId(colliderInfo.entity.entityId) : "";
+                        hitEntity.entity.entityId = colliderInfo.entity != null ? helper.GetOriginalId(colliderInfo.entity.entityId) : "";
                         hitEntity.entity.meshName = colliderInfo.meshName;
                         hitEntityInfoList.Add(hitEntity);
                     }

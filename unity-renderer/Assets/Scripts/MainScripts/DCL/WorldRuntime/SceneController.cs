@@ -31,7 +31,7 @@ namespace DCL
         private CancellationTokenSource tokenSource;
         private IMessagingControllersManager messagingControllersManager => Environment.i.messaging.manager;
 
-        public EntityIdHelper entityIdHelper { get; } = EntityIdHelper.i;
+        public EntityIdHelper entityIdHelper { get; } = new EntityIdHelper();
 
         public void Initialize()
         {
@@ -364,7 +364,7 @@ namespace DCL
 
             raycastQuery.ray.unityOrigin = PositionUtils.WorldToUnityPosition(worldOrigin);
             raycastQuery.sceneId = sceneId;
-            PhysicsCast.i.Query(raycastQuery);
+            PhysicsCast.i.Query(raycastQuery, entityIdHelper);
         }
 
         public void SendSceneMessage(string chunk)
