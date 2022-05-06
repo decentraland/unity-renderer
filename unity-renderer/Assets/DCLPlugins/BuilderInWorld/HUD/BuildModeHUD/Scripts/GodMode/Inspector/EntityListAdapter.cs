@@ -104,7 +104,7 @@ public class EntityListAdapter : MonoBehaviour
             return;
 
         if (string.IsNullOrEmpty(entityToEdit.GetDescriptiveName()))
-            nameInputField.text = entityToEdit.rootEntity.entityId;
+            nameInputField.text = entityToEdit.rootEntity.entityId.ToString();
         else
             nameInputField.text = entityToEdit.GetDescriptiveName();
 
@@ -182,7 +182,7 @@ public class EntityListAdapter : MonoBehaviour
     {
         if (entity != currentEntity)
             return;
-
+        
         CheckEntityNameColor(entity);
     }
 

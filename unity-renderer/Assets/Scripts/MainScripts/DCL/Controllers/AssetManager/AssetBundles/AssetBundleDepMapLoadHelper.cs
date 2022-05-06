@@ -72,6 +72,6 @@ public static class AssetBundleDepMapLoadHelper
         
         metadata.dependencies = metadata.dependencies.Where(x => !x.Contains(MAIN_SHADER_FILENAME)).ToArray();
 
-        dependenciesMap.Add(hash, new List<string>(metadata.dependencies));
+        dependenciesMap[hash] = new List<string>(metadata.dependencies);
     }
 }

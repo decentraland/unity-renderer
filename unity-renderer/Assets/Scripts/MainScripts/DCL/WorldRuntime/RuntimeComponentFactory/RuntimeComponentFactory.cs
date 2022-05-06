@@ -11,121 +11,53 @@ namespace DCL
 {
     public class RuntimeComponentFactory : IRuntimeComponentFactory
     {
+        // Temporal delegate for special behaviours. Should be deleted or refactored later.
+        public Dictionary<int, IRuntimeComponentFactory.CreateCondition> createConditions { get; set; } =
+            new Dictionary<int, IRuntimeComponentFactory.CreateCondition>();
+
+        public Dictionary<int, IRuntimeComponentFactory.CreateOverride> createOverrides { get; set; } =
+            new Dictionary<int, IRuntimeComponentFactory.CreateOverride>();
+        
         protected delegate IComponent ComponentBuilder(int classId);
 
         protected Dictionary<int, ComponentBuilder> builders = new Dictionary<int, ComponentBuilder>();
 
-        public IPoolableComponentFactory poolableComponentFactory { get; private set; }
-
-        public void Initialize()
+        public void RegisterBuilder(int classId, Func<IComponent> builder)
         {
-            CoroutineStarter.Start(InitializeCoroutine());
+            if (builders.ContainsKey(classId))
+                builders[classId] = (id) => builder();
+            else
+                builders.Add(classId, (id) => builder());
         }
 
-        IEnumerator InitializeCoroutine()
+        public void UnregisterBuilder(int classId)
         {
-            yield return null;
-            poolableComponentFactory.PrewarmPools();
-        }
+            if (!builders.ContainsKey(classId))
+                return;
 
-        public RuntimeComponentFactory(IPoolableComponentFactory poolableComponentFactory = null)
-        {
-            this.poolableComponentFactory = poolableComponentFactory ?? PoolableComponentFactory.Create();
-
-            // Transform
-            builders.Add((int) CLASS_ID_COMPONENT.TRANSFORM, BuildComponent<DCLTransform>);
-            builders.Add((int) CLASS_ID_COMPONENT.AVATAR_ATTACH, BuildComponent<AvatarAttachComponent>);
-
-            // Shapes
-            builders.Add((int) CLASS_ID.BOX_SHAPE, BuildComponent<BoxShape>);
-            builders.Add((int) CLASS_ID.SPHERE_SHAPE, BuildComponent<SphereShape>);
-            builders.Add((int) CLASS_ID.CYLINDER_SHAPE, BuildComponent<CylinderShape>);
-            builders.Add((int) CLASS_ID.CONE_SHAPE, BuildComponent<ConeShape>);
-            builders.Add((int) CLASS_ID.PLANE_SHAPE, BuildComponent<PlaneShape>);
-            builders.Add((int) CLASS_ID.GLTF_SHAPE, BuildComponent<GLTFShape>);
-            builders.Add((int) CLASS_ID.NFT_SHAPE, BuildComponent<NFTShape>);
-            builders.Add((int) CLASS_ID.OBJ_SHAPE, BuildComponent<OBJShape>);
-            builders.Add((int) CLASS_ID_COMPONENT.TEXT_SHAPE, BuildPoolableComponent);
-
-            builders.Add((int) CLASS_ID_COMPONENT.BILLBOARD, BuildPoolableComponent);
-            builders.Add((int) CLASS_ID_COMPONENT.SMART_ITEM, BuildPoolableComponent);
-
-            // Materials
-            builders.Add((int) CLASS_ID.BASIC_MATERIAL, BuildComponent<BasicMaterial>);
-            builders.Add((int) CLASS_ID.PBR_MATERIAL, BuildComponent<PBRMaterial>);
-            builders.Add((int) CLASS_ID.TEXTURE, BuildComponent<DCLTexture>);
-            builders.Add((int) CLASS_ID.AVATAR_TEXTURE, BuildComponent<DCLAvatarTexture>);
-
-            // Audio
-            builders.Add((int) CLASS_ID.AUDIO_CLIP, BuildComponent<DCLAudioClip>);
-            builders.Add((int) CLASS_ID_COMPONENT.AUDIO_SOURCE, BuildPoolableComponent);
-            builders.Add((int) CLASS_ID_COMPONENT.AUDIO_STREAM, BuildPoolableComponent);
-
-            // UI
-            builders.Add((int) CLASS_ID.UI_INPUT_TEXT_SHAPE, BuildComponent<UIInputText>);
-            builders.Add((int) CLASS_ID.UI_FULLSCREEN_SHAPE, BuildComponent<UIScreenSpace>);
-            builders.Add((int) CLASS_ID.UI_SCREEN_SPACE_SHAPE, BuildComponent<UIScreenSpace>);
-            builders.Add((int) CLASS_ID.UI_CONTAINER_RECT, BuildComponent<UIContainerRect>);
-            builders.Add((int) CLASS_ID.UI_SLIDER_SHAPE, BuildComponent<UIScrollRect>);
-            builders.Add((int) CLASS_ID.UI_CONTAINER_STACK, BuildComponent<UIContainerStack>);
-            builders.Add((int) CLASS_ID.UI_IMAGE_SHAPE, BuildComponent<UIImage>);
-            builders.Add((int) CLASS_ID.UI_TEXT_SHAPE, BuildComponent<UIText>);
-            builders.Add((int) CLASS_ID.FONT, BuildComponent<DCLFont>);
-
-            // Video
-            builders.Add((int) CLASS_ID.VIDEO_CLIP, BuildComponent<DCLVideoClip>);
-            builders.Add((int) CLASS_ID.VIDEO_TEXTURE, BuildComponent<DCLVideoTexture>);
-
-            // Builder in world
-            builders.Add((int) CLASS_ID.NAME, BuildComponent<DCLName>);
-            builders.Add((int) CLASS_ID.LOCKED_ON_EDIT, BuildComponent<DCLLockedOnEdit>);
-            builders.Add((int) CLASS_ID.VISIBLE_ON_EDIT, BuildComponent<DCLVisibleOnEdit>);
-
-            // Events
-            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_UP, BuildUUIDComponent<OnPointerUp>);
-            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_DOWN, BuildUUIDComponent<OnPointerDown>);
-            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_CLICK, BuildUUIDComponent<OnClick>);
-            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER, BuildUUIDComponent<OnPointerHoverEnter>);
-            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT, BuildUUIDComponent<OnPointerHoverExit>);
-
-            // Others
-            builders.Add((int) CLASS_ID_COMPONENT.AVATAR_SHAPE, BuildPoolableComponent);
-            builders.Add((int) CLASS_ID_COMPONENT.ANIMATOR, BuildPoolableComponent);
-            builders.Add((int) CLASS_ID_COMPONENT.GIZMOS, BuildPoolableComponent);
-            builders.Add((int) CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA, BuildPoolableComponent);
-            builders.Add((int) CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION, BuildPoolableComponent);
-            builders.Add((int) CLASS_ID_COMPONENT.CAMERA_MODE_AREA, BuildComponent<CameraModeArea>);
-
-            CoroutineStarter.Start(InitializeCoroutine());
-        }
-
-        private IComponent BuildPoolableComponent(int classId) { return poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT) classId); }
-
-        protected T BuildComponent<T>(int classId)
-            where T : IComponent, new()
-        {
-            return new T();
-        }
-
-        private T BuildUUIDComponent<T>(int classId)
-            where T : UnityEngine.Component
-        {
-            var go = new GameObject("UUID Component");
-            T newComponent = go.GetOrCreateComponent<T>();
-            return newComponent;
+            builders.Remove(classId);
         }
 
         public IComponent CreateComponent(int classId)
         {
             if (!builders.ContainsKey(classId))
             {
-                Debug.LogError($"Unknown classId {classId}");
+                Debug.LogError(
+                    $"Unknown classId: {classId} - Make sure the component is registered! (You forgot to add a plugin?)");
                 return null;
             }
 
             IComponent newComponent = builders[classId](classId);
 
             return newComponent;
+        }
+
+        public RuntimeComponentFactory()
+        {
+        }
+
+        public void Initialize()
+        {
         }
 
         public void Dispose()

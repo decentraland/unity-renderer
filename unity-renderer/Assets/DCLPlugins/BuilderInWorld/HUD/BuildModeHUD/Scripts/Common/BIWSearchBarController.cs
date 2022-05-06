@@ -41,6 +41,9 @@ public class BIWSearchBarController : IBIWSearchBarController
 
     public void Dispose()
     {
+        if (view == null)
+            return;
+        
         if (view.searchInput != null)
             view.searchInput.onValueChanged.RemoveListener(OnSearchInputChanged);
 

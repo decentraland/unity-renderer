@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class BIWEntityAction
 {
-    public string entityId;
+    public long entityId;
 
     public object oldValue;
     public object newValue;
 
-    public BIWEntityAction(string entityId) { this.entityId = entityId; }
+    public BIWEntityAction(long entityId) { this.entityId = entityId; }
 
-    public BIWEntityAction(string entityId, object oldValue, object newValue)
+    public BIWEntityAction(long entityId, object oldValue, object newValue)
     {
         this.entityId = entityId;
         this.oldValue = oldValue;

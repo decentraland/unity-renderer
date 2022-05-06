@@ -24,9 +24,223 @@ using UnityEngine.Events;
 
 public static partial class BIWUtils
 {
+    public static IDCLEntity DuplicateEntity(IParcelScene scene, IDCLEntity entity)
+    {
+        if (!scene.entities.ContainsKey(entity.entityId))
+            return null;
+
+        var sceneController = Environment.i.world.sceneController;
+        IDCLEntity newEntity =
+            scene.CreateEntity(
+                sceneController.entityIdHelper.EntityFromLegacyEntityString(System.Guid.NewGuid().ToString()));
+
+        if (entity.children.Count > 0)
+        {
+            using (var iterator = entity.children.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    IDCLEntity childDuplicate = DuplicateEntity(scene, iterator.Current.Value);
+                    childDuplicate.SetParent(newEntity);
+                }
+            }
+        }
+
+        if (entity.parent != null)
+            scene.SetEntityParent(newEntity.entityId, entity.parent.entityId);
+
+        DCLTransform.model.position = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position);
+        DCLTransform.model.rotation = entity.gameObject.transform.rotation;
+        DCLTransform.model.scale = entity.gameObject.transform.lossyScale;
+
+        var components = scene.componentsManagerLegacy.GetComponentsDictionary(entity);
+
+        if (components != null)
+        {
+            foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> component in components)
+            {
+                scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(newEntity.entityId, component.Key, component.Value.GetModel());
+            }
+        }
+
+        using (var iterator = scene.componentsManagerLegacy.GetSharedComponents(entity))
+        {
+            while (iterator.MoveNext())
+            {
+                ISharedComponent sharedComponent = scene.componentsManagerLegacy.SceneSharedComponentCreate(System.Guid.NewGuid().ToString(), iterator.Current.GetClassId());
+                sharedComponent.UpdateFromModel(iterator.Current.GetModel());
+                scene.componentsManagerLegacy.SceneSharedComponentAttach(newEntity.entityId, sharedComponent.id);
+            }
+        }
+        
+        return newEntity;
+    }
+    
+    public static bool IsParcelSceneSquare(Vector2Int[] parcelsPoints)
+    {
+        int minX = int.MaxValue;
+        int minY = int.MaxValue;
+        int maxX = int.MinValue;
+        int maxY = int.MinValue;
+
+        foreach (Vector2Int vector in parcelsPoints)
+        {
+            if (vector.x < minX)
+                minX = vector.x;
+            if (vector.y < minY)
+                minY = vector.y;
+            if (vector.x > maxX)
+                maxX = vector.x;
+            if (vector.y > maxY)
+                maxY = vector.y;
+        }
+
+        if (maxX - minX != maxY - minY)
+            return false;
+
+        int lateralLengh = Math.Abs((maxX - minX) + 1);
+
+        if (parcelsPoints.Length != lateralLengh * lateralLengh)
+            return false;
+
+        return true;
+    }
+    
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    public static LoadParcelScenesMessage.UnityParcelScene AddSceneMappings(Dictionary<string, string> contents, string baseUrl, LoadParcelScenesMessage.UnityParcelScene data)
+    public static LayerMask GetBIWCulling(LayerMask currentCulling)
+    {
+        currentCulling += BIWSettings.FX_LAYER;
+        return currentCulling;
+    }
+    
+    public static string Vector2INTToString(Vector2Int vector) { return vector.x + "," + vector.y; }
+
+    public static List<Vector2Int> GetLandsToPublishProject(LandWithAccess[] lands, IBuilderScene scene)
+    {
+        List<Vector2Int> availableLandsToPublish = new List<Vector2Int>();
+        List<Vector2Int> totalParcels = new List<Vector2Int>();
+        foreach (LandWithAccess land in lands)
+        {
+            totalParcels.AddRange(land.parcels.ToList());
+        }
+
+        Vector2Int sceneSize = GetSceneSize(scene.scene.sceneData.parcels);
+        foreach (Vector2Int parcel in totalParcels)
+        {
+            List<Vector2Int> necessaryParcelsToOwn = new List<Vector2Int>();
+            for (int x = 0; x < sceneSize.x; x++)
+            {
+                for (int y = 0; y < sceneSize.y; y++)
+                {
+                    necessaryParcelsToOwn.Add(new Vector2Int(parcel.x + x, parcel.y + y));
+                }
+            }
+
+            int amountOfParcelFounds = 0;
+            foreach (Vector2Int parcelToCheck in totalParcels)
+            {
+                if (necessaryParcelsToOwn.Contains(parcelToCheck))
+                    amountOfParcelFounds++;
+            }
+
+            if (amountOfParcelFounds == necessaryParcelsToOwn.Count)
+                availableLandsToPublish.Add(parcel);
+        }
+        return availableLandsToPublish;
+    }
+
+    public static Vector2Int GetRowsAndColumsFromLand(LandWithAccess landWithAccess)
+    {
+        Vector2Int result = new Vector2Int();
+        int baseX = landWithAccess.baseCoords.x;
+        int baseY = landWithAccess.baseCoords.y;
+
+        int amountX = 0;
+        int amountY = 0;
+
+        foreach (Vector2Int parcel in landWithAccess.parcels)
+        {
+            if (parcel.x == baseX)
+                amountX++;
+
+            if (parcel.y == baseY)
+                amountY++;
+        }
+
+        result.x = amountX;
+        result.y = amountY;
+        return result;
+    }
+
+    public static ILand CreateILandFromManifest(IManifest manifest, Vector2Int initialCoord)
+    {
+        ILand land = new ILand();
+        land.sceneId = manifest.project.scene_id;
+        land.baseUrl = BIWUrlUtils.GetUrlSceneObjectContent();
+
+        land.mappingsResponse = new MappingsResponse();
+        land.mappingsResponse.parcel_id = land.sceneId;
+        land.mappingsResponse.root_cid = land.sceneId;
+        land.mappingsResponse.contents = new List<ContentServerUtils.MappingPair>();
+
+        land.sceneJsonData = new SceneJsonData();
+        land.sceneJsonData.main = "bin/game.js";
+        land.sceneJsonData.scene = new SceneParcels();
+        land.sceneJsonData.scene.@base = initialCoord.x + "," + initialCoord.y;
+
+        int amountOfParcels = manifest.project.rows * manifest.project.cols;
+        land.sceneJsonData.scene.parcels = new string[amountOfParcels];
+
+        int baseX = initialCoord.x;
+        int baseY = initialCoord.y;
+
+        int currentPositionInRow = 0;
+        for (int i = 0; i < amountOfParcels; i++ )
+        {
+            land.sceneJsonData.scene.parcels[i] = baseX + "," + baseY;
+            currentPositionInRow++;
+            baseX++;
+            if (currentPositionInRow >= manifest.project.rows)
+            {
+                baseX = initialCoord.x;
+                baseY++;
+                currentPositionInRow = 0;
+            }
+        }
+
+        return land;
+    }
+
+    public static ILand CreateILandFromParcelScene(IParcelScene scene)
+    {
+        ILand land = new ILand();
+        land.sceneId = scene.sceneData.id;
+        land.baseUrl = scene.sceneData.baseUrl;
+        land.baseUrlBundles = scene.sceneData.baseUrlBundles;
+
+        land.mappingsResponse = new MappingsResponse();
+        land.mappingsResponse.parcel_id = land.sceneId;
+        land.mappingsResponse.root_cid = land.sceneId;
+        land.mappingsResponse.contents = scene.sceneData.contents;
+
+        land.sceneJsonData = new SceneJsonData();
+        land.sceneJsonData.main = "bin/game.js";
+        land.sceneJsonData.scene = new SceneParcels();
+        land.sceneJsonData.scene.@base = scene.sceneData.basePosition.ToString();
+        land.sceneJsonData.scene.parcels = new string[scene.sceneData.parcels.Length];
+
+        int count = 0;
+        foreach (Vector2Int parcel in scene.sceneData.parcels)
+        {
+            land.sceneJsonData.scene.parcels[count] = parcel.x + "," + parcel.y;
+            count++;
+        }
+
+        return land;
+    }
+
+    public static void AddSceneMappings(Dictionary<string, string> contents, string baseUrl, LoadParcelScenesMessage.UnityParcelScene data)
     {
         if (data == null)
             data = new LoadParcelScenesMessage.UnityParcelScene();
@@ -53,7 +267,6 @@ public static partial class BIWUtils
             if (!found)
                 data.contents.Add(mappingPair);
         }
-        return data;
     }
 
     public static void RemoveAssetsFromCurrentScene()
@@ -103,28 +316,95 @@ public static partial class BIWUtils
         return cachedModel;
     }
 
+    public static Manifest CreateManifestFromProjectDataAndScene(ProjectData data, WebBuilderScene scene)
+    {
+        Manifest manifest = new Manifest();
+        manifest.version = BIWSettings.MANIFEST_VERSION;
+        manifest.project = data;
+        manifest.scene = scene;
+
+        manifest.project.scene_id = manifest.scene.id;
+        return manifest;
+    }
+
     public static Manifest CreateManifestFromProject(ProjectData projectData)
     {
         Manifest manifest = new Manifest();
-        manifest.version = 10;
+        manifest.version = BIWSettings.MANIFEST_VERSION;
         manifest.project = projectData;
-        manifest.scene = CreateEmtpyBuilderScene(projectData.rows * projectData.cols);
+        manifest.scene = CreateEmtpyBuilderScene(projectData.rows, projectData.cols);
 
         manifest.project.scene_id = manifest.scene.id;
         return manifest;
     }
 
     //We create the scene the same way as the current builder do, so we ensure the compatibility between both builders
-    private static WebBuilderScene CreateEmtpyBuilderScene(int parcelsAmount)
+    private static WebBuilderScene CreateEmtpyBuilderScene(int rows, int cols)
     {
+        Dictionary<string, BuilderEntity> entities = new Dictionary<string, BuilderEntity>();
+        Dictionary<string, BuilderComponent> components = new Dictionary<string, BuilderComponent>();
+        Dictionary<string, SceneObject> assets = new Dictionary<string, SceneObject>();
+        
+        // We get the asset
+        var floorAsset = CreateFloorSceneObject();
+        assets.Add(floorAsset.id,floorAsset);
+        
+        // We create the ground
         BuilderGround ground = new BuilderGround();
-        ground.assetId = BIWSettings.FLOOR_ID;
+        ground.assetId = floorAsset.id;
         ground.componentId = Guid.NewGuid().ToString();
+
+        for (int x = 0; x < rows; x++)
+        {
+            for (int y = 0; y < cols; y++)
+            {
+                // We create the entity for the ground
+                BuilderEntity entity = new BuilderEntity();
+                entity.id = Guid.NewGuid().ToString();
+                entity.disableGizmos = true;
+                entity.name = "entity"+x+y;
+        
+                // We need a transform for the entity so we create it
+                BuilderComponent transformComponent = new BuilderComponent();
+                transformComponent.id = Guid.NewGuid().ToString();
+                transformComponent.type = "Transform";
+        
+                // We create the transform data
+                TransformComponent entityTransformComponentModel = new TransformComponent();
+                entityTransformComponentModel.position = new Vector3(8+(16*x), 0, 8+(16*y));
+                entityTransformComponentModel.rotation = new ProtocolV2.QuaternionRepresentation(Quaternion.identity);
+                entityTransformComponentModel.scale = Vector3.one;
+        
+                transformComponent.data = entityTransformComponentModel;
+                entity.components.Add(transformComponent.id);
+                if(!components.ContainsKey(transformComponent.id))
+                    components.Add(transformComponent.id,transformComponent);
+        
+                // We create the GLTFShape component
+                BuilderComponent gltfShapeComponent = new BuilderComponent();
+                gltfShapeComponent.id = ground.componentId;
+                gltfShapeComponent.type = "GLTFShape";
+        
+                LoadableShape.Model model = new GLTFShape.Model();
+                model.assetId = floorAsset.id;
+                gltfShapeComponent.data = model;
+        
+                entity.components.Add(ground.componentId);
+                if(!components.ContainsKey(gltfShapeComponent.id))
+                    components.Add(gltfShapeComponent.id,gltfShapeComponent);
+
+                // Finally, we add the entity to the list
+                entities.Add(entity.id,entity);
+            }
+        }
 
         WebBuilderScene scene = new WebBuilderScene
         {
             id = Guid.NewGuid().ToString(),
-            limits = GetSceneMetricsLimits(parcelsAmount),
+            entities = entities,
+            components =  components,
+            assets = assets,
+            limits = GetSceneMetricsLimits(rows*cols),
             metrics = new SceneMetricsModel(),
             ground = ground
         };
@@ -132,9 +412,29 @@ public static partial class BIWUtils
         return scene;
     }
 
-    public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)
+    public static Manifest CreateEmptyDefaultBuilderManifest(Vector2Int size, string landCoordinates)
     {
         Manifest manifest = new Manifest();
+        manifest.version = BIWSettings.MANIFEST_VERSION;
+
+        //We create a new project data for the scene
+        ProjectData projectData = new ProjectData();
+        projectData.id = Guid.NewGuid().ToString();
+        projectData.eth_address = UserProfile.GetOwnUserProfile().ethAddress;
+        projectData.title = "Builder " + landCoordinates;
+        projectData.description = "Scene created from the explorer builder";
+        projectData.creation_coords = landCoordinates;
+        projectData.rows = size.x;
+        projectData.cols = size.y;
+        projectData.updated_at = DateTime.Now;
+        projectData.created_at = DateTime.Now;
+        projectData.thumbnail = "thumbnail.png";
+
+        //We create an empty scene
+        manifest.scene = CreateEmtpyBuilderScene(size.x, size.y);
+
+        projectData.scene_id = manifest.scene.id;
+        manifest.project = projectData;
         return manifest;
     }
 
@@ -181,6 +481,43 @@ public static partial class BIWUtils
 
     public static Vector2Int GetSceneSize(IParcelScene parcelScene) { return GetSceneSize(parcelScene.sceneData.parcels); }
 
+    public static bool HasSquareSize(LandWithAccess land)
+    {
+        Vector2Int size = GetSceneSize(land.parcels);
+
+        for (int x = land.baseCoords.x; x < size.x; x++)
+        {
+            bool found = false;
+            foreach (Vector2Int parcel in land.parcels)
+            {
+                if (parcel.x == x)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                return false;
+        }
+
+        for (int y = land.baseCoords.y; y < size.x; y++)
+        {
+            bool found = false;
+            foreach (Vector2Int parcel in land.parcels)
+            {
+                if (parcel.y == y)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                return false;
+        }
+
+        return true;
+    }
+
     public static Vector2Int GetSceneSize(Vector2Int[] parcels)
     {
         int minX = Int32.MaxValue;
@@ -219,10 +556,10 @@ public static partial class BIWUtils
         int maxX = int.MinValue;
         int maxY = int.MinValue;
 
-        if (parcelScene.sceneData == null || parcelScene.sceneData.parcels == null)
+        if (parcelScene?.sceneData == null || parcelScene?.sceneData.parcels == null)
             return Vector3.zero;
 
-        foreach (Vector2Int vector in parcelScene.sceneData.parcels)
+        foreach (Vector2Int vector in parcelScene?.sceneData.parcels)
         {
             totalX += vector.x;
             totalZ += vector.y;
@@ -236,22 +573,48 @@ public static partial class BIWUtils
                 maxY = vector.y;
         }
 
-        float centerX = totalX / parcelScene.sceneData.parcels.Length;
-        float centerZ = totalZ / parcelScene.sceneData.parcels.Length;
+        float centerX = totalX / parcelScene.sceneData.parcels.Length + 0.5f;
+        float centerZ = totalZ / parcelScene.sceneData.parcels.Length + 0.5f;
 
         position.x = centerX;
         position.y = totalY;
         position.z = centerZ;
 
-        position = WorldStateUtils.ConvertScenePositionToUnityPosition(parcelScene);
-
-        position.x += ParcelSettings.PARCEL_SIZE / 2;
-        position.z += ParcelSettings.PARCEL_SIZE / 2;
+        Vector3 scenePosition = Utils.GridToWorldPosition(centerX, centerZ);
+        position = PositionUtils.WorldToUnityPosition(scenePosition);
 
         return position;
     }
 
-    public static CatalogItem CreateFloorSceneObject()
+    public static SceneObject CreateFloorSceneObject()
+    {
+        SceneObject floorSceneObject = new SceneObject();
+        floorSceneObject.id = BIWSettings.FLOOR_ID;
+
+        floorSceneObject.model = BIWSettings.FLOOR_MODEL;
+        floorSceneObject.name = BIWSettings.FLOOR_NAME;
+        floorSceneObject.asset_pack_id = BIWSettings.FLOOR_ASSET_PACK_ID;
+        floorSceneObject.thumbnail = BIWSettings.FLOOR_ASSET_THUMBNAIL;
+        floorSceneObject.category = BIWSettings.FLOOR_CATEGORY;
+        
+        floorSceneObject.tags = new List<string>();
+        floorSceneObject.tags.Add("genesis");
+        floorSceneObject.tags.Add("city");
+        floorSceneObject.tags.Add("town");
+        floorSceneObject.tags.Add("ground");
+
+        floorSceneObject.contents = new Dictionary<string, string>();
+
+        floorSceneObject.contents.Add(BIWSettings.FLOOR_GLTF_KEY, BIWSettings.FLOOR_GLTF_VALUE);
+        floorSceneObject.contents.Add(BIWSettings.FLOOR_TEXTURE_KEY, BIWSettings.FLOOR_TEXTURE_VALUE);
+        floorSceneObject.contents.Add(BIWSettings.FLOOR_THUMBNAIL_KEY, BIWSettings.FLOOR_THUMBNAIL_VALUE);
+
+        floorSceneObject.metrics = new SceneObject.ObjectMetrics();
+
+        return floorSceneObject;
+    }
+    
+    public static CatalogItem CreateFloorCatalogItem()
     {
         CatalogItem floorSceneObject = new CatalogItem();
         floorSceneObject.id = BIWSettings.FLOOR_ID;
@@ -259,11 +622,19 @@ public static partial class BIWUtils
         floorSceneObject.model = BIWSettings.FLOOR_MODEL;
         floorSceneObject.name = BIWSettings.FLOOR_NAME;
         floorSceneObject.assetPackName = BIWSettings.FLOOR_ASSET_PACK_NAME;
+        floorSceneObject.thumbnailURL = BIWSettings.FLOOR_ASSET_THUMBNAIL;
 
+        floorSceneObject.tags = new List<string>();
+        floorSceneObject.tags.Add("genesis");
+        floorSceneObject.tags.Add("city");
+        floorSceneObject.tags.Add("town");
+        floorSceneObject.tags.Add("ground");
+        
         floorSceneObject.contents = new Dictionary<string, string>();
 
         floorSceneObject.contents.Add(BIWSettings.FLOOR_GLTF_KEY, BIWSettings.FLOOR_GLTF_VALUE);
         floorSceneObject.contents.Add(BIWSettings.FLOOR_TEXTURE_KEY, BIWSettings.FLOOR_TEXTURE_VALUE);
+        floorSceneObject.contents.Add(BIWSettings.FLOOR_THUMBNAIL_KEY, BIWSettings.FLOOR_THUMBNAIL_VALUE);
 
         floorSceneObject.metrics = new SceneObject.ObjectMetrics();
 
@@ -397,52 +768,61 @@ public static partial class BIWUtils
         EntityData builderInWorldEntityData = new EntityData();
         builderInWorldEntityData.entityId = entity.entityId;
 
+        var components = entity.scene.componentsManagerLegacy.GetComponentsDictionary(entity);
 
-        foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> keyValuePair in entity.components)
+        if (components != null)
         {
-            if (keyValuePair.Key == CLASS_ID_COMPONENT.TRANSFORM)
+            foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> keyValuePair in components)
             {
-                EntityData.TransformComponent entityComponentModel = new EntityData.TransformComponent();
+                if (keyValuePair.Key == CLASS_ID_COMPONENT.TRANSFORM)
+                {
+                    EntityData.TransformComponent entityComponentModel = new EntityData.TransformComponent();
 
-                entityComponentModel.position = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, entity.scene);
-                entityComponentModel.rotation = entity.gameObject.transform.localRotation.eulerAngles;
-                entityComponentModel.scale = entity.gameObject.transform.localScale;
+                    entityComponentModel.position = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, entity.scene);
+                    entityComponentModel.rotation = entity.gameObject.transform.localRotation.eulerAngles;
+                    entityComponentModel.scale = entity.gameObject.transform.localScale;
 
-                builderInWorldEntityData.transformComponent = entityComponentModel;
-            }
-            else
-            {
-                ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
-                entityComponentModel.componentId = (int) keyValuePair.Key;
-                entityComponentModel.data = keyValuePair.Value.GetModel();
+                    builderInWorldEntityData.transformComponent = entityComponentModel;
+                }
+                else
+                {
+                    ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
+                    entityComponentModel.componentId = (int)keyValuePair.Key;
+                    entityComponentModel.data = keyValuePair.Value.GetModel();
 
-                builderInWorldEntityData.components.Add(entityComponentModel);
+                    builderInWorldEntityData.components.Add(entityComponentModel);
+                }
             }
         }
 
-        foreach (KeyValuePair<Type, ISharedComponent> keyValuePair in entity.sharedComponents)
+        var sharedComponents = entity.scene.componentsManagerLegacy.GetSharedComponentsDictionary(entity);
+
+        if (sharedComponents != null)
         {
-            if (keyValuePair.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
+            foreach (KeyValuePair<Type, ISharedComponent> keyValuePair in sharedComponents)
             {
-                EntityData.NFTComponent nFTComponent = new EntityData.NFTComponent();
-                NFTShape.Model model = (NFTShape.Model) keyValuePair.Value.GetModel();
+                if (keyValuePair.Value.GetClassId() == (int)CLASS_ID.NFT_SHAPE)
+                {
+                    EntityData.NFTComponent nFTComponent = new EntityData.NFTComponent();
+                    NFTShape.Model model = (NFTShape.Model)keyValuePair.Value.GetModel();
 
-                nFTComponent.id = keyValuePair.Value.id;
-                nFTComponent.color = new ColorRepresentation(model.color);
-                nFTComponent.assetId = model.assetId;
-                nFTComponent.src = model.src;
-                nFTComponent.style = model.style;
+                    nFTComponent.id = keyValuePair.Value.id;
+                    nFTComponent.color = new ColorRepresentation(model.color);
+                    nFTComponent.assetId = model.assetId;
+                    nFTComponent.src = model.src;
+                    nFTComponent.style = model.style;
 
-                builderInWorldEntityData.nftComponent = nFTComponent;
-            }
-            else
-            {
-                ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
-                entityComponentModel.componentId = keyValuePair.Value.GetClassId();
-                entityComponentModel.data = keyValuePair.Value.GetModel();
-                entityComponentModel.classId = keyValuePair.Value.id;
+                    builderInWorldEntityData.nftComponent = nFTComponent;
+                }
+                else
+                {
+                    ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
+                    entityComponentModel.componentId = keyValuePair.Value.GetClassId();
+                    entityComponentModel.data = keyValuePair.Value.GetModel();
+                    entityComponentModel.classId = keyValuePair.Value.id;
 
-                builderInWorldEntityData.sharedComponents.Add(entityComponentModel);
+                    builderInWorldEntityData.sharedComponents.Add(entityComponentModel);
+                }
             }
         }
 
@@ -495,6 +875,7 @@ public static partial class BIWUtils
 
     public static IWebRequestAsyncOperation MakeGetCall(string url, Promise<string> callPromise, Dictionary<string, string> headers)
     {
+        headers["Cache-Control"] = "no-cache";
         var asyncOperation = Environment.i.platform.webRequest.Get(
             url: url,
             OnSuccess: (webRequestResult) =>
@@ -505,10 +886,36 @@ public static partial class BIWUtils
             },
             OnFail: (webRequestResult) =>
             {
-                Debug.Log(webRequestResult.webRequest.error);
-                callPromise.Reject(webRequestResult.webRequest.error);
+                try
+                {
+                    byte[] byteArray = webRequestResult.GetResultData();
+                    string result = System.Text.Encoding.UTF8.GetString(byteArray);
+                    APIResponse response = JsonConvert.DeserializeObject<APIResponse>(result);
+                    callPromise?.Resolve(result);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(webRequestResult.webRequest.error);
+                    callPromise.Reject(webRequestResult.webRequest.error);
+                }
             },
             headers: headers);
+        
+        return asyncOperation;
+    }
+
+    public static IWebRequestAsyncOperation MakeGetTextureCall(string url, Promise<Texture2D> callPromise)
+    {
+        var asyncOperation = Environment.i.platform.webRequest.GetTexture(
+            url: url,
+            OnSuccess: (webRequestResult) =>
+            {
+                callPromise.Resolve(DownloadHandlerTexture.GetContent(webRequestResult.webRequest));
+            },
+            OnFail: (webRequestResult) =>
+            {
+                callPromise.Reject(webRequestResult.webRequest.error);
+            });
 
         return asyncOperation;
     }

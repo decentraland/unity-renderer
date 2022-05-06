@@ -122,8 +122,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         if (model == null)
             return;
 
-        //We only do this if we don't have items, this is done because the editor doesn't call awake method
-        if (instantiatedItems.Count == 0)
+        //We only do this if we are from editor, this is done because the editor doesn't call awake method
+        if (!Application.isPlaying)
             RegisterCurrentInstantiatedItems();
 
         SetConstraint(model.constraint);
@@ -177,42 +177,45 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         Vector2 newSizeToApply = newItemSize;
 
-        if (model.adaptVerticallyItemSizeToContainer  && model.adaptHorizontallyItemSizeToContainer)
+        if (instantiatedItems.Count > 0)
         {
-            CalculateAutoSize(out newSizeToApply);
-        }
-        else if (model.adaptVerticallyItemSizeToContainer)
-        {
-            //TODO: We need to implement this functionality. Nobody is using it
-            //      Please implement it if needed
-            throw new Exception("Not implemented yet! Please implement the functionality");
-        }
-        else if (model.adaptHorizontallyItemSizeToContainer)
-        {
-            switch (model.constraint)
+            if (model.adaptVerticallyItemSizeToContainer && model.adaptHorizontallyItemSizeToContainer)
             {
-                case Constraint.FixedColumnCount:
-                    CalculateHorizontalSizeForFixedColumnConstraint(out newSizeToApply);
-                    break;
-                case Constraint.FixedRowCount:
-                    CalculateHorizontalSizeForFixedRowConstraint(out newSizeToApply);
-                    break;
-                case Constraint.Flexible:
-                    CalculateHorizontalSizeForFlexibleConstraint(out newSizeToApply, newItemSize);
-                    break;
+                CalculateAutoSize(out newSizeToApply);
             }
-        }
-        else
-        {
-            switch (model.constraint)
+            else if (model.adaptVerticallyItemSizeToContainer)
             {
-                case Constraint.FixedColumnCount:
-                case Constraint.Flexible:
-                    currentItemsPerRow = model.constraintCount;
-                    break;
-                case Constraint.FixedRowCount:
-                    currentItemsPerRow = (int)Mathf.Ceil((float)instantiatedItems.Count / model.constraintCount);
-                    break;
+                //TODO: We need to implement this functionality. Nobody is using it
+                //      Please implement it if needed
+                throw new Exception("Not implemented yet! Please implement the functionality");
+            }
+            else if (model.adaptHorizontallyItemSizeToContainer)
+            {
+                switch (model.constraint)
+                {
+                    case Constraint.FixedColumnCount:
+                        CalculateHorizontalSizeForFixedColumnConstraint(out newSizeToApply);
+                        break;
+                    case Constraint.FixedRowCount:
+                        CalculateHorizontalSizeForFixedRowConstraint(out newSizeToApply);
+                        break;
+                    case Constraint.Flexible:
+                        CalculateHorizontalSizeForFlexibleConstraint(out newSizeToApply, newItemSize);
+                        break;
+                }
+            }
+            else
+            {
+                switch (model.constraint)
+                {
+                    case Constraint.FixedColumnCount:
+                    case Constraint.Flexible:
+                        currentItemsPerRow = model.constraintCount;
+                        break;
+                    case Constraint.FixedRowCount:
+                        currentItemsPerRow = (int)Mathf.Ceil((float)instantiatedItems.Count / model.constraintCount);
+                        break;
+                }
             }
         }
 
@@ -241,13 +244,13 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         float itemHeight = model.recommendedHeightForFlexibleItems;
 
         if (itemWidth * amountsOfHorizontalItemsPerRow + extraSpaceToRemoveX >= width)
-            itemWidth = width / amountsOfHorizontalItemsPerRow - extraSpaceToRemoveX;
+            itemWidth = (width - extraSpaceToRemoveX) / amountsOfHorizontalItemsPerRow;
 
         if (itemWidth < model.minWidthForFlexibleItems)
             itemWidth = model.minWidthForFlexibleItems;
 
         if (itemHeight * amountsOfVerticalItemsPerColumn + extraSpaceToRemoveY >= height)
-            itemHeight = height / amountsOfVerticalItemsPerColumn - extraSpaceToRemoveY;
+            itemHeight = (height - extraSpaceToRemoveY) / amountsOfVerticalItemsPerColumn;
 
         if (itemHeight < model.minHeightForFlexibleItems)
             itemHeight = model.minHeightForFlexibleItems;
@@ -400,6 +403,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         instantiatedItems.Clear();
 
+        SetItemSize(model.itemSize);
+
         return extractedItems;
     }
 
@@ -414,6 +419,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         itemsToDestroy.Clear();
 
         instantiatedItems.Clear();
+
+        SetItemSize(model.itemSize);
     }
 
     internal void CreateItem(BaseComponentView newItem, string name)

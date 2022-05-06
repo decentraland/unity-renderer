@@ -54,7 +54,7 @@ public class PBRMaterialVisualTests : VisualTestsBase
             }, out IDCLEntity entity);
         TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(0, 0, 8), rotation = Quaternion.Euler(90, 180, 0) });
 
-        LoadWrapper loader = GLTFShape.GetLoaderForEntity(entity);
+        LoadWrapper loader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new WaitUntil(() => loader.alreadyLoaded);
 
         yield return VisualTestUtils.TakeSnapshot("PBRMaterialVisualTests_StandardConfigurations", camera);

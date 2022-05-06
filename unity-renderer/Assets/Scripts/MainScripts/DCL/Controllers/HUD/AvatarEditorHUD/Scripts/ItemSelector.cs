@@ -1,5 +1,7 @@
+using DCL.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,11 +10,16 @@ using UnityEngine.UI;
 
 public class ItemSelector : MonoBehaviour
 {
+    private const string DECENTRALAND_COLLECTION_ID = "Decentraland";
+
     [SerializeField]
     internal ItemToggleFactory itemToggleFactory;
 
     [SerializeField]
-    private RectTransform itemContainer;
+    internal CollectionGroup collectionGroupPrefab;
+
+    [SerializeField]
+    internal RectTransform content;
 
     [SerializeField]
     internal GameObject loadingSpinner;
@@ -28,6 +35,7 @@ public class ItemSelector : MonoBehaviour
     public event System.Action OnRetryClicked;
 
     internal Dictionary<string, ItemToggle> itemToggles = new Dictionary<string, ItemToggle>();
+    internal Dictionary<string, CollectionGroup> currentCollectionGroups = new Dictionary<string, CollectionGroup>();
 
     private string currentBodyShape;
 
@@ -43,10 +51,19 @@ public class ItemSelector : MonoBehaviour
 
     private void OnDestroy() { loadingRetryButton.onClick.RemoveListener(RetryLoading); }
 
-    public void AddItemToggle(WearableItem item, int amount,
+    public void AddItemToggle(
+        WearableItem item,
+        string collectionName,
+        int amount,
         Func<WearableItem, bool> hideOtherWearablesToastStrategy,
         Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
     {
+        CollectionGroup collectionGroup;
+        if (item.IsFromThirdPartyCollection)
+            collectionGroup = CreateCollectionGroupIfNeeded(item.ThirdPartyCollectionId, collectionName);
+        else
+            collectionGroup = CreateCollectionGroupIfNeeded(DECENTRALAND_COLLECTION_ID, DECENTRALAND_COLLECTION_ID);
+
         if (item == null)
             return;
         if (itemToggles.ContainsKey(item.id))
@@ -55,12 +72,12 @@ public class ItemSelector : MonoBehaviour
         ItemToggle newToggle;
         if (item.IsCollectible())
         {
-            newToggle = itemToggleFactory.CreateItemToggleFromRarity(item.rarity, itemContainer);
+            newToggle = itemToggleFactory.CreateItemToggleFromRarity(item.rarity, collectionGroup.itemContainer);
             newToggle.transform.SetAsFirstSibling();
         }
         else
         {
-            newToggle = itemToggleFactory.CreateBaseWearable(itemContainer);
+            newToggle = itemToggleFactory.CreateBaseWearable(collectionGroup.itemContainer);
         }
 
         newToggle.Initialize(item, false, amount);
@@ -68,6 +85,7 @@ public class ItemSelector : MonoBehaviour
         newToggle.SetReplaceOtherWearablesToastStrategy(replaceOtherWearablesToastStrategy);
         newToggle.OnClicked += ToggleClicked;
         newToggle.OnSellClicked += SellClicked;
+        newToggle.collectionId = collectionGroup.collectionId;
         itemToggles.Add(item.id, newToggle);
 
         bool active = string.IsNullOrEmpty(currentBodyShape) || item.SupportsBodyShape(currentBodyShape);
@@ -85,6 +103,7 @@ public class ItemSelector : MonoBehaviour
 
         itemToggles.Remove(itemID);
         Destroy(toggle.gameObject);
+        RemoveCollectionGroupIfNeeded(toggle.collectionId);
     }
 
     public void RemoveAllItemToggle()
@@ -94,6 +113,7 @@ public class ItemSelector : MonoBehaviour
             while (it.MoveNext())
             {
                 Destroy(it.Current.Value.gameObject);
+                RemoveCollectionGroupIfNeeded(it.Current.Value.collectionId);
             }
         }
 
@@ -108,6 +128,8 @@ public class ItemSelector : MonoBehaviour
         currentBodyShape = bodyShape;
         ShowCompatibleWithBodyShape();
     }
+
+    public void UpdateSelectorLayout() { Utils.ForceUpdateLayout(content); }
 
     private void ShowCompatibleWithBodyShape()
     {
@@ -178,4 +200,34 @@ public class ItemSelector : MonoBehaviour
     }
 
     private void RetryLoading() { OnRetryClicked?.Invoke(); }
+
+    private CollectionGroup CreateCollectionGroupIfNeeded(string collectionId, string collectionName)
+    {
+        if (currentCollectionGroups.ContainsKey(collectionId))
+            return currentCollectionGroups[collectionId];
+
+        CollectionGroup newCollectionGroup = Instantiate(collectionGroupPrefab, content);
+        newCollectionGroup.Configure(collectionId, collectionName);
+        currentCollectionGroups.Add(collectionId, newCollectionGroup);
+
+        if (collectionId == DECENTRALAND_COLLECTION_ID)
+            newCollectionGroup.transform.SetAsFirstSibling();
+        else
+            newCollectionGroup.transform.SetAsLastSibling();
+
+        return newCollectionGroup;
+    }
+
+    private bool RemoveCollectionGroupIfNeeded(string collectionId)
+    {
+        currentCollectionGroups.TryGetValue(collectionId, out CollectionGroup collectionGroupToRemove);
+        if (collectionGroupToRemove != null && itemToggles.Count(x => x.Value.collectionId == collectionId) == 0)
+        {
+            currentCollectionGroups.Remove(collectionId);
+            Destroy(collectionGroupToRemove.gameObject);
+            return true;
+        }
+
+        return false;
+    }
 }

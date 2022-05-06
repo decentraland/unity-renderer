@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace EmotesCustomization
+namespace DCL.EmotesCustomization
 {
     public interface IEmotesCustomizationComponentView
     {

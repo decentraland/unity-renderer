@@ -11,20 +11,24 @@ public class DebugShapesBoundingBoxDisplayer : IPlugin
     private readonly ISceneController sceneController;
     internal readonly Dictionary<string, WatchSceneHandler> scenesWatcher = new Dictionary<string, WatchSceneHandler>();
     internal readonly List<string> pendingScenesId = new List<string>();
+    private readonly IUpdateEventHandler updateEventHandler;
 
     public DebugShapesBoundingBoxDisplayer() : this(
         DataStore.i.debugConfig.showSceneBoundingBoxes,
-        Environment.i.world.state, Environment.i.world.sceneController)
-    {
-    }
+        Environment.i.world.state,
+        Environment.i.world.sceneController,
+        Environment.i.platform.updateEventHandler) { }
 
     internal DebugShapesBoundingBoxDisplayer(
         IBaseDictionary<string, bool> isBoundingBoxEnabledVariable,
-        IWorldState state, ISceneController sceneController)
+        IWorldState state,
+        ISceneController sceneController,
+        IUpdateEventHandler updateEventHandler)
     {
         this.isBoundingBoxEnabledForScene = isBoundingBoxEnabledVariable;
         this.worldState = state;
         this.sceneController = sceneController;
+        this.updateEventHandler = updateEventHandler;
 
         // NOTE: we search for scenes that might be added to the variable previous to this class instantiation
         using (var iterator = isBoundingBoxEnabledVariable.Get().GetEnumerator())
@@ -85,7 +89,7 @@ public class DebugShapesBoundingBoxDisplayer : IPlugin
             watchHandler?.Dispose();
         }
 
-        scenesWatcher[scene.sceneData.id] = new WatchSceneHandler(scene, new SceneEntitiesTracker());
+        scenesWatcher[scene.sceneData.id] = new WatchSceneHandler(scene, new SceneEntitiesTracker(updateEventHandler));
     }
 
     private void IsBoundingBoxEnabledVariableOnOnRemoved(string sceneId, bool enabled)

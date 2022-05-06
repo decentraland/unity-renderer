@@ -26,6 +26,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public List<string> muted => model.muted ?? new List<string>();
     public bool hasConnectedWeb3 => model.hasConnectedWeb3;
     public bool hasClaimedName => model.hasClaimedName;
+    public bool isGuest => !model.hasConnectedWeb3;
     public AvatarModel avatar => model.avatar;
     public int tutorialStep => model.tutorialStep;
 
@@ -115,6 +116,18 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         OnInventorySet?.Invoke(inventory);
     }
 
+    public void AddToInventory(string wearableId)
+    {
+        if (inventory.ContainsKey(wearableId))
+            inventory[wearableId]++;
+        else
+            inventory.Add(wearableId, 1);
+    }
+
+    public void RemoveFromInventory(string wearableId) { inventory.Remove(wearableId); }
+    
+    public bool ContainsInInventory(string wearableId) => inventory.ContainsKey(wearableId);
+
     public string[] GetInventoryItemsIds() { return inventory.Keys.ToArray(); }
 
     internal static UserProfile ownUserProfile;
@@ -131,21 +144,18 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public UserProfileModel CloneModel() => model.Clone();
 
-    public bool IsBlocked(string userId)
-    {
-        return blocked != null && blocked.Contains(userId);
-    }
+    public bool IsBlocked(string userId) { return blocked != null && blocked.Contains(userId); }
 
     public void Block(string userId)
     {
-        if (IsBlocked(userId)) return;
+        if (IsBlocked(userId))
+            return;
         blocked.Add(userId);
     }
     
-    public void Unblock(string userId)
-    {
-        blocked.Remove(userId);
-    }
+    public void Unblock(string userId) { blocked.Remove(userId); }
+    
+    public bool HasEquipped(string wearableId) => avatar.wearables.Contains(wearableId);
 
 #if UNITY_EDITOR
     private void OnEnable()

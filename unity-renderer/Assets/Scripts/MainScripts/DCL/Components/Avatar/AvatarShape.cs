@@ -120,7 +120,7 @@ namespace DCL
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
             // To deal with the cases in which the entity transform was configured before the AvatarShape
-            if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
+            if (!initializedPosition && scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TRANSFORM))
             {
                 initializedPosition = true;
                 OnEntityTransformChanged(entity.gameObject.transform.localPosition,
@@ -231,6 +231,8 @@ namespace DCL
                 player = new Player();
             }
 
+            bool isNameDirty = player.name != model.name;
+
             player.id = model.id;
             player.name = model.name;
             player.isTalking = model.talking;
@@ -242,17 +244,18 @@ namespace DCL
             if (isNew)
             {
                 player.playerName = playerName;
-                player.playerName.SetName(player.name);
                 player.playerName.Show();
                 player.anchorPoints = anchorPoints;
                 if (isGlobalSceneAvatar)
                 {
-                    otherPlayers.Add(player.id, player);
+                    // TODO: Note: This is having a problem, sometimes the users has been detected as new 2 times and it shouldn't happen
+                    // we should investigate this 
+                    otherPlayers[player.id] = player;
                 }
                 avatarReporterController.ReportAvatarRemoved();
             }
 
-            avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
+            avatarReporterController.SetUp(entity.scene.sceneData.id, player.id);
 
             float height = AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y;
 
@@ -260,6 +263,8 @@ namespace DCL
 
             player.playerName.SetIsTalking(model.talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));
+            if (isNameDirty)
+                player.playerName.SetName(model.name);
         }
 
         private void Update()

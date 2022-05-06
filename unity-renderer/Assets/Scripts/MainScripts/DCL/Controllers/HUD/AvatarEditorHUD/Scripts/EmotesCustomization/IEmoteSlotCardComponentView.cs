@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace EmotesCustomization
+namespace DCL.EmotesCustomization
 {
     public interface IEmoteSlotCardComponentView
     {

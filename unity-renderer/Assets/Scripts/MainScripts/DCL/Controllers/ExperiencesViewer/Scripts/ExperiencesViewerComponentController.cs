@@ -49,11 +49,9 @@ namespace DCL.ExperiencesViewer
             IsOpenChanged(isOpen.Get(), false);
 
             this.sceneController = sceneController;
-            if (this.sceneController != null)
-            {
-                this.sceneController.OnNewPortableExperienceSceneAdded += OnPEXSceneAdded;
-                this.sceneController.OnNewPortableExperienceSceneRemoved += OnPEXSceneRemoved;
-            }
+
+            DataStore.i.world.portableExperienceIds.OnAdded += OnPEXSceneAdded;
+            DataStore.i.world.portableExperienceIds.OnRemoved += OnPEXSceneRemoved;
 
             CheckCurrentActivePortableExperiences();
 
@@ -80,12 +78,9 @@ namespace DCL.ExperiencesViewer
             view.onSomeExperienceExecutionChanged -= OnSomeExperienceExecutionChanged;
             isOpen.OnChange -= IsOpenChanged;
 
-            if (sceneController != null)
-            {
-                sceneController.OnNewPortableExperienceSceneAdded -= OnPEXSceneAdded;
-                sceneController.OnNewPortableExperienceSceneRemoved -= OnPEXSceneRemoved;
-            }
-
+            DataStore.i.world.portableExperienceIds.OnAdded -= OnPEXSceneAdded;
+            DataStore.i.world.portableExperienceIds.OnRemoved -= OnPEXSceneRemoved;
+            
             if (userProfile != null)
                 userProfile.OnUpdate -= OnUserProfileUpdated;
         }
@@ -97,7 +92,7 @@ namespace DCL.ExperiencesViewer
             activePEXScenes.TryGetValue(pexId, out IParcelScene scene);
             if (scene != null)
             {
-                UIScreenSpace sceneUIComponent = scene.GetSharedComponent<UIScreenSpace>();
+                UIScreenSpace sceneUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
                 sceneUIComponent.canvas.enabled = isVisible;
             }
 
@@ -137,18 +132,20 @@ namespace DCL.ExperiencesViewer
 
             if (DCL.Environment.i.world.state != null)
             {
-                List<GlobalScene> activePortableExperiences = WorldStateUtils.GetActivePortableExperienceScenes();
+                List<GlobalScene> activePortableExperiences =
+                    PortableExperienceUtils.GetActivePortableExperienceScenes();
                 foreach (GlobalScene pexScene in activePortableExperiences)
                 {
-                    OnPEXSceneAdded(pexScene);
+                    OnPEXSceneAdded(pexScene.sceneData.id);
                 }
             }
 
             numOfLoadedExperiences.Set(activePEXScenes.Count);
         }
 
-        public void OnPEXSceneAdded(IParcelScene scene)
+        public void OnPEXSceneAdded(string id)
         {
+            IParcelScene scene = Environment.i.world.state.GetScene(id);
             ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(scene.sceneData.id);
 
             if (activePEXScenes.ContainsKey(scene.sceneData.id))
@@ -163,11 +160,12 @@ namespace DCL.ExperiencesViewer
             }
 
             GlobalScene newPortableExperienceScene = scene as GlobalScene;
-
+            DataStore.i.experiencesViewer.activeExperience.Get().Add(scene.sceneData.id);
+            
             if (pausedPEXScenesIds.Contains(scene.sceneData.id))
             {
                 pausedPEXScenesIds.Remove(scene.sceneData.id);
-
+                
                 if (experienceToUpdate != null)
                     experienceToUpdate.SetAsPlaying(true);
             }
@@ -194,6 +192,7 @@ namespace DCL.ExperiencesViewer
             if (!activePEXScenes.ContainsKey(id))
                 return;
 
+            DataStore.i.experiencesViewer.activeExperience.Get().Remove(id);
             if (pausedPEXScenesIds.Contains(id))
             {
                 ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(id);
@@ -234,6 +233,12 @@ namespace DCL.ExperiencesViewer
             {
                 lastDisablePEXSentToKernel = pausedPEXScenesIds;
                 WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
+            }
+
+            List<ExperienceRowComponentView> loadedExperiences = view.GetAllAvailableExperiences();
+            for (int i = 0; i < loadedExperiences.Count; i++)
+            {
+                loadedExperiences[i].SetAllowStartStop(userProfile.avatar.wearables.Contains(loadedExperiences[i].model.id));
             }
         }
 

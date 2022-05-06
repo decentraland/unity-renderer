@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
-using UnityEditor.Experimental;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityGLTF;
@@ -15,11 +14,18 @@ using UnityGLTF.Cache;
 public class GLTFImporterTests : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
-
+    private CoreComponentsPlugin coreComponentsPlugin;
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     public IEnumerator LoadModel(string path, System.Action<IDCLEntity, InstantiatedGLTFObject> OnFinishLoading)

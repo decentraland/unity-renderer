@@ -140,6 +140,7 @@ public class AvatarModifierArea : BaseComponent
     private void RemoveAllModifiers()
     {
         RemoveAllModifiers(DetectAllAvatarsInArea());
+        avatarsInArea = null;
     }
 
     private void RemoveAllModifiers(HashSet<GameObject> avatars)
@@ -184,6 +185,10 @@ public class AvatarModifierArea : BaseComponent
                 DataStore.i.player.ownPlayer.OnChange += OwnPlayerOnOnChange;
                 DataStore.i.player.otherPlayers.OnAdded += OtherPlayersOnOnAdded;
             }
+            
+            // Force update due to after model update modifiers are removed and re-added
+            // leaving a frame with the avatar without the proper modifications
+            Update();
         }
     }
 

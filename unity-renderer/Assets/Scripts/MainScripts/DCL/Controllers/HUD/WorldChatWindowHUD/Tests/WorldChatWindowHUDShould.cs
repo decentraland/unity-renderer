@@ -76,8 +76,8 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
 
         ChatEntry entry = controller.view.chatHudView.entries[0];
 
-        Assert.AreEqual("<b>To TEST_USER:</b>", entry.username.text);
-        Assert.AreEqual("<b>To TEST_USER:</b> <noparse>test message</noparse>", entry.body.text);
+        Assert.AreEqual("To TEST_USER:", entry.username.text);
+        Assert.AreEqual("To TEST_USER: <noparse>test message</noparse>", entry.body.text);
 
         var receivedPM = new ChatMessage()
         {
@@ -91,8 +91,8 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
 
         ChatEntry entry2 = controller.view.chatHudView.entries[1];
 
-        Assert.AreEqual("<b>From TEST_USER:</b>", entry2.username.text);
-        Assert.AreEqual("<b>From TEST_USER:</b> <noparse>test message</noparse>", entry2.body.text);
+        Assert.AreEqual("From TEST_USER:", entry2.username.text);
+        Assert.AreEqual("From TEST_USER: <noparse>test message</noparse>", entry2.body.text);
     }
 
     [Test]

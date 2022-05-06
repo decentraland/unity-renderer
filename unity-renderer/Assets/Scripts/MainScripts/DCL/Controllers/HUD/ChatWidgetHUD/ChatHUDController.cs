@@ -1,5 +1,8 @@
 using System;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,10 +17,10 @@ public class ChatHUDController : IDisposable
     public event UnityAction<string> OnPressPrivateMessage;
 
     private readonly DataStore dataStore;
-    private readonly RegexProfanityFilter profanityFilter;
+    private readonly IProfanityFilter profanityFilter;
     private InputAction_Trigger closeWindowTrigger;
 
-    public ChatHUDController(DataStore dataStore, RegexProfanityFilter profanityFilter = null)
+    public ChatHUDController(DataStore dataStore, IProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
         this.profanityFilter = profanityFilter;
@@ -56,19 +59,23 @@ public class ChatHUDController : IDisposable
         }
     }
 
-    public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
+    public async UniTask AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
         chatEntryModel.bodyText = ChatUtils.AddNoParse(chatEntryModel.bodyText);
 
         if (IsProfanityFilteringEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
         {
-            chatEntryModel.bodyText = profanityFilter.Filter(chatEntryModel.bodyText);
+            chatEntryModel.bodyText = await profanityFilter.Filter(chatEntryModel.bodyText);
+
             if (!string.IsNullOrEmpty(chatEntryModel.senderName))
-                chatEntryModel.senderName = profanityFilter.Filter(chatEntryModel.senderName);
+                chatEntryModel.senderName = await profanityFilter.Filter(chatEntryModel.senderName);
+
             if (!string.IsNullOrEmpty(chatEntryModel.recipientName))
-                chatEntryModel.recipientName = profanityFilter.Filter(chatEntryModel.recipientName);
+                chatEntryModel.recipientName = await profanityFilter.Filter(chatEntryModel.recipientName);
         }
-            
+
+        await UniTask.SwitchToMainThread();
+        
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (view.entries.Count > MAX_CHAT_ENTRIES)

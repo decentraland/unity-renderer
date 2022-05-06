@@ -1,4 +1,3 @@
-using DCL;
 using DCL.Helpers;
 using System;
 using System.Collections;
@@ -27,15 +26,15 @@ public class GLTFLoadingTestController : MonoBehaviour
         var scene = Environment.i.world.state.loadedScenes["0,0"] as ParcelScene;
 
         // FULL GLB
-        TestUtils.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(-2.5f, 1, 0),
+        TestUtils.InstantiateEntityWithShape(scene, 1, DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(-2.5f, 1, 0),
             TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb");
 
         // GLB + Separated Textures
-        TestUtils.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0f, 1, 0),
+        TestUtils.InstantiateEntityWithShape(scene, 2, DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0f, 1, 0),
             TestAssetsUtils.GetPath() + "/GLB/TrunkSeparatedTextures/Trunk.glb");
 
         // GLTF
-        TestUtils.InstantiateEntityWithShape(scene, "3", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(2.5f, 1, 0),
+        TestUtils.InstantiateEntityWithShape(scene, 3, DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(2.5f, 1, 0),
             TestAssetsUtils.GetPath() + "/GLTF/Trunk/Trunk.gltf");
         // ---------
     }

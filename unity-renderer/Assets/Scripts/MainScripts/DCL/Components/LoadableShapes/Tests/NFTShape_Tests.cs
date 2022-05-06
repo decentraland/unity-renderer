@@ -17,7 +17,7 @@ public class NFTShape_Tests : IntegrationTestSuite
     {
         serviceLocator.Register<ISceneController>(() => new SceneController());
         serviceLocator.Register<IWorldState>(() => new WorldState());
-        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory));
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
         serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
     }
 
@@ -30,12 +30,13 @@ public class NFTShape_Tests : IntegrationTestSuite
         scene.contentProvider = new ContentProvider_Dummy();
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         CommonScriptableObjects.rendererState.Set(true);
+        TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
     }
 
     [UnityTest]
     public IEnumerator ShapeUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         var entity = scene.entities[entityId];
@@ -53,7 +54,7 @@ public class NFTShape_Tests : IntegrationTestSuite
 
         Assert.IsTrue(entity.meshRootGameObject != null, "entity mesh object should already exist as the NFTShape already initialized");
 
-        var nftShape = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
+        var nftShape = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_NFT;
 
         var backgroundMaterial = nftShape.loaderController.backgroundMaterial;
 
@@ -82,7 +83,7 @@ public class NFTShape_Tests : IntegrationTestSuite
     [Category("Explicit")]
     public IEnumerator CollisionProperty()
     {
-        string entityId = "entityId";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;
@@ -107,7 +108,7 @@ public class NFTShape_Tests : IntegrationTestSuite
     [Category("Explicit")]
     public IEnumerator VisibleProperty()
     {
-        string entityId = "entityId";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;
@@ -124,6 +125,6 @@ public class NFTShape_Tests : IntegrationTestSuite
         var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_NFT>(true);
         yield return new DCL.WaitUntil(() => shapeLoader.alreadyLoaded);
 
-        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestOnPointerEventWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
     }
 }
