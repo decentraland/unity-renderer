@@ -173,7 +173,7 @@ namespace AvatarSystem
             // once that's fixed we can remove this wait
             // AttachExternalCancellation is needed because cancellation will take a wait to trigger
             await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
-
+            avatarMeshCombiner.Dispose();
             var featureFlags = DataStore.i.featureFlags.flags.Get();
             avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
             avatarMeshCombiner.enableCombinedMesh = false;
