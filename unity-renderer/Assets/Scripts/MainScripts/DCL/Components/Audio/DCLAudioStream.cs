@@ -28,6 +28,8 @@ namespace DCL.Components
         private bool isDestroyed = false;
         private Model prevModel = new Model();
 
+        public override string componentName => "AudioStream";
+
         new public Model GetModel() { return (Model) model; }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
