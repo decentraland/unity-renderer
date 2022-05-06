@@ -145,6 +145,9 @@ public class PlayerInfoCardHUDController : IHUD
 
         if (currentUserProfile == null)
         {
+            if (CommonScriptableObjects.playerInfoCardVisibleState.Get())
+                socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
+
             view.SetCardActive(false);
             wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
             loadedWearables.Clear();
@@ -157,11 +160,11 @@ public class PlayerInfoCardHUDController : IHUD
                      {
                          await AsyncSetUserProfile(currentUserProfile);
                          view.SetCardActive(true);
+                         socialAnalytics.SendPassportOpen();
                      })
                      .Forget();
 
             passportOpenStartTime = Time.realtimeSinceStartup;
-            socialAnalytics.SendPassportOpen();
         }
     }
 
@@ -202,10 +205,6 @@ public class PlayerInfoCardHUDController : IHUD
         {
             if (viewingUserProfile != null)
                 viewingUserProfile.snapshotObserver.AddListener(view.SetFaceSnapshot);
-        }
-        else
-        {
-            socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
         }
     }
 
