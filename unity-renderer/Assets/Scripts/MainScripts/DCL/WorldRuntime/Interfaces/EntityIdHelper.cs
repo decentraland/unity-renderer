@@ -10,6 +10,9 @@ namespace DCL
 {
     public class EntityIdHelper
     {
+        private static EntityIdHelper instance = new EntityIdHelper();
+
+        public static EntityIdHelper i { get => instance; }
         internal Dictionary<long, string> entityIdToLegacyId = new Dictionary<long, string>();
         internal Dictionary<string, long> negativeValues = new Dictionary<string, long>();
 

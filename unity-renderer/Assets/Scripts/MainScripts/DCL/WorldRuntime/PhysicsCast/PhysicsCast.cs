@@ -46,7 +46,7 @@ namespace DCL
             if (raycastInfo != null)
             {
                 CollidersManager.i.GetColliderInfo(raycastInfo.hitInfo.hit.collider, out ColliderInfo colliderInfo);
-
+               
                 hitEntity = new WebInterface.RaycastHitEntity()
                 {
                     didHit = raycastInfo.hitInfo.isValid,
@@ -55,7 +55,7 @@ namespace DCL
                     ray = rayInfo,
                     entity = new WebInterface.HitEntityInfo()
                     {
-                        entityId = colliderInfo.entity != null ? colliderInfo.entity.entityId : 0,
+                        entityId = colliderInfo.entity != null ?  EntityIdHelper.i.GetOriginalId(colliderInfo.entity.entityId) : "",
                         meshName = colliderInfo.meshName
                     }
                 };
@@ -102,7 +102,7 @@ namespace DCL
                         hitEntity.hitPoint = hitInfo.hit.point;
                         hitEntity.hitNormal = hitInfo.hit.normal;
                         hitEntity.entity = new WebInterface.HitEntityInfo();
-                        hitEntity.entity.entityId = colliderInfo.entity != null ? colliderInfo.entity.entityId : 0;
+                        hitEntity.entity.entityId = colliderInfo.entity != null ? EntityIdHelper.i.GetOriginalId(colliderInfo.entity.entityId) : "";
                         hitEntity.entity.meshName = colliderInfo.meshName;
                         hitEntityInfoList.Add(hitEntity);
                     }

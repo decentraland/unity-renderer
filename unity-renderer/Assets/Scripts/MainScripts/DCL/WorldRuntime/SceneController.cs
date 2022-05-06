@@ -31,7 +31,7 @@ namespace DCL
         private CancellationTokenSource tokenSource;
         private IMessagingControllersManager messagingControllersManager => Environment.i.messaging.manager;
 
-        public EntityIdHelper entityIdHelper { get; } = new EntityIdHelper();
+        public EntityIdHelper entityIdHelper { get; } = EntityIdHelper.i;
 
         public void Initialize()
         {
