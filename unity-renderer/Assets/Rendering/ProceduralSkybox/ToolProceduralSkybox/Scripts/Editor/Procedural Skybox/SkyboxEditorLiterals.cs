@@ -26,7 +26,12 @@ namespace DCL.Skybox
         public const string fogLayer = "Fog Layer";
         public const string directionalLightLayer = "Directional Light Layer";
         public const string twoDLayers = "2D Layers";
-        public const string threeDLayers = "3D Layers";
+        public const string RenderDomeLayers = "Dome Layers";
+        public const string RenderSatelliteLayers = "Satellite Layers";
+        public const string RenderPlanarLayers = "Planar Layers";
+        public const string domeName = "Dome Name";
+        public const string domeSize = "Dome Size";
+        public const string horizonPlane = "Horizon Plane";
 
         // Labels and ButtonNames
         public const string timeLineTags = "Timeline Tags";
