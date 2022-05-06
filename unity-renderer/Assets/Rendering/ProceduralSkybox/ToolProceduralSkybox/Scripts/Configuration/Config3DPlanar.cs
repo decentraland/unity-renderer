@@ -6,7 +6,7 @@ using UnityEngine;
 namespace DCL.Skybox
 {
     [System.Serializable]
-    public class Planar3DConfig
+    public class Config3DPlanar
     {
         public bool enabled = true;
         public string nameInEditor;
@@ -26,7 +26,7 @@ namespace DCL.Skybox
         private ParticleSystem particles;
         [NonSerialized] public string inValidStr = "";
 
-        public Planar3DConfig(string name) { this.nameInEditor = name; }
+        public Config3DPlanar(string name) { this.nameInEditor = name; }
 
         public void AssignNewPrefab(GameObject tempPrefab)
         {

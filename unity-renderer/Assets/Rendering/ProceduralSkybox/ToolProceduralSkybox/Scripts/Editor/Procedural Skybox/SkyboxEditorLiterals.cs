@@ -28,6 +28,7 @@ namespace DCL.Skybox
         public const string twoDLayers = "2D Layers";
         public const string RenderDomeLayers = "Dome Layers";
         public const string RenderSatelliteLayers = "Satellite Layers";
+        public const string RenderPlanarLayers = "Planar Layers";
         public const string domeName = "Dome Name";
         public const string domeSize = "Dome Size";
 

@@ -7,7 +7,7 @@ namespace DCL.Skybox
 {
     public static class RenderPlanar3DLayer
     {
-        public static void RenderLayer(ref float timeOfTheDay, EditorToolMeasurements toolSize, Planar3DConfig config)
+        public static void RenderLayer(ref float timeOfTheDay, EditorToolMeasurements toolSize, Config3DPlanar config)
         {
 
             // name In Editor
