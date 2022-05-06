@@ -158,12 +158,14 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 
     private void InitializeChatWindowController(IChatController chatController)
     {
-        controller = new PrivateChatWindowController(new DataStore(),
+        controller = new PrivateChatWindowController(
+            new DataStore(),
             userProfileBridge,
             chatController,
             Substitute.For<IFriendsController>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
-            Substitute.For<ILastReadMessagesService>());
+            Substitute.For<ILastReadMessagesService>(),
+            SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics());
         controller.Initialize(view);
         controller.Setup(testProfileModel.userId);
         controller.SetVisibility(true);

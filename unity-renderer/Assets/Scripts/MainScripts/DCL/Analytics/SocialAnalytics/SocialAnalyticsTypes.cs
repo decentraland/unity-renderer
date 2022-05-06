@@ -13,14 +13,6 @@ namespace SocialFeaturesAnalytics
         Link
     }
 
-    public enum ChatMessageType
-    {
-        None,
-        Public,
-        Private,
-        System
-    }
-
     public enum FriendActionSource
     {
         Passport,
@@ -32,12 +24,5 @@ namespace SocialFeaturesAnalytics
     public enum PlayerReportIssueType
     {
         None
-    }
-
-    public enum EmoteSource
-    {
-        EmotesWheel,
-        Shortcut,
-        Command
     }
 }

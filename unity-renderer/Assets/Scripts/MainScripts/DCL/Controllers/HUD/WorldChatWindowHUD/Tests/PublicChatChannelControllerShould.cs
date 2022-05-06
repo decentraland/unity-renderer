@@ -1,13 +1,12 @@
-using System;
-using System.Collections;
 using DCL;
-using DCL.Helpers;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
+using SocialFeaturesAnalytics.TestHelpers;
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Object = UnityEngine.Object;
 
 public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
 {
@@ -45,12 +44,14 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
         userProfileBridge.GetOwn().Returns(ownProfile);
 
         chatController = Substitute.For<IChatController>();
-        controller = new PublicChatChannelController(chatController,
+        controller = new PublicChatChannelController(
+            chatController,
             Substitute.For<ILastReadMessagesService>(),
             userProfileBridge,
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
             new DataStore(),
-            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()));
+            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
+            SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics());
 
         view = Substitute.For<IChannelChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();

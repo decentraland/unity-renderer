@@ -12,6 +12,7 @@ public class PublicChatChannelWindowMock : MonoBehaviour, IChannelChatWindowView
     public bool IsActive => gameObject.activeSelf;
     public IChatHUDComponentView ChatHUD => Substitute.For<IChatHUDComponentView>();
     public RectTransform Transform => (RectTransform) transform;
+    public string channel => "#mockedChannel";
 
     private void Awake()
     {

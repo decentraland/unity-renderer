@@ -133,7 +133,7 @@ public class PlayerAvatarController : MonoBehaviour
             socialAnalytics.SendPlayEmote(
                 emoteItem.GetName(),
                 emoteItem.rarity, 
-                (EmoteSource)source,
+                source,
                 $"{CommonScriptableObjects.playerCoords.Get().x},{CommonScriptableObjects.playerCoords.Get().y}");
         }
     }

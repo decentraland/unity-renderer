@@ -37,7 +37,7 @@ public class HUDFactory : IHUDFactory
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
                     new WearablesCatalogControllerBridge(),
-                    new SocialFeaturesAnalytics.SocialAnalytics(),
+                    new SocialAnalytics(),
                     ProfanityFilterSharedInstances.regexFilter,
                     DataStore.i);
                 break;
@@ -57,12 +57,14 @@ public class HUDFactory : IHUDFactory
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>());
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
-                hudElement = new PrivateChatWindowController(DataStore.i,
+                hudElement = new PrivateChatWindowController(
+                    DataStore.i,
                     new UserProfileWebInterfaceBridge(),
                     ChatController.i,
                     new WebInterfaceFriendsController(FriendsController.i),
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
-                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
+                    new SocialAnalytics());
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
                 hudElement = new PublicChatChannelController(ChatController.i,
@@ -70,7 +72,8 @@ public class HUDFactory : IHUDFactory
                     new UserProfileWebInterfaceBridge(),
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
                     DataStore.i,
-                    ProfanityFilterSharedInstances.regexFilter);
+                    ProfanityFilterSharedInstances.regexFilter,
+                    new SocialAnalytics());
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();

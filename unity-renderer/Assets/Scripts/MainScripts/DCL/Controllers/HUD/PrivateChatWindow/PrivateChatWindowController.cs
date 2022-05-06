@@ -2,6 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
+using SocialFeaturesAnalytics;
 
 public class PrivateChatWindowController : IHUD
 {
@@ -13,6 +14,7 @@ public class PrivateChatWindowController : IHUD
     private readonly IFriendsController friendsController;
     private readonly InputAction_Trigger closeWindowTrigger;
     private readonly ILastReadMessagesService lastReadMessagesService;
+    private readonly ISocialAnalytics socialAnalytics;
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
 
@@ -26,7 +28,8 @@ public class PrivateChatWindowController : IHUD
         IChatController chatController,
         IFriendsController friendsController,
         InputAction_Trigger closeWindowTrigger,
-        ILastReadMessagesService lastReadMessagesService)
+        ILastReadMessagesService lastReadMessagesService,
+        ISocialAnalytics socialAnalytics)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
@@ -34,6 +37,7 @@ public class PrivateChatWindowController : IHUD
         this.friendsController = friendsController;
         this.closeWindowTrigger = closeWindowTrigger;
         this.lastReadMessagesService = lastReadMessagesService;
+        this.socialAnalytics = socialAnalytics;
     }
 
     public void Initialize(IPrivateChatComponentView view = null)
@@ -157,6 +161,7 @@ public class PrivateChatWindowController : IHUD
         message.body = $"/w {message.recipient} {message.body}";
 
         chatController.Send(message);
+        socialAnalytics.SendDirectMessageSent(message.sender, message.recipient, message.body.Length, friendsController.IsFriend(message.recipient), ChatContentType.Text);
     }
 
     private void HandleCloseInputTriggered(DCLAction_Trigger action) => Hide();
@@ -168,6 +173,9 @@ public class PrivateChatWindowController : IHUD
         if (!IsMessageFomCurrentConversation(message)) return;
 
         chatHudController.AddChatMessage(message);
+
+        if (message.sender != userProfileBridge.GetOwn().userId)
+            socialAnalytics.SendDirectMessageReceived(message.sender, message.recipient, message.body.Length, friendsController.IsFriend(message.sender), ChatContentType.Text);
 
         if (View.IsActive)
         {

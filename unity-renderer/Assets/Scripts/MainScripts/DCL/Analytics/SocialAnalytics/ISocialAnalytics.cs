@@ -1,3 +1,5 @@
+using DCL.Interface;
+
 namespace SocialFeaturesAnalytics
 {
     public interface ISocialAnalytics
@@ -6,8 +8,8 @@ namespace SocialFeaturesAnalytics
         void SendPlayerUnmuted(string toUserId);
         void SendVoiceMessageStartedByFirstTime();
         void SendVoiceMessageSent(double messageLength);
-        void SendChannelMessageSent(string fromUserId, double messageLength, string channel, ChatMessageType messageType);
-        void SendChannelMessageReceived(string fromUserId, double messageLength, string channel, ChatMessageType messageType);
+        void SendChannelMessageSent(string fromUserId, double messageLength, string channel);
+        void SendChannelMessageReceived(string fromUserId, double messageLength, string channel, ChatMessage.Type messageType);
         void SendDirectMessageSent(string fromUserId, string toUserId, double messageLength, bool areFriends, ChatContentType contentType);
         void SendDirectMessageReceived(string fromUserId, string toUserId, double messageLength, bool areFriends, ChatContentType contentType);
         void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, FriendActionSource source);
@@ -21,6 +23,6 @@ namespace SocialFeaturesAnalytics
         void SendPlayerUnblocked(bool isFriend, FriendActionSource source);
         void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, FriendActionSource source);
         void SendPlayerJoin(FriendActionSource source);
-        void SendPlayEmote(string emoteName, string rarity, EmoteSource source, string parcelLocation);
+        void SendPlayEmote(string emoteName, string rarity, UserProfile.EmoteSource source, string parcelLocation);
     }
 }

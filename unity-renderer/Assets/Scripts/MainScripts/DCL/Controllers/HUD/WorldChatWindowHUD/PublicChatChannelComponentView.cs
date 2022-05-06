@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Interface;
 using TMPro;
 using UnityEngine;
@@ -19,6 +19,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     public bool IsActive => gameObject.activeInHierarchy;
     public IChatHUDComponentView ChatHUD => chatView;
     public RectTransform Transform => (RectTransform) transform;
+    public string channel => nameLabel.text;
 
     public static PublicChatChannelComponentView Create()
     {

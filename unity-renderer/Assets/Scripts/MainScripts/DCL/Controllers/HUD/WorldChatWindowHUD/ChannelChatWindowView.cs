@@ -1,7 +1,6 @@
+using DCL;
 using System;
 using System.Collections;
-using DCL;
-using DCL.Interface;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -27,6 +26,7 @@ public class ChannelChatWindowView : MonoBehaviour, IPointerClickHandler, IChann
     public bool IsPreview { get; private set; }
     public IChatHUDComponentView ChatHUD => chatHudView;
     public RectTransform Transform => (RectTransform) transform;
+    public string channel => "#nearby";
 
     public static ChannelChatWindowView Create()
     {

@@ -90,12 +90,14 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         ownProfile.UpdateData(new UserProfileModel{name = "myself", userId = "myUserId"});
         userProfileBridge.GetOwn().Returns(ownProfile);
         var lastReadMessagesService = Substitute.For<ILastReadMessagesService>();
-        privateChatController = new PrivateChatWindowController(new DataStore(),
+        privateChatController = new PrivateChatWindowController(
+            new DataStore(),
             userProfileBridge,
             chatController,
             Substitute.For<IFriendsController>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
-            lastReadMessagesService);
+            lastReadMessagesService,
+            SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics());
         privateChatController.Initialize(new GameObject("PrivateChatWindowMock").AddComponent<PrivateChatWindowMock>());
         controller.AddPrivateChatWindow(privateChatController);
 
@@ -107,10 +109,14 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
-        var publicChatChannelController = new PublicChatChannelController(chatController, lastReadMessagesService, userProfileBridge,
+        var publicChatChannelController = new PublicChatChannelController(
+            chatController, 
+            lastReadMessagesService, 
+            userProfileBridge,
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
             new DataStore(),
-            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()));
+            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
+            SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics());
         publicChatChannelController.Initialize(new GameObject("PublicChatChannelWindowMock").AddComponent<PublicChatChannelWindowMock>());
         controller.AddPublicChatChannel(publicChatChannelController);
 

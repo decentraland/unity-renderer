@@ -1,3 +1,4 @@
+using DCL.Interface;
 using System.Collections.Generic;
 
 namespace SocialFeaturesAnalytics
@@ -55,7 +56,7 @@ namespace SocialFeaturesAnalytics
             GenericAnalytics.SendAnalytic(VOICE_MESSAGE_SENT, data);
         }
 
-        public void SendChannelMessageSent(string fromUserId, double messageLength, string channel, ChatMessageType messageType)
+        public void SendChannelMessageSent(string fromUserId, double messageLength, string channel)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
 
@@ -63,12 +64,11 @@ namespace SocialFeaturesAnalytics
             data.Add("from", fromPlayerType.ToString());
             data.Add("length", messageLength.ToString());
             data.Add("channel", channel);
-            data.Add("message_type", messageType.ToString());
 
             GenericAnalytics.SendAnalytic(CHANNEL_MESSAGE_SENT, data);
         }
 
-        public void SendChannelMessageReceived(string fromUserId, double messageLength, string channel, ChatMessageType messageType)
+        public void SendChannelMessageReceived(string fromUserId, double messageLength, string channel, ChatMessage.Type messageType)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
 
@@ -241,7 +241,7 @@ namespace SocialFeaturesAnalytics
             GenericAnalytics.SendAnalytic(PLAYER_JOIN, data);
         }
 
-        public void SendPlayEmote(string emoteName, string rarity, EmoteSource source, string parcelLocation)
+        public void SendPlayEmote(string emoteName, string rarity, UserProfile.EmoteSource source, string parcelLocation)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("id", emoteName);
@@ -254,6 +254,9 @@ namespace SocialFeaturesAnalytics
 
         private PlayerType? GetPlayerTypeByUserId(string userId)
         {
+            if (string.IsNullOrEmpty(userId))
+                return null;
+
             UserProfile userProfile = UserProfileController.GetProfileByUserId(userId);
 
             if (userProfile == null)
