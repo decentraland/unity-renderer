@@ -254,7 +254,7 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   avatarTintColor: {r: 0.26937425, g: 0.9339623, b: 0, a: 1}
   useAvatarRealtimeDLDirection: 0
-  avatarLightConstantDir: {x: -26.73, y: 17.04, z: 22.87}
+  avatarLightConstantDir: {x: 135, y: 85, z: 45}
   useAvatarRealtimeLightColor: 0
   avatarLightColorGradient:
     serializedVersion: 2
@@ -285,6 +285,9 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
+  avatarEditorTintColor: {r: 0.745283, g: 0.68967444, b: 0.6433339, a: 1}
+  avatarEditorLightDir: {x: 135, y: 85, z: 45}
+  avatarEditorLightColor: {r: 1, g: 1, b: 1, a: 1}
   useFog: 1
   fogMode: 1
   fogColor:
@@ -561,7 +564,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 1
-    renderType: 0
+    renderType: 1
     layerType: 2
     enabled: 1
     nameInEditor: Big Sun
