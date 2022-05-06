@@ -61,7 +61,7 @@ namespace DCL.Skybox
             timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, SkyboxUtils.CYCLE_TIME);
 
-            ApplyOnMaterial();
+            ApplyOnMaterial(false);
 
             if (timeOfTheDay >= SkyboxUtils.CYCLE_TIME)
             {
@@ -99,7 +99,7 @@ namespace DCL.Skybox
 
             if (GUI.changed)
             {
-                ApplyOnMaterial();
+                ApplyOnMaterial(true);
             }
         }
 
@@ -299,6 +299,13 @@ namespace DCL.Skybox
 
             RenderLeftPanelSatelliteLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, copyPasteObj);
 
+            // Render Satellite list
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.RenderPlanarLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
+
+            EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
+
+            RenderLeftPanelPlanarLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, copyPasteObj);
+
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndScrollView();
         }
@@ -427,6 +434,9 @@ namespace DCL.Skybox
                     break;
                 case SkyboxEditorToolsParts.Elements3D_Satellite:
                     RenderSatellite3DLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.targetSatelliteElement);
+                    break;
+                case SkyboxEditorToolsParts.Elements3D_Planar:
+                    RenderPlanar3DLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.targetPlanarElement);
                     break;
                 default:
                     break;
@@ -596,13 +606,13 @@ namespace DCL.Skybox
 
         void PauseTime() { isPaused = true; }
 
-        private void ApplyOnMaterial()
+        private void ApplyOnMaterial(bool isEditor)
         {
             EnsureDependencies();
             float normalizedDayTime = SkyboxUtils.GetNormalizedDayTime(timeOfTheDay);
             selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
 
-            skyboxElements.ApplyConfigTo3DElements(selectedConfiguration, timeOfTheDay, normalizedDayTime, directionalLight, SkyboxUtils.CYCLE_TIME, true);
+            skyboxElements.ApplyConfigTo3DElements(selectedConfiguration, timeOfTheDay, normalizedDayTime, directionalLight, SkyboxUtils.CYCLE_TIME, isEditor);
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)

@@ -69,6 +69,7 @@ namespace DCL.Skybox
         // 3D Components
         public List<Config3DDome> additional3Dconfig = new List<Config3DDome>();
         public List<Config3DSatellite> satelliteLayers = new List<Config3DSatellite>();
+        public List<Config3DPlanar> planarLayers = new List<Config3DPlanar>();
 
         private float cycleTime = 24;
 

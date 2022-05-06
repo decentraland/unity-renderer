@@ -110,5 +110,14 @@ namespace DCL.Skybox
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
+
+        public static void RenderBoolField(string label, ref bool value)
+        {
+            EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            value = EditorGUILayout.Toggle(value, GUILayout.Width(90));
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
     }
 }
