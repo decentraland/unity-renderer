@@ -51,7 +51,7 @@ public class WorldChatWindowController : IHUD
         view.SetPublicChannel(new PublicChatChannelModel
         {
             channelId = GENERAL_CHANNEL_ID,
-            name = "General"
+            name = "nearby"
         });
         var privateChatsByRecipient = GetLastPrivateChatByRecipient(chatController.GetEntries());
         lastPrivateMessages = privateChatsByRecipient.ToDictionary(pair => pair.Key.userId, pair => pair.Value);

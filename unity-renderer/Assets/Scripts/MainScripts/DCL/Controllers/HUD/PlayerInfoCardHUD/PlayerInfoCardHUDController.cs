@@ -23,7 +23,7 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly InputAction_Trigger toggleWorldChatTrigger;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IWearableCatalogBridge wearableCatalogBridge;
-    private readonly RegexProfanityFilter profanityFilter;
+    private readonly IProfanityFilter profanityFilter;
     private readonly DataStore dataStore;
     private readonly List<string> loadedWearables = new List<string>();
     private readonly ISocialAnalytics socialAnalytics;
@@ -34,7 +34,7 @@ public class PlayerInfoCardHUDController : IHUD
         IUserProfileBridge userProfileBridge,
         IWearableCatalogBridge wearableCatalogBridge,
         ISocialAnalytics socialAnalytics,
-        RegexProfanityFilter profanityFilter,
+        IProfanityFilter profanityFilter,
         DataStore dataStore)
     {
         this.friendsController = friendsController;
@@ -173,8 +173,12 @@ public class PlayerInfoCardHUDController : IHUD
     }
     private async UniTask AsyncSetUserProfile(UserProfile userProfile)
     {
-        view.SetName(await FilterName(userProfile));
-        view.SetDescription(await FilterDescription(userProfile));
+        string filterName = await FilterName(userProfile);
+        string filterDescription = await FilterDescription(userProfile);
+        await UniTask.SwitchToMainThread();
+
+        view.SetName(filterName);
+        view.SetDescription(filterDescription);
         view.ClearCollectibles();
         view.SetIsBlocked(IsBlocked(userProfile.userId));
         LoadAndShowWearables(userProfile);
