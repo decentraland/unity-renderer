@@ -10,7 +10,7 @@ namespace DCL.Skybox
     {
         private GameObject skyboxCameraGO;
         private Camera skyboxCamera;
-        private SkyboxCameraBehavior camBehavior;
+        private SkyboxCameraBehaviour camBehavior;
 
         public SkyboxCamera()
         {
@@ -28,7 +28,7 @@ namespace DCL.Skybox
             skyboxCamera.cullingMask = (1 << LayerMask.NameToLayer("Skybox"));
 
             // Attach follow script
-            camBehavior = skyboxCameraGO.AddComponent<SkyboxCameraBehavior>();
+            camBehavior = skyboxCameraGO.AddComponent<SkyboxCameraBehaviour>();
         }
 
         public void AssignTargetCamera(Transform mainCam)

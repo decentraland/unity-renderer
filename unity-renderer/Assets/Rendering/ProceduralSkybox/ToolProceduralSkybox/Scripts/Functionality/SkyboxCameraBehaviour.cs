@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkyboxCameraBehavior : MonoBehaviour
+public class SkyboxCameraBehaviour : MonoBehaviour
 {
     [SerializeField] private GameObject target;
     private Camera cam;

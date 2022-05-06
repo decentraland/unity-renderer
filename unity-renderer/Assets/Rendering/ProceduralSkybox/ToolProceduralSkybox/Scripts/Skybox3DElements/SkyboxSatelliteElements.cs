@@ -10,7 +10,7 @@ namespace DCL.Skybox
         public GameObject orbitGO;
         public GameObject satelliteGO;
         public GameObject satellitePrefab;
-        public SatelliteLayerBehavior satelliteBehavior;
+        public SatelliteLayerBehaviour satelliteBehavior;
     }
 
     public class SkyboxSatelliteElements
@@ -20,7 +20,7 @@ namespace DCL.Skybox
         private GameObject skyboxElements;
         private GameObject satelliteElements;
         private GameObject satelliteParentPrefab;
-        private FollowBehavior followBehavior;
+        private FollowBehaviour followBehavior;
 
         Dictionary<GameObject, Queue<SatelliteReferences>> satelliteReferences = new Dictionary<GameObject, Queue<SatelliteReferences>>();
         List<SatelliteReferences> usedSatellites = new List<SatelliteReferences>();
@@ -45,7 +45,7 @@ namespace DCL.Skybox
             satelliteElements.layer = LayerMask.NameToLayer("Skybox");
             satelliteElements.transform.parent = skyboxElements.transform;
 
-            followBehavior = satelliteElements.AddComponent<FollowBehavior>();
+            followBehavior = satelliteElements.AddComponent<FollowBehaviour>();
             followBehavior.followPos = true;
             followBehavior.ignoreYAxis = true;
         }
@@ -57,7 +57,7 @@ namespace DCL.Skybox
 
             if (satelliteRefs.Count != config.satelliteLayers.Count)
             {
-                Debug.LogError("Satellite not working!, cause of difference of count in config and 3D pool");
+                Debug.LogWarning("Satellite not working!, cause prefab is not assigned");
                 return;
             }
 
@@ -66,8 +66,19 @@ namespace DCL.Skybox
                 // If satellite is disabled, disable the 3D object too.
                 if (!config.satelliteLayers[i].enabled)
                 {
-                    satelliteRefs[i].satelliteParent.SetActive(false);
-                    satelliteRefs[i].satelliteBehavior.ChangeRenderType(LayerRenderType.NotRendering);
+                    if (satelliteRefs[i] != null)
+                    {
+                        satelliteRefs[i].satelliteParent.SetActive(false);
+                        satelliteRefs[i].satelliteBehavior.ChangeRenderType(LayerRenderType.NotRendering);
+                    }
+                    continue;
+                }
+
+                if (satelliteRefs[i] == null)
+                {
+#if UNITY_EDITOR
+                    Debug.LogWarning(config.satelliteLayers[i].nameInEditor + " Satellite not working!, prefab not assigned");
+#endif
                     continue;
                 }
 
@@ -82,6 +93,10 @@ namespace DCL.Skybox
                 for (int i = 0; i < usedSatellites.Count; i++)
                 {
                     SatelliteReferences sat = usedSatellites[i];
+                    if (sat == null)
+                    {
+                        continue;
+                    }
                     sat.satelliteParent.SetActive(false);
                     satelliteReferences[sat.satellitePrefab].Enqueue(sat);
                 }
@@ -104,6 +119,7 @@ namespace DCL.Skybox
 
             if (config.satellite == null)
             {
+                usedSatellites.Add(tempSatellite);
                 return tempSatellite;
             }
 
@@ -150,7 +166,7 @@ namespace DCL.Skybox
             satelliteObj.transform.parent = obj.transform;
 
             // Get satellite behavior and assign satellite 
-            SatelliteLayerBehavior satelliteBehavior = obj.GetComponent<SatelliteLayerBehavior>();
+            SatelliteLayerBehaviour satelliteBehavior = obj.GetComponent<SatelliteLayerBehaviour>();
             satelliteBehavior.satellite = satelliteObj;
 
             SatelliteReferences satellite = new SatelliteReferences();

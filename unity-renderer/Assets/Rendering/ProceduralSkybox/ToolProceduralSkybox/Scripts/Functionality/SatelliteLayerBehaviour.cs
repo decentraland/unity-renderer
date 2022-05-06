@@ -7,7 +7,7 @@ using UnityEngine;
 namespace DCL.Skybox
 {
 
-    public class SatelliteLayerBehavior : MonoBehaviour
+    public class SatelliteLayerBehaviour : MonoBehaviour
     {
         Config3DSatellite layerProperties;
         public GameObject satelliteOrbit;

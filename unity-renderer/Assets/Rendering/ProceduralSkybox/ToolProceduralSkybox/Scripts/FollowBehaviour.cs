@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FollowBehavior : MonoBehaviour
+public class FollowBehaviour : MonoBehaviour
 {
     public GameObject target;
     public bool followRot;

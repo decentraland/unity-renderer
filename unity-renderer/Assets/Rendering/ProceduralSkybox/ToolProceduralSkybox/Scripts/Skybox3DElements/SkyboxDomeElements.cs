@@ -18,7 +18,7 @@ namespace DCL.Skybox
         private GameObject skyboxElements;
         private GameObject domeElements;
         private GameObject domePrefab;
-        private FollowBehavior followBehavior;
+        private FollowBehaviour followBehavior;
 
         Queue<DomeReferences> domeObjects = new Queue<DomeReferences>();
         Queue<DomeReferences> activeDomeObjects = new Queue<DomeReferences>();
@@ -44,10 +44,10 @@ namespace DCL.Skybox
                 domeElements.transform.parent = skyboxElements.transform;
             }
 
-            followBehavior = domeElements.GetComponent<FollowBehavior>();
+            followBehavior = domeElements.GetComponent<FollowBehaviour>();
             if (followBehavior == null)
             {
-                followBehavior = domeElements.AddComponent<FollowBehavior>();
+                followBehavior = domeElements.AddComponent<FollowBehaviour>();
             }
             followBehavior.followPos = true;
 
