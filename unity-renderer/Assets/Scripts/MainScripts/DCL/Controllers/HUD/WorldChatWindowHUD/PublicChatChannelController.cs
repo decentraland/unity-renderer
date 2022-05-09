@@ -140,7 +140,7 @@ public class PublicChatChannelController : IHUD
         {
             var message = list[i];
             if (i % entriesPerFrame == 0) await UniTask.NextFrame();
-            HandleMessageReceived(message, false);
+            HandleMessageReceived(message);
         }
     }
 
@@ -165,9 +165,7 @@ public class PublicChatChannelController : IHUD
         return timestampInSeconds < initTimeInSeconds;
     }
 
-    private void HandleMessageReceived(ChatMessage message) { HandleMessageReceived(message, true); }
-
-    private void HandleMessageReceived(ChatMessage message, bool sendAnalytics)
+    private void HandleMessageReceived(ChatMessage message)
     {
         if (IsOldPrivateMessage(message)) return;
 
