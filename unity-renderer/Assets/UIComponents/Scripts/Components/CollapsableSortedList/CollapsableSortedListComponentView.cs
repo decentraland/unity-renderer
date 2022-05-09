@@ -126,7 +126,7 @@ namespace UIComponents.CollapsableSortedList
             UpdateLayout();
         }
         
-        public IEnumerator FilterAsync(Func<V, bool> comparision, int throttlingBudget = 1)
+        public IEnumerator FilterAsync(Func<V, bool> comparision, int throttlingBudget = 10)
         {
             filteredCount = 0;
             var iterations = 0;
