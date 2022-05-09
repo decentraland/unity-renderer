@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using DCL;
@@ -67,9 +67,12 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         var entry = newFriendEntry.gameObject.GetComponent<PublicChannelEntry>();
         Add(channelId, entry);
         entry.Initialize(chatController, lastReadMessagesService);
-        entry.OnOpenChat += () => OnOpenChat?.Invoke(entry);
+        entry.OnOpenChat -= OnEntryOpenChat;
+        entry.OnOpenChat += OnEntryOpenChat;
     }
-    
+
+    private void OnEntryOpenChat(PublicChannelEntry entry) { OnOpenChat?.Invoke(entry); }
+
     private Pool GetEntryPool()
     {
         var entryPool = PoolManager.i.GetPool(POOL_NAME_PREFIX + name + GetInstanceID());

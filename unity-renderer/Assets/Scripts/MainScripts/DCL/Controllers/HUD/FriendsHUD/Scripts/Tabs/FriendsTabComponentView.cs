@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
@@ -269,13 +269,18 @@ public class FriendsTabComponentView : BaseComponentView
         var entry = newFriendEntry.gameObject.GetComponent<FriendEntry>();
         entries.Add(userId, entry);
 
-        entry.OnMenuToggle += x =>
-        {
-            contextMenuPanel.Show(userId);
-            entry.Dock(contextMenuPanel);
-        };
+        entry.OnMenuToggle -= OnEntryMenuToggle;
+        entry.OnMenuToggle += OnEntryMenuToggle;
+        entry.OnWhisperClick -= OnEntryWhisperClick;
+        entry.OnWhisperClick += OnEntryWhisperClick;
+    }
 
-        entry.OnWhisperClick += x => OnWhisper?.Invoke(x);
+    private void OnEntryWhisperClick(FriendEntry friendEntry) { OnWhisper?.Invoke(friendEntry); }
+
+    private void OnEntryMenuToggle(FriendEntryBase friendEntry)
+    {
+        contextMenuPanel.Show(friendEntry.model.userId);
+        friendEntry.Dock(contextMenuPanel);
     }
 
     private Pool GetEntryPool()
