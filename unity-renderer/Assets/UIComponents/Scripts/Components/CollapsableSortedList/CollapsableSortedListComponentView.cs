@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
@@ -115,6 +116,27 @@ namespace UIComponents.CollapsableSortedList
 
             foreach (var entry in entries)
             {
+                var isMatch = comparision.Invoke(entry.Value);
+                entry.Value.gameObject.SetActive(isMatch);
+
+                if (!isMatch)
+                    filteredCount++;
+            }
+
+            UpdateLayout();
+        }
+        
+        public IEnumerator FilterAsync(Func<V, bool> comparision, int throttlingBudget = 1)
+        {
+            filteredCount = 0;
+            var iterations = 0;
+
+            foreach (var entry in entries)
+            {
+                iterations++;
+                if (iterations % throttlingBudget == 0)
+                    yield return null;
+                
                 var isMatch = comparision.Invoke(entry.Value);
                 entry.Value.gameObject.SetActive(isMatch);
 

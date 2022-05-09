@@ -5,9 +5,10 @@ public class CollapsableSortedFriendEntryList : CollapsableSortedListComponentVi
 {
     public void Filter(string search)
     {   
+        if (!gameObject.activeInHierarchy) return;
         var regex = new Regex(search, RegexOptions.IgnoreCase);
-        Filter(entry => regex.IsMatch(entry.model.userId)
+        StartCoroutine(FilterAsync(entry => regex.IsMatch(entry.model.userId)
             || regex.IsMatch(entry.model.userName)
-            /*|| regex.IsMatch(entry.model.realm)*/);
+            /*|| regex.IsMatch(entry.model.realm)*/));
     }
 }
