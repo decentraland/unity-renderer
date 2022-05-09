@@ -23,6 +23,10 @@ namespace SocialFeaturesAnalytics
         private const string PLAYER_JOIN = "player_join";
         private const string PLAY_EMOTE = "used_emote";
 
+        private IAnalytics analytics;
+
+        public SocialAnalytics(IAnalytics analytics) { this.analytics = analytics; }
+
         public void SendPlayerMuted(string toUserId)
         {
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -30,7 +34,7 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("to", toPlayerType.ToString());
 
-            GenericAnalytics.SendAnalytic(PLAYER_MUTED, data);
+            analytics.SendAnalytic(PLAYER_MUTED, data);
         }
 
         public void SendPlayerUnmuted(string toUserId)
@@ -40,10 +44,10 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("to", toPlayerType.ToString());
 
-            GenericAnalytics.SendAnalytic(PLAYER_UNMUTED, data);
+            analytics.SendAnalytic(PLAYER_UNMUTED, data);
         }
 
-        public void SendVoiceMessageStartedByFirstTime() { GenericAnalytics.SendAnalytic(VOICE_MESSAGE_STARTED_BY_FIRST_TIME); }
+        public void SendVoiceMessageStartedByFirstTime() { analytics.SendAnalytic(VOICE_MESSAGE_STARTED_BY_FIRST_TIME, new Dictionary<string, string>()); }
 
         public void SendChannelMessageSent(string fromUserId, double messageLength, string channel)
         {
@@ -54,7 +58,7 @@ namespace SocialFeaturesAnalytics
             data.Add("length", messageLength.ToString());
             data.Add("channel", channel);
 
-            GenericAnalytics.SendAnalytic(CHANNEL_MESSAGE_SENT, data);
+            analytics.SendAnalytic(CHANNEL_MESSAGE_SENT, data);
         }
 
         public void SendDirectMessageSent(string fromUserId, string toUserId, double messageLength, bool areFriends, ChatContentType contentType)
@@ -69,7 +73,7 @@ namespace SocialFeaturesAnalytics
             data.Add("friends", areFriends.ToString());
             data.Add("content_type", contentType.ToString());
 
-            GenericAnalytics.SendAnalytic(DIRECT_MESSAGE_SENT, data);
+            analytics.SendAnalytic(DIRECT_MESSAGE_SENT, data);
         }
 
         public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, FriendActionSource source)
@@ -86,7 +90,7 @@ namespace SocialFeaturesAnalytics
             data.Add("text_length", messageLength.ToString());
             data.Add("source", source.ToString());
 
-            GenericAnalytics.SendAnalytic(FRIEND_REQUEST_SENT, data);
+            analytics.SendAnalytic(FRIEND_REQUEST_SENT, data);
         }
 
         public void SendFriendRequestApproved(string fromUserId, string toUserId, FriendActionSource source)
@@ -102,7 +106,7 @@ namespace SocialFeaturesAnalytics
             data.Add("to", toPlayerType.ToString());
             data.Add("source", source.ToString());
 
-            GenericAnalytics.SendAnalytic(FRIEND_REQUEST_APPROVED, data);
+            analytics.SendAnalytic(FRIEND_REQUEST_APPROVED, data);
         }
 
         public void SendFriendRequestRejected(string fromUserId, string toUserId, FriendActionSource source)
@@ -118,7 +122,7 @@ namespace SocialFeaturesAnalytics
             data.Add("to", toPlayerType.ToString());
             data.Add("source", source.ToString());
 
-            GenericAnalytics.SendAnalytic(FRIEND_REQUEST_REJECTED, data);
+            analytics.SendAnalytic(FRIEND_REQUEST_REJECTED, data);
         }
 
         public void SendFriendRequestCancelled(string fromUserId, string toUserId, FriendActionSource source)
@@ -134,7 +138,7 @@ namespace SocialFeaturesAnalytics
             data.Add("to", toPlayerType.ToString());
             data.Add("source", source.ToString());
 
-            GenericAnalytics.SendAnalytic(FRIEND_REQUEST_CANCELLED, data);
+            analytics.SendAnalytic(FRIEND_REQUEST_CANCELLED, data);
         }
 
         public void SendFriendDeleted(string fromUserId, string toUserId, FriendActionSource source)
@@ -150,12 +154,12 @@ namespace SocialFeaturesAnalytics
             data.Add("to", toPlayerType.ToString());
             data.Add("source", source.ToString());
 
-            GenericAnalytics.SendAnalytic(FRIEND_DELETED, data);
+            analytics.SendAnalytic(FRIEND_DELETED, data);
         }
 
         public void SendPassportOpen()
         {
-            GenericAnalytics.SendAnalytic(PASSPORT_OPENED);
+            analytics.SendAnalytic(PASSPORT_OPENED, new Dictionary<string, string>());
         }
 
         public void SendPassportClose(double timeSpent)
@@ -163,7 +167,7 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("time_spent", timeSpent.ToString());
 
-            GenericAnalytics.SendAnalytic(PASSPORT_CLOSED, data);
+            analytics.SendAnalytic(PASSPORT_CLOSED, data);
         }
 
         public void SendPlayerBlocked(bool isFriend, FriendActionSource source)
@@ -172,7 +176,7 @@ namespace SocialFeaturesAnalytics
             data.Add("friend", isFriend.ToString());
             data.Add("source", source.ToString());
 
-            GenericAnalytics.SendAnalytic(PLAYER_BLOCKED, data);
+            analytics.SendAnalytic(PLAYER_BLOCKED, data);
         }
 
         public void SendPlayerUnblocked(bool isFriend, FriendActionSource source)
@@ -181,7 +185,7 @@ namespace SocialFeaturesAnalytics
             data.Add("friend", isFriend.ToString());
             data.Add("source", source.ToString());
 
-            GenericAnalytics.SendAnalytic(PLAYER_UNBLOCKED, data);
+            analytics.SendAnalytic(PLAYER_UNBLOCKED, data);
         }
 
         public void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, FriendActionSource source)
@@ -191,7 +195,7 @@ namespace SocialFeaturesAnalytics
             data.Add("text_length", messageLength.ToString());
             data.Add("source", source.ToString());
 
-            GenericAnalytics.SendAnalytic(PLAYER_REPORT, data);
+            analytics.SendAnalytic(PLAYER_REPORT, data);
         }
 
         public void SendPlayerJoin(FriendActionSource source)
@@ -199,7 +203,7 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("source", source.ToString());
 
-            GenericAnalytics.SendAnalytic(PLAYER_JOIN, data);
+            analytics.SendAnalytic(PLAYER_JOIN, data);
         }
 
         public void SendPlayEmote(string emoteId, string emoteName, string rarity, bool isBaseEmote, UserProfile.EmoteSource source, string parcelLocation)
@@ -212,7 +216,7 @@ namespace SocialFeaturesAnalytics
             data.Add("source", source.ToString());
             data.Add("parcel_location", parcelLocation);
 
-            GenericAnalytics.SendAnalytic(PLAY_EMOTE, data);
+            analytics.SendAnalytic(PLAY_EMOTE, data);
         }
 
         private PlayerType? GetPlayerTypeByUserId(string userId)

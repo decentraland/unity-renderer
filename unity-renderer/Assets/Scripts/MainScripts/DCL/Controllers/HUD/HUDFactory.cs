@@ -37,7 +37,7 @@ public class HUDFactory : IHUDFactory
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
                     new WearablesCatalogControllerBridge(),
-                    new SocialAnalytics(),
+                    new SocialAnalytics(Environment.i.platform.serviceProviders.analytics),
                     ProfanityFilterSharedInstances.regexFilter,
                     DataStore.i);
                 break;
@@ -64,7 +64,7 @@ public class HUDFactory : IHUDFactory
                     new WebInterfaceFriendsController(FriendsController.i),
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
-                    new SocialAnalytics());
+                    new SocialAnalytics(Environment.i.platform.serviceProviders.analytics));
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
                 hudElement = new PublicChatChannelController(ChatController.i,
@@ -73,7 +73,7 @@ public class HUDFactory : IHUDFactory
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
                     DataStore.i,
                     ProfanityFilterSharedInstances.regexFilter,
-                    new SocialAnalytics());
+                    new SocialAnalytics(Environment.i.platform.serviceProviders.analytics));
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();
@@ -94,7 +94,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new HelpAndSupportHUDController();
                 break;
             case HUDElementID.USERS_AROUND_LIST_HUD:
-                hudElement = new UsersAroundListHUDController(new SocialAnalytics());
+                hudElement = new UsersAroundListHUDController(new SocialAnalytics(Environment.i.platform.serviceProviders.analytics));
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();

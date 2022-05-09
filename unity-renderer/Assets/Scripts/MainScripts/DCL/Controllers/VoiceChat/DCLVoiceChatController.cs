@@ -14,13 +14,10 @@ namespace DCL
         private InputAction_Trigger.Triggered voiceChatToggleDelegate;
 
         private bool firstTimeVoiceRecorded = true;
-        private double currentVoiceMessageStartTime = 0;
         private ISocialAnalytics socialAnalytics;
 
         void Awake()
         {
-            socialAnalytics = new SocialAnalytics();
-
             voiceChatStartedDelegate = (action) => StartVoiceChatRecording();
             voiceChatFinishedDelegate = (action) => DCL.Interface.WebInterface.SendSetVoiceChatRecording(false);
             voiceChatToggleDelegate = (action) => DCL.Interface.WebInterface.ToggleVoiceChatRecording();
@@ -44,11 +41,13 @@ namespace DCL
 
         private void StartVoiceChatRecording()
         {
-            currentVoiceMessageStartTime = Time.realtimeSinceStartup;
             DCL.Interface.WebInterface.SendSetVoiceChatRecording(true);
 
             if (firstTimeVoiceRecorded)
             {
+                if (socialAnalytics == null)
+                    socialAnalytics = new SocialAnalytics(Environment.i.platform.serviceProviders.analytics);
+                
                 socialAnalytics.SendVoiceMessageStartedByFirstTime();
                 firstTimeVoiceRecorded = false;
             }
