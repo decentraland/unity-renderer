@@ -707,8 +707,7 @@ namespace UnityGLTF
                 {
                     await TaskUtils.RunThrottledCoroutine(coroutine, exception => throw exception, throttlingCounter.EvaluateTimeBudget)
                                    .AttachExternalCancellation(cancellationToken);
-                    
-                    Object.Destroy(texture);
+
                 }
 
                 isConfigured = true;

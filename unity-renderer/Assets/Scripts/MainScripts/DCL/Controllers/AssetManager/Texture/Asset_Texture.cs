@@ -14,7 +14,7 @@ namespace DCL
 
         private static readonly IThrottlingCounter throttlingCounter = new SmartThrottlingCounter(2 / 1000.0);
 
-        public IEnumerable ConfigureTexture(TextureWrapMode textureWrapMode, FilterMode textureFilterMode, bool makeNoLongerReadable = true)
+        public IEnumerator ConfigureTexture(TextureWrapMode textureWrapMode, FilterMode textureFilterMode, bool makeNoLongerReadable = true)
         {
             if (texture == null)
                 yield break;

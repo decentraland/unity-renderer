@@ -92,6 +92,11 @@ public static class TextureHelpers
     };
     public static IEnumerator ThrottledCompress(Texture2D texture, bool uploadToGPU, Action<Texture2D> OnSuccess, Action<Exception> OnFail, bool generateMimpaps = false, bool linear = false)
     {
+        if (texture.format == TextureFormat.DXT5 || texture.format == TextureFormat.DXT1)
+        {
+            OnSuccess(texture);
+            yield break;
+        }
         var throttle = new SkipFrameIfDepletedTimeBudget();
 
         var chunkSize = GetBiggestChunkSizeFor(texture.width, texture.height);
@@ -188,6 +193,8 @@ public static class TextureHelpers
                 Object.Destroy(chunkTexture);
             }
         }
+        
+        Object.Destroy(texture);
 
         finalTexture.wrapMode = texture.wrapMode;
         finalTexture.filterMode = texture.filterMode;

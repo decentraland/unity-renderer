@@ -37,7 +37,7 @@ namespace DCL
         internal event Action<AssetPromise<AssetType>> OnPreFinishEvent;
         public event Action<AssetType> OnSuccessEvent;
         public event Action<AssetType, Exception> OnFailEvent;
-
+        
         private static IThrottlingCounter throttlingCounter = new SmartThrottlingCounter(2 / 1000.0);
 
         public override bool keepWaiting { get { return state == AssetPromiseState.LOADING || state == AssetPromiseState.WAITING; } }
