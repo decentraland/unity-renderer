@@ -115,10 +115,6 @@ public class UserContextMenu : MonoBehaviour
 
     private void Awake()
     {
-        socialAnalytics = new SocialAnalytics(
-            DCL.Environment.i.platform.serviceProviders.analytics,
-            new UserProfileWebInterfaceBridge());
-
         if (!currentPlayerId)
         {
             currentPlayerId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
@@ -160,7 +156,7 @@ public class UserContextMenu : MonoBehaviour
     {
         OnReport?.Invoke(userId);
         WebInterface.SendReportPlayer(userId);
-        socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, FriendActionSource.ProfileContextMenu);
+        GetSocialAnalytics().SendPlayerReport(PlayerReportIssueType.None, 0, FriendActionSource.ProfileContextMenu);
         Hide();
     }
 
@@ -185,7 +181,7 @@ public class UserContextMenu : MonoBehaviour
                         userId = userId
                     });
 
-                socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, FriendActionSource.ProfileContextMenu);
+                GetSocialAnalytics().SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, FriendActionSource.ProfileContextMenu);
             });
         }
         Hide();
@@ -218,7 +214,7 @@ public class UserContextMenu : MonoBehaviour
             userId = userId, action = FriendshipAction.REQUESTED_TO
         });
 
-        socialAnalytics.SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, FriendActionSource.ProfileContextMenu);
+        GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, FriendActionSource.ProfileContextMenu);
     }
 
     private void OnCancelFriendRequestButtonPressed()
@@ -241,7 +237,7 @@ public class UserContextMenu : MonoBehaviour
             userId = userId, action = FriendshipAction.CANCELLED
         });
 
-        socialAnalytics.SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId, FriendActionSource.ProfileContextMenu);
+        GetSocialAnalytics().SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId, FriendActionSource.ProfileContextMenu);
     }
 
     private void OnMessageButtonPressed()
@@ -258,12 +254,12 @@ public class UserContextMenu : MonoBehaviour
         if (blockUser)
         {
             WebInterface.SendBlockPlayer(userId);
-            socialAnalytics.SendPlayerBlocked(FriendsController.i.IsFriend(userId), FriendActionSource.ProfileContextMenu);
+            GetSocialAnalytics().SendPlayerBlocked(FriendsController.i.IsFriend(userId), FriendActionSource.ProfileContextMenu);
         }
         else
         {
             WebInterface.SendUnblockPlayer(userId);
-            socialAnalytics.SendPlayerUnblocked(FriendsController.i.IsFriend(userId), FriendActionSource.ProfileContextMenu);
+            GetSocialAnalytics().SendPlayerUnblocked(FriendsController.i.IsFriend(userId), FriendActionSource.ProfileContextMenu);
         }
         Hide();
     }
@@ -413,6 +409,18 @@ public class UserContextMenu : MonoBehaviour
         {
             SetupFriendship(FriendshipStatus.NOT_FRIEND);
         }
+    }
+
+    private ISocialAnalytics GetSocialAnalytics()
+    {
+        if (socialAnalytics == null)
+        {
+            socialAnalytics = new SocialAnalytics(
+                DCL.Environment.i.platform.serviceProviders.analytics,
+                new UserProfileWebInterfaceBridge());
+        }
+
+        return socialAnalytics;
     }
 
 #if UNITY_EDITOR
