@@ -2,6 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
+using SocialFeaturesAnalytics;
 
 public class PublicChatChannelController : IHUD
 {
@@ -15,6 +16,7 @@ public class PublicChatChannelController : IHUD
     private readonly InputAction_Trigger closeWindowTrigger;
     private readonly DataStore dataStore;
     private readonly IProfanityFilter profanityFilter;
+    private readonly ISocialAnalytics socialAnalytics;
     private ChatHUDController chatHudController;
     private double initTimeInSeconds;
     private string channelId;
@@ -27,7 +29,8 @@ public class PublicChatChannelController : IHUD
         IUserProfileBridge userProfileBridge,
         InputAction_Trigger closeWindowTrigger,
         DataStore dataStore,
-        IProfanityFilter profanityFilter)
+        IProfanityFilter profanityFilter,
+        ISocialAnalytics socialAnalytics)
     {
         this.chatController = chatController;
         this.lastReadMessagesService = lastReadMessagesService;
@@ -35,6 +38,7 @@ public class PublicChatChannelController : IHUD
         this.closeWindowTrigger = closeWindowTrigger;
         this.dataStore = dataStore;
         this.profanityFilter = profanityFilter;
+        this.socialAnalytics = socialAnalytics;
     }
 
     public void Initialize(IChannelChatWindowView view = null)
@@ -108,6 +112,7 @@ public class PublicChatChannelController : IHUD
             message.body = $"/w {message.recipient} {message.body}";
 
         chatController.Send(message);
+        socialAnalytics.SendChannelMessageSent(message.sender, message.body.Length, channelId);
     }
 
     public void SetVisibility(bool visible)
@@ -165,7 +170,7 @@ public class PublicChatChannelController : IHUD
         if (IsOldPrivateMessage(message)) return;
 
         chatHudController.AddChatMessage(message, View.IsActive);
-        
+
         if (View.IsActive)
             MarkChatMessagesAsRead();
 

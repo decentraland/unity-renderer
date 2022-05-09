@@ -26,7 +26,7 @@ public class HUDBridge : MonoBehaviour
         HUDController.i.ConfigureHUDElement(id, configuration, extraPayload);
     }
 
-    public void TriggerSelfUserExpression(string id) { UserProfile.GetOwnUserProfile().SetAvatarExpression(id); }
+    public void TriggerSelfUserExpression(string id) { UserProfile.GetOwnUserProfile().SetAvatarExpression(id, UserProfile.EmoteSource.Command); }
 
     public void AirdroppingRequest(string payload)
     {

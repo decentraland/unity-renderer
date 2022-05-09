@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,12 +14,12 @@ public class PublicChannelEntry : BaseComponentView
 
     public PublicChannelEntryModel Model => model;
 
-    public event Action OnOpenChat;
+    public event Action<PublicChannelEntry> OnOpenChat;
 
     public override void Awake()
     {
         base.Awake();
-        openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke());
+        openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
     }
     
     public void Initialize(IChatController chatController,

@@ -5,6 +5,7 @@ using DCL.Huds.QuestsTracker;
 using DCL.Interface;
 using DCL.SettingsPanelHUD;
 using SignupHUD;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 public class HUDFactory : IHUDFactory
@@ -36,8 +37,12 @@ public class HUDFactory : IHUDFactory
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
                     new WearablesCatalogControllerBridge(),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
                     ProfanityFilterSharedInstances.regexFilter,
-                    DataStore.i);
+                    DataStore.i,
+                    CommonScriptableObjects.playerInfoCardVisibleState);
                 break;
             case HUDElementID.AIRDROPPING:
                 hudElement = new AirdroppingHUDController();
@@ -55,12 +60,16 @@ public class HUDFactory : IHUDFactory
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>());
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
-                hudElement = new PrivateChatWindowController(DataStore.i,
+                hudElement = new PrivateChatWindowController(
+                    DataStore.i,
                     new UserProfileWebInterfaceBridge(),
                     ChatController.i,
                     new WebInterfaceFriendsController(FriendsController.i),
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
-                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
                 hudElement = new PublicChatChannelController(ChatController.i,
@@ -68,7 +77,10 @@ public class HUDFactory : IHUDFactory
                     new UserProfileWebInterfaceBridge(),
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
                     DataStore.i,
-                    ProfanityFilterSharedInstances.regexFilter);
+                    ProfanityFilterSharedInstances.regexFilter,
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();
@@ -89,7 +101,10 @@ public class HUDFactory : IHUDFactory
                 hudElement = new HelpAndSupportHUDController();
                 break;
             case HUDElementID.USERS_AROUND_LIST_HUD:
-                hudElement = new UsersAroundListHUDController();
+                hudElement = new UsersAroundListHUDController(
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();

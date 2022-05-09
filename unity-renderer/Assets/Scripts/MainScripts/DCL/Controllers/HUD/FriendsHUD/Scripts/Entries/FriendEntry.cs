@@ -1,4 +1,5 @@
 using DCL;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,7 +23,11 @@ public class FriendEntry : FriendEntryBase
     private void Start()
     {
         unreadNotificationBadge?.Initialize(ChatController.i, model.userId, Environment.i.serviceLocator.Get<ILastReadMessagesService>());
-        jumpInButton.Initialize(FriendsController.i, model.userId);
+        jumpInButton.Initialize(
+            FriendsController.i, model.userId, 
+            new SocialAnalytics(
+                Environment.i.platform.serviceProviders.analytics,
+                new UserProfileWebInterfaceBridge()));
         jumpInButton.OnClick += () => OnJumpInClick?.Invoke(this);
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
@@ -8,6 +8,7 @@ using DCL.Helpers;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
+using SocialFeaturesAnalytics;
 
 public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 {
@@ -18,6 +19,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
     private UserProfileModel ownProfileModel;
     private UserProfileModel testProfileModel;
     private IUserProfileBridge userProfileBridge;
+    private ISocialAnalytics socialAnalytics;
 
     protected override IEnumerator SetUp()
     {
@@ -25,6 +27,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 
         view = Substitute.For<IPrivateChatComponentView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();
+        socialAnalytics = Substitute.For<ISocialAnalytics>();
         view.ChatHUD.Returns(internalChatView);
 
         notificationsController =
@@ -140,7 +143,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         notificationsController.Initialize(new NotificationHUDController());
 
         FriendsHUDController friendsHudController = new FriendsHUDController();
-        friendsHudController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile(), chatController);
+        friendsHudController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile(), chatController, socialAnalytics);
 
         Assert.IsTrue(view != null, "Friends hud view is null?");
         Assert.IsTrue(controller != null, "Friends hud controller is null?");
@@ -157,12 +160,14 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 
     private void InitializeChatWindowController(IChatController chatController)
     {
-        controller = new PrivateChatWindowController(new DataStore(),
+        controller = new PrivateChatWindowController(
+            new DataStore(),
             userProfileBridge,
             chatController,
             Substitute.For<IFriendsController>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
-            Substitute.For<ILastReadMessagesService>());
+            Substitute.For<ILastReadMessagesService>(),
+            socialAnalytics);
         controller.Initialize(view);
         controller.Setup(testProfileModel.userId);
         controller.SetVisibility(true);

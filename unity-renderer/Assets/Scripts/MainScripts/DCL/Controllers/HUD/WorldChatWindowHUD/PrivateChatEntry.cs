@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,7 +23,7 @@ public class PrivateChatEntry : BaseComponentView
 
     public PrivateChatEntryModel Model => model;
 
-    public event Action OnOpenChat;
+    public event Action<PrivateChatEntry> OnOpenChat;
 
     public override void Awake()
     {
@@ -33,7 +33,7 @@ public class PrivateChatEntry : BaseComponentView
             userContextMenu.Show(model.userId);
             Dock(userContextMenu);
         });
-        openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke());
+        openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
     }
 
     public void Initialize(IChatController chatController,

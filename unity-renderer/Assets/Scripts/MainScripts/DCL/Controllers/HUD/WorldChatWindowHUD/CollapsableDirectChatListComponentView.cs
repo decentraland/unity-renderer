@@ -74,9 +74,12 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         var entry = newFriendEntry.gameObject.GetComponent<PrivateChatEntry>();
         Add(userId, entry);
         entry.Initialize(chatController, userContextMenu, lastReadMessagesService);
-        entry.OnOpenChat += () => OnOpenChat?.Invoke(entry);
+        entry.OnOpenChat -= OnEntryOpenChat;
+        entry.OnOpenChat += OnEntryOpenChat;
     }
-    
+
+    private void OnEntryOpenChat(PrivateChatEntry entry) { OnOpenChat?.Invoke(entry); }
+
     private Pool GetEntryPool()
     {
         var entryPool = PoolManager.i.GetPool(POOL_NAME_PREFIX + name + GetInstanceID());

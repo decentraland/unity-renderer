@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Interface;
 using TMPro;
 using UnityEngine;

@@ -1,9 +1,9 @@
+using DCL.Helpers;
+using DCL.Interface;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
-using DCL.Helpers;
-using DCL.Interface;
 using UnityEngine;
 
 public class FriendsHUDController : IHUD
@@ -13,18 +13,24 @@ public class FriendsHUDController : IHUD
 
     private readonly Dictionary<string, FriendEntryBase.Model> friends = new Dictionary<string, FriendEntryBase.Model>();
     private IFriendsController friendsController;
+    private ISocialAnalytics socialAnalytics;
     private UserProfile ownUserProfile;
     
     public event Action<string> OnPressWhisper;
     public event Action OnFriendsOpened;
     public event Action OnFriendsClosed;
 
-    public void Initialize(IFriendsController friendsController, UserProfile ownUserProfile, IChatController chatController,
+    public void Initialize(
+        IFriendsController friendsController, 
+        UserProfile ownUserProfile, 
+        IChatController chatController,
+        ISocialAnalytics socialAnalytics,
         IFriendsHUDComponentView view = null)
     {
         view ??= FriendsHUDComponentView.Create();
         this.view = view;     
         this.friendsController = friendsController;
+        this.socialAnalytics = socialAnalytics;
 
         if (this.friendsController != null)
         {
@@ -105,6 +111,9 @@ public class FriendsHUDController : IHUD
                 userId = userNameOrId,
                 action = FriendshipAction.REQUESTED_TO
             });
+
+            if (ownUserProfile != null)
+                socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userNameOrId, 0, PlayerActionSource.FriendsHUD);
 
             view.ShowRequestSendSuccess();
         }
@@ -229,6 +238,9 @@ public class FriendsHUDController : IHUD
                 action = FriendshipAction.REJECTED,
                 userId = entry.model.userId
             });
+
+        if (ownUserProfile != null)
+            socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, entry.model.userId, PlayerActionSource.FriendsHUD);
     }
 
     private void HandleRequestCancelled(FriendRequestEntry entry)
@@ -239,6 +251,9 @@ public class FriendsHUDController : IHUD
                 action = FriendshipAction.CANCELLED,
                 userId = entry.model.userId
             });
+
+        if (ownUserProfile != null)
+            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, entry.model.userId, PlayerActionSource.FriendsHUD);
     }
 
     private void HandleRequestAccepted(FriendRequestEntry entry)
@@ -249,6 +264,9 @@ public class FriendsHUDController : IHUD
                 action = FriendshipAction.APPROVED,
                 userId = entry.model.userId
             });
+
+        if(ownUserProfile != null)
+            socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.model.userId, PlayerActionSource.FriendsHUD);
     }
 
     public void Dispose()
