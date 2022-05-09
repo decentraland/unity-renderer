@@ -20,7 +20,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         {
             yield return base.SetUp();
             contentProvider = new ContentProvider();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
         }
 
         protected override AssetPromise_GLTF CreatePromise()

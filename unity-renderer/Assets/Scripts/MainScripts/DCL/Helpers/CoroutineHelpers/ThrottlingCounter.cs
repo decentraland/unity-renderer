@@ -7,8 +7,12 @@ namespace DCL
     {
         public bool enabled = true;
         public double budgetPerFrame { get => enabled ? budgetPerFrameValue : double.MaxValue; set => budgetPerFrameValue = value; }
-        private double budgetPerFrameValue = 2 / 1000.0;
+        private double budgetPerFrameValue;
         private double timeBudgetCounter = 0f;
+        public ThrottlingCounter(double budgetPerFrame)
+        {
+            budgetPerFrameValue = budgetPerFrame;
+        }
 
         /// <summary>
         /// EvaluateTimeBudget decrements an internal time budget counter according to the given elapsedTime.

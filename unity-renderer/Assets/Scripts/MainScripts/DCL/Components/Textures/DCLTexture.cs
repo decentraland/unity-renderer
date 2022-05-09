@@ -121,7 +121,9 @@ namespace DCL
                     {
                         texture.wrapMode = unityWrap;
                         texture.filterMode = unitySamplingMode;
+                        var prev = texture.format;
                         texture.Compress(false);
+                        Debug.Log($"DCLTexture: {prev} -> {texture.format}");
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
                     }
                 }

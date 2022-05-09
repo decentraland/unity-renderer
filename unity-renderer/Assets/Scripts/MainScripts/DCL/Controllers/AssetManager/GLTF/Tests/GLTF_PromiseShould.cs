@@ -28,7 +28,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             provider.BakeHashes();
 
             var keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             IWebRequestController webRequestController = WebRequestController.Create();
 
@@ -55,7 +55,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator NotAddAssetToLibraryMoreThanOnce()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             IWebRequestController webRequestController = WebRequestController.Create();
 
@@ -86,7 +86,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator RefreshRenderers()
         {
             AssetPromiseKeeper_GLTF keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             IWebRequestController webRequestController = WebRequestController.Create();
 

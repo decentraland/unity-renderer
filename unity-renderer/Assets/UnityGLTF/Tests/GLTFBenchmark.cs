@@ -12,12 +12,12 @@ public class GLTFBenchmark : MonoBehaviour
     float minTime = float.MaxValue;
     float maxTime = float.MinValue;
 
-    private GLTFThrottlingCounter gltfThrottlingCounter = new GLTFThrottlingCounter();
+    private SmartThrottlingCounter smartThrottlingCounter = new SmartThrottlingCounter(2 / 1000.0);
 
     private IEnumerator Start()
     {
         GLTFSceneImporter.PROFILING_ENABLED = true;
-        gltfThrottlingCounter.budgetPerFrameInMilliseconds = float.MaxValue;
+        smartThrottlingCounter.budgetPerFrameInMilliseconds = float.MaxValue;
         GLTFSceneImporter.OnPerformanceFinish += OnPerformanceFinish;
         yield return new WaitForSeconds(1.0f);
         RunTest();
@@ -46,7 +46,7 @@ public class GLTFBenchmark : MonoBehaviour
         GameObject gameObject = new GameObject("Test");
         lastGameObjectCreated = gameObject;
         GLTFComponent gltfComponent = gameObject.AddComponent<GLTFComponent>();
-        gltfComponent.Initialize(DCL.Environment.i.platform.webRequest, gltfThrottlingCounter);
+        gltfComponent.Initialize(DCL.Environment.i.platform.webRequest, smartThrottlingCounter);
         GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
         {
             useVisualFeedback = false,

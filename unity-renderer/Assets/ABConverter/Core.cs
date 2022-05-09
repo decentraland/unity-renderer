@@ -708,7 +708,7 @@ namespace DCL.ABConverter
 
             Utils.FixGltfRootInvalidUriCharacters(gLTFRoot);
 
-            var loader = new GLTFSceneImporter(Path.GetFullPath(projectFilePath), gLTFRoot, fileLoader, new GLTFThrottlingCounter(), stream);
+            var loader = new GLTFSceneImporter(Path.GetFullPath(projectFilePath), gLTFRoot, fileLoader, null, stream);
             loader.addImagesToPersistentCaching = false; // Since we control the PersistentAssetCache during AB Conversion, we don't want the importer to mess with that
             loader.addMaterialsToPersistentCaching = false;
             loader.initialVisibility = true;

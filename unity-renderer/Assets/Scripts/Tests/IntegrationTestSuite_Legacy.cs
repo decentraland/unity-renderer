@@ -27,7 +27,7 @@ public class IntegrationTestSuite_Legacy
     {
         DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
-        AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
+        AssetPromiseKeeper_GLTF.i.DisableThrottling();
         PoolManager.enablePrewarm = false;
 
         // TODO(Brian): Move these variants to a DataStore object to avoid having to reset them

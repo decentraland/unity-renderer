@@ -1,15 +1,18 @@
 ﻿using DCL;
-using UnityEngine;
 
 namespace UnityGLTF
 {
-    public class GLTFThrottlingCounter : IThrottlingCounter
+    public class SmartThrottlingCounter : IThrottlingCounter
     {
-        private ThrottlingCounter throttlingCounter = new ThrottlingCounter();
+        private readonly ThrottlingCounter throttlingCounter;
 
-        public GLTFThrottlingCounter ()
+        public SmartThrottlingCounter (double budget)
         {
-            throttlingCounter.enabled = CommonScriptableObjects.rendererState;
+            throttlingCounter = new ThrottlingCounter(budget)
+            {
+                enabled = CommonScriptableObjects.rendererState
+            };
+
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
         }
 

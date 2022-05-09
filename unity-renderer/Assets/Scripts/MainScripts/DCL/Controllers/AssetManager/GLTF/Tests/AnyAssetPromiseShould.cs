@@ -24,7 +24,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator BeSetupCorrectlyAfterLoad()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
@@ -71,7 +71,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator ForceNewInstanceIsOff()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
@@ -88,7 +88,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator ForceNewInstanceIsOffMultipleTimes()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             var poolableComponents = new List<PoolableObject>();
 
@@ -111,7 +111,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator ForceNewInstanceIsOn()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
@@ -133,7 +133,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator ForceNewInstanceIsOnMultipleTimes()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             var poolableComponents = new List<PoolableObject>();
 
@@ -158,7 +158,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator NotTryToLoadAfterForget()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             var promises = new List<AssetPromise_GLTF>();
             var forgottenPromises = new Dictionary<int, bool>();

@@ -23,7 +23,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator SucceedWhenMastersParentIsDestroyed()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             GameObject parent = new GameObject("parent");
@@ -74,7 +74,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator SucceedWhenMastersParentIsDeactivated()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             GameObject parent = new GameObject("parent");
@@ -128,7 +128,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator GLTF_FailCorrectlyWhenGivenWrongURL()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-            keeper.throttlingCounter.enabled = false;
+            keeper.DisableThrottling();
 
             //NOTE(Brian): Expect the 404 error
             LogAssert.Expect(LogType.Log, new Regex("^.*?404"));

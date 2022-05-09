@@ -9,6 +9,7 @@ public class ThrottlingRunnerShould
     private ThrottlingCounter counter;
     private float currentMockedTime;
     private int lastFrame;
+    private double budgetPerFrame = 2 / 1000.0;
 
     float TimeMocker()
     {
@@ -41,7 +42,7 @@ public class ThrottlingRunnerShould
     [UnityTest]
     public IEnumerator SkipFramesAccordingToBudgetWithMultipleCases()
     {
-        counter = new ThrottlingCounter();
+        counter = new ThrottlingCounter(budgetPerFrame);
         counter.enabled = true;
 
         yield return SkipFramesAccordingToBudget(100, 2, 50, 5);
@@ -52,7 +53,7 @@ public class ThrottlingRunnerShould
     [UnityTest]
     public IEnumerator NotSkipFramesIfThrottlingCounterIsDisabled()
     {
-        counter = new ThrottlingCounter();
+        counter = new ThrottlingCounter(budgetPerFrame);
         counter.enabled = false;
 
         int budgetMs = 1;

@@ -11,14 +11,11 @@ namespace DCL
         /// Start a coroutine that might throw an exception. Call the callback with the exception if it
         /// does or null if it finishes without throwing an exception.
         /// </summary>
-        /// <param name="monoBehaviour">MonoBehaviour to start the coroutine on</param>
         /// <param name="enumerator">Iterator function to run as the coroutine</param>
         /// <param name="onException">Callback to call when the coroutine has thrown an exception or finished.
         /// The thrown exception or null is passed as the parameter.</param>
         /// <returns>The started coroutine</returns>
-        public static Coroutine StartThrottledCoroutine(
-            this MonoBehaviour monoBehaviour,
-            IEnumerator enumerator,
+        public static Coroutine StartThrottledCoroutine(IEnumerator enumerator,
             Action<Exception> onException,
             Func<double, bool> timeBudgetCounter
         )

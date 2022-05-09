@@ -18,7 +18,7 @@ namespace Tests
             CommonScriptableObjects.rendererState.Set(true);
             DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
             DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
-            AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
+            AssetPromiseKeeper_GLTF.i.DisableThrottling();
             PoolManager.enablePrewarm = false;
 
             ServiceLocator serviceLocator = DCL.ServiceLocatorTestFactory.CreateMocked();

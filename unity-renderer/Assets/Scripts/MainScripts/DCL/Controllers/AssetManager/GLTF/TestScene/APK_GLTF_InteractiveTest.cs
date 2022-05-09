@@ -29,7 +29,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         CommonScriptableObjects.rendererState.Set(true);
         webRequestController = WebRequestController.Create();
         keeper = new AssetPromiseKeeper_GLTF();
-        keeper.throttlingCounter.enabled = false;
+        keeper.DisableThrottling();
     }
 
     void Generate(string url)

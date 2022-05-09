@@ -36,7 +36,7 @@ public class MemoryScoreFormulasShould
     public IEnumerator OvershootAnimationClipMemoryWhenScoreIsComputed()
     {
         AssetPromiseKeeper_GLTF keeper = new AssetPromiseKeeper_GLTF();
-        keeper.throttlingCounter.enabled = false;
+        keeper.DisableThrottling();
         IWebRequestController webRequestController = WebRequestController.Create();
         ContentProvider_Dummy provider = new ContentProvider_Dummy();
 
@@ -69,7 +69,7 @@ public class MemoryScoreFormulasShould
     public IEnumerator OvershootMeshMemoryWhenScoreIsComputed()
     {
         AssetPromiseKeeper_GLTF keeper = new AssetPromiseKeeper_GLTF();
-        keeper.throttlingCounter.enabled = false;
+        keeper.DisableThrottling();
         IWebRequestController webRequestController = WebRequestController.Create();
         ContentProvider_Dummy provider = new ContentProvider_Dummy();
 

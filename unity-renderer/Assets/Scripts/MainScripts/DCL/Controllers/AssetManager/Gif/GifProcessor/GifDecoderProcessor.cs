@@ -34,7 +34,7 @@ namespace DCL
 
         private static bool isRunning;
         private bool isRunningInternal;
-        private readonly ThrottlingCounter throttlingCounter = new ThrottlingCounter();
+        private readonly ThrottlingCounter throttlingCounter = new ThrottlingCounter(2 / 1000.0);
 
         private readonly string url;
         private readonly Stream stream;
