@@ -4,6 +4,7 @@ using DCL.Helpers;
 using DCL.Models;
 using DCL.Controllers.ParcelSceneDebug;
 using System.Collections.Generic;
+using DCL.CRDT;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -39,6 +40,8 @@ namespace DCL.Controllers
 
         public SceneLifecycleHandler sceneLifecycleHandler;
 
+        public ICRDTExecutor crdtExecutor { get; private set; }
+
         public bool isReleased { get; private set; }
         
         public void Awake()
@@ -47,12 +50,14 @@ namespace DCL.Controllers
             componentsManagerLegacy = new ECSComponentsManagerLegacy(this);
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
             metricsCounter = new SceneMetricsCounter(DataStore.i.sceneWorldObjects);
+            crdtExecutor = new CRDTExecutor(this);
         }
 
         private void OnDestroy()
         {
             CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
             metricsCounter?.Dispose();
+            crdtExecutor?.Dispose();
         }
 
         void OnDisable() { metricsCounter?.Disable(); }

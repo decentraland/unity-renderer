@@ -22,7 +22,7 @@ namespace DCL.CRDT
 
             return new CRDTMessage()
             {
-                key = $"{componentHeader.entityId}.{componentHeader.componentClassId}",
+                key = CRDTUtils.KeyFromIds(componentHeader.entityId, componentHeader.componentClassId),
                 timestamp = componentHeader.timestamp,
                 data = data
             };
