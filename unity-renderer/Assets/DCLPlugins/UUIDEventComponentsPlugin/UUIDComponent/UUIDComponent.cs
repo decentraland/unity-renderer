@@ -1,16 +1,14 @@
+using System;
+using System.Collections;
 using DCL.Components;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace DCL
 {
     public class UUIDComponent : BaseComponent
     {
-        [System.Serializable]
+        [Serializable]
         public class Model : BaseModel
         {
             public string type;
@@ -41,9 +39,13 @@ namespace DCL
             }
         }
 
+        public override string componentName => uuidComponentName;
+
+        protected virtual string uuidComponentName { get; }
+
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            this.model = newModel ?? new UUIDComponent.Model();
+            this.model = newModel ?? new Model();
             return null;
         }
 
