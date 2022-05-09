@@ -112,6 +112,7 @@ namespace Tests
                 64, 73, 15, 219, 64, 73, 15, 219
             };
 
+
             CRDTComponentMessageHeader expectedComponentHeader = new CRDTComponentMessageHeader()
             {
                 entityId = 666,
