@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowView
+public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowView, IComponentModelConfig
 {
     [SerializeField] private CollapsablePublicChannelListComponentView publicChannelList;
     [SerializeField] private CollapsableDirectChatListComponentView directChatList;
@@ -17,7 +17,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] private TMP_Text searchResultsHeaderLabel;
     [SerializeField] private ScrollRect scroll;
     [SerializeField] private SearchBarComponentView searchBar;
-    [SerializeField] private Model model;
+    [SerializeField] private WorldChatWindowModel model;
 
     private string lastSearch;
 
@@ -88,6 +88,12 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             new PublicChannelEntry.PublicChannelEntryModel(model.channelId, name = model.name));
     }
 
+    public void Configure(BaseComponentModel newModel)
+    {
+        model = (WorldChatWindowModel) newModel;
+        RefreshControl();
+    }
+
     public void ShowPrivateChatsLoading() => SetPrivateChatLoadingVisibility(true);
 
     public void HidePrivateChatsLoading() => SetPrivateChatLoadingVisibility(false);
@@ -144,13 +150,5 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         directChatsHeaderLabel.text = $"Direct Messages ({directChatList.Count()})";
         searchResultsHeaderLabel.text = $"Results ({searchResultsList.Count()})";
-    }
-
-    [Serializable]
-    private class Model
-    {
-        public PrivateChatEntry.PrivateChatEntryModel[] privateChats;
-        public PublicChannelEntry.PublicChannelEntryModel[] publicChannels;
-        public bool isLoadingDirectChats;
     }
 }
