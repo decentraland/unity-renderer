@@ -61,14 +61,16 @@ namespace UIComponents.CollapsableSortedList
 
         public virtual int Count() => entries.Count - filteredCount;
 
-        public virtual void Show()
+        public override void Show(bool instant = false)
         {
+            base.Show(instant);
             gameObject.SetActive(true);
             model.isVisible = true;
         }
 
-        public virtual void Hide()
+        public override void Hide(bool instant = false)
         {
+            base.Hide(instant);
             gameObject.SetActive(false);
             model.isVisible = false;
         }
