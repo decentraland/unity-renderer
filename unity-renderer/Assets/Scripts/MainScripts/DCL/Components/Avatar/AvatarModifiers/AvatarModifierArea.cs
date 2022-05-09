@@ -33,6 +33,8 @@ public class AvatarModifierArea : BaseComponent
 
     private HashSet<Collider> excludedColliders;
 
+    public override string componentName => "avatarModifierArea";
+
     public AvatarModifierArea()
     {
         // Configure all available modifiers

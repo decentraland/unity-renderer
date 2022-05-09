@@ -10,6 +10,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
@@ -19,6 +20,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
     private CoreComponentsPlugin coreComponentsPlugin;
+    private UUIDEventsPlugin uuidComponentsPlugin;
     private ISceneController sceneController => DCL.Environment.i.world.sceneController;
 
     protected override IEnumerator SetUp()
@@ -26,12 +28,15 @@ public class SceneTests : IntegrationTestSuite_Legacy
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
         coreComponentsPlugin = new CoreComponentsPlugin();
+        uuidComponentsPlugin = new UUIDEventsPlugin();
+
         DataStore.i.debugConfig.isDebugMode.Set(true);
     }
 
     protected override IEnumerator TearDown()
     {
         coreComponentsPlugin.Dispose();
+        uuidComponentsPlugin.Dispose();
         yield return base.TearDown();
     }
 
@@ -373,4 +378,65 @@ public class SceneTests : IntegrationTestSuite_Legacy
         Assert.IsNull(entity.parent);
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
     }
+    
+    [UnityTest]
+    public IEnumerator EntityComponentShouldBeRemovedCorreclty()
+    {
+        var classIds = Enum.GetValues(typeof(CLASS_ID_COMPONENT));
+        //var classIds = new[] { CLASS_ID_COMPONENT.UUID_ON_CLICK };
+        var ignoreIds = new List<CLASS_ID_COMPONENT>() { CLASS_ID_COMPONENT.NONE, CLASS_ID_COMPONENT.TRANSFORM, CLASS_ID_COMPONENT.UUID_CALLBACK };
+
+        IDCLEntity entity = scene.CreateEntity(1);
+
+        foreach (CLASS_ID_COMPONENT classId in classIds)
+        {
+            if (ignoreIds.Contains(classId))
+                continue;
+ 
+            IEntityComponent component = scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entity.entityId, classId, "{}");
+            yield return null;
+
+            GameObject componentGO = component.GetTransform()?.gameObject;
+
+            bool hasGameObject = componentGO != null;
+            bool released = true;
+            bool isPooleable = false;
+            bool isGameObjectDestroyed = false;
+
+            if (hasGameObject)
+            {
+                DestroyGameObjectCallback destroy = componentGO.AddComponent<DestroyGameObjectCallback>();
+                destroy.OnDestroyed += () => isGameObjectDestroyed = true;
+            }
+
+            if (component is IPoolableObjectContainer pooleable && pooleable.poolableObject != null)
+            {
+                released = false;
+                isPooleable = true;
+                pooleable.poolableObject.OnRelease += () => released = true;
+            }
+
+            Assert.AreNotEqual(entity.gameObject, componentGO, $"component {classId} has same GameObject as entity");
+
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, component.componentName);
+
+            yield return null;
+
+            if (!isPooleable && hasGameObject)
+            {
+                Assert.IsTrue(isGameObjectDestroyed, $"GameObject not destroyed for component {component.componentName} id {classId}");
+            }
+            Assert.IsTrue(released, $"component {component.componentName} id {classId} is IPoolableObjectContainer but was not released");
+            Assert.IsFalse(scene.componentsManagerLegacy.HasComponent(entity, classId), $"component {component.componentName} id {classId} was not removed from entity components dictionary");
+        }
+    }
+
+    class DestroyGameObjectCallback : MonoBehaviour
+    {
+        public event Action OnDestroyed;
+        private void OnDestroy()
+        {
+            OnDestroyed?.Invoke();
+        }
+    }    
 }

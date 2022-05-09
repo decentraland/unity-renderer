@@ -21,6 +21,8 @@ namespace DCL.Components
 
         internal OnPointerEventColliders pointerEventColliders;
 
+        protected override string uuidComponentName { get; }
+
         public override void Initialize(IParcelScene scene, IDCLEntity entity)
         {
             base.Initialize(scene, entity);
