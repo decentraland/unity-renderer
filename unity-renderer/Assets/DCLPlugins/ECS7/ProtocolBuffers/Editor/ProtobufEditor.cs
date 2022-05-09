@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -78,16 +79,11 @@ namespace DCL.Protobuf
             {
                 Directory.CreateDirectory(destPackage);
 
-                ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "tar", Arguments = "-xvzf dcl-ecs-next.tgz -C " + destPackage };
+                ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "tar", Arguments = "-xvzf dcl-ecs-next.tgz -C " + destPackage, CreateNoWindow = true};
                 Process proc = new Process() { StartInfo = startInfo };
-                proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.RedirectStandardOutput = true;
-                proc.StartInfo.RedirectStandardError = true;
                 proc.Start();
 
-                string output = proc.StandardOutput.ReadToEnd();
-                string error = proc.StandardError.ReadToEnd();
-                proc.WaitForExit();
+                proc.WaitForExit(5 * 1000);
 
                 UnityEngine.Debug.Log("Unzipped dcl-ecs-next.tgz");
 
@@ -97,6 +93,7 @@ namespace DCL.Protobuf
                     Directory.Delete(componentDefinitionPath, true);
 
                 Directory.Move(destPackage + "/package/dist/components/definitions", componentDefinitionPath);
+                UnityEngine.Debug.Log("Success copying definitions in " + componentDefinitionPath);
             }
             catch (Exception e)
             {
