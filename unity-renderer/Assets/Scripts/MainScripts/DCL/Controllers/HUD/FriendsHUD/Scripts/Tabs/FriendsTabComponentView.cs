@@ -85,6 +85,7 @@ public class FriendsTabComponentView : BaseComponentView
         gameObject.SetActive(true);
         enabledHeader.SetActive(true);
         disabledHeader.SetActive(false);
+        searchBar.ClearSearch();
     }
 
     public void Hide()

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
@@ -25,8 +25,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [SerializeField] private TMP_Text sentRequestsCountText;
     [SerializeField] private UserContextMenu contextMenuPanel;
 
-    [Header("Notifications")]
-    [SerializeField] private Notification requestSentNotification;
+    [Header("Notifications")] [SerializeField]
+    private Notification requestSentNotification;
+
     [SerializeField] private Notification friendSearchFailedNotification;
     [SerializeField] private Notification acceptedFriendNotification;
     [SerializeField] private Notification alreadyFriendsNotification;
@@ -76,6 +77,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         gameObject.SetActive(true);
         enabledHeader.SetActive(true);
         disabledHeader.SetActive(false);
+        searchBar.ClearSearch();
     }
 
     public void Hide()
@@ -137,7 +139,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     public void Populate(string userId, FriendEntryBase.Model model)
     {
         if (!entries.ContainsKey(userId)) return;
-        
+
         var entry = entries[userId];
         entry.Populate(model);
     }
@@ -158,7 +160,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
             receivedRequestsList.Add(userId, entry);
         else
             sentRequestsList.Add(userId, entry);
-        
+
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
     }
@@ -287,7 +289,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         receivedRequestsCountText.SetText("RECEIVED ({0})", receivedRequestsList.Count());
         sentRequestsCountText.SetText("SENT ({0})", sentRequestsList.Count());
     }
-    
+
     private void HandleFriendBlockRequest(string userId, bool blockUser)
     {
         var friendEntryToBlock = Get(userId);

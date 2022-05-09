@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentView
 {
+    private const int FRIENDS_LIST_TAB_INDEX = 0;
+    private const int FRIENDS_REQUEST_TAB_INDEX = 1;
+
     [SerializeField] private GameObject loadingSpinner;
     [SerializeField] private Button closeButton;
     [SerializeField] private Button friendsTabFocusButton;
@@ -57,8 +60,8 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     {
         base.Awake();
         
-        friendsTabFocusButton.onClick.AddListener(() => FocusTab(0));
-        friendRequestsTabFocusButton.onClick.AddListener(() => FocusTab(1));
+        friendsTabFocusButton.onClick.AddListener(() => FocusTab(FRIENDS_LIST_TAB_INDEX));
+        friendRequestsTabFocusButton.onClick.AddListener(() => FocusTab(FRIENDS_REQUEST_TAB_INDEX));
         closeButton.onClick.AddListener(() =>
         {
             OnClose?.Invoke();
@@ -204,12 +207,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     {
         model.focusedTabIndex = index;
 
-        if (index == 0)
+        if (index == FRIENDS_LIST_TAB_INDEX)
         {
             friendsTab.Show();
             friendRequestsTab.Hide();
         }
-        else if (index == 1)
+        else if (index == FRIENDS_REQUEST_TAB_INDEX)
         {
             friendsTab.Hide();
             friendRequestsTab.Show();
