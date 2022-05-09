@@ -71,7 +71,7 @@ public class ChannelChatWindowView : MonoBehaviour, IPointerClickHandler, IChann
 
     public void Show() => gameObject.SetActive(true);
     
-    public void Setup(string channelId, string name, string description)
+    public void Configure(PublicChatChannelModel model)
     {
     }
 

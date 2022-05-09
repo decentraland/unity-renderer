@@ -70,7 +70,8 @@ public class PublicChatChannelController : IHUD
         this.channelId = channelId;
 
         // TODO: retrieve data from a channel provider
-        View.Setup(this.channelId, "nearby", "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.");
+        View.Configure(new PublicChatChannelModel(this.channelId, "nearby",
+            "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed."));
 
         ReloadAllChats().Forget();
     }

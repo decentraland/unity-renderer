@@ -1,18 +1,17 @@
-using System;
-using DCL.Interface;
+﻿using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWindowView
+public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWindowView, IComponentModelConfig
 {
     [SerializeField] private Button closeButton;
     [SerializeField] private Button backButton;
     [SerializeField] private TMP_Text nameLabel;
     [SerializeField] private TMP_Text descriptionLabel;
     [SerializeField] private ChatHUDView chatView;
-    [SerializeField] private Model model;
-    
+    [SerializeField] private PublicChatChannelModel model;
+
     public event Action OnClose;
     public event Action OnBack;
 
@@ -34,7 +33,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
 
     public override void RefreshControl()
     {
-        nameLabel.text = model.name;
+        nameLabel.text = $"#{model.name}";
         descriptionLabel.text = model.description;
     }
 
@@ -42,17 +41,11 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
 
     public void Show() => gameObject.SetActive(true);
     
-    public void Setup(string channelId, string name, string description)
+    public void Configure(PublicChatChannelModel model)
     {
-        model.name = $"#{name}";
-        model.description = description;
+        this.model = model;
         RefreshControl();
     }
 
-    [Serializable]
-    private struct Model
-    {
-        public string name;
-        public string description;
-    }
+    public void Configure(BaseComponentModel newModel) => Configure((PublicChatChannelModel) newModel);
 }

@@ -48,11 +48,8 @@ public class WorldChatWindowController : IHUD
         view.OnUnfriend += HandleUnfriend;
         ownUserProfile = userProfileBridge.GetOwn();
         // TODO: this data should come from the chat service when channels are implemented
-        view.SetPublicChannel(new PublicChatChannelModel
-        {
-            channelId = GENERAL_CHANNEL_ID,
-            name = "nearby"
-        });
+        view.SetPublicChannel(new PublicChatChannelModel(GENERAL_CHANNEL_ID, "nearby",
+            "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed."));
         var privateChatsByRecipient = GetLastPrivateChatByRecipient(chatController.GetEntries());
         lastPrivateMessages = privateChatsByRecipient.ToDictionary(pair => pair.Key.userId, pair => pair.Value);
         recipientsFromPrivateChats = privateChatsByRecipient.Keys.ToDictionary(profile => profile.userId);
