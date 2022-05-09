@@ -46,7 +46,9 @@ namespace DCL
             if (firstTimeVoiceRecorded)
             {
                 if (socialAnalytics == null)
-                    socialAnalytics = new SocialAnalytics(Environment.i.platform.serviceProviders.analytics);
+                    socialAnalytics = new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge());
                 
                 socialAnalytics.SendVoiceMessageStartedByFirstTime();
                 firstTimeVoiceRecorded = false;

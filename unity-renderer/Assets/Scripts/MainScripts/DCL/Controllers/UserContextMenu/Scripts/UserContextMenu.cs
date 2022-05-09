@@ -115,7 +115,9 @@ public class UserContextMenu : MonoBehaviour
 
     private void Awake()
     {
-        socialAnalytics = new SocialAnalytics(DCL.Environment.i.platform.serviceProviders.analytics);
+        socialAnalytics = new SocialAnalytics(
+            DCL.Environment.i.platform.serviceProviders.analytics,
+            new UserProfileWebInterfaceBridge());
 
         if (!currentPlayerId)
         {

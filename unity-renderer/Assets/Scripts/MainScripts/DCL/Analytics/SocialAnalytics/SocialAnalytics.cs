@@ -1,4 +1,3 @@
-using DCL.Interface;
 using System.Collections.Generic;
 
 namespace SocialFeaturesAnalytics
@@ -24,8 +23,13 @@ namespace SocialFeaturesAnalytics
         private const string PLAY_EMOTE = "used_emote";
 
         private IAnalytics analytics;
+        private IUserProfileBridge userProfileBridge;
 
-        public SocialAnalytics(IAnalytics analytics) { this.analytics = analytics; }
+        public SocialAnalytics(IAnalytics analytics, IUserProfileBridge userProfileBridge)
+        {
+            this.analytics = analytics;
+            this.userProfileBridge = userProfileBridge;
+        }
 
         public void SendPlayerMuted(string toUserId)
         {
@@ -224,7 +228,7 @@ namespace SocialFeaturesAnalytics
             if (string.IsNullOrEmpty(userId))
                 return null;
 
-            UserProfile userProfile = UserProfileController.GetProfileByUserId(userId);
+            UserProfile userProfile = userProfileBridge.Get(userId);
 
             if (userProfile == null)
                 return null;

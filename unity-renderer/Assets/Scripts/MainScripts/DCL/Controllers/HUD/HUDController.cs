@@ -33,7 +33,9 @@ public class HUDController : IHUDController
     public HUDController(IHUDFactory hudFactory = null)
     {
         this.hudFactory = hudFactory;
-        socialAnalytics = new SocialAnalytics(DCL.Environment.i.platform.serviceProviders.analytics);
+        socialAnalytics = new SocialAnalytics(
+            DCL.Environment.i.platform.serviceProviders.analytics,
+            new UserProfileWebInterfaceBridge());
     }
 
     public void Initialize()

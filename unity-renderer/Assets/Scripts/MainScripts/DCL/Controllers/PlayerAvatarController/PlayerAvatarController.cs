@@ -41,7 +41,9 @@ public class PlayerAvatarController : MonoBehaviour
     private void Start()
     {
         DataStore.i.common.isPlayerRendererLoaded.Set(false);
-        socialAnalytics = new SocialAnalytics(DCL.Environment.i.platform.serviceProviders.analytics);
+        socialAnalytics = new SocialAnalytics(
+            DCL.Environment.i.platform.serviceProviders.analytics,
+            new UserProfileWebInterfaceBridge());
 
         AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
         avatar = new AvatarSystem.Avatar(
