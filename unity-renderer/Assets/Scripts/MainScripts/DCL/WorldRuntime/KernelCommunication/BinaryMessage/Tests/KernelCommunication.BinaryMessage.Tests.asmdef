@@ -1,0 +1,21 @@
+{
+    "name": "KernelCommunication.BinaryMessage.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:211458814b4045e7ad894e13b8f8d919",
+        "GUID:374252a1740a422eb7762fc12ff3bf8a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

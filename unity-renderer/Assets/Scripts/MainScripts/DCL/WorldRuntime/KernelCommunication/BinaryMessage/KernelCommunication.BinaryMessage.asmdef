@@ -1,0 +1,18 @@
+{
+    "name": "KernelCommunication.BinaryMessage",
+    "rootNamespace": "",
+    "references": [
+        "GUID:374252a1740a422eb7762fc12ff3bf8a",
+        "GUID:561c0622fe6f4025ae33ed99ed7d3fc8",
+        "GUID:80f579cff5cf4136aa8969bf6fa1098c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -97,7 +97,9 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
         response.payload.ray.direction = new Vector3(raycastQuery.Ray.Direction.X, raycastQuery.Ray.Direction.Y,
             raycastQuery.Ray.Direction.Z);
         response.payload.entity = new WebInterface.HitEntityInfo();
-        response.payload.entity.entityId = entities[0].entityId;
+
+        EntityIdHelper entityIdHelper = new EntityIdHelper();
+        response.payload.entity.entityId = entityIdHelper.GetOriginalId(entities[0].entityId) ;
 
         var sceneEvent = new WebInterface.SceneEvent<WebInterface.RaycastHitFirstResponse>();
 
@@ -168,13 +170,13 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
         response.payload.ray.direction = new Vector3(raycastQuery.Ray.Direction.X, raycastQuery.Ray.Direction.Y,
             raycastQuery.Ray.Direction.Z);
         response.payload.entities = new WebInterface.RaycastHitEntity[ENTITIES_COUNT];
-
+        EntityIdHelper entityIdHelper = new EntityIdHelper();
         for (int i = 0; i < ENTITIES_COUNT; i++)
         {
             response.payload.entities[i] = new WebInterface.RaycastHitEntity();
             response.payload.entities[i].didHit = true;
             response.payload.entities[i].entity = new WebInterface.HitEntityInfo();
-            response.payload.entities[i].entity.entityId = entities[i].entityId;
+            response.payload.entities[i].entity.entityId = entityIdHelper.GetOriginalId(entities[i].entityId);
         }
 
         var sceneEvent = new WebInterface.SceneEvent<WebInterface.RaycastHitAllResponse>();

@@ -347,10 +347,10 @@ namespace DCL
                 return component;
 
             IRuntimeComponentFactory factory = componentFactory;
-            
+
             if (factory.createConditions.ContainsKey(classId))
             {
-                if (!factory.createConditions[(int) classId].Invoke(scene.sceneData.id, classId))
+                if (!factory.createConditions[(int)classId].Invoke(scene.sceneData.id, classId))
                     return null;
             }
 
@@ -400,17 +400,17 @@ namespace DCL
             IEntityComponent newComponent = null;
 
             var overrideCreate = Environment.i.world.componentFactory.createOverrides;
-            
-            if (overrideCreate.ContainsKey((int) classId))
+
+            if (overrideCreate.ContainsKey((int)classId))
             {
-                int classIdAsInt = (int) classId;
-                overrideCreate[(int) classId].Invoke(scene.sceneData.id, entityId, ref classIdAsInt, data);
-                classId = (CLASS_ID_COMPONENT) classIdAsInt;
+                int classIdAsInt = (int)classId;
+                overrideCreate[(int)classId].Invoke(scene.sceneData.id, entityId, ref classIdAsInt, data);
+                classId = (CLASS_ID_COMPONENT)classIdAsInt;
             }
 
             if (!HasComponent(entity, classId))
             {
-                newComponent = componentFactory.CreateComponent((int) classId) as IEntityComponent;
+                newComponent = componentFactory.CreateComponent((int)classId) as IEntityComponent;
 
                 if (newComponent != null)
                 {
@@ -586,6 +586,33 @@ namespace DCL
                         }
                     }
                     return;
+
+                default:
+                    {
+                        IEntityComponent component = GetComponentsDictionary(entity).FirstOrDefault(kp => kp.Value.componentName == componentName).Value;
+                        if (component == null)
+                            break;
+
+                        RemoveComponent(entity, (CLASS_ID_COMPONENT)component.GetClassId());
+
+                        if (component is ICleanable cleanableComponent)
+                            cleanableComponent.Cleanup();
+
+                        bool released = false;
+                        if (component is IPoolableObjectContainer poolableContainer)
+                        {
+                            if (poolableContainer.poolableObject != null)
+                            {
+                                poolableContainer.poolableObject.Release();
+                                released = true;
+                            }
+                        }
+                        if (!released)
+                        {
+                            Utils.SafeDestroy(component.GetTransform()?.gameObject);
+                        }
+                        break;
+                    }
             }
         }
 

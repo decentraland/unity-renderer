@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using DCL;
+using DCL.CRDT;
 using NUnit.Framework;
 
 namespace Tests

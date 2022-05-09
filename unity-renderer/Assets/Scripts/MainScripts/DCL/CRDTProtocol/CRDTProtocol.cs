@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DCL
+namespace DCL.CRDT
 {
     public class CRDTProtocol
     {

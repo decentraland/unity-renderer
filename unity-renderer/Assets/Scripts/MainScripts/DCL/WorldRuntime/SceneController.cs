@@ -373,7 +373,7 @@ namespace DCL
 
             raycastQuery.ray.unityOrigin = PositionUtils.WorldToUnityPosition(worldOrigin);
             raycastQuery.sceneId = sceneId;
-            PhysicsCast.i.Query(raycastQuery);
+            PhysicsCast.i.Query(raycastQuery, entityIdHelper);
         }
 
         public void SendSceneMessage(string chunk)
