@@ -4,6 +4,7 @@ syntax = "proto3";
 // This parameter is processed by the tool
 
 package decentraland.ecs;
+option csharp_namespace = "DCL.ECSComponents";
 
 message PBBoxShape {  
   bool with_collisions = 1;
