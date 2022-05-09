@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
+using DCL.CRDT;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
