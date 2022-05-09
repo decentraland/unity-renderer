@@ -71,8 +71,11 @@ public class FriendRequestsTabView : FriendsTabViewBase
         if (entry == null)
             return false;
 
+        entry.OnAccepted -= OnFriendRequestReceivedAccepted;
         entry.OnAccepted += OnFriendRequestReceivedAccepted;
+        entry.OnRejected -= OnEntryRejectButtonPressed;
         entry.OnRejected += OnEntryRejectButtonPressed;
+        entry.OnCancelled -= OnEntryCancelButtonPressed;
         entry.OnCancelled += OnEntryCancelButtonPressed;
 
         return true;

@@ -13,7 +13,7 @@ namespace SocialFeaturesAnalytics
         Link
     }
 
-    public enum FriendActionSource
+    public enum PlayerActionSource
     {
         Passport,
         ProfileContextMenu,

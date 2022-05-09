@@ -95,7 +95,7 @@ public class PlayerInfoCardHUDController : IHUD
             userId = currentPlayerId, action = FriendshipAction.REQUESTED_TO
         });
 
-        socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, FriendActionSource.Passport);
+        socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
     }
 
     private void CancelInvitation()
@@ -108,7 +108,7 @@ public class PlayerInfoCardHUDController : IHUD
             userId = currentPlayerId, action = FriendshipAction.CANCELLED
         });
 
-        socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, FriendActionSource.Passport);
+        socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
     private void AcceptFriendRequest()
@@ -121,7 +121,7 @@ public class PlayerInfoCardHUDController : IHUD
             userId = currentPlayerId, action = FriendshipAction.APPROVED
         });
 
-        socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, FriendActionSource.Passport);
+        socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
     private void RejectFriendRequest()
@@ -134,7 +134,7 @@ public class PlayerInfoCardHUDController : IHUD
             userId = currentPlayerId, action = FriendshipAction.REJECTED
         });
 
-        socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, currentPlayerId, FriendActionSource.Passport);
+        socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
     private void OnCurrentPlayerIdChanged(string current, string previous)
@@ -217,7 +217,7 @@ public class PlayerInfoCardHUDController : IHUD
         ownUserProfile.Block(currentUserProfile.userId);
         view.SetIsBlocked(true);
         WebInterface.SendBlockPlayer(currentUserProfile.userId);
-        socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), FriendActionSource.Passport);
+        socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
     }
 
     private void UnblockPlayer()
@@ -226,13 +226,13 @@ public class PlayerInfoCardHUDController : IHUD
         ownUserProfile.Unblock(currentUserProfile.userId);
         view.SetIsBlocked(false);
         WebInterface.SendUnblockPlayer(currentUserProfile.userId);
-        socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(currentUserProfile.userId), FriendActionSource.Passport);
+        socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
     }
 
     private void ReportPlayer()
     {
         WebInterface.SendReportPlayer(currentPlayerId);
-        socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, FriendActionSource.Passport);
+        socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
     }
 
     public void Dispose()

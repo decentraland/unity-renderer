@@ -156,7 +156,7 @@ public class UserContextMenu : MonoBehaviour
     {
         OnReport?.Invoke(userId);
         WebInterface.SendReportPlayer(userId);
-        GetSocialAnalytics().SendPlayerReport(PlayerReportIssueType.None, 0, FriendActionSource.ProfileContextMenu);
+        GetSocialAnalytics().SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.ProfileContextMenu);
         Hide();
     }
 
@@ -180,11 +180,11 @@ public class UserContextMenu : MonoBehaviour
                         action = FriendshipAction.DELETED,
                         userId = userId
                     });
-
-                GetSocialAnalytics().SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, FriendActionSource.ProfileContextMenu);
             });
         }
         Hide();
+
+        GetSocialAnalytics().SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
     }
 
     private void OnAddFriendButtonPressed()
@@ -214,7 +214,7 @@ public class UserContextMenu : MonoBehaviour
             userId = userId, action = FriendshipAction.REQUESTED_TO
         });
 
-        GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, FriendActionSource.ProfileContextMenu);
+        GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
     }
 
     private void OnCancelFriendRequestButtonPressed()
@@ -237,7 +237,7 @@ public class UserContextMenu : MonoBehaviour
             userId = userId, action = FriendshipAction.CANCELLED
         });
 
-        GetSocialAnalytics().SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId, FriendActionSource.ProfileContextMenu);
+        GetSocialAnalytics().SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
     }
 
     private void OnMessageButtonPressed()
@@ -254,12 +254,12 @@ public class UserContextMenu : MonoBehaviour
         if (blockUser)
         {
             WebInterface.SendBlockPlayer(userId);
-            GetSocialAnalytics().SendPlayerBlocked(FriendsController.i.IsFriend(userId), FriendActionSource.ProfileContextMenu);
+            GetSocialAnalytics().SendPlayerBlocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
         }
         else
         {
             WebInterface.SendUnblockPlayer(userId);
-            GetSocialAnalytics().SendPlayerUnblocked(FriendsController.i.IsFriend(userId), FriendActionSource.ProfileContextMenu);
+            GetSocialAnalytics().SendPlayerUnblocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
         }
         Hide();
     }

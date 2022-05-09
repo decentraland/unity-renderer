@@ -161,7 +161,7 @@ public class PrivateChatWindowController : IHUD
         message.body = $"/w {message.recipient} {message.body}";
 
         chatController.Send(message);
-        socialAnalytics.SendDirectMessageSent(message.sender, message.recipient, message.body.Length, friendsController.IsFriend(message.recipient), ChatContentType.Text);
+        socialAnalytics.SendDirectMessageSent(message.sender, ConversationUserId, message.body.Length, friendsController.IsFriend(ConversationUserId), ChatContentType.Text);
     }
 
     private void HandleCloseInputTriggered(DCLAction_Trigger action) => Hide();

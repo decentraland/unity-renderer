@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
@@ -181,14 +181,14 @@ public class FriendRequestsTabComponentView : BaseComponentView
         if (entry == null) return;
         entries.Add(userId, entry);
 
+        entry.OnAccepted -= OnFriendRequestReceivedAccepted;
         entry.OnAccepted += OnFriendRequestReceivedAccepted;
+        entry.OnRejected -= OnEntryRejectButtonPressed;
         entry.OnRejected += OnEntryRejectButtonPressed;
+        entry.OnCancelled -= OnEntryCancelButtonPressed;
         entry.OnCancelled += OnEntryCancelButtonPressed;
-        entry.OnMenuToggle += x =>
-        {
-            contextMenuPanel.Show(userId);
-            entry.Dock(contextMenuPanel);
-        };
+        entry.OnMenuToggle -= OnEntryMenuToggle;
+        entry.OnMenuToggle += OnEntryMenuToggle;
     }
 
     private Pool GetEntryPool()
@@ -275,7 +275,13 @@ public class FriendRequestsTabComponentView : BaseComponentView
         Remove(requestEntry.model.userId);
         OnCancelConfirmation?.Invoke(requestEntry);
     }
-    
+
+    private void OnEntryMenuToggle(FriendEntryBase friendEntry)
+    {
+        contextMenuPanel.Show(friendEntry.model.userId);
+        friendEntry.Dock(contextMenuPanel);
+    }
+
     private void UpdateCounterLabel()
     {
         receivedRequestsCountText.SetText("RECEIVED ({0})", receivedRequestsList.Count());

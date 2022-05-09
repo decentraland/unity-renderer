@@ -92,7 +92,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(DIRECT_MESSAGE_SENT, data);
         }
 
-        public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, FriendActionSource source)
+        public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -109,7 +109,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(FRIEND_REQUEST_SENT, data);
         }
 
-        public void SendFriendRequestApproved(string fromUserId, string toUserId, FriendActionSource source)
+        public void SendFriendRequestApproved(string fromUserId, string toUserId, PlayerActionSource source)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -125,7 +125,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(FRIEND_REQUEST_APPROVED, data);
         }
 
-        public void SendFriendRequestRejected(string fromUserId, string toUserId, FriendActionSource source)
+        public void SendFriendRequestRejected(string fromUserId, string toUserId, PlayerActionSource source)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -141,7 +141,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(FRIEND_REQUEST_REJECTED, data);
         }
 
-        public void SendFriendRequestCancelled(string fromUserId, string toUserId, FriendActionSource source)
+        public void SendFriendRequestCancelled(string fromUserId, string toUserId, PlayerActionSource source)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -157,7 +157,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(FRIEND_REQUEST_CANCELLED, data);
         }
 
-        public void SendFriendDeleted(string fromUserId, string toUserId, FriendActionSource source)
+        public void SendFriendDeleted(string fromUserId, string toUserId, PlayerActionSource source)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -186,7 +186,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PASSPORT_CLOSED, data);
         }
 
-        public void SendPlayerBlocked(bool isFriend, FriendActionSource source)
+        public void SendPlayerBlocked(bool isFriend, PlayerActionSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("friend", isFriend.ToString());
@@ -195,7 +195,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PLAYER_BLOCKED, data);
         }
 
-        public void SendPlayerUnblocked(bool isFriend, FriendActionSource source)
+        public void SendPlayerUnblocked(bool isFriend, PlayerActionSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("friend", isFriend.ToString());
@@ -204,7 +204,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PLAYER_UNBLOCKED, data);
         }
 
-        public void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, FriendActionSource source)
+        public void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, PlayerActionSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("issue_type", issueType.ToString());
@@ -214,7 +214,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PLAYER_REPORT, data);
         }
 
-        public void SendPlayerJoin(FriendActionSource source)
+        public void SendPlayerJoin(PlayerActionSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("source", source.ToString());

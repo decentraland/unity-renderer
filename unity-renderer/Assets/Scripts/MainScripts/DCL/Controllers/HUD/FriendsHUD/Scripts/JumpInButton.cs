@@ -108,6 +108,6 @@ public class JumpInButton : MonoBehaviour
     {
         OnClick?.Invoke();
         WebInterface.JumpIn((int)currentCoords.x, (int)currentCoords.y, currentRealmServerName, currentRealmLayerName);
-        socialAnalytics.SendPlayerJoin(FriendActionSource.Conversation);
+        socialAnalytics.SendPlayerJoin(PlayerActionSource.Conversation);
     }
 }

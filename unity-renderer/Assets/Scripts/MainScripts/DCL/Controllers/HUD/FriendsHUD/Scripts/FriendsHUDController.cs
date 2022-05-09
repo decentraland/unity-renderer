@@ -113,7 +113,7 @@ public class FriendsHUDController : IHUD
             });
 
             if (ownUserProfile != null)
-                socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userNameOrId, 0, FriendActionSource.FriendsHUD);
+                socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userNameOrId, 0, PlayerActionSource.FriendsHUD);
 
             view.ShowRequestSendSuccess();
         }
@@ -228,9 +228,6 @@ public class FriendsHUDController : IHUD
                 action = FriendshipAction.DELETED,
                 userId = userId
             });
-
-        if (ownUserProfile != null)
-            socialAnalytics.SendFriendDeleted(ownUserProfile.userId, userId, FriendActionSource.FriendsHUD);
     }
 
     private void HandleRequestRejected(FriendRequestEntry entry)
@@ -243,7 +240,7 @@ public class FriendsHUDController : IHUD
             });
 
         if (ownUserProfile != null)
-            socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, entry.model.userId, FriendActionSource.FriendsHUD);
+            socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, entry.model.userId, PlayerActionSource.FriendsHUD);
     }
 
     private void HandleRequestCancelled(FriendRequestEntry entry)
@@ -256,7 +253,7 @@ public class FriendsHUDController : IHUD
             });
 
         if (ownUserProfile != null)
-            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, entry.model.userId, FriendActionSource.FriendsHUD);
+            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, entry.model.userId, PlayerActionSource.FriendsHUD);
     }
 
     private void HandleRequestAccepted(FriendRequestEntry entry)
@@ -269,7 +266,7 @@ public class FriendsHUDController : IHUD
             });
 
         if(ownUserProfile != null)
-            socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.model.userId, FriendActionSource.FriendsHUD);
+            socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.model.userId, PlayerActionSource.FriendsHUD);
     }
 
     public void Dispose()
