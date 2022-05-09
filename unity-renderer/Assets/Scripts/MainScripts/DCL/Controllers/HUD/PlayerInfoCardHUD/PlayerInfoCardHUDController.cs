@@ -25,6 +25,7 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly IWearableCatalogBridge wearableCatalogBridge;
     private readonly IProfanityFilter profanityFilter;
     private readonly DataStore dataStore;
+    private readonly BooleanVariable playerInfoCardVisibleState;
     private readonly List<string> loadedWearables = new List<string>();
     private readonly ISocialAnalytics socialAnalytics;
     private double passportOpenStartTime = 0;
@@ -35,7 +36,8 @@ public class PlayerInfoCardHUDController : IHUD
         IWearableCatalogBridge wearableCatalogBridge,
         ISocialAnalytics socialAnalytics,
         IProfanityFilter profanityFilter,
-        DataStore dataStore)
+        DataStore dataStore,
+        BooleanVariable playerInfoCardVisibleState)
     {
         this.friendsController = friendsController;
         view = PlayerInfoCardHUDView.CreateView();
@@ -48,6 +50,7 @@ public class PlayerInfoCardHUDController : IHUD
         this.socialAnalytics = socialAnalytics;
         this.profanityFilter = profanityFilter;
         this.dataStore = dataStore;
+        this.playerInfoCardVisibleState = playerInfoCardVisibleState;
         currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
         OnCurrentPlayerIdChanged(currentPlayerId, null);
 
@@ -145,7 +148,7 @@ public class PlayerInfoCardHUDController : IHUD
 
         if (currentUserProfile == null)
         {
-            if (CommonScriptableObjects.playerInfoCardVisibleState.Get())
+            if (playerInfoCardVisibleState.Get())
                 socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
 
             view.SetCardActive(false);

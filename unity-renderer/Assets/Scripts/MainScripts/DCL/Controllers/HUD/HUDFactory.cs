@@ -41,7 +41,8 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     ProfanityFilterSharedInstances.regexFilter,
-                    DataStore.i);
+                    DataStore.i,
+                    CommonScriptableObjects.playerInfoCardVisibleState);
                 break;
             case HUDElementID.AIRDROPPING:
                 hudElement = new AirdroppingHUDController();

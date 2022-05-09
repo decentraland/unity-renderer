@@ -54,7 +54,8 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
             wearableCatalogBridge,
             socialAnalytics,
             profanityFilter,
-            dataStore);
+            dataStore,
+            CommonScriptableObjects.playerInfoCardVisibleState);
     }
 
     protected override IEnumerator TearDown()
