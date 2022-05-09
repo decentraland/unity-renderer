@@ -156,6 +156,7 @@ MonoBehaviour:
   jumpInButton: {fileID: 5169509239082897848}
   whisperButton: {fileID: 5791209562270436312}
   unreadNotificationBadge: {fileID: 0}
+  rowButton: {fileID: 3296812224725170092}
 --- !u!114 &7758688996308583502
 MonoBehaviour:
   m_ObjectHideFlags: 0

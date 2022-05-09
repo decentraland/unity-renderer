@@ -97,7 +97,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
 
     private void OnAvatarImageChange(Texture2D texture) { playerImage.texture = texture; }
 
-    private void ShowUserProfile()
+    protected void ShowUserProfile()
     {
         if (currentPlayerInfoCardId == null)
             currentPlayerInfoCardId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
