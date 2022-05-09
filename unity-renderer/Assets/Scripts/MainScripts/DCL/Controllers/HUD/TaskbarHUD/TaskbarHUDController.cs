@@ -1,7 +1,5 @@
 using System;
 using DCL;
-using DCL.Helpers;
-using DCL.Interface;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -169,8 +167,14 @@ public class TaskbarHUDController : IHUD
         if (anyInputFieldIsSelected) return;
 
         mouseCatcher.UnlockCursor();
-        view.leftWindowContainerAnimator.Show();
-        OpenFriendsWindow();
+
+        if (!friendsHud.view.IsActive())
+        {
+            view.leftWindowContainerAnimator.Show();
+            OpenFriendsWindow();
+        }
+        else
+            CloseFriendsWindow();
     }
 
     private void ToggleWorldChatTrigger_OnTriggered(DCLAction_Trigger action)
@@ -182,7 +186,11 @@ public class TaskbarHUDController : IHUD
         if (anyInputFieldIsSelected) return;
         
         mouseCatcher.UnlockCursor();
-        worldChatWindowHud.OpenLastActiveChat();
+
+        if (!worldChatWindowHud.View.IsActive)
+            worldChatWindowHud.OpenLastActiveChat();
+        else
+            CloseAnyChatWindow();
     }
 
     private void CloseWindowTrigger_OnTriggered(DCLAction_Trigger action)
@@ -202,11 +210,8 @@ public class TaskbarHUDController : IHUD
         if (show)
             OpenChatList();
         else
-        {
-            worldChatWindowHud.SetVisibility(false);
-            privateChatWindow.SetVisibility(false);
-            publicChatChannel.SetVisibility(false);
-        }
+            CloseAnyChatWindow();
+        
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
@@ -258,6 +263,12 @@ public class TaskbarHUDController : IHUD
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Friends);
     }
 
+    private void CloseFriendsWindow()
+    {
+        friendsHud.SetVisibility(false);
+        view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Friends);
+    }
+
     public void OpenPrivateChat(string userId)
     {
         privateChatWindow.Setup(userId);
@@ -268,6 +279,14 @@ public class TaskbarHUDController : IHUD
         isEmotesVisible.Set(false);
         privateChatWindow.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
+    }
+
+    private void CloseAnyChatWindow()
+    {
+        worldChatWindowHud.SetVisibility(false);
+        privateChatWindow.SetVisibility(false);
+        publicChatChannel.SetVisibility(false);
+        view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
     }
 
     public void OpenPublicChatChannel(string channelId)
