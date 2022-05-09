@@ -18,9 +18,10 @@ namespace UnityGLTF
             if (_importNormalsNames == null)
             {
                 _importNormalsNames = Enum.GetNames(typeof(GLTFImporterNormals))
-                    .Select(n => ObjectNames.NicifyVariableName(n))
-                    .ToArray();
+                                          .Select(n => ObjectNames.NicifyVariableName(n))
+                                          .ToArray();
             }
+
             EditorGUILayout.LabelField("Meshes", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_removeEmptyRootObjects"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_scaleFactor"));
@@ -33,10 +34,12 @@ namespace UnityGLTF
             EditorGUI.BeginChangeCheck();
             var importNormalsProp = serializedObject.FindProperty("_importNormals");
             var importNormals = EditorGUILayout.Popup(importNormalsProp.displayName, importNormalsProp.intValue, _importNormalsNames);
+
             if (EditorGUI.EndChangeCheck())
             {
                 importNormalsProp.intValue = importNormals;
             }
+
             EditorGUILayout.Separator();
             EditorGUILayout.LabelField("Materials", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_importMaterials"));
@@ -44,7 +47,10 @@ namespace UnityGLTF
 
             EditorGUILayout.Separator();
             EditorGUILayout.LabelField("Misc", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("_importSkeleton"));
+            var importSkeleton = serializedObject.FindProperty("_importSkeleton");
+
+            if (importSkeleton != null)
+                EditorGUILayout.PropertyField(importSkeleton);
 
             ApplyRevertGUI();
         }

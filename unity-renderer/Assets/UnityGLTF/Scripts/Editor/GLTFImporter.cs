@@ -2,6 +2,7 @@
 using GLTF;
 using GLTF.Schema;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -72,27 +73,71 @@ namespace UnityGLTF
             return materials;
         }
 
+        public static bool ShouldWaitForPreloadedGLTF = false;
         public static Dictionary<string, GameObject> PreloadedGLTFObjects = new Dictionary<string, GameObject>();
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            delayCallsCount++;
-
-            if (!PreloadedGLTFObjects.ContainsKey(ctx.assetPath))
+            GameObject preloadedGltfObject = null;
+            if (ShouldWaitForPreloadedGLTF)
             {
-                delayCallsCount--;
+                delayCallsCount++;
 
-                return;
+                if (!PreloadedGLTFObjects.ContainsKey(ctx.assetPath))
+                {
+                    delayCallsCount--;
+                    return;
+                }
+
+                preloadedGltfObject = PreloadedGLTFObjects[ctx.assetPath];
+
+                if (!preloadedGltfObject)
+                {
+                    delayCallsCount--;
+                    return;
+                }
             }
-
-            GameObject preloadedGltfObject = PreloadedGLTFObjects[ctx.assetPath];
-
-            if (!preloadedGltfObject)
+            else
             {
-                delayCallsCount--;
-                return;
+                char ps = Path.DirectorySeparatorChar;
+
+                string path = ctx.assetPath;
+
+                path = path.Replace('/', ps);
+                path = path.Replace('\\', ps);
+
+                preloadedGltfObject = CreateGLTFScene(path);
             }
+            
             ImportAsset(ctx, preloadedGltfObject);
+        }
+        
+        private GameObject CreateGLTFScene(string projectFilePath)
+        {
+            ILoader fileLoader = new GLTFFileLoader(Path.GetDirectoryName(projectFilePath));
+            using (var stream = File.OpenRead(projectFilePath))
+            {
+                GLTFRoot gLTFRoot;
+                GLTFParser.ParseJson(stream, out gLTFRoot);
+
+                var loader = new GLTFSceneImporter(Path.GetFullPath(projectFilePath), gLTFRoot, fileLoader, null, stream);
+                loader.addImagesToPersistentCaching = false;
+                loader.addMaterialsToPersistentCaching = false;
+                loader.initialVisibility = true;
+                loader.useMaterialTransition = false;
+                loader.maximumLod = _maximumLod;
+                loader.forceGPUOnlyMesh = false;
+                loader.forceGPUOnlyTex = false;
+                loader.forceSyncCoroutines = true;
+
+                Task task = loader.LoadScene(CancellationToken.None);
+                bool result = task.Wait(TimeSpan.FromSeconds(10));
+
+                if (!result)
+                    throw new TimeoutException($"Importing {projectFilePath}");
+                
+                return loader.lastLoadedScene;
+            }
         }
 
         private void ImportAsset(AssetImportContext ctx, GameObject gltfScene)

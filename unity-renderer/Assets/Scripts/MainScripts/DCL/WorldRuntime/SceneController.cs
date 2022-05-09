@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
+using DCL.CRDT;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -336,10 +337,10 @@ namespace DCL
 
                     case MessagingTypes.CRDT_MESSAGE:
                         {
-                            // TODO: implement CRDT
-                            // if (msgPayload is CRDTMessage crdtMessage)
-                            // {
-                            // }
+                            if (msgPayload is CRDTMessage crdtMessage)
+                            {
+                                scene.crdtExecutor.Execute(crdtMessage);
+                            }
                             break;
                         }
 
@@ -373,7 +374,7 @@ namespace DCL
 
             raycastQuery.ray.unityOrigin = PositionUtils.WorldToUnityPosition(worldOrigin);
             raycastQuery.sceneId = sceneId;
-            PhysicsCast.i.Query(raycastQuery);
+            PhysicsCast.i.Query(raycastQuery, entityIdHelper);
         }
 
         public void SendSceneMessage(string chunk)

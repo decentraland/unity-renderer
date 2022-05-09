@@ -114,12 +114,12 @@ namespace Tests
             return msg;
         }
 
-        public static Dictionary<string, CRDTMessage> InstructionToFinalState(TestFileInstruction instruction)
+        public static Dictionary<long, CRDTMessage> InstructionToFinalState(TestFileInstruction instruction)
         {
-            Dictionary<string, CRDTMessage> finalState = new Dictionary<string, CRDTMessage>();
+            Dictionary<long, CRDTMessage> finalState = new Dictionary<long, CRDTMessage>();
             try
             {
-                finalState = JsonConvert.DeserializeObject<Dictionary<string, CRDTMessage>>(instruction.instructionValue);
+                finalState = JsonConvert.DeserializeObject<Dictionary<long, CRDTMessage>>(instruction.instructionValue);
             }
             catch (Exception e)
             {

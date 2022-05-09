@@ -68,7 +68,7 @@ namespace DCL.Components
 
         int IComponent.GetClassId() => (int)CLASS_ID_COMPONENT.CAMERA_MODE_AREA;
 
-        Transform IMonoBehaviour.GetTransform() => areaEntity?.gameObject.transform;
+        Transform IMonoBehaviour.GetTransform() => null;
 
         void ICleanable.Cleanup()
         {
