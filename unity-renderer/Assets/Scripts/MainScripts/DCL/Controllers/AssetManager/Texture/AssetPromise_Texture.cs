@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -88,7 +89,7 @@ namespace DCL
             }
         }
 
-        protected override bool AddToLibrary()
+        protected override IEnumerator AddToLibrary(Action<bool> OnComplete)
         {
             if (storeDefaultTextureInAdvance && !UsesDefaultWrapAndFilterMode())
             {
@@ -96,12 +97,13 @@ namespace DCL
                 {
                     // Save default texture asset
                     asset.id = idWithDefaultTexSettings;
-                    asset.ConfigureTexture(DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, false);
+                    yield return asset.ConfigureTexture(DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, false);
 
                     if (!library.Add(asset))
                     {
                         Debug.Log("add to library fail?");
-                        return false;
+                        OnComplete(false);
+                        yield break;
                     }
                 }
 
@@ -114,16 +116,17 @@ namespace DCL
             }
 
             asset.id = idWithTexSettings;
-            asset.ConfigureTexture(wrapMode, filterMode, storeTexAsNonReadable);
+            yield return asset.ConfigureTexture(wrapMode, filterMode, storeTexAsNonReadable);
 
             if (!library.Add(asset))
             {
                 Debug.Log("add to library fail?");
-                return false;
+                OnComplete(false);
+                yield break;
             }
 
             asset = library.Get(asset.id);
-            return true;
+            OnComplete(true);
         }
 
         string ConstructId(string textureUrl, TextureWrapMode textureWrapMode, FilterMode textureFilterMode) { return ((int)textureWrapMode).ToString() + ((int)textureFilterMode).ToString() + textureUrl; }

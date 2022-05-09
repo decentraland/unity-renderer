@@ -116,7 +116,7 @@ namespace UnityGLTF
 
         public bool forceGPUOnlyMesh = true;
         public bool forceGPUOnlyTex = true;
-        
+
         // this setting forces coroutines to be ran in a single call
         public bool forceSyncCoroutines = false;
 
@@ -657,7 +657,7 @@ namespace UnityGLTF
                 bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
                 await bufferContents.Stream.ReadAsync(data, 0, data.Length, cancellationToken);
 
-                ConstructUnityTexture(settings, data, imageCacheIndex);
+                await CompressTexture(settings, data, imageCacheIndex, cancellationToken);
             }
             else
             {
@@ -677,35 +677,58 @@ namespace UnityGLTF
                     stream = _assetCache.ImageStreamCache[imageCacheIndex];
                 }
 
-                await ConstructUnityTexture(settings, stream, imageCacheIndex);
+                await ConstructUnityTexture(settings, stream, imageCacheIndex, cancellationToken);
             }
         }
 
-        protected void ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex)
+        protected async UniTask CompressTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex, CancellationToken cancellationToken)
         {
             Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, settings.generateMipmaps, settings.linear);
-
+            
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
 
+            var isConfigured = false;
             // We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
 #if !UNITY_STANDALONE || UNITY_EDITOR
             if ( Application.isPlaying )
             {
-                //NOTE(Brian): This breaks importing in editor mode
-                texture.Compress(false);
+                IEnumerator coroutine = TextureHelpers.ThrottledCompress(texture, settings.uploadToGpu,
+                    texture2D => AddTextureToAssetCache(settings, imageCacheIndex, texture2D),
+                    exception => throw exception,
+                    false,
+                    settings.linear);
+
+                if (forceSyncCoroutines)
+                {
+                    texture.Compress(false);
+                }
+                else
+                {
+                    await TaskUtils.RunThrottledCoroutine(coroutine, exception => throw exception, throttlingCounter.EvaluateTimeBudget)
+                                   .AttachExternalCancellation(cancellationToken);
+                    
+                    Object.Destroy(texture);
+                }
+
+                isConfigured = true;
             }
 #endif
 
-            texture.wrapMode = settings.wrapMode;
-            texture.filterMode = settings.filterMode;
-            texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
+            if (!isConfigured)
+            {
+                texture.wrapMode = settings.wrapMode;
+                texture.filterMode = settings.filterMode;
+                texture.Apply(false, settings.uploadToGpu);
 
-            // Resizing must be the last step to avoid breaking the texture when copying with Graphics.CopyTexture()
-            _assetCache.ImageCache[imageCacheIndex] = CheckAndReduceTextureSize(texture, settings.linear);
+                // Resizing must be the last step to avoid breaking the texture when copying with Graphics.CopyTexture()
+                AddTextureToAssetCache(settings, imageCacheIndex, texture);
+            }
         }
 
-        protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex)
+        private void AddTextureToAssetCache(TextureCreationSettings settings, int imageCacheIndex, Texture2D texture) => _assetCache.ImageCache[imageCacheIndex] = CheckAndReduceTextureSize(texture, settings.linear);
+
+        protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex, CancellationToken cancellationToken)
         {
             if (stream == null)
                 return;
@@ -714,7 +737,7 @@ namespace UnityGLTF
             {
                 using (MemoryStream memoryStream = stream as MemoryStream)
                 {
-                    ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
+                    await CompressTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
                 }
             }
 
@@ -723,7 +746,7 @@ namespace UnityGLTF
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     await fileStream.CopyToAsync(memoryStream);
-                    ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
+                    await CompressTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
                 }
             }
         }

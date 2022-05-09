@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using UnityGLTF;
 
 namespace DCL
 {
@@ -35,6 +37,8 @@ namespace DCL
         internal event Action<AssetPromise<AssetType>> OnPreFinishEvent;
         public event Action<AssetType> OnSuccessEvent;
         public event Action<AssetType, Exception> OnFailEvent;
+
+        private static IThrottlingCounter throttlingCounter = new SmartThrottlingCounter(2 / 1000.0);
 
         public override bool keepWaiting { get { return state == AssetPromiseState.LOADING || state == AssetPromiseState.WAITING; } }
 
@@ -87,6 +91,7 @@ namespace DCL
 
             // NOTE(Brian): Get existent library element
             object libraryAssetCheckId = GetLibraryAssetCheckId();
+
             if (library.Contains(libraryAssetCheckId))
             {
                 asset = GetAsset(libraryAssetCheckId);
@@ -127,7 +132,11 @@ namespace DCL
 
         protected void OnLoadSuccess()
         {
-            if (AddToLibrary())
+            CoroutineUtils.StartThrottledCoroutine(AddToLibrary(OnAddToLibrary), OnLoadFailure, throttlingCounter.EvaluateTimeBudget);
+        }
+        private void OnAddToLibrary(bool success)
+        {
+            if (success)
             {
                 OnAfterLoadOrReuse();
                 state = AssetPromiseState.FINISHED;
@@ -145,12 +154,18 @@ namespace DCL
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
-            
+
             CallAndClearEvents(false, exception);
             Cleanup();
         }
 
-        protected virtual bool AddToLibrary() { return library.Add(asset); }
+        protected virtual IEnumerator AddToLibrary(Action<bool> OnComplete)
+        {
+            OnComplete(true);
+            library.Add(asset);
+
+            yield return null;
+        }
 
         internal virtual void Unload()
         {

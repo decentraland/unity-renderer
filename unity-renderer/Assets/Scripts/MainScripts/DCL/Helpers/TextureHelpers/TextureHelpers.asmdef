@@ -1,7 +1,9 @@
 {
     "name": "TextureHelpers",
-    "references": [],
-    "optionalUnityReferences": [],
+    "rootNamespace": "",
+    "references": [
+        "GUID:760a1d365aad58044916992b072cf2a6"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -9,5 +11,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

@@ -38,22 +38,24 @@ namespace DCL
             assetBundlesLoader.Start();
         }
 
-        protected override bool AddToLibrary()
+        protected override IEnumerator AddToLibrary(Action<bool> OnComplete)
         {
             if (!library.Add(asset))
             {
                 Debug.Log("add to library fail?");
-                return false;
+                OnComplete(false);
+                yield break;
             }
 
             if (asset == null)
             {
                 Debug.LogWarning($"Asset is null when trying to add it to the library: hash == {this.GetId()}");
-                return false;
+                OnComplete(false);
+                yield break;
             }
 
             asset = library.Get(asset.id);
-            return true;
+            OnComplete(true);
         }
 
         protected override void OnCancelLoading()

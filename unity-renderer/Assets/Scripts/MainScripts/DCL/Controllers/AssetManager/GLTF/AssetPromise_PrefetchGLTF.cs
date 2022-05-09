@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 
 namespace DCL
 {
@@ -12,10 +13,11 @@ namespace DCL
 
         protected override void OnReuse(Action OnSuccess) { asset.Show(false, OnSuccess); }
 
-        protected override bool AddToLibrary()
+        protected override IEnumerator AddToLibrary(Action<bool> OnComplete)
         {
             library.Add(asset);
-            return true;
+            OnComplete(true);
+            yield return null;
         }
 
         internal override void Load()

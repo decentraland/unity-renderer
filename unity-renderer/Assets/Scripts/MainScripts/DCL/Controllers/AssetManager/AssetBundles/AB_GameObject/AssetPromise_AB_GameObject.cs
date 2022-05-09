@@ -18,11 +18,12 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail) { loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail)); }
 
-        protected override bool AddToLibrary()
+        protected override IEnumerator AddToLibrary(Action<bool> OnComplete)
         {
             if (!library.Add(asset))
             {
-                return false;
+                OnComplete(false);
+                yield break;
             }
 
             if (settings.forceNewInstance)
@@ -37,7 +38,7 @@ namespace DCL
             //NOTE(Brian): Call again this method because we are replacing the asset.
             settings.ApplyBeforeLoad(asset.container.transform);
 
-            return true;
+            OnComplete(true);
         }
 
         protected override void OnReuse(Action OnSuccess)

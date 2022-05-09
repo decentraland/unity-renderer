@@ -103,14 +103,16 @@ namespace DCL
             webRequestAsyncOperation = null;
         }
 
-        protected override bool AddToLibrary()
+        protected override IEnumerator AddToLibrary(Action<bool> OnComplete)
         {
             if (!library.Add(asset))
             {
-                return false;
+                OnComplete(false);
+
+                yield break;
             }
             asset = library.Get(asset.id);
-            return true;
+            OnComplete(true);
         }
 
         protected override void OnBeforeLoadOrReuse() { }

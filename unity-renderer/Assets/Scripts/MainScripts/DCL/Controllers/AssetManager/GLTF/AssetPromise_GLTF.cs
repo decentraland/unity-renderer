@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
@@ -160,10 +161,14 @@ namespace DCL
             asset.Show(settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION, OnSuccess);
         }
 
-        protected override bool AddToLibrary()
+        protected override IEnumerator AddToLibrary(Action<bool> OnComplete)
+
         {
             if (!library.Add(asset))
-                return false;
+            {
+                OnComplete(false);
+                yield break;
+            }
 
             //NOTE(Brian): If the asset did load "in world" add it to library and then Get it immediately
             //             So it keeps being there. As master gltfs can't be in the world.
@@ -180,7 +185,7 @@ namespace DCL
 
             //NOTE(Brian): Call again this method because we are replacing the asset.
             OnBeforeLoadOrReuse();
-            return true;
+            OnComplete(true);
         }
 
         protected override void OnCancelLoading()
