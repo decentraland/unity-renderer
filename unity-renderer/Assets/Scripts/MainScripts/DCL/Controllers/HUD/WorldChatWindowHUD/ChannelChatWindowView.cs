@@ -26,7 +26,7 @@ public class ChannelChatWindowView : MonoBehaviour, IPointerClickHandler, IChann
     public bool IsPreview { get; private set; }
     public IChatHUDComponentView ChatHUD => chatHudView;
     public RectTransform Transform => (RectTransform) transform;
-    public string channel => "#nearby";
+    public string Channel => "#nearby";
 
     public static ChannelChatWindowView Create()
     {

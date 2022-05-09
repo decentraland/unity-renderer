@@ -19,7 +19,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     public bool IsActive => gameObject.activeInHierarchy;
     public IChatHUDComponentView ChatHUD => chatView;
     public RectTransform Transform => (RectTransform) transform;
-    public string channel => nameLabel.text;
+    public string Channel => nameLabel.text;
 
     public static PublicChatChannelComponentView Create()
     {

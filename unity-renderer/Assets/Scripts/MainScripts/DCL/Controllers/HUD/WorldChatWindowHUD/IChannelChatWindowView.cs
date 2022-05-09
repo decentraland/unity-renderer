@@ -9,7 +9,7 @@ public interface IChannelChatWindowView
     bool IsActive { get; }
     IChatHUDComponentView ChatHUD { get; }
     RectTransform Transform { get; }
-    string channel { get; }
+    string Channel { get; }
 
     void Dispose();
     void Hide();

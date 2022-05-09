@@ -112,7 +112,7 @@ public class PublicChatChannelController : IHUD
             message.body = $"/w {message.recipient} {message.body}";
 
         chatController.Send(message);
-        socialAnalytics.SendChannelMessageSent(message.sender, message.body.Length, View.channel);
+        socialAnalytics.SendChannelMessageSent(message.sender, message.body.Length, View.Channel);
     }
 
     public void SetVisibility(bool visible)
