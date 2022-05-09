@@ -152,6 +152,9 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
                 friendRequestsTab.Remove(userId);
                 friendsTab.Remove(userId);
                 break;
+            default:
+                Debug.LogError($"UpdateFriendshipStatus not supported: {friendshipAction}");
+                break;
         }
     }
 
