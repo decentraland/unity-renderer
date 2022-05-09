@@ -38,5 +38,7 @@ namespace DCL.Components
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.SMART_ITEM; }
 
         public Dictionary<object, object> GetValues() { return ((Model)model).values; }
+        
+        public override string componentName => "smartItem";
     }
 }
