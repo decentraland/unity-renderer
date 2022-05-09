@@ -1,14 +1,15 @@
-using System;
+﻿using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PublicChannelEntry : BaseComponentView
+public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
 {
     [SerializeField] private Button openChatButton;
     [SerializeField] private TMP_Text nameLabel;
     [SerializeField] private PublicChannelEntryModel model;
     [SerializeField] private UnreadNotificationBadge unreadNotifications;
+    
     private IChatController chatController;
     private ILastReadMessagesService lastReadMessagesService;
 
@@ -21,7 +22,7 @@ public class PublicChannelEntry : BaseComponentView
         base.Awake();
         openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
     }
-    
+
     public void Initialize(IChatController chatController,
         ILastReadMessagesService lastReadMessagesService)
     {
@@ -29,9 +30,9 @@ public class PublicChannelEntry : BaseComponentView
         this.lastReadMessagesService = lastReadMessagesService;
     }
 
-    public void Set(PublicChannelEntryModel model)
+    public void Configure(BaseComponentModel newModel)
     {
-        this.model = model;
+        model = (PublicChannelEntryModel) newModel;
         RefreshControl();
     }
 
@@ -42,7 +43,7 @@ public class PublicChannelEntry : BaseComponentView
     }
 
     [Serializable]
-    public struct PublicChannelEntryModel
+    public class PublicChannelEntryModel : BaseComponentModel
     {
         public string channelId;
         public string name;

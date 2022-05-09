@@ -18,12 +18,13 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] private ScrollRect scroll;
     [SerializeField] private SearchBarComponentView searchBar;
     [SerializeField] private Model model;
-    
+
     private string lastSearch;
 
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChannel;
+
     public event Action<string> OnUnfriend
     {
         add => directChatList.OnUnfriend += value;
@@ -32,7 +33,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeInHierarchy;
-    
+
     public static WorldChatWindowComponentView Create()
     {
         return Instantiate(Resources.Load<WorldChatWindowComponentView>("SocialBarV1/ConversationListHUD"));
@@ -83,11 +84,8 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public void SetPublicChannel(PublicChatChannelModel model)
     {
-        publicChannelList.Set(model.channelId, new PublicChannelEntry.PublicChannelEntryModel
-        {
-            channelId = model.channelId,
-            name = model.name
-        });
+        publicChannelList.Set(model.channelId,
+            new PublicChannelEntry.PublicChannelEntryModel(model.channelId, name = model.name));
     }
 
     public void ShowPrivateChatsLoading() => SetPrivateChatLoadingVisibility(true);
@@ -104,7 +102,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             directChatList.Set(entry.userId, entry);
         SetPrivateChatLoadingVisibility(model.isLoadingDirectChats);
     }
-    
+
     private void Filter(string search)
     {
         if (string.IsNullOrEmpty(search) && !string.IsNullOrEmpty(lastSearch))

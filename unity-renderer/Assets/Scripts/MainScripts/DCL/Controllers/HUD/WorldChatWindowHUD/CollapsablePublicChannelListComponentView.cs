@@ -56,7 +56,7 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         if (!Contains(entryModel.channelId))
             CreateEntry(channelId);
         var entry = Get(channelId);
-        entry.Set(entryModel);
+        entry.Configure(entryModel);
     }
     
     private void CreateEntry(string channelId)

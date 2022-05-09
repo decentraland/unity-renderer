@@ -209,6 +209,18 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         group.interactable = false;
     }
 
+    public void DockContextMenu(RectTransform panel)
+    {
+        panel.pivot = contextMenuPositionReference.pivot;
+        panel.position = contextMenuPositionReference.position;
+    }
+
+    public void DockHoverPanel(RectTransform panel)
+    {
+        panel.pivot = hoverPanelPositionReference.pivot;
+        panel.position = hoverPanelPositionReference.position;
+    }
+
     private void Update()
     {
         Fade();
@@ -240,8 +252,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             return;
 
         //NOTE(Brian): Small offset using normalized Y so we keep the cascade effect
-        double yOffset = (transform as RectTransform).anchoredPosition.y / (double) Screen.height * 2.0;
-
+        double yOffset = ((RectTransform) transform).anchoredPosition.y / (double) Screen.height * 2.0;
         double fadeTime = Math.Max(Model.timestamp / 1000.0, fadeoutStartTime) + timeToFade - yOffset;
         double currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
 
@@ -265,7 +276,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (hoverPanelTimer <= 0f)
         {
             hoverPanelTimer = 0f;
-
             OnTriggerHover?.Invoke(this);
         }
     }
@@ -279,7 +289,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (hoverGotoPanelTimer <= 0f)
         {
             hoverGotoPanelTimer = 0f;
-
             OnTriggerHoverGoto?.Invoke(this, currentCoordinates);
         }
     }
@@ -307,17 +316,5 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
         return dtDateTime;
-    }
-
-    public void DockContextMenu(RectTransform panel)
-    {
-        panel.pivot = contextMenuPositionReference.pivot;
-        panel.position = contextMenuPositionReference.position;
-    }
-
-    public void DockHoverPanel(RectTransform panel)
-    {
-        panel.pivot = hoverPanelPositionReference.pivot;
-        panel.position = hoverPanelPositionReference.position;
     }
 }
