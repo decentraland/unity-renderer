@@ -1,4 +1,4 @@
-namespace DCL
+namespace DCL.CRDT
 {
     public class CRDTMessage
     {

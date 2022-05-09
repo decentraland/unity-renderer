@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DCL.CRDT;
 using DCL;
 using DCL.Helpers;
 using Newtonsoft.Json;
