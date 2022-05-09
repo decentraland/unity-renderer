@@ -128,8 +128,11 @@ namespace UIComponents.CollapsableSortedList
         public virtual void Sort()
         {
             sortedEntries.Sort((k, y) => SortingMethod.Invoke(entries[k], entries[y]));
-            foreach (var key in sortedEntries)
+            for (var i = 0; i < sortedEntries.Count; i++)
+            {
+                var key = sortedEntries[i];
                 entries[key].transform.SetAsLastSibling();
+            }
         }
 
         private void UpdateEmptyState() => emptyStateContainer.SetActive(Count() == 0);
