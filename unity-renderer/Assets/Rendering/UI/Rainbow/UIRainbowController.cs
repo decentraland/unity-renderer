@@ -22,9 +22,9 @@ public class UIRainbowController : MonoBehaviour
     public rainbowT rainbowType;
     public fillT fillType;
 
-    void Awake()
+    void Start()
     {
-        targetMat = GetComponent<Image>().material;
+        targetMat = GetComponent<Image>().materialForRendering;
     }
 
 
