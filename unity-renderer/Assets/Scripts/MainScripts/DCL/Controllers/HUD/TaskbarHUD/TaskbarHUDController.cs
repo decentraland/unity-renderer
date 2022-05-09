@@ -30,7 +30,7 @@ public class TaskbarHUDController : IHUD
 
     public event Action OnAnyTaskbarButtonClicked;
 
-    public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
+    public RectTransform socialTooltipReference => view.socialTooltipReference;
 
     internal BaseVariable<bool> isEmotesWheelInitialized => DataStore.i.emotesCustomization.isWheelInitialized;
     internal BaseVariable<bool> isEmotesVisible => DataStore.i.HUDs.emotesVisible;
@@ -210,7 +210,11 @@ public class TaskbarHUDController : IHUD
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
-    private void MouseCatcher_OnMouseUnlock() { view.leftWindowContainerAnimator.Show(); }
+    private void MouseCatcher_OnMouseUnlock()
+    {
+        view.leftWindowContainerAnimator.Show();
+        view.RestoreLastToggle();
+    }
 
     private void MouseCatcher_OnMouseLock()
     {

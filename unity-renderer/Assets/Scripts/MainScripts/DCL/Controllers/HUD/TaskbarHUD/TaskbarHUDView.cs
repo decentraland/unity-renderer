@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,11 +28,12 @@ public class TaskbarHUDView : MonoBehaviour
     private readonly Dictionary<TaskbarButtonType, TaskbarButton> buttonsByType =
         new Dictionary<TaskbarButtonType, TaskbarButton>();
 
+    private TaskbarButtonType lastToggledOnButton = TaskbarButtonType.None;
+
     public event System.Action<bool> OnChatToggle;
     public event System.Action<bool> OnFriendsToggle;
     public event System.Action<bool> OnEmotesToggle;
     public event System.Action<bool> OnExperiencesToggle;
-    public event System.Action OnFriendsInitializationRetry;
 
     internal static TaskbarHUDView Create()
     {
@@ -112,14 +114,23 @@ public class TaskbarHUDView : MonoBehaviour
 
     public void ToggleAllOff()
     {
+        lastToggledOnButton = GetToggledOnButtonType();
         foreach (var button in buttonsByType.Keys)
             ToggleOff(button);
     }
 
     public void ToggleOn(TaskbarButtonType buttonType) => ToggleOn(buttonsByType[buttonType], false);
 
-    public void ToggleOff(TaskbarButtonType type) => ToggleOff(buttonsByType[type], false);
+    public void ToggleOff(TaskbarButtonType buttonType) => ToggleOff(buttonsByType[buttonType], false);
+    
     private void ToggleOn(TaskbarButton obj) => ToggleOn(obj, true);
+
+    private TaskbarButtonType GetToggledOnButtonType()
+    {
+        return buttonsByType.Any(pair => pair.Value.toggledOn)
+            ? buttonsByType.First(pair => pair.Value.toggledOn).Key
+            : TaskbarButtonType.None;
+    }
 
     private void ToggleOn(TaskbarButton obj, bool useCallback)
     {
@@ -212,24 +223,15 @@ public class TaskbarHUDView : MonoBehaviour
         friendsButton.toggleButton.interactable = !isLoading;
     }
 
-    public void SetFriendsAsFailed(bool hasFailed)
+    public void RestoreLastToggle()
     {
-        friendsButton.OnToggleOn -= ToggleOn;
-        friendsButton.OnToggleOff -= ToggleOff;
-
-        if (hasFailed)
-        {
-            friendsButton.SetToggleState(true);
-        }
-        else
-        {
-            friendsButton.OnToggleOn += ToggleOn;
-            friendsButton.OnToggleOff += ToggleOff;
-        }
+        if (lastToggledOnButton == TaskbarButtonType.None) return;
+        ToggleOn(lastToggledOnButton);
     }
 
     public enum TaskbarButtonType
     {
+        None,
         Friends,
         Emotes,
         Chat,
