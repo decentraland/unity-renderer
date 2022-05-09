@@ -12,15 +12,15 @@
         "GUID:28f74c468a54948bfa9f625c5d428f56",
         "GUID:c34e38f41494f834abff029ddf82af43",
         "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
-        "GUID:55b66aa56b81d2d4cafb4a5f02bc90ca",
-        "GUID:2b923fb3044d55c4ba8f7fc97ccf730f"
+        "GUID:55b66aa56b81d2d4cafb4a5f02bc90ca"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "NSubstitute.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

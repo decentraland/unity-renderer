@@ -8,7 +8,6 @@ using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
-using SocialFeaturesAnalytics.TestHelpers;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -46,7 +45,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         GivenProfanityFilteringAvailability(true);
 
         friendsController = new FriendsController_Mock();
-        socialAnalytics = SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics();
+        socialAnalytics = Substitute.For<ISocialAnalytics>();
 
         controller = new PlayerInfoCardHUDController(friendsController,
             currentPlayerIdData,

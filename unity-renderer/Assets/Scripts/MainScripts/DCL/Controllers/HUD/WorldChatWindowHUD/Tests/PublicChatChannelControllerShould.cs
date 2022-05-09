@@ -2,7 +2,7 @@ using DCL;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
-using SocialFeaturesAnalytics.TestHelpers;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -51,7 +51,7 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
-            SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics());
+            Substitute.For<ISocialAnalytics>());
 
         view = Substitute.For<IChannelChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();

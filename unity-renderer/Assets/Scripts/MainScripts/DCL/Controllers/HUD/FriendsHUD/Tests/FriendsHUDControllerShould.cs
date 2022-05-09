@@ -2,7 +2,6 @@ using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
-using SocialFeaturesAnalytics.TestHelpers;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -27,7 +26,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
         controller = new FriendsHUDController();
         friendsController = new FriendsController_Mock();
-        socialAnalytics = SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics();
+        socialAnalytics = Substitute.For<ISocialAnalytics>();
         var chatController = Substitute.For<IChatController>();
         controller.Initialize(friendsController, UserProfile.GetOwnUserProfile(), chatController, socialAnalytics);
         view = controller.view;

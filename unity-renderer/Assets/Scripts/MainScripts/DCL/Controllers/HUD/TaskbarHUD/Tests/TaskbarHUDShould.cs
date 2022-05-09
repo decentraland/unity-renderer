@@ -4,7 +4,6 @@ using DCL;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
-using SocialFeaturesAnalytics.TestHelpers;
 using UnityEngine;
 
 public class TaskbarHUDShould : IntegrationTestSuite_Legacy
@@ -35,7 +34,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         controller.Initialize(null, null);
         view = controller.view;
 
-        socialAnalytics = SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics();
+        socialAnalytics = Substitute.For<ISocialAnalytics>();
 
         Assert.IsTrue(view != null, "Taskbar view is null?");
         Assert.IsTrue(CommonScriptableObjects.isTaskbarHUDInitialized, "Taskbar controller is not initialized?");
@@ -97,7 +96,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IFriendsController>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
             lastReadMessagesService,
-            SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics());
+            socialAnalytics);
         privateChatController.Initialize(new GameObject("PrivateChatWindowMock").AddComponent<PrivateChatWindowMock>());
         controller.AddPrivateChatWindow(privateChatController);
 
@@ -116,7 +115,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
-            SocialAnalyticsTestHelpers.CreateMockedSocialAnalytics());
+            socialAnalytics);
         publicChatChannelController.Initialize(new GameObject("PublicChatChannelWindowMock").AddComponent<PublicChatChannelWindowMock>());
         controller.AddPublicChatChannel(publicChatChannelController);
 
