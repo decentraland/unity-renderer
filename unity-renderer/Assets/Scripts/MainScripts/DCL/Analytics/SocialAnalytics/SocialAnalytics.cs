@@ -35,6 +35,9 @@ namespace SocialFeaturesAnalytics
         {
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
 
+            if (toPlayerType == null)
+                return;
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("to", toPlayerType.ToString());
 
@@ -44,6 +47,9 @@ namespace SocialFeaturesAnalytics
         public void SendPlayerUnmuted(string toUserId)
         {
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
+
+            if (toPlayerType == null)
+                return;
 
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("to", toPlayerType.ToString());
@@ -57,6 +63,9 @@ namespace SocialFeaturesAnalytics
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
 
+            if (fromPlayerType == null)
+                return;
+
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("length", messageLength.ToString());
@@ -69,6 +78,9 @@ namespace SocialFeaturesAnalytics
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
+
+            if (fromPlayerType == null || toPlayerType == null)
+                return;
 
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
