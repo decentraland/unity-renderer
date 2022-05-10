@@ -12,10 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1e14fbd4dde0934cb2823b119a38e5f, type: 3}
   m_Name: SkyboxMaterialData
   m_EditorClassIdentifier: 
-  materials:
-  - numberOfSlots: 5
-    material: {fileID: 2100000, guid: 8e2ebb980b3bfab4d9f13e3bc7081c0f, type: 2}
-  - numberOfSlots: 5
-    material: {fileID: 2100000, guid: 8e2ebb980b3bfab4d9f13e3bc7081c0f, type: 2}
-  - numberOfSlots: 5
-    material: {fileID: 2100000, guid: 8e2ebb980b3bfab4d9f13e3bc7081c0f, type: 2}
+  skyboxMat: {fileID: 2100000, guid: 8e2ebb980b3bfab4d9f13e3bc7081c0f, type: 2}
+  skyboxMatSlots: 5
+  domeMat: {fileID: 2100000, guid: bd83b14b96b99fd45ac69aa81ed87e12, type: 2}

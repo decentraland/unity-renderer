@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DCL;
 using UnityEngine;
 
@@ -39,18 +40,11 @@ namespace AvatarSystem
             animator.UnequipEmote(values.emoteId);
         }
 
-        public void SetEquippedEmotes(string bodyShapeId, IEnumerable<WearableItem> emotes)
+        public void SetEquippedEmotes(string bodyShapeId, IEnumerable<WearableItem> newEmotes)
         {
-            foreach (string emoteId in this.emotes)
-            {
-                dataStoreEmotes.emotesOnUse.DecreaseRefCount((this.bodyShapeId, emoteId));
-            }
-            this.emotes.Clear();
-
             this.bodyShapeId = bodyShapeId;
-            foreach (WearableItem emote in emotes)
+            foreach (WearableItem emote in newEmotes)
             {
-                this.emotes.Add(emote.id);
                 dataStoreEmotes.emotesOnUse.IncreaseRefCount((bodyShapeId, emote.id));
 
                 //If the clip is not ready by the time we equip it
@@ -58,6 +52,13 @@ namespace AvatarSystem
                 if (dataStoreEmotes.animations.TryGetValue((this.bodyShapeId, emote.id), out AnimationClip clip))
                     animator.EquipEmote(emote.id, clip);
             }
+
+            foreach (string emoteId in this.emotes)
+            {
+                dataStoreEmotes.emotesOnUse.DecreaseRefCount((this.bodyShapeId, emoteId));
+            }
+            this.emotes.Clear();
+            this.emotes.AddRange(newEmotes.Select(e => e.id));
         }
 
         public void Dispose()
