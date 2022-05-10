@@ -230,7 +230,6 @@ public class FriendsTabComponentView : BaseComponentView
                 onlineFriendsList.list.Remove(pair.Key);
             }
 
-            searchResultsFriendList.list.Sort();
             searchResultsFriendList.Show();
         }
 
