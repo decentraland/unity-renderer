@@ -244,6 +244,8 @@ public class HUDController : IHUDController
                         PublicChatChannelHud.SetVisibility(false);
                     }
                     taskbarHud?.AddPublicChatChannel(PublicChatChannelHud);
+                    // TODO: this call should be removed when chat notifications are implemented
+                    taskbarHud?.OpenPublicChatChannel("general");
                 }
                 else
                     UpdateHudElement(configuration, HUDElementID.PUBLIC_CHAT_CHANNEL);

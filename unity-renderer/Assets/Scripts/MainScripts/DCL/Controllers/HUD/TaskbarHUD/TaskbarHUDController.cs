@@ -219,14 +219,14 @@ public class TaskbarHUDController : IHUD
     {
         // TODO: temporary deactivated current window fadein/fadeout until we get the full chat notifications feature implemented
         // view.leftWindowContainerAnimator.Show();
-        view.RestoreLastToggle();
+        // view.RestoreLastToggle();
     }
 
     private void MouseCatcher_OnMouseLock()
     {
         // TODO: temporary deactivated current window fadein/fadeout until we get the full chat notifications feature implemented
         // view.leftWindowContainerAnimator.Hide();
-        view.ToggleAllOff();
+        // view.ToggleAllOff();
     }
 
     public void AddWorldChatWindow(WorldChatWindowController controller)
@@ -293,13 +293,13 @@ public class TaskbarHUDController : IHUD
 
     public void OpenPublicChatChannel(string channelId)
     {
-        publicChatChannel.Setup(channelId);
-        worldChatWindowHud.SetVisibility(false);
-        privateChatWindow.SetVisibility(false);
-        friendsHud.SetVisibility(false);
-        isExperiencesViewerOpen.Set(false);
-        isEmotesVisible.Set(false);
-        publicChatChannel.SetVisibility(true);
+        publicChatChannel?.Setup(channelId);
+        worldChatWindowHud?.SetVisibility(false);
+        privateChatWindow?.SetVisibility(false);
+        friendsHud?.SetVisibility(false);
+        isExperiencesViewerOpen?.Set(false);
+        isEmotesVisible?.Set(false);
+        publicChatChannel?.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
     }
     
