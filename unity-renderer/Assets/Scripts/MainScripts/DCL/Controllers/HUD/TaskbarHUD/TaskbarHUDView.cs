@@ -203,25 +203,7 @@ public class TaskbarHUDView : MonoBehaviour
             taskbarAnimator.Hide(instant);
     }
 
-    public void SetFiendsAsLoading(bool isLoading)
-    {
-        friendsLoadingSpinner.gameObject.SetActive(isLoading);
-
-        friendsButton.OnToggleOn -= ToggleOn;
-        friendsButton.OnToggleOff -= ToggleOff;
-
-        if (!isLoading)
-        {
-            friendsButton.OnToggleOn += ToggleOn;
-            friendsButton.OnToggleOff += ToggleOff;
-        }
-        else
-        {
-            friendsButton.SetToggleState(false);
-        }
-
-        friendsButton.toggleButton.interactable = !isLoading;
-    }
+    public void SetFiendsAsLoading(bool isLoading) { friendsLoadingSpinner.gameObject.SetActive(isLoading); }
 
     public void RestoreLastToggle()
     {
