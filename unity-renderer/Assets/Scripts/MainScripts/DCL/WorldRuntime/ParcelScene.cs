@@ -273,26 +273,17 @@ namespace DCL.Controllers
             return false;
         }
         
-        public bool IsInsideSceneOuterBoundaries(Bounds objectBounds, float height = 0f)
+        public bool IsInsideSceneOuterBoundaries(Bounds objectBounds)
         {
-            // TODO: height logic
-            
             Vector3 objectBoundsMin = new Vector3(objectBounds.min.x, 0f, objectBounds.min.z);
             Vector3 objectBoundsMax = new Vector3(objectBounds.max.x, 0f, objectBounds.max.z);
             bool isInsideOuterBoundaries = outerBounds.Contains(objectBoundsMin) && outerBounds.Contains(objectBoundsMax);
             
-            if (sceneData.basePosition.x == -11 && sceneData.basePosition.y == -11)
-            {
-                Debug.Log($"SCENE DEBUG - objectBoundsMin: {objectBoundsMin} objectBoundsMax: {objectBoundsMax} outerBoundsMin: {outerBounds.min} outerBoundsMax: {outerBounds.max}; is inside? {isInsideOuterBoundaries}");
-            }
-            
             return isInsideOuterBoundaries;
         }
 
-        public bool IsInsideSceneOuterBoundaries(Vector3 objectUnityPosition, float height = 0f)
+        public bool IsInsideSceneOuterBoundaries(Vector3 objectUnityPosition)
         {
-            // TODO: height logic
-            
             objectUnityPosition.y = 0f;
             return outerBounds.Contains(objectUnityPosition);
         }

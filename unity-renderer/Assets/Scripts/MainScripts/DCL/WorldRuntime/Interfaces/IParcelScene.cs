@@ -27,8 +27,8 @@ namespace DCL.Controllers
         bool IsInsideSceneBoundaries(Bounds objectBounds);
         bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f);
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);
-        bool IsInsideSceneOuterBoundaries(Bounds objectBounds, float height = 0f);
-        bool IsInsideSceneOuterBoundaries(Vector3 objectUnityPosition, float height = 0f);
+        bool IsInsideSceneOuterBoundaries(Bounds objectBounds);
+        bool IsInsideSceneOuterBoundaries(Vector3 objectUnityPosition);
         void CalculateSceneLoadingState();
         void GetWaitingComponentsDebugInfo();
         void SetEntityParent(long entityId, long parentId);
