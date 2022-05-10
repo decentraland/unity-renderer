@@ -11,6 +11,8 @@ public class QuestTrackingInfo : BaseComponent
 
     private QuestModel cachedModel;
 
+    public override string componentName => "questTrackingComponent";
+
     private void Awake() { model = new QuestModel(); }
 
     new public QuestModel GetModel() { return cachedModel; }
@@ -24,9 +26,11 @@ public class QuestTrackingInfo : BaseComponent
         if (!(newModel is QuestModel quest))
             return;
 
-        bool isDifferentQuest = cachedModel != null && quest.id != cachedModel.id;
-        cachedModel = (QuestModel) this.model;
-        if (isDifferentQuest)
+        if (string.IsNullOrEmpty(quest.id))
+            return;
+
+        bool isDifferentQuest = cachedModel == null || quest.id != cachedModel.id;
+        if (isDifferentQuest && cachedModel != null)
             questsController.RemoveQuest(cachedModel);
 
         cachedModel = quest;

@@ -254,7 +254,7 @@ namespace UnityGLTF
         /// <param name="onLoadComplete">Callback function for when load is completed</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        public async UniTask LoadScene(CancellationToken token, int sceneIndex = -1, bool showSceneObj = true)
+        public async Task LoadScene(CancellationToken token, int sceneIndex = -1, bool showSceneObj = true)
         {
             try
             {
