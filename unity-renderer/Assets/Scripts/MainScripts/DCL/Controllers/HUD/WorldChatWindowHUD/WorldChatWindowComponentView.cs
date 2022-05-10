@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,6 +51,12 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         UpdateHeaders();
     }
 
+    public override void OnEnable()
+    {
+        base.OnEnable();
+        UpdateLayout();
+    }
+
     public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService)
     {
         directChatList.Initialize(chatController, lastReadMessagesService);
@@ -74,18 +81,21 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             model.recentMessage.timestamp));
         directChatList.Sort();
         UpdateHeaders();
+        UpdateLayout();
     }
 
     public void RemovePrivateChat(string userId)
     {
         directChatList.Remove(userId);
         UpdateHeaders();
+        UpdateLayout();
     }
 
     public void SetPublicChannel(PublicChatChannelModel model)
     {
         publicChannelList.Set(model.channelId,
             new PublicChannelEntry.PublicChannelEntryModel(model.channelId, name = model.name));
+        UpdateLayout();
     }
 
     public void Configure(BaseComponentModel newModel)
@@ -151,4 +161,6 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         directChatsHeaderLabel.text = $"Direct Messages ({directChatList.Count()})";
         searchResultsHeaderLabel.text = $"Results ({searchResultsList.Count()})";
     }
+    
+    private void UpdateLayout() => ((RectTransform) scroll.transform).ForceUpdateLayout();
 }

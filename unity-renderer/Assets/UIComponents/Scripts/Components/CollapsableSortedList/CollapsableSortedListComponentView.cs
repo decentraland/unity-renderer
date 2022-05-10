@@ -28,6 +28,7 @@ namespace UIComponents.CollapsableSortedList
         {
             base.OnEnable();
             UpdateEmptyState();
+            UpdateLayout();
         }
 
         public override void RefreshControl()

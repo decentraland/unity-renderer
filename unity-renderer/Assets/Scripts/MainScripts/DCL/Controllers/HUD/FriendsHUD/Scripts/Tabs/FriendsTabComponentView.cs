@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 
@@ -63,6 +64,7 @@ public class FriendsTabComponentView : BaseComponentView
         onlineFriendsList.list.SortingMethod = SortByTimestamp;
         offlineFriendsList.list.SortingMethod = SortByTimestamp;
         searchResultsFriendList.list.SortingMethod = SortByAlphabeticalOrder;
+        UpdateLayout();
     }
 
     public override void OnDisable()
@@ -139,6 +141,7 @@ public class FriendsTabComponentView : BaseComponentView
 
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
+        UpdateLayout();
     }
 
     public FriendEntry Get(string userId) => entries.ContainsKey(userId) ? entries[userId] : null;
@@ -179,7 +182,10 @@ public class FriendsTabComponentView : BaseComponentView
         }
 
         if (!entries.ContainsKey(userId))
+        {
             CreateEntry(userId);
+            UpdateLayout();
+        }
 
         Populate(userId, model);
     }
@@ -321,6 +327,8 @@ public class FriendsTabComponentView : BaseComponentView
         Remove(userId);
         OnDeleteConfirmation?.Invoke(userId);
     }
+    
+    private void UpdateLayout() => ((RectTransform) filledStateContainer.transform).ForceUpdateLayout();
 
     [Serializable]
     private struct FriendListComponents
