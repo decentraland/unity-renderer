@@ -85,12 +85,12 @@ public class LastReadMessagesService : ILastReadMessagesService
     private void LoadChannelsUnreadCount()
     {
         if (chatController == null) return;
+        var ownUserId = userProfileBridge.GetOwn().userId;
         using var iterator = memoryRepository.GetEnumerator();
         while (iterator.MoveNext())
         {
             var channelId = iterator.Current.Key;
             var timestamp = GetLastReadTimestamp(channelId);
-            var ownUserId = userProfileBridge.GetOwn().userId;
             channelUnreadCount[channelId] = chatController.GetEntries()
                 .Count(message =>
                 {
