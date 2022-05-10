@@ -60,14 +60,12 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         add
         {
-            if (value == null) return;
             void Action(string s) => value.Invoke();
             inputFieldListeners[value] = Action;
             inputField.onSelect.AddListener(Action);
         }
         remove
         {
-            if (value == null) return;
             if (!inputFieldListeners.ContainsKey(value)) return;
             inputField.onSelect.RemoveListener(inputFieldListeners[value]);
             inputFieldListeners.Remove(value);
@@ -204,8 +202,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         entries.Remove(entries[0]);
     }
 
-    public void Hide()
+    public override void Hide(bool instant = false)
     {
+        base.Hide(instant);
         if (contextMenu == null) return;
         contextMenu.Hide();
         confirmationDialog.Hide();

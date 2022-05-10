@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PrivateChatEntry : BaseComponentView
+public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
 {
     [SerializeField] private Button openChatButton;
     [SerializeField] private PrivateChatEntryModel model;
@@ -46,10 +46,10 @@ public class PrivateChatEntry : BaseComponentView
         userContextMenu.OnBlock -= HandleUserBlocked;
         userContextMenu.OnBlock += HandleUserBlocked;
     }
-
-    public void Set(PrivateChatEntryModel model)
+    
+    public void Configure(BaseComponentModel newModel)
     {
-        this.model = model;
+        model = (PrivateChatEntryModel) newModel;
         RefreshControl();
     }
 
@@ -90,7 +90,7 @@ public class PrivateChatEntry : BaseComponentView
     }
 
     [Serializable]
-    public struct PrivateChatEntryModel
+    public class PrivateChatEntryModel : BaseComponentModel
     {
         public string userId;
         public string userName;

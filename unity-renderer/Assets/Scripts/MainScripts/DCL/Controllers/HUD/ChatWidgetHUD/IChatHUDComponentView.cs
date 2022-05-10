@@ -16,7 +16,6 @@ public interface IChatHUDComponentView
     void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false);
     void Dispose();
     void RemoveFirstEntry();
-    void Hide();
     void ClearAllEntries();
     void ResetInputField(bool loseFocus = false);
     void FocusInputField();

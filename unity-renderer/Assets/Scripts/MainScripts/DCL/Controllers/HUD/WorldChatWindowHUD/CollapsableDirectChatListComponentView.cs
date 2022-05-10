@@ -64,7 +64,7 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         if (!Contains(entryModel.userId))
             CreateEntry(userId);
         var entry = Get(userId);
-        entry.Set(entryModel);
+        entry.Configure(entryModel);
     }
     
     private void CreateEntry(string userId)
