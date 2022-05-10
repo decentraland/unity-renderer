@@ -24,5 +24,7 @@ namespace DCL.Components
         {
             return (int) CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER;
         }
+
+        protected override string uuidComponentName => "pointerHoverEnter";
     }
 }
