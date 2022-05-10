@@ -359,7 +359,7 @@ namespace DCL.Interface
         [System.Serializable]
         public class HitEntityInfo
         {
-            public long entityId;
+            public string entityId;
             public string meshName;
         }
 

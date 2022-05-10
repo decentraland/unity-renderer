@@ -35,6 +35,9 @@ namespace DCL.Emotes
             Rendereable rendereable = await retriever.Retrieve(container, emote.GetContentProvider(bodyShapeId), emote.baseUrlBundles, representation.mainFile, ct);
 
             animation = rendereable.container.GetComponentInChildren<Animation>()?.clip;
+
+            //Setting animation name equal to emote id to avoid unity animation clip duplication on Animation.AddClip()
+            animation.name = emote.id;
         }
 
         public void Dispose() { retriever?.Dispose(); }

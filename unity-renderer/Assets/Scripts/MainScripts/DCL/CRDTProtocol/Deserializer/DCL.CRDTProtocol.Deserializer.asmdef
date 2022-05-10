@@ -1,0 +1,17 @@
+{
+    "name": "DCL.CRDTProtocol.Deserializer",
+    "rootNamespace": "",
+    "references": [
+        "GUID:80f579cff5cf4136aa8969bf6fa1098c",
+        "GUID:374252a1740a422eb7762fc12ff3bf8a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
