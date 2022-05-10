@@ -1,4 +1,4 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 
 // ComponentDefinition.ComponentID=13;
 // This parameter is processed by the tool

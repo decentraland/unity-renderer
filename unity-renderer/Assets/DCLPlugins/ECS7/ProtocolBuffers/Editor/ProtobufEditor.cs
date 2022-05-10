@@ -23,12 +23,12 @@ namespace DCL.Protobuf
         [MenuItem("Decentraland/Protobuf/UpdateModels")]
         public static void UpdateModels()
         {
-            DownloadProtos();
-            RegenerateModels();
+            DownloadProtoDefinitions();
+            CompileAllProtobuffDefinitions();
         }
 
-        [MenuItem("Decentraland/Protobuf/Download proto definitions")]
-        public static void DownloadProtos()
+        [MenuItem("Decentraland/Protobuf/Download proto definitions (For debugging)")]
+        public static void DownloadProtoDefinitions()
         {
             WebClient client = new WebClient();
             Stream data;
@@ -79,6 +79,7 @@ namespace DCL.Protobuf
             {
                 Directory.CreateDirectory(destPackage);
 
+                // We unzip the library
                 ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "tar", Arguments = "-xvzf dcl-ecs-next.tgz -C " + destPackage, CreateNoWindow = true};
                 Process proc = new Process() { StartInfo = startInfo };
                 proc.Start();
@@ -92,6 +93,7 @@ namespace DCL.Protobuf
                 if (Directory.Exists(componentDefinitionPath))
                     Directory.Delete(componentDefinitionPath, true);
 
+                // We move the definitions to their correct path
                 Directory.Move(destPackage + "/package/dist/components/definitions", componentDefinitionPath);
                 UnityEngine.Debug.Log("Success copying definitions in " + componentDefinitionPath);
             }
@@ -99,7 +101,7 @@ namespace DCL.Protobuf
             {
                 Debug.LogError("The download has failed " + e.Message);
             }
-            finally
+            finally // We delete the downloaded package
             {
                 Directory.Delete(destPackage, true);
                 if (File.Exists("dcl-ecs-next.tgz"))
@@ -107,10 +109,10 @@ namespace DCL.Protobuf
             }
         }
 
-        [MenuItem("Decentraland/Protobuf/Regenerate models")]
-        public static void RegenerateModels()
+        [MenuItem("Decentraland/Protobuf/Regenerate models (For debugging)")]
+        public static void CompileAllProtobuffDefinitions()
         {
-            Debug.Log("Starting update");
+            Debug.Log("Starting regenerate ");
             
             // We get all the files that are proto
             DirectoryInfo dir = new DirectoryInfo(Application.dataPath + PATH_TO_COMPONENTS_DEFINITIONS);
@@ -143,7 +145,7 @@ namespace DCL.Protobuf
                 }
             }
 
-            Debug.Log("Models has been updated converted: " +convertedCount + "    failed: "+failedCount);
+            Debug.Log("Models has been converted. Success: " +convertedCount + "    Failed: "+failedCount);
         }
 
         private static bool CompileProtobufFile(string outputPath , string protoFileName)
@@ -167,7 +169,7 @@ namespace DCL.Protobuf
 
             if (error != "")
             {
-                UnityEngine.Debug.LogError("Protobuf Unity : " + error);
+                UnityEngine.Debug.LogError("Protobuf Unity failed : " + error);
                 return false;
             }
             return true;
