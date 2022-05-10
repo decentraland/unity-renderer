@@ -17,6 +17,12 @@ public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneM
         var texture2 = CreateTexture(texturePaths[0]);
         var texture3 = CreateTexture(texturePaths[0]);
         var texture4 = CreateTexture(texturePaths[0]);
+        
+        yield return texture1;
+        yield return texture2;
+        yield return texture3;
+        yield return texture4;
+        
         var material1 = CreatePBRMaterial(texture1.id, texture2.id, texture3.id, texture4.id);
         var planeShape = CreatePlane();
         var entity = CreateEntityWithTransform();
@@ -149,6 +155,12 @@ public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneM
         var texture2 = CreateTexture(texturePaths[1]);
         var texture3 = CreateTexture(texturePaths[2]);
         var texture4 = CreateTexture(texturePaths[3]);
+
+        yield return texture1;
+        yield return texture2;
+        yield return texture3;
+        yield return texture4;
+        
         var planeShape = CreatePlane();
         var entity = CreateEntityWithTransform();
         var material1 = CreatePBRMaterial(texture1.id, texture2.id, texture3.id, texture4.id);
