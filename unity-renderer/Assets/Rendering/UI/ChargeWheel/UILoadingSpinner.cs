@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class UILoadingSpinner : MonoBehaviour
 {
     Material _material;
-    Image _img;
+    public Image img;
 
     public Color color;
     public float head;
@@ -19,16 +19,14 @@ public class UILoadingSpinner : MonoBehaviour
 
     void GetMaterial()
     {
-        _img = GetComponent<Image>();
-
-        if (_img.maskable)
+        if (img.maskable)
         {
-            _material = _img.materialForRendering;
+            _material = img.materialForRendering;
         }
         else
         {
-            _material = new Material(_img.material);
-            _img.material = _material;
+            _material = new Material(img.material);
+            img.material = _material;
         }
     }
 
