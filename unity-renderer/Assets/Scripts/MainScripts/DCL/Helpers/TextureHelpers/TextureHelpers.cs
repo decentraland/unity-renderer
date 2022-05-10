@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
@@ -90,13 +91,26 @@ public static class TextureHelpers
         { TextureFormat.RGBA32, TextureFormat.DXT5 },
         { TextureFormat.RGB24, TextureFormat.DXT1 }
     };
+
+
+    private static readonly Dictionary<TextureFormat, int> formatByteLength = new Dictionary<TextureFormat, int>()
+    {
+        { TextureFormat.ARGB32, 4 },
+        { TextureFormat.RGBA32, 4 },
+        { TextureFormat.RGB24, 3 },
+        { TextureFormat.DXT5, 16 },
+        { TextureFormat.DXT1, 8 },
+    };
+    
     public static IEnumerator ThrottledCompress(Texture2D texture, bool uploadToGPU, Action<Texture2D> OnSuccess, Action<Exception> OnFail, bool generateMimpaps = false, bool linear = false)
     {
         if (texture.format == TextureFormat.DXT5 || texture.format == TextureFormat.DXT1)
         {
             OnSuccess(texture);
+
             yield break;
         }
+
         var throttle = new SkipFrameIfDepletedTimeBudget();
 
         var chunkSize = GetBiggestChunkSizeFor(texture.width, texture.height);
@@ -118,12 +132,14 @@ public static class TextureHelpers
         var targetFormat = supportedFormats[texture.format];
 
         Texture2D finalTexture = new Texture2D(texture.width, texture.height, targetFormat, generateMimpaps, linear);
-        finalTexture.Apply(generateMimpaps, uploadToGPU);
         
         yield return throttle;
 
         var yChunks = texture.height / chunkSize;
         var xChunks = texture.width / chunkSize;
+
+        var finalTextureData = finalTexture.GetRawTextureData<byte>();
+        var textureData = texture.GetRawTextureData();
 
         for (int y = 0; y < yChunks; y++)
         {
@@ -131,75 +147,67 @@ public static class TextureHelpers
             {
                 // TODO: Reuse this texture2D
                 Texture2D chunkTexture = new Texture2D(chunkSize, chunkSize, texture.format, generateMimpaps, linear);
-
                 yield return throttle;
-
-                // Copy the chunk
-                int srcX = x * chunkSize;
-                int srcY = y * chunkSize;
-
-                if (srcX % 4 != 0)
-                {
-                    Debug.LogError("Coordinate not mul4");
-                }
-                if (srcY % 4 != 0)
-                {
-                    Debug.LogError("Coordinate not mul4");
-                }
-
-                Graphics.CopyTexture(
-                    src: texture,
-                    srcElement: 0,
-                    srcMip: 0,
-                    srcX: srcX,
-                    srcY: srcY,
-                    srcWidth: chunkSize,
-                    srcHeight: chunkSize,
-                    dst: chunkTexture,
-                    dstElement: 0,
-                    dstMip: 0,
-                    dstX: 0,
-                    dstY: 0
-                );
                 
-                // Compress it
-                chunkTexture.Compress(false);
-
+                // Get chunk texture from original texture
+                var data = GetChunkTextureData(textureData, x, y, texture.width, chunkSize, formatByteLength[texture.format]);
+                chunkTexture.LoadRawTextureData(data);
                 yield return throttle;
 
-                // Upload it to GPU
-                chunkTexture.Apply(generateMimpaps, true);
-
+                // Compress the chunk
+                chunkTexture.Compress(false);
                 yield return throttle;
 
                 // Copy into final texture
-                Graphics.CopyTexture(
-                    src: chunkTexture,
-                    srcElement: 0,
-                    srcMip: 0,
-                    srcX: 0,
-                    srcY: 0,
-                    srcWidth: chunkSize,
-                    srcHeight: chunkSize,
-                    dst: finalTexture,
-                    dstElement: 0,
-                    dstMip: 0,
-                    dstX: srcX,
-                    dstY: srcY
-                );
+                WriteChunkTextureDataDXT5(finalTextureData, chunkTexture.GetRawTextureData<byte>(), x, y, chunkSize, texture.width, formatByteLength[chunkTexture.format] );
 
                 yield return throttle;
-
                 Object.Destroy(chunkTexture);
             }
         }
-        
+
         Object.Destroy(texture);
 
         finalTexture.wrapMode = texture.wrapMode;
         finalTexture.filterMode = texture.filterMode;
-        
+
+        finalTexture.Apply(generateMimpaps, uploadToGPU);
+
         OnSuccess(finalTexture);
+    }
+    private static void CopyFromChunkToTexture(Texture2D chunkTexture, int chunkSize, Texture2D finalTexture, int srcX, int srcY)
+    {
+        Graphics.CopyTexture(
+            src: chunkTexture,
+            srcElement: 0,
+            srcMip: 0,
+            srcX: 0,
+            srcY: 0,
+            srcWidth: chunkSize,
+            srcHeight: chunkSize,
+            dst: finalTexture,
+            dstElement: 0,
+            dstMip: 0,
+            dstX: srcX,
+            dstY: srcY
+        );
+    }
+    private static void CopyFromTextureToChunk(Texture2D texture, int srcX, int srcY, int chunkSize, Texture2D chunkTexture)
+    {
+        Graphics.CopyTexture(
+            src: texture,
+            srcElement: 0,
+            srcMip: 0,
+            srcX: srcX,
+            srcY: srcY,
+            srcWidth: chunkSize,
+            srcHeight: chunkSize,
+            dst: chunkTexture,
+            dstElement: 0,
+            dstMip: 0,
+            dstX: 0,
+            dstY: 0
+        );
     }
 
     /// <summary>
@@ -228,51 +236,58 @@ public static class TextureHelpers
         return biggest;
     }
 
-    private static IEnumerable CopyChunkFromSourceTexture(Texture2D sourceTexture, Texture2D targetChunk, int coordX, int coordY, int chunkSize)
+    public static byte[] GetChunkTextureData(byte[] target, int coordX, int coordY,
+        int originalWidth, int chunkSize, int byteLength)
     {
-        Debug.Log("Copy texture?");
-        var throttle = new SkipFrameIfDepletedTimeBudget();
+        byte[] result = new byte[4 * chunkSize * chunkSize];
 
-        Graphics.CopyTexture(
-            src: sourceTexture,
-            srcElement: 0,
-            srcMip: 0,
-            srcX: coordX * chunkSize,
-            srcY: coordY * chunkSize,
-            srcWidth: chunkSize,
-            srcHeight: chunkSize,
-            dst: targetChunk,
-            dstElement: 0,
-            dstMip: 0,
-            dstX: 0,
-            dstY: 0
-        );
+        for (int y = 0; y < chunkSize; y++)
+        {
+            for (int x = 0; x < chunkSize; x++)
+            {
+                var textureXIndex = coordX * chunkSize * byteLength + x * byteLength;
+                var textureYIndex = coordY * originalWidth * chunkSize * byteLength + y * byteLength * originalWidth;
+                var textureIndex = textureXIndex + textureYIndex;
+                var chunkIndex = chunkSize * y * byteLength + x * byteLength;
 
-        yield return throttle;
+                for (int c = 0; c < byteLength; c++)
+                {
+                    result[chunkIndex + c] = target[textureIndex + c];
+                }
+            }
+        }
 
+        return result;
     }
-    private static IEnumerable CopyChunkToFinalTexture(Texture2D chunkTexture, Texture2D target, int coordX, int coordY, int chunkSize)
+
+    private static void WriteChunkTextureDataDXT5(
+        NativeArray<byte> blankTexture,
+        NativeArray<byte> chunkData,
+        int coordX, int coordY, int chunkSize, int originalWidth, int byteLength)
     {
-        Debug.Log("Paste texture?");
-        var throttle = new SkipFrameIfDepletedTimeBudget();
+        // Number of bytes that a DXT chunk has ( 4x4 pixels )
+        var bytesPerPixelChunk = byteLength;
+        // Number of DXT chunks that our chunk has
+        var dxtChunkSize = chunkSize / 4;
+        // Chunk width in bytes
+        var chunkWidth = dxtChunkSize * bytesPerPixelChunk;
+        // Total width in bytes
+        var totalWidth = originalWidth / chunkSize * chunkWidth;
 
-        Graphics.CopyTexture(
-            src: chunkTexture,
-            srcElement: 0,
-            srcMip: 0,
-            srcX: 0,
-            srcY: 0,
-            srcWidth: chunkSize,
-            srcHeight: chunkSize,
-            dst: target,
-            dstElement: 0,
-            dstMip: 0,
-            dstX: coordX * chunkSize,
-            dstY: coordY * chunkSize
-        );
+        // Offsets by chunk coordinates
+        var xOffset = coordX * chunkWidth;
+        var yOffset = coordY * totalWidth * (chunkSize / 4);
 
-        yield return throttle;
+        for (int y = 0; y < dxtChunkSize; y++)
+        {
+            for (int x = 0; x < chunkWidth; x++)
+            {
+                int chunkIndex = x + y * chunkWidth;
+                int targetIndex = yOffset + xOffset + x + y * totalWidth;
 
+                blankTexture[targetIndex] = chunkData[chunkIndex];
+            }
+        }
     }
 
 }
