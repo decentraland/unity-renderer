@@ -134,13 +134,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         flattenedVelocity.y = 0;
 
         if (isOwnPlayer)
-        {
             blackboard.movementSpeed = flattenedVelocity.magnitude - DCLCharacterController.i.movingPlatformSpeed;
-        }
         else
-        {
             blackboard.movementSpeed = flattenedVelocity.magnitude;
-        }
 
         Vector3 rayOffset = Vector3.up * RAY_OFFSET_LENGTH;
         
@@ -327,9 +323,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         return true;
     }
 
-    public void PlayEmote(string emoteId, long timestamps) {
-        SetExpressionValues(emoteId, timestamps); 
-    }
+    public void PlayEmote(string emoteId, long timestamps) { SetExpressionValues(emoteId, timestamps); }
 
     public void EquipEmote(string emoteId, AnimationClip clip)
     {
