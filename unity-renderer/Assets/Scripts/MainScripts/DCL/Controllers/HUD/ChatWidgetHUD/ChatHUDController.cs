@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -7,6 +8,9 @@ using DCL.Interface;
 public class ChatHUDController : IDisposable
 {
     public const int MAX_CHAT_ENTRIES = 30;
+    private const int TEMPORARILY_MUTE_MINUTES = 10;
+    private const int MAX_CONTINUOUS_MESSAGES = 6;
+    private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
 
     public event Action OnInputFieldSelected;
     public event Action<ChatMessage> OnSendMessage;
@@ -17,6 +21,8 @@ public class ChatHUDController : IDisposable
     private readonly bool detectWhisper;
     private readonly IProfanityFilter profanityFilter;
     private readonly Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
+    private readonly Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
+    private readonly List<ChatEntryModel> lastMessages = new List<ChatEntryModel>();
     private IChatHUDComponentView view;
 
     public ChatHUDController(DataStore dataStore,
@@ -43,13 +49,15 @@ public class ChatHUDController : IDisposable
         this.view.OnMessageUpdated += HandleMessageUpdated;
     }
 
-    public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false)
+    public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false, bool spamFiltering = true)
     {
-        AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom).Forget();
+        AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom, spamFiltering).Forget();
     }
 
-    public async UniTask AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false)
+    public async UniTask AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false, bool spamFiltering = true)
     {
+        if (IsSpamming(chatEntryModel.senderName) && spamFiltering) return;
+        
         chatEntryModel.bodyText = ChatUtils.AddNoParse(chatEntryModel.bodyText);
 
         if (IsProfanityFilteringEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
@@ -64,11 +72,16 @@ public class ChatHUDController : IDisposable
         }
 
         await UniTask.SwitchToMainThread();
-        
+
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (view.EntryCount > MAX_CHAT_ENTRIES)
             view.RemoveFirstEntry();
+        
+        if (string.IsNullOrEmpty(chatEntryModel.senderId)) return;
+
+        if (spamFiltering)
+            UpdateSpam(chatEntryModel);
     }
 
     public void Dispose()
@@ -172,4 +185,62 @@ public class ChatHUDController : IDisposable
     }
 
     private void HandleInputFieldSelection() => OnInputFieldSelected?.Invoke();
+
+    private bool IsSpamming(string senderName)
+    {
+        if (string.IsNullOrEmpty(senderName)) return false;
+
+        var isSpamming = false;
+
+        if (!temporarilyMutedSenders.ContainsKey(senderName)) return false;
+        
+        var muteTimestamp = CreateBaseDateTime().AddMilliseconds(temporarilyMutedSenders[senderName]).ToLocalTime();
+        if ((DateTime.Now - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
+            isSpamming = true;
+        else
+            temporarilyMutedSenders.Remove(senderName);
+
+        return isSpamming;
+    }
+    
+    private void UpdateSpam(ChatEntryModel model)
+    {
+        if (lastMessages.Count == 0)
+        {
+            lastMessages.Add(model);
+        }
+        else if (lastMessages[lastMessages.Count - 1].senderName == model.senderName)
+        {
+            if (MessagesSentTooFast(lastMessages[lastMessages.Count - 1].timestamp, model.timestamp))
+            {
+                lastMessages.Add(model);
+
+                if (lastMessages.Count == MAX_CONTINUOUS_MESSAGES)
+                {
+                    temporarilyMutedSenders.Add(model.senderName, model.timestamp);
+                    lastMessages.Clear();
+                }
+            }
+            else
+            {
+                lastMessages.Clear();
+            }
+        }
+        else
+        {
+            lastMessages.Clear();
+        }
+    }
+
+    private bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
+    {
+        DateTime oldDateTime = CreateBaseDateTime().AddMilliseconds(oldMessageTimeStamp).ToLocalTime();
+        DateTime newDateTime = CreateBaseDateTime().AddMilliseconds(newMessageTimeStamp).ToLocalTime();
+        return (newDateTime - oldDateTime).TotalMilliseconds < MIN_MILLISECONDS_BETWEEN_MESSAGES;
+    }
+
+    private DateTime CreateBaseDateTime()
+    {
+        return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+    }
 }

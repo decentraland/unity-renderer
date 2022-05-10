@@ -14,9 +14,6 @@ using UnityEngine.UI;
 public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 {
     private const string VIEW_PATH = "SocialBarV1/Chat";
-    private const int MAX_CONTINUOUS_MESSAGES = 6;
-    private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
-    private const int TEMPORARILY_MUTE_MINUTES = 10;
 
     public TMP_InputField inputField;
     public RectTransform chatEntriesContainer;
@@ -33,8 +30,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [NonSerialized] protected List<ChatEntry> entries = new List<ChatEntry>();
 
     private readonly ChatMessage currentMessage = new ChatMessage();
-    private readonly List<ChatEntryModel> lastMessages = new List<ChatEntryModel>();
-    private readonly Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
     private readonly Dictionary<Action, UnityAction<string>> inputFieldListeners =
         new Dictionary<Action, UnityAction<string>>();
 
@@ -157,8 +152,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public virtual void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
     {
-        if (IsSpamming(model.senderName)) return;
-
         var chatEntry = ChatEntryFactory.Create(model);
         chatEntry.transform.SetParent(chatEntriesContainer, false);
 
@@ -189,10 +182,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
-
-        if (string.IsNullOrEmpty(model.senderId)) return;
-
-        UpdateSpam(model);
     }
 
     public void RemoveFirstEntry()
@@ -257,67 +246,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private void OnInputFieldDeselect(string message)
     {
         AudioScriptableObjects.inputFieldUnfocus.Play(true);
-    }
-
-    private void UpdateSpam(ChatEntryModel model)
-    {
-        if (lastMessages.Count == 0)
-        {
-            lastMessages.Add(model);
-        }
-        else if (lastMessages[lastMessages.Count - 1].senderName == model.senderName)
-        {
-            if (MessagesSentTooFast(lastMessages[lastMessages.Count - 1].timestamp, model.timestamp))
-            {
-                lastMessages.Add(model);
-
-                if (lastMessages.Count == MAX_CONTINUOUS_MESSAGES)
-                {
-                    temporarilyMutedSenders.Add(model.senderName, model.timestamp);
-                    lastMessages.Clear();
-                }
-            }
-            else
-            {
-                lastMessages.Clear();
-            }
-        }
-        else
-        {
-            lastMessages.Clear();
-        }
-    }
-
-    private bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
-    {
-        DateTime oldDateTime = CreateBaseDateTime().AddMilliseconds(oldMessageTimeStamp).ToLocalTime();
-        DateTime newDateTime = CreateBaseDateTime().AddMilliseconds(newMessageTimeStamp).ToLocalTime();
-        return (newDateTime - oldDateTime).TotalMilliseconds < MIN_MILLISECONDS_BETWEEN_MESSAGES;
-    }
-
-    private bool IsSpamming(string senderName)
-    {
-        if (string.IsNullOrEmpty(senderName))
-            return false;
-
-        bool isSpamming = false;
-
-        if (temporarilyMutedSenders.ContainsKey(senderName))
-        {
-            DateTime muteTimestamp =
-                CreateBaseDateTime().AddMilliseconds(temporarilyMutedSenders[senderName]).ToLocalTime();
-            if ((DateTime.Now - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
-                isSpamming = true;
-            else
-                temporarilyMutedSenders.Remove(senderName);
-        }
-
-        return isSpamming;
-    }
-
-    private DateTime CreateBaseDateTime()
-    {
-        return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
     }
 
     private void OnOpenContextMenu(DefaultChatEntry chatEntry)

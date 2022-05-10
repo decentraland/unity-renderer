@@ -136,7 +136,7 @@ public class PrivateChatWindowController : IHUD
             var message = list[i];
             if (i != 0 && i % entriesPerFrame == 0) await UniTask.NextFrame();
             if (!IsMessageFomCurrentConversation(message)) continue;
-            HandleMessageReceived(message);
+            chatHudController.AddChatMessage(message, spamFiltering: false);
         }
     }
 
@@ -161,7 +161,8 @@ public class PrivateChatWindowController : IHUD
         message.body = $"/w {message.recipient} {message.body}";
 
         chatController.Send(message);
-        socialAnalytics.SendDirectMessageSent(message.sender, ConversationUserId, message.body.Length, friendsController.IsFriend(ConversationUserId), ChatContentType.Text);
+        socialAnalytics.SendDirectMessageSent(message.sender, ConversationUserId, message.body.Length,
+            friendsController.IsFriend(ConversationUserId), ChatContentType.Text);
     }
 
     private void HandleCloseInputTriggered(DCLAction_Trigger action) => Hide();
