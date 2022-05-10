@@ -217,13 +217,15 @@ public class TaskbarHUDController : IHUD
 
     private void MouseCatcher_OnMouseUnlock()
     {
-        view.leftWindowContainerAnimator.Show();
+        // TODO: temporary deactivated current window fadein/fadeout until we get the full chat notifications feature implemented
+        // view.leftWindowContainerAnimator.Show();
         view.RestoreLastToggle();
     }
 
     private void MouseCatcher_OnMouseLock()
     {
-        view.leftWindowContainerAnimator.Hide();
+        // TODO: temporary deactivated current window fadein/fadeout until we get the full chat notifications feature implemented
+        // view.leftWindowContainerAnimator.Hide();
         view.ToggleAllOff();
     }
 
