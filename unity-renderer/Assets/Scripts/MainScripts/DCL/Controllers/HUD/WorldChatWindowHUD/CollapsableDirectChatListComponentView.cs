@@ -35,8 +35,9 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
     {
         if (!gameObject.activeInHierarchy) return;
         var regex = new Regex(search, RegexOptions.IgnoreCase);
-        StartCoroutine(FilterAsync(entry => regex.IsMatch(entry.Model.userName)
-            /*|| regex.IsMatch(entry.Model.lastMessage)*/));
+        Filter(entry => regex.IsMatch(entry.Model.userName));
+        // throttling may intruduce race conditions & artifacts into the ui
+        // StartCoroutine(FilterAsync(entry => regex.IsMatch(entry.Model.userName)));
     }
 
     public void Clear(bool releaseEntriesFromPool)
