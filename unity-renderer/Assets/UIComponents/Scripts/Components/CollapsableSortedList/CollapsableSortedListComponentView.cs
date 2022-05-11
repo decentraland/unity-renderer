@@ -127,6 +127,7 @@ namespace UIComponents.CollapsableSortedList
             }
 
             UpdateLayout();
+            UpdateEmptyState();
         }
         
         public IEnumerator FilterAsync(Func<V, bool> comparision, int throttlingBudget = 10)
@@ -148,6 +149,7 @@ namespace UIComponents.CollapsableSortedList
             }
 
             UpdateLayout();
+            UpdateEmptyState();
         }
 
         public virtual void Sort()
