@@ -131,8 +131,17 @@ public class LastReadMessagesService : ILastReadMessagesService
         };
     }
 
-    private ulong GetLastReadTimestamp(string chatId) =>
-        (ulong) (memoryRepository.ContainsKey(chatId) ? memoryRepository.Get(chatId) : 0);
+    private ulong GetLastReadTimestamp(string chatId)
+    {
+        var oldNotificationsFilteringTimestamp = DateTime.UtcNow
+            .Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+            .Subtract(TimeSpan.FromDays(1))
+            .TotalMilliseconds;
+        
+        return (ulong) (memoryRepository.ContainsKey(chatId)
+            ? memoryRepository.Get(chatId)
+            : oldNotificationsFilteringTimestamp);
+    }
 
     private void Persist()
     {
