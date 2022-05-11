@@ -29,7 +29,6 @@ public class FriendsTabComponentView : BaseComponentView
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendEntry> entries = new Dictionary<string, FriendEntry>();
-    private readonly Dictionary<string, ulong> timestamps = new Dictionary<string, ulong>();
     private Pool entryPool;
     private string lastSearch;
 
@@ -49,20 +48,13 @@ public class FriendsTabComponentView : BaseComponentView
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
         contextMenuPanel.OnUnfriend += HandleUnfriendRequest;
 
-        int SortByTimestamp(FriendEntryBase u1, FriendEntryBase u2)
-        {
-            var t1 = timestamps.ContainsKey(u1.model.userId) ? timestamps[u1.model.userId] : 0;
-            var t2 = timestamps.ContainsKey(u2.model.userId) ? timestamps[u2.model.userId] : 0;
-            return t2.CompareTo(t1);
-        }
-
         int SortByAlphabeticalOrder(FriendEntryBase u1, FriendEntryBase u2)
         {
-            return string.Compare(u2.model.userName, u1.model.userName, StringComparison.Ordinal);
+            return string.Compare(u1.model.userName, u2.model.userName, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        onlineFriendsList.list.SortingMethod = SortByTimestamp;
-        offlineFriendsList.list.SortingMethod = SortByTimestamp;
+        onlineFriendsList.list.SortingMethod = SortByAlphabeticalOrder;
+        offlineFriendsList.list.SortingMethod = SortByAlphabeticalOrder;
         searchResultsFriendList.list.SortingMethod = SortByAlphabeticalOrder;
         UpdateLayout();
     }
@@ -137,7 +129,6 @@ public class FriendsTabComponentView : BaseComponentView
         offlineFriendsList.list.Remove(userId);
         onlineFriendsList.list.Remove(userId);
         searchResultsFriendList.list.Remove(userId);
-        timestamps.Remove(userId);
 
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
@@ -249,16 +240,6 @@ public class FriendsTabComponentView : BaseComponentView
     public void Enqueue(string userId, FriendEntryBase.Model model)
     {
         creationQueue[userId] = model;
-    }
-
-    public void SortEntriesByTimestamp(FriendEntryBase.Model user, ulong timestamp)
-    {
-        timestamps[user.userId] = timestamp;
-
-        if (user.status == PresenceStatus.ONLINE)
-            onlineFriendsList.list.Sort();
-        else
-            offlineFriendsList.list.Sort();
     }
 
     private void UpdateEmptyOrFilledState()

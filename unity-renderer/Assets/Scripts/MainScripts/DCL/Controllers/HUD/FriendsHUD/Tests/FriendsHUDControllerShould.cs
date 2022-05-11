@@ -27,8 +27,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         controller = new FriendsHUDController();
         friendsController = new FriendsController_Mock();
         socialAnalytics = Substitute.For<ISocialAnalytics>();
-        var chatController = Substitute.For<IChatController>();
-        controller.Initialize(friendsController, UserProfile.GetOwnUserProfile(), chatController, socialAnalytics);
+        controller.Initialize(friendsController, UserProfile.GetOwnUserProfile(), socialAnalytics);
         view = controller.view;
 
         Assert.IsTrue(view != null, "Friends hud view is null?");

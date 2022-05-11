@@ -29,7 +29,6 @@ public interface IFriendsHUDComponentView
     void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction, FriendEntryBase.Model friendEntryModel);
     void Search(string userId);
     bool IsActive();
-    void SortEntriesByTimestamp(FriendEntryBase.Model user, ulong timestamp);
     void ShowRequestSendError(FriendRequestError error);
     void ShowRequestSendSuccess();
 }

@@ -20,10 +20,10 @@ public class FriendsHUDController : IHUD
     public event Action OnFriendsOpened;
     public event Action OnFriendsClosed;
 
+    // TODO: refactor into dependency injection, solve static usages & define better responsibilities controller<->view
     public void Initialize(
         IFriendsController friendsController, 
         UserProfile ownUserProfile, 
-        IChatController chatController,
         ISocialAnalytics socialAnalytics,
         IFriendsHUDComponentView view = null)
     {
@@ -66,8 +66,6 @@ public class FriendsHUDController : IHUD
                 friendsController.OnInitialized += HandleFriendsInitialized;
             }
         }
-        
-        chatController.OnAddMessage += HandleChatMessageAdded;
     }
 
     private void HandleViewClosed() => SetVisibility(false);
@@ -307,18 +305,5 @@ public class FriendsHUDController : IHUD
 
             AudioScriptableObjects.dialogClose.Play(true);
         }
-    }
-    
-    private void HandleChatMessageAdded(ChatMessage message)
-    {
-        if (message.messageType != ChatMessage.Type.PRIVATE) return;
-
-        var friendId = message.sender != ownUserProfile.userId
-            ? message.sender
-            : message.recipient;
-        if (!friends.ContainsKey(friendId)) return;
-        
-        var friend = friends[friendId];
-        view.SortEntriesByTimestamp(friend, message.timestamp);
     }
 }

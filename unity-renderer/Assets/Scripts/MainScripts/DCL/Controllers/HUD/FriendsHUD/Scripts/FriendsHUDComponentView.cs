@@ -161,17 +161,9 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         }
     }
 
-    public void Search(string userId)
-    {
-        FilterFriends(userId);
-    }
+    public void Search(string userId) => FilterFriends(userId);
 
     public bool IsActive() => gameObject.activeInHierarchy;
-    
-    public void SortEntriesByTimestamp(FriendEntryBase.Model user, ulong timestamp)
-    {
-        friendsTab.SortEntriesByTimestamp(user, timestamp);
-    }
 
     public void ShowRequestSendError(FriendRequestError error)
     {
