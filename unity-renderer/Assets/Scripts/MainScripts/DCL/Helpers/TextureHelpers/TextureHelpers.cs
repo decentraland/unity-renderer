@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
-//using WaitUntil = DCL;
 
 public static class TextureHelpers
 {
@@ -121,6 +120,12 @@ public static class TextureHelpers
     /// <returns></returns>
     public static IEnumerator ThrottledCompress(Texture2D texture, bool uploadToGPU, Action<Texture2D> OnSuccess, Action<Exception> OnFail, bool generateMimpaps = false, bool linear = false)
     {
+        if (!Application.isPlaying)
+        {
+            OnSuccess(texture);
+            yield break;
+        }
+        
         // Already compressed? 
         if (texture.format == TextureFormat.DXT5 || texture.format == TextureFormat.DXT1)
         {

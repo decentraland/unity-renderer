@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -41,12 +40,12 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
-            asset.Cancel();
+            asset?.Cancel();
 
             if (webRequestOp != null)
                 webRequestOp.Dispose();
         }
-        internal override void OnForget() { asset.Cancel(); }
+        internal override void OnForget() { asset?.Cancel(); }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
