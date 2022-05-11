@@ -38,7 +38,7 @@ namespace DCL
         public event Action<AssetType> OnSuccessEvent;
         public event Action<AssetType, Exception> OnFailEvent;
         
-        private static IThrottlingCounter throttlingCounter = new SmartThrottlingCounter(2 / 1000.0);
+        private static IThrottlingCounter throttlingCounter = new SmartThrottlingCounter(4 / 1000.0);
 
         public override bool keepWaiting { get { return state == AssetPromiseState.LOADING || state == AssetPromiseState.WAITING; } }
 
@@ -154,7 +154,6 @@ namespace DCL
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
-
             CallAndClearEvents(false, exception);
             Cleanup();
         }

@@ -12,8 +12,6 @@ namespace DCL
         public Asset_Texture dependencyAsset; // to store the default tex asset and release it accordingly
         public event System.Action OnCleanup;
 
-        private static readonly IThrottlingCounter throttlingCounter = new SmartThrottlingCounter(2 / 1000.0);
-
         public IEnumerator ConfigureTexture(TextureWrapMode textureWrapMode, FilterMode textureFilterMode, bool makeNoLongerReadable = true)
         {
             if (texture == null)
@@ -23,7 +21,10 @@ namespace DCL
             texture.filterMode = textureFilterMode;
 
 #if !UNITY_STANDALONE
-            yield return TextureHelpers.ThrottledCompress(texture, makeNoLongerReadable, texture2D => texture = texture2D, e => throw e);
+            yield return TextureHelpers.ThrottledCompress(texture, makeNoLongerReadable, texture2D => texture = texture2D, e =>
+            {
+                Debug.LogWarning(e.Message);
+            });
 #else
             texture.Apply(textureFilterMode != FilterMode.Point, makeNoLongerReadable);
 #endif

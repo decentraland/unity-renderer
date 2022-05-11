@@ -4,11 +4,35 @@ using System.Collections.Generic;
 using DCL;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
+//using WaitUntil = DCL;
 
 public static class TextureHelpers
 {
+    // We if we allow bigger chunks, compressing those chunks may be slow
+    private const int MAX_CHUNK_SIZE = 256;
+    private const bool DISABLE_THROTTLED_COMPRESSION = false;
+    
+    // Compression lookup table
+    private static readonly Dictionary<TextureFormat, TextureFormat> supportedFormats = new Dictionary<TextureFormat, TextureFormat>()
+    {
+        { TextureFormat.ARGB32, TextureFormat.DXT5 },
+        { TextureFormat.RGBA32, TextureFormat.DXT5 },
+        { TextureFormat.RGB24, TextureFormat.DXT1 }
+    };
+    
+    // Compression lookup table
+    private static readonly Dictionary<TextureFormat, int> formatByteLength = new Dictionary<TextureFormat, int>()
+    {
+        { TextureFormat.ARGB32, 4 },
+        { TextureFormat.RGBA32, 4 },
+        { TextureFormat.RGB24, 3 },
+        { TextureFormat.DXT5, 16 },
+        { TextureFormat.DXT1, 8 },
+    };
+    
     public static void EnsureTexture2DMaxSize(ref Texture2D texture, int maxTextureSize)
     {
         if (texture == null)
@@ -85,58 +109,76 @@ public static class TextureHelpers
         return texture;
     }
 
-    private static readonly Dictionary<TextureFormat, TextureFormat> supportedFormats = new Dictionary<TextureFormat, TextureFormat>()
-    {
-        { TextureFormat.ARGB32, TextureFormat.DXT5 },
-        { TextureFormat.RGBA32, TextureFormat.DXT5 },
-        { TextureFormat.RGB24, TextureFormat.DXT1 }
-    };
+    // This is dangerous and we must manage it carefuly
+    private static readonly Queue<Texture2D> _compressionQueue = new Queue<Texture2D>();
 
-
-    private static readonly Dictionary<TextureFormat, int> formatByteLength = new Dictionary<TextureFormat, int>()
-    {
-        { TextureFormat.ARGB32, 4 },
-        { TextureFormat.RGBA32, 4 },
-        { TextureFormat.RGB24, 3 },
-        { TextureFormat.DXT5, 16 },
-        { TextureFormat.DXT1, 8 },
-    };
-    
     public static IEnumerator ThrottledCompress(Texture2D texture, bool uploadToGPU, Action<Texture2D> OnSuccess, Action<Exception> OnFail, bool generateMimpaps = false, bool linear = false)
     {
+        _compressionQueue.Enqueue(texture);
+
+        yield return new DCL.WaitUntil( () => _compressionQueue.Peek() == texture);
+        
         if (texture.format == TextureFormat.DXT5 || texture.format == TextureFormat.DXT1)
         {
             OnSuccess(texture);
+            _compressionQueue.Dequeue();
+            yield break;
+        }
 
+        if (DISABLE_THROTTLED_COMPRESSION)
+        {
+            texture.Compress(true);
+            OnSuccess(texture);
+            _compressionQueue.Dequeue();
+            yield break;
+        }
+        
+        // small textures are not worth to throttle
+        if (texture.width < 32 || texture.height < 32)
+        {
+            texture.Compress(false);
+            OnSuccess(texture);
+            _compressionQueue.Dequeue();
+            yield break;
+        }
+        
+        // other formats? 
+        if (!supportedFormats.ContainsKey(texture.format))
+        {
+            texture.Compress(false);
+            OnFail(new TextureCompressionNotThrottleableException($"Texture format: {texture.format} not compatible with this compression method"));
+            OnSuccess(texture);
+            _compressionQueue.Dequeue();
+            yield break;
+        }
+            
+        // we sacrifice up to ~3 pixels to make it divisible by 4
+        var targetTextureWidth = GetMinMultBySacrifice(texture.width);
+        var targetTextureHeight = GetMinMultBySacrifice(texture.height);
+        
+        // we get the most optimal chunk size
+        var chunkSizeWidth = GetBiggestChunkSizeFor(targetTextureWidth);
+        var chunkSizeHeight = GetBiggestChunkSizeFor(targetTextureHeight);
+
+        // At this point something went wrong
+        if (chunkSizeWidth < 0 || chunkSizeHeight < 0)
+        {
+            texture.Compress(false);
+            OnFail(new TextureCompressionNotThrottleableException($"Texture size: {texture.width}x{texture.height} not compatible with this compression method"));
+            OnSuccess(texture);
+            _compressionQueue.Dequeue();
             yield break;
         }
 
         var throttle = new SkipFrameIfDepletedTimeBudget();
 
-        var chunkSize = GetBiggestChunkSizeFor(texture.width, texture.height);
-
-        if (chunkSize < 0)
-        {
-            OnFail(new Exception($"Texture size: {texture.width}x{texture.height} not compatible with this compression method"));
-
-            yield break;
-        }
-
-        if (!supportedFormats.ContainsKey(texture.format))
-        {
-            OnFail(new Exception($"Texture format: {texture.format} not compatible with this compression method"));
-
-            yield break;
-        }
-
         var targetFormat = supportedFormats[texture.format];
-
-        Texture2D finalTexture = new Texture2D(texture.width, texture.height, targetFormat, generateMimpaps, linear);
+        Texture2D finalTexture = new Texture2D(targetTextureWidth, targetTextureHeight, targetFormat, generateMimpaps, linear);
         
         yield return throttle;
 
-        var yChunks = texture.height / chunkSize;
-        var xChunks = texture.width / chunkSize;
+        var xChunks = targetTextureWidth / chunkSizeWidth;
+        var yChunks = targetTextureHeight / chunkSizeHeight;
 
         var finalTextureData = finalTexture.GetRawTextureData<byte>();
         var textureData = texture.GetRawTextureData();
@@ -146,20 +188,31 @@ public static class TextureHelpers
             for (int x = 0; x < xChunks; x++)
             {
                 // TODO: Reuse this texture2D
-                Texture2D chunkTexture = new Texture2D(chunkSize, chunkSize, texture.format, generateMimpaps, linear);
+                Texture2D chunkTexture = new Texture2D(chunkSizeWidth, chunkSizeHeight, texture.format, generateMimpaps, linear);
                 yield return throttle;
                 
                 // Get chunk texture from original texture
-                var data = GetChunkTextureData(textureData, x, y, texture.width, chunkSize, formatByteLength[texture.format]);
+                Profiler.BeginSample("[TextureHelper] GetChunkTextureData");
+                var data = GetChunkTextureData(textureData, x, y, texture.width, chunkSizeWidth, chunkSizeHeight, formatByteLength[texture.format]);
+                Profiler.EndSample();
+                
+                Profiler.BeginSample("[TextureHelper] LoadRawTextureData");
                 chunkTexture.LoadRawTextureData(data);
+                Profiler.EndSample();
+
                 yield return throttle;
 
                 // Compress the chunk
+                Profiler.BeginSample("[TextureHelper] Compress");
                 chunkTexture.Compress(false);
+                Profiler.EndSample();
+
                 yield return throttle;
 
                 // Copy into final texture
-                WriteChunkTextureDataDXT5(finalTextureData, chunkTexture.GetRawTextureData<byte>(), x, y, chunkSize, texture.width, formatByteLength[chunkTexture.format] );
+                Profiler.BeginSample("[TextureHelper] WriteChunkTextureDataDXT5");
+                WriteChunkTextureDataDXT5(finalTextureData, chunkTexture.GetRawTextureData<byte>(), x, y, chunkSizeWidth, chunkSizeHeight, targetTextureWidth, formatByteLength[chunkTexture.format] );
+                Profiler.EndSample();
 
                 yield return throttle;
                 Object.Destroy(chunkTexture);
@@ -174,6 +227,24 @@ public static class TextureHelpers
         finalTexture.Apply(generateMimpaps, uploadToGPU);
 
         OnSuccess(finalTexture);
+        _compressionQueue.Dequeue();
+        
+    }
+    private static int GetMinMultBySacrifice(int size)
+    {
+        var result = -1;
+        var current = size;
+
+        while (current > 1 && result < 0)
+        {
+            if (current % 4 == 0)
+            {
+                result = current;
+            }
+
+            current--;
+        }
+        return result;
     }
     private static void CopyFromChunkToTexture(Texture2D chunkTexture, int chunkSize, Texture2D finalTexture, int srcX, int srcY)
     {
@@ -213,18 +284,16 @@ public static class TextureHelpers
     /// <summary>
     /// Gets the biggest chunk size that is multiplier of 4 based on a width and height, this is required for writing chunk texture data on DXT formats
     /// </summary>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
     /// <returns></returns>
-    private static int GetBiggestChunkSizeFor(int width, int height)
+    private static int GetBiggestChunkSizeFor(int value)
     {
         var current = 4;
         var mult = 1;
         var biggest = -1;
 
-        while (current < height && current < width && current < 256)
+        while (current < value && current < MAX_CHUNK_SIZE)
         {
-            if (height % current == 0 && width % current == 0)
+            if (value % current == 0)
             {
                 biggest = current;
             }
@@ -237,18 +306,18 @@ public static class TextureHelpers
     }
 
     public static byte[] GetChunkTextureData(byte[] target, int coordX, int coordY,
-        int originalWidth, int chunkSize, int byteLength)
+        int originalWidth, int chunkWidth, int chunkHeight, int byteLength)
     {
-        byte[] result = new byte[4 * chunkSize * chunkSize];
+        byte[] result = new byte[4 * chunkWidth * chunkHeight];
 
-        for (int y = 0; y < chunkSize; y++)
+        for (int y = 0; y < chunkHeight; y++)
         {
-            for (int x = 0; x < chunkSize; x++)
+            for (int x = 0; x < chunkWidth; x++)
             {
-                var textureXIndex = coordX * chunkSize * byteLength + x * byteLength;
-                var textureYIndex = coordY * originalWidth * chunkSize * byteLength + y * byteLength * originalWidth;
+                var textureXIndex = coordX * chunkWidth * byteLength + x * byteLength;
+                var textureYIndex = coordY * originalWidth * chunkHeight * byteLength + y * byteLength * originalWidth;
                 var textureIndex = textureXIndex + textureYIndex;
-                var chunkIndex = chunkSize * y * byteLength + x * byteLength;
+                var chunkIndex = chunkWidth * y * byteLength + x * byteLength;
 
                 for (int c = 0; c < byteLength; c++)
                 {
@@ -260,25 +329,27 @@ public static class TextureHelpers
         return result;
     }
 
-    private static void WriteChunkTextureDataDXT5(
-        NativeArray<byte> blankTexture,
+    private static void WriteChunkTextureDataDXT5(NativeArray<byte> blankTexture,
         NativeArray<byte> chunkData,
-        int coordX, int coordY, int chunkSize, int originalWidth, int byteLength)
+        int coordX, int coordY, int chunkSizeWidth, int chunkSizeHeight, int originalWidth, int byteLength)
     {
         // Number of bytes that a DXT chunk has ( 4x4 pixels )
         var bytesPerPixelChunk = byteLength;
+        
         // Number of DXT chunks that our chunk has
-        var dxtChunkSize = chunkSize / 4;
+        var dxtChunkSizeWidth = chunkSizeWidth / 4;
+        var dxtChunkSizeHeight = chunkSizeHeight / 4;
+        
         // Chunk width in bytes
-        var chunkWidth = dxtChunkSize * bytesPerPixelChunk;
+        var chunkWidth = dxtChunkSizeWidth * bytesPerPixelChunk;
         // Total width in bytes
-        var totalWidth = originalWidth / chunkSize * chunkWidth;
+        var totalWidth = originalWidth / chunkSizeWidth * chunkWidth;
 
         // Offsets by chunk coordinates
         var xOffset = coordX * chunkWidth;
-        var yOffset = coordY * totalWidth * (chunkSize / 4);
+        var yOffset = coordY * totalWidth * dxtChunkSizeHeight;
 
-        for (int y = 0; y < dxtChunkSize; y++)
+        for (int y = 0; y < dxtChunkSizeHeight; y++)
         {
             for (int x = 0; x < chunkWidth; x++)
             {
@@ -290,4 +361,8 @@ public static class TextureHelpers
         }
     }
 
+    public class TextureCompressionNotThrottleableException : Exception
+    {
+        public TextureCompressionNotThrottleableException(string message) : base(message) { }
+    }
 }
