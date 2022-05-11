@@ -185,7 +185,7 @@ public class FriendsHUDController : IHUD
     private void UpdateNotificationsCounter()
     {
         //NOTE(Brian): If friends tab is already active, update and save this value instantly
-        if (view.IsFriendListFocused())
+        if (view.IsActive())
         {
             PlayerPrefsUtils.SetInt(PLAYER_PREFS_SEEN_FRIEND_COUNT, friendsController.friendCount);
             PlayerPrefsUtils.Save();
@@ -236,6 +236,8 @@ public class FriendsHUDController : IHUD
                 action = FriendshipAction.REJECTED,
                 userId = entry.model.userId
             });
+        
+        UpdateNotificationsCounter();
 
         if (ownUserProfile != null)
             socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, entry.model.userId, PlayerActionSource.FriendsHUD);

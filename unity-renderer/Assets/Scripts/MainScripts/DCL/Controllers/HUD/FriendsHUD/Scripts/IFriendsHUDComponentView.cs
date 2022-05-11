@@ -20,7 +20,6 @@ public interface IFriendsHUDComponentView
     FriendEntryBase GetEntry(string userId);
     void UpdateEntry(string userId, FriendEntryBase.Model model);
     void DisplayFriendUserNotFound();
-    bool IsFriendListFocused();
     bool IsFriendListCreationReady();
     int GetReceivedFriendRequestCount();
     void Destroy();

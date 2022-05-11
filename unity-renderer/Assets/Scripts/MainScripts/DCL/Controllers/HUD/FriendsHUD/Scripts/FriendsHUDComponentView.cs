@@ -105,8 +105,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public void DisplayFriendUserNotFound() => friendRequestsTab.ShowUserNotFoundNotification();
 
-    public bool IsFriendListFocused() => friendsTab.gameObject.activeInHierarchy;
-
     public bool IsFriendListCreationReady() => friendsTab.DidDeferredCreationCompleted;
 
     public int GetReceivedFriendRequestCount() => friendRequestsTab.ReceivedRequestsList.Count();
