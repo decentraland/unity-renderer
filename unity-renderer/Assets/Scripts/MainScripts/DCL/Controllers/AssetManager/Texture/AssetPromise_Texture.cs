@@ -41,9 +41,12 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
+            asset.Cancel();
+
             if (webRequestOp != null)
                 webRequestOp.Dispose();
         }
+        internal override void OnForget() { asset.Cancel(); }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
@@ -51,6 +54,7 @@ namespace DCL
             if (library.Contains(idWithDefaultTexSettings) && !UsesDefaultWrapAndFilterMode())
             {
                 OnSuccess?.Invoke();
+
                 return;
             }
 
@@ -63,6 +67,7 @@ namespace DCL
                         if (asset != null)
                         {
                             asset.texture = DownloadHandlerTexture.GetContent(webRequestResult.webRequest);
+
                             if (TextureUtils.IsQuestionMarkPNG(asset.texture))
                                 OnFail?.Invoke(new Exception("The texture is a question mark"));
                             else
@@ -97,12 +102,14 @@ namespace DCL
                 {
                     // Save default texture asset
                     asset.id = idWithDefaultTexSettings;
+
                     yield return asset.ConfigureTexture(DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, false);
 
                     if (!library.Add(asset))
                     {
                         Debug.Log("add to library fail?");
                         OnComplete(false);
+
                         yield break;
                     }
                 }
@@ -116,12 +123,14 @@ namespace DCL
             }
 
             asset.id = idWithTexSettings;
+
             yield return asset.ConfigureTexture(wrapMode, filterMode, storeTexAsNonReadable);
 
             if (!library.Add(asset))
             {
                 Debug.Log("add to library fail?");
                 OnComplete(false);
+
                 yield break;
             }
 

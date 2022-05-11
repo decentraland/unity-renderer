@@ -21,7 +21,7 @@ namespace DCL
             texture.filterMode = textureFilterMode;
 
 #if !UNITY_STANDALONE
-            yield return TextureHelpers.ThrottledCompress(texture, makeNoLongerReadable, texture2D => texture = texture2D, e =>
+            yield return TextureCompressorHelper.ThrottledCompress(this, texture, makeNoLongerReadable, texture2D => texture = texture2D, e =>
             {
                 Debug.LogWarning(e.Message);
             });
@@ -41,5 +41,6 @@ namespace DCL
 
         public int width => texture.width;
         public int height => texture.height;
+        public void Cancel() { TextureCompressorHelper.CancelCompression(this); }
     }
 }

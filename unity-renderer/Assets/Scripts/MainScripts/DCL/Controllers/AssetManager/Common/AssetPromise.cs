@@ -38,7 +38,8 @@ namespace DCL
         public event Action<AssetType> OnSuccessEvent;
         public event Action<AssetType, Exception> OnFailEvent;
         
-        private static IThrottlingCounter throttlingCounter = new SmartThrottlingCounter(4 / 1000.0);
+        private static readonly IThrottlingCounter throttlingCounter = new SmartThrottlingCounter(4 / 1000.0);
+        private Coroutine addToLibraryCoroutine;
 
         public override bool keepWaiting { get { return state == AssetPromiseState.LOADING || state == AssetPromiseState.WAITING; } }
 
@@ -132,7 +133,7 @@ namespace DCL
 
         protected void OnLoadSuccess()
         {
-            CoroutineUtils.StartThrottledCoroutine(AddToLibrary(OnAddToLibrary), OnLoadFailure, throttlingCounter.EvaluateTimeBudget);
+            addToLibraryCoroutine = CoroutineUtils.StartThrottledCoroutine(AddToLibrary(OnAddToLibrary), OnLoadFailure, throttlingCounter.EvaluateTimeBudget);
         }
         private void OnAddToLibrary(bool success)
         {
@@ -193,12 +194,24 @@ namespace DCL
 
                 asset = null;
             }
+
+            StopCoroutines();
         }
 
         internal virtual void OnForget()
         {
+            StopCoroutines();
             isForgotten = true;
             ClearEvents();
+        }
+        
+        private void StopCoroutines()
+        {
+            if (addToLibraryCoroutine != null)
+            {
+                CoroutineStarter.Stop(addToLibraryCoroutine);
+                addToLibraryCoroutine = null;
+            }
         }
 
         protected abstract void OnCancelLoading();

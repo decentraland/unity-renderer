@@ -108,20 +108,23 @@ public static class TextureHelpers
 
         return texture;
     }
-
-    // This is dangerous and we must manage it carefuly
-    private static readonly Queue<Texture2D> _compressionQueue = new Queue<Texture2D>();
-
+    
+    /// <summary>
+    /// Compresses a texture of RGBA/RGB format into DXT5/1 by separating the original texture into chunks and compressing each chunk separatedly then using the resulting data to draw the final compressed texture
+    /// </summary>
+    /// <param name="texture"></param>
+    /// <param name="uploadToGPU"></param>
+    /// <param name="OnSuccess"></param>
+    /// <param name="OnFail"></param>
+    /// <param name="generateMimpaps"></param>
+    /// <param name="linear"></param>
+    /// <returns></returns>
     public static IEnumerator ThrottledCompress(Texture2D texture, bool uploadToGPU, Action<Texture2D> OnSuccess, Action<Exception> OnFail, bool generateMimpaps = false, bool linear = false)
     {
-        _compressionQueue.Enqueue(texture);
-
-        yield return new DCL.WaitUntil( () => _compressionQueue.Peek() == texture);
-        
+        // Already compressed? 
         if (texture.format == TextureFormat.DXT5 || texture.format == TextureFormat.DXT1)
         {
             OnSuccess(texture);
-            _compressionQueue.Dequeue();
             yield break;
         }
 
@@ -129,7 +132,6 @@ public static class TextureHelpers
         {
             texture.Compress(true);
             OnSuccess(texture);
-            _compressionQueue.Dequeue();
             yield break;
         }
         
@@ -138,7 +140,6 @@ public static class TextureHelpers
         {
             texture.Compress(false);
             OnSuccess(texture);
-            _compressionQueue.Dequeue();
             yield break;
         }
         
@@ -146,15 +147,14 @@ public static class TextureHelpers
         if (!supportedFormats.ContainsKey(texture.format))
         {
             texture.Compress(false);
-            OnFail(new TextureCompressionNotThrottleableException($"Texture format: {texture.format} not compatible with this compression method"));
+            Debug.LogWarning($"Texture format: {texture.format} not compatible with this compression method");
             OnSuccess(texture);
-            _compressionQueue.Dequeue();
             yield break;
         }
             
         // we sacrifice up to ~3 pixels to make it divisible by 4
-        var targetTextureWidth = GetMinMultBySacrifice(texture.width);
-        var targetTextureHeight = GetMinMultBySacrifice(texture.height);
+        var targetTextureWidth = ReduceSizeUntilMultiplierOf4(texture.width);
+        var targetTextureHeight = ReduceSizeUntilMultiplierOf4(texture.height);
         
         // we get the most optimal chunk size
         var chunkSizeWidth = GetBiggestChunkSizeFor(targetTextureWidth);
@@ -164,9 +164,8 @@ public static class TextureHelpers
         if (chunkSizeWidth < 0 || chunkSizeHeight < 0)
         {
             texture.Compress(false);
-            OnFail(new TextureCompressionNotThrottleableException($"Texture size: {texture.width}x{texture.height} not compatible with this compression method"));
+            Debug.LogWarning($"Texture size: {texture.width}x{texture.height} not compatible with this compression method");
             OnSuccess(texture);
-            _compressionQueue.Dequeue();
             yield break;
         }
 
@@ -227,10 +226,8 @@ public static class TextureHelpers
         finalTexture.Apply(generateMimpaps, uploadToGPU);
 
         OnSuccess(finalTexture);
-        _compressionQueue.Dequeue();
-        
     }
-    private static int GetMinMultBySacrifice(int size)
+    private static int ReduceSizeUntilMultiplierOf4(int size)
     {
         var result = -1;
         var current = size;
@@ -359,10 +356,5 @@ public static class TextureHelpers
                 blankTexture[targetIndex] = chunkData[chunkIndex];
             }
         }
-    }
-
-    public class TextureCompressionNotThrottleableException : Exception
-    {
-        public TextureCompressionNotThrottleableException(string message) : base(message) { }
     }
 }
