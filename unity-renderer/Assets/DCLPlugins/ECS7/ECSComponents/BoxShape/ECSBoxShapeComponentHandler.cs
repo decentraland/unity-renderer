@@ -13,6 +13,7 @@ public class ECSBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>
     internal MeshesInfo meshesInfo;
 
     private bool isDisposed = false;
+    private Rendereable rendereable;
     
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
     
@@ -28,12 +29,7 @@ public class ECSBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>
         
         isDisposed = true;
         
-        if (primitiveMeshPromisePrimitive != null)
-            AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
-        
-        Utils.CleanMaterials(meshesInfo.meshRootGameObject.GetComponent<Renderer>());
-        meshesInfo.CleanReferences();
-        ECSComponentsUtils.RemoveRendereableFromDataStore(scene.sceneData.id,meshesInfo.rendereable);
+        ECSComponentsUtils.DisposePrimitiveShape(primitiveMeshPromisePrimitive,meshesInfo,scene.sceneData.id,rendereable);
         meshesInfo = null;
     }
     
@@ -60,6 +56,6 @@ public class ECSBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>
         meshesInfo = ECSComponentsUtils.GenerateMesh(entity,mesh, entity.gameObject,model.visible,model.withCollisions,model.isPointerBlocker);
         
         // Note: We should add the rendereable to the data store and dispose when it not longer exists
-        meshesInfo.rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id,(int)ECS7_CLASS_ID.BOX_SHAPE,mesh,entity.gameObject);
+        rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id,(int)ECS7_CLASS_ID.BOX_SHAPE,mesh,entity.gameObject,meshesInfo.renderers);
     }
 }

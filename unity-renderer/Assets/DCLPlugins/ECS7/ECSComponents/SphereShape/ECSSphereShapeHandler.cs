@@ -8,11 +8,12 @@ using DCL.Models;
 using UnityEngine;
 
 
-public class ECSSphereShapeComponentHandler : IECSComponentHandler<ECSShpereShape>
+public class ECSSphereShapeComponentHandler : IECSComponentHandler<ECSSphereShape>
 {
     private AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
     internal MeshesInfo meshesInfo;
     private bool isDisposed = false;
+    private Rendereable rendereable;
     
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
     
@@ -26,17 +27,12 @@ public class ECSSphereShapeComponentHandler : IECSComponentHandler<ECSShpereShap
         if (isDisposed)
             return;
         isDisposed = true;
-
-        if (primitiveMeshPromisePrimitive != null)
-            AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
         
-        Utils.CleanMaterials(meshesInfo.meshRootGameObject.GetComponent<Renderer>());
-        meshesInfo.CleanReferences();
-        ECSComponentsUtils.RemoveRendereableFromDataStore(scene.sceneData.id,meshesInfo.rendereable);
+        ECSComponentsUtils.DisposePrimitiveShape(primitiveMeshPromisePrimitive,meshesInfo,scene.sceneData.id,rendereable);
         meshesInfo = null;
     }
     
-    public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSShpereShape model)
+    public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSSphereShape model)
     {
         Mesh generatedMesh = null;
         if (primitiveMeshPromisePrimitive != null)
@@ -52,11 +48,11 @@ public class ECSSphereShapeComponentHandler : IECSComponentHandler<ECSShpereShap
         AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
     }
 
-    private void GenerateRenderer(Mesh mesh,IParcelScene scene, IDCLEntity entity, ECSShpereShape model)
+    private void GenerateRenderer(Mesh mesh,IParcelScene scene, IDCLEntity entity, ECSSphereShape model)
     {
         meshesInfo = ECSComponentsUtils.GenerateMesh(entity,mesh, entity.gameObject,model.visible,model.withCollisions,model.isPointerBlocker);
         
         // Note: We should add the rendereable to the data store and dispose when it not longer exists
-        meshesInfo.rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id,(int)ECS7_CLASS_ID.SPHERE_SHAPE,mesh,entity.gameObject);
+        rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id,(int)ECS7_CLASS_ID.SPHERE_SHAPE,mesh,entity.gameObject,meshesInfo.renderers);
     }
 }

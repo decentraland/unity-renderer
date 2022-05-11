@@ -43,7 +43,7 @@ public class ECSSphereShapeShould
     public void UpdateComponentCorrectly()
     {
         // Arrange
-        ECSShpereShape model = new ECSShpereShape();
+        ECSSphereShape model = new ECSSphereShape();
 
         // Act
         sphereShapeComponentHandler.OnComponentModelUpdated(scene,entity,model);
@@ -56,7 +56,7 @@ public class ECSSphereShapeShould
     public void DisposeComponentCorrectly()
     {
         // Arrange
-        ECSShpereShape model = new ECSShpereShape();
+        ECSSphereShape model = new ECSSphereShape();
         sphereShapeComponentHandler.OnComponentModelUpdated(scene,entity,model);
         
         // Act

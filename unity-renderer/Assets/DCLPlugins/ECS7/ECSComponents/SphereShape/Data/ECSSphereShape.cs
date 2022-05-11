@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ECSShpereShape 
+public class ECSSphereShape 
 {
     public bool withCollisions = true;
     public bool isPointerBlocker = true;
@@ -11,13 +11,13 @@ public class ECSShpereShape
 
 public static class ECSShpereShapeSerialization
 {
-    public static string Serialize(ECSShpereShape component)
+    public static string Serialize(ECSSphereShape component)
     {
         return JsonUtility.ToJson(component);
     }
 
-    public static ECSShpereShape Deserialize(object data)
+    public static ECSSphereShape Deserialize(object data)
     {
-        return JsonUtility.FromJson<ECSShpereShape>(data as string);
+        return JsonUtility.FromJson<ECSSphereShape>(data as string);
     }
 }

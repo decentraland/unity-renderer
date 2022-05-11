@@ -56,9 +56,10 @@ public class RendererUtilsShould
         DataStore_WorldObjects.SceneData sceneData = new DataStore_WorldObjects.SceneData();
         DataStore.i.sceneWorldObjects.sceneData.Add(sceneId, sceneData);
         int sceneDataMeshesCount = sceneData.meshes.Count();
+        var renderers = gameObject.GetComponentsInChildren<Renderer>(true);
 
         // Act
-        var rendereable = ECSComponentsUtils.AddRendereableToDataStore(sceneId, componentId, mesh, gameObject);
+        var rendereable = ECSComponentsUtils.AddRendereableToDataStore(sceneId, componentId, mesh, gameObject,renderers);
 
         // Assert
         Assert.IsNotNull(rendereable);
@@ -75,7 +76,8 @@ public class RendererUtilsShould
         Mesh mesh =  PrimitiveMeshBuilder.BuildCube(1f);
         DataStore_WorldObjects.SceneData sceneData = new DataStore_WorldObjects.SceneData();
         DataStore.i.sceneWorldObjects.sceneData.Add(sceneId, sceneData);
-        var rendereable = ECSComponentsUtils.AddRendereableToDataStore(sceneId, componentId, mesh, gameObject);
+        var renderers = gameObject.GetComponentsInChildren<Renderer>(true);
+        var rendereable = ECSComponentsUtils.AddRendereableToDataStore(sceneId, componentId, mesh, gameObject,renderers);
         int sceneDataMeshesCount = sceneData.meshes.Count();
         
         // Act

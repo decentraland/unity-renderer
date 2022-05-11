@@ -74,7 +74,7 @@ public static class ECSComponentsUtils
         DataStore.i.sceneWorldObjects.RemoveRendereable(sceneId, rendereable);
     }
 
-    public static Rendereable AddRendereableToDataStore(string sceneId, int componentId, Mesh mesh, GameObject gameObject)
+    public static Rendereable AddRendereableToDataStore(string sceneId, int componentId, Mesh mesh, GameObject gameObject, Renderer[] renderers)
     {
         int triangleCount = mesh.triangles.Length;
 
@@ -87,19 +87,31 @@ public static class ECSComponentsUtils
                 meshToTriangleCount = new Dictionary<Mesh, int>() { { mesh, triangleCount } }
             };
 
-        newRendereable.renderers = MeshesInfoUtils.ExtractUniqueRenderers(gameObject);
+        newRendereable.renderers = new HashSet<Renderer>(renderers); 
         newRendereable.ownerId = componentId;
 
         DataStore.i.sceneWorldObjects.AddRendereable(sceneId, newRendereable);
         return newRendereable;
     }
-    
+
+    public static void DisposePrimitiveShape(AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive,MeshesInfo meshesInfo, string sceneId, Rendereable rendereable)
+    {
+        if (primitiveMeshPromisePrimitive != null)
+            AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
+        
+        foreach (Renderer renderer in meshesInfo.renderers)
+        {
+            Utils.CleanMaterials(renderer);
+        }
+        meshesInfo.CleanReferences();
+        RemoveRendereableFromDataStore(sceneId,rendereable);
+    }
+
     private static int CalculateCollidersLayer(bool withCollisions, bool isPointerBlocker)
     {
         if (!withCollisions && isPointerBlocker)
             return PhysicsLayers.onPointerEventLayer;
-        else 
-        if (withCollisions && !isPointerBlocker)
+        else if (withCollisions && !isPointerBlocker)
             return PhysicsLayers.characterOnlyLayer;
 
         return PhysicsLayers.defaultLayer;
