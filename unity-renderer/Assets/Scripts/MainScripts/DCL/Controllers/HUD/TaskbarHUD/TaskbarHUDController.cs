@@ -20,7 +20,6 @@ public class TaskbarHUDController : IHUD
     public FriendsHUDController friendsHud;
 
     private IMouseCatcher mouseCatcher;
-    private IFriendsController friendsController;
     private InputAction_Trigger toggleFriendsTrigger;
     private InputAction_Trigger closeWindowTrigger;
     private InputAction_Trigger toggleWorldChatTrigger;
@@ -38,10 +37,9 @@ public class TaskbarHUDController : IHUD
 
     protected virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(); }
 
-    public void Initialize(IMouseCatcher mouseCatcher, IFriendsController friendsController)
+    public void Initialize(IMouseCatcher mouseCatcher)
     {
         this.mouseCatcher = mouseCatcher;
-        this.friendsController = friendsController;
 
         view = CreateView();
 
@@ -88,20 +86,6 @@ public class TaskbarHUDController : IHUD
 
         numOfLoadedExperiences.OnChange += NumOfLoadedExperiencesChanged;
         NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
-
-        if (friendsController != null)
-        {
-            if (friendsController.isInitialized)
-            {
-                view.SetFiendsAsLoading(false);
-            }
-            else
-            {
-                friendsController.OnInitialized -= HandleFriendsInitialization;
-                friendsController.OnInitialized += HandleFriendsInitialization;
-                view.SetFiendsAsLoading(true);
-            }
-        }
     }
 
     private void HandleFriendsToggle(bool show)
@@ -154,9 +138,6 @@ public class TaskbarHUDController : IHUD
 
     private void ToggleFriendsTrigger_OnTriggered(DCLAction_Trigger action)
     {
-        if (!friendsController.isInitialized)
-            return;
-
         // ??????
         if (!view.friendsButton.transform.parent.gameObject.activeSelf) return;
 
@@ -462,9 +443,6 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
         isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
         numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;
-
-        if (friendsController != null)
-            friendsController.OnInitialized -= HandleFriendsInitialization;
     }
 
     private void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
@@ -474,10 +452,4 @@ public class TaskbarHUDController : IHUD
     public void SetVoiceChatRecording(bool recording) { view?.voiceChatButton.SetOnRecording(recording); }
 
     public void SetVoiceChatEnabledByScene(bool enabled) { view?.voiceChatButton.SetEnabledByScene(enabled); }
-
-    private void HandleFriendsInitialization()
-    {
-        friendsController.OnInitialized -= HandleFriendsInitialization;
-        view.SetFiendsAsLoading(false);
-    }
 }

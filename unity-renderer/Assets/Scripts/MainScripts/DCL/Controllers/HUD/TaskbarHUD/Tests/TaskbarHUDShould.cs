@@ -31,7 +31,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         controller = new TaskbarHUDController();
-        controller.Initialize(null, null);
+        controller.Initialize(null);
         view = controller.view;
 
         socialAnalytics = Substitute.For<ISocialAnalytics>();

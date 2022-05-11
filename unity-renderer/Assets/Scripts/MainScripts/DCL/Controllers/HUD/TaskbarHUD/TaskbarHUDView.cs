@@ -19,7 +19,6 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal VoiceChatButton voiceChatButton;
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
-    [SerializeField] internal GameObject friendsLoadingSpinner;
     [SerializeField] internal TaskbarButton emotesButton;
     [SerializeField] internal GameObject experiencesContainer;
     [SerializeField] internal TaskbarButton experiencesButton;
@@ -202,8 +201,6 @@ public class TaskbarHUDView : MonoBehaviour
         else
             taskbarAnimator.Hide(instant);
     }
-
-    public void SetFiendsAsLoading(bool isLoading) { friendsLoadingSpinner.gameObject.SetActive(isLoading); }
 
     public void RestoreLastToggle()
     {
