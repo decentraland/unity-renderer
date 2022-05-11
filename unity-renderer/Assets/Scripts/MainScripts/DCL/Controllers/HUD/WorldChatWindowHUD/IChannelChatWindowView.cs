@@ -14,4 +14,6 @@ public interface IChannelChatWindowView
     void Hide();
     void Show();
     void Configure(PublicChatChannelModel model);
+    void ActivatePreview();
+    void DeactivatePreview();
 }

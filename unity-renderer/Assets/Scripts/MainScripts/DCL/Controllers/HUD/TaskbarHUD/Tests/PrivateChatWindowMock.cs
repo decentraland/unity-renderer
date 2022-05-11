@@ -38,4 +38,12 @@ public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
         if (isDestroyed) return;
         Destroy(gameObject);
     }
+
+    public void ActivatePreview()
+    {
+    }
+
+    public void DeactivatePreview()
+    {
+    }
 }

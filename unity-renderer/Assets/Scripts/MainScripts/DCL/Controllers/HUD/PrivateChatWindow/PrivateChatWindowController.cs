@@ -15,6 +15,7 @@ public class PrivateChatWindowController : IHUD
     private readonly InputAction_Trigger closeWindowTrigger;
     private readonly ILastReadMessagesService lastReadMessagesService;
     private readonly ISocialAnalytics socialAnalytics;
+    private readonly IMouseCatcher mouseCatcher;
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
 
@@ -29,7 +30,8 @@ public class PrivateChatWindowController : IHUD
         IFriendsController friendsController,
         InputAction_Trigger closeWindowTrigger,
         ILastReadMessagesService lastReadMessagesService,
-        ISocialAnalytics socialAnalytics)
+        ISocialAnalytics socialAnalytics,
+        IMouseCatcher mouseCatcher)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
@@ -38,6 +40,7 @@ public class PrivateChatWindowController : IHUD
         this.closeWindowTrigger = closeWindowTrigger;
         this.lastReadMessagesService = lastReadMessagesService;
         this.socialAnalytics = socialAnalytics;
+        this.mouseCatcher = mouseCatcher;
     }
 
     public void Initialize(IPrivateChatComponentView view = null)
@@ -65,6 +68,9 @@ public class PrivateChatWindowController : IHUD
             chatController.OnAddMessage -= HandleMessageReceived;
             chatController.OnAddMessage += HandleMessageReceived;
         }
+
+        mouseCatcher.OnMouseLock += View.ActivatePreview;
+        mouseCatcher.OnMouseUnlock += View.DeactivatePreview;
     }
 
     public void Setup(string newConversationUserId)
@@ -119,6 +125,9 @@ public class PrivateChatWindowController : IHUD
 
         if (chatController != null)
             chatController.OnAddMessage -= HandleMessageReceived;
+        
+        mouseCatcher.OnMouseLock -= View.ActivatePreview;
+        mouseCatcher.OnMouseUnlock -= View.DeactivatePreview;
 
         View?.Dispose();
     }

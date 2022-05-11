@@ -16,4 +16,6 @@ public interface IPrivateChatComponentView
     void Show();
     void Hide();
     void Dispose();
+    void ActivatePreview();
+    void DeactivatePreview();
 }

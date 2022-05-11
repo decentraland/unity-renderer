@@ -27,4 +27,12 @@ public class PublicChatChannelWindowMock : MonoBehaviour, IChannelChatWindowView
     public void Configure(PublicChatChannelModel model)
     {
     }
+
+    public void ActivatePreview()
+    {
+    }
+
+    public void DeactivatePreview()
+    {
+    }
 }

@@ -56,7 +56,8 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
-                    new WebInterfaceFriendsController(FriendsController.i), ChatController.i,
+                    new WebInterfaceFriendsController(FriendsController.i),
+                    ChatController.i,
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>());
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
@@ -69,7 +70,8 @@ public class HUDFactory : IHUDFactory
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
+                        new UserProfileWebInterfaceBridge()),
+                    SceneReferences.i.mouseCatcher);
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
                 hudElement = new PublicChatChannelController(ChatController.i,
@@ -80,7 +82,8 @@ public class HUDFactory : IHUDFactory
                     ProfanityFilterSharedInstances.regexFilter,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
+                        new UserProfileWebInterfaceBridge()),
+                    SceneReferences.i.mouseCatcher);
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,9 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     [SerializeField] private TMP_Text descriptionLabel;
     [SerializeField] private ChatHUDView chatView;
     [SerializeField] private PublicChatChannelModel model;
+    [SerializeField] private CanvasGroup[] previewCanvasGroup;
+    
+    private Coroutine alphaRoutine;
 
     public event Action OnClose;
     public event Action OnBack;
@@ -47,5 +51,59 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         RefreshControl();
     }
 
+    public void ActivatePreview()
+    {
+        const float alphaTarget = 0f;
+        
+        if (!gameObject.activeInHierarchy)
+        {
+            foreach (var group in previewCanvasGroup)
+                group.alpha = alphaTarget;
+            
+            return;
+        }
+        
+        if (alphaRoutine != null)
+            StopCoroutine(alphaRoutine);
+        
+        alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
+    }
+
+    public void DeactivatePreview()
+    {
+        const float alphaTarget = 1f;
+        
+        if (!gameObject.activeInHierarchy)
+        {
+            foreach (var group in previewCanvasGroup)
+                group.alpha = alphaTarget;
+            
+            return;
+        }
+        
+        if (alphaRoutine != null)
+            StopCoroutine(alphaRoutine);
+        
+        alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
+    }
+
     public void Configure(BaseComponentModel newModel) => Configure((PublicChatChannelModel) newModel);
+    
+    private IEnumerator SetAlpha(float target, float duration)
+    {
+        var t = 0f;
+        
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            
+            foreach (var group in previewCanvasGroup)
+                group.alpha = Mathf.Lerp(group.alpha, target, t / duration);
+            
+            yield return null;
+        }
+
+        foreach (var group in previewCanvasGroup)
+            group.alpha = target;
+    }
 }

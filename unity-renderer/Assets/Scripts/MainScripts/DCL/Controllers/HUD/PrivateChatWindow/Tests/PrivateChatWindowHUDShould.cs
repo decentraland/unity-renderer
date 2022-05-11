@@ -167,7 +167,8 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IFriendsController>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
             Substitute.For<ILastReadMessagesService>(),
-            socialAnalytics);
+            socialAnalytics,
+            Substitute.For<IMouseCatcher>());
         controller.Initialize(view);
         controller.Setup(testProfileModel.userId);
         controller.SetVisibility(true);

@@ -17,6 +17,7 @@ public class PublicChatChannelController : IHUD
     private readonly DataStore dataStore;
     private readonly IProfanityFilter profanityFilter;
     private readonly ISocialAnalytics socialAnalytics;
+    private readonly IMouseCatcher mouseCatcher;
     private ChatHUDController chatHudController;
     private double initTimeInSeconds;
     private string channelId;
@@ -30,7 +31,8 @@ public class PublicChatChannelController : IHUD
         InputAction_Trigger closeWindowTrigger,
         DataStore dataStore,
         IProfanityFilter profanityFilter,
-        ISocialAnalytics socialAnalytics)
+        ISocialAnalytics socialAnalytics,
+        IMouseCatcher mouseCatcher)
     {
         this.chatController = chatController;
         this.lastReadMessagesService = lastReadMessagesService;
@@ -39,6 +41,7 @@ public class PublicChatChannelController : IHUD
         this.dataStore = dataStore;
         this.profanityFilter = profanityFilter;
         this.socialAnalytics = socialAnalytics;
+        this.mouseCatcher = mouseCatcher;
     }
 
     public void Initialize(IChannelChatWindowView view = null)
@@ -60,6 +63,9 @@ public class PublicChatChannelController : IHUD
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
+
+        mouseCatcher.OnMouseLock += view.ActivatePreview;
+        mouseCatcher.OnMouseUnlock += view.DeactivatePreview;
 
         initTimeInSeconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
     }
@@ -86,6 +92,9 @@ public class PublicChatChannelController : IHUD
 
         chatHudController.OnSendMessage -= SendChatMessage;
         chatHudController.OnMessageUpdated -= HandleMessageInputUpdated;
+        
+        mouseCatcher.OnMouseLock -= View.ActivatePreview;
+        mouseCatcher.OnMouseUnlock -= View.DeactivatePreview;
 
         View?.Dispose();
     }

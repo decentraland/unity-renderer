@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using SocialBar.UserThumbnail;
 using TMPro;
 using UnityEngine;
@@ -16,6 +17,9 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] private RectTransform userContextMenuReferencePoint;
     [SerializeField] private Button optionsButton;
     [SerializeField] private Model model;
+    [SerializeField] private CanvasGroup[] previewCanvasGroup;
+    
+    private Coroutine alphaRoutine;
 
     public event Action OnPressBack;
     public event Action OnMinimize;
@@ -52,6 +56,42 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         }
             
         base.Dispose();
+    }
+
+    public void ActivatePreview()
+    {
+        const float alphaTarget = 0f;
+        
+        if (!gameObject.activeInHierarchy)
+        {
+            foreach (var group in previewCanvasGroup)
+                group.alpha = alphaTarget;
+            
+            return;
+        }
+        
+        if (alphaRoutine != null)
+            StopCoroutine(alphaRoutine);
+        
+        alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
+    }
+
+    public void DeactivatePreview()
+    {
+        const float alphaTarget = 1f;
+        
+        if (!gameObject.activeInHierarchy)
+        {
+            foreach (var group in previewCanvasGroup)
+                group.alpha = alphaTarget;
+            
+            return;
+        }
+        
+        if (alphaRoutine != null)
+            StopCoroutine(alphaRoutine);
+        
+        alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
     }
 
     public override void RefreshControl()
@@ -96,6 +136,24 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         if (userId != model.userId) return;
         model.isUserBlocked = isBlocked;
         RefreshControl();
+    }
+    
+    private IEnumerator SetAlpha(float target, float duration)
+    {
+        var t = 0f;
+        
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            
+            foreach (var group in previewCanvasGroup)
+                group.alpha = Mathf.Lerp(group.alpha, target, t / duration);
+            
+            yield return null;
+        }
+
+        foreach (var group in previewCanvasGroup)
+            group.alpha = target;
     }
 
     [Serializable]
