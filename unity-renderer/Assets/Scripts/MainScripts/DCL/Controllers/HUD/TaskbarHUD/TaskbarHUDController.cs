@@ -189,7 +189,7 @@ public class TaskbarHUDController : IHUD
     private void HandleChatToggle(bool show)
     {
         if (show)
-            OpenChatList();
+            worldChatWindowHud.OpenLastActiveChat();
         else
             CloseAnyChatWindow();
         
