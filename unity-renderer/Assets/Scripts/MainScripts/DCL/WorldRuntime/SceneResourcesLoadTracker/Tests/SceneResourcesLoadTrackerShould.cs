@@ -9,39 +9,39 @@ namespace Tests
     public class SceneResourcesLoadTrackerShould
     {
         private IECSComponentsManagerLegacy componentsManager;
-        private SceneResourcesLoadTracker resourcesLoadTracker;
+        private SceneLoadTracker loadTracker;
 
         [SetUp]
         public void SetUp()
         {
             componentsManager = new ECSComponentsManagerLegacy(Substitute.For<IParcelScene>());
-            resourcesLoadTracker = new SceneResourcesLoadTracker();
+            loadTracker = new SceneLoadTracker();
         }
 
         [Test]
         public void WaitSharedComponents()
         {
-            resourcesLoadTracker.Track(componentsManager, Substitute.For<IWorldState>());
+            loadTracker.Track(componentsManager, Substitute.For<IWorldState>());
 
             var loadedSubscriber = Substitute.For<IDummyEventSubscriber>();
             var updateSubscriber = Substitute.For<IDummyEventSubscriber>();
 
-            resourcesLoadTracker.OnResourcesLoaded += loadedSubscriber.React;
-            resourcesLoadTracker.OnResourcesStatusUpdate += updateSubscriber.React;
+            loadTracker.OnResourcesLoaded += loadedSubscriber.React;
+            loadTracker.OnResourcesStatusUpdate += updateSubscriber.React;
 
             var component0 = MockedSharedComponentHelper.Create("temptation0");
             var component1 = MockedSharedComponentHelper.Create("temptation1");
 
             componentsManager.AddSceneSharedComponent(component0.id, component0.component);
 
-            Assert.AreEqual(1, resourcesLoadTracker.pendingResourcesCount);
+            Assert.AreEqual(1, loadTracker.pendingResourcesCount);
 
             componentsManager.AddSceneSharedComponent(component1.id, component1.component);
 
-            Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
-            Assert.AreEqual(2, resourcesLoadTracker.pendingResourcesCount);
-            Assert.AreEqual(0, resourcesLoadTracker.loadingProgress);
-            Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
+            Assert.IsTrue(loadTracker.ShouldWaitForPendingResources());
+            Assert.AreEqual(2, loadTracker.pendingResourcesCount);
+            Assert.AreEqual(0, loadTracker.loadingProgress);
+            Assert.IsTrue(loadTracker.ShouldWaitForPendingResources());
 
             loadedSubscriber.DidNotReceive().React();
 
@@ -55,44 +55,44 @@ namespace Tests
             updateSubscriber.Received(1).React();
             loadedSubscriber.Received(1).React();
 
-            Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
-            Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
+            Assert.AreEqual(0, loadTracker.pendingResourcesCount);
+            Assert.AreEqual(100, loadTracker.loadingProgress);
         }
 
         [Test]
         public void NotWaitIfNoSharedComponents()
         {
-            resourcesLoadTracker.Track(componentsManager, Substitute.For<IWorldState>());
-            Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
-            Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
-            Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
+            loadTracker.Track(componentsManager, Substitute.For<IWorldState>());
+            Assert.IsFalse(loadTracker.ShouldWaitForPendingResources());
+            Assert.AreEqual(100, loadTracker.loadingProgress);
+            Assert.AreEqual(0, loadTracker.pendingResourcesCount);
         }
 
         [Test]
         public void IgnoreSharedComponentsAfterDisposed()
         {
-            resourcesLoadTracker.Track(componentsManager, Substitute.For<IWorldState>());
+            loadTracker.Track(componentsManager, Substitute.For<IWorldState>());
 
             var loadedSubscriber = Substitute.For<IDummyEventSubscriber>();
 
-            resourcesLoadTracker.OnResourcesLoaded += loadedSubscriber.React;
+            loadTracker.OnResourcesLoaded += loadedSubscriber.React;
 
             var component0 = MockedSharedComponentHelper.Create("temptation0");
             var component1 = MockedSharedComponentHelper.Create("temptation1");
 
             componentsManager.AddSceneSharedComponent(component0.id, component0.component);
 
-            Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
+            Assert.IsTrue(loadTracker.ShouldWaitForPendingResources());
             component0.SetAsReady();
 
-            Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
-            Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
+            Assert.AreEqual(100, loadTracker.loadingProgress);
+            Assert.AreEqual(0, loadTracker.pendingResourcesCount);
 
-            resourcesLoadTracker.Dispose();
+            loadTracker.Dispose();
             componentsManager.AddSceneSharedComponent(component1.id, component1.component);
 
-            Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
-            Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
+            Assert.AreEqual(100, loadTracker.loadingProgress);
+            Assert.AreEqual(0, loadTracker.pendingResourcesCount);
 
             loadedSubscriber.Received(1).React();
         }

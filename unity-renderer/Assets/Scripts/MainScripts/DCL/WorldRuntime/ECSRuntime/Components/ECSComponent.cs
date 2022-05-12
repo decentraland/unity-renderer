@@ -8,6 +8,8 @@ namespace DCL.ECSRuntime
 {
     public class ECSComponent<ModelType> : IECSComponent
     {
+        public event Action<IECSComponent> OnComponentReady;
+        
         internal Dictionary<long, ECSComponentData<ModelType>> entities = new Dictionary<long, ECSComponentData<ModelType>>();
         internal Dictionary<long, IECSComponentHandler<ModelType>> handlers = new Dictionary<long, IECSComponentHandler<ModelType>>();
 

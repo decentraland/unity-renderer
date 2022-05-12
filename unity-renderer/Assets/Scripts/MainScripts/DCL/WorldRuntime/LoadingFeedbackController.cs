@@ -64,7 +64,7 @@ namespace DCL
             SceneLoadingStatus refreshedScene = new SceneLoadingStatus
             {
                 sceneId = scene.GetInstanceID(),
-                componentsLoading = scene.sceneLifecycleHandler.sceneResourcesLoadTracker.pendingResourcesCount
+                componentsLoading = scene.sceneLifecycleHandler.SceneLoadTracker.pendingResourcesCount
             };
 
             switch (scene.sceneLifecycleHandler.state)

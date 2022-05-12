@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL.WorldRuntime
 {
-    public class SceneResourcesLoadTracker : IDisposable
+    public class SceneLoadTracker : IDisposable
     {
         public int pendingResourcesCount => tracker.pendingResourcesCount;
         public float loadingProgress => tracker.loadingProgress;
@@ -11,14 +11,24 @@ namespace DCL.WorldRuntime
         public event Action OnResourcesLoaded;
         public event Action OnResourcesStatusUpdate;
 
-        private IResourcesLoadTracker tracker;
+        private IComponentsLoadTracker tracker;
 
+        public void Track(IECSComponentsManager componentsManager)
+        {
+            if (tracker != null)
+                return;
+
+            tracker = new ComponentsLoadTrackerECS(componentsManager);
+            tracker.OnResourcesLoaded += OnTrackerResourcesLoaded;
+            tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
+        }
+        
         public void Track(IECSComponentsManagerLegacy componentsManagerLegacy, IWorldState worldState)
         {
             if (tracker != null)
                 return;
 
-            tracker = new ResourcesLoadTrackerLegacyECS(componentsManagerLegacy, worldState);
+            tracker = new ComponentsLoadTrackerLegacyEcs(componentsManagerLegacy, worldState);
             tracker.OnResourcesLoaded += OnTrackerResourcesLoaded;
             tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
         }

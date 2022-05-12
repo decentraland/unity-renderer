@@ -2,7 +2,7 @@ using System;
 
 namespace DCL.WorldRuntime
 {
-    internal interface IResourcesLoadTracker : IDisposable
+    internal interface IComponentsLoadTracker : IDisposable
     {
         int pendingResourcesCount { get; }
         float loadingProgress { get; }

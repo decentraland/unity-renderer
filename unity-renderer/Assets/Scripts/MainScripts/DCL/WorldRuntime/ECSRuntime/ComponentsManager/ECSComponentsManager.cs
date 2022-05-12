@@ -1,14 +1,19 @@
+using System;
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Models;
 
 namespace DCL.ECSRuntime
 {
-    public class ECSComponentsManager
+    public class ECSComponentsManager : IECSComponentsManager
     {
+        public event Action<IECSComponent> OnComponentAdded;
+        
         private readonly IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders;
         internal readonly Dictionary<int, IECSComponent> sceneComponents = new Dictionary<int, IECSComponent>();
         private readonly IParcelScene scene;
+
+        public Dictionary<int, IECSComponent> GetSceneComponents() => sceneComponents;
 
         public ECSComponentsManager(IParcelScene scene, IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders)
         {
@@ -47,6 +52,7 @@ namespace DCL.ECSRuntime
                 component = componentBuilder.Invoke(scene);
                 sceneComponents.Add(componentId, component);
                 component.Create(entity);
+                OnComponentAdded?.Invoke(component);
             }
             return component;
         }
@@ -112,5 +118,6 @@ namespace DCL.ECSRuntime
             }
             return false;
         }
+ 
     }
 }
