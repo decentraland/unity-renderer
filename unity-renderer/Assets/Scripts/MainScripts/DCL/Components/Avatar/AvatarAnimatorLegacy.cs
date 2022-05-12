@@ -230,8 +230,14 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     {
         var animationInfo = animation[bb.expressionTriggerId];
         animation.CrossFade(bb.expressionTriggerId, EXPRESSION_TRANSITION_TIME, PlayMode.StopAll);
+        bool mustExit;
+
         //Introduced the isMoving variable that is true if there is user input, substituted the old Math.Abs(bb.movementSpeed) > Mathf.Epsilon that relies of too much precision
-        var mustExit = DCLCharacterController.i.isMovingByUserInput || animationInfo.length - animationInfo.time < EXPRESSION_TRANSITION_TIME || !bb.isGrounded;
+        if (isOwnPlayer) 
+            mustExit = DCLCharacterController.i.isMovingByUserInput || animationInfo.length - animationInfo.time < EXPRESSION_TRANSITION_TIME || !bb.isGrounded;
+        else
+            mustExit = Math.Abs(bb.movementSpeed) > 0.07f || animationInfo.length - animationInfo.time < EXPRESSION_TRANSITION_TIME || !bb.isGrounded;
+
         if (mustExit)
         {
             animation.Blend(bb.expressionTriggerId, 0, EXPRESSION_TRANSITION_TIME);
