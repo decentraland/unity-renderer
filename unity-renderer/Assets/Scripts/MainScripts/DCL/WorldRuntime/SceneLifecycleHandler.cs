@@ -9,134 +9,133 @@ namespace DCL.Controllers
     /// This handler is in charge of handling the scene lifecycle events
     /// and upkeep the scene lifecycle state.
     /// </summary>
-    public class SceneLifecycleHandler : ISceneLifeCycleHandler
-
+    public class SceneLifecycleHandler
     {
-    public static bool VERBOSE = false;
+        public static bool VERBOSE = false;
 
-    public enum State
-    {
-        NOT_READY,
-        WAITING_FOR_INIT_MESSAGES,
-        WAITING_FOR_COMPONENTS,
-        READY,
-    }
-
-    public int pendingResourcesCount => sceneLoadTracker.pendingResourcesCount;
-    public float loadingProgress => sceneLoadTracker.loadingProgress;
-    public bool isReady => state == State.READY;
-
-    State stateValue = State.NOT_READY;
-
-    public State state
-    {
-        get { return stateValue; }
-        set
+        public enum State
         {
-            stateValue = value;
-            OnStateRefreshed?.Invoke(owner);
+            NOT_READY,
+            WAITING_FOR_INIT_MESSAGES,
+            WAITING_FOR_COMPONENTS,
+            READY,
         }
-    }
 
-    public SceneLoadTracker sceneLoadTracker { get; }
+        public int pendingResourcesCount => sceneLoadTracker.pendingResourcesCount;
+        public float loadingProgress => sceneLoadTracker.loadingProgress;
+        public bool isReady => state == State.READY;
 
-    public event Action<ParcelScene> OnSceneReady;
-    public event Action<ParcelScene> OnStateRefreshed;
+        State stateValue = State.NOT_READY;
 
-    private ParcelScene owner;
+        public State state
+        {
+            get { return stateValue; }
+            set
+            {
+                stateValue = value;
+                OnStateRefreshed?.Invoke(owner);
+            }
+        }
 
-    public SceneLifecycleHandler(ParcelScene ownerScene)
-    {
-        state = State.NOT_READY;
-        this.owner = ownerScene;
-        owner.OnSetData += OnSceneSetData;
+        public SceneLoadTracker sceneLoadTracker { get; }
 
-        sceneLoadTracker = new SceneLoadTracker();
-        sceneLoadTracker.Track(owner.componentsManagerLegacy, Environment.i.world.state);
-        sceneLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
-    }
+        public event Action<ParcelScene> OnSceneReady;
+        public event Action<ParcelScene> OnStateRefreshed;
 
-    private void OnSceneSetData(LoadParcelScenesMessage.UnityParcelScene data)
-    {
-        state = State.WAITING_FOR_INIT_MESSAGES;
-        owner.RefreshLoadingState();
+        private ParcelScene owner;
+
+        public SceneLifecycleHandler(ParcelScene ownerScene)
+        {
+            state = State.NOT_READY;
+            this.owner = ownerScene;
+            owner.OnSetData += OnSceneSetData;
+
+            sceneLoadTracker = new SceneLoadTracker();
+            sceneLoadTracker.Track(owner.componentsManagerLegacy, Environment.i.world.state);
+            sceneLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
+        }
+
+        private void OnSceneSetData(LoadParcelScenesMessage.UnityParcelScene data)
+        {
+            state = State.WAITING_FOR_INIT_MESSAGES;
+            owner.RefreshLoadingState();
 
 #if UNITY_EDITOR
-        DebugConfig debugConfig = DataStore.i.debugConfig;
-        //NOTE(Brian): Don't generate parcel blockers if debugScenes is active and is not the desired scene.
-        if (debugConfig.soloScene && debugConfig.soloSceneCoords != data.basePosition)
-        {
-            SetSceneReady();
-            return;
-        }
+            DebugConfig debugConfig = DataStore.i.debugConfig;
+            //NOTE(Brian): Don't generate parcel blockers if debugScenes is active and is not the desired scene.
+            if (debugConfig.soloScene && debugConfig.soloSceneCoords != data.basePosition)
+            {
+                SetSceneReady();
+                return;
+            }
 #endif
 
-        if (owner.isTestScene)
-            SetSceneReady();
-    }
-
-    private void OnResourcesStatusUpdated()
-    {
-        if (owner.isReleased)
-            return;
-
-        if (VERBOSE)
-        {
-            Debug.Log($"{owner.sceneData.basePosition} Disposable objects left... {sceneLoadTracker.pendingResourcesCount}");
+            if (owner.isTestScene)
+                SetSceneReady();
         }
 
-        OnStateRefreshed?.Invoke(owner);
-        owner.RefreshLoadingState();
-    }
-
-    public void SetInitMessagesDone()
-    {
-        if (owner.isReleased)
-            return;
-
-        if (state == State.READY)
+        private void OnResourcesStatusUpdated()
         {
-            Debug.LogWarning($"Init messages done after ready?! {owner.sceneData.basePosition}", owner.gameObject);
-            return;
+            if (owner.isReleased)
+                return;
+
+            if (VERBOSE)
+            {
+                Debug.Log($"{owner.sceneData.basePosition} Disposable objects left... {sceneLoadTracker.pendingResourcesCount}");
+            }
+
+            OnStateRefreshed?.Invoke(owner);
+            owner.RefreshLoadingState();
         }
 
-        state = State.WAITING_FOR_COMPONENTS;
-        owner.RefreshLoadingState();
-
-        if (sceneLoadTracker.ShouldWaitForPendingResources())
+        public void SetInitMessagesDone()
         {
-            sceneLoadTracker.OnResourcesLoaded -= SetSceneReady;
-            sceneLoadTracker.OnResourcesLoaded += SetSceneReady;
-        }
-        else
-        {
-            SetSceneReady();
-        }
-    }
+            if (owner.isReleased)
+                return;
 
-    private void SetSceneReady()
-    {
+            if (state == State.READY)
+            {
+                Debug.LogWarning($"Init messages done after ready?! {owner.sceneData.basePosition}", owner.gameObject);
+                return;
+            }
+
+            state = State.WAITING_FOR_COMPONENTS;
+            owner.RefreshLoadingState();
+
+            if (sceneLoadTracker.ShouldWaitForPendingResources())
+            {
+                sceneLoadTracker.OnResourcesLoaded -= SetSceneReady;
+                sceneLoadTracker.OnResourcesLoaded += SetSceneReady;
+            }
+            else
+            {
+                SetSceneReady();
+            }
+        }
+
+        private void SetSceneReady()
+        {
 #if UNITY_STANDALONE || UNITY_EDITOR
-        if (DataStore.i.common.isApplicationQuitting.Get())
-            return;
+            if (DataStore.i.common.isApplicationQuitting.Get())
+                return;
 #endif
 
-        if (state == State.READY)
-            return;
+            if (state == State.READY)
+                return;
 
-        if (VERBOSE)
-            Debug.Log($"{owner.sceneData.basePosition} Scene Ready!");
+            if (VERBOSE)
+                Debug.Log($"{owner.sceneData.basePosition} Scene Ready!");
 
-        state = State.READY;
+            state = State.READY;
 
-        Environment.i.world.sceneController.SendSceneReady(owner.sceneData.id);
-        owner.RefreshLoadingState();
+            Environment.i.world.sceneController.SendSceneReady(owner.sceneData.id);
+            owner.RefreshLoadingState();
 
-        sceneLoadTracker.OnResourcesLoaded -= SetSceneReady;
-        sceneLoadTracker.OnResourcesStatusUpdate -= OnResourcesStatusUpdated;
-        sceneLoadTracker.Dispose();
+            sceneLoadTracker.OnResourcesLoaded -= SetSceneReady;
+            sceneLoadTracker.OnResourcesStatusUpdate -= OnResourcesStatusUpdated;
+            sceneLoadTracker.Dispose();
 
-        OnSceneReady?.Invoke(owner);
-    }
+            OnSceneReady?.Invoke(owner);
+        }
     }
 }
