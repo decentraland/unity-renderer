@@ -7,10 +7,12 @@ public interface IPrivateChatComponentView
     event Action OnMinimize;
     event Action OnClose;
     event Action<string> OnUnfriend;
+    event Action<bool> OnFocused;
     
     IChatHUDComponentView ChatHUD { get; }
     bool IsActive { get; }
     RectTransform Transform { get; }
+    bool IsFocused { get; }
 
     void Setup(UserProfile profile, bool isOnline, bool isBlocked);
     void Show();

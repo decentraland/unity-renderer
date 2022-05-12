@@ -48,7 +48,6 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
             chatController,
             Substitute.For<ILastReadMessagesService>(),
             userProfileBridge,
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             Substitute.For<ISocialAnalytics>(),

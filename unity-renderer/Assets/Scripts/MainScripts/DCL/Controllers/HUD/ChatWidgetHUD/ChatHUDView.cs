@@ -30,7 +30,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [NonSerialized] protected List<ChatEntry> entries = new List<ChatEntry>();
 
     private readonly ChatMessage currentMessage = new ChatMessage();
-    private readonly Dictionary<Action, UnityAction<string>> inputFieldListeners =
+    private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners =
+        new Dictionary<Action, UnityAction<string>>();
+    private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners =
         new Dictionary<Action, UnityAction<string>>();
 
     private Coroutine updateLayoutRoutine;
@@ -56,14 +58,30 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         add
         {
             void Action(string s) => value.Invoke();
-            inputFieldListeners[value] = Action;
+            inputFieldSelectedListeners[value] = Action;
             inputField.onSelect.AddListener(Action);
         }
         remove
         {
-            if (!inputFieldListeners.ContainsKey(value)) return;
-            inputField.onSelect.RemoveListener(inputFieldListeners[value]);
-            inputFieldListeners.Remove(value);
+            if (!inputFieldSelectedListeners.ContainsKey(value)) return;
+            inputField.onSelect.RemoveListener(inputFieldSelectedListeners[value]);
+            inputFieldSelectedListeners.Remove(value);
+        }
+    }
+
+    public event Action OnInputFieldDeselected
+    {
+        add
+        {
+            void Action(string s) => value.Invoke();
+            inputFieldUnselectedListeners[value] = Action;
+            inputField.onDeselect.AddListener(Action);
+        }
+        remove
+        {
+            if (!inputFieldUnselectedListeners.ContainsKey(value)) return;
+            inputField.onDeselect.RemoveListener(inputFieldUnselectedListeners[value]);
+            inputFieldUnselectedListeners.Remove(value);
         }
     }
 
@@ -71,6 +89,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public int EntryCount => entries.Count;
     public IChatEntryFactory ChatEntryFactory { get; set; }
+    public bool IsInputFieldSelected => inputField.isFocused;
 
     public static ChatHUDView Create()
     {

@@ -18,10 +18,16 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
 
     public event Action OnClose;
     public event Action OnBack;
+    public event Action<bool> OnFocused
+    {
+        add => onFocused += value;
+        remove => onFocused -= value;
+    }
 
     public bool IsActive => gameObject.activeInHierarchy;
     public IChatHUDComponentView ChatHUD => chatView;
     public RectTransform Transform => (RectTransform) transform;
+    public bool IsFocused => isFocused;
 
     public static PublicChatChannelComponentView Create()
     {

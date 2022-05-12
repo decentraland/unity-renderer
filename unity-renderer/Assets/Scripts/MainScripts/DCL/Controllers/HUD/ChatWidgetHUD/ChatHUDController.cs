@@ -13,6 +13,7 @@ public class ChatHUDController : IDisposable
     private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
 
     public event Action OnInputFieldSelected;
+    public event Action OnInputFieldDeselected;
     public event Action<ChatMessage> OnSendMessage;
     public event Action<string> OnMessageUpdated;
 
@@ -36,13 +37,17 @@ public class ChatHUDController : IDisposable
         this.profanityFilter = profanityFilter;
     }
 
+    public bool IsInputSelected => view.IsInputFieldSelected;
+
     public void Initialize(IChatHUDComponentView view)
     {
         this.view = view;
         this.view.OnShowMenu -= ContextMenu_OnShowMenu;
         this.view.OnShowMenu += ContextMenu_OnShowMenu;
-        this.view.OnInputFieldSelected -= HandleInputFieldSelection;
-        this.view.OnInputFieldSelected += HandleInputFieldSelection;
+        this.view.OnInputFieldSelected -= HandleInputFieldSelected;
+        this.view.OnInputFieldSelected += HandleInputFieldSelected;
+        this.view.OnInputFieldDeselected -= HandleInputFieldDeselected;
+        this.view.OnInputFieldDeselected += HandleInputFieldDeselected;
         this.view.OnSendMessage -= HandleSendMessage;
         this.view.OnSendMessage += HandleSendMessage;
         this.view.OnMessageUpdated -= HandleMessageUpdated;
@@ -89,7 +94,8 @@ public class ChatHUDController : IDisposable
         view.OnShowMenu -= ContextMenu_OnShowMenu;
         view.OnMessageUpdated -= HandleMessageUpdated;
         view.OnSendMessage -= HandleSendMessage;
-        view.OnInputFieldSelected -= HandleInputFieldSelection;
+        view.OnInputFieldSelected -= HandleInputFieldSelected;
+        view.OnInputFieldDeselected -= HandleInputFieldDeselected;
         OnSendMessage = null;
         OnMessageUpdated = null;
         OnInputFieldSelected = null;
@@ -187,7 +193,9 @@ public class ChatHUDController : IDisposable
         message.body = match.Groups[4].Value;
     }
 
-    private void HandleInputFieldSelection() => OnInputFieldSelected?.Invoke();
+    private void HandleInputFieldSelected() => OnInputFieldSelected?.Invoke();
+    
+    private void HandleInputFieldDeselected() => OnInputFieldDeselected?.Invoke();
 
     private bool IsSpamming(string senderName)
     {

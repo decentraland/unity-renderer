@@ -77,7 +77,6 @@ public class HUDFactory : IHUDFactory
                 hudElement = new PublicChatChannelController(ChatController.i,
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
                     new UserProfileWebInterfaceBridge(),
-                    Resources.Load<InputAction_Trigger>("CloseWindow"),
                     DataStore.i,
                     ProfanityFilterSharedInstances.regexFilter,
                     new SocialAnalytics(

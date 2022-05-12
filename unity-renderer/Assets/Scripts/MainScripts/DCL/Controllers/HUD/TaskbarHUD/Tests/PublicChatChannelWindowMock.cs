@@ -6,12 +6,12 @@ public class PublicChatChannelWindowMock : MonoBehaviour, IChannelChatWindowView
 {
     public event Action OnClose;
     public event Action OnBack;
-    public event Action OnDeactivatePreview;
-    public event Action OnActivatePreview;
+    public event Action<bool> OnFocused;
 
     public bool IsActive => gameObject.activeSelf;
     public IChatHUDComponentView ChatHUD => Substitute.For<IChatHUDComponentView>();
     public RectTransform Transform => (RectTransform) transform;
+    public bool IsFocused => false;
 
     private void Awake()
     {

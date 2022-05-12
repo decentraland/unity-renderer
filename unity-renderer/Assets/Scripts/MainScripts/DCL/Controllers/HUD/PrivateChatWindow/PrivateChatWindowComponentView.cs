@@ -3,6 +3,7 @@ using System.Collections;
 using SocialBar.UserThumbnail;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatComponentView
@@ -30,9 +31,16 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         remove => userContextMenu.OnUnfriend -= value;
     }
 
+    public event Action<bool> OnFocused
+    {
+        add => onFocused += value;
+        remove => onFocused -= value;
+    }
+
     public IChatHUDComponentView ChatHUD => chatView;
     public bool IsActive => gameObject.activeInHierarchy;
     public RectTransform Transform => (RectTransform) transform;
+    public bool IsFocused => isFocused;
 
     public static PrivateChatWindowComponentView Create()
     {

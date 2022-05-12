@@ -7,10 +7,12 @@ public interface IChatHUDComponentView
     event Action<string> OnMessageUpdated;
     event Action OnShowMenu;
     event Action OnInputFieldSelected;
+    event Action OnInputFieldDeselected;
     
     int EntryCount { get; }
 
     IChatEntryFactory ChatEntryFactory { get; set; }
+    bool IsInputFieldSelected { get; }
 
     void OnMessageCancelHover();
     void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false);

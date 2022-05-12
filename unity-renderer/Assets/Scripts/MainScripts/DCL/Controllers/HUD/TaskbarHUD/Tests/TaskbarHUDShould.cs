@@ -113,7 +113,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             chatController, 
             lastReadMessagesService, 
             userProfileBridge,
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             socialAnalytics,

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
@@ -13,7 +14,6 @@ public class PublicChatChannelController : IHUD
     private readonly IChatController chatController;
     private readonly ILastReadMessagesService lastReadMessagesService;
     private readonly IUserProfileBridge userProfileBridge;
-    private readonly InputAction_Trigger closeWindowTrigger;
     private readonly DataStore dataStore;
     private readonly IProfanityFilter profanityFilter;
     private readonly ISocialAnalytics socialAnalytics;
@@ -21,6 +21,7 @@ public class PublicChatChannelController : IHUD
     private ChatHUDController chatHudController;
     private double initTimeInSeconds;
     private string channelId;
+    private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     internal string lastPrivateMessageRecipient = string.Empty;
 
     private UserProfile ownProfile => userProfileBridge.GetOwn();
@@ -28,7 +29,6 @@ public class PublicChatChannelController : IHUD
     public PublicChatChannelController(IChatController chatController,
         ILastReadMessagesService lastReadMessagesService,
         IUserProfileBridge userProfileBridge,
-        InputAction_Trigger closeWindowTrigger,
         DataStore dataStore,
         IProfanityFilter profanityFilter,
         ISocialAnalytics socialAnalytics,
@@ -37,7 +37,6 @@ public class PublicChatChannelController : IHUD
         this.chatController = chatController;
         this.lastReadMessagesService = lastReadMessagesService;
         this.userProfileBridge = userProfileBridge;
-        this.closeWindowTrigger = closeWindowTrigger;
         this.dataStore = dataStore;
         this.profanityFilter = profanityFilter;
         this.socialAnalytics = socialAnalytics;
@@ -47,11 +46,10 @@ public class PublicChatChannelController : IHUD
     public void Initialize(IChannelChatWindowView view = null)
     {
         view ??= PublicChatChannelComponentView.Create();
-        this.View = view;
+        View = view;
         view.OnClose += HandleViewClosed;
         view.OnBack += HandleViewBacked;
-        closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
-        closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
+        view.OnFocused += HandleViewFocused;
 
         chatHudController = new ChatHUDController(dataStore,
             userProfileBridge,
@@ -60,12 +58,15 @@ public class PublicChatChannelController : IHUD
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnSendMessage += SendChatMessage;
         chatHudController.OnMessageUpdated += HandleMessageInputUpdated;
+        chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
+        chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
+        chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
+        chatHudController.OnInputFieldDeselected += HandleInputFieldDeselected;
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
 
         mouseCatcher.OnMouseLock += view.ActivatePreview;
-        mouseCatcher.OnMouseUnlock += view.DeactivatePreview;
 
         initTimeInSeconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
     }
@@ -92,11 +93,17 @@ public class PublicChatChannelController : IHUD
 
         chatHudController.OnSendMessage -= SendChatMessage;
         chatHudController.OnMessageUpdated -= HandleMessageInputUpdated;
+        chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
+        chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
         
         mouseCatcher.OnMouseLock -= View.ActivatePreview;
         mouseCatcher.OnMouseUnlock -= View.DeactivatePreview;
 
-        View?.Dispose();
+        if (View != null)
+        {
+            View.OnFocused -= HandleViewFocused;
+            View.Dispose();
+        }
     }
 
     public void SendChatMessage(ChatMessage message)
@@ -156,8 +163,6 @@ public class PublicChatChannelController : IHUD
 
     private void MarkChatMessagesAsRead() => lastReadMessagesService.MarkAllRead(channelId);
 
-    private void HandleCloseInputTriggered(DCLAction_Trigger action) => HandleViewClosed();
-
     private void HandleViewClosed() => OnClosed?.Invoke();
 
     private void HandleViewBacked() => OnBack?.Invoke();
@@ -186,5 +191,41 @@ public class PublicChatChannelController : IHUD
 
         if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
             lastPrivateMessageRecipient = userProfileBridge.Get(message.sender).userName;
+    }
+    
+    private void HandleInputFieldSelected()
+    {
+        deactivatePreviewCancellationToken.Cancel();
+        deactivatePreviewCancellationToken = new CancellationTokenSource();
+        View.DeactivatePreview();
+    }
+
+    private void HandleInputFieldDeselected()
+    {
+        if (View.IsFocused) return;
+        WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
+    }
+    
+    private void HandleViewFocused(bool focused)
+    {
+        if (focused)
+        {
+            deactivatePreviewCancellationToken.Cancel();
+            deactivatePreviewCancellationToken = new CancellationTokenSource();
+            View.DeactivatePreview();
+        }
+        else
+        {
+            if (chatHudController.IsInputSelected) return;
+            WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
+        }
+    }
+
+    private async UniTaskVoid WaitThenActivatePreview(CancellationToken cancellationToken)
+    {
+        await UniTask.Delay(3000, cancellationToken: cancellationToken);
+        await UniTask.SwitchToMainThread(cancellationToken);
+        if (cancellationToken.IsCancellationRequested) return;
+        View.ActivatePreview();
     }
 }
