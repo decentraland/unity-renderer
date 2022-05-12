@@ -45,9 +45,13 @@ namespace DCL.WorldRuntime
             List<ISharedComponent> disposableComponents = componentsManager.GetSceneSharedComponentsDictionary().Values.ToList();
             for (int i = 0; i < disposableComponents.Count; i++)
             {
+                if (!disposableNotReady.Contains(disposableComponents[i].id))
+                {
+                    disposableNotReady.Add(disposableComponents[i].id);
+                }
                 disposableComponents[i].CallWhenReady(OnDisposableReady);
             }
-            return disposableComponents.Count > 0;
+            return disposableNotReady.Count > 0;
         }
 
         public void PrintWaitingResourcesDebugInfo()

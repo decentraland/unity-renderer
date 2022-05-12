@@ -59,5 +59,26 @@ namespace Tests
             Assert.AreEqual(0, trackerLegacyEcs.pendingResourcesCount);
             Assert.AreEqual(100, trackerLegacyEcs.loadingProgress);
         }
+        
+        [Test]
+        public void HandlePendingCheckWhenComponentIsAlreadyReady()
+        {
+            var loadedSubscriber = Substitute.For<IDummyEventSubscriber>();
+
+            trackerLegacyEcs.OnResourcesLoaded += loadedSubscriber.React;
+
+            var component0 = MockedSharedComponentHelper.Create("temptation0");
+
+            componentsManager.AddSceneSharedComponent(component0.id, component0.component);
+
+            Assert.AreEqual(1, trackerLegacyEcs.pendingResourcesCount);
+            component0.SetAsReady();
+
+            Assert.IsFalse(trackerLegacyEcs.CheckPendingResources());
+            loadedSubscriber.Received(1).React();
+
+            Assert.AreEqual(0, trackerLegacyEcs.pendingResourcesCount);
+            Assert.AreEqual(100, trackerLegacyEcs.loadingProgress);
+        }  
     }
 }
