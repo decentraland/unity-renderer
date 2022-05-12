@@ -392,7 +392,7 @@ public class HUDController : IHUDController
     private void HandlePublicChatChannelBacked()
     {
         PublicChatChannelHud.SetVisibility(false);
-        taskbarHud?.OpenChatList();
+        taskbarHud?.GoBackFromChat();
     }
 
     private void OpenPublicChannelWindow(string channelId)
@@ -413,7 +413,7 @@ public class HUDController : IHUDController
     private void PrivateChatWindowHud_OnPressBack()
     {
         PrivateChatWindow?.SetVisibility(false);
-        taskbarHud?.OpenChatList();
+        taskbarHud?.GoBackFromChat();
     }
 
     private void TaskbarHud_onAnyTaskbarButtonClicked()

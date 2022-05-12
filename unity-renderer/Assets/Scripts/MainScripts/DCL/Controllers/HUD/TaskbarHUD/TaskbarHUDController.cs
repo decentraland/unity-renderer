@@ -25,6 +25,7 @@ public class TaskbarHUDController : IHUD
     private InputAction_Trigger toggleWorldChatTrigger;
     private Transform experiencesViewerTransform;
     private IHUD lastChatActiveWindow;
+    private IHUD chatBackWindow;
 
     public event Action OnAnyTaskbarButtonClicked;
 
@@ -168,6 +169,7 @@ public class TaskbarHUDController : IHUD
         if (anyInputFieldIsSelected) return;
         
         mouseCatcher.UnlockCursor();
+        chatBackWindow = worldChatWindowHud;
 
         if (!worldChatWindowHud.View.IsActive
             && !privateChatWindow.View.IsActive
@@ -192,7 +194,10 @@ public class TaskbarHUDController : IHUD
     private void HandleChatToggle(bool show)
     {
         if (show)
+        {
+            chatBackWindow = publicChatChannel;
             OpenLastActiveChatWindow();
+        }
         else
             CloseAnyChatWindow();
         
@@ -247,6 +252,7 @@ public class TaskbarHUDController : IHUD
         isEmotesVisible.Set(false);
         friendsHud.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Friends);
+        chatBackWindow = friendsHud;
     }
 
     private void CloseFriendsWindow()
@@ -306,7 +312,7 @@ public class TaskbarHUDController : IHUD
         lastChatActiveWindow = publicChatChannel;
     }
     
-    public void OpenChatList()
+    private void OpenChatList()
     {
         privateChatWindow.SetVisibility(false);
         publicChatChannel.SetVisibility(false);
@@ -315,6 +321,7 @@ public class TaskbarHUDController : IHUD
         isEmotesVisible.Set(false);
         worldChatWindowHud.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
+        lastChatActiveWindow = worldChatWindowHud;
     }
 
     public void AddPrivateChatWindow(PrivateChatWindowController controller)
@@ -474,4 +481,12 @@ public class TaskbarHUDController : IHUD
     public void SetVoiceChatRecording(bool recording) { view?.voiceChatButton.SetOnRecording(recording); }
 
     public void SetVoiceChatEnabledByScene(bool enabled) { view?.voiceChatButton.SetEnabledByScene(enabled); }
+
+    public void GoBackFromChat()
+    {
+        if (chatBackWindow == friendsHud)
+            OpenFriendsWindow();
+        else
+            OpenChatList();
+    }
 }
