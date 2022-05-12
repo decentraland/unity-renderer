@@ -161,8 +161,8 @@ namespace DCL
 
         protected virtual IEnumerator AddToLibrary(Action<bool> OnComplete)
         {
-            OnComplete(true);
             library.Add(asset);
+            OnComplete(true);
 
             yield return null;
         }

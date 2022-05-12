@@ -66,9 +66,7 @@ namespace DCL
                     {
                         texture.wrapMode = unityWrap;
                         texture.filterMode = unitySamplingMode;
-                        var prev = texture.format;
                         texture.Compress(false);
-                        Debug.Log($"AssetPromise_TextureResource: {prev} -> {texture.format}");
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
                         asset.texture2D = texture;
                     }

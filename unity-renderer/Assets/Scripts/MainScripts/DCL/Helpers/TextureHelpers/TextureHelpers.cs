@@ -310,7 +310,7 @@ public static class TextureHelpers
     public static byte[] GetChunkTextureData(byte[] target, int coordX, int coordY,
         int originalWidth, int chunkWidth, int chunkHeight, int byteLength)
     {
-        byte[] result = new byte[4 * chunkWidth * chunkHeight];
+        byte[] result = new byte[byteLength * chunkWidth * chunkHeight];
 
         for (int y = 0; y < chunkHeight; y++)
         {

@@ -718,7 +718,7 @@ namespace UnityGLTF
             {
                 texture.wrapMode = settings.wrapMode;
                 texture.filterMode = settings.filterMode;
-                texture.Apply(false, settings.uploadToGpu);
+                texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
 
                 // Resizing must be the last step to avoid breaking the texture when copying with Graphics.CopyTexture()
                 AddTextureToAssetCache(settings, imageCacheIndex, texture);
