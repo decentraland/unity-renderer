@@ -309,6 +309,7 @@ public class TaskbarHUDController : IHUD
         isEmotesVisible?.Set(false);
         publicChatChannel?.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
+        lastChatActiveWindow = publicChatChannel;
     }
     
     private void OpenChatList()
@@ -320,7 +321,6 @@ public class TaskbarHUDController : IHUD
         isEmotesVisible.Set(false);
         worldChatWindowHud.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
-        lastChatActiveWindow = worldChatWindowHud;
     }
 
     public void AddPrivateChatWindow(PrivateChatWindowController controller)
