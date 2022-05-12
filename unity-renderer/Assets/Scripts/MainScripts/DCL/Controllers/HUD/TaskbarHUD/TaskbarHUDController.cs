@@ -309,7 +309,6 @@ public class TaskbarHUDController : IHUD
         isEmotesVisible?.Set(false);
         publicChatChannel?.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
-        lastChatActiveWindow = publicChatChannel;
     }
     
     private void OpenChatList()
