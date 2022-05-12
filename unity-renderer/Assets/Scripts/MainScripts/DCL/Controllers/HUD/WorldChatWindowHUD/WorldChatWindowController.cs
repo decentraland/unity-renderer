@@ -81,25 +81,6 @@ public class WorldChatWindowController : IHUD
             view.Hide();
     }
 
-    public void OpenLastActiveChat()
-    {
-        if (lastPrivateMessages.Count == 0)
-        {
-            OpenPublicChannel(GENERAL_CHANNEL_ID);
-            return;
-        }
-
-        var mostRecentMessagePair = lastPrivateMessages.OrderByDescending(pair => pair.Value.timestamp)
-            .First();
-        var userId = mostRecentMessagePair.Key;
-        var message = mostRecentMessagePair.Value;
-        var date = message.timestamp.ToDateTimeFromUnixTimestamp();
-        if ((DateTime.UtcNow - date).TotalSeconds <= 60.0)
-            OpenPrivateChat(userId);
-        else
-            OpenPublicChannel(GENERAL_CHANNEL_ID);
-    }
-
     private void HandleUnfriend(string friendId)
     {
         friendsController.RemoveFriend(friendId);
