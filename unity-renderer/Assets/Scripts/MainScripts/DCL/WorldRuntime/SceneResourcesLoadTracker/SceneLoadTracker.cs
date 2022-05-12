@@ -28,7 +28,7 @@ namespace DCL.WorldRuntime
             if (tracker != null)
                 return;
 
-            tracker = new ComponentsLoadTrackerLegacyEcs(componentsManagerLegacy, worldState);
+            tracker = new ComponentsLoadTrackerLegacyECS(componentsManagerLegacy, worldState);
             tracker.OnResourcesLoaded += OnTrackerResourcesLoaded;
             tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
         }

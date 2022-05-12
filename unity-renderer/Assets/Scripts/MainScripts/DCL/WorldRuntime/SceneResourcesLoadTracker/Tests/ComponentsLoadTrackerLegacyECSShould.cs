@@ -9,13 +9,13 @@ namespace Tests
     public class ComponentsLoadTrackerLegacyECSShould
     {
         private IECSComponentsManagerLegacy componentsManager;
-        private ComponentsLoadTrackerLegacyEcs trackerLegacyEcs;
+        private ComponentsLoadTrackerLegacyECS trackerLegacyEcs;
 
         [SetUp]
         public void SetUp()
         {
             componentsManager = new ECSComponentsManagerLegacy(Substitute.For<IParcelScene>());
-            trackerLegacyEcs = new ComponentsLoadTrackerLegacyEcs(componentsManager, Substitute.For<IWorldState>());
+            trackerLegacyEcs = new ComponentsLoadTrackerLegacyECS(componentsManager, Substitute.For<IWorldState>());
         }
 
         [Test]
