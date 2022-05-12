@@ -22,8 +22,8 @@ namespace DCL.Controllers
         READY,
     }
 
-    public int pendingResourcesCount => SceneLoadTracker.pendingResourcesCount;
-    public float loadingProgress => SceneLoadTracker.loadingProgress;
+    public int pendingResourcesCount => sceneLoadTracker.pendingResourcesCount;
+    public float loadingProgress => sceneLoadTracker.loadingProgress;
     public bool isReady => state == State.READY;
 
     State stateValue = State.NOT_READY;
@@ -38,7 +38,7 @@ namespace DCL.Controllers
         }
     }
 
-    public SceneLoadTracker SceneLoadTracker { get; }
+    public SceneLoadTracker sceneLoadTracker { get; }
 
     public event Action<ParcelScene> OnSceneReady;
     public event Action<ParcelScene> OnStateRefreshed;
@@ -51,9 +51,9 @@ namespace DCL.Controllers
         this.owner = ownerScene;
         owner.OnSetData += OnSceneSetData;
 
-        SceneLoadTracker = new SceneLoadTracker();
-        SceneLoadTracker.Track(owner.componentsManagerLegacy, Environment.i.world.state);
-        SceneLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
+        sceneLoadTracker = new SceneLoadTracker();
+        sceneLoadTracker.Track(owner.componentsManagerLegacy, Environment.i.world.state);
+        sceneLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
     }
 
     private void OnSceneSetData(LoadParcelScenesMessage.UnityParcelScene data)
@@ -82,7 +82,7 @@ namespace DCL.Controllers
 
         if (VERBOSE)
         {
-            Debug.Log($"{owner.sceneData.basePosition} Disposable objects left... {SceneLoadTracker.pendingResourcesCount}");
+            Debug.Log($"{owner.sceneData.basePosition} Disposable objects left... {sceneLoadTracker.pendingResourcesCount}");
         }
 
         OnStateRefreshed?.Invoke(owner);
@@ -103,10 +103,10 @@ namespace DCL.Controllers
         state = State.WAITING_FOR_COMPONENTS;
         owner.RefreshLoadingState();
 
-        if (SceneLoadTracker.ShouldWaitForPendingResources())
+        if (sceneLoadTracker.ShouldWaitForPendingResources())
         {
-            SceneLoadTracker.OnResourcesLoaded -= SetSceneReady;
-            SceneLoadTracker.OnResourcesLoaded += SetSceneReady;
+            sceneLoadTracker.OnResourcesLoaded -= SetSceneReady;
+            sceneLoadTracker.OnResourcesLoaded += SetSceneReady;
         }
         else
         {
@@ -132,9 +132,9 @@ namespace DCL.Controllers
         Environment.i.world.sceneController.SendSceneReady(owner.sceneData.id);
         owner.RefreshLoadingState();
 
-        SceneLoadTracker.OnResourcesLoaded -= SetSceneReady;
-        SceneLoadTracker.OnResourcesStatusUpdate -= OnResourcesStatusUpdated;
-        SceneLoadTracker.Dispose();
+        sceneLoadTracker.OnResourcesLoaded -= SetSceneReady;
+        sceneLoadTracker.OnResourcesStatusUpdate -= OnResourcesStatusUpdated;
+        sceneLoadTracker.Dispose();
 
         OnSceneReady?.Invoke(owner);
     }

@@ -13,8 +13,6 @@ namespace DCL.ECSRuntime
         internal readonly Dictionary<int, IECSComponent> sceneComponents = new Dictionary<int, IECSComponent>();
         private readonly IParcelScene scene;
 
-        public Dictionary<int, IECSComponent> GetSceneComponents() => sceneComponents;
-
         public ECSComponentsManager(IParcelScene scene, IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders)
         {
             this.componentBuilders = componentBuilders;
