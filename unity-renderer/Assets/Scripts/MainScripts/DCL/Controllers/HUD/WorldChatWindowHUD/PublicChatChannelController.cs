@@ -22,6 +22,7 @@ public class PublicChatChannelController : IHUD
     private double initTimeInSeconds;
     private string channelId;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
+    private bool isFirstFocusSkipped;
     internal string lastPrivateMessageRecipient = string.Empty;
 
     private UserProfile ownProfile => userProfileBridge.GetOwn();
@@ -95,7 +96,7 @@ public class PublicChatChannelController : IHUD
         chatHudController.OnMessageUpdated -= HandleMessageInputUpdated;
         chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
         chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
-        
+
         mouseCatcher.OnMouseLock -= View.ActivatePreview;
         mouseCatcher.OnMouseUnlock -= View.DeactivatePreview;
 
@@ -138,7 +139,11 @@ public class PublicChatChannelController : IHUD
         {
             View.Show();
             MarkChatMessagesAsRead();
-            chatHudController.FocusInputField();
+            // this is a terrible patch to keep preview mode activated at the start of the session
+            // the root of the problem comes from race conditions from input field's event triggers
+            if (isFirstFocusSkipped)
+                chatHudController.FocusInputField();
+            isFirstFocusSkipped = true;
         }
         else
             View.Hide();
@@ -152,13 +157,20 @@ public class PublicChatChannelController : IHUD
         // TODO: filter entries by channelId
         var list = chatController.GetEntries();
         if (list.Count == 0) return;
-        
+
         for (var i = list.Count - 1; i >= 0; i--)
         {
             var message = list[i];
             if (i % entriesPerFrame == 0) await UniTask.NextFrame();
             HandleMessageReceived(message);
         }
+    }
+
+    public void ActivatePreviewModeInstantly()
+    {
+        deactivatePreviewCancellationToken.Cancel();
+        deactivatePreviewCancellationToken = new CancellationTokenSource();
+        View.ActivatePreviewInstantly();
     }
 
     private void MarkChatMessagesAsRead() => lastReadMessagesService.MarkAllRead(channelId);
@@ -192,7 +204,7 @@ public class PublicChatChannelController : IHUD
         if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
             lastPrivateMessageRecipient = userProfileBridge.Get(message.sender).userName;
     }
-    
+
     private void HandleInputFieldSelected()
     {
         deactivatePreviewCancellationToken.Cancel();
@@ -205,7 +217,7 @@ public class PublicChatChannelController : IHUD
         if (View.IsFocused) return;
         WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
     }
-    
+
     private void HandleViewFocused(bool focused)
     {
         if (focused)

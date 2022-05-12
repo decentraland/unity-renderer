@@ -75,6 +75,16 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
     }
 
+    public void ActivatePreviewInstantly()
+    {
+        if (alphaRoutine != null)
+            StopCoroutine(alphaRoutine);
+        
+        const float alphaTarget = 0f;
+        foreach (var group in previewCanvasGroup)
+            group.alpha = alphaTarget;
+    }
+
     public void DeactivatePreview()
     {
         const float alphaTarget = 1f;

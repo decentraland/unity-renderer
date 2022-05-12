@@ -32,6 +32,10 @@ public class PublicChatChannelWindowMock : MonoBehaviour, IChannelChatWindowView
     {
     }
 
+    public void ActivatePreviewInstantly()
+    {
+    }
+
     public void DeactivatePreview()
     {
     }
