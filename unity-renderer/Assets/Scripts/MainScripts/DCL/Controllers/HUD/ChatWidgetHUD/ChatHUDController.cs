@@ -165,7 +165,10 @@ public class ChatHUDController : IDisposable
 
     private void HandleSendMessage(ChatMessage message)
     {
-        message.sender = userProfileBridge.GetOwn().userId;
+        var ownProfile = userProfileBridge.GetOwn();
+        message.sender = ownProfile.userId;
+        if (IsSpamming(message.sender)) return;
+        if (IsSpamming(ownProfile.userName)) return;
         ApplyWhisperAttributes(message);
         OnSendMessage?.Invoke(message);
     }

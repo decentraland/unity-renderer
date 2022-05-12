@@ -182,7 +182,7 @@ public class PrivateChatWindowController : IHUD
     {
         if (!IsMessageFomCurrentConversation(message)) return;
 
-        chatHudController.AddChatMessage(message);
+        chatHudController.AddChatMessage(message, View.IsActive);
 
         if (View.IsActive)
         {
