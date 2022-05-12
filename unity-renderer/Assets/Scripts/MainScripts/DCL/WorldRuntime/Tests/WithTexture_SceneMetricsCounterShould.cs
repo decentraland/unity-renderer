@@ -18,10 +18,10 @@ public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneM
         var texture3 = CreateTexture(texturePaths[0]);
         var texture4 = CreateTexture(texturePaths[0]);
         
-        yield return texture1;
-        yield return texture2;
-        yield return texture3;
-        yield return texture4;
+        yield return texture1.routine;
+        yield return texture2.routine;
+        yield return texture3.routine;
+        yield return texture4.routine;
         
         var material1 = CreatePBRMaterial(texture1.id, texture2.id, texture3.id, texture4.id);
         var planeShape = CreatePlane();
@@ -155,11 +155,11 @@ public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneM
         var texture2 = CreateTexture(texturePaths[1]);
         var texture3 = CreateTexture(texturePaths[2]);
         var texture4 = CreateTexture(texturePaths[3]);
-
-        yield return texture1;
-        yield return texture2;
-        yield return texture3;
-        yield return texture4;
+        
+        yield return texture1.routine;
+        yield return texture2.routine;
+        yield return texture3.routine;
+        yield return texture4.routine;
         
         var planeShape = CreatePlane();
         var entity = CreateEntityWithTransform();
@@ -173,6 +173,7 @@ public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneM
         TestUtils.SharedComponentAttach(texture4, entity);
 
         yield return material1.routine;
+
 
         sceneMetrics = scene.metricsCounter.currentCount;
 
@@ -198,6 +199,7 @@ public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneM
     public IEnumerator CountWhenAdded()
     {
         DCLTexture texture = CreateTexture(texturePaths[0]);
+        
         IDCLEntity entity;
         BasicMaterial material;
         PlaneShape planeShape = CreatePlane();
