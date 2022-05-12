@@ -470,7 +470,10 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     {
         doneButton.interactable = false;
         CoroutineStarter.Start(TakeSnapshotsAfterStopPreviewAnimation());
-
+        eyeColorPickerComponent.SetActive(false);
+        hairColorPickerComponent.SetActive(false);
+        facialHairColorPickerComponent.SetActive(false);
+        eyeBrowsColorPickerComponent.SetActive(false);
     }
 
     private IEnumerator TakeSnapshotsAfterStopPreviewAnimation()
