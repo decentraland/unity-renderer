@@ -508,11 +508,7 @@ namespace DCL.Controllers
                 case SceneLifecycleHandler.State.WAITING_FOR_INIT_MESSAGES:
                     return $"{baseState}:{prettyName} - waiting for init messages...";
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
-                    int sharedComponentsCount = componentsManagerLegacy.GetSceneSharedComponentsCount();
-                    if (sharedComponentsCount > 0)
-                        return $"{baseState}:{prettyName} - left to ready:{sharedComponentsCount - sceneLifecycleHandler.disposableNotReadyCount}/{sharedComponentsCount} ({loadingProgress}%)";
-                    else
-                        return $"{baseState}:{prettyName} - no components. waiting...";
+                    return $"{baseState}:{prettyName} - {sceneLifecycleHandler.sceneResourcesLoadTracker.GetStateString()}";
                 case SceneLifecycleHandler.State.READY:
                     return $"{baseState}:{prettyName} - ready!";
             }
@@ -540,35 +536,7 @@ namespace DCL.Controllers
             switch (sceneLifecycleHandler.state)
             {
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
-
-                    foreach (string componentId in sceneLifecycleHandler.disposableNotReady)
-                    {
-                        if (componentsManagerLegacy.HasSceneSharedComponent(componentId))
-                        {
-                            var component = componentsManagerLegacy.GetSceneSharedComponent(componentId);
-
-                            Debug.Log($"Waiting for: {component.ToString()}");
-
-                            foreach (var entity in component.GetAttachedEntities())
-                            {
-                                var loader = Environment.i.world.state.GetLoaderForEntity(entity);
-
-                                string loadInfo = "No loader";
-
-                                if (loader != null)
-                                {
-                                    loadInfo = loader.ToString();
-                                }
-
-                                Debug.Log($"This shape is attached to {entity.entityId} entity. Click here for highlight it.\nLoading info: {loadInfo}", entity.gameObject);
-                            }
-                        }
-                        else
-                        {
-                            Debug.Log($"Waiting for missing component? id: {componentId}");
-                        }
-                    }
-
+                    sceneLifecycleHandler.sceneResourcesLoadTracker.PrintWaitingResourcesDebugInfo();
                     break;
 
                 default:
@@ -587,8 +555,7 @@ namespace DCL.Controllers
             if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS ||
                 sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY)
             {
-                int sharedComponentsCount = componentsManagerLegacy.GetSceneSharedComponentsCount();
-                loadingProgress = sharedComponentsCount > 0 ? (sharedComponentsCount - sceneLifecycleHandler.disposableNotReadyCount) * 100f / sharedComponentsCount : 100f;
+                loadingProgress = sceneLifecycleHandler.loadingProgress;
             }
 
             OnLoadingStateUpdated?.Invoke(loadingProgress);
