@@ -18,7 +18,7 @@ namespace DCL.WorldRuntime
             }
         }
 
-        public event Action OnResourcesLoaded;
+        public event Action OnComponentsLoaded;
         public event Action OnStatusUpdate;
 
         private readonly IECSComponentsManagerLegacy componentsManager;
@@ -109,7 +109,7 @@ namespace DCL.WorldRuntime
 
             if (disposableNotReady.Count == 0)
             {
-                OnResourcesLoaded?.Invoke();
+                OnComponentsLoaded?.Invoke();
             }
             else
             {

@@ -5,6 +5,9 @@ namespace DCL.ECSRuntime
 {
     public interface IECSComponent
     {
+        /// <summary>
+        /// Released when the component is ready
+        /// </summary>
         event Action<IECSComponent> OnComponentReady;
         
         /// <summary>

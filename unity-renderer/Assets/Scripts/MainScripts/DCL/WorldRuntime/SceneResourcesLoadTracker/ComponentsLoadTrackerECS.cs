@@ -19,9 +19,10 @@ public class ComponentsLoadTrackerECS : IComponentsLoadTracker
         }
     }
     
-    public event Action OnResourcesLoaded;
+    public event Action OnComponentsLoaded;
     public event Action OnStatusUpdate;
     
+    // We are storing the whole component for debugging purposes, this way we can see which models are not loading if needed 
     private List<IECSComponent> componentsNotReady = new List<IECSComponent>();
     private List<IECSComponent> componentsReady = new List<IECSComponent>();
     private IECSComponentsManager componentsManager;
@@ -42,6 +43,15 @@ public class ComponentsLoadTrackerECS : IComponentsLoadTracker
     {
         componentsNotReady.Remove(component);
         componentsReady.Add(component);
+        
+        if (componentsNotReady.Count == 0)
+        {
+            OnComponentsLoaded?.Invoke();
+        }
+        else
+        {
+            OnStatusUpdate?.Invoke();
+        }
     }
 
     public void Dispose()
