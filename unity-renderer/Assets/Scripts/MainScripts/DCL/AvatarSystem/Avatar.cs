@@ -11,8 +11,6 @@ namespace AvatarSystem
     // [ADR 65 - https://github.com/decentraland/adr]
     public class Avatar : IAvatar
     {
-        public bool disposeOnCancellation = true;
-
         private const float RESCALING_BOUNDS_FACTOR = 100f;
         internal const string LOADING_VISIBILITY_CONSTRAIN = "Loading";
         private readonly IAvatarCurator avatarCurator;
@@ -94,9 +92,7 @@ namespace AvatarSystem
             }
             catch (OperationCanceledException)
             {
-                //if(disposeOnCancellation)
-                    Dispose();
-
+                Dispose();
                 throw;
             }
             catch (Exception e)

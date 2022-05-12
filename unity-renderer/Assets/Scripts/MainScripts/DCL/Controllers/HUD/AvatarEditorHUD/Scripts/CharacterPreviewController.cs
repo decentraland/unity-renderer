@@ -64,7 +64,7 @@ public class CharacterPreviewController : MonoBehaviour
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler(),
             new EmoteAnimationEquipper(animator, DataStore.i.emotes) 
-        ) { disposeOnCancellation = false };
+        );
     }
 
     public void UpdateModel(AvatarModel newModel, Action onDone)
