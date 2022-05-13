@@ -9,12 +9,11 @@ namespace DCL
     {
         public PrimitiveMeshModel model;
 
-        private IPrimitiveMeshFactory primitiveMeshFactory;
+        private static readonly IPrimitiveMeshFactory primitiveMeshFactory = new PrimitiveMeshFactory();
 
         public AssetPromise_PrimitiveMesh(PrimitiveMeshModel model)
         {
             this.model = model;
-            primitiveMeshFactory = new PrimitiveMeshFactory();
         }
         
         protected override void OnAfterLoadOrReuse() {  }

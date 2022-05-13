@@ -8,7 +8,7 @@ using UnityEngine;
 
 public static class ECSComponentsUtils
 {
-    public static MeshesInfo GenerateMesh(IDCLEntity entity, Mesh mesh, GameObject gameObject,bool visible, bool withCollisions, bool isPointerBlocker)
+    public static MeshesInfo GenerateMeshInfo(IDCLEntity entity, Mesh mesh, GameObject gameObject,bool visible, bool withCollisions, bool isPointerBlocker)
     {
         MeshesInfo meshesInfo = new MeshesInfo();
         meshesInfo.innerGameObject = gameObject;
@@ -74,7 +74,7 @@ public static class ECSComponentsUtils
         DataStore.i.sceneWorldObjects.RemoveRendereable(sceneId, rendereable);
     }
 
-    public static Rendereable AddRendereableToDataStore(string sceneId, int componentId, Mesh mesh, GameObject gameObject, Renderer[] renderers)
+    public static Rendereable AddRendereableToDataStore(string sceneId, long entityId, Mesh mesh, GameObject gameObject, Renderer[] renderers)
     {
         int triangleCount = mesh.triangles.Length;
 
@@ -88,7 +88,7 @@ public static class ECSComponentsUtils
             };
 
         newRendereable.renderers = new HashSet<Renderer>(renderers); 
-        newRendereable.ownerId = componentId;
+        newRendereable.ownerId = entityId;
 
         DataStore.i.sceneWorldObjects.AddRendereable(sceneId, newRendereable);
         return newRendereable;

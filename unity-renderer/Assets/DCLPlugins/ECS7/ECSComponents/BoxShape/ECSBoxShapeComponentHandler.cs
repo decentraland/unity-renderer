@@ -22,7 +22,7 @@ public class ECSBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>
         Dispose(scene);
     }
 
-    public void Dispose(IParcelScene scene)
+    internal void Dispose(IParcelScene scene)
     {
         if (isDisposed)
             return;
@@ -53,9 +53,9 @@ public class ECSBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>
 
     private void GenerateRenderer(Mesh mesh,IParcelScene scene, IDCLEntity entity, ECSBoxShape model)
     {
-        meshesInfo = ECSComponentsUtils.GenerateMesh(entity,mesh, entity.gameObject,model.visible,model.withCollisions,model.isPointerBlocker);
+        meshesInfo = ECSComponentsUtils.GenerateMeshInfo(entity,mesh, entity.gameObject,model.visible,model.withCollisions,model.isPointerBlocker);
         
         // Note: We should add the rendereable to the data store and dispose when it not longer exists
-        rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id,(int)ECS7_CLASS_ID.BOX_SHAPE,mesh,entity.gameObject,meshesInfo.renderers);
+        rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id,entity.entityId,mesh,entity.gameObject,meshesInfo.renderers);
     }
 }

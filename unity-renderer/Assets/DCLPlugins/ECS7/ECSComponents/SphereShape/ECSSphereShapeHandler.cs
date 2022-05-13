@@ -50,9 +50,9 @@ public class ECSSphereShapeComponentHandler : IECSComponentHandler<ECSSphereShap
 
     private void GenerateRenderer(Mesh mesh,IParcelScene scene, IDCLEntity entity, ECSSphereShape model)
     {
-        meshesInfo = ECSComponentsUtils.GenerateMesh(entity,mesh, entity.gameObject,model.visible,model.withCollisions,model.isPointerBlocker);
+        meshesInfo = ECSComponentsUtils.GenerateMeshInfo(entity,mesh, entity.gameObject,model.visible,model.withCollisions,model.isPointerBlocker);
         
         // Note: We should add the rendereable to the data store and dispose when it not longer exists
-        rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id,(int)ECS7_CLASS_ID.SPHERE_SHAPE,mesh,entity.gameObject,meshesInfo.renderers);
+        rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id,entity.entityId,mesh,entity.gameObject,meshesInfo.renderers);
     }
 }
