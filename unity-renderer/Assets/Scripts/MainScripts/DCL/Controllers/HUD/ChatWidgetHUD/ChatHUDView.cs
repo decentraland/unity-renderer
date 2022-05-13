@@ -118,7 +118,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.text = string.Empty;
         inputField.caretColor = Color.white;
         if (loseFocus)
-            EventSystem.current.SetSelectedGameObject(null);
+            UnfocusInputField();
     }
 
     public override void RefreshControl()
@@ -137,6 +137,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.ActivateInputField();
         inputField.Select();
     }
+
+    public void UnfocusInputField() => EventSystem.current.SetSelectedGameObject(null);
 
     public void SetInputFieldText(string text)
     {

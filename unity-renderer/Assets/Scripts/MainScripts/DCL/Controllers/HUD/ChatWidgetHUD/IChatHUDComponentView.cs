@@ -21,5 +21,6 @@ public interface IChatHUDComponentView
     void ClearAllEntries();
     void ResetInputField(bool loseFocus = false);
     void FocusInputField();
+    void UnfocusInputField();
     void SetInputFieldText(string text);
 }

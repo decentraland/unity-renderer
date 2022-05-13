@@ -145,7 +145,10 @@ public class PublicChatChannelController : IHUD
             isFirstFocusSkipped = true;
         }
         else
+        {
+            chatHudController.UnfocusInputField();
             View.Hide();
+        }
     }
     
     public void Focus() => chatHudController.FocusInputField();

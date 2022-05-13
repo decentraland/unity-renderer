@@ -112,6 +112,7 @@ public class PrivateChatWindowController : IHUD
         }
         else
         {
+            chatHudController.UnfocusInputField();
             View.Hide();
         }
     }
