@@ -133,6 +133,7 @@ public class PublicChatChannelController : IHUD
         {
             skipChatInputTrigger = true;
             chatHudController.ResetInputField(true);
+            ActivatePreview();
             return;
         }
 

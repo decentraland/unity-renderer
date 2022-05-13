@@ -192,6 +192,7 @@ public class PrivateChatWindowController : IHUD
         {
             skipChatInputTrigger = true;
             chatHudController.ResetInputField(true);
+            ActivatePreviewMode();
             return;
         }
 
