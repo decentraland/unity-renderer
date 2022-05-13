@@ -71,7 +71,8 @@ public class HUDFactory : IHUDFactory
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    SceneReferences.i.mouseCatcher);
+                    SceneReferences.i.mouseCatcher,
+                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
                 hudElement = new PublicChatChannelController(ChatController.i,

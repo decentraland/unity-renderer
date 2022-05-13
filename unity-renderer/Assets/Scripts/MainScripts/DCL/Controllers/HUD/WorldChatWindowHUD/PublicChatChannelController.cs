@@ -104,6 +104,8 @@ public class PublicChatChannelController : IHUD
         chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
 
         mouseCatcher.OnMouseLock -= ActivatePreview;
+        
+        toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
         if (View != null)
         {

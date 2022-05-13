@@ -17,9 +17,11 @@ public class PrivateChatWindowController : IHUD
     private readonly ILastReadMessagesService lastReadMessagesService;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IMouseCatcher mouseCatcher;
+    private readonly InputAction_Trigger toggleChatTrigger;
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
+    private bool skipChatInputTrigger;
 
     private string ConversationUserId { get; set; } = string.Empty;
 
@@ -33,7 +35,8 @@ public class PrivateChatWindowController : IHUD
         InputAction_Trigger closeWindowTrigger,
         ILastReadMessagesService lastReadMessagesService,
         ISocialAnalytics socialAnalytics,
-        IMouseCatcher mouseCatcher)
+        IMouseCatcher mouseCatcher,
+        InputAction_Trigger toggleChatTrigger)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
@@ -43,6 +46,7 @@ public class PrivateChatWindowController : IHUD
         this.lastReadMessagesService = lastReadMessagesService;
         this.socialAnalytics = socialAnalytics;
         this.mouseCatcher = mouseCatcher;
+        this.toggleChatTrigger = toggleChatTrigger;
     }
 
     public void Initialize(IPrivateChatComponentView view = null)
@@ -73,6 +77,8 @@ public class PrivateChatWindowController : IHUD
         chatController.OnAddMessage += HandleMessageReceived;
 
         mouseCatcher.OnMouseLock += ActivatePreviewMode;
+        
+        toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
     }
 
     public void Setup(string newConversationUserId)
@@ -138,6 +144,7 @@ public class PrivateChatWindowController : IHUD
         }
 
         mouseCatcher.OnMouseLock -= ActivatePreviewMode;
+        toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
         if (View != null)
         {
@@ -183,6 +190,7 @@ public class PrivateChatWindowController : IHUD
             
         else
         {
+            skipChatInputTrigger = true;
             chatHudController.ResetInputField(true);
             return;
         }
@@ -276,4 +284,17 @@ public class PrivateChatWindowController : IHUD
     private void DeactivatePreviewMode() => View.DeactivatePreview();
 
     private void ActivatePreviewMode() => View.ActivatePreview();
+    
+    private void HandleChatInputTriggered(DCLAction_Trigger action)
+    {
+        // race condition patch caused by unfocusing input field from invalid message on SendChatMessage
+        // chat input trigger is the same key as sending the chat message from the input field
+        if (skipChatInputTrigger)
+        {
+            skipChatInputTrigger = false;
+            return;
+        }
+        if (!View.IsActive) return;
+        chatHudController.FocusInputField();
+    }
 }
