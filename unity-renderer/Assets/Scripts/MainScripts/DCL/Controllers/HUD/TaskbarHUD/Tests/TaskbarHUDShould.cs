@@ -97,7 +97,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
             lastReadMessagesService,
             socialAnalytics,
-            Substitute.For<IMouseCatcher>());
+            Substitute.For<IMouseCatcher>(),
+            ScriptableObject.CreateInstance<InputAction_Trigger>());
         privateChatController.Initialize(new GameObject("PrivateChatWindowMock").AddComponent<PrivateChatWindowMock>());
         controller.AddPrivateChatWindow(privateChatController);
 
@@ -116,7 +117,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             socialAnalytics,
-            Substitute.For<IMouseCatcher>());
+            Substitute.For<IMouseCatcher>(),
+            ScriptableObject.CreateInstance<InputAction_Trigger>());
         publicChatChannelController.Initialize(new GameObject("PublicChatChannelWindowMock").AddComponent<PublicChatChannelWindowMock>());
         controller.AddPublicChatChannel(publicChatChannelController);
 
