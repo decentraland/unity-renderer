@@ -51,7 +51,8 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             Substitute.For<ISocialAnalytics>(),
-            Substitute.For<IMouseCatcher>());
+            Substitute.For<IMouseCatcher>(),
+            ScriptableObject.CreateInstance<InputAction_Trigger>());
 
         view = Substitute.For<IChannelChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();
