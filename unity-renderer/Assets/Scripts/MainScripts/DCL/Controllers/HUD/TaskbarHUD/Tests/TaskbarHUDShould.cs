@@ -149,7 +149,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view.friendsButton.toggleButton.onClick.Invoke();
         view.chatButton.toggleButton.onClick.Invoke();
 
-        Assert.IsTrue(controller.worldChatWindowHud.View.IsActive);
+        Assert.IsTrue(controller.publicChatChannel.View.IsActive);
         Assert.IsFalse(controller.friendsHud.view.IsActive());
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
     }

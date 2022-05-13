@@ -16,7 +16,7 @@ public class TaskbarHUDController : IHUD
     public TaskbarHUDView view;
     public WorldChatWindowController worldChatWindowHud;
     public PrivateChatWindowController privateChatWindow;
-    private PublicChatChannelController publicChatChannel;
+    public PublicChatChannelController publicChatChannel;
     public FriendsHUDController friendsHud;
 
     private IMouseCatcher mouseCatcher;
