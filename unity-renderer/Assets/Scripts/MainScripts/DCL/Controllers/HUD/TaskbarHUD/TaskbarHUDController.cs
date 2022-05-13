@@ -214,6 +214,8 @@ public class TaskbarHUDController : IHUD
         // TODO: temporary deactivated current window fadein/fadeout until we get the full chat notifications feature implemented
         // view.leftWindowContainerAnimator.Hide();
         // view.ToggleAllOff();
+        CloseFriendsWindow();
+        CloseChatList();
     }
 
     public void AddWorldChatWindow(WorldChatWindowController controller)
@@ -319,6 +321,12 @@ public class TaskbarHUDController : IHUD
         isEmotesVisible.Set(false);
         worldChatWindowHud.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
+    }
+
+    private void CloseChatList()
+    {
+        worldChatWindowHud.SetVisibility(false);
+        view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
     }
 
     public void AddPrivateChatWindow(PrivateChatWindowController controller)
