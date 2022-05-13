@@ -325,6 +325,7 @@ public class TaskbarHUDController : IHUD
 
     private void CloseChatList()
     {
+        if (!worldChatWindowHud.View.IsActive) return;
         worldChatWindowHud.SetVisibility(false);
         view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
     }
