@@ -18,8 +18,6 @@ public class WorldChatWindowController : IHUD
     private UserProfile ownUserProfile;
 
     public IWorldChatWindowView View => view;
-    public bool IsInputFieldFocused { get; }
-    public bool IsPreview { get; }
 
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChannel;

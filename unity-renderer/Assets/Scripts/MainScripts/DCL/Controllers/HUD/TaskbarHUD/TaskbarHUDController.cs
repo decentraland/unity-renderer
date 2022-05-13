@@ -173,8 +173,12 @@ public class TaskbarHUDController : IHUD
 
         if (!worldChatWindowHud.View.IsActive
             && !privateChatWindow.View.IsActive
-            && ! publicChatChannel.View.IsActive)
+            && !publicChatChannel.View.IsActive)
             OpenLastActiveChatWindow();
+        else if (privateChatWindow.View.IsActive)
+            privateChatWindow.Focus();
+        else if (publicChatChannel.View.IsActive)
+            publicChatChannel.Focus();
         else
             CloseAnyChatWindow();
     }

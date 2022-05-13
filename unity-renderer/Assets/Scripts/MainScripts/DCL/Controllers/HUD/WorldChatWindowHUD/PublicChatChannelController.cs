@@ -67,7 +67,7 @@ public class PublicChatChannelController : IHUD
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
 
-        mouseCatcher.OnMouseLock += view.ActivatePreview;
+        mouseCatcher.OnMouseLock += ActivatePreview;
 
         initTimeInSeconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
     }
@@ -97,8 +97,7 @@ public class PublicChatChannelController : IHUD
         chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
         chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
 
-        mouseCatcher.OnMouseLock -= View.ActivatePreview;
-        mouseCatcher.OnMouseUnlock -= View.DeactivatePreview;
+        mouseCatcher.OnMouseLock -= ActivatePreview;
 
         if (View != null)
         {
@@ -119,7 +118,7 @@ public class PublicChatChannelController : IHUD
 
         if (!isValidMessage)
         {
-            chatHudController.ResetInputField(true);
+            chatHudController.ResetInputField();
             return;
         }
 
@@ -148,6 +147,8 @@ public class PublicChatChannelController : IHUD
         else
             View.Hide();
     }
+    
+    public void Focus() => chatHudController.FocusInputField();
 
     private async UniTaskVoid ReloadAllChats()
     {
@@ -209,7 +210,7 @@ public class PublicChatChannelController : IHUD
     {
         deactivatePreviewCancellationToken.Cancel();
         deactivatePreviewCancellationToken = new CancellationTokenSource();
-        View.DeactivatePreview();
+        DeactivatePreview();
     }
 
     private void HandleInputFieldDeselected()
@@ -224,7 +225,7 @@ public class PublicChatChannelController : IHUD
         {
             deactivatePreviewCancellationToken.Cancel();
             deactivatePreviewCancellationToken = new CancellationTokenSource();
-            View.DeactivatePreview();
+            DeactivatePreview();
         }
         else
         {
@@ -238,6 +239,10 @@ public class PublicChatChannelController : IHUD
         await UniTask.Delay(3000, cancellationToken: cancellationToken);
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;
-        View.ActivatePreview();
+        ActivatePreview();
     }
+    
+    private void ActivatePreview() => View.ActivatePreview();
+    
+    private void DeactivatePreview() => View.DeactivatePreview();
 }

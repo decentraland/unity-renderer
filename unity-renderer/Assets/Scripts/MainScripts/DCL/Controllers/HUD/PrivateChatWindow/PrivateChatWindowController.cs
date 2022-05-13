@@ -72,7 +72,7 @@ public class PrivateChatWindowController : IHUD
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
 
-        mouseCatcher.OnMouseLock += View.ActivatePreview;
+        mouseCatcher.OnMouseLock += ActivatePreviewMode;
     }
 
     public void Setup(string newConversationUserId)
@@ -108,13 +108,18 @@ public class PrivateChatWindowController : IHUD
             }
 
             View.Show();
-            chatHudController.FocusInputField();
-            MarkUserChatMessagesAsRead();
+            Focus();
         }
         else
         {
             View.Hide();
         }
+    }
+    
+    public void Focus()
+    {
+        chatHudController.FocusInputField();
+        MarkUserChatMessagesAsRead();
     }
 
     public void Dispose()
@@ -131,8 +136,7 @@ public class PrivateChatWindowController : IHUD
             chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
         }
 
-        mouseCatcher.OnMouseLock -= View.ActivatePreview;
-        mouseCatcher.OnMouseUnlock -= View.DeactivatePreview;
+        mouseCatcher.OnMouseLock -= ActivatePreviewMode;
 
         if (View != null)
         {
@@ -227,7 +231,7 @@ public class PrivateChatWindowController : IHUD
     {
         deactivatePreviewCancellationToken.Cancel();
         deactivatePreviewCancellationToken = new CancellationTokenSource();
-        View.DeactivatePreview();
+        DeactivatePreviewMode();
         // The messages from 'conversationUserId' are marked as read if the player clicks on the input field of the private chat
         MarkUserChatMessagesAsRead();
     }
@@ -244,7 +248,7 @@ public class PrivateChatWindowController : IHUD
         {
             deactivatePreviewCancellationToken.Cancel();
             deactivatePreviewCancellationToken = new CancellationTokenSource();
-            View.DeactivatePreview();
+            DeactivatePreviewMode();
         }
         else
         {
@@ -258,6 +262,10 @@ public class PrivateChatWindowController : IHUD
         await UniTask.Delay(3000, cancellationToken: cancellationToken);
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;
-        View.ActivatePreview();
+        ActivatePreviewMode();
     }
+    
+    private void DeactivatePreviewMode() => View.DeactivatePreview();
+
+    private void ActivatePreviewMode() => View.ActivatePreview();
 }

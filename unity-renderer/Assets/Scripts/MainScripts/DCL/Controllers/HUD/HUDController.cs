@@ -134,8 +134,7 @@ public class HUDController : IHUDController
         bool anyInputFieldIsSelected = EventSystem.current != null &&
                                        EventSystem.current.currentSelectedGameObject != null &&
                                        EventSystem.current.currentSelectedGameObject
-                                           .GetComponent<TMPro.TMP_InputField>() != null &&
-                                       (!worldChatWindowHud.IsInputFieldFocused || !worldChatWindowHud.IsPreview);
+                                           .GetComponent<TMPro.TMP_InputField>() != null;
 
         if (anyInputFieldIsSelected ||
             DataStore.i.exploreV2.isOpen.Get() ||
