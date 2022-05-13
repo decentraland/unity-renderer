@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class UIRainbowController : MonoBehaviour
 {
     Material _targetMat;
+    public Image img;
     public Texture mask;
     public bool useTexture;
     public Texture gradientTexture;
@@ -24,7 +25,15 @@ public class UIRainbowController : MonoBehaviour
 
     void Start()
     {
-        _targetMat = GetComponent<Image>().materialForRendering;
+        if(img.maskable)
+        {
+            _targetMat = img.materialForRendering;
+        }
+        else
+        {
+            _targetMat = new Material(img.material);
+            img.material = _targetMat;
+        }
     }
 
 

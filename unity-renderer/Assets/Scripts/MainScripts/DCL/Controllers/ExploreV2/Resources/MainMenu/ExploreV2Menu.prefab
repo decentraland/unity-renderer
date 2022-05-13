@@ -1088,7 +1088,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 108a822a9ba6d6f4aac1bce5c6fd23d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetMat: {fileID: 0}
+  img: {fileID: 4191315971024799078}
   mask: {fileID: 0}
   useTexture: 0
   gradientTexture: {fileID: 0}
@@ -1121,7 +1121,7 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 4
     m_NumAlphaKeys: 2
-  speed: {x: 0, y: 0}
+  speed: {x: 0.025, y: 0}
   rotation: 0
   fill: 1
   rainbowType: 0
