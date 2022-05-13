@@ -4343,21 +4343,6 @@ PrefabInstance:
       propertyPath: m_firstOverflowCharacterIndex
       value: -1
       objectReference: {fileID: 0}
-    - target: {fileID: 6643461750668719960, guid: ffadaebc1af107142a4c7fd23524095c,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.7735849
-      objectReference: {fileID: 0}
-    - target: {fileID: 6643461750668719960, guid: ffadaebc1af107142a4c7fd23524095c,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.45996222
-      objectReference: {fileID: 0}
-    - target: {fileID: 6643461750668719960, guid: ffadaebc1af107142a4c7fd23524095c,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.22258809
-      objectReference: {fileID: 0}
     - target: {fileID: 8022463139147755279, guid: ffadaebc1af107142a4c7fd23524095c,
         type: 3}
       propertyPath: m_Name
