@@ -179,8 +179,6 @@ public class TaskbarHUDController : IHUD
             privateChatWindow.Focus();
         else if (publicChatChannel.View.IsActive)
             publicChatChannel.Focus();
-        else
-            CloseAnyChatWindow();
     }
 
     private void CloseWindowTrigger_OnTriggered(DCLAction_Trigger action)
