@@ -14,6 +14,7 @@ public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
     public bool IsActive => gameObject.activeSelf;
     public RectTransform Transform => (RectTransform) transform;
     public bool IsFocused => false;
+    public bool IsInputFieldSelected => false;
 
     private bool isDestroyed;
 

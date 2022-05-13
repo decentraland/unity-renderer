@@ -175,10 +175,17 @@ public class PrivateChatWindowController : IHUD
                               && !string.IsNullOrWhiteSpace(message.body)
                               && !string.IsNullOrEmpty(message.recipient);
 
-        chatHudController.ResetInputField();
-        chatHudController.FocusInputField();
-
-        if (!isValidMessage) return;
+        if (isValidMessage)
+        {
+            chatHudController.ResetInputField();
+            chatHudController.FocusInputField();
+        }
+            
+        else
+        {
+            chatHudController.ResetInputField(true);
+            return;
+        }
 
         // If Kernel allowed for private messages without the whisper param we could avoid this line
         message.body = $"/w {message.recipient} {message.body}";

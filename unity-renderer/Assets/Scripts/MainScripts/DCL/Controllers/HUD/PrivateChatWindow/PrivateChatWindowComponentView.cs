@@ -3,7 +3,6 @@ using System.Collections;
 using SocialBar.UserThumbnail;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatComponentView

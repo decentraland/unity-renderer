@@ -12,6 +12,7 @@ public class PublicChatChannelWindowMock : MonoBehaviour, IChannelChatWindowView
     public IChatHUDComponentView ChatHUD => Substitute.For<IChatHUDComponentView>();
     public RectTransform Transform => (RectTransform) transform;
     public bool IsFocused => false;
+    public bool IsInputFieldSelected => false;
 
     private void Awake()
     {

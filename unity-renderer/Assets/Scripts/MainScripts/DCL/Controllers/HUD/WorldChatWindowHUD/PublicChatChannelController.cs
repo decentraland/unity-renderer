@@ -18,11 +18,13 @@ public class PublicChatChannelController : IHUD
     private readonly IProfanityFilter profanityFilter;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IMouseCatcher mouseCatcher;
+    private readonly InputAction_Trigger toggleChatTrigger;
     private ChatHUDController chatHudController;
     private double initTimeInSeconds;
     private string channelId;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private bool isFirstFocusSkipped;
+    private bool skipChatInputTrigger;
     internal string lastPrivateMessageRecipient = string.Empty;
 
     private UserProfile ownProfile => userProfileBridge.GetOwn();
@@ -33,7 +35,8 @@ public class PublicChatChannelController : IHUD
         DataStore dataStore,
         IProfanityFilter profanityFilter,
         ISocialAnalytics socialAnalytics,
-        IMouseCatcher mouseCatcher)
+        IMouseCatcher mouseCatcher,
+        InputAction_Trigger toggleChatTrigger)
     {
         this.chatController = chatController;
         this.lastReadMessagesService = lastReadMessagesService;
@@ -42,6 +45,7 @@ public class PublicChatChannelController : IHUD
         this.profanityFilter = profanityFilter;
         this.socialAnalytics = socialAnalytics;
         this.mouseCatcher = mouseCatcher;
+        this.toggleChatTrigger = toggleChatTrigger;
     }
 
     public void Initialize(IChannelChatWindowView view = null)
@@ -68,6 +72,8 @@ public class PublicChatChannelController : IHUD
         chatController.OnAddMessage += HandleMessageReceived;
 
         mouseCatcher.OnMouseLock += ActivatePreview;
+
+        toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
         initTimeInSeconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
     }
@@ -116,14 +122,17 @@ public class PublicChatChannelController : IHUD
         else
             lastPrivateMessageRecipient = null;
 
-        if (!isValidMessage)
+        if (isValidMessage)
         {
             chatHudController.ResetInputField();
+            chatHudController.FocusInputField();
+        }
+        else
+        {
+            skipChatInputTrigger = true;
+            chatHudController.ResetInputField(true);
             return;
         }
-
-        chatHudController.ResetInputField();
-        chatHudController.FocusInputField();
 
         if (isPrivateMessage)
             message.body = $"/w {message.recipient} {message.body}";
@@ -150,8 +159,6 @@ public class PublicChatChannelController : IHUD
             View.Hide();
         }
     }
-    
-    public void Focus() => chatHudController.FocusInputField();
 
     private async UniTaskVoid ReloadAllChats()
     {
@@ -248,4 +255,17 @@ public class PublicChatChannelController : IHUD
     private void ActivatePreview() => View.ActivatePreview();
     
     private void DeactivatePreview() => View.DeactivatePreview();
+    
+    private void HandleChatInputTriggered(DCLAction_Trigger action)
+    {
+        // race condition patch caused by unfocusing input field from invalid message on SendChatMessage
+        // chat input trigger is the same key as sending the chat message from the input field
+        if (skipChatInputTrigger)
+        {
+            skipChatInputTrigger = false;
+            return;
+        }
+        if (!View.IsActive) return;
+        chatHudController.FocusInputField();
+    }
 }
