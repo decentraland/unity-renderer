@@ -127,6 +127,10 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             FocusInputField();
         SetInputFieldText(model.inputFieldText);
         SetFadeoutMode(model.enableFadeoutMode);
+        if (model.isPreviewMode)
+            ActivatePreview();
+        else
+            DeactivatePreview();
         ClearAllEntries();
         foreach (var entry in model.entries)
             AddEntry(entry);
@@ -147,7 +151,29 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.MoveTextEnd(false);
     }
 
-    public void SetFadeoutMode(bool enabled)
+    public void ActivatePreview()
+    {
+        model.isPreviewMode = true;
+        
+        for (var i = 0; i < entries.Count; i++)
+        {
+            var entry = entries[i];
+            entry.ActivatePreview();
+        }
+    }
+
+    public void DeactivatePreview()
+    {
+        model.isPreviewMode = false;
+        
+        for (var i = 0; i < entries.Count; i++)
+        {
+            var entry = entries[i];
+            entry.DeactivatePreview();
+        }
+    }
+
+    private void SetFadeoutMode(bool enabled)
     {
         model.enableFadeoutMode = enabled;
 
@@ -182,6 +208,11 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             chatEntry.SetFadeout(false);
 
         chatEntry.Populate(model);
+        
+        if (this.model.isPreviewMode)
+            chatEntry.ActivatePreviewInstantly();
+        else
+            chatEntry.DeactivatePreviewInstantly();
 
         if (model.messageType == ChatMessage.Type.PUBLIC
             || model.messageType == ChatMessage.Type.PRIVATE)
@@ -231,11 +262,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         foreach (var entry in entries)
             Destroy(entry.gameObject);
         entries.Clear();
-    }
-
-    public void SetGotoPanelStatus(bool isActive)
-    {
-        DataStore.i.HUDs.gotoPanelVisible.Set(isActive);
     }
 
     private bool IsEntryVisible(ChatEntry entry)
@@ -323,6 +349,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [Serializable]
     private struct Model
     {
+        public bool isPreviewMode;
         public bool isInputFieldFocused;
         public string inputFieldText;
         public bool enableFadeoutMode;

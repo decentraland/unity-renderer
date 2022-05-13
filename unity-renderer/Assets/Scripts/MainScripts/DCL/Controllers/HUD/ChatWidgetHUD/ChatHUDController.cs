@@ -109,6 +109,12 @@ public class ChatHUDController : IDisposable
     public void FocusInputField() => view.FocusInputField();
 
     public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
+    
+    public void UnfocusInputField() => view.UnfocusInputField();
+
+    public void ActivatePreview() => view.ActivatePreview();
+    
+    public void DeactivatePreview() => view.DeactivatePreview();
 
     private ChatEntryModel ChatMessageToChatEntry(ChatMessage message)
     {
@@ -254,6 +260,4 @@ public class ChatHUDController : IDisposable
     {
         return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
     }
-
-    public void UnfocusInputField() => view.UnfocusInputField();
 }

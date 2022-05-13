@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
@@ -7,6 +8,7 @@ using DCL.SettingsCommon;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
@@ -21,6 +23,11 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     [SerializeField] private RectTransform contextMenuPositionReference;
     [NonSerialized] public string messageLocalDateTime;
 
+    [Header("Preview Mode")]
+    [SerializeField] private Image previewBackgroundImage;
+    [SerializeField] private Color previewBackgroundColor;
+    [SerializeField] private Color previewFontColor;
+
     private bool fadeEnabled;
     private double fadeoutStartTime;
     private float hoverPanelTimer;
@@ -28,6 +35,9 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     private bool isOverCoordinates;
     private ParcelCoordinates currentCoordinates;
     private ChatEntryModel model;
+    private Coroutine previewInterpolationRoutine;
+    private Color originalBackgroundColor;
+    private Color originalFontColor;
 
     public override ChatEntryModel Model => model;
 
@@ -37,6 +47,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     public event Action<DefaultChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
     public event Action OnCancelHover;
     public event Action OnCancelGotoHover;
+
+    private void Awake()
+    {
+        originalBackgroundColor = previewBackgroundImage.color;
+        originalFontColor = body.color;
+    }
 
     public override void Populate(ChatEntryModel chatEntryModel)
     {
@@ -209,6 +225,53 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         group.interactable = false;
     }
 
+    public override void DeactivatePreview()
+    {
+        if (!gameObject.activeInHierarchy)
+        {
+            previewBackgroundImage.color = originalBackgroundColor;
+            body.color = originalFontColor;
+            return;
+        }
+        
+        if (previewInterpolationRoutine != null)
+            StopCoroutine(previewInterpolationRoutine);
+        
+        previewInterpolationRoutine = StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+    }
+
+    public override void ActivatePreview()
+    {
+        if (!gameObject.activeInHierarchy)
+        {
+            ActivatePreviewInstantly();
+            return;
+        }
+        
+        if (previewInterpolationRoutine != null)
+            StopCoroutine(previewInterpolationRoutine);
+        
+        previewInterpolationRoutine = StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
+    }
+    
+    public override void ActivatePreviewInstantly()
+    {
+        if (previewInterpolationRoutine != null)
+            StopCoroutine(previewInterpolationRoutine);
+        
+        previewBackgroundImage.color = previewBackgroundColor;
+        body.color = previewFontColor;
+    }
+    
+    public override void DeactivatePreviewInstantly()
+    {
+        if (previewInterpolationRoutine != null)
+            StopCoroutine(previewInterpolationRoutine);
+        
+        previewBackgroundImage.color = originalBackgroundColor;
+        body.color = originalFontColor;
+    }
+
     public void DockContextMenu(RectTransform panel)
     {
         panel.pivot = contextMenuPositionReference.pivot;
@@ -316,5 +379,23 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
         return dtDateTime;
+    }
+    
+    private IEnumerator InterpolatePreviewColor(Color backgroundColor, Color fontColor, float duration)
+    {
+        var t = 0f;
+        
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+
+            previewBackgroundImage.color = Color.Lerp(previewBackgroundImage.color, backgroundColor, t / duration);
+            body.color = Color.Lerp(body.color, fontColor, t / duration);
+            
+            yield return null;
+        }
+
+        previewBackgroundImage.color = backgroundColor;
+        body.color = fontColor;
     }
 }

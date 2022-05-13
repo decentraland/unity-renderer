@@ -35,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 180, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 360, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &826062948616953639
@@ -141,6 +141,9 @@ MonoBehaviour:
   showUserName: 1
   hoverPanelPositionReference: {fileID: 1110658662034786025}
   contextMenuPositionReference: {fileID: 650554326901945825}
+  previewBackgroundImage: {fileID: 7437960684281325092}
+  previewBackgroundColor: {r: 0, g: 0, b: 0, a: 0.7058824}
+  previewFontColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &8041991267711887529
 MonoBehaviour:
   m_ObjectHideFlags: 0

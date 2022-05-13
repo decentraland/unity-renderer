@@ -237,6 +237,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: {fileID: 354067051564857684}
+  previewBackgroundImage: {fileID: 354067052128924988}
+  previewBackgroundColor: {r: 0, g: 0, b: 0, a: 0.7058824}
+  previewFontColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &7718504158943562904
 MonoBehaviour:
   m_ObjectHideFlags: 0

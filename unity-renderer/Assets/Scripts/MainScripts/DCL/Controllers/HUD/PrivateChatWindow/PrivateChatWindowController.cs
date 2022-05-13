@@ -285,10 +285,18 @@ public class PrivateChatWindowController : IHUD
         ActivatePreviewMode();
     }
     
-    private void DeactivatePreviewMode() => View.DeactivatePreview();
+    private void DeactivatePreviewMode()
+    {
+        View.DeactivatePreview();
+        chatHudController.DeactivatePreview();
+    }
 
-    private void ActivatePreviewMode() => View.ActivatePreview();
-    
+    private void ActivatePreviewMode()
+    {
+        View.ActivatePreview();
+        chatHudController.ActivatePreview();
+    }
+
     private void HandleChatInputTriggered(DCLAction_Trigger action)
     {
         // race condition patch caused by unfocusing input field from invalid message on SendChatMessage

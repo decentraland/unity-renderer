@@ -23,4 +23,6 @@ public interface IChatHUDComponentView
     void FocusInputField();
     void UnfocusInputField();
     void SetInputFieldText(string text);
+    void ActivatePreview();
+    void DeactivatePreview();
 }

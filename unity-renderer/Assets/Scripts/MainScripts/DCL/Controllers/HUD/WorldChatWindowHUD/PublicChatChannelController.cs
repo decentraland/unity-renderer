@@ -187,6 +187,7 @@ public class PublicChatChannelController : IHUD
         deactivatePreviewCancellationToken.Cancel();
         deactivatePreviewCancellationToken = new CancellationTokenSource();
         View.ActivatePreviewInstantly();
+        chatHudController.ActivatePreview();
     }
 
     private void MarkChatMessagesAsRead() => lastReadMessagesService.MarkAllRead(channelId);
@@ -257,10 +258,18 @@ public class PublicChatChannelController : IHUD
         ActivatePreview();
     }
     
-    private void ActivatePreview() => View.ActivatePreview();
-    
-    private void DeactivatePreview() => View.DeactivatePreview();
-    
+    private void ActivatePreview()
+    {
+        View.ActivatePreview();
+        chatHudController.ActivatePreview();
+    }
+
+    private void DeactivatePreview()
+    {
+        View.DeactivatePreview();
+        chatHudController.DeactivatePreview();
+    }
+
     private void HandleChatInputTriggered(DCLAction_Trigger action)
     {
         // race condition patch caused by unfocusing input field from invalid message on SendChatMessage
