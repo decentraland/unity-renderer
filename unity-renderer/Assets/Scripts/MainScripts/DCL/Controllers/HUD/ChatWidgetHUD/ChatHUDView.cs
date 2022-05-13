@@ -138,7 +138,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.Select();
     }
 
-    public void UnfocusInputField() => EventSystem.current.SetSelectedGameObject(null);
+    public void UnfocusInputField() => EventSystem.current?.SetSelectedGameObject(null);
 
     public void SetInputFieldText(string text)
     {

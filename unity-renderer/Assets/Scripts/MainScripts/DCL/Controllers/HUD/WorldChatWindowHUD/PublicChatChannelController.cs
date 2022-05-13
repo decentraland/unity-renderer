@@ -71,7 +71,8 @@ public class PublicChatChannelController : IHUD
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
 
-        mouseCatcher.OnMouseLock += ActivatePreview;
+        if (mouseCatcher != null)
+            mouseCatcher.OnMouseLock += ActivatePreview;
 
         toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
@@ -103,7 +104,8 @@ public class PublicChatChannelController : IHUD
         chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
         chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
 
-        mouseCatcher.OnMouseLock -= ActivatePreview;
+        if (mouseCatcher != null)
+            mouseCatcher.OnMouseLock -= ActivatePreview;
         
         toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
