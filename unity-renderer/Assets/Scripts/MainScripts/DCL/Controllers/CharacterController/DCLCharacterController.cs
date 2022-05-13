@@ -49,6 +49,7 @@ public class DCLCharacterController : MonoBehaviour
     Vector3 velocity = Vector3.zero;
 
     public bool isWalking { get; private set; } = false;
+    public bool isMovingByUserInput { get; private set; } = false;
     public bool isJumping { get; private set; } = false;
     public bool isGrounded { get; private set; }
     public bool isOnMovingPlatform { get; private set; }
@@ -305,6 +306,11 @@ public class DCLCharacterController : MonoBehaviour
                     forwardTarget += xzPlaneRight;
                 if (characterXAxis.GetValue() < -CONTROLLER_DRIFT_OFFSET)
                     forwardTarget -= xzPlaneRight;
+
+                if (forwardTarget.Equals(Vector3.zero))
+                    isMovingByUserInput = false;
+                else
+                    isMovingByUserInput = true;
 
 
                 forwardTarget.Normalize();
