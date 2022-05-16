@@ -38,7 +38,8 @@ public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
 
     public void Dispose()
     {
-        if (isDestroyed) return;
+        if (!this) return;
+        if (!gameObject) return;
         Destroy(gameObject);
     }
 

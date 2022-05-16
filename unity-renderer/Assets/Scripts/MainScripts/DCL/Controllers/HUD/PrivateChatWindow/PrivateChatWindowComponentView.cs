@@ -57,6 +57,9 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
 
     public override void Dispose()
     {
+        if (!this) return;
+        if (!gameObject) return;
+        
         if (userContextMenu != null)
         {
             userContextMenu.OnBlock -= HandleBlockFromContextMenu;

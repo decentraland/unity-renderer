@@ -132,17 +132,14 @@ public class PrivateChatWindowController : IHUD
 
     public void Dispose()
     {
-        chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
-        View.OnPressBack -= HandlePressBack;
-        View.OnClose -= Hide;
-        View.OnMinimize -= MinimizeView;
-        View.OnUnfriend -= Unfriend;
-
-        if (chatController != null)
+        if (chatHudController != null)
         {
-            chatController.OnAddMessage -= HandleMessageReceived;
+            chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
             chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
         }
+
+        if (chatController != null)
+            chatController.OnAddMessage -= HandleMessageReceived;
 
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock -= ActivatePreviewMode;
@@ -151,6 +148,10 @@ public class PrivateChatWindowController : IHUD
 
         if (View != null)
         {
+            View.OnPressBack -= HandlePressBack;
+            View.OnClose -= Hide;
+            View.OnMinimize -= MinimizeView;
+            View.OnUnfriend -= Unfriend;
             View.OnFocused -= HandleViewFocused;
             View.Dispose();
         }
