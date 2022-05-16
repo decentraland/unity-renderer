@@ -17,8 +17,9 @@ public class FriendsTabComponentView : BaseComponentView
     [SerializeField] private GameObject emptyStateContainer;
     [SerializeField] private GameObject filledStateContainer;
     [SerializeField] private FriendEntry entryPrefab;
-    [SerializeField] private FriendListComponents onlineFriendsList;
-    [SerializeField] private FriendListComponents offlineFriendsList;
+    // [SerializeField] private FriendListComponents onlineFriendsList;
+    // [SerializeField] private FriendListComponents offlineFriendsList;
+    [SerializeField] private FriendListComponents allFriendsList;
     [SerializeField] private FriendListComponents searchResultsFriendList;
     [SerializeField] private SearchBarComponentView searchBar;
     [SerializeField] private UserContextMenu contextMenuPanel;
@@ -53,8 +54,9 @@ public class FriendsTabComponentView : BaseComponentView
             return string.Compare(u1.model.userName, u2.model.userName, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        onlineFriendsList.list.SortingMethod = SortByAlphabeticalOrder;
-        offlineFriendsList.list.SortingMethod = SortByAlphabeticalOrder;
+        // onlineFriendsList.list.SortingMethod = SortByAlphabeticalOrder;
+        // offlineFriendsList.list.SortingMethod = SortByAlphabeticalOrder;
+        allFriendsList.list.SortingMethod = SortByAlphabeticalOrder;
         searchResultsFriendList.list.SortingMethod = SortByAlphabeticalOrder;
         UpdateLayout();
     }
@@ -70,8 +72,9 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void Expand()
     {
-        onlineFriendsList.list.Expand();
-        offlineFriendsList.list.Expand();
+        // onlineFriendsList.list.Expand();
+        // offlineFriendsList.list.Expand();
+        allFriendsList.list.Expand();
     }
 
     public void Show()
@@ -107,8 +110,9 @@ public class FriendsTabComponentView : BaseComponentView
     public void Clear()
     {
         entries.ToList().ForEach(pair => Remove(pair.Key));
-        onlineFriendsList.list.Clear();
-        offlineFriendsList.list.Clear();
+        // onlineFriendsList.list.Clear();
+        // offlineFriendsList.list.Clear();
+        allFriendsList.list.Clear();
         searchResultsFriendList.list.Clear();
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
@@ -126,8 +130,9 @@ public class FriendsTabComponentView : BaseComponentView
 
         entries.Remove(userId);
 
-        offlineFriendsList.list.Remove(userId);
-        onlineFriendsList.list.Remove(userId);
+        // offlineFriendsList.list.Remove(userId);
+        // onlineFriendsList.list.Remove(userId);
+        allFriendsList.list.Remove(userId);
         searchResultsFriendList.list.Remove(userId);
 
         UpdateEmptyOrFilledState();
@@ -149,16 +154,18 @@ public class FriendsTabComponentView : BaseComponentView
         var entry = entries[userId];
         entry.Populate(model);
 
-        if (model.status == PresenceStatus.ONLINE)
-        {
-            offlineFriendsList.list.Remove(userId);
-            onlineFriendsList.list.Add(userId, entry);
-        }
-        else
-        {
-            onlineFriendsList.list.Remove(userId);
-            offlineFriendsList.list.Add(userId, entry);
-        }
+        // if (model.status == PresenceStatus.ONLINE)
+        // {
+        //     offlineFriendsList.list.Remove(userId);
+        //     onlineFriendsList.list.Add(userId, entry);
+        // }
+        // else
+        // {
+        //     onlineFriendsList.list.Remove(userId);
+        //     offlineFriendsList.list.Add(userId, entry);
+        // }
+        
+        allFriendsList.list.Add(userId, entry);
 
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
@@ -188,15 +195,15 @@ public class FriendsTabComponentView : BaseComponentView
         foreach (var friend in model.friends)
             Set(friend.userId, friend.model);
 
-        if (model.isOnlineFriendsExpanded)
-            onlineFriendsList.list.Expand();
-        else
-            onlineFriendsList.list.Collapse();
-
-        if (model.isOfflineFriendsExpanded)
-            offlineFriendsList.list.Expand();
-        else
-            offlineFriendsList.list.Collapse();
+        // if (model.isOnlineFriendsExpanded)
+        //     onlineFriendsList.list.Expand();
+        // else
+        //     onlineFriendsList.list.Collapse();
+        //
+        // if (model.isOfflineFriendsExpanded)
+        //     offlineFriendsList.list.Expand();
+        // else
+        //     offlineFriendsList.list.Collapse();
     }
 
     public void Filter(string search)
@@ -211,28 +218,32 @@ public class FriendsTabComponentView : BaseComponentView
                 Populate(pair.Key, pair.Value.model);
             }
 
-            offlineFriendsList.Show();
-            onlineFriendsList.Show();
+            // offlineFriendsList.Show();
+            // onlineFriendsList.Show();
+            allFriendsList.Show();
         }
 
         if (!string.IsNullOrEmpty(search) && string.IsNullOrEmpty(lastSearch))
         {
-            offlineFriendsList.Hide();
-            onlineFriendsList.Hide();
+            // offlineFriendsList.Hide();
+            // onlineFriendsList.Hide();
+            allFriendsList.Hide();
 
             foreach (var pair in entries)
             {
                 searchResultsFriendList.list.Add(pair.Key, pair.Value);
-                offlineFriendsList.list.Remove(pair.Key);
-                onlineFriendsList.list.Remove(pair.Key);
+                // offlineFriendsList.list.Remove(pair.Key);
+                // onlineFriendsList.list.Remove(pair.Key);
+                allFriendsList.list.Remove(pair.Key);
             }
 
             searchResultsFriendList.Show();
         }
 
         searchResultsFriendList.list.Filter(search);
-        offlineFriendsList.list.Filter(search);
-        onlineFriendsList.list.Filter(search);
+        // offlineFriendsList.list.Filter(search);
+        // onlineFriendsList.list.Filter(search);
+        allFriendsList.list.Filter(search);
         lastSearch = search;
         UpdateCounterLabel();
     }
@@ -287,8 +298,10 @@ public class FriendsTabComponentView : BaseComponentView
 
     private void UpdateCounterLabel()
     {
-        onlineFriendsList.countText.SetText("ONLINE ({0})", onlineFriendsList.list.Count());
-        offlineFriendsList.countText.SetText("OFFLINE ({0})", offlineFriendsList.list.Count());
+        // TODO: activate online/offline friend lists when is working properly on backend
+        // onlineFriendsList.countText.SetText("ONLINE ({0})", onlineFriendsList.list.Count());
+        // offlineFriendsList.countText.SetText("OFFLINE ({0})", offlineFriendsList.list.Count());
+        allFriendsList.countText.SetText("Results ({0})", allFriendsList.list.Count());
         searchResultsFriendList.countText.SetText("Results ({0})", searchResultsFriendList.list.Count());
     }
 
