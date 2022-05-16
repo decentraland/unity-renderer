@@ -102,8 +102,8 @@ namespace DCL.Builder
             isContributor = false;
             isDeployed = true;
             authorName = scene.author;
-            requiredPermissions = scene.requiredPermissions;
-            bannedUsers = scene.bannedUsers;
+            // requiredPermissions = scene.requiredPermissions;
+            // bannedUsers = scene.bannedUsers;
             isEditable = scene.source != Scene.Source.SDK;
             parcels = scene.parcels;
             projectId = scene.projectId;
@@ -111,11 +111,11 @@ namespace DCL.Builder
             source = scene.source;
 
             isMatureContent = false;
-            if (!string.IsNullOrEmpty(scene.contentRating))
-            {
-                isMatureContent = scene.contentRating.Equals(CONTENT_MATURE_SYMBOL, StringComparison.OrdinalIgnoreCase)
-                                  || scene.contentRating.Equals(CONTENT_ADULTS_ONLY_SYMBOL, StringComparison.OrdinalIgnoreCase);
-            }
+            // if (!string.IsNullOrEmpty(scene.contentRating))
+            // {
+            //     isMatureContent = scene.contentRating.Equals(CONTENT_MATURE_SYMBOL, StringComparison.OrdinalIgnoreCase)
+            //                       || scene.contentRating.Equals(CONTENT_ADULTS_ONLY_SYMBOL, StringComparison.OrdinalIgnoreCase);
+            // }
 
             if (scene.parcels.Length < 2)
             {
