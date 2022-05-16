@@ -2,24 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ECSBoxShape 
+namespace DCL.ECSComponents
 {
-    public float[] uvs;
-    
-    public bool withCollisions = true;
-    public bool isPointerBlocker = true;
-    public bool visible = true;
-}
-
-public static class ECSBoxShapeSerialization
-{
-    public static string Serialize(ECSBoxShape component)
+    public class ECSBoxShape
     {
-        return JsonUtility.ToJson(component);
+        public float[] uvs;
+
+        public bool withCollisions = true;
+        public bool isPointerBlocker = true;
+        public bool visible = true;
     }
 
-    public static ECSBoxShape Deserialize(object data)
+    public static class ECSBoxShapeSerialization
     {
-        return JsonUtility.FromJson<ECSBoxShape>(data as string);
+        public static string Serialize(ECSBoxShape component) { return JsonUtility.ToJson(component); }
+
+        public static ECSBoxShape Deserialize(object data) { return JsonUtility.FromJson<ECSBoxShape>(data as string); }
     }
 }

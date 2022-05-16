@@ -23,35 +23,23 @@ public static class ECSComponentsUtils
         // We should remove this relation in the future, the entity shouldn't know about the mesh
         entity.meshesInfo = meshesInfo;
         
-        UpdateRenderer(entity,gameObject, renderers, visible, withCollisions, isPointerBlocker);
+        UpdateRenderer(entity, meshFilter, gameObject, renderers, visible, withCollisions, isPointerBlocker);
         meshesInfo.UpdateRenderersCollection();
         return meshesInfo;
     }
     
-    public static void UpdateRenderer(IDCLEntity entity,GameObject meshGameObject, Renderer[] renderers,bool visible, bool withCollisions, bool isPointerBlocker)
+    public static void UpdateRenderer(IDCLEntity entity, MeshFilter meshFilter, GameObject meshGameObject, Renderer[] renderers,bool visible, bool withCollisions, bool isPointerBlocker)
     {
-        ConfigureVisibility(meshGameObject, visible,renderers);
+        ConfigurePrimitiveShapeVisibility(meshGameObject, visible,renderers);
         
-        CollidersManager.i.ConfigureColliders(meshGameObject, withCollisions, false, entity, CalculateCollidersLayer(withCollisions,isPointerBlocker));
+        // TODO: For better perfomance we should create the correct collider to each primitive shape instead of creating a meshCollider
+        CollidersManager.i.ConfigureCollider(entity, meshFilter, withCollisions, CalculateCollidersLayer(withCollisions,isPointerBlocker));
     }
     
-    public static void ConfigureVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
+    public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
     {
         if (meshGameObject == null)
             return;
-
-        if (!shouldBeVisible)
-        {
-            MaterialTransitionController[] materialTransitionControllers = meshGameObject.GetComponentsInChildren<MaterialTransitionController>();
-
-            for (var i = 0; i < materialTransitionControllers.Length; i++)
-            {
-                Object.Destroy(materialTransitionControllers[i]);
-            }
-        }
-
-        if (meshRenderers == null)
-            meshRenderers = meshGameObject.GetComponentsInChildren<Renderer>(true);
 
         Collider onPointerEventCollider;
 
@@ -94,17 +82,13 @@ public static class ECSComponentsUtils
         return newRendereable;
     }
 
-    public static void DisposePrimitiveShape(AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive,MeshesInfo meshesInfo, string sceneId, Rendereable rendereable)
+    public static void DisposeMeshInfo(MeshesInfo mesheshInfo)
     {
-        if (primitiveMeshPromisePrimitive != null)
-            AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
-        
-        foreach (Renderer renderer in meshesInfo.renderers)
+        foreach (Renderer renderer in mesheshInfo.renderers)
         {
             Utils.CleanMaterials(renderer);
         }
-        meshesInfo.CleanReferences();
-        RemoveRendereableFromDataStore(sceneId,rendereable);
+        mesheshInfo.CleanReferences();
     }
 
     private static int CalculateCollidersLayer(bool withCollisions, bool isPointerBlocker)

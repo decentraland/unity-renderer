@@ -2,22 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ECSSphereShape 
+namespace DCL.ECSComponents
 {
-    public bool withCollisions = true;
-    public bool isPointerBlocker = true;
-    public bool visible = true;
-}
-
-public static class ECSShpereShapeSerialization
-{
-    public static string Serialize(ECSSphereShape component)
+    public class ECSSphereShape
     {
-        return JsonUtility.ToJson(component);
+        public bool withCollisions = true;
+        public bool isPointerBlocker = true;
+        public bool visible = true;
     }
 
-    public static ECSSphereShape Deserialize(object data)
+    public static class ECSShpereShapeSerialization
     {
-        return JsonUtility.FromJson<ECSSphereShape>(data as string);
+        public static string Serialize(ECSSphereShape component) { return JsonUtility.ToJson(component); }
+
+        public static ECSSphereShape Deserialize(object data) { return JsonUtility.FromJson<ECSSphereShape>(data as string); }
     }
 }
