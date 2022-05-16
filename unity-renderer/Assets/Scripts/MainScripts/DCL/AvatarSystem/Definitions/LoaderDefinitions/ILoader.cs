@@ -24,5 +24,6 @@ namespace AvatarSystem
 
         UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default);
         Transform[] GetBones();
+        bool IsValidForBodyShape(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth);
     }
 }
