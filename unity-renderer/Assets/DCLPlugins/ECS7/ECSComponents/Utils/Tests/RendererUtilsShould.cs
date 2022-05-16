@@ -35,11 +35,12 @@ public class RendererUtilsShould
         meshesInfo.colliders = new List<Collider>();
         entity.Configure().meshesInfo.Returns(meshesInfo);
         MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
+        MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
         meshRenderer.enabled = true;
         Renderer[] renderers = new Renderer[] { meshRenderer };
         
         // Act
-        ECSComponentsUtils.UpdateRenderer(entity, gameObject, renderers, false, false, false);
+        ECSComponentsUtils.UpdateRenderer(entity, meshFilter,gameObject, renderers, false, false, false);
 
         // Assert
         Assert.IsFalse(meshRenderer.enabled);
