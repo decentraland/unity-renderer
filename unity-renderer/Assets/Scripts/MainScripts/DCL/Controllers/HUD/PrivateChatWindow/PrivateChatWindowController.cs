@@ -293,8 +293,8 @@ public class PrivateChatWindowController : IHUD
 
     private void ActivatePreviewMode()
     {
-        View.ActivatePreview();
-        chatHudController.ActivatePreview();
+        View?.ActivatePreview();
+        chatHudController?.ActivatePreview();
     }
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)
