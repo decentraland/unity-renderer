@@ -52,7 +52,6 @@ public class ProjectSceneCardViewShould
         metadata.metadata.display.title = "TestTitle";
         metadata.metadata.contact = new CatalystSceneEntityMetadata.Contact();
         metadata.metadata.contact.name = "";
-        // metadata.metadata.policy = new CatalystSceneEntityMetadata.Policy();
         Scene scene = new Scene(metadata, "TestURL");
        
         scene.parcelsCoord = null;

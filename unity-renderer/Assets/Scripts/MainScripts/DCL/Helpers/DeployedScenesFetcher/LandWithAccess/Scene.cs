@@ -18,10 +18,7 @@ namespace DCL.Builder
         public string id => entityId;
         public Source source => deploymentSource;
         public LandWithAccess land => sceneLand;
-        // public string[] requiredPermissions => metadata.requiredPermissions;
-        // public string contentRating => metadata.policy?.contentRating;
-        // public bool voiceEnabled => metadata.policy?.voiceEnabled ?? false;
-        // public string[] bannedUsers => metadata.policy?.blacklist;
+        public string[] requiredPermissions => metadata.requiredPermissions;
         public string projectId => metadata.source?.projectId;
         public bool isEmpty => metadata.source?.isEmpty ?? false;
         public long deployTimestamp => timestamp;

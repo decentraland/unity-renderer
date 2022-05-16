@@ -19,7 +19,6 @@ public class SceneDataShould
         metadata.metadata.display.navmapThumbnail = "TestURl";
         metadata.metadata.contact = new CatalystSceneEntityMetadata.Contact();
         metadata.metadata.contact.name = "";
-        // metadata.metadata.policy = new CatalystSceneEntityMetadata.Policy();
         Scene scene = new Scene(metadata, "TestURL");
         scene.parcelsCoord = new [] { new Vector2Int(1, 1) };
 

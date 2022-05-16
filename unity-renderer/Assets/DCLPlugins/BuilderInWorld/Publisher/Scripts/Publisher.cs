@@ -430,7 +430,6 @@ namespace DCL.Builder
             sceneJson.source.layout.rows = builderScene.manifest.project.rows;
             sceneJson.source.layout.cols = builderScene.manifest.project.cols;
             sceneJson.source.point = new CatalystSceneEntityMetadata.Vector2IntRepresentantion(info.coordsToPublish);
-            //sceneJson.source.point = info.coordsToPublish;
 
             return sceneJson;
         }
