@@ -7,11 +7,11 @@ namespace DCL.ECSComponents
 {
     public class ECSSphereShapeComponentHandler : IECSComponentHandler<ECSSphereShape>
     {
-        private AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
-        internal MeshesInfo meshesInfo;
-        private bool isDisposed = false;
-        private Rendereable rendereable;
         private IParcelScene scene;
+        
+        internal AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
+        internal MeshesInfo meshesInfo;
+        internal Rendereable rendereable;
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { this.scene = scene; }
 

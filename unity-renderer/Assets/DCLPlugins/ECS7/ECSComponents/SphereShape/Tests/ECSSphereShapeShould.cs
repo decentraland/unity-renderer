@@ -32,6 +32,8 @@ namespace DCL.ECSComponents.Test
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
             sceneData.id = "1";
             scene.sceneData.Configure().Returns(sceneData);
+            
+            sphereShapeComponentHandler.OnComponentCreated(scene, entity);
         }
 
         [TearDown]
@@ -66,6 +68,72 @@ namespace DCL.ECSComponents.Test
 
             // Assert
             Assert.IsNull(sphereShapeComponentHandler.meshesInfo);
+        }
+        
+        [Test]
+        public void DisposeMeshorrectly()
+        {
+            // Arrange
+            ECSSphereShape model = new ECSSphereShape();
+            sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            sphereShapeComponentHandler.meshesInfo = null;
+
+            // Act
+            sphereShapeComponentHandler.DisposeMesh();
+
+            // Assert
+            Assert.IsNull(sphereShapeComponentHandler.meshesInfo);
+            Assert.IsNull(sphereShapeComponentHandler.rendereable);
+        }
+        
+        [Test]
+        public void DisposeMeshWithNullPromiseCorrectly()
+        {
+            // Arrange
+            ECSSphereShape model = new ECSSphereShape();
+            sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            sphereShapeComponentHandler.primitiveMeshPromisePrimitive = null;
+
+            // Act
+            sphereShapeComponentHandler.OnComponentRemoved(scene, entity);
+
+            // Assert
+            Assert.IsNull(sphereShapeComponentHandler.meshesInfo);
+            Assert.IsNull(sphereShapeComponentHandler.rendereable);
+        }
+        
+        [Test]
+        public void DisposeMeshWithNullMeshInfoCorrectly()
+        {
+            // Arrange
+            ECSSphereShape model = new ECSSphereShape();
+            sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            sphereShapeComponentHandler.meshesInfo = null;
+
+            // Act
+            sphereShapeComponentHandler.OnComponentRemoved(scene, entity);
+
+            // Assert
+            Assert.IsNull(sphereShapeComponentHandler.meshesInfo);
+            Assert.IsNull(sphereShapeComponentHandler.rendereable);
+            Assert.IsTrue(sphereShapeComponentHandler.primitiveMeshPromisePrimitive.isForgotten);
+        }
+        
+        [Test]
+        public void DisposeMeshWithNullRendereableCorrectly()
+        {
+            // Arrange
+            ECSSphereShape model = new ECSSphereShape();
+            sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            sphereShapeComponentHandler.rendereable = null;
+
+            // Act
+            sphereShapeComponentHandler.OnComponentRemoved(scene, entity);
+
+            // Assert
+            Assert.IsNull(sphereShapeComponentHandler.meshesInfo);
+            Assert.IsNull(sphereShapeComponentHandler.rendereable);
+            Assert.IsTrue(sphereShapeComponentHandler.primitiveMeshPromisePrimitive.isForgotten);
         }
     }
 }

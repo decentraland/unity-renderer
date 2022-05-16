@@ -31,6 +31,8 @@ namespace DCL.ECSComponents.Test
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
             sceneData.id = "1";
             scene.sceneData.Configure().Returns(sceneData);
+            
+            boxShapeComponentHandler.OnComponentCreated(scene, entity);
         }
 
         [TearDown]
@@ -65,6 +67,72 @@ namespace DCL.ECSComponents.Test
 
             // Assert
             Assert.IsNull(boxShapeComponentHandler.meshesInfo);
+        }
+        
+        [Test]
+        public void DisposeMeshorrectly()
+        {
+            // Arrange
+            ECSBoxShape model = new ECSBoxShape();
+            boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            boxShapeComponentHandler.meshesInfo = null;
+
+            // Act
+            boxShapeComponentHandler.DisposeMesh();
+
+            // Assert
+            Assert.IsNull(boxShapeComponentHandler.meshesInfo);
+            Assert.IsNull(boxShapeComponentHandler.rendereable);
+        }
+        
+        [Test]
+        public void DisposeMeshWithNullPromiseCorrectly()
+        {
+            // Arrange
+            ECSBoxShape model = new ECSBoxShape();
+            boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            boxShapeComponentHandler.primitiveMeshPromisePrimitive = null;
+
+            // Act
+            boxShapeComponentHandler.OnComponentRemoved(scene, entity);
+
+            // Assert
+            Assert.IsNull(boxShapeComponentHandler.meshesInfo);
+            Assert.IsNull(boxShapeComponentHandler.rendereable);
+        }
+        
+        [Test]
+        public void DisposeMeshWithNullMeshInfoCorrectly()
+        {
+            // Arrange
+            ECSBoxShape model = new ECSBoxShape();
+            boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            boxShapeComponentHandler.meshesInfo = null;
+
+            // Act
+            boxShapeComponentHandler.OnComponentRemoved(scene, entity);
+
+            // Assert
+            Assert.IsNull(boxShapeComponentHandler.meshesInfo);
+            Assert.IsNull(boxShapeComponentHandler.rendereable);
+            Assert.IsTrue(boxShapeComponentHandler.primitiveMeshPromisePrimitive.isForgotten);
+        }
+        
+        [Test]
+        public void DisposeMeshWithNullRendereableCorrectly()
+        {
+            // Arrange
+            ECSBoxShape model = new ECSBoxShape();
+            boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            boxShapeComponentHandler.rendereable = null;
+
+            // Act
+            boxShapeComponentHandler.OnComponentRemoved(scene, entity);
+
+            // Assert
+            Assert.IsNull(boxShapeComponentHandler.meshesInfo);
+            Assert.IsNull(boxShapeComponentHandler.rendereable);
+            Assert.IsTrue(boxShapeComponentHandler.primitiveMeshPromisePrimitive.isForgotten);
         }
     }
 }
