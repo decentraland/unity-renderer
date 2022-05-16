@@ -21,45 +21,57 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         add => friendRequestsTab.OnFriendRequestApproved += value;
         remove => friendRequestsTab.OnFriendRequestApproved -= value;
     }
+
     public event Action<FriendRequestEntry> OnCancelConfirmation
     {
         add => friendRequestsTab.OnCancelConfirmation += value;
         remove => friendRequestsTab.OnCancelConfirmation -= value;
     }
+
     public event Action<FriendRequestEntry> OnRejectConfirmation
     {
         add => friendRequestsTab.OnRejectConfirmation += value;
         remove => friendRequestsTab.OnRejectConfirmation -= value;
     }
+
     public event Action<string> OnFriendRequestSent
     {
         add => friendRequestsTab.OnFriendRequestSent += value;
         remove => friendRequestsTab.OnFriendRequestSent -= value;
     }
+
     public event Action<FriendEntry> OnWhisper
     {
         add => friendsTab.OnWhisper += value;
         remove => friendsTab.OnWhisper -= value;
     }
+
     public event Action<string> OnDeleteConfirmation
     {
         add => friendsTab.OnDeleteConfirmation += value;
         remove => friendsTab.OnDeleteConfirmation -= value;
     }
+
     public event Action OnClose;
 
     public RectTransform Transform => transform as RectTransform;
-    
+
+    public bool ListByOnlineStatus
+    {
+        set => friendsTab.ListByOnlineStatus = value;
+    }
+
     public static FriendsHUDComponentView Create()
     {
-        var view = Instantiate(Resources.Load<GameObject>("SocialBarV1/FriendsHUD")).GetComponent<FriendsHUDComponentView>();
+        var view = Instantiate(Resources.Load<GameObject>("SocialBarV1/FriendsHUD"))
+            .GetComponent<FriendsHUDComponentView>();
         return view;
     }
 
     public override void Awake()
     {
         base.Awake();
-        
+
         friendsTabFocusButton.onClick.AddListener(() => FocusTab(FRIENDS_LIST_TAB_INDEX));
         friendRequestsTabFocusButton.onClick.AddListener(() => FocusTab(FRIENDS_REQUEST_TAB_INDEX));
         closeButton.onClick.AddListener(() =>
@@ -67,7 +79,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
             OnClose?.Invoke();
             Hide();
         });
-        
+
         friendsTab.Expand();
         friendRequestsTab.Expand();
     }
@@ -147,7 +159,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
                 friendRequestsTab.Set(userId, friendEntryModel, true);
                 break;
             case FriendshipAction.REQUESTED_TO:
-                friendRequestsTab.Set(userId,  friendEntryModel, false);
+                friendRequestsTab.Set(userId, friendEntryModel, false);
                 break;
             case FriendshipAction.DELETED:
                 friendRequestsTab.Remove(userId);

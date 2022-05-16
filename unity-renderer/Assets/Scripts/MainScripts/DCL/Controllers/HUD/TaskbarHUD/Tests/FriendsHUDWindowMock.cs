@@ -12,6 +12,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public event Action<string> OnDeleteConfirmation;
     public event Action OnClose;
     public RectTransform Transform => (RectTransform) transform;
+    public bool ListByOnlineStatus { get; set; }
 
     private bool isDestroyed;
 
@@ -45,8 +46,6 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     {
     }
 
-    public bool IsFriendListFocused() => false;
-
     public bool IsFriendListCreationReady() => false;
 
     public int GetReceivedFriendRequestCount() => 0;
@@ -74,10 +73,6 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     }
 
     public bool IsActive() => gameObject.activeSelf;
-
-    public void SortEntriesByTimestamp(FriendEntryBase.Model user, ulong timestamp)
-    {
-    }
 
     public void ShowRequestSendError(FriendRequestError error)
     {

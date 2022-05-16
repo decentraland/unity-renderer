@@ -142,7 +142,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         // Initialize friends HUD
         notificationsController.Initialize(new NotificationHUDController());
 
-        FriendsHUDController friendsHudController = new FriendsHUDController();
+        FriendsHUDController friendsHudController = new FriendsHUDController(new DataStore());
         friendsHudController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile(), socialAnalytics);
 
         Assert.IsTrue(view != null, "Friends hud view is null?");
@@ -152,7 +152,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         view.OnPressBack += Raise.Event<Action>();
         yield return null;
 
-        Assert.AreEqual(true, friendsHudController.view.IsActive());
+        Assert.AreEqual(true, friendsHudController.View.IsActive());
 
         friendsHudController.Dispose();
         notificationsController.Dispose();

@@ -152,7 +152,7 @@ public class TaskbarHUDController : IHUD
 
         mouseCatcher.UnlockCursor();
 
-        if (!friendsHud.view.IsActive())
+        if (!friendsHud.View.IsActive())
         {
             view.leftWindowContainerAnimator.Show();
             OpenFriendsWindow();
@@ -383,21 +383,21 @@ public class TaskbarHUDController : IHUD
 
     public void AddFriendsWindow(FriendsHUDController controller)
     {
-        if (controller?.view == null)
+        if (controller?.View == null)
         {
             Debug.LogWarning("AddFriendsWindow >>> Friends window doesn't exist yet!");
             return;
         }
 
-        if (controller.view.Transform.parent == view.leftWindowContainer)
+        if (controller.View.Transform.parent == view.leftWindowContainer)
             return;
 
-        controller.view.Transform.SetParent(view.leftWindowContainer, false);
+        controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
 
         friendsHud = controller;
         view.ShowFriendsButton();
-        friendsHud.view.OnClose += () => view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Friends);
+        friendsHud.View.OnClose += () => view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Friends);
     }
 
     private void InitializeEmotesSelector(bool current, bool previous) 

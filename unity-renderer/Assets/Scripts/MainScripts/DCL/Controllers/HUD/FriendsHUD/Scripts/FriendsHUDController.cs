@@ -4,21 +4,30 @@ using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
 using UnityEngine;
 
 public class FriendsHUDController : IHUD
 {
-    internal const string PLAYER_PREFS_SEEN_FRIEND_COUNT = "SeenFriendsCount";
-    public IFriendsHUDComponentView view { get; private set; }
+    private const string PLAYER_PREFS_SEEN_FRIEND_COUNT = "SeenFriendsCount";
 
     private readonly Dictionary<string, FriendEntryBase.Model> friends = new Dictionary<string, FriendEntryBase.Model>();
+    private readonly DataStore dataStore;
+    
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
     private UserProfile ownUserProfile;
     
+    public IFriendsHUDComponentView View { get; private set; }
+    
     public event Action<string> OnPressWhisper;
     public event Action OnFriendsOpened;
     public event Action OnFriendsClosed;
+
+    public FriendsHUDController(DataStore dataStore)
+    {
+        this.dataStore = dataStore;
+    }
 
     // TODO: refactor into dependency injection, solve static usages & define better responsibilities controller<->view
     public void Initialize(
@@ -28,7 +37,7 @@ public class FriendsHUDController : IHUD
         IFriendsHUDComponentView view = null)
     {
         view ??= FriendsHUDComponentView.Create();
-        this.view = view;     
+        View = view;     
         this.friendsController = friendsController;
         this.socialAnalytics = socialAnalytics;
 
@@ -38,7 +47,8 @@ public class FriendsHUDController : IHUD
             this.friendsController.OnUpdateUserStatus += OnUpdateUserStatus;
             this.friendsController.OnFriendNotFound += OnFriendNotFound;
         }
-        
+
+        view.ListByOnlineStatus = dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_by_online_status");
         view.OnFriendRequestApproved += HandleRequestAccepted;
         view.OnCancelConfirmation += HandleRequestCancelled;
         view.OnRejectConfirmation += HandleRequestRejected;
@@ -73,7 +83,7 @@ public class FriendsHUDController : IHUD
     private void HandleFriendsInitialized()
     {
         friendsController.OnInitialized -= HandleFriendsInitialized;
-        view.HideSpinner();
+        View.HideSpinner();
     }
 
     private void OnUserProfileUpdate(UserProfile profile)
@@ -86,7 +96,7 @@ public class FriendsHUDController : IHUD
         else
             allBlockedUsers = new HashSet<string>();
 
-        var entries = view.GetAllEntries();
+        var entries = View.GetAllEntries();
         int entriesCount = entries.Count;
 
         for (int i = 0; i < entriesCount; i++)
@@ -100,7 +110,7 @@ public class FriendsHUDController : IHUD
     {
         if (AreAlreadyFriends(userNameOrId))
         {
-            view.ShowRequestSendError(FriendRequestError.AlreadyFriends);
+            View.ShowRequestSendError(FriendRequestError.AlreadyFriends);
         }
         else
         {
@@ -113,7 +123,7 @@ public class FriendsHUDController : IHUD
             if (ownUserProfile != null)
                 socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userNameOrId, 0, PlayerActionSource.FriendsHUD);
 
-            view.ShowRequestSendSuccess();
+            View.ShowRequestSendSuccess();
         }
     }
     
@@ -153,10 +163,10 @@ public class FriendsHUDController : IHUD
             model.realmLayerName = string.Empty;
         }
 
-        view.UpdateEntry(userId, model);
+        View.UpdateEntry(userId, model);
     }
 
-    void OnFriendNotFound(string name) { view.DisplayFriendUserNotFound(); }
+    void OnFriendNotFound(string name) { View.DisplayFriendUserNotFound(); }
 
     private void OnUpdateFriendship(string userId, FriendshipAction friendshipAction)
     {
@@ -178,21 +188,21 @@ public class FriendsHUDController : IHUD
 
         if (ownUserProfile != null && ownUserProfile.blocked != null)
             friendEntryModel.blocked = ownUserProfile.blocked.Contains(userId);
-        view.UpdateFriendshipStatus(userId, friendshipAction, friendEntryModel);
+        View.UpdateFriendshipStatus(userId, friendshipAction, friendEntryModel);
         UpdateNotificationsCounter();
     }
 
     private void UpdateNotificationsCounter()
     {
         //NOTE(Brian): If friends tab is already active, update and save this value instantly
-        if (view.IsActive())
+        if (View.IsActive())
         {
             PlayerPrefsUtils.SetInt(PLAYER_PREFS_SEEN_FRIEND_COUNT, friendsController.friendCount);
             PlayerPrefsUtils.Save();
         }
 
         var pendingFriendRequestsSO = NotificationScriptableObjects.pendingFriendRequests;
-        int receivedRequestsCount = view.GetReceivedFriendRequestCount();
+        int receivedRequestsCount = View.GetReceivedFriendRequestCount();
 
         if (pendingFriendRequestsSO != null)
         {
@@ -278,9 +288,9 @@ public class FriendsHUDController : IHUD
             friendsController.OnUpdateUserStatus -= OnUpdateUserStatus;
         }
 
-        if (view != null)
-            view.OnClose -= HandleViewClosed;
-        view?.Destroy();
+        if (View != null)
+            View.OnClose -= HandleViewClosed;
+        View?.Destroy();
 
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OnUserProfileUpdate;
@@ -289,9 +299,9 @@ public class FriendsHUDController : IHUD
     public void SetVisibility(bool visible)
     {
         if (visible)
-            view.Show();
+            View.Show();
         else
-            view.Hide();
+            View.Hide();
 
         if (visible)
         {

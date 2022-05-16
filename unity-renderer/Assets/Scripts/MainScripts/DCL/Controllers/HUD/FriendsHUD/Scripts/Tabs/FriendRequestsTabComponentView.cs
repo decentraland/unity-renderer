@@ -241,7 +241,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private void OnSearchInputValueChanged(string friendUserName)
     {
         if (!string.IsNullOrEmpty(friendUserName))
-            NotificationsController.i?.DismissAllNotifications(FriendsHUDView.NOTIFICATIONS_ID);
+            NotificationsController.i?.DismissAllNotifications(NOTIFICATIONS_ID);
     }
 
     private void OnFriendRequestReceivedAccepted(FriendRequestEntry requestEntry)

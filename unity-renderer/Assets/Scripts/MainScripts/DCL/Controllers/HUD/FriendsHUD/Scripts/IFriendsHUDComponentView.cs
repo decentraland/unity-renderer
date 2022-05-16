@@ -13,6 +13,7 @@ public interface IFriendsHUDComponentView
     event Action OnClose;
     
     RectTransform Transform { get; }
+    bool ListByOnlineStatus { set; }
 
     void HideSpinner();
     void ShowSpinner();

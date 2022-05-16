@@ -5168,6 +5168,14 @@ MonoBehaviour:
   filledStateContainer: {fileID: 8631820522309958958}
   entryPrefab: {fileID: 5210039636499982884, guid: 9e2a899148a8245639521f83c6a46c35,
     type: 3}
+  onlineFriendsList:
+    list: {fileID: 1601438812487812336}
+    countText: {fileID: 4232341704070456539}
+    headerContainer: {fileID: 3778124598785868284}
+  offlineFriendsList:
+    list: {fileID: 6803596437606588523}
+    countText: {fileID: 5003485521969263545}
+    headerContainer: {fileID: 1781201262405527982}
   allFriendsList:
     list: {fileID: 2746461878533739154}
     countText: {fileID: 9099417614628500159}
@@ -5179,9 +5187,9 @@ MonoBehaviour:
   searchBar: {fileID: 3868216263017426092}
   contextMenuPanel: {fileID: 2931223222951668588}
   model:
-    friends: []
     isOnlineFriendsExpanded: 1
     isOfflineFriendsExpanded: 1
+    listByOnlineStatus: 0
 --- !u!114 &5628837750012038765
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System.Collections;
+using DCL;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -24,11 +25,11 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         notificationsController.Initialize(new NotificationHUDController());
 
         userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
-        controller = new FriendsHUDController();
+        controller = new FriendsHUDController(new DataStore());
         friendsController = new FriendsController_Mock();
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         controller.Initialize(friendsController, UserProfile.GetOwnUserProfile(), socialAnalytics);
-        view = controller.view;
+        view = controller.View;
 
         Assert.IsTrue(view != null, "Friends hud view is null?");
         Assert.IsTrue(controller != null, "Friends hud controller is null?");
@@ -111,7 +112,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         Assert.IsNotNull(entry);
 
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.DELETED);
-        entry = controller.view.GetEntry(id) as FriendEntry;
+        entry = controller.View.GetEntry(id) as FriendEntry;
         Assert.IsNull(entry);
     }
 
@@ -124,7 +125,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_FROM);
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.REJECTED);
 
-        var entry = controller.view.GetEntry(id);
+        var entry = controller.View.GetEntry(id);
         Assert.IsNull(entry);
     }
 
@@ -135,10 +136,10 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id, FriendshipAction.NONE);
 
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_TO);
-        var entry = controller.view.GetEntry(id);
+        var entry = controller.View.GetEntry(id);
         Assert.IsNotNull(entry);
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.CANCELLED);
-        entry = controller.view.GetEntry(id);
+        entry = controller.View.GetEntry(id);
         Assert.IsNull(entry);
     }
 
