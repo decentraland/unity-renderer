@@ -1,0 +1,13 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SpinnerSingleColor
+  m_Controller: {fileID: 9100000, guid: e12c11d5f7a2cd845aa17f4f01916655, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 2d15225b42a1a44499ea555350bbdb9c, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: a20e8ecc13e1b184a8acdb66eca14a54, type: 2}

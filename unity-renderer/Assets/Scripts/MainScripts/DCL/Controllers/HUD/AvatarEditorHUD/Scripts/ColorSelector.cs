@@ -3,8 +3,8 @@ using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(ToggleGroup))]
-public class ColorSelector : MonoBehaviour
+[RequireComponent(typeof(ToggleGroup))]     //Temporary untill ColorSelector and its dependencies are ported to UIComponents
+public class ColorSelector : MonoBehaviour, IColorSelector
 {
     [SerializeField]
     private ColorToggle colorTogglePrefab;
@@ -12,7 +12,7 @@ public class ColorSelector : MonoBehaviour
     [SerializeField]
     private RectTransform colorContainer;
 
-    public event System.Action<Color> OnColorChanged;
+    public event System.Action<Color> OnColorSelectorChange;
 
     private ColorToggle currentToggle;
 
@@ -28,6 +28,14 @@ public class ColorSelector : MonoBehaviour
             newToggle.Initialize(colors[i], false);
             newToggle.OnClicked += ToggleClicked;
             colorToggles.Add(newToggle);
+        }
+    }
+
+    public void Cleanup() 
+    {
+        for (int i = 0; i < colorToggles.Count; i++) 
+        {
+            DestroyImmediate(colorToggles[i]);
         }
     }
 
@@ -49,7 +57,7 @@ public class ColorSelector : MonoBehaviour
             return;
 
         Select(toggle);
-        OnColorChanged?.Invoke(currentToggle.color);
+        OnColorSelectorChange?.Invoke(currentToggle.color);
     }
 
     private void Select(ColorToggle colorToggle)
@@ -73,7 +81,7 @@ public class ColorSelector : MonoBehaviour
             return;
 
         Select(toggle);
-        OnColorChanged?.Invoke(currentToggle.color);
+        OnColorSelectorChange?.Invoke(currentToggle.color);
     }
 
     private ColorToggle GetColorToggle(Color color)
