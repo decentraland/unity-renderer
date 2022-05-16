@@ -105,9 +105,9 @@ namespace Test.AvatarSystem
                 new WearableItem { id = "new2" },
             });
 
-            Assert.AreEqual(9, dataStore.emotesOnUse.GetRefCount(("female", "old0")));
-            Assert.AreEqual(10, dataStore.emotesOnUse.GetRefCount(("female", "old1")));
-            Assert.AreEqual(11, dataStore.emotesOnUse.GetRefCount(("female", "old2")));
+            Assert.AreEqual(10, dataStore.emotesOnUse.GetRefCount(("female", "old0")));
+            Assert.AreEqual(11, dataStore.emotesOnUse.GetRefCount(("female", "old1")));
+            Assert.AreEqual(12, dataStore.emotesOnUse.GetRefCount(("female", "old2")));
             Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("male", "new0")));
             Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("male", "new1")));
             Assert.AreEqual(1, dataStore.emotesOnUse.GetRefCount(("male", "new2")));

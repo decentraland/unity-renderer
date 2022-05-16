@@ -56,7 +56,6 @@ namespace AvatarSystem
 
             try
             {
-                visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
                 WearableItem bodyshape = null;
                 WearableItem eyes = null;
                 WearableItem eyebrows = null;
@@ -65,6 +64,11 @@ namespace AvatarSystem
                 List<WearableItem> emotes = null;
 
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
+
+                if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
+                {
+                    visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
+                }
 
                 await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
 
