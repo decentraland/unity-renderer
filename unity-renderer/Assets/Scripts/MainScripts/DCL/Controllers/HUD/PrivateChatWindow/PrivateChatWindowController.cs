@@ -175,7 +175,6 @@ public class PrivateChatWindowController : IHUD
 
     private void HandleSendChatMessage(ChatMessage message)
     {
-        if (string.IsNullOrEmpty(message.body)) return;
         if (string.IsNullOrEmpty(conversationProfile.userName)) return;
 
         message.messageType = ChatMessage.Type.PRIVATE;
