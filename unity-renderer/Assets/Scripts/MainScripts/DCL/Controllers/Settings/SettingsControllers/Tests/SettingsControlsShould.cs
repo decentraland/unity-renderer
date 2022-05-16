@@ -50,7 +50,6 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         private void SetupReferences()
         {
             legacySystems.Add(MainSceneFactory.CreateEnvironment());
-            legacySystems.Add(MainSceneFactory.CreateSettingsController());
             legacySystems.AddRange(MainSceneFactory.CreatePlayerSystems());
 
             urpAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
