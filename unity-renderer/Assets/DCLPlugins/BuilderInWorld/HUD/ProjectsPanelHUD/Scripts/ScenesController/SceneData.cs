@@ -35,9 +35,6 @@ namespace DCL.Builder
     [Serializable]
     internal class SceneData : ISceneData
     {
-        private const string CONTENT_MATURE_SYMBOL = "M";
-        private const string CONTENT_ADULTS_ONLY_SYMBOL = "AO";
-
         public Vector2Int coords;
         public Vector2Int size;
         public string id;
