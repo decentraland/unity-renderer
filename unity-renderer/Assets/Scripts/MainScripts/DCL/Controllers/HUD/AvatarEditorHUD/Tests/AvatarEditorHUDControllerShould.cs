@@ -200,9 +200,9 @@ namespace AvatarEditorHUD_Tests
         public void ProcessNotSupportedClickedHairColor()
         {
             var current = controller.myModel.hairColor;
-            controller.HairColorClicked(hairColorList.colors[0] * new Color(0.2f, 0.4f, 0.2f)); //Getting an arbitrary/invalid color
+            controller.HairColorClicked(hairColorList.colors[0] * new Color(0.2f, 0.4f, 0.2f));
 
-            Assert.AreEqual(current, controller.myModel.hairColor);
+            Assert.AreEqual(hairColorList.colors[0] * new Color(0.2f, 0.4f, 0.2f), controller.myModel.hairColor);
         }
 
         [Test]
@@ -217,9 +217,9 @@ namespace AvatarEditorHUD_Tests
         public void ProcessNotSupportedClickedSkinColor()
         {
             var current = controller.myModel.skinColor;
-            controller.SkinColorClicked(skinColorList.colors[0] * new Color(0.2f, 0.4f, 0.2f)); //Getting an arbitrary/invalid color
+            controller.SkinColorClicked(skinColorList.colors[0] * new Color(0.2f, 0.4f, 0.2f));
 
-            Assert.AreEqual(current, controller.myModel.skinColor);
+            Assert.AreEqual(skinColorList.colors[0] * new Color(0.2f, 0.4f, 0.2f), controller.myModel.skinColor);
         }
 
         [Test]
@@ -234,9 +234,9 @@ namespace AvatarEditorHUD_Tests
         public void ProcessNotSupportedClickedEyesColor()
         {
             var current = controller.myModel.eyesColor;
-            controller.EyesColorClicked(eyeColorList.colors[0] * new Color(0.2f, 0.4f, 0.2f)); //Getting an arbitrary/invalid color
+            controller.EyesColorClicked(eyeColorList.colors[0] * new Color(0.2f, 0.4f, 0.2f));
 
-            Assert.AreEqual(current, controller.myModel.eyesColor);
+            Assert.AreEqual(eyeColorList.colors[0] * new Color(0.2f, 0.4f, 0.2f), controller.myModel.eyesColor);
         }
 
         [Test]
