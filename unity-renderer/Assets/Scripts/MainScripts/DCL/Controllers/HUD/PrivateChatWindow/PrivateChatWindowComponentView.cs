@@ -70,6 +70,9 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
 
     public void ActivatePreview()
     {
+        if (!this) return;
+        if (!gameObject) return;
+        
         const float alphaTarget = 0f;
         
         if (!gameObject.activeInHierarchy)
