@@ -1,8 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
-using DCL.ECSComponents;
-using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
 using DCL.SettingsCommon;
@@ -12,11 +9,10 @@ using NUnit.Framework;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents.Test
 {
-    public class ECSAudioSourceShould : IntegrationTestSuite
+    public class ECSAudioSourceIntegrationTest : IntegrationTestSuite
     {
         private IDCLEntity entity;
         private IParcelScene scene;
@@ -33,6 +29,8 @@ namespace DCL.ECSComponents.Test
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            Settings.CreateSharedInstance(new DefaultSettingsFactory());
+            
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
@@ -41,13 +39,13 @@ namespace DCL.ECSComponents.Test
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.id = "1";
+            sceneData.id = "current-scene";
 
             ContentProvider_Dummy providerDummy = new ContentProvider_Dummy();
 
             scene.sceneData.Configure().Returns(sceneData);
             scene.Configure().contentProvider.Returns(providerDummy);
-
+            scene.Configure().isPersistent.Returns(false);
             audioSourceComponentHandler.OnComponentCreated(scene, entity);
         }
 
@@ -59,99 +57,90 @@ namespace DCL.ECSComponents.Test
             GameObject.Destroy(gameObject);
         }
         
-        [UnityTest]
-        public IEnumerator UpdatePlayingModelComponentCorrectly()
+        [Test]
+        public void VolumeWhenAudioCreatedWithNoUserInScene()
         {
             // Arrange
+            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+            
             ECSAudioSource model = CreateAudioSourceModel();
-            model.playing = true;
-            model.loop = false;
-
+            model.volume = 1f;
+            
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
-            yield return new WaitUntil( () => audioSourceComponentHandler.promiseAudioClip.state == AssetPromiseState.FINISHED);
-
             // Assert
-            Assert.AreEqual(audioSourceComponentHandler.audioSource.isPlaying, true);
+            Assert.AreEqual(0f, audioSourceComponentHandler.audioSource.volume);
         }
 
         [Test]
-        public void UpdateLoopModelComponentCorrectly()
+        public void VolumeWhenAudioCreatedWithUserInScene()
         {
             // Arrange
+            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            
             ECSAudioSource model = CreateAudioSourceModel();
-            model.loop = false;
-            
-            ECSAudioSource model2 = CreateAudioSourceModel();
-            model2.loop = true;
-            
-            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            model.volume = 1f;
             
             // Act
-            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Assert
-            Assert.AreEqual(audioSourceComponentHandler.audioSource.loop, model2.loop);
+            Assert.AreEqual(1f, audioSourceComponentHandler.audioSource.volume);
         }
 
         [Test]
-        public void UpdatePitchModelComponentCorrectly()
+        public void VolumeIsMutedWhenUserLeavesScene()
         {
             // Arrange
+            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            
             ECSAudioSource model = CreateAudioSourceModel();
-            model.pitch = 0f;
-            
-            ECSAudioSource model2 = CreateAudioSourceModel();
-            model2.pitch = 1f;
-            
+            model.volume = 1f;
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
             
             // Act
-            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
+            CommonScriptableObjects.sceneID.Set("unexistent-scene");
 
             // Assert
-            Assert.AreEqual(audioSourceComponentHandler.audioSource.pitch, model2.pitch);
+            Assert.AreEqual(0f, audioSourceComponentHandler.audioSource.volume);
+        }
+
+        [Test]
+        public void VolumeIsUnmutedWhenUserEntersScene()
+        {
+            // Arrange
+            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+
+            ECSAudioSource model = CreateAudioSourceModel();
+            model.volume = 1f;
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Act
+            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+
+            // Assert
+            Assert.AreEqual(1f, audioSourceComponentHandler.audioSource.volume);
+        }
+
+        [Test]
+        public void VolumeIsNotMutedForPersistentScenes()
+        {
+            // Arrange
+            scene.Configure().isPersistent.Returns(true);
+            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            
+            ECSAudioSource model = CreateAudioSourceModel();
+            model.volume = 1f;
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Act
+            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+
+            // Assert
+            Assert.AreEqual(1f, audioSourceComponentHandler.audioSource.volume);
         }
         
-        [Test]
-        public void UpdateVolumeModelComponentCorrectly()
-        {
-            // Arrange
-            Settings.CreateSharedInstance(new DefaultSettingsFactory());
-            CommonScriptableObjects.sceneID.Set("1");
-            
-            ECSAudioSource model = CreateAudioSourceModel();
-            model.volume = 0f;
-            
-            ECSAudioSource model2 = CreateAudioSourceModel();
-            model2.volume = 1f;
-            
-            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
-            
-            // Act
-            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
-
-            // Assert
-            Assert.AreEqual(audioSourceComponentHandler.audioSource.volume, model2.volume);
-        }
-
-        [UnityTest]
-        public IEnumerator DisposeComponentCorrectly()
-        {
-            // Arrange
-            ECSAudioSource model = CreateAudioSourceModel();
-            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
-
-            // Act
-            audioSourceComponentHandler.OnComponentRemoved(scene, entity);
-            yield return null;
-
-            // Assert
-            Assert.IsNull(audioSourceComponentHandler.audioSource);
-            Assert.IsTrue(audioSourceComponentHandler.promiseAudioClip.isForgotten);
-        }
-
         private ECSAudioSource CreateAudioSourceModel()
         {
             ECSAudioSource model = new ECSAudioSource();

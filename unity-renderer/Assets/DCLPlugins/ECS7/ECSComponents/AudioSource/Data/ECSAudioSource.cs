@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ECSAudioSource 
+namespace DCL.ECSComponents
 {
-    public bool playing = false;
-    public float volume = 1f;
-    public bool loop = false;
-    public float pitch = 1f;
-    public long playedAtTimestamp = 0;
+    public class ECSAudioSource
+    {
+        public bool playing = false;
+        public float volume = 1f;
+        public bool loop = false;
+        public float pitch = 1f;
+        public long playedAtTimestamp = 0;
 
-    // This is the model of the audio clip
-    public string audioClipUrl;
+        // This is the model of the audio clip
+        public string audioClipUrl;
+    }
 }

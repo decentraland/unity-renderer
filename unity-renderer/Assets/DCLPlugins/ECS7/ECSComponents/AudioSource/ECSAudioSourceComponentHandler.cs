@@ -17,7 +17,6 @@ namespace DCL.ECSComponents
         internal AudioSource audioSource;
         internal AssetPromise_AudioClip promiseAudioClip;
         
-        private bool isDestroyed = false;
         public long playedAtTimestamp = 0;
         
         // TODO: We should figure out how to change this value
@@ -42,11 +41,8 @@ namespace DCL.ECSComponents
 
         private void Dispose()
         {
-            if (isDestroyed)
-                return;
-            isDestroyed = true;
-            
-            AssetPromiseKeeper_AudioClip.i.Forget(promiseAudioClip);
+            if(promiseAudioClip != null)
+                AssetPromiseKeeper_AudioClip.i.Forget(promiseAudioClip);
             
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
 
@@ -54,15 +50,24 @@ namespace DCL.ECSComponents
                 Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
-            GameObject.Destroy(audioSource);
+            if (audioSource != null)
+            {
+                GameObject.Destroy(audioSource);
+                audioSource = null;
+            }
         }
         
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSAudioSource model)
         {
+            bool isSameClip = model.audioClipUrl == this.model?.audioClipUrl;
             this.scene = scene;
             this.model = model;
             
             ApplyCurrentModel();
+            
+            // If the clip has changed, we need to forget the old clip
+            if(!isSameClip && promiseAudioClip != null)
+                AssetPromiseKeeper_AudioClip.i.Forget(promiseAudioClip);
             
             promiseAudioClip = new AssetPromise_AudioClip(model.audioClipUrl, scene.contentProvider);
             promiseAudioClip.OnSuccessEvent += OnComplete;
@@ -181,9 +186,8 @@ namespace DCL.ECSComponents
             float volume = 0;
 
             if (scene.isPersistent || scene.sceneData.id == currentSceneId)
-            {
                 volume = model.volume;
-            }
+            
 
             audioSource.volume = volume;
         }
