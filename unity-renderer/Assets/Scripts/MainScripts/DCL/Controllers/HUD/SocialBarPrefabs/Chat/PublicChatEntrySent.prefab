@@ -132,7 +132,7 @@ PrefabInstance:
     - target: {fileID: 4919932192753732469, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 837
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4919932192753732469, guid: c419563788ffdbc44a53495651162084,
         type: 3}
@@ -319,18 +319,6 @@ PrefabInstance:
       propertyPath: m_text
       value: 'The worlds '
       objectReference: {fileID: 0}
-    - target: {fileID: 8068759164719752186, guid: c419563788ffdbc44a53495651162084,
-        type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a,
-        type: 2}
-    - target: {fileID: 8068759164719752186, guid: c419563788ffdbc44a53495651162084,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 1196159134475820439, guid: a02669827dd9144f39b4b164e753a21a,
-        type: 2}
     - target: {fileID: 8068759164719752186, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: m_HorizontalAlignment
