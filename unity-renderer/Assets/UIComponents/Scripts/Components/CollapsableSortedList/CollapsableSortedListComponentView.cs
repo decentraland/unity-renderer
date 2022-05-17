@@ -162,7 +162,11 @@ namespace UIComponents.CollapsableSortedList
             }
         }
 
-        private void UpdateEmptyState() => emptyStateContainer.SetActive(Count() == 0);
+        private void UpdateEmptyState()
+        {
+            if (emptyStateContainer == null) return;
+            emptyStateContainer.SetActive(Count() == 0);
+        }
 
         private void UpdateLayout() => ((RectTransform) container).ForceUpdateLayout();
     }
