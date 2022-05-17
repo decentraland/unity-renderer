@@ -72,8 +72,6 @@ namespace DCL
         /// WebRequest that is being managed.
         /// </summary>
         public UnityWebRequest webRequest { get; private set; }
-        
-        public UnityWebRequestAsyncOperation asyncOp { get; private set; }
 
         /// <summary>
         /// Returns true after the request has finished communicating with the remote server.
