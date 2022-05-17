@@ -13,13 +13,10 @@ namespace DCL.ECSComponents
 {
     public class ECSAudioSourceComponentHandler : IECSComponentHandler<ECSAudioSource>, IOutOfSceneBoundariesHandler
     {
-        public float playTime => audioSource.time;
         internal AudioSource audioSource;
         internal AssetPromise_AudioClip promiseAudioClip;
         
-        public long playedAtTimestamp = 0;
-        
-        // TODO: We should figure out how to change this value
+        private long playedAtTimestamp = 0;
         private bool isOutOfBoundaries = false;
         
         private ECSAudioSource model;
@@ -114,12 +111,10 @@ namespace DCL.ECSComponents
             bool shouldPlay = playedAtTimestamp != model.playedAtTimestamp ||
                               (model.playing && !audioSource.isPlaying);
 
+            //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
             if (audioSource.enabled && model.playing && shouldPlay)
-            {
-                //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
                 audioSource.Play();
-            }
-
+            
             playedAtTimestamp = model.playedAtTimestamp;
         }
         
