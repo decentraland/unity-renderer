@@ -79,7 +79,7 @@ namespace DCL.ECSComponents.Test
             sphereShapeComponentHandler.meshesInfo = null;
 
             // Act
-            sphereShapeComponentHandler.DisposeMesh();
+            sphereShapeComponentHandler.DisposeMesh(scene);
 
             // Assert
             Assert.IsNull(sphereShapeComponentHandler.meshesInfo);
