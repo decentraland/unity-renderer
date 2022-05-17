@@ -11,19 +11,17 @@ namespace DCL.ECSComponents
 {
     public class ECSBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>
     {
-        private IParcelScene scene;
-        
         internal AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
 
-        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { this.scene = scene; }
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
-            DisposeMesh();
+            DisposeMesh(scene);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSBoxShape model)
@@ -38,7 +36,7 @@ namespace DCL.ECSComponents
             primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
             primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>
             {
-                DisposeMesh();
+                DisposeMesh(scene);
                 generatedMesh = shape.mesh;
                 GenerateRenderer(generatedMesh, scene, entity, model);
             };
@@ -53,7 +51,7 @@ namespace DCL.ECSComponents
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
         }
 
-        internal void DisposeMesh()
+        internal void DisposeMesh(IParcelScene scene)
         {
             if(meshesInfo != null)
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
