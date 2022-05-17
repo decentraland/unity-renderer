@@ -57,7 +57,9 @@ public class WorldChatWindowController : IHUD
         chatController.OnAddMessage += HandleMessageAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
-        ownUserProfile.OnUpdate += OnUserProfileUpdate;
+
+        if (ownUserProfile != null)
+            ownUserProfile.OnUpdate += OnUserProfileUpdate;
     }
 
     public void Dispose()
@@ -70,7 +72,9 @@ public class WorldChatWindowController : IHUD
         chatController.OnAddMessage -= HandleMessageAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
-        ownUserProfile.OnUpdate -= OnUserProfileUpdate;
+
+        if (ownUserProfile != null)
+            ownUserProfile.OnUpdate -= OnUserProfileUpdate;
     }
 
     public void SetVisibility(bool visible)
