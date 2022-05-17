@@ -292,7 +292,7 @@ public class AvatarEditorHUDController : IHUD
 
         EnsureWearablesCategoriesNotEmpty();
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
         isAvatarPreviewReady = true;
     }
 
@@ -363,31 +363,31 @@ public class AvatarEditorHUDController : IHUD
             }
         }
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(false);
     }
 
     public void HairColorClicked(Color color)
     {
         EquipHairColor(color);
         view.SelectHairColor(model.hairColor);
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
     public void SkinColorClicked(Color color)
     {
         EquipSkinColor(color);
         view.SelectSkinColor(model.skinColor);
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
     public void EyesColorClicked(Color color)
     {
         EquipEyesColor(color);
         view.SelectEyeColor(model.eyesColor);
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
-    protected virtual void UpdateAvatarPreview()
+    protected virtual void UpdateAvatarPreview(bool skipAudio)
     {
         if (bypassUpdateAvatarPreview)
             return;
@@ -401,42 +401,24 @@ public class AvatarEditorHUDController : IHUD
                 modelToUpdate.wearables.Add(emoteId);
         }
 
-        view.UpdateAvatarPreview(modelToUpdate);
+        view.UpdateAvatarPreview(modelToUpdate, skipAudio);
     }
 
     private void EquipHairColor(Color color)
     {
-        var colorToSet = color;
-        if (!hairColorList.colors.Any(x => x.AproxComparison(colorToSet)))
-        {
-            colorToSet = hairColorList.colors[hairColorList.defaultColor];
-        }
-
-        model.hairColor = colorToSet;
+        model.hairColor = color;
         view.SelectHairColor(model.hairColor);
     }
 
     private void EquipEyesColor(Color color)
     {
-        var colorToSet = color;
-        if (!eyeColorList.colors.Any(x => x.AproxComparison(color)))
-        {
-            colorToSet = eyeColorList.colors[eyeColorList.defaultColor];
-        }
-
-        model.eyesColor = colorToSet;
+        model.eyesColor = color;
         view.SelectEyeColor(model.eyesColor);
     }
 
     private void EquipSkinColor(Color color)
     {
-        var colorToSet = color;
-        if (!skinColorList.colors.Any(x => x.AproxComparison(colorToSet)))
-        {
-            colorToSet = skinColorList.colors[skinColorList.defaultColor];
-        }
-
-        model.skinColor = colorToSet;
+        model.skinColor = color;
         view.SelectSkinColor(model.skinColor);
     }
 
@@ -584,8 +566,8 @@ public class AvatarEditorHUDController : IHUD
 
     public void RandomizeWearables()
     {
-        EquipHairColor(hairColorList.colors[Random.Range(0, hairColorList.colors.Count)]);
-        EquipEyesColor(eyeColorList.colors[Random.Range(0, eyeColorList.colors.Count)]);
+        EquipHairColor(view.GetRandomColor());
+        EquipEyesColor(view.GetRandomColor());
 
         List<WearableItem> wearablesToRemove = model.wearables.Where(x => !x.IsEmote()).ToList();
         foreach (var wearable in wearablesToRemove)
@@ -615,7 +597,7 @@ public class AvatarEditorHUDController : IHUD
             }
         }
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(false);
     }
 
     private List<WearableItem> GetWearablesReplacedBy(WearableItem wearableItem)
@@ -955,7 +937,7 @@ public class AvatarEditorHUDController : IHUD
         if (!isAvatarPreviewReady)
             return;
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
     private void OnPreviewEmote(string emoteId) { view.PlayPreviewEmote(emoteId); }

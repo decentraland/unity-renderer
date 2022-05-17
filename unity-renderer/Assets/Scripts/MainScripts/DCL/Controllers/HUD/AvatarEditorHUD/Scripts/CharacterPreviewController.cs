@@ -63,7 +63,7 @@ public class CharacterPreviewController : MonoBehaviour
             new NoLODs(),
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler(),
-            new EmoteAnimationEquipper(animator, DataStore.i.emotes)
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes) 
         );
     }
 
