@@ -28,16 +28,20 @@ namespace DCL.ECSComponents
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-           
             audioSource = entity.gameObject.AddComponent<AudioSource>();
 
             if (Settings.i != null)
                 Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
     
+            DataStore.i.sceneBoundariesChecker.Add(entity,this);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
-        public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity) { Dispose(); }
+        public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
+        {
+            Dispose();
+            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
+        }
 
         private void Dispose()
         {
