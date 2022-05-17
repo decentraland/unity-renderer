@@ -38,8 +38,8 @@ Material:
     - _InnerThickness: 0.01
     m_Colors:
     - Color_0679a06095a34b1dbe5a595111800b38: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0, g: 2.0571344, b: 3.9999995, a: 0.7294118}
-    - _RevealNormal: {r: 0, g: -1.0000001, b: -0.00000011920929, a: 0}
-    - _RevealPosition: {r: 9.313099, g: 0, b: -7.08, a: 0}
+    - _Color: {r: 0, g: 2.0571344, b: 3.9999995, a: 0}
+    - _RevealNormal: {r: 0, g: 1, b: 0, a: 0}
+    - _RevealPosition: {r: 0, g: 0, b: 0, a: 0}
     - _SecondaryColor: {r: 3.194459, g: 33.89676, b: 15.663916, a: 0.8862745}
   m_BuildTextureStacks: []
