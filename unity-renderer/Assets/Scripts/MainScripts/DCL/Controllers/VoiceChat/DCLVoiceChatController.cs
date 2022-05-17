@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.Analytics;
+using SocialFeaturesAnalytics;
 
 namespace DCL
 {
@@ -14,6 +14,7 @@ namespace DCL
         private InputAction_Trigger.Triggered voiceChatToggleDelegate;
 
         private bool firstTimeVoiceRecorded = true;
+        private ISocialAnalytics socialAnalytics;
 
         void Awake()
         {
@@ -41,9 +42,15 @@ namespace DCL
         private void StartVoiceChatRecording()
         {
             DCL.Interface.WebInterface.SendSetVoiceChatRecording(true);
+
             if (firstTimeVoiceRecorded)
             {
-                AnalyticsHelper.SendVoiceChatStartedAnalytic();
+                if (socialAnalytics == null)
+                    socialAnalytics = new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge());
+                
+                socialAnalytics.SendVoiceMessageStartedByFirstTime();
                 firstTimeVoiceRecorded = false;
             }
         }

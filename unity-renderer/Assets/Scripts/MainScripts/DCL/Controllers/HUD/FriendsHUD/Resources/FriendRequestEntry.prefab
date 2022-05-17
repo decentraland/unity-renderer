@@ -719,6 +719,7 @@ GameObject:
   - component: {fileID: 9064008720247560545}
   - component: {fileID: 1928742131678321287}
   - component: {fileID: 7150547270306046405}
+  - component: {fileID: 9036398230220714834}
   m_Layer: 5
   m_Name: FriendRequestEntry
   m_TagString: Untagged
@@ -782,9 +783,35 @@ MonoBehaviour:
   hoveredBackgroundSprite: {fileID: 21300000, guid: f48850fa5be164fc68819a7c8586432c,
     type: 3}
   audioEventHover: {fileID: 11400000, guid: 14fe705a57deb3043b6a95325455a231, type: 2}
+  onlineStatusContainer: {fileID: 0}
+  offlineStatusContainer: {fileID: 0}
+  passportButton: {fileID: 0}
+  transition: 2
+  transitionColors:
+    m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+    m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+    m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+    m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+    m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+    m_ColorMultiplier: 0
+    m_FadeDuration: 0
   acceptButton: {fileID: 552327391556498921}
   rejectButton: {fileID: 5241274719269839806}
   cancelButton: {fileID: 5651660656805690779}
+--- !u!114 &9036398230220714834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3492364064683962267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82e017250d074fa2a218204a7281cb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetObjects:
+  - {fileID: 7059827856586363227}
 --- !u!1 &4465955091894006684
 GameObject:
   m_ObjectHideFlags: 0

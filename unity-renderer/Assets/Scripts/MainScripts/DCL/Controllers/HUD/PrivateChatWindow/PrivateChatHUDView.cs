@@ -1,63 +1,43 @@
-using DCL.Helpers;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PrivateChatHUDView : ChatHUDView
 {
-    string ENTRY_PATH_SENT = "ChatEntrySent";
-    string ENTRY_PATH_RECEIVED = "ChatEntryReceived";
-    string ENTRY_PATH_SEPARATOR = "ChatEntrySeparator";
+    [SerializeField] private DateSeparatorEntry separatorEntryPrefab;
+    
+    private readonly Dictionary<DateTime, DateSeparatorEntry> dateSeparators = new Dictionary<DateTime, DateSeparatorEntry>();
 
-    public override void AddEntry(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
+    public override void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
     {
-        AddSeparatorEntryIfNeeded(chatEntryModel);
-
-        var chatEntryGO = Instantiate(Resources.Load(chatEntryModel.subType == ChatEntry.Model.SubType.PRIVATE_TO ? ENTRY_PATH_SENT : ENTRY_PATH_RECEIVED) as GameObject, chatEntriesContainer);
-        ChatEntry chatEntry = chatEntryGO.GetComponent<ChatEntry>();
-
-        chatEntry.SetFadeout(false);
-        chatEntry.Populate(chatEntryModel);
-
-        chatEntry.OnTriggerHover += OnMessageTriggerHover;
-        chatEntry.OnCancelHover += OnMessageCancelHover;
-
-        entries.Add(chatEntry);
-        Utils.ForceUpdateLayout(transform as RectTransform, delayed: false);
-
-        if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
-            scrollRect.verticalNormalizedPosition = 0;
+        AddSeparatorEntryIfNeeded(model);
+        base.AddEntry(model, setScrollPositionToBottom);
     }
 
-    protected override void OnMessageTriggerHover(ChatEntry chatEntry)
+    public override void ClearAllEntries()
     {
-        (messageHoverPanel.transform as RectTransform).pivot = new Vector2(chatEntry.model.subType == ChatEntry.Model.SubType.PRIVATE_TO ? 1 : 0, 0.5f);
+        base.ClearAllEntries();
+        
+        foreach (var separator in dateSeparators.Values)
+            if (separator)
+                Destroy(separator.gameObject);
 
-        base.OnMessageTriggerHover(chatEntry);
+        dateSeparators.Clear();
     }
 
-    private void AddSeparatorEntryIfNeeded(ChatEntry.Model chatEntryModel)
+    private void AddSeparatorEntryIfNeeded(ChatEntryModel chatEntryModel)
     {
-        DateTime entryDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        entryDateTime = GetDateTimeFromUnixTimestampMilliseconds(chatEntryModel.timestamp);
-
-        if (!dateSeparators.Exists(separator =>
-            separator.model.date.Year == entryDateTime.Year &&
-            separator.model.date.Month == entryDateTime.Month &&
-            separator.model.date.Day == entryDateTime.Day))
-        {
-            var chatEntrySeparatorGO = Instantiate(Resources.Load(ENTRY_PATH_SEPARATOR) as GameObject, chatEntriesContainer);
-            DateSeparatorEntry dateSeparatorEntry = chatEntrySeparatorGO.GetComponent<DateSeparatorEntry>();
-            dateSeparatorEntry.Populate(new DateSeparatorEntry.Model
-            {
-                date = entryDateTime
-            });
-            dateSeparators.Add(dateSeparatorEntry);
-        }
+        var entryDateTime = GetDateTimeFromUnixTimestampMilliseconds(chatEntryModel.timestamp).Date;
+        if (dateSeparators.ContainsKey(entryDateTime)) return;
+        var dateSeparatorEntry = Instantiate(separatorEntryPrefab, chatEntriesContainer);
+        dateSeparatorEntry.Populate(chatEntryModel);
+        dateSeparators.Add(entryDateTime, dateSeparatorEntry);
+        entries.Add(dateSeparatorEntry);
     }
 
     private DateTime GetDateTimeFromUnixTimestampMilliseconds(ulong milliseconds)
     {
-        System.DateTime result = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        DateTime result = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         return result.AddMilliseconds(milliseconds);
     }
 }
