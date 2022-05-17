@@ -68,6 +68,7 @@ public class FriendsTabComponentView : BaseComponentView
         allFriendsList.list.SortingMethod = SortByAlphabeticalOrder;
         searchResultsFriendList.list.SortingMethod = SortByAlphabeticalOrder;
         UpdateLayout();
+        UpdateEmptyOrFilledState();
     }
 
     public override void OnDisable()
