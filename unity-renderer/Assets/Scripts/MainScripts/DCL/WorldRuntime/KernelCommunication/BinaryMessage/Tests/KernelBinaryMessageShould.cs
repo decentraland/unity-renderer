@@ -1,7 +1,10 @@
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using DCL.CRDT;
 using KernelCommunication;
 using NUnit.Framework;
+using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace Tests
 {
@@ -154,8 +157,57 @@ namespace Tests
             Assert.AreEqual(2, parsedCount);
         }
 
+        [Test]
+        public void SerializeCRDTCorrectly()
+        {
+            var msgs = new[]
+            {
+                new CRDTMessage()
+                {
+                    key = 3446567322,
+                    timestamp = 9598327474,
+                    data = null
+                },
+                new CRDTMessage()
+                {
+                    key = 7693,
+                    timestamp = 799,
+                    data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
+                },
+                new CRDTMessage()
+                {
+                    key = 0,
+                    timestamp = 0,
+                    data = new byte[] { 1 }
+                },
+            };
+
+            for (int i = 0; i < msgs.Length; i++)
+            {
+                MemoryStream memoryStream = new MemoryStream();
+                BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+                KernelBinaryMessageSerializer.Serialize(binaryWriter, msgs[i]);
+                var bytes = memoryStream.ToArray();
+
+                IBinaryReader reader = new ByteArrayReader(bytes);
+
+                // check message header values
+                int expectedMessageSize = 32 + (((byte[])msgs[i].data)?.Length ?? 0);
+                Assert.AreEqual(expectedMessageSize, reader.ReadInt32());
+
+                int expectedType = msgs[i].data != null ? (int)KernelBinaryMessageType.PUT_COMPONENT : (int)KernelBinaryMessageType.DELETE_COMPONENT;
+                Assert.AreEqual(expectedType, reader.ReadInt32());
+
+                binaryWriter.Dispose();
+                memoryStream.Dispose();
+            }
+        }
+
         static bool AreEqual(byte[] a, byte[] b)
         {
+            if (a == null && b == null)
+                return true;
+
             if (a == null || b == null)
                 return false;
 
