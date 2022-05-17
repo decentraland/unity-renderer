@@ -121,16 +121,21 @@ namespace DCL
 
             if (colliderLayer == -1)
                 colliderLayer = DCL.Configuration.PhysicsLayers.defaultLayer;
-
-            Collider collider;
+            
             int onClickLayer = PhysicsLayers.onPointerEventLayer; // meshes can have a child collider for the OnClick that should be ignored
             MeshFilter[] meshFilters = meshGameObject.GetComponentsInChildren<MeshFilter>(true);
 
+            ConfigureColliders(entity, meshFilters, hasCollision, onClickLayer, filterByColliderName, colliderLayer);
+        }
+        
+        public void ConfigureColliders(IDCLEntity entity,MeshFilter[] meshFilters, bool hasCollision, int onClickLayer, bool filterByColliderName = true, int colliderLayer = -1)
+        {
+            Collider collider;
             for (int i = 0; i < meshFilters.Length; i++)
             {
                 if (meshFilters[i].gameObject.layer == onClickLayer)
                     continue;
-
+                
                 if (filterByColliderName)
                 {
                     if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider"))
@@ -140,32 +145,35 @@ namespace DCL
                     Object.Destroy(meshFilters[i].GetComponent<Renderer>());
                 }
 
-                collider = meshFilters[i].GetComponent<Collider>();
+                ConfigureCollider(entity, meshFilters[i], hasCollision, colliderLayer);
+            }
+        }
 
-                //HACK(Pravus): Hack to bring back compatibility with old builder scenes that have withCollision = false in the JS code.
-                //              Remove when we fix this changing the property name or something similar.
-                bool shouldCreateCollider = hasCollision || filterByColliderName;
+        public void ConfigureCollider(IDCLEntity entity, MeshFilter meshFilters, bool hasCollision,  int colliderLayer = -1)
+        {
+            Collider collider;
+            
+            collider = meshFilters.GetComponent<Collider>();
 
-                if (shouldCreateCollider)
-                {
-                    if (collider == null)
-                        collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
+            if (hasCollision)
+            {
+                if (collider == null)
+                    collider = meshFilters.gameObject.AddComponent<MeshCollider>();
 
-                    if (collider is MeshCollider)
-                        ((MeshCollider) collider).sharedMesh = meshFilters[i].sharedMesh;
+                if (collider is MeshCollider)
+                    ((MeshCollider) collider).sharedMesh = meshFilters.sharedMesh;
 
-                    if (entity != null)
-                        AddOrUpdateEntityCollider(entity, collider);
-                }
+                if (entity != null)
+                    AddOrUpdateEntityCollider(entity, collider);
+            }
 
-                if (collider != null)
-                {
-                    collider.gameObject.layer = colliderLayer;
-                    collider.enabled = shouldCreateCollider;
+            if (collider != null)
+            {
+                collider.gameObject.layer = colliderLayer;
+                collider.enabled = hasCollision;
 
-                    if (entity != null)
-                        entity.meshesInfo.colliders.Add(collider);
-                }
+                if (entity != null)
+                    entity.meshesInfo.colliders.Add(collider);
             }
         }
     }
