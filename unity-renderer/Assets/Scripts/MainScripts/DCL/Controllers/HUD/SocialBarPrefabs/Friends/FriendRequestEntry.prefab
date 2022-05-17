@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1705297173061340754}
   - component: {fileID: 9089267942920016503}
   - component: {fileID: 4218919115546049416}
+  - component: {fileID: 7223183811281419143}
   m_Layer: 5
   m_Name: MenuButton
   m_TagString: Untagged
@@ -135,6 +136,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
+--- !u!114 &7223183811281419143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 142779142021419725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
   playClick: 1
   playRelease: 1
   extraClickEvent: {fileID: 0}
@@ -1412,6 +1429,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2099729747741884662}
+  - component: {fileID: 6161359852761937369}
   m_Layer: 5
   m_Name: AddButtonContainer
   m_TagString: Untagged
@@ -1439,6 +1457,22 @@ RectTransform:
   m_AnchoredPosition: {x: 59.8, y: 0}
   m_SizeDelta: {x: 60, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6161359852761937369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4212356851738203338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4250664813082659121
 GameObject:
   m_ObjectHideFlags: 0
@@ -1448,6 +1482,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7151878220996575671}
+  - component: {fileID: 6628937286999639372}
   m_Layer: 5
   m_Name: RejectButtonContainer
   m_TagString: Untagged
@@ -1475,6 +1510,22 @@ RectTransform:
   m_AnchoredPosition: {x: 127.79999, y: 0}
   m_SizeDelta: {x: 60, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6628937286999639372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4250664813082659121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4655430856483260599
 GameObject:
   m_ObjectHideFlags: 0
@@ -1997,6 +2048,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 583539154141141577}
+  - component: {fileID: 5654599451728145846}
   m_Layer: 5
   m_Name: CancelButtonContainer
   m_TagString: Untagged
@@ -2024,6 +2076,22 @@ RectTransform:
   m_AnchoredPosition: {x: 127.79999, y: 0}
   m_SizeDelta: {x: 60, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5654599451728145846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6223728503660259618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &6581080457526852239
 GameObject:
   m_ObjectHideFlags: 0
@@ -2036,6 +2104,7 @@ GameObject:
   - component: {fileID: 1082695310042542472}
   - component: {fileID: 8593409506462044280}
   - component: {fileID: 2959463299087718891}
+  - component: {fileID: 3766044632156974308}
   m_Layer: 5
   m_Name: ColorTransitionButton
   m_TagString: Untagged
@@ -2148,6 +2217,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3766044632156974308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6581080457526852239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &8022349267181421513
 GameObject:
   m_ObjectHideFlags: 0
