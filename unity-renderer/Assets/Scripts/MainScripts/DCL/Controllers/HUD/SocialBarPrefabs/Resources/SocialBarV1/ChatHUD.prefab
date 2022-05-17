@@ -1804,6 +1804,7 @@ MonoBehaviour:
   defaultChatEntryFactory: {fileID: 11400000, guid: de537b45ff89f45489136467b5b292aa,
     type: 2}
   model:
+    isPreviewMode: 0
     isInputFieldFocused: 0
     inputFieldText: 
     enableFadeoutMode: 0
