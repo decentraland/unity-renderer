@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
@@ -20,6 +22,7 @@ using UnityEngine.Rendering;
 using UnityGLTF.Cache;
 using UnityGLTF.Extensions;
 using UnityGLTF.Loader;
+using Color = UnityEngine.Color;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using WaitUntil = UnityEngine.WaitUntil;
@@ -656,8 +659,7 @@ namespace UnityGLTF
                 BufferCacheData bufferContents = _assetCache.BufferCache[bufferView.Buffer.Id];
                 bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
                 await bufferContents.Stream.ReadAsync(data, 0, data.Length, cancellationToken);
-
-                await CompressTexture(settings, data, imageCacheIndex, cancellationToken);
+                await CompressTexture(settings, new MemoryStream(data), imageCacheIndex, cancellationToken);
             }
             else
             {
@@ -681,48 +683,60 @@ namespace UnityGLTF
             }
         }
 
-        protected async UniTask CompressTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex, CancellationToken cancellationToken)
+        protected async UniTask CompressTexture(TextureCreationSettings settings, MemoryStream stream, int imageCacheIndex, CancellationToken cancellationToken)
         {
-            Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, settings.generateMipmaps, settings.linear);
-            
-            //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
-            texture.LoadImage(buffer, false);
-
-            var isConfigured = false;
-            // We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
+            bool shouldBeCompressed = Application.isPlaying;
 #if !UNITY_STANDALONE || UNITY_EDITOR
-            if ( Application.isPlaying )
-            {
-                IEnumerator coroutine = TextureHelpers.ThrottledCompress(texture, settings.uploadToGpu,
-                    texture2D => AddTextureToAssetCache(settings, imageCacheIndex, texture2D),
-                    exception => throw exception,
-                    false,
-                    settings.linear);
+            shouldBeCompressed = Application.isPlaying;
+#endif
 
+            if (shouldBeCompressed)
+            {
                 if (forceSyncCoroutines)
                 {
+                    var texture = CreateTexture(stream.ToArray(), true, settings);
                     texture.Compress(false);
                 }
                 else
                 {
+                    Bitmap bitmap = new Bitmap(stream);
+                    await UniTask.WaitForEndOfFrame();
+
+                    (int width, int height) = GetResize(bitmap.Width, bitmap.Height);
+                    Bitmap resized = new Bitmap(bitmap, width, height);
+                    bitmap.Dispose();
+                    await UniTask.WaitForEndOfFrame();
+                    
+                    IEnumerator coroutine = TextureHelpers.ThrottledCompressBmp(resized, settings.uploadToGpu,
+                        texture2D => _assetCache.ImageCache[imageCacheIndex] = texture2D,
+                        exception => throw exception,
+                        false,
+                        settings.linear,
+                        settings.wrapMode,
+                        settings.filterMode);
+                    
                     await TaskUtils.RunThrottledCoroutine(coroutine, exception => throw exception, throttlingCounter.EvaluateTimeBudget)
                                    .AttachExternalCancellation(cancellationToken);
-
+                    
+                    resized.Dispose();
                 }
-
-                isConfigured = true;
             }
-#endif
-
-            if (!isConfigured)
+            else
             {
-                texture.wrapMode = settings.wrapMode;
-                texture.filterMode = settings.filterMode;
-                texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
-
-                // Resizing must be the last step to avoid breaking the texture when copying with Graphics.CopyTexture()
+                var texture = CreateTexture(stream.ToArray(), false, settings);
                 AddTextureToAssetCache(settings, imageCacheIndex, texture);
             }
+        }
+        
+        Texture2D CreateTexture(byte[] bytes, bool compress, TextureCreationSettings settings)
+        {
+            Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, settings.generateMipmaps, settings.linear);
+            texture.LoadImage(bytes, false);
+            if (compress) texture.Compress(false);
+            texture.wrapMode = settings.wrapMode;
+            texture.filterMode = settings.filterMode;
+            texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
+            return texture;
         }
 
         private void AddTextureToAssetCache(TextureCreationSettings settings, int imageCacheIndex, Texture2D texture) => _assetCache.ImageCache[imageCacheIndex] = CheckAndReduceTextureSize(texture, settings.linear);
@@ -736,7 +750,7 @@ namespace UnityGLTF
             {
                 using (MemoryStream memoryStream = stream as MemoryStream)
                 {
-                    await CompressTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
+                    await CompressTexture(settings, memoryStream, imageCacheIndex, cancellationToken);
                 }
             }
 
@@ -745,7 +759,7 @@ namespace UnityGLTF
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     await fileStream.CopyToAsync(memoryStream);
-                    await CompressTexture(settings, memoryStream.ToArray(), imageCacheIndex, cancellationToken);
+                    await CompressTexture(settings, memoryStream, imageCacheIndex, cancellationToken);
                 }
             }
         }
@@ -756,20 +770,8 @@ namespace UnityGLTF
             if (source.width <= maxTextureSize && source.height <= maxTextureSize)
                 return source;
 
-            float factor = 1.0f;
-            int width = source.width;
-            int height = source.height;
-
-            if (width >= height)
-            {
-                factor = (float)maxTextureSize / width;
-            }
-            else
-            {
-                factor = (float)maxTextureSize / height;
-            }
-
-            Texture2D dstTex = TextureHelpers.Resize(source, (int) (width * factor), (int) (height * factor), linear);
+            (int width, int height) = GetResize(source.width, source.height);
+            Texture2D dstTex = TextureHelpers.Resize(source, width, height, linear);
 
             if (Application.isPlaying)
                 Object.Destroy(source);
@@ -777,6 +779,21 @@ namespace UnityGLTF
                 Object.DestroyImmediate(source);
 
             return dstTex;
+        }
+
+        private (int width, int height) GetResize(int originalWidth, int originalHeight)
+        {
+            float factor = 1.0f;
+            if (originalWidth >= originalHeight)
+            {
+                factor = (float)maxTextureSize / originalWidth;
+            }
+            else
+            {
+                factor = (float)maxTextureSize / originalHeight;
+            }
+
+            return ((int) (originalWidth * factor), (int) (originalHeight * factor));
         }
 
         protected virtual async UniTask ConstructMeshAttributes(MeshPrimitive primitive, int meshID, int primitiveIndex, CancellationToken token)

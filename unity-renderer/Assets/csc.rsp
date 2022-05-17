@@ -1,0 +1,3 @@
+ 
+-r:System.Drawing.dll
+-unsafe
