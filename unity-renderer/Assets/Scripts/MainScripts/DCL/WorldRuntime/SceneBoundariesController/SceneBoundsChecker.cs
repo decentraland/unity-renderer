@@ -288,13 +288,12 @@ namespace DCL.Controllers
 
         protected void UpdateComponents(IDCLEntity entity, bool isInsideBoundaries)
         {
-            IOutOfSceneBoundariesHandler[] components;
-            if (DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity))
-                components = entity.gameObject.GetComponentsInChildren<IOutOfSceneBoundariesHandler>();
-            else
-                components = DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity].ToArray();
+            if(!DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity))
+                return;
+            
+            List<IOutOfSceneBoundariesHandler> components = DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity];
 
-            for (int i = 0; i < components.Length; i++)
+            for (int i = 0; i < components.Count; i++)
             {
                 components[i].UpdateOutOfBoundariesState(isInsideBoundaries);
             }
