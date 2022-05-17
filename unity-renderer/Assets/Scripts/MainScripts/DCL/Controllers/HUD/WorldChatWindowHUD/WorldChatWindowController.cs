@@ -57,6 +57,7 @@ public class WorldChatWindowController : IHUD
         chatController.OnAddMessage += HandleMessageAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
+        ownUserProfile.OnUpdate += OnUserProfileUpdate;
     }
 
     public void Dispose()
@@ -69,6 +70,7 @@ public class WorldChatWindowController : IHUD
         chatController.OnAddMessage -= HandleMessageAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
+        ownUserProfile.OnUpdate -= OnUserProfileUpdate;
     }
 
     public void SetVisibility(bool visible)
@@ -175,4 +177,6 @@ public class WorldChatWindowController : IHUD
 
     private UserProfile ExtractRecipient(ChatMessage message) =>
         userProfileBridge.Get(message.sender != ownUserProfile.userId ? message.sender : message.recipient);
+
+    private void OnUserProfileUpdate(UserProfile profile) { view.RefreshBlockedDirectMessages(profile.blocked); }
 }

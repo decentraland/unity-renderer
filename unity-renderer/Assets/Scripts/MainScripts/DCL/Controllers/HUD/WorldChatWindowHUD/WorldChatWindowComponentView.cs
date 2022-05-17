@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
@@ -107,6 +108,14 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public void ShowPrivateChatsLoading() => SetPrivateChatLoadingVisibility(true);
 
     public void HidePrivateChatsLoading() => SetPrivateChatLoadingVisibility(false);
+
+    public void RefreshBlockedDirectMessages(List<string> blockedUsers)
+    {
+        if (blockedUsers == null)
+            return;
+
+        directChatList.RefreshBlockedEntries(blockedUsers);
+    }
 
     public override void RefreshControl()
     {

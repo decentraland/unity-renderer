@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
@@ -47,6 +48,10 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     }
 
     public void HidePrivateChatsLoading()
+    {
+    }
+
+    public void RefreshBlockedDirectMessages(List<string> blockedUsers)
     {
     }
 

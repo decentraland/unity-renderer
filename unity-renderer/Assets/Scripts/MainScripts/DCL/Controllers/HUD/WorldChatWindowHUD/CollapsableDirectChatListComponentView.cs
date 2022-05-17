@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using DCL;
@@ -67,7 +67,15 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         var entry = Get(userId);
         entry.Configure(entryModel);
     }
-    
+
+    public void RefreshBlockedEntries(List<string> blockedUsers)
+    {
+        foreach (var pair in Entries)
+        {
+            pair.Value.SetBlockStatus(blockedUsers.Contains(pair.Key));
+        }
+    }
+
     private void CreateEntry(string userId)
     {
         entryPool = GetEntryPool();

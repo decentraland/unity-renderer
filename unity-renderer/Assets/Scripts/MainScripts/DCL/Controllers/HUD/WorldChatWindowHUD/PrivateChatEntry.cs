@@ -69,7 +69,7 @@ public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
         SetBlockStatus(blocked);
     }
 
-    private void SetBlockStatus(bool isBlocked)
+    public void SetBlockStatus(bool isBlocked)
     {
         model.isBlocked = isBlocked;
         blockedContainer.SetActive(isBlocked);

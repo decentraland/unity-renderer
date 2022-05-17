@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IWorldChatWindowView
@@ -19,5 +20,6 @@ public interface IWorldChatWindowView
     void SetPublicChannel(PublicChatChannelModel model);
     void ShowPrivateChatsLoading();
     void HidePrivateChatsLoading();
+    void RefreshBlockedDirectMessages(List<string> blockedUsers);
     void Dispose();
 }
