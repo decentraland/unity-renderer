@@ -21,7 +21,7 @@ public class FriendEntry : FriendEntryBase
         whisperButton.onClick.RemoveAllListeners();
         whisperButton.onClick.AddListener(() => OnWhisperClick?.Invoke(this));
         rowButton.onClick.RemoveAllListeners();
-        rowButton.onClick.AddListener(ShowUserProfile);
+        rowButton.onClick.AddListener(() => OnWhisperClick?.Invoke(this));
     }
 
     private void Start()
