@@ -32,7 +32,6 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
         result.Add(MainSceneFactory.CreateAudioHandler());
         result.Add(MainSceneFactory.CreateHudController());
         result.Add(MainSceneFactory.CreateMouseCatcher());
-        result.Add(MainSceneFactory.CreateSettingsController());
         result.Add(MainSceneFactory.CreateEventSystem());
         return result;
     }

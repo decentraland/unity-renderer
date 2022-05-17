@@ -46,8 +46,6 @@ namespace DCL
 
         public static GameObject CreateNavMap() => LoadAndInstantiate("NavMap");
 
-        public static GameObject CreateSettingsController() => LoadAndInstantiate("SettingsController");
-
         public static GameObject CreateEnvironment(string prefabPath = "Environment")
         {
             GameObject result = LoadAndInstantiate(prefabPath);
