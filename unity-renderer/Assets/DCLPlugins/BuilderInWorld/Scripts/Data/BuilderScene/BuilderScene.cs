@@ -13,6 +13,7 @@ namespace DCL.Builder
         public Texture2D aerialScreenshotTexture { get; set; }
 
         public IParcelScene scene { get; internal set; }
+        public IBuilderScene.SceneVersion sceneVersion { get; internal set; }
         public IBuilderScene.SceneType sceneType { get; }
         
         public Vector2Int landCoordsAsociated { get; set; }
@@ -25,6 +26,8 @@ namespace DCL.Builder
             this.manifest = manifest;
 
             this.sceneType = sceneType;
+
+            sceneVersion = IBuilderScene.SceneVersion.LEGACY;
         }
 
         public void UpdateManifestFromScene()
