@@ -178,11 +178,11 @@ namespace DCL.Builder
             sceneJson.source.origin = BIWSettings.DEPLOYMENT_SOURCE_TYPE;
             sceneJson.source.version = 1;
             sceneJson.source.layout = new CatalystSceneEntityMetadata.Source.Layout();
-            sceneJson.source.layout.rows = size.x.ToString();
-            sceneJson.source.layout.cols = size.y.ToString();
-            sceneJson.source.point = coords;
+            sceneJson.source.layout.rows = size.x;
+            sceneJson.source.layout.cols = size.y;
+            sceneJson.source.point = new CatalystSceneEntityMetadata.Vector2IntRepresentantion(coords);
             sceneJson.source.isEmpty = true;
-            
+            sceneJson.source.isEmpty = true;
 
             // Prepare the assets
             List<SceneObject> assets = manifest.scene.assets.Values.ToList();
@@ -374,17 +374,26 @@ namespace DCL.Builder
         {
             CatalystSceneEntityMetadata sceneJson = new CatalystSceneEntityMetadata();
 
-            //Display info
+            //  Display info
             sceneJson.display = new CatalystSceneEntityMetadata.Display();
             sceneJson.display.title = builderScene.manifest.project.title;
             sceneJson.display.description = builderScene.manifest.project.description;
-            sceneJson.display.description = builderScene.manifest.project.description;
             sceneJson.display.navmapThumbnail = BIWSettings.DEPLOYMENT_SCENE_THUMBNAIL;
+            
+            //  Contact
+            sceneJson.contact = new CatalystSceneEntityMetadata.Contact();
+            sceneJson.contact.name =  UserProfile.GetOwnUserProfile().name;
+            
+            //  Tags
+            sceneJson.tags = Array.Empty<string>();
+            
+            //  Spawn points
+            sceneJson.spawnPoints = Array.Empty<CatalystSceneEntityMetadata.SpawnPoint>();
 
-            //Owner
+            //  Owner
             sceneJson.owner = UserProfile.GetOwnUserProfile().ethAddress;
 
-            //Scenes
+            //  Scenes
             sceneJson.scene = new CatalystSceneEntityMetadata.Scene();
 
             //  Base Parcels 
@@ -418,9 +427,9 @@ namespace DCL.Builder
             sceneJson.source.projectId = builderScene.manifest.project.id;
             sceneJson.source.rotation = info.rotation.ToString().ToLowerInvariant();
             sceneJson.source.layout = new CatalystSceneEntityMetadata.Source.Layout();
-            sceneJson.source.layout.rows = builderScene.manifest.project.rows.ToString();
-            sceneJson.source.layout.cols = builderScene.manifest.project.cols.ToString();
-            sceneJson.source.point = info.coordsToPublish;
+            sceneJson.source.layout.rows = builderScene.manifest.project.rows;
+            sceneJson.source.layout.cols = builderScene.manifest.project.cols;
+            sceneJson.source.point = new CatalystSceneEntityMetadata.Vector2IntRepresentantion(info.coordsToPublish);
 
             return sceneJson;
         }

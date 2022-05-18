@@ -60,8 +60,9 @@ namespace DCL
 
         [Obsolete("Deprecated HUD Element, this feature is initialized from the Feature Flags system")]
         EMOTES = 32,
+        PUBLIC_CHAT_CHANNEL = 33,
 
-        COUNT = 33
+        COUNT = 34
     }
 
     public interface IHUDFactory : IService

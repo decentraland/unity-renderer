@@ -31,7 +31,7 @@ namespace AssetPromiseKeeper_Tests
         protected abstract AssetPromiseType CreatePromise();
 
         [UnityTest]
-        public IEnumerator KeepAndForgetIsCalledInSingleFrameWhenLoadingAsset()
+        public virtual IEnumerator KeepAndForgetIsCalledInSingleFrameWhenLoadingAsset()
         {
             var prom = CreatePromise();
             bool calledSuccess = false;
@@ -78,7 +78,7 @@ namespace AssetPromiseKeeper_Tests
         }
 
         [UnityTest]
-        public IEnumerator AnyAssetIsLoadedAndThenUnloaded()
+        public virtual IEnumerator AnyAssetIsLoadedAndThenUnloaded()
         {
             var prom = CreatePromise();
             AssetType loadedAsset = null;
@@ -138,7 +138,7 @@ namespace AssetPromiseKeeper_Tests
         }
 
         [UnityTest]
-        public IEnumerator ManyPromisesWithTheSameURLAreLoaded()
+        public virtual IEnumerator ManyPromisesWithTheSameURLAreLoaded()
         {
             var prom = CreatePromise();
             AssetType asset = null;
