@@ -85,6 +85,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         }
     }
 
+    public event Action OnIterateChatHistoryDown;
+    public event Action OnIterateChatHistoryUp;
+
     public event Action<ChatMessage> OnSendMessage;
 
     public int EntryCount => entries.Count;
@@ -111,6 +114,19 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         base.OnEnable();
         Utils.ForceUpdateLayout(transform as RectTransform);
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        
+        if (!inputField.isFocused) return;
+        
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+            OnIterateChatHistoryDown?.Invoke();
+        
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+            OnIterateChatHistoryUp?.Invoke();
     }
 
     public void ResetInputField(bool loseFocus = false)
