@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Helpers;
+using DCL.Interface;
 using DCL.Models;
 using DCL.SettingsCommon;
 using UnityEngine;
@@ -13,20 +12,17 @@ namespace DCL.ECSComponents
 {
     public class ECSAudioStreamComponentHandler : IECSComponentHandler<ECSAudioStream>, IOutOfSceneBoundariesHandler
     {
-        public float playTime => audioSource.time;
-        public long playedAtTimestamp = 0;
-        
-        internal AudioSource audioSource;
-        internal AssetPromise_AudioClip promiseAudioClip;
-        
-
-
         private float settingsVolume = 0;
-        private bool isOutOfBoundaries = false;
-        
-        private ECSAudioStream model;
-        private IParcelScene scene;
-        private AudioClip audioClip;
+
+        internal float currentVolume = -1;
+        internal bool isPlaying = false;
+        internal AudioSource audioSource;
+        internal ECSAudioStream model;
+
+        // Flags to check if we can activate the AudioStream
+        internal bool isInsideScene = false;
+        internal bool isRendererActive = false;
+        internal bool isInsideBoundaries = true;
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
@@ -36,23 +32,46 @@ namespace DCL.ECSComponents
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged += OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
+            settingsVolume = GetCalculatedSettingsVolume(Settings.i.audioSettings.Data);
+            DataStore.i.sceneBoundariesChecker.Add(entity,this);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             Dispose();
-            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
+        }
+                
+        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSAudioStream model)
+        {
+            // Nothing has change so we do an early return
+            if(!StateHasChange(model))
+                return;
+                
+            // We update the model and the volume
+            UpdateModel(model);
+            
+            // In case that the audio stream can't be played we do an early return
+            if (!CanAudioStreamBePlayed())
+                return;
+            
+            // If everything went ok, we update the state
+            SendUpdateAudioStreamEvent(model.playing);
+        }
+        
+        public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
+        {
+            this.isInsideBoundaries = isInsideBoundaries;
+            ConditionsToPlayChanged();
         }
 
         private void Dispose()
         {
-            if(promiseAudioClip != null)
-                AssetPromiseKeeper_AudioClip.i.Forget(promiseAudioClip);
-            
             CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
+            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
+            
             StopStreaming();
             
             if (audioSource != null)
@@ -61,51 +80,51 @@ namespace DCL.ECSComponents
                 audioSource = null;
             }
         }
-        
-        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSAudioStream model)
-        {
-            settingsVolume = GetCalculatedSettingsVolume(Settings.i.audioSettings.Data);
 
-            UpdatePlayingState(model);
-        }
-        
-         private void UpdatePlayingState(ECSAudioStream model)
+        private void UpdateModel(ECSAudioStream model)
         {
-            bool canPlayStream = scene.isPersistent || scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
-            canPlayStream &= CommonScriptableObjects.rendererState;
+            this.model = model;
+            currentVolume = model.volume * settingsVolume;
+        }
+
+        private bool StateHasChange(ECSAudioStream model)
+        {
+            // First time that the model come so the state has change
+            if (this.model == null)
+                return true;
             
-            bool shouldStopStream = (isPlaying && !model.playing) || (isPlaying && !canPlayStream);
-            bool shouldStartStream = !isPlaying && canPlayStream && model.playing;
-
-            if (shouldStopStream)
-            {
-                StopStreaming();
-                return;
-            }
-
-            if (shouldStartStream)
-            {
-                StartStreaming();
-                return;
-            }
-
-            if (forceStateUpdate)
-            {
-                if (isPlaying)
-                    StartStreaming();
-                else
-                    StopStreaming();
-            }
+            bool shouldChangeState = isPlaying && !model.playing;
+            bool shouldUpdateVolume = Mathf.Approximately( currentVolume, model.volume);
+            bool shouldUpdateUrl = this.model.url == model.url;
+                
+            return shouldChangeState || shouldUpdateVolume || shouldUpdateUrl;
         }
 
-        private void OnSceneChanged(string sceneId, string prevSceneId) { UpdatePlayingState(false); }
+        private void ConditionsToPlayChanged()
+        {
+            bool canBePlayed = CanAudioStreamBePlayed();
+            
+            if(isPlaying && !canBePlayed)
+                StopStreaming();
+            if(!isPlaying && canBePlayed && model.playing)
+                StartStreaming();
+        }
+
+        private bool CanAudioStreamBePlayed()
+        {
+            return isInsideScene && isRendererActive && isInsideBoundaries;
+        }
+
+        private void OnSceneChanged(string sceneId, string prevSceneId)
+        {
+            isInsideScene = sceneId == CommonScriptableObjects.sceneID.Get();
+            ConditionsToPlayChanged();
+        }
 
         private void OnRendererStateChanged(bool isEnable, bool prevState)
         {
-            if (isEnable)
-            {
-                UpdatePlayingState(false);
-            }
+            isRendererActive = isEnable;
+            ConditionsToPlayChanged();
         }
 
         private void OnSettingsChanged(AudioSettings settings)
@@ -114,7 +133,7 @@ namespace DCL.ECSComponents
             if (Math.Abs(settingsVolume - newSettingsVolume) > Mathf.Epsilon)
             {
                 settingsVolume = newSettingsVolume;
-                UpdatePlayingState(true);
+                SendUpdateAudioStreamEvent(isPlaying);
             }
         }
 
@@ -124,34 +143,18 @@ namespace DCL.ECSComponents
 
         private void StopStreaming()
         {
-            Model model = (Model) this.model;
-            isPlaying = false;
-            Interface.WebInterface.SendAudioStreamEvent(model.url, false, model.volume * settingsVolume);
-        }
-
+            SendUpdateAudioStreamEvent(false);
+        }   
+        
         private void StartStreaming()
         {
-            Model model = (Model) this.model;
-            isPlaying = true;
-            Interface.WebInterface.SendAudioStreamEvent(model.url, true, model.volume * settingsVolume);
+            SendUpdateAudioStreamEvent(true);
         }
 
-        public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
+        private void SendUpdateAudioStreamEvent(bool play)
         {
-            if (!isPlaying)
-                return;
-
-            if (isInsideBoundaries)
-            {
-                StartStreaming();
-            }
-            else
-            {
-                Model model = (Model) this.model;
-                //Set volume to 0 (temporary solution until the refactor in #1421)
-                Interface.WebInterface.SendAudioStreamEvent(model.url, true, 0);
-            }
+            isPlaying = play;
+            WebInterface.SendAudioStreamEvent(model.url, isPlaying, currentVolume);
         }
-
     }
 }

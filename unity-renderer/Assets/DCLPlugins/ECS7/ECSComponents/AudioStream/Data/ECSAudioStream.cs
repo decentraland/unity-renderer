@@ -9,8 +9,5 @@ namespace DCL.ECSComponents
         public string url;
         public bool playing = false;
         public float volume = 1;
-
-        // This is the model of the audio clip
-        public string audioClipUrl;
     }
 }

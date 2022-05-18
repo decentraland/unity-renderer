@@ -20,7 +20,7 @@ namespace DCL.ECSComponents.Test
     {
         private IDCLEntity entity;
         private IParcelScene scene;
-        private ECSAudioSourceComponentHandler audioSourceComponentHandler;
+        private ECSAudioStreamComponentHandler audioSourceComponentHandler;
         private GameObject gameObject;
 
         protected override void InitializeServices(ServiceLocator serviceLocator)
@@ -33,10 +33,12 @@ namespace DCL.ECSComponents.Test
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            
+            Settings.CreateSharedInstance(new DefaultSettingsFactory());
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            audioSourceComponentHandler = new ECSAudioSourceComponentHandler();
+            audioSourceComponentHandler = new ECSAudioStreamComponentHandler();
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
@@ -59,103 +61,159 @@ namespace DCL.ECSComponents.Test
             GameObject.Destroy(gameObject);
         }
         
-        // [UnityTest]
-        // public IEnumerator UpdatePlayingModelComponentCorrectly()
-        // {
-        //     // Arrange
-        //     ECSAudioSource model = CreateAudioSourceModel();
-        //     model.playing = true;
-        //     model.loop = false;
-        //
-        //     // Act
-        //     audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
-        //
-        //     yield return new WaitUntil( () => audioSourceComponentHandler.promiseAudioClip.state == AssetPromiseState.FINISHED);
-        //
-        //     // Assert
-        //     Assert.AreEqual(audioSourceComponentHandler.audioSource.isPlaying, true);
-        // }
-        //
-        // [Test]
-        // public void UpdateLoopModelComponentCorrectly()
-        // {
-        //     // Arrange
-        //     ECSAudioSource model = CreateAudioSourceModel();
-        //     model.loop = false;
-        //     
-        //     ECSAudioSource model2 = CreateAudioSourceModel();
-        //     model2.loop = true;
-        //     
-        //     audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
-        //     
-        //     // Act
-        //     audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
-        //
-        //     // Assert
-        //     Assert.AreEqual(audioSourceComponentHandler.audioSource.loop, model2.loop);
-        // }
-        //
-        // [Test]
-        // public void UpdatePitchModelComponentCorrectly()
-        // {
-        //     // Arrange
-        //     ECSAudioSource model = CreateAudioSourceModel();
-        //     model.pitch = 0f;
-        //     
-        //     ECSAudioSource model2 = CreateAudioSourceModel();
-        //     model2.pitch = 1f;
-        //     
-        //     audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
-        //     
-        //     // Act
-        //     audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
-        //
-        //     // Assert
-        //     Assert.AreEqual(audioSourceComponentHandler.audioSource.pitch, model2.pitch);
-        // }
-        //
-        // [Test]
-        // public void UpdateVolumeModelComponentCorrectly()
-        // {
-        //     // Arrange
-        //     Settings.CreateSharedInstance(new DefaultSettingsFactory());
-        //     CommonScriptableObjects.sceneID.Set("1");
-        //     
-        //     ECSAudioSource model = CreateAudioSourceModel();
-        //     model.volume = 0f;
-        //     
-        //     ECSAudioSource model2 = CreateAudioSourceModel();
-        //     model2.volume = 1f;
-        //     
-        //     audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
-        //     
-        //     // Act
-        //     audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
-        //
-        //     // Assert
-        //     Assert.AreEqual(audioSourceComponentHandler.audioSource.volume, model2.volume);
-        // }
-        //
-        // [UnityTest]
-        // public IEnumerator DisposeComponentCorrectly()
-        // {
-        //     // Arrange
-        //     ECSAudioSource model = CreateAudioSourceModel();
-        //     audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
-        //
-        //     // Act
-        //     audioSourceComponentHandler.OnComponentRemoved(scene, entity);
-        //     yield return null;
-        //
-        //     // Assert
-        //     Assert.IsNull(audioSourceComponentHandler.audioSource);
-        //     Assert.IsTrue(audioSourceComponentHandler.promiseAudioClip.isForgotten);
-        // }
-
-        private ECSAudioSource CreateAudioSourceModel()
+        [Test]
+        public void UpdatePlayingModelComponentCorrectly()
         {
-            ECSAudioSource model = new ECSAudioSource();
-            model.audioClipUrl = TestAssetsUtils.GetPath() + "/Audio/short_effect.ogg";
+            // Arrange
+            
+            // We prepare the componentHandler
+            audioSourceComponentHandler.isInsideBoundaries = true;
+            audioSourceComponentHandler.isInsideScene = true;
+            audioSourceComponentHandler.isRendererActive = true;
+
+            // We prepare the models
+            ECSAudioStream model = CreateAudioStreamModel();
+            model.playing = false;
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            
+            ECSAudioStream model2 = CreateAudioStreamModel();
+            model2.playing = true;
+            
+            // Act
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
+
+            // Assert
+            Assert.AreEqual(audioSourceComponentHandler.isPlaying, true);
+        }
+        
+        [Test]
+        public void UpdateVolumeModelComponentCorrectly()
+        {
+            // Arrange
+            ECSAudioStream model = CreateAudioStreamModel();
+            model.volume = 0f;
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            
+            ECSAudioStream model2 = CreateAudioStreamModel();
+            model2.volume = 1f;
+            
+            // Act
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
+
+            // Assert
+            Assert.AreEqual(1f,audioSourceComponentHandler.currentVolume);
+        }
+        
+        [Test]
+        public void UpdateUrlModelComponentCorrectly()
+        {
+            // Arrange
+            string expectedUrl = "NewUrl";
+            ECSAudioStream model = CreateAudioStreamModel();
+            model.url = "OldUrl";
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            
+            ECSAudioStream model2 = CreateAudioStreamModel();
+            model2.url = expectedUrl;
+            
+            // Act
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
+
+            // Assert
+            Assert.AreEqual(expectedUrl,audioSourceComponentHandler.model.url);
+        }
+        
+        [Test]
+        public void PlayAudioIfConditionsAreMeet()
+        {
+            // Arrange
+            ECSAudioStream model = CreateAudioStreamModel();
+            model.playing = true;
+            audioSourceComponentHandler.isInsideBoundaries = true;
+            audioSourceComponentHandler.isInsideScene = true;
+            audioSourceComponentHandler.isRendererActive = true;
+            
+            // Act
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Assert
+            Assert.IsTrue(audioSourceComponentHandler.isPlaying);
+        }
+        
+        [Test]
+        public void StopAudioIfRendererIsDisable()
+        {
+            // Arrange
+            ECSAudioStream model = CreateAudioStreamModel();
+            model.playing = true;
+            audioSourceComponentHandler.isInsideBoundaries = true;
+            audioSourceComponentHandler.isInsideScene = true;
+            audioSourceComponentHandler.isRendererActive = false;
+            
+            // Act
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Assert
+            Assert.IsFalse(audioSourceComponentHandler.isPlaying);
+        }
+        
+        [Test]
+        public void StopAudioIfItsOutsideScene()
+        {
+            // Arrange
+            ECSAudioStream model = CreateAudioStreamModel();
+            model.playing = true;
+            audioSourceComponentHandler.isInsideBoundaries = true;
+            audioSourceComponentHandler.isInsideScene = false;
+            audioSourceComponentHandler.isRendererActive = true;
+            
+            // Act
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Assert
+            Assert.IsFalse(audioSourceComponentHandler.isPlaying);
+        }
+        
+        [Test]
+        public void StopAudioIfItsOutsideBoundaries()
+        {
+            // Arrange
+            ECSAudioStream model = CreateAudioStreamModel();
+            model.playing = true;
+            audioSourceComponentHandler.isInsideBoundaries = false;
+            audioSourceComponentHandler.isInsideScene = true;
+            audioSourceComponentHandler.isRendererActive = true;
+            
+            // Act
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Assert
+            Assert.IsFalse(audioSourceComponentHandler.isPlaying);
+        }
+        
+        [UnityTest]
+        public IEnumerator DisposeComponentCorrectly()
+        {
+            // Arrange
+            ECSAudioStream model = CreateAudioStreamModel();
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+        
+            // Act
+            audioSourceComponentHandler.OnComponentRemoved(scene, entity);
+            yield return null;
+        
+            // Assert
+            Assert.IsNull(audioSourceComponentHandler.audioSource);
+        }
+
+        private ECSAudioStream CreateAudioStreamModel()
+        {
+            ECSAudioStream model = new ECSAudioStream()
+            {
+                url = "https://audio.dcl.guru/radio/8110/radio.mp3",
+                playing = true,
+                volume = 1f
+            };
             return model;
         }
         

@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DCL.Components.ECSAudioSourceShould")]
+[assembly: InternalsVisibleTo("DCL.Components.ECSAudioStreamShould")]
