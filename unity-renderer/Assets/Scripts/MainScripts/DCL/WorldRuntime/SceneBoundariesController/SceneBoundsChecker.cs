@@ -285,10 +285,10 @@ namespace DCL.Controllers
 
         protected void UpdateComponents(IDCLEntity entity, bool isInsideBoundaries)
         {
-            if(!DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity))
+            if(!DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity.entityId))
                 return;
             
-            List<IOutOfSceneBoundariesHandler> components = DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity];
+            List<IOutOfSceneBoundariesHandler> components = DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId];
 
             for (int i = 0; i < components.Count; i++)
             {

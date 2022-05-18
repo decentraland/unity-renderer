@@ -36,28 +36,9 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            Dispose();
-            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
+            Dispose(entity);
         }
 
-        private void Dispose()
-        {
-            if(promiseAudioClip != null)
-                AssetPromiseKeeper_AudioClip.i.Forget(promiseAudioClip);
-            
-            CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
-
-            if (Settings.i != null)
-                Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
-            
-            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
-            if (audioSource != null)
-            {
-                GameObject.Destroy(audioSource);
-                audioSource = null;
-            }
-        }
-        
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSAudioSource model)
         {
             bool isSameClip = model.audioClipUrl == this.model?.audioClipUrl;
@@ -78,6 +59,35 @@ namespace DCL.ECSComponents
             
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneChanged;
+        }
+                
+        void IOutOfSceneBoundariesHandler.UpdateOutOfBoundariesState(bool isInsideBoundaries)
+        {
+            if (scene.isPersistent)
+                isInsideBoundaries = true;
+
+            isOutOfBoundaries = !isInsideBoundaries;
+            UpdateAudioSourceVolume();
+        }
+        
+        private void Dispose(IDCLEntity entity)
+        {
+            if(promiseAudioClip != null)
+                AssetPromiseKeeper_AudioClip.i.Forget(promiseAudioClip);
+            
+            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
+            
+            CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
+
+            if (Settings.i != null)
+                Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
+            
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
+            if (audioSource != null)
+            {
+                GameObject.Destroy(audioSource);
+                audioSource = null;
+            }
         }
         
         private void ApplyCurrentModel()
@@ -116,15 +126,6 @@ namespace DCL.ECSComponents
                 audioSource.Play();
             
             playedAtTimestamp = model.playedAtTimestamp;
-        }
-        
-        public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
-        {
-            if (scene.isPersistent)
-                isInsideBoundaries = true;
-
-            isOutOfBoundaries = !isInsideBoundaries;
-            UpdateAudioSourceVolume();
         }
 
         private void OnComplete(Asset_AudioClip assetAudioClip)
@@ -187,7 +188,6 @@ namespace DCL.ECSComponents
             if (scene.isPersistent || scene.sceneData.id == currentSceneId)
                 volume = model.volume;
             
-
             audioSource.volume = volume;
         }
     }
