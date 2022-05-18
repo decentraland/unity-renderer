@@ -181,9 +181,12 @@ namespace Tests
                     data = new byte[] { 1 }
                 },
             };
-
+            MemoryStream allMsgsMemoryStream = new MemoryStream();
+            BinaryWriter allMsgsBinaryWriter = new BinaryWriter(allMsgsMemoryStream);
             for (int i = 0; i < msgs.Length; i++)
             {
+                KernelBinaryMessageSerializer.Serialize(allMsgsBinaryWriter, msgs[i]);
+
                 MemoryStream memoryStream = new MemoryStream();
                 BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
                 KernelBinaryMessageSerializer.Serialize(binaryWriter, msgs[i]);
@@ -192,8 +195,7 @@ namespace Tests
                 IBinaryReader reader = new ByteArrayReader(bytes);
 
                 // check message header values
-                int expectedMessageSize = 32 + (((byte[])msgs[i].data)?.Length ?? 0);
-                Assert.AreEqual(expectedMessageSize, reader.ReadInt32());
+                Assert.AreEqual(bytes.Length, reader.ReadInt32());
 
                 int expectedType = msgs[i].data != null ? (int)KernelBinaryMessageType.PUT_COMPONENT : (int)KernelBinaryMessageType.DELETE_COMPONENT;
                 Assert.AreEqual(expectedType, reader.ReadInt32());
@@ -201,6 +203,23 @@ namespace Tests
                 binaryWriter.Dispose();
                 memoryStream.Dispose();
             }
+
+            // compare messages
+            using (var iterator = KernelBinaryMessageDeserializer.Deserialize(new ByteArrayReader(allMsgsMemoryStream.ToArray())))
+            {
+                int index = 0;
+                while (iterator.MoveNext())
+                {
+                    CRDTMessage result = (CRDTMessage)iterator.Current;
+                    Assert.AreEqual(msgs[index].key, result.key);
+                    Assert.AreEqual(msgs[index].timestamp, result.timestamp);
+                    Assert.IsTrue(AreEqual((byte[])msgs[index].data, (byte[])result.data));
+                    index++;
+                }
+            }
+
+            allMsgsBinaryWriter.Dispose();
+            allMsgsMemoryStream.Dispose();
         }
 
         static bool AreEqual(byte[] a, byte[] b)
