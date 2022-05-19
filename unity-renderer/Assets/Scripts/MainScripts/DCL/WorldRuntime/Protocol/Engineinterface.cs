@@ -3652,8 +3652,6 @@ namespace DCL.Interface {
       }
     }
 
-      public PB_Transform pb = new PB_Transform(());
-      pb.
   }
 
   public sealed partial class PB_Transform : pb::IMessage<PB_Transform> {
@@ -7723,7 +7721,8 @@ namespace DCL.Interface {
           }
         }
       }
-    
+    }
+
   }
 
   public sealed partial class PB_Animator : pb::IMessage<PB_Animator> {
