@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!21 &-2328729848628831580
+--- !u!21 &-6382220749319385524
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2768580860173156486}
+        m_Texture: {fileID: 2425126532213679165}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
@@ -113,13 +113,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansJP-Heavy SDF
   m_EditorClassIdentifier: 
-  hashCode: -1234964560
-  material: {fileID: -2328729848628831580}
-  materialHashCode: 782051216
+  hashCode: 0
+  material: {fileID: -6382220749319385524}
+  materialHashCode: 0
   m_Version: 1.1.0
-  m_SourceFontFileGUID: 
-  m_SourceFontFile_EditorRef: {fileID: 0}
-  m_SourceFontFile: {fileID: 12800000, guid: d1dad829aba7f4f4db86e1d9d03bc071, type: 3}
+  m_SourceFontFileGUID: bb58af0ed6a17284ea029cf83414552c
+  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: bb58af0ed6a17284ea029cf83414552c,
+    type: 3}
+  m_SourceFontFile: {fileID: 12800000, guid: bb58af0ed6a17284ea029cf83414552c, type: 3}
   m_AtlasPopulationMode: 1
   m_FaceInfo:
     m_FaceIndex: 0
@@ -145,7 +146,7 @@ MonoBehaviour:
   m_GlyphTable: []
   m_CharacterTable: []
   m_AtlasTextures:
-  - {fileID: 2768580860173156486}
+  - {fileID: 2425126532213679165}
   m_AtlasTextureIndex: 0
   m_IsMultiAtlasTexturesEnabled: 0
   m_ClearDynamicDataOnBuild: 0
@@ -191,7 +192,7 @@ MonoBehaviour:
   m_FallbackFontAssetTable: []
   m_CreationSettings:
     sourceFontFileName: 
-    sourceFontFileGUID: d1dad829aba7f4f4db86e1d9d03bc071
+    sourceFontFileGUID: bb58af0ed6a17284ea029cf83414552c
     pointSizeSamplingMode: 0
     pointSize: 90
     padding: 9
@@ -234,7 +235,7 @@ MonoBehaviour:
   boldSpacing: 7
   italicStyle: 35
   tabSize: 10
---- !u!28 &2768580860173156486
+--- !u!28 &2425126532213679165
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

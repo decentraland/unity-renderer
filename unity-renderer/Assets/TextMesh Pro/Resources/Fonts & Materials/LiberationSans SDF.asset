@@ -8588,10 +8588,10 @@ MonoBehaviour:
       m_FeatureLookupFlags: 0
   fallbackFontAssets: []
   m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: 70d4a3cb89785e543b0a1b3d2b0fc4f6, type: 2}
-  - {fileID: 11400000, guid: 98ed4d4c6bbdeea49b43846863211f59, type: 2}
-  - {fileID: 11400000, guid: 527e54e3612e6544395dc23c2cb56bf0, type: 2}
-  - {fileID: 11400000, guid: 63e935748f2f9f04f94fcb99076acb1b, type: 2}
+  - {fileID: 11400000, guid: da0259ef1400a9041907ccbd4c46f4a9, type: 2}
+  - {fileID: 11400000, guid: 045cd130aa88f4f4f8e7313908c8e0a6, type: 2}
+  - {fileID: 11400000, guid: 2804a0e342af42041b46a6e0b3868038, type: 2}
+  - {fileID: 11400000, guid: ab368c0476d208a4f98870a40c33d3ba, type: 2}
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: e3265ab4bf004d28a9537516768c1c75

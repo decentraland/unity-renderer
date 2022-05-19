@@ -7108,10 +7108,10 @@ MonoBehaviour:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
   m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: 573105e11ae4cb0499901e2b7ea902a4, type: 2}
-  - {fileID: 11400000, guid: 75893e12df0f1854599237c02ccd6154, type: 2}
-  - {fileID: 11400000, guid: cb4e548eadf156945ab6a5e6a57884d4, type: 2}
-  - {fileID: 11400000, guid: d07ec15431bb7e145ba5a0f926f87c94, type: 2}
+  - {fileID: 11400000, guid: 78ca70dfe773c844497dd8a1c9254828, type: 2}
+  - {fileID: 11400000, guid: 00bdda23ca3fad947bcd13665570509e, type: 2}
+  - {fileID: 11400000, guid: 92d3a0d84cde5a8428c772482c2a443f, type: 2}
+  - {fileID: 11400000, guid: 84891112e6d1a3b4e92ffc264b7492a9, type: 2}
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: 6ff40703bf15145dba7ebe52c35276b9
