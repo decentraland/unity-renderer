@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansKR-Regular SDF
   m_EditorClassIdentifier: 
-  hashCode: -887855542
+  hashCode: 0
   material: {fileID: 1748256653999927243}
-  materialHashCode: -504769750
+  materialHashCode: 0
   m_Version: 1.1.0
-  m_SourceFontFileGUID: 
-  m_SourceFontFile_EditorRef: {fileID: 0}
+  m_SourceFontFileGUID: 5ea5c63978b53f4468bdf3626973c3b0
+  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 5ea5c63978b53f4468bdf3626973c3b0,
+    type: 3}
   m_SourceFontFile: {fileID: 12800000, guid: 5ea5c63978b53f4468bdf3626973c3b0, type: 3}
   m_AtlasPopulationMode: 1
   m_FaceInfo:

@@ -59,12 +59,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansKR-Bold SDF
   m_EditorClassIdentifier: 
-  hashCode: -1136569547
+  hashCode: 0
   material: {fileID: 5905273190494220}
-  materialHashCode: -196505355
+  materialHashCode: 0
   m_Version: 1.1.0
-  m_SourceFontFileGUID: 
-  m_SourceFontFile_EditorRef: {fileID: 0}
+  m_SourceFontFileGUID: 07a8442d63f42c441aac70c832fa2827
+  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 07a8442d63f42c441aac70c832fa2827,
+    type: 3}
   m_SourceFontFile: {fileID: 12800000, guid: 07a8442d63f42c441aac70c832fa2827, type: 3}
   m_AtlasPopulationMode: 1
   m_FaceInfo:

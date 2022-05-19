@@ -113,12 +113,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansTC-SemiBold SDF
   m_EditorClassIdentifier: 
-  hashCode: 899182825
+  hashCode: 0
   material: {fileID: -7458999992364693798}
-  materialHashCode: -332010327
+  materialHashCode: 0
   m_Version: 1.1.0
-  m_SourceFontFileGUID: 
-  m_SourceFontFile_EditorRef: {fileID: 0}
+  m_SourceFontFileGUID: 36f716067ffc39543ab8d3aea4665638
+  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 36f716067ffc39543ab8d3aea4665638,
+    type: 3}
   m_SourceFontFile: {fileID: 12800000, guid: 36f716067ffc39543ab8d3aea4665638, type: 3}
   m_AtlasPopulationMode: 1
   m_FaceInfo:
