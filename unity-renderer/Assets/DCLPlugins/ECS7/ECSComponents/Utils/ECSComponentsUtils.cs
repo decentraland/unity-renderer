@@ -33,7 +33,7 @@ public static class ECSComponentsUtils
         ConfigurePrimitiveShapeVisibility(meshGameObject, visible,renderers);
         
         // TODO: For better perfomance we should create the correct collider to each primitive shape instead of creating a meshCollider
-        CollidersManager.i.ConfigureCollider(entity, meshFilter, withCollisions, CalculateCollidersLayer(withCollisions,isPointerBlocker));
+        CollidersManager.i.ConfigureColliders(entity.meshRootGameObject,false, withCollisions, entity,CalculateCollidersLayer(withCollisions,isPointerBlocker));
     }
     
     public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
