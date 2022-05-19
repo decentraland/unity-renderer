@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!28 &-7439885582299705644
+--- !u!28 &-4850149088523579625
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -59,14 +59,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansTC-Heavy SDF
   m_EditorClassIdentifier: 
-  hashCode: 0
-  material: {fileID: 7313568327494898832}
-  materialHashCode: 0
+  hashCode: 1341326141
+  material: {fileID: 381921218746290292}
+  materialHashCode: -126508035
   m_Version: 1.1.0
-  m_SourceFontFileGUID: fab8b88756dd8c347bcde7cfc76c340b
-  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: fab8b88756dd8c347bcde7cfc76c340b,
+  m_SourceFontFileGUID: 9d5fb47f4380a544d91c0657fadc7f12
+  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 9d5fb47f4380a544d91c0657fadc7f12,
     type: 3}
-  m_SourceFontFile: {fileID: 12800000, guid: fab8b88756dd8c347bcde7cfc76c340b, type: 3}
+  m_SourceFontFile: {fileID: 12800000, guid: 9d5fb47f4380a544d91c0657fadc7f12, type: 3}
   m_AtlasPopulationMode: 1
   m_FaceInfo:
     m_FaceIndex: 0
@@ -75,7 +75,7 @@ MonoBehaviour:
     m_PointSize: 90
     m_Scale: 1
     m_LineHeight: 130.32
-    m_AscentLine: 104.4
+    m_AscentLine: 87.3
     m_CapLine: 68
     m_MeanLine: 52
     m_Baseline: 0
@@ -92,9 +92,9 @@ MonoBehaviour:
   m_GlyphTable: []
   m_CharacterTable: []
   m_AtlasTextures:
-  - {fileID: -7439885582299705644}
+  - {fileID: -4850149088523579625}
   m_AtlasTextureIndex: 0
-  m_IsMultiAtlasTexturesEnabled: 0
+  m_IsMultiAtlasTexturesEnabled: 1
   m_ClearDynamicDataOnBuild: 0
   m_UsedGlyphRects: []
   m_FreeGlyphRects:
@@ -138,7 +138,7 @@ MonoBehaviour:
   m_FallbackFontAssetTable: []
   m_CreationSettings:
     sourceFontFileName: 
-    sourceFontFileGUID: fab8b88756dd8c347bcde7cfc76c340b
+    sourceFontFileGUID: 9d5fb47f4380a544d91c0657fadc7f12
     pointSizeSamplingMode: 0
     pointSize: 90
     padding: 9
@@ -181,7 +181,7 @@ MonoBehaviour:
   boldSpacing: 7
   italicStyle: 35
   tabSize: 10
---- !u!21 &7313568327494898832
+--- !u!21 &381921218746290292
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -213,7 +213,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: -7439885582299705644}
+        m_Texture: {fileID: -4850149088523579625}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:

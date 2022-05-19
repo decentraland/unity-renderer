@@ -5755,10 +5755,10 @@ MonoBehaviour:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
   m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: 573105e11ae4cb0499901e2b7ea902a4, type: 2}
-  - {fileID: 11400000, guid: 75893e12df0f1854599237c02ccd6154, type: 2}
-  - {fileID: 11400000, guid: cb4e548eadf156945ab6a5e6a57884d4, type: 2}
-  - {fileID: 11400000, guid: d07ec15431bb7e145ba5a0f926f87c94, type: 2}
+  - {fileID: 11400000, guid: 668c51f0549997040bbe7d8a5c25514d, type: 2}
+  - {fileID: 11400000, guid: 940eb13800892334781a0b7d7a2fc564, type: 2}
+  - {fileID: 11400000, guid: f7bc7620e87960a44adc5b7742e559fa, type: 2}
+  - {fileID: 11400000, guid: 6bd1d9a49c18f7f44a8441c396d5effb, type: 2}
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: e7fc064ba5e1246d2972a1ca5cbac88a

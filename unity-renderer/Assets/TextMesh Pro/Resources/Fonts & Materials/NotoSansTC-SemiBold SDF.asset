@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!21 &-7458999992364693798
+--- !u!21 &-7797314615211969184
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 383050734665040339}
+        m_Texture: {fileID: 7832725963135983446}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
@@ -113,14 +113,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansTC-SemiBold SDF
   m_EditorClassIdentifier: 
-  hashCode: 0
-  material: {fileID: -7458999992364693798}
-  materialHashCode: 0
+  hashCode: 899182825
+  material: {fileID: -7797314615211969184}
+  materialHashCode: -332010327
   m_Version: 1.1.0
-  m_SourceFontFileGUID: 36f716067ffc39543ab8d3aea4665638
-  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 36f716067ffc39543ab8d3aea4665638,
+  m_SourceFontFileGUID: ccfc26671c36cb146a22f2d21f9c6571
+  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: ccfc26671c36cb146a22f2d21f9c6571,
     type: 3}
-  m_SourceFontFile: {fileID: 12800000, guid: 36f716067ffc39543ab8d3aea4665638, type: 3}
+  m_SourceFontFile: {fileID: 12800000, guid: ccfc26671c36cb146a22f2d21f9c6571, type: 3}
   m_AtlasPopulationMode: 1
   m_FaceInfo:
     m_FaceIndex: 0
@@ -146,9 +146,9 @@ MonoBehaviour:
   m_GlyphTable: []
   m_CharacterTable: []
   m_AtlasTextures:
-  - {fileID: 383050734665040339}
+  - {fileID: 7832725963135983446}
   m_AtlasTextureIndex: 0
-  m_IsMultiAtlasTexturesEnabled: 0
+  m_IsMultiAtlasTexturesEnabled: 1
   m_ClearDynamicDataOnBuild: 0
   m_UsedGlyphRects: []
   m_FreeGlyphRects:
@@ -192,7 +192,7 @@ MonoBehaviour:
   m_FallbackFontAssetTable: []
   m_CreationSettings:
     sourceFontFileName: 
-    sourceFontFileGUID: 36f716067ffc39543ab8d3aea4665638
+    sourceFontFileGUID: ccfc26671c36cb146a22f2d21f9c6571
     pointSizeSamplingMode: 0
     pointSize: 90
     padding: 9
@@ -235,7 +235,7 @@ MonoBehaviour:
   boldSpacing: 7
   italicStyle: 35
   tabSize: 10
---- !u!28 &383050734665040339
+--- !u!28 &7832725963135983446
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

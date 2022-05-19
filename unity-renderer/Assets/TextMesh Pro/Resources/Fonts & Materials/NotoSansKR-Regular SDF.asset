@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansKR-Regular SDF
   m_EditorClassIdentifier: 
-  hashCode: 0
-  material: {fileID: 1748256653999927243}
-  materialHashCode: 0
+  hashCode: -887855542
+  material: {fileID: 3991297689441702233}
+  materialHashCode: -504769750
   m_Version: 1.1.0
-  m_SourceFontFileGUID: 5ea5c63978b53f4468bdf3626973c3b0
-  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 5ea5c63978b53f4468bdf3626973c3b0,
+  m_SourceFontFileGUID: 0dc2f39627c22ab4191b7d5a0f050694
+  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 0dc2f39627c22ab4191b7d5a0f050694,
     type: 3}
-  m_SourceFontFile: {fileID: 12800000, guid: 5ea5c63978b53f4468bdf3626973c3b0, type: 3}
+  m_SourceFontFile: {fileID: 12800000, guid: 0dc2f39627c22ab4191b7d5a0f050694, type: 3}
   m_AtlasPopulationMode: 1
   m_FaceInfo:
     m_FaceIndex: 0
@@ -45,9 +45,9 @@ MonoBehaviour:
   m_GlyphTable: []
   m_CharacterTable: []
   m_AtlasTextures:
-  - {fileID: 7608910447843344187}
+  - {fileID: 7240055176392267641}
   m_AtlasTextureIndex: 0
-  m_IsMultiAtlasTexturesEnabled: 0
+  m_IsMultiAtlasTexturesEnabled: 1
   m_ClearDynamicDataOnBuild: 0
   m_UsedGlyphRects: []
   m_FreeGlyphRects:
@@ -91,7 +91,7 @@ MonoBehaviour:
   m_FallbackFontAssetTable: []
   m_CreationSettings:
     sourceFontFileName: 
-    sourceFontFileGUID: 5ea5c63978b53f4468bdf3626973c3b0
+    sourceFontFileGUID: 0dc2f39627c22ab4191b7d5a0f050694
     pointSizeSamplingMode: 0
     pointSize: 90
     padding: 9
@@ -134,7 +134,7 @@ MonoBehaviour:
   boldSpacing: 7
   italicStyle: 35
   tabSize: 10
---- !u!21 &1748256653999927243
+--- !u!21 &3991297689441702233
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -166,7 +166,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 7608910447843344187}
+        m_Texture: {fileID: 7240055176392267641}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
@@ -235,7 +235,7 @@ Material:
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_BuildTextureStacks: []
---- !u!28 &7608910447843344187
+--- !u!28 &7240055176392267641
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
