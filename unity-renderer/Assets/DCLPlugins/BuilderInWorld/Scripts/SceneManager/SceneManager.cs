@@ -57,6 +57,7 @@ namespace DCL.Builder
         private float beginStartFlowTimeStamp = 0;
         internal bool catalogLoaded = false;
         internal List<string> portableExperiencesToResume = new List<string>();
+        private BuilderInWorldBridge bridge;
 
         public void Initialize(IContext context)
         {
@@ -68,6 +69,8 @@ namespace DCL.Builder
             builderInWorldBridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
             userProfile = UserProfile.GetOwnUserProfile();
 
+            bridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
+            
             context.editorContext.editorHUD.OnStartExitAction += StartExitMode;
             context.editorContext.editorHUD.OnLogoutAction += ExitEditMode;
 
@@ -405,8 +408,11 @@ namespace DCL.Builder
             CommonScriptableObjects.allUIHidden.Set(true);
             NotificationsController.i.allowNotifications = true;
             inputController.inputTypeMode = InputTypeMode.BUILD_MODE_LOADING;
+            
+            // We prepare the bridge for the current scene
+            bridge.SetScene(targetScene);
 
-            //We configure the loading part
+            // We configure the loading part
             ShowBuilderLoading();
 
             DataStore.i.common.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);

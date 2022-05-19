@@ -288,7 +288,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b34a804476c5243872ffafcab770d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectWhisper: 1
   inputField: {fileID: 6940267282881019307}
   chatEntriesContainer: {fileID: 1398511019163901991}
   scrollRect: {fileID: 249819674404411145}
@@ -298,6 +297,7 @@ MonoBehaviour:
   messageHoverGotoText: {fileID: 7133618350416264519}
   contextMenu: {fileID: 4601609249802841795}
   confirmationDialog: {fileID: 953798123681827801}
+  defaultChatEntryFactory: {fileID: 0}
 --- !u!225 &8356831171081595404
 CanvasGroup:
   m_ObjectHideFlags: 0
