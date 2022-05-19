@@ -6934,10 +6934,10 @@ MonoBehaviour:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
   m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: 17a0f377e46555644998ca17173e69f3, type: 2}
-  - {fileID: 11400000, guid: 64a561ac15c5be746b6a5281ad59b303, type: 2}
-  - {fileID: 11400000, guid: 1bed0e83325287049a91a5c9605dce9f, type: 2}
-  - {fileID: 11400000, guid: ef62b046ca2881742bf9c8a12705d148, type: 2}
+  - {fileID: 11400000, guid: 29b452b9588d8464f90cfab44e19d73c, type: 2}
+  - {fileID: 11400000, guid: b44f1d30a1d621048bd3baf0a89814b2, type: 2}
+  - {fileID: 11400000, guid: 6e30e5be80aee624b8596fc1ca93c0ee, type: 2}
+  - {fileID: 11400000, guid: 82c9b9ce0700f934d80402b4d1e96475, type: 2}
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: 09b97968322d548d48263701ed418976

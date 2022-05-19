@@ -6980,11 +6980,7 @@ MonoBehaviour:
   m_FontFeatureTable:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
-  m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: 17a0f377e46555644998ca17173e69f3, type: 2}
-  - {fileID: 11400000, guid: 64a561ac15c5be746b6a5281ad59b303, type: 2}
-  - {fileID: 11400000, guid: 1bed0e83325287049a91a5c9605dce9f, type: 2}
-  - {fileID: 11400000, guid: ef62b046ca2881742bf9c8a12705d148, type: 2}
+  m_FallbackFontAssetTable: []
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: c5ce734143e1c40c38a09e3af70c27b8
