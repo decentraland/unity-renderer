@@ -13,6 +13,15 @@ namespace DCL.Builder
             PROJECT = 0,
             LAND = 1
         }
+        
+        /// <summary>
+        /// This enum represent the version of the scene, legacy is the old ECS while ECS is the new runtime
+        /// </summary>
+        public enum SceneVersion
+        {
+            LEGACY = 0,
+            ECS = 1
+        }
 
         /// <summary>
         /// Current manifest of the scene, the manifest is used to save the project
@@ -33,6 +42,11 @@ namespace DCL.Builder
         /// Parcel scene associated with the scene
         /// </summary>
         IParcelScene scene { get; }
+        
+        /// <summary>
+        /// Version of the scene, legacy or new ECS
+        /// </summary>
+        SceneVersion sceneVersion { get; }
 
         /// <summary>
         /// Type of scene 

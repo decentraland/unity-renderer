@@ -1,5 +1,6 @@
 using System;
 using DCL.Interface;
+using SocialFeaturesAnalytics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,6 +22,7 @@ public class JumpInButton : MonoBehaviour
     internal string currentRealmServerName;
     internal string currentRealmLayerName;
     internal PresenceStatus currentPresenceStatus;
+    internal ISocialAnalytics socialAnalytics;
 
     public event Action OnClick;
 
@@ -29,13 +31,14 @@ public class JumpInButton : MonoBehaviour
     /// </summary>
     /// <param name="friendsController">Friends Controller to be listened</param>
     /// <param name="userId">User ID to listen to</param>
-    public void Initialize(IFriendsController friendsController, string userId)
+    public void Initialize(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics)
     {
         if (friendsController == null)
             return;
 
         currentFriendsController = friendsController;
         currentUserId = userId;
+        this.socialAnalytics = socialAnalytics;
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => JumpIn());
@@ -105,5 +108,6 @@ public class JumpInButton : MonoBehaviour
     {
         OnClick?.Invoke();
         WebInterface.JumpIn((int)currentCoords.x, (int)currentCoords.y, currentRealmServerName, currentRealmLayerName);
+        socialAnalytics.SendPlayerJoin(PlayerActionSource.Conversation);
     }
 }
