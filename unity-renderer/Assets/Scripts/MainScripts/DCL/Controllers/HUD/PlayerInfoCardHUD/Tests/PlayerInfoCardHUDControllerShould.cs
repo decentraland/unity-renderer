@@ -7,6 +7,7 @@ using DCL.Helpers;
 using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -21,6 +22,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     private WearableItem[] wearables;
     private FriendsController_Mock friendsController;
     private IUserProfileBridge userProfileBridge;
+    private ISocialAnalytics socialAnalytics;
     private RegexProfanityFilter profanityFilter;
     private StringVariable currentPlayerIdData;
 
@@ -43,13 +45,16 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         GivenProfanityFilteringAvailability(true);
 
         friendsController = new FriendsController_Mock();
+        socialAnalytics = Substitute.For<ISocialAnalytics>();
 
         controller = new PlayerInfoCardHUDController(friendsController,
             currentPlayerIdData,
             userProfileBridge,
             wearableCatalogBridge,
+            socialAnalytics,
             profanityFilter,
-            dataStore);
+            dataStore,
+            CommonScriptableObjects.playerInfoCardVisibleState);
     }
 
     protected override IEnumerator TearDown()
@@ -202,7 +207,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         controller.currentPlayerId.Set(null);
         controller.currentPlayerId.Set(IDS[4]);
 
-        Environment.i.platform.serviceProviders.analytics.Received(5).SendAnalytic(PlayerInfoCardHUDController.PASSPORT_OPENED_EVENT, Arg.Any<Dictionary<string, string>>());
+        socialAnalytics.Received(5).SendPassportOpen();
     }
 
     private void PrepareUsers()

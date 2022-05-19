@@ -44,7 +44,7 @@ namespace KernelCommunication
         public void Write(string value)
         {
             var bytes = Encoding.UTF8.GetBytes(value);
-            stream.Write(bytes, 0, value.Length);
+            stream.Write(bytes, 0, bytes.Length);
         }
 
         public void Dispose()
