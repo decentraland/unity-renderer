@@ -84,6 +84,9 @@ Shader "DCL/Universal Render Pipeline/Lit"
         _FadeThickness ("Fade Thickness", Float) = 5
         _FadeDirection ("Fade Direction", Float) = 0
         
+        _FresnelColor("Fresnel Color", Color) = (0,1,0.75,0)
+        _FresnelPower("Fresnel Power", Float) = 3.0
+
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}

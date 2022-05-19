@@ -170,10 +170,11 @@ half4 LitPassFragment(Varyings input) : SV_Target
     InitializeInputData(input, surfaceData.normalTS, inputData);
 
     half4 color = UniversalFragmentPBR(inputData, surfaceData);
+    half fresnel = pow((1.0 - saturate(dot(normalize(input.normalWS.xyz), normalize(input.viewDirWS.xyz)))), _FresnelPower);
 
     color.rgb = MixFog(color.rgb, inputData.fogCoord);    
     color.a = OutputAlpha(color.a, _Surface);    
-	color = fadeDithering(color, input.positionWS, input.positionSS);
+	color = clamp(fadeDithering(color, input.positionWS, input.positionSS) + (fresnel * _FresnelColor)* _FresnelColor.w, 0, 1);
 
     return color;
 }

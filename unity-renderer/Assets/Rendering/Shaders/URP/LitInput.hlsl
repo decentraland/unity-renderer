@@ -38,6 +38,9 @@ int _BaseMapUVs;
 int _NormalMapUVs;
 int _MetallicMapUVs;
 int _EmissiveMapUVs;
+
+half4 _FresnelColor;
+half _FresnelPower;
 CBUFFER_END
 
 // NOTE: Do not ifdef the properties for dots instancing, but ifdef the actual usage.
