@@ -11,9 +11,9 @@ using BinaryWriter = KernelCommunication.BinaryWriter;
 
 public class ComponentCrdtWriteSystem : IDisposable
 {
-    const int BINARY_MSG_MAX_SIZE = 5242880;
+    internal const int BINARY_MSG_MAX_SIZE = 5242880;
 
-    private readonly Dictionary<string, Queue<CRDTMessage>> queuedMessages = new Dictionary<string, Queue<CRDTMessage>>();
+    internal readonly Dictionary<string, Queue<CRDTMessage>> queuedMessages = new Dictionary<string, Queue<CRDTMessage>>();
 
     private readonly IUpdateEventHandler updateEventHandler;
     private readonly MemoryStream memoryStream;
@@ -36,7 +36,7 @@ public class ComponentCrdtWriteSystem : IDisposable
         memoryStream.Dispose();
     }
 
-    public void WriteMessage(string sceneId, long entityId, int componentId, object data)
+    public void WriteMessage(string sceneId, long entityId, int componentId, byte[] data)
     {
         CRDTMessage message = new CRDTMessage()
         {
@@ -58,7 +58,7 @@ public class ComponentCrdtWriteSystem : IDisposable
         sceneMessages.Enqueue(message);
     }
 
-    private void ProcessMessages()
+    internal void ProcessMessages()
     {
         if (queuedMessages.Count == 0)
         {
