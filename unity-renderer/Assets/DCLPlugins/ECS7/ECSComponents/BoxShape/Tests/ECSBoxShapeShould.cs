@@ -46,7 +46,7 @@ namespace DCL.ECSComponents.Test
         public void UpdateComponentCorrectly()
         {
             // Arrange
-            ECSBoxShape model = new ECSBoxShape();
+            PBBoxShape model = new PBBoxShape();
 
             // Act
             boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -59,7 +59,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeComponentCorrectly()
         {
             // Arrange
-            ECSBoxShape model = new ECSBoxShape();
+            PBBoxShape model = new PBBoxShape();
             boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Act
@@ -73,7 +73,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshorrectly()
         {
             // Arrange
-            ECSBoxShape model = new ECSBoxShape();
+            PBBoxShape model = new PBBoxShape();
             boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             boxShapeComponentHandler.meshesInfo = null;
 
@@ -89,7 +89,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullPromiseCorrectly()
         {
             // Arrange
-            ECSBoxShape model = new ECSBoxShape();
+            PBBoxShape model = new PBBoxShape();
             boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             boxShapeComponentHandler.primitiveMeshPromisePrimitive = null;
 
@@ -105,7 +105,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullMeshInfoCorrectly()
         {
             // Arrange
-            ECSBoxShape model = new ECSBoxShape();
+            PBBoxShape model = new PBBoxShape();
             boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             boxShapeComponentHandler.meshesInfo = null;
 
@@ -122,7 +122,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullRendereableCorrectly()
         {
             // Arrange
-            ECSBoxShape model = new ECSBoxShape();
+            PBBoxShape model = new PBBoxShape();
             boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             boxShapeComponentHandler.rendereable = null;
 

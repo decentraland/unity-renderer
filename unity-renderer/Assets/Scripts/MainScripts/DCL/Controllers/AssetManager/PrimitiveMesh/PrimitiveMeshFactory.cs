@@ -18,7 +18,7 @@ public class PrimitiveMeshFactory : IPrimitiveMeshFactory
         {
             case PrimitiveMeshModel.Type.Box:
                 mesh = PrimitiveMeshBuilder.BuildCube(1f);
-                if (meshModelModel.uvs != null && meshModelModel.uvs.Length > 0)
+                if (meshModelModel.uvs != null && meshModelModel.uvs.Count > 0)
                 {
                     mesh.uv = Utils.FloatArrayToV2List(meshModelModel.uvs);
                 }

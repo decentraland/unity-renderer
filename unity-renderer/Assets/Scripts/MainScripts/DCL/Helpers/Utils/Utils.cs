@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Configuration;
+using Google.Protobuf.Collections;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -58,6 +59,23 @@ namespace DCL.Helpers
             }
         }
 
+        public static Vector2[] FloatArrayToV2List(RepeatedField<float> uvs)
+        {
+            Vector2[] uvsResult = new Vector2[uvs.Count / 2];
+            int uvsResultIndex = 0;
+
+            for (int i = 0; i < uvs.Count;)
+            {
+                Vector2 tmpUv = Vector2.zero;
+                tmpUv.x = uvs[i++];
+                tmpUv.y = uvs[i++];
+
+                uvsResult[uvsResultIndex++] = tmpUv;
+            }
+
+            return uvsResult;
+        }
+        
         public static Vector2[] FloatArrayToV2List(float[] uvs)
         {
             Vector2[] uvsResult = new Vector2[uvs.Length / 2];
