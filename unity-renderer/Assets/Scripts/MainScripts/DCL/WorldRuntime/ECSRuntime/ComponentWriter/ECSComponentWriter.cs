@@ -8,7 +8,7 @@ namespace DCL.ECSRuntime
 {
     public class ECSComponentWriter
     {
-        public delegate void WriteComponent(IParcelScene scene, IDCLEntity entity, int componentId, byte[] data);
+        public delegate void WriteComponent(string sceneId, long entityId, int componentId, byte[] data);
 
         private readonly Dictionary<int, object> serializers = new Dictionary<int, object>();
         private readonly WriteComponent writeComponent;
@@ -33,7 +33,7 @@ namespace DCL.ECSRuntime
 
             if (serializer is Func<T, byte[]> typedSerializer)
             {
-                writeComponent(scene, entity, componentId, typedSerializer(model));
+                writeComponent(scene.sceneData.id, entity.entityId, componentId, typedSerializer(model));
             }
             else
             {
@@ -43,7 +43,7 @@ namespace DCL.ECSRuntime
 
         public void RemoveComponent(IParcelScene scene, IDCLEntity entity, int componentId)
         {
-            writeComponent(scene, entity, componentId, null);
+            writeComponent(scene.sceneData.id, entity.entityId, componentId, null);
         }
     }
 }
