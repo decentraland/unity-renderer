@@ -6,12 +6,12 @@ using UnityEngine;
 
 namespace DCL.ECSRuntime
 {
-    public class ECSComponentWriter
+    public class ECSComponentWriter : IECSComponentWriter
     {
         public delegate void WriteComponent(string sceneId, long entityId, int componentId, byte[] data);
 
         private readonly Dictionary<int, object> serializers = new Dictionary<int, object>();
-        private readonly WriteComponent writeComponent;
+        private WriteComponent writeComponent;
 
         public ECSComponentWriter(WriteComponent writeComponent)
         {
@@ -44,6 +44,11 @@ namespace DCL.ECSRuntime
         public void RemoveComponent(IParcelScene scene, IDCLEntity entity, int componentId)
         {
             writeComponent(scene.sceneData.id, entity.entityId, componentId, null);
+        }
+
+        public void Dispose()
+        {
+            writeComponent = null;
         }
     }
 }
