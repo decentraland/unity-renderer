@@ -14,8 +14,9 @@ public class AvatarReveal : MonoBehaviour
     public float fadeInSpeed;
     public Renderer ghostDummy;
     Material _ghostMaterial;
+    
     public List<Renderer> targets = new List<Renderer>();
-    List<Material> materials = new List<Material>();
+    List<Material> _materials = new List<Material>();
 
     private void Start()
     {
@@ -23,7 +24,7 @@ public class AvatarReveal : MonoBehaviour
 
         foreach (Renderer r in targets)
         {
-            materials.Add(r.material);
+            _materials.Add(r.material);
         }
     }
     private void Update()
@@ -33,6 +34,22 @@ public class AvatarReveal : MonoBehaviour
         if(avatarLoaded)
         {
             RevealAvatar();
+        }
+    }
+    void UpdateMaterials()
+    {
+        if(_ghostMaterial.GetColor("_Color").a < 0.9f)
+        {
+            Color gColor = _ghostMaterial.GetColor("_Color");
+            Color tempColor = new Color(gColor.r, gColor.g, gColor.b, gColor.a + Time.deltaTime * fadeInSpeed);
+            _ghostMaterial.SetColor("_Color", tempColor);
+        }        
+
+        _ghostMaterial.SetVector("_RevealPosition", revealer.transform.position);
+
+        foreach (Material m in _materials)
+        {
+            m.SetVector("_RevealPosition", revealer.transform.position);
         }
     }
 
@@ -52,23 +69,6 @@ public class AvatarReveal : MonoBehaviour
         {
             particles.Stop();
             revealParticles.Stop();
-        }
-    }
-
-    void UpdateMaterials()
-    {
-        if(_ghostMaterial.GetColor("_Color").a < 0.9f)
-        {
-            Color gColor = _ghostMaterial.GetColor("_Color");
-            Color tempColor = new Color(gColor.r, gColor.g, gColor.b, gColor.a + Time.deltaTime * fadeInSpeed);
-            _ghostMaterial.SetColor("_Color", tempColor);
-        }        
-
-        _ghostMaterial.SetVector("_RevealPosition", revealer.transform.position);
-
-        foreach (Material m in materials)
-        {
-            m.SetVector("_RevealPosition", revealer.transform.position);
         }
     }
 }
