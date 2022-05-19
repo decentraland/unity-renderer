@@ -52,8 +52,8 @@ namespace DCL.ECSComponents
                 AssetPromiseKeeper_AudioClip.i.Forget(promiseAudioClip);
             
             promiseAudioClip = new AssetPromise_AudioClip(model.audioClipUrl, scene.contentProvider);
-            promiseAudioClip.OnSuccessEvent += OnComplete;
-            promiseAudioClip.OnFailEvent += OnFail;
+            promiseAudioClip.OnSuccessEvent += OnAudioClipLoadComplete;
+            promiseAudioClip.OnFailEvent += OnAudioClipLoadFail;
 
             AssetPromiseKeeper_AudioClip.i.Keep(promiseAudioClip);
             
@@ -128,7 +128,7 @@ namespace DCL.ECSComponents
             playedAtTimestamp = model.playedAtTimestamp;
         }
 
-        private void OnComplete(Asset_AudioClip assetAudioClip)
+        private void OnAudioClipLoadComplete(Asset_AudioClip assetAudioClip)
         {
             if (assetAudioClip.audioClip == null)
                 return;
@@ -143,7 +143,7 @@ namespace DCL.ECSComponents
             ApplyLoadedAudioClip(assetAudioClip.audioClip);
         }
 
-        private void OnFail(Asset_AudioClip assetAudioClip, Exception exception)
+        private void OnAudioClipLoadFail(Asset_AudioClip assetAudioClip, Exception exception)
         {
             Debug.LogError("Audio clip couldn't be loaded. Url: " +model.audioClipUrl + "     error: " + exception.Message);
             AssetPromiseKeeper_AudioClip.i.Forget(promiseAudioClip);
