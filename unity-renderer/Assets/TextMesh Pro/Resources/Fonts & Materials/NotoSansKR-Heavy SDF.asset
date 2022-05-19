@@ -160,13 +160,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansKR-Heavy SDF
   m_EditorClassIdentifier: 
-  hashCode: 0
+  hashCode: -1318234925
   material: {fileID: -5462997310118966800}
-  materialHashCode: 0
+  materialHashCode: 2133318675
   m_Version: 1.1.0
-  m_SourceFontFileGUID: eb3784b94d0bf344c9624022c2c5c108
-  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: eb3784b94d0bf344c9624022c2c5c108,
-    type: 3}
+  m_SourceFontFileGUID: 
+  m_SourceFontFile_EditorRef: {fileID: 0}
   m_SourceFontFile: {fileID: 12800000, guid: eb3784b94d0bf344c9624022c2c5c108, type: 3}
   m_AtlasPopulationMode: 1
   m_FaceInfo:

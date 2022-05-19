@@ -59,13 +59,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansTC-Bold SDF
   m_EditorClassIdentifier: 
-  hashCode: 0
+  hashCode: -984932197
   material: {fileID: 589350123040605251}
-  materialHashCode: 0
+  materialHashCode: 1225377115
   m_Version: 1.1.0
-  m_SourceFontFileGUID: 48a8f67b17f8e1649895e15641354c2a
-  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 48a8f67b17f8e1649895e15641354c2a,
-    type: 3}
+  m_SourceFontFileGUID: 
+  m_SourceFontFile_EditorRef: {fileID: 0}
   m_SourceFontFile: {fileID: 12800000, guid: 48a8f67b17f8e1649895e15641354c2a, type: 3}
   m_AtlasPopulationMode: 1
   m_FaceInfo:
