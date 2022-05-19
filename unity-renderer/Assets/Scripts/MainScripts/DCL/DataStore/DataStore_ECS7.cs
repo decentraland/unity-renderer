@@ -7,6 +7,5 @@ namespace DCL
     {
         public BaseDictionary<IParcelScene, ECSComponentsManager> componentsManagers = new BaseDictionary<IParcelScene, ECSComponentsManager>();
         public ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
-        public IECSComponentWriter componentsWriter = null;
     }
 }
