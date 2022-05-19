@@ -6913,10 +6913,10 @@ MonoBehaviour:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
   m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: c77db7e95e4bf044ebbe355ab759077b, type: 2}
-  - {fileID: 11400000, guid: 3c76a8f07b1679742946a97aa5225e2a, type: 2}
-  - {fileID: 11400000, guid: 0d2bf378e90480c428637ed18d4bb9bb, type: 2}
-  - {fileID: 11400000, guid: 4d8fd887778af474b8b67de36cf64d0f, type: 2}
+  - {fileID: 11400000, guid: 014201b1a0c1ddb4c8ef9a0f5ffed06e, type: 2}
+  - {fileID: 11400000, guid: cc1f2eba3ffec93438f6ef5c41787cf6, type: 2}
+  - {fileID: 11400000, guid: 3efbb5c63ccb93440a55c5700cfe8405, type: 2}
+  - {fileID: 11400000, guid: b93111e188f635e41a5c9fbf0744fbc8, type: 2}
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: a4c78ab23107b40129b828fe2d27427f

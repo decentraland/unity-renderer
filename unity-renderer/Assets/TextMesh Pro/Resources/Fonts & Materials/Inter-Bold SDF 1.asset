@@ -7072,10 +7072,10 @@ MonoBehaviour:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
   m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: ff18940d37327b94bb8be6111e567332, type: 2}
-  - {fileID: 11400000, guid: 27f9d5533af68184380118469de6bfa5, type: 2}
-  - {fileID: 11400000, guid: b9535b3ca6ddf8a448031682741ad3fa, type: 2}
-  - {fileID: 11400000, guid: e5d3dbf571fdb9c41a288f957b492809, type: 2}
+  - {fileID: 11400000, guid: 94dec742386593e49adca2e968a1c45a, type: 2}
+  - {fileID: 11400000, guid: dacc964c6703f85478c756c54d9ffd92, type: 2}
+  - {fileID: 11400000, guid: 5f305a4821c82734e9a193393969e0d7, type: 2}
+  - {fileID: 11400000, guid: f810979f87eacc24880879fe7f7988be, type: 2}
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: 0de250bf0b30143d0899c691c48c7d32
