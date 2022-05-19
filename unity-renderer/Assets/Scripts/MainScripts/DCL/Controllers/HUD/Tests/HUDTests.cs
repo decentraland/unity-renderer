@@ -1,9 +1,9 @@
 using System.Collections;
 using DCL;
 using DCL.Helpers;
-using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using NSubstitute;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -12,12 +12,14 @@ namespace Tests
     {
         private IHUDController hudController;
         private FriendsController friendsController;
+        private ChatController chatController;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             
             friendsController = TestUtils.CreateComponentWithGameObject<FriendsController>("FriendsController");
+            chatController = TestUtils.CreateComponentWithGameObject<ChatController>("ChatController");
             hudController = new HUDController(new HUDFactory());
             hudController.Initialize();
             yield return null;
@@ -25,6 +27,7 @@ namespace Tests
 
         protected override IEnumerator TearDown()
         {
+            Object.Destroy(chatController.gameObject);
             Object.Destroy(friendsController.gameObject);
             hudController.Dispose();
             yield return base.TearDown();

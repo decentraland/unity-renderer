@@ -6,12 +6,13 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static WearableCollectionsAPIData;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
-public class AvatarEditorHUDView : MonoBehaviour
+public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 {
     private static readonly int RANDOMIZE_ANIMATOR_LOADING_BOOL = Animator.StringToHash("Loading");
     private const string VIEW_PATH = "AvatarEditorHUD";
@@ -69,10 +70,16 @@ public class AvatarEditorHUDView : MonoBehaviour
     internal ColorSelector skinColorSelector;
 
     [SerializeField]
-    internal ColorSelector eyeColorSelector;
+    internal ColorPickerComponentView eyeColorPickerComponent;
 
     [SerializeField]
-    internal ColorSelector hairColorSelector;
+    internal ColorPickerComponentView hairColorPickerComponent;
+
+    [SerializeField]
+    internal ColorPickerComponentView facialHairColorPickerComponent;
+
+    [SerializeField]
+    internal ColorPickerComponentView eyeBrowsColorPickerComponent;
 
     [SerializeField]
     internal GameObject characterPreviewPrefab;
@@ -224,9 +231,11 @@ public class AvatarEditorHUDView : MonoBehaviour
         collectiblesItemSelector.OnSellClicked += controller.SellCollectible;
         collectiblesItemSelector.OnRetryClicked += controller.RetryLoadOwnedWearables;
 
-        skinColorSelector.OnColorChanged += controller.SkinColorClicked;
-        eyeColorSelector.OnColorChanged += controller.EyesColorClicked;
-        hairColorSelector.OnColorChanged += controller.HairColorClicked;
+        skinColorSelector.OnColorSelectorChange += controller.SkinColorClicked;
+        eyeColorPickerComponent.OnColorChanged += controller.EyesColorClicked;
+        hairColorPickerComponent.OnColorChanged += controller.HairColorClicked;
+        facialHairColorPickerComponent.OnColorChanged += controller.HairColorClicked;
+        eyeBrowsColorPickerComponent.OnColorChanged += controller.HairColorClicked;
     }
 
     internal static AvatarEditorHUDView Create(AvatarEditorHUDController controller)
@@ -289,17 +298,39 @@ public class AvatarEditorHUDView : MonoBehaviour
         wearablesWithLoadingSpinner.Clear();
     }
 
-    public void SelectHairColor(Color hairColor) { hairColorSelector.Select(hairColor); }
+    public void SelectHairColor(Color hairColor) 
+    {
+        hairColorPickerComponent.SetColorSelector(hairColor);
+        hairColorPickerComponent.UpdateSliderValues(hairColor);
+        eyeBrowsColorPickerComponent.SetColorSelector(hairColor);
+        eyeBrowsColorPickerComponent.UpdateSliderValues(hairColor);
+        facialHairColorPickerComponent.SetColorSelector(hairColor);
+        facialHairColorPickerComponent.UpdateSliderValues(hairColor);
+    }
 
-    public void SelectSkinColor(Color skinColor) { skinColorSelector.Select(skinColor); }
+    public Color GetRandomColor()
+    { 
+        return Color.HSVToRGB(UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f));
+    }
 
-    public void SelectEyeColor(Color eyesColor) { eyeColorSelector.Select(eyesColor); }
+    public void SelectSkinColor(Color skinColor) 
+    { 
+        skinColorSelector.Select(skinColor);
+    }
+
+    public void SelectEyeColor(Color eyesColor) 
+    {
+        eyeColorPickerComponent.SetColorSelector(eyesColor);
+        eyeColorPickerComponent.UpdateSliderValues(eyesColor);
+    }
 
     public void SetColors(List<Color> skinColors, List<Color> hairColors, List<Color> eyeColors)
     {
         skinColorSelector.Populate(skinColors);
-        eyeColorSelector.Populate(eyeColors);
-        hairColorSelector.Populate(hairColors);
+        eyeColorPickerComponent.SetColorList(eyeColors);
+        hairColorPickerComponent.SetColorList(hairColors);
+        eyeBrowsColorPickerComponent.SetColorList(hairColors);
+        facialHairColorPickerComponent.SetColorList(hairColors);
     }
 
     public void UnselectAllWearables()
@@ -315,7 +346,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         collectiblesItemSelector.UnselectAll();
     }
 
-    public void UpdateAvatarPreview(AvatarModel avatarModel)
+    public void UpdateAvatarPreview(AvatarModel avatarModel, bool skipAudio)
     {
         if (avatarModel?.wearables == null)
             return;
@@ -329,7 +360,10 @@ public class AvatarEditorHUDView : MonoBehaviour
                     doneButton.interactable = true;
 
                 loadingSpinnerGameObject?.SetActive(false);
-                OnAvatarAppear?.Invoke(avatarModel);
+                
+                if(!skipAudio)
+                    OnAvatarAppear?.Invoke(avatarModel);
+                
                 ClearWearablesLoadingSpinner();
                 randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
             });
@@ -436,7 +470,10 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         doneButton.interactable = false;
         CoroutineStarter.Start(TakeSnapshotsAfterStopPreviewAnimation());
-
+        eyeColorPickerComponent.SetActive(false);
+        hairColorPickerComponent.SetActive(false);
+        facialHairColorPickerComponent.SetActive(false);
+        eyeBrowsColorPickerComponent.SetActive(false);
     }
 
     private IEnumerator TakeSnapshotsAfterStopPreviewAnimation()
@@ -500,11 +537,15 @@ public class AvatarEditorHUDView : MonoBehaviour
         }
 
         if (skinColorSelector != null)
-            skinColorSelector.OnColorChanged -= controller.SkinColorClicked;
-        if (eyeColorSelector != null)
-            eyeColorSelector.OnColorChanged -= controller.EyesColorClicked;
-        if (hairColorSelector != null)
-            hairColorSelector.OnColorChanged -= controller.HairColorClicked;
+            skinColorSelector.OnColorSelectorChange -= controller.SkinColorClicked;
+        if (eyeColorPickerComponent != null)
+            eyeColorPickerComponent.OnColorChanged -= controller.EyesColorClicked;
+        if (hairColorPickerComponent != null)
+            hairColorPickerComponent.OnColorChanged -= controller.HairColorClicked;
+        if (facialHairColorPickerComponent != null)
+            facialHairColorPickerComponent.OnColorChanged -= controller.HairColorClicked;
+        if (eyeBrowsColorPickerComponent != null)
+            eyeBrowsColorPickerComponent.OnColorChanged -= controller.HairColorClicked;
 
         if (this != null)
             Destroy(gameObject);
@@ -541,6 +582,20 @@ public class AvatarEditorHUDView : MonoBehaviour
         rectTransform.localPosition = Vector2.zero;
         rectTransform.offsetMax = Vector2.zero;
         rectTransform.offsetMin = Vector2.zero;
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (eventData.pointerPressRaycast.gameObject != eyeColorPickerComponent.gameObject &&
+            eventData.pointerPressRaycast.gameObject != hairColorPickerComponent.gameObject &&
+            eventData.pointerPressRaycast.gameObject != eyeBrowsColorPickerComponent.gameObject &&
+            eventData.pointerPressRaycast.gameObject != facialHairColorPickerComponent.gameObject)
+        {
+            eyeColorPickerComponent.SetActive(false);
+            hairColorPickerComponent.SetActive(false);
+            eyeBrowsColorPickerComponent.SetActive(false);
+            facialHairColorPickerComponent.SetActive(false);
+        }
     }
 
     public void LoadCollectionsDropdown(Collection[] collections)

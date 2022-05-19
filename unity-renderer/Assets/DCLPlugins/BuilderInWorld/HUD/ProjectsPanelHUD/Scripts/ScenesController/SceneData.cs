@@ -35,9 +35,6 @@ namespace DCL.Builder
     [Serializable]
     internal class SceneData : ISceneData
     {
-        private const string CONTENT_MATURE_SYMBOL = "M";
-        private const string CONTENT_ADULTS_ONLY_SYMBOL = "AO";
-
         public Vector2Int coords;
         public Vector2Int size;
         public string id;
@@ -103,7 +100,6 @@ namespace DCL.Builder
             isDeployed = true;
             authorName = scene.author;
             requiredPermissions = scene.requiredPermissions;
-            bannedUsers = scene.bannedUsers;
             isEditable = scene.source != Scene.Source.SDK;
             parcels = scene.parcels;
             projectId = scene.projectId;
@@ -111,11 +107,6 @@ namespace DCL.Builder
             source = scene.source;
 
             isMatureContent = false;
-            if (!string.IsNullOrEmpty(scene.contentRating))
-            {
-                isMatureContent = scene.contentRating.Equals(CONTENT_MATURE_SYMBOL, StringComparison.OrdinalIgnoreCase)
-                                  || scene.contentRating.Equals(CONTENT_ADULTS_ONLY_SYMBOL, StringComparison.OrdinalIgnoreCase);
-            }
 
             if (scene.parcels.Length < 2)
             {

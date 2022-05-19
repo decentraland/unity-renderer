@@ -200,7 +200,7 @@ Material:
     - _RenderDistance_4: 0
     - _dayTime: 0
     - _distance_0: 20
-    - _fadeTime_0: 0.46380693
+    - _fadeTime_0: 0.025469208
     - _fadeTime_1: 1
     - _fadeTime_2: 1
     - _fadeTime_3: 1
@@ -283,11 +283,11 @@ Material:
     - _color00: {r: 1, g: 1, b: 1, a: 1}
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
-    - _color_0: {r: 383.49805, g: 383.49805, b: 383.49805, a: 0.09084171}
+    - _color_0: {r: 383.49805, g: 383.49805, b: 383.49805, a: 0.3650316}
     - _color_1: {r: 1, g: 1, b: 1, a: 0}
-    - _color_2: {r: 0.7773456, g: 0.72894245, b: 0.9399801, a: 0.87070453}
-    - _color_3: {r: 0.86261344, g: 0.71708167, b: 0.7549342, a: 0.93481505}
-    - _color_4: {r: 0.2531883, g: 0.22018728, b: 0.22207151, a: 1}
+    - _color_2: {r: 0.80942184, g: 0.6740295, b: 0.65606415, a: 1}
+    - _color_3: {r: 0.8647004, g: 0.61189765, b: 0.58901805, a: 0.704988}
+    - _color_4: {r: 0.39461944, g: 0.37664622, b: 0.3874877, a: 1}
     - _distortIntAndSize_0: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_1: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_2: {r: 0, g: 0, b: 0, a: 0}
@@ -298,11 +298,11 @@ Material:
     - _distortSpeedAndSharp_2: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_3: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_4: {r: 0, g: 0, b: 0, a: 0}
-    - _groundColor: {r: 0.120846115, g: 0.13232026, b: 0.2531925, a: 1}
-    - _horizonColor: {r: 0.75731444, g: 0.23176838, b: 0.29985687, a: 1}
+    - _groundColor: {r: 0.133162, g: 0.17519164, b: 0.2729534, a: 1}
+    - _horizonColor: {r: 0.90125847, g: 0.43678397, b: 0.10979465, a: 1}
     - _horizonMaskValues: {r: -0.98, g: 0, b: -1.77, a: 0}
-    - _lightDirection: {r: 6.7032747, g: 314.99997, b: 270, a: 0}
-    - _lightTint: {r: 0.81150544, g: 0.65871197, b: 0.5866264, a: 1}
+    - _lightDirection: {r: 356.55618, g: 134.99998, b: 90, a: 0}
+    - _lightTint: {r: 0.9593907, g: 0.7285799, b: 0.5382492, a: 1}
     - _particlesMainParameters_0: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_1: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_2: {r: 0, g: 0, b: 0, a: 0}
@@ -318,7 +318,7 @@ Material:
     - _rowAndCollumns_2: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_3: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_4: {r: 0, g: 0, b: 0, a: 0}
-    - _skyColor: {r: 0.30269784, g: 0.22042277, b: 0.41487584, a: 1}
+    - _skyColor: {r: 0.31728077, g: 0.32052368, b: 0.5033231, a: 1}
     - _speedAndRotation_0: {r: 0.01, g: 0, b: 0, a: 0}
     - _speedAndRotation_1: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_2: {r: 0, g: 0.4, b: 0, a: 0}
