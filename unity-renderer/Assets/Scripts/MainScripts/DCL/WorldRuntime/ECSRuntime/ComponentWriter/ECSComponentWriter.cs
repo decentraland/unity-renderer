@@ -31,7 +31,7 @@ namespace DCL.ECSRuntime
                 return;
             }
 
-            if (serializer is Func<T, byte[]> typedSerializer)
+            if (serializer is Func<T, object> typedSerializer)
             {
                 writeComponent(scene.sceneData.id, entity.entityId, componentId, typedSerializer(model));
             }
@@ -48,6 +48,7 @@ namespace DCL.ECSRuntime
 
         public void Dispose()
         {
+            serializers.Clear();
             writeComponent = null;
         }
     }
