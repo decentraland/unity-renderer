@@ -8587,11 +8587,7 @@ MonoBehaviour:
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
   fallbackFontAssets: []
-  m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: 29b452b9588d8464f90cfab44e19d73c, type: 2}
-  - {fileID: 11400000, guid: b44f1d30a1d621048bd3baf0a89814b2, type: 2}
-  - {fileID: 11400000, guid: 6e30e5be80aee624b8596fc1ca93c0ee, type: 2}
-  - {fileID: 11400000, guid: 82c9b9ce0700f934d80402b4d1e96475, type: 2}
+  m_FallbackFontAssetTable: []
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: e3265ab4bf004d28a9537516768c1c75

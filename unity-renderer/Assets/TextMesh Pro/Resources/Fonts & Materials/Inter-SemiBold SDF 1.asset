@@ -6913,11 +6913,7 @@ MonoBehaviour:
   m_FontFeatureTable:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
-  m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: d4ef82e265bc3a147b02d54bfe4bf9ea, type: 2}
-  - {fileID: 11400000, guid: 364ce7c7092fccd45a28d6e1d7bdba30, type: 2}
-  - {fileID: 11400000, guid: ea451711a0e218043b8b6b21125c1d99, type: 2}
-  - {fileID: 11400000, guid: cadbdcb4eab5b1f499a13f026605b812, type: 2}
+  m_FallbackFontAssetTable: []
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: a4c78ab23107b40129b828fe2d27427f
