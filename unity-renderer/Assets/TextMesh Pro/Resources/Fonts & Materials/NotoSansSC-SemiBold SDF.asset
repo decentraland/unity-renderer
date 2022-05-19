@@ -59,9 +59,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansSC-SemiBold SDF
   m_EditorClassIdentifier: 
-  hashCode: -1535040210
+  hashCode: 0
   material: {fileID: 1362449484109282479}
-  materialHashCode: -1531940530
+  materialHashCode: 0
   m_Version: 1.1.0
   m_SourceFontFileGUID: 1058e2dfbd5688c4988679a4f86cdd83
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 1058e2dfbd5688c4988679a4f86cdd83,
