@@ -6,7 +6,7 @@ using DCL.Helpers;
 
 namespace DCL.Skybox
 {
-    //[CreateAssetMenu(fileName = "Skybox Configuration", menuName = "ScriptableObjects/SkyboxConfiguration", order = 1)]
+    [CreateAssetMenu(fileName = "Skybox Configuration", menuName = "ScriptableObjects/SkyboxConfiguration", order = 1)]
     public class SkyboxConfiguration : ScriptableObject
     {
         public delegate void TimelineEvents(string tag, bool enable, bool trigger);

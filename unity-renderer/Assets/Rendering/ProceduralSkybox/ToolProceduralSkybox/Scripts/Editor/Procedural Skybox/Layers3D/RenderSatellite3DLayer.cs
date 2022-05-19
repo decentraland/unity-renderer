@@ -12,29 +12,29 @@ namespace DCL.Skybox
 
             // name In Editor
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(SkyboxEditorLiterals.layerName, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.Layers.layerName, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             config.nameInEditor = EditorGUILayout.TextField(config.nameInEditor, GUILayout.Width(200), GUILayout.ExpandWidth(false));
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Separator();
 
             // Time Span
-            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.timeSpan, SkyboxEditorLiterals.start, ref config.timeSpan_start, SkyboxEditorLiterals.end, ref config.timeSpan_End);
-            SkyboxEditorUtils.ClampToDayTime(ref config.timeSpan_start);
-            SkyboxEditorUtils.ClampToDayTime(ref config.timeSpan_End);
+            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.LayerProperties.timeSpan, SkyboxEditorLiterals.LayerProperties.start, ref config.timeSpanStart, SkyboxEditorLiterals.LayerProperties.end, ref config.timeSpanEnd);
+            SkyboxEditorUtils.ClampToDayTime(ref config.timeSpanStart);
+            SkyboxEditorUtils.ClampToDayTime(ref config.timeSpanEnd);
 
             // Fading
-            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.fade, SkyboxEditorLiterals.inStr, ref config.fadeInTime, SkyboxEditorLiterals.outStr, ref config.fadeOutTime);
+            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.LayerProperties.fade, SkyboxEditorLiterals.LayerProperties.inStr, ref config.fadeInTime, SkyboxEditorLiterals.LayerProperties.outStr, ref config.fadeOutTime);
 
-            RenderSimpleValues.RenderPrefabInput("Prefab", ref config.satellite);
-            RenderSimpleValues.RenderFloatField("Size", ref config.satelliteSize);
-            RenderSimpleValues.RenderFloatField("Radius", ref config.radius);
-            RenderSimpleValues.RenderFloatField("y-offset", ref config.orbitYOffset);
-            RenderSimpleValues.RenderFloatFieldAsSlider("Initial Pos", ref config.initialAngle, 0, 360);
-            RenderSimpleValues.RenderFloatFieldAsSlider("Horizon Plane", ref config.horizonPlaneRotation, 0, 180);
-            RenderSimpleValues.RenderFloatFieldAsSlider("Inclination", ref config.inclination, 0, 180);
-            RenderSimpleValues.RenderFloatField("Speed", ref config.movementSpeed);
-            RenderSimpleValues.RenderEnumPopup<RotationType>("Rotation Type", ref config.satelliteRotation);
+            RenderSimpleValues.RenderPrefabInput(SkyboxEditorLiterals.Satellite3D.PREFAB, ref config.satellite);
+            RenderSimpleValues.RenderFloatField(SkyboxEditorLiterals.Satellite3D.SIZE, ref config.satelliteSize);
+            RenderSimpleValues.RenderFloatField(SkyboxEditorLiterals.Satellite3D.RADIUS, ref config.radius);
+            RenderSimpleValues.RenderFloatField(SkyboxEditorLiterals.Satellite3D.Y_OFFSET, ref config.orbitYOffset);
+            RenderSimpleValues.RenderFloatFieldAsSlider(SkyboxEditorLiterals.Satellite3D.INITIAL_POS, ref config.initialAngle, 0, 360);
+            RenderSimpleValues.RenderFloatFieldAsSlider(SkyboxEditorLiterals.Satellite3D.HORIZON_PLANE, ref config.horizonPlaneRotation, 0, 180);
+            RenderSimpleValues.RenderFloatFieldAsSlider(SkyboxEditorLiterals.Satellite3D.INCLINATION, ref config.inclination, 0, 180);
+            RenderSimpleValues.RenderFloatField(SkyboxEditorLiterals.LayerProperties.speed, ref config.movementSpeed);
+            RenderSimpleValues.RenderEnumPopup(SkyboxEditorLiterals.Satellite3D.ROTATION_TYPE, ref config.satelliteRotation);
 
             // If fixed rotation
             if (config.satelliteRotation == RotationType.Fixed)

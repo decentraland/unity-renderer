@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DCL.Skybox
 {
@@ -9,8 +10,8 @@ namespace DCL.Skybox
     {
         public bool enabled = true;
         public string nameInEditor;
-        public float timeSpan_start;
-        public float timeSpan_End;
+        [FormerlySerializedAs("timeSpan_start")] public float timeSpanStart;
+        [FormerlySerializedAs("timeSpan_End")] public float timeSpanEnd;
         public float fadeInTime = 0;
         public float fadeOutTime = 0;
 
@@ -37,8 +38,8 @@ namespace DCL.Skybox
         public Config3DSatellite(string name = "Noname")
         {
             nameInEditor = name;
-            timeSpan_start = 0;
-            timeSpan_End = 24;
+            timeSpanStart = 0;
+            timeSpanEnd = 24;
         }
 
         public Config3DSatellite DeepCopy()

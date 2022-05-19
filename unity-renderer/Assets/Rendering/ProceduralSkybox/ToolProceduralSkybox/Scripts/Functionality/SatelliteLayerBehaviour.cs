@@ -119,12 +119,12 @@ namespace DCL.Skybox
         {
             float timeOfDayEdited = timeOfTheDay;
 
-            if (timeOfTheDay < layerProperties.timeSpan_start)
+            if (timeOfTheDay < layerProperties.timeSpanStart)
             {
                 timeOfDayEdited += cycleTime;
             }
 
-            float diff = timeOfDayEdited - layerProperties.timeSpan_start;
+            float diff = timeOfDayEdited - layerProperties.timeSpanStart;
             currentAngle = layerProperties.initialAngle + (diff * layerProperties.movementSpeed);
 
             dummyObj.transform.localPosition = GetSatellitePosition(layerProperties.radius, currentAngle);
@@ -178,20 +178,20 @@ namespace DCL.Skybox
         private bool CheckIfSatelliteInTimeBounds(float timeOfTheDay)
         {
             // Calculate edited time for the case of out time less than in time (over the day scenario)
-            float outTimeEdited = layerProperties.timeSpan_End;
+            float outTimeEdited = layerProperties.timeSpanEnd;
             float timeOfTheDayEdited = timeOfTheDay;
 
-            if (layerProperties.timeSpan_End < layerProperties.timeSpan_start)
+            if (layerProperties.timeSpanEnd < layerProperties.timeSpanStart)
             {
                 outTimeEdited += cycleTime;
             }
 
-            if (timeOfTheDay < layerProperties.timeSpan_start)
+            if (timeOfTheDay < layerProperties.timeSpanStart)
             {
                 timeOfTheDayEdited += cycleTime;
             }
 
-            if (timeOfTheDayEdited >= layerProperties.timeSpan_start && timeOfTheDayEdited <= outTimeEdited)
+            if (timeOfTheDayEdited >= layerProperties.timeSpanStart && timeOfTheDayEdited <= outTimeEdited)
             {
                 return true;
             }
@@ -233,16 +233,16 @@ namespace DCL.Skybox
         {
             fadeAmt = 1;
             bool fadeChanged = false;
-            float fadeInCompletionTime = layerProperties.timeSpan_start + layerProperties.fadeInTime;
+            float fadeInCompletionTime = layerProperties.timeSpanStart + layerProperties.fadeInTime;
             float dayTimeEdited = dayTime;
-            if (dayTime < layerProperties.timeSpan_start)
+            if (dayTime < layerProperties.timeSpanStart)
             {
                 dayTimeEdited = cycleTime + dayTime;
             }
 
             if (dayTimeEdited < fadeInCompletionTime)
             {
-                float percentage = Mathf.InverseLerp(layerProperties.timeSpan_start, fadeInCompletionTime, dayTimeEdited);
+                float percentage = Mathf.InverseLerp(layerProperties.timeSpanStart, fadeInCompletionTime, dayTimeEdited);
                 fadeAmt = percentage;
                 fadeChanged = true;
             }
@@ -254,15 +254,15 @@ namespace DCL.Skybox
         {
             fadeAmt = 1;
             bool fadeChanged = false;
-            float endTimeEdited = layerProperties.timeSpan_End;
+            float endTimeEdited = layerProperties.timeSpanEnd;
             float dayTimeEdited = dayTime;
 
-            if (layerProperties.timeSpan_End < layerProperties.timeSpan_start)
+            if (layerProperties.timeSpanEnd < layerProperties.timeSpanStart)
             {
-                endTimeEdited = cycleTime + layerProperties.timeSpan_End;
+                endTimeEdited = cycleTime + layerProperties.timeSpanEnd;
             }
 
-            if (dayTime < layerProperties.timeSpan_start)
+            if (dayTime < layerProperties.timeSpanStart)
             {
                 dayTimeEdited = cycleTime + dayTime;
             }

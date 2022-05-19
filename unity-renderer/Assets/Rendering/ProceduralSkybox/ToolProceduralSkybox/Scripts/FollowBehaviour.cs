@@ -12,9 +12,8 @@ public class FollowBehaviour : MonoBehaviour
     private void LateUpdate()
     {
         if (target == null)
-        {
             return;
-        }
+
         if (followRot)
             this.transform.rotation = target.transform.rotation;
 

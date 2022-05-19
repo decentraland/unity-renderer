@@ -84,7 +84,7 @@ namespace DCL.Skybox
             EditorGUILayout.Separator();
         }
 
-        public static void RenderColorGradientField(Gradient color, string label = SkyboxEditorLiterals.color, float startTime = -1, float endTime = -1, bool hdr = false)
+        public static void RenderColorGradientField(Gradient color, string label = SkyboxEditorLiterals.LayerProperties.color, float startTime = -1, float endTime = -1, bool hdr = false)
         {
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));

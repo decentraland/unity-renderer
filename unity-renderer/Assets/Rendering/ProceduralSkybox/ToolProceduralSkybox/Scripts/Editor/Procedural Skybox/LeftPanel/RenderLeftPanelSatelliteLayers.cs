@@ -27,7 +27,7 @@ namespace DCL.Skybox
                 {
                     GUI.enabled = false;
                 }
-                if (GUILayout.Button(SkyboxEditorLiterals.upArrow.ToString()))
+                if (GUILayout.Button(SkyboxEditorLiterals.Characters.upArrow.ToString()))
                 {
                     Config3DSatellite temp = null;
 
@@ -46,7 +46,7 @@ namespace DCL.Skybox
                     GUI.enabled = false;
                 }
 
-                if (GUILayout.Button(SkyboxEditorLiterals.downArrow.ToString()))
+                if (GUILayout.Button(SkyboxEditorLiterals.Characters.downArrow.ToString()))
                 {
                     Config3DSatellite temp = null;
                     if (i < (config.satelliteLayers.Count - 1))
@@ -88,7 +88,7 @@ namespace DCL.Skybox
                 Color normalContentColor = GUI.color;
                 GUI.color = circleColor;
 
-                EditorGUILayout.LabelField(SkyboxEditorLiterals.renderMarker.ToString(), SkyboxEditorStyles.Instance.renderingMarkerStyle, GUILayout.Width(20), GUILayout.Height(20));
+                EditorGUILayout.LabelField(SkyboxEditorLiterals.Characters.renderMarker.ToString(), SkyboxEditorStyles.Instance.renderingMarkerStyle, GUILayout.Width(20), GUILayout.Height(20));
 
                 GUI.color = normalContentColor;
 
@@ -141,7 +141,7 @@ namespace DCL.Skybox
                 EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             }
             Rect r = EditorGUILayout.BeginHorizontal();
-            if (GUI.Button(new Rect(r.width - 35, r.y, 25, 25), SkyboxEditorLiterals.sign_add))
+            if (GUI.Button(new Rect(r.width - 35, r.y, 25, 25), SkyboxEditorLiterals.Characters.sign_add))
             {
                 config.satelliteLayers.Add(new Config3DSatellite("Satellite " + (config.satelliteLayers.Count + 1)));
             }

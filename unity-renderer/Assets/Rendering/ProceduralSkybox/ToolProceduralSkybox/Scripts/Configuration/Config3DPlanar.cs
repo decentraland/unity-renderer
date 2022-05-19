@@ -17,7 +17,7 @@ namespace DCL.Skybox
         public float fadeInTime = 0;
         public float fadeOutTime = 0;
         public float satelliteSize;
-        public float radius;                    // Need to initialize with particle system prefab's radius
+        public float radius;
         public float yPos = 0;
         public bool followCamera;
         public bool renderWithMainCamera;

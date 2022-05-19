@@ -14,6 +14,7 @@ namespace DCL.Skybox
 
     public class SkyboxPlanarElements
     {
+        private const string LAYER = "Skybox";
         private GameObject skyboxElementsGO;
         private Transform planarElementsGO;
         private Transform planarCameraFollowingElements;
@@ -41,15 +42,15 @@ namespace DCL.Skybox
 
             planarElementsGO = new GameObject("Planar Elements").transform;
             planarElementsGO.parent = skyboxElementsGO.transform;
-            planarElementsGO.gameObject.layer = LayerMask.NameToLayer("Skybox");
+            planarElementsGO.gameObject.layer = LayerMask.NameToLayer(LAYER);
 
             planarCameraFollowingElements = new GameObject("Camera Following").transform;
             planarCameraFollowingElements.parent = planarElementsGO.transform;
-            planarCameraFollowingElements.gameObject.layer = LayerMask.NameToLayer("Skybox");
+            planarCameraFollowingElements.gameObject.layer = LayerMask.NameToLayer(LAYER);
 
             planarStaticElements = new GameObject("Static").transform;
             planarStaticElements.parent = planarElementsGO.transform;
-            planarStaticElements.gameObject.layer = LayerMask.NameToLayer("Skybox");
+            planarStaticElements.gameObject.layer = LayerMask.NameToLayer(LAYER);
 
             // Add follow script
             followObj = planarCameraFollowingElements.gameObject.AddComponent<FollowBehaviour>();
@@ -123,7 +124,7 @@ namespace DCL.Skybox
             }
             else
             {
-                tempRef.planarObject.layer = LayerMask.NameToLayer("Skybox");
+                tempRef.planarObject.layer = LayerMask.NameToLayer(LAYER);
             }
         }
 
@@ -189,7 +190,7 @@ namespace DCL.Skybox
         PlanarRefs InstantiateNewSatelliteReference(Config3DPlanar config)
         {
             GameObject obj = GameObject.Instantiate<GameObject>(config.prefab);
-            obj.layer = LayerMask.NameToLayer("Skybox");
+            obj.layer = LayerMask.NameToLayer(LAYER);
             obj.name = "Planar Layer";
             obj.transform.parent = planarElementsGO;
             obj.transform.localPosition = Vector3.zero;

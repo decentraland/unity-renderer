@@ -12,22 +12,19 @@ namespace DCL.Skybox
 
             // name In Editor
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(SkyboxEditorLiterals.layerName, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.Layers.layerName, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             config.nameInEditor = EditorGUILayout.TextField(config.nameInEditor, GUILayout.Width(200), GUILayout.ExpandWidth(false));
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Separator();
 
             // Time Span
-            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.timeSpan, SkyboxEditorLiterals.start, ref config.timeSpan_start, SkyboxEditorLiterals.end, ref config.timeSpan_End);
+            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.LayerProperties.timeSpan, SkyboxEditorLiterals.LayerProperties.start, ref config.timeSpan_start, SkyboxEditorLiterals.LayerProperties.end, ref config.timeSpan_End);
             SkyboxEditorUtils.ClampToDayTime(ref config.timeSpan_start);
             SkyboxEditorUtils.ClampToDayTime(ref config.timeSpan_End);
 
             // Fading
-            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.fade, SkyboxEditorLiterals.inStr, ref config.fadeInTime, SkyboxEditorLiterals.outStr, ref config.fadeOutTime);
-
-            //// Tint
-            //RenderSimpleValues.RenderFloatFieldAsSlider(SkyboxEditorLiterals.tint, ref layer.tintPercentage, 0, 100);
+            RenderSimpleValues.RenderSepratedFloatFields(SkyboxEditorLiterals.LayerProperties.fade, SkyboxEditorLiterals.LayerProperties.inStr, ref config.fadeInTime, SkyboxEditorLiterals.LayerProperties.outStr, ref config.fadeOutTime);
 
             GameObject tempPrefab = config.prefab;
             RenderSimpleValues.RenderPrefabInput("Prefab", ref tempPrefab);
