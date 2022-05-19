@@ -36,7 +36,7 @@ public class ComponentCrdtWriteSystem : IDisposable
         memoryStream.Dispose();
     }
 
-    public void WriteMessage(string sceneId, long entityId, int componentId, byte[] data)
+    public void WriteMessage(string sceneId, long entityId, int componentId, object data)
     {
         CRDTMessage message = new CRDTMessage()
         {
