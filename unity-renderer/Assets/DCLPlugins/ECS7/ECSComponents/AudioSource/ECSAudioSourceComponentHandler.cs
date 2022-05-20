@@ -39,6 +39,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
+            this.scene = scene;
             audioSource = entity.gameObject.AddComponent<AudioSource>();
             audioSource.spatialBlend = 1;
             audioSource.dopplerLevel = 0.1f;
@@ -59,7 +60,6 @@ namespace DCL.ECSComponents
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSAudioSource model)
         {
             bool isSameClip = model.audioClipUrl == this.model?.audioClipUrl;
-            this.scene = scene;
             this.model = model;
             
             // If the clip has changed, we need to forget the old clip
@@ -207,7 +207,7 @@ namespace DCL.ECSComponents
         
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
         {
-            if (audioSource == null)
+            if (audioSource == null || model == null)
                 return;
             
             float volume = 0;
