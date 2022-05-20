@@ -38,7 +38,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            Dispose();
+            Dispose(entity);
         }
                 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSAudioStream model)
@@ -64,7 +64,7 @@ namespace DCL.ECSComponents
             ConditionsToPlayChanged();
         }
 
-        private void Dispose()
+        private void Dispose(IDCLEntity entity)
         {
             CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
