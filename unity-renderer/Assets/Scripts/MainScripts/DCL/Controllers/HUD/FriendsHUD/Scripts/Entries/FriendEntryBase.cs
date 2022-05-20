@@ -34,6 +34,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
     [SerializeField] protected internal Button passportButton;
     
     private StringVariable currentPlayerInfoCardId;
+    private bool avatarFetchingEnabled;
 
     public event Action<FriendEntryBase> OnMenuToggle;
 
@@ -58,20 +59,30 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
         panelTransform.position = menuPositionReference.position;
     }
 
-    private void OnEnable()
-    {
-        // TODO: replace image loading for ImageComponentView implementation
-        model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
-    }
-
     protected virtual void OnDisable()
     {
-        model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+        DisableAvatarSnapshotFetching();
     }
 
     protected void OnDestroy()
     {
-        model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+        DisableAvatarSnapshotFetching();
+    }
+    
+    public virtual void EnableAvatarSnapshotFetching()
+    {
+        if (avatarFetchingEnabled) return;
+        avatarFetchingEnabled = true;
+        // TODO: replace image loading for ImageComponentView implementation
+        model?.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
+    }
+    
+    public virtual void DisableAvatarSnapshotFetching()
+    {
+        if (!avatarFetchingEnabled) return;
+        avatarFetchingEnabled = false;
+        // TODO: replace image loading for ImageComponentView implementation
+        model?.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
     }
 
     public virtual void Populate(Model model)
@@ -81,11 +92,11 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
 
         playerBlockedImage.enabled = model.blocked;
 
-        if (this.model != null && isActiveAndEnabled)
-        {
-            this.model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+        this.model?.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+
+        if (isActiveAndEnabled && avatarFetchingEnabled)
+            // TODO: replace image loading for ImageComponentView implementation
             model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
-        }
 
         if (onlineStatusContainer != null)
             onlineStatusContainer.SetActive(model.status == PresenceStatus.ONLINE && !model.blocked);
@@ -94,10 +105,15 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
 
         this.model = model;
     }
+    
+    public virtual bool IsVisible(RectTransform container)
+    {
+        return ((RectTransform) transform).CountCornersVisibleFrom(container) > 0;
+    }
 
     private void OnAvatarImageChange(Texture2D texture) { playerImage.texture = texture; }
 
-    protected void ShowUserProfile()
+    private void ShowUserProfile()
     {
         if (currentPlayerInfoCardId == null)
             currentPlayerInfoCardId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");

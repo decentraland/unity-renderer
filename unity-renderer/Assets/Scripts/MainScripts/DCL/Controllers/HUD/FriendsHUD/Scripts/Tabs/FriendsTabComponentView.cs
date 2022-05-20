@@ -9,6 +9,7 @@ using UnityEngine;
 public class FriendsTabComponentView : BaseComponentView
 {
     private const int CREATION_AMOUNT_PER_FRAME = 5;
+    private const int AVATAR_SNAPSHOTS_PER_FRAME = 5;
     private const int PRE_INSTANTIATED_ENTRIES = 25;
     private const string FRIEND_ENTRIES_POOL_NAME_PREFIX = "FriendEntriesPool_";
 
@@ -24,6 +25,7 @@ public class FriendsTabComponentView : BaseComponentView
     [SerializeField] private SearchBarComponentView searchBar;
     [SerializeField] private UserContextMenu contextMenuPanel;
     [SerializeField] private Model model;
+    [SerializeField] private RectTransform viewport;
 
     private readonly Dictionary<string, FriendEntryBase.Model> creationQueue =
         new Dictionary<string, FriendEntryBase.Model>();
@@ -32,6 +34,7 @@ public class FriendsTabComponentView : BaseComponentView
     private readonly Dictionary<string, FriendEntry> entries = new Dictionary<string, FriendEntry>();
     private Pool entryPool;
     private string lastSearch;
+    private int currentAvatarSnapshotIndex;
 
     public Dictionary<string, FriendEntry> Entries => entries;
 
@@ -113,14 +116,8 @@ public class FriendsTabComponentView : BaseComponentView
     {
         base.Update();
 
-        if (creationQueue.Count == 0) return;
-
-        for (var i = 0; i < CREATION_AMOUNT_PER_FRAME && creationQueue.Count != 0; i++)
-        {
-            var pair = creationQueue.FirstOrDefault();
-            creationQueue.Remove(pair.Key);
-            Set(pair.Key, pair.Value);
-        }
+        FetchAvatarSnapshotsForVisibleEntries();
+        SetQueuedEntries();
     }
 
     public void Clear()
@@ -308,6 +305,34 @@ public class FriendsTabComponentView : BaseComponentView
     public void Enqueue(string userId, FriendEntryBase.Model model)
     {
         creationQueue[userId] = model;
+    }
+    
+    private void SetQueuedEntries()
+    {
+        if (creationQueue.Count == 0) return;
+
+        for (var i = 0; i < CREATION_AMOUNT_PER_FRAME && creationQueue.Count != 0; i++)
+        {
+            var pair = creationQueue.FirstOrDefault();
+            creationQueue.Remove(pair.Key);
+            Set(pair.Key, pair.Value);
+        }
+    }
+    
+    private void FetchAvatarSnapshotsForVisibleEntries()
+    {
+        foreach (var entry in entries.Values.Skip(currentAvatarSnapshotIndex).Take(AVATAR_SNAPSHOTS_PER_FRAME))
+        {
+            if (entry.IsVisible(viewport))
+                entry.EnableAvatarSnapshotFetching();
+            else
+                entry.DisableAvatarSnapshotFetching();
+        }
+
+        currentAvatarSnapshotIndex += AVATAR_SNAPSHOTS_PER_FRAME;
+
+        if (currentAvatarSnapshotIndex >= entries.Count)
+            currentAvatarSnapshotIndex = 0;
     }
 
     private void UpdateEmptyOrFilledState()

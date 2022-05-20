@@ -12,6 +12,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private const string NOTIFICATIONS_ID = "Friends";
     private const int PRE_INSTANTIATED_ENTRIES = 25;
     private const float NOTIFICATIONS_DURATION = 3;
+    private const int AVATAR_SNAPSHOTS_PER_FRAME = 5;
 
     [SerializeField] private GameObject enabledHeader;
     [SerializeField] private GameObject disabledHeader;
@@ -24,6 +25,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [SerializeField] private TMP_Text receivedRequestsCountText;
     [SerializeField] private TMP_Text sentRequestsCountText;
     [SerializeField] private UserContextMenu contextMenuPanel;
+    [SerializeField] private RectTransform viewport;
 
     [Header("Notifications")] [SerializeField]
     private Notification requestSentNotification;
@@ -37,6 +39,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private readonly Dictionary<string, FriendRequestEntry> entries = new Dictionary<string, FriendRequestEntry>();
     private Pool entryPool;
     private string lastRequestSentUserName;
+    private int currentAvatarSnapshotIndex;
 
     public Dictionary<string, FriendRequestEntry> Entries => entries;
 
@@ -64,6 +67,13 @@ public class FriendRequestsTabComponentView : BaseComponentView
         searchBar.OnSearchText -= OnSearchInputValueChanged;
         contextMenuPanel.OnBlock -= HandleFriendBlockRequest;
         NotificationsController.i?.DismissAllNotifications(NOTIFICATIONS_ID);
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        
+        FetchAvatarSnapshotsForVisibleEntries();
     }
 
     public void Expand()
@@ -297,6 +307,22 @@ public class FriendRequestsTabComponentView : BaseComponentView
         // instantly refresh ui
         friendEntryToBlock.model.blocked = blockUser;
         Set(userId, friendEntryToBlock.model, friendEntryToBlock.isReceived);
+    }
+    
+    private void FetchAvatarSnapshotsForVisibleEntries()
+    {
+        foreach (var entry in entries.Values.Skip(currentAvatarSnapshotIndex).Take(AVATAR_SNAPSHOTS_PER_FRAME))
+        {
+            if (entry.IsVisible(viewport))
+                entry.EnableAvatarSnapshotFetching();
+            else
+                entry.DisableAvatarSnapshotFetching();
+        }
+
+        currentAvatarSnapshotIndex += AVATAR_SNAPSHOTS_PER_FRAME;
+
+        if (currentAvatarSnapshotIndex >= entries.Count)
+            currentAvatarSnapshotIndex = 0;
     }
 
     [Serializable]
