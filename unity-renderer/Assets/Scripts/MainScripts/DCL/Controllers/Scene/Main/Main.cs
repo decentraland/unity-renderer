@@ -27,6 +27,8 @@ namespace DCL
         
         protected virtual void Awake()
         {
+            Input.imeCompositionMode = IMECompositionMode.Auto;
+
             if (i != null)
             {
                 Utils.SafeDestroy(this);
