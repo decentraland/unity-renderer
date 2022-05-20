@@ -1,4 +1,4 @@
-﻿#if UNITY_2018_2_OR_NEWER
+#if UNITY_2018_2_OR_NEWER
 #define TMP_WEBGL_SUPPORT
 #endif
 
@@ -227,15 +227,19 @@ namespace WebGLSupport
 
             // try to support RenderMode:WorldSpace
             var canvas = uiElement.GetComponentInParent<Canvas>();
-            var useCamera = (canvas.renderMode != RenderMode.ScreenSpaceOverlay);
-            if (canvas && useCamera)
+            if (canvas != null)
             {
-                var camera = canvas.worldCamera;
-                if (!camera) camera = Camera.main;
+                var useCamera = (canvas.renderMode != RenderMode.ScreenSpaceOverlay);
 
-                for (var i = 0; i < worldCorners.Length; i++)
+                if (canvas && useCamera)
                 {
-                    worldCorners[i] = camera.WorldToScreenPoint(worldCorners[i]);
+                    var camera = canvas.worldCamera;
+                    if (!camera) camera = Camera.main;
+
+                    for (var i = 0; i < worldCorners.Length; i++)
+                    {
+                        worldCorners[i] = camera.WorldToScreenPoint(worldCorners[i]);
+                    }
                 }
             }
 
