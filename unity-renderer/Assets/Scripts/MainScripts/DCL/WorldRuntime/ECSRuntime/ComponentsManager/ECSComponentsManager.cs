@@ -42,15 +42,14 @@ namespace DCL.ECSRuntime
             {
                 if (!component.HasComponent(entity))
                 {
-                    component.Create(entity);
+                    CreateComponent(entity);
                 }
             }
             else if (componentBuilders.TryGetValue(componentId, out ECSComponentsFactory.ECSComponentBuilder componentBuilder))
             {
                 component = componentBuilder.Invoke(scene);
                 sceneComponents.Add(componentId, component);
-                component.Create(entity);
-                OnComponentAdded?.Invoke(component);
+                CreateComponent(entity);
             }
             return component;
         }
@@ -115,6 +114,11 @@ namespace DCL.ECSRuntime
                 }
             }
             return false;
+        }
+
+        private void CreateComponent(IDCLEntity entity)
+        {
+            
         }
  
     }
