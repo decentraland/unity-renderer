@@ -20,7 +20,7 @@ public class PrimitiveMeshModel
     }
 
     public Type type;
-    public RepeatedField<float> uvs;
+    public RepeatedField<float> uvs = new RepeatedField<float>();
     
     protected bool Equals(PrimitiveMeshModel other)
     {
