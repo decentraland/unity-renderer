@@ -27,7 +27,7 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void PopulateSystemChat()
     {
-        GivenEntryChat("Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/Chat/ChatEntrySystem.prefab");
+        GivenEntryChat("ChatEntrySystem");
         
         var message = new ChatEntryModel
         {
@@ -46,7 +46,7 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void PopulateReceivedPublicChat()
     {
-        GivenEntryChat("Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/Chat/PublicChatEntryReceived.prefab");
+        GivenEntryChat("PublicChatEntryReceived");
         
         var message = new ChatEntryModel
         {
@@ -65,7 +65,7 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void PopulateSentPublicChat()
     {
-        GivenEntryChat("Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/Chat/PublicChatEntrySent.prefab");
+        GivenEntryChat("PublicChatEntrySent");
         
         var message = new ChatEntryModel
         {
@@ -84,7 +84,7 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void PopulateReceivedWhisperInPublicChannel()
     {
-        GivenEntryChat("Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/Chat/PublicChatEntryReceivedWhisper.prefab");
+        GivenEntryChat("PublicChatEntryReceivedWhisper");
         
         var message = new ChatEntryModel
         {
@@ -103,7 +103,7 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void PopulateSentWhisperInPublicChannel()
     {
-        GivenEntryChat("Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/Chat/PublicChatEntrySentWhisper.prefab");
+        GivenEntryChat("PublicChatEntrySentWhisper");
         
         var message = new ChatEntryModel
         {
@@ -122,7 +122,7 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void PopulateSentWhisperInPrivateChannel()
     {
-        GivenEntryChat("Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/Chat/PrivateChatEntrySent.prefab");
+        GivenEntryChat("PrivateChatEntrySent");
         
         var message = new ChatEntryModel
         {
@@ -141,7 +141,7 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void PopulateReceivedWhisperInPrivateChannel()
     {
-        GivenEntryChat("Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/Chat/PrivateChatEntryReceived.prefab");
+        GivenEntryChat("PrivateChatEntryReceived");
         
         var message = new ChatEntryModel
         {
@@ -157,9 +157,9 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
         Assert.AreEqual("test message", entry.body.text);
     }
 
-    private void GivenEntryChat(string path)
+    private void GivenEntryChat(string prefabName)
     {
-        entry = Object.Instantiate(AssetDatabase.LoadAssetAtPath<DefaultChatEntry>(path),
+        entry = Object.Instantiate(Resources.Load<DefaultChatEntry>($"SocialBarV1/{prefabName}"),
             canvas.transform, false);
     }
 }
