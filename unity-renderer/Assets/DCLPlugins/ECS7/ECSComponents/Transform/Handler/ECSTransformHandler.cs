@@ -9,7 +9,13 @@ namespace DCL.ECSComponents
     {
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
-        public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity) { }
+        public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
+        {
+            if (entity.parent != null)
+            {
+                scene.SetEntityParent(entity.entityId, (long)SpecialEntityId.SCENE_ROOT_ENTITY);
+            }
+        }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSTransform model)
         {
