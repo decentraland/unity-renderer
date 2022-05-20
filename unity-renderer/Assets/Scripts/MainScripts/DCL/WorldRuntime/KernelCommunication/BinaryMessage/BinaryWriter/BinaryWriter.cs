@@ -23,6 +23,15 @@ namespace KernelCommunication
             stream.WriteByte(ptr[0]);
         }
 
+        public unsafe void Write(float value)
+        {
+            byte* ptr = (byte*)&value;
+            stream.WriteByte(ptr[3]);
+            stream.WriteByte(ptr[2]);
+            stream.WriteByte(ptr[1]);
+            stream.WriteByte(ptr[0]);
+        }
+
         public unsafe void Write(long value)
         {
             byte* ptr = (byte*)&value;
