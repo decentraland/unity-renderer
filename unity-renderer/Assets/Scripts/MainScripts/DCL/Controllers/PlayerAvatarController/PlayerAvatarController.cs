@@ -10,6 +10,7 @@ using DCL.FatalErrorReporter;
 using DCL.Interface;
 using DCL.NotificationModel;
 using GPUSkinning;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using Type = DCL.NotificationModel.Type;
 
@@ -32,15 +33,17 @@ public class PlayerAvatarController : MonoBehaviour
 
     private bool enableCameraCheck = false;
     private Camera mainCamera;
-    private PlayerAvatarAnalytics playerAvatarAnalytics;
     private IFatalErrorReporter fatalErrorReporter; // TODO?
     private string VISIBILITY_CONSTRAIN;
+
+    internal ISocialAnalytics socialAnalytics;
 
     private void Start()
     {
         DataStore.i.common.isPlayerRendererLoaded.Set(false);
-        IAnalytics analytics = DCL.Environment.i.platform.serviceProviders.analytics;
-        playerAvatarAnalytics = new PlayerAvatarAnalytics(analytics, CommonScriptableObjects.playerCoords);
+        socialAnalytics = new SocialAnalytics(
+            DCL.Environment.i.platform.serviceProviders.analytics,
+            new UserProfileWebInterfaceBridge());
 
         AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
         avatar = new AvatarSystem.Avatar(
@@ -121,10 +124,22 @@ public class PlayerAvatarController : MonoBehaviour
         userProfile.OnAvatarEmoteSet += OnAvatarEmote;
     }
 
-    private void OnAvatarEmote(string id, long timestamp)
+    private void OnAvatarEmote(string id, long timestamp, UserProfile.EmoteSource source)
     {
         avatar.PlayEmote(id, timestamp);
-        playerAvatarAnalytics.ReportExpression(id);
+
+        DataStore.i.common.wearables.TryGetValue(id, out WearableItem emoteItem);
+
+        if (emoteItem != null)
+        {
+            socialAnalytics.SendPlayEmote(
+                emoteItem.id,
+                emoteItem.GetName(),
+                emoteItem.rarity,
+                emoteItem.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE),
+                source,
+                $"{CommonScriptableObjects.playerCoords.Get().x},{CommonScriptableObjects.playerCoords.Get().y}");
+        }
     }
 
     private void OnUserProfileOnUpdate(UserProfile profile)
@@ -143,10 +158,10 @@ public class PlayerAvatarController : MonoBehaviour
             return;
         }
 
-        ct.ThrowIfCancellationRequested();
-        if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
+        try
         {
-            try
+            ct.ThrowIfCancellationRequested();
+            if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
             {
                 currentAvatar.CopyFrom(profile.avatar);
 
@@ -168,16 +183,16 @@ public class PlayerAvatarController : MonoBehaviour
                 if (avatar.lodLevel <= 1)
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
             }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-                WebInterface.ReportAvatarFatalError();
-                return;
-            }
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+            WebInterface.ReportAvatarFatalError();
+            return;
         }
 
         IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();

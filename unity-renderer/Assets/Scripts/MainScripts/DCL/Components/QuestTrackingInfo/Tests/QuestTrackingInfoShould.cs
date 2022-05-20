@@ -13,6 +13,7 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
 {
     private ParcelScene scene;
     private IQuestsController mockQuestController;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
@@ -25,9 +26,16 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
         mockQuestController = Substitute.For<IQuestsController>();
         QuestsController.i = mockQuestController;
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     [UnityTest]

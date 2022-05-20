@@ -39,7 +39,6 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         result.Add(MainSceneFactory.CreateAudioHandler());
         result.Add(MainSceneFactory.CreateHudController());
         result.Add(MainSceneFactory.CreateMouseCatcher());
-        result.Add(MainSceneFactory.CreateSettingsController());
         result.Add(MainSceneFactory.CreateEventSystem());
         return result;
     }
@@ -80,10 +79,11 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator EndMultiSelection()
     {
+        var coreComponentsPlugin = new CoreComponentsPlugin();
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
-        var rootEntity = TestUtils.CreateSceneEntity(scene, "testId");
+        var rootEntity = TestUtils.CreateSceneEntity(scene, 1);
         entity.Initialize(rootEntity, null);
         yield return TestUtils.CreateShapeForEntity(scene, rootEntity);
         rootEntity.gameObject.transform.position = Vector3.zero;
@@ -105,6 +105,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         //Assert
         context.editorContext.outlinerController.Received().CancelAllOutlines();
         context.editorContext.entityHandler.Received().SelectEntity(entity);
+        coreComponentsPlugin.Dispose();
     }
 
     [Test]
@@ -189,10 +190,11 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OutlineEntitiesInsideSquareSelection()
     {
+        var coreComponentsPlugin = new CoreComponentsPlugin();
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
-        var rootEntity = TestUtils.CreateSceneEntity(scene, "testId");
+        var rootEntity = TestUtils.CreateSceneEntity(scene, 2);
         entity.Initialize(rootEntity, null);
         yield return TestUtils.CreateShapeForEntity(scene, rootEntity);
         rootEntity.gameObject.transform.position = Vector3.zero;
@@ -213,6 +215,8 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
 
         //Assert
         context.editorContext.outlinerController.Received().OutlineEntity(entity);
+
+        coreComponentsPlugin.Dispose();
     }
 
     [Test]
@@ -560,6 +564,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator CalculateEntityMidPoint()
     {
+        var coreComponentsPlugin = new CoreComponentsPlugin();
         //Arrange
         var entity = TestUtils.CreateSceneEntity(scene);
 
@@ -570,7 +575,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
             }));
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
         yield return null;
 
@@ -579,6 +584,8 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.AreEqual(postion, entity.renderers[0].bounds.center);
+
+        coreComponentsPlugin.Dispose();
     }
 
     [Test]

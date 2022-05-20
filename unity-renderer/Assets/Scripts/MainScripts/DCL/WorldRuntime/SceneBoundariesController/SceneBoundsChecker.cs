@@ -1,10 +1,8 @@
-using DCL.Components;
 using DCL.Models;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using System;
-using DCL.Helpers;
 
 namespace DCL.Controllers
 {
@@ -208,7 +206,7 @@ namespace DCL.Controllers
                 return;
             }
 
-            var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
+            var loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
 
@@ -287,9 +285,12 @@ namespace DCL.Controllers
 
         protected void UpdateComponents(IDCLEntity entity, bool isInsideBoundaries)
         {
-            IOutOfSceneBoundariesHandler[] components = entity.gameObject.GetComponentsInChildren<IOutOfSceneBoundariesHandler>();
+            if(!DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity.entityId))
+                return;
+            
+            List<IOutOfSceneBoundariesHandler> components = DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId];
 
-            for (int i = 0; i < components.Length; i++)
+            for (int i = 0; i < components.Count; i++)
             {
                 components[i].UpdateOutOfBoundariesState(isInsideBoundaries);
             }

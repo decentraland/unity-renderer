@@ -4,6 +4,8 @@ using DCL.Helpers;
 using DCL.Models;
 using DCL.Controllers.ParcelSceneDebug;
 using System.Collections.Generic;
+using DCL.CRDT;
+using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -11,7 +13,7 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene
     {
-        public Dictionary<string, IDCLEntity> entities { get; private set; } = new Dictionary<string, IDCLEntity>();
+        public Dictionary<long, IDCLEntity> entities { get; private set; } = new Dictionary<long, IDCLEntity>();
         public IECSComponentsManagerLegacy componentsManagerLegacy { get; private set; }
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
 
@@ -38,6 +40,8 @@ namespace DCL.Controllers
 
         public SceneLifecycleHandler sceneLifecycleHandler;
 
+        public ICRDTExecutor crdtExecutor { get; private set; }
+
         public bool isReleased { get; private set; }
         
         public void Awake()
@@ -46,12 +50,14 @@ namespace DCL.Controllers
             componentsManagerLegacy = new ECSComponentsManagerLegacy(this);
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
             metricsCounter = new SceneMetricsCounter(DataStore.i.sceneWorldObjects);
+            crdtExecutor = new CRDTExecutor(this);
         }
 
         private void OnDestroy()
         {
             CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
             metricsCounter?.Dispose();
+            crdtExecutor?.Dispose();
         }
 
         void OnDisable() { metricsCounter?.Disable(); }
@@ -83,10 +89,8 @@ namespace DCL.Controllers
                 parcels.Add(sceneData.parcels[i]);
             }
 
-            if (DCLCharacterController.i != null)
-            {
-                gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
-            }
+            gameObject.transform.position =
+                PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
 
             DataStore.i.sceneWorldObjects.AddScene(sceneData.id);
 
@@ -244,9 +248,10 @@ namespace DCL.Controllers
             return false;
         }
 
+        public IDCLEntity GetEntityById(string entityId) { throw new System.NotImplementedException(); }
         public Transform GetSceneTransform() { return transform; }
 
-        public IDCLEntity CreateEntity(string id)
+        public IDCLEntity CreateEntity(long id)
         {
             if (entities.ContainsKey(id))
             {
@@ -285,7 +290,7 @@ namespace DCL.Controllers
             return newEntity;
         }
 
-        public void RemoveEntity(string id, bool removeImmediatelyFromEntitiesList = true)
+        public void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true)
         {
             if (entities.ContainsKey(id))
             {
@@ -384,7 +389,7 @@ namespace DCL.Controllers
 
         private void RemoveAllEntitiesImmediate() { RemoveAllEntities(instant: true); }
 
-        public void SetEntityParent(string entityId, string parentId)
+        public void SetEntityParent(long entityId, long parentId)
         {
             if (entityId == parentId)
             {
@@ -403,14 +408,17 @@ namespace DCL.Controllers
             Transform avatarTransform = worldData.avatarTransform.Get();
             Transform firstPersonCameraTransform = worldData.fpsTransform.Get();
 
-            if (parentId == "FirstPersonCameraEntityReference" ||
-                parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+            // CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE is for compatibility purposes
+            if (parentId == (long) SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE ||
+                parentId == (long) SpecialEntityId.THIRD_PERSON_CAMERA_ENTITY_REFERENCE)
             {
+
                 if (firstPersonCameraTransform == null)
                 {
                     Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.id);
                     return;
                 }
+
 
                 // In this case, the entity will attached to the first person camera
                 // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
@@ -421,9 +429,9 @@ namespace DCL.Controllers
                 return;
             }
 
-            if (parentId == "AvatarEntityReference" ||
-                parentId ==
-                "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+            if (parentId == (long) SpecialEntityId.AVATAR_ENTITY_REFERENCE ||
+                parentId == (long) SpecialEntityId
+                    .AVATAR_POSITION_REFERENCE) // AvatarPositionEntityReference is for compatibility purposes
             {
                 if (avatarTransform == null)
                 {
@@ -448,7 +456,7 @@ namespace DCL.Controllers
                     Environment.i.world.sceneBoundsChecker.RemovePersistent(me);
             }
 
-            if (parentId == "0")
+            if (parentId == (long) SpecialEntityId.SCENE_ROOT_ENTITY)
             {
                 // The entity will be child of the scene directly
                 me.SetParent(null);
@@ -472,14 +480,8 @@ namespace DCL.Controllers
                 metricsCounter.SendEvent();
         }
 
-        public IDCLEntity GetEntityById(string entityId)
+        public IDCLEntity GetEntityById(long entityId)
         {
-            if (string.IsNullOrEmpty(entityId))
-            {
-                Debug.LogError("Null or empty entityId");
-                return null;
-            }
-
             if (!entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return null;
@@ -506,11 +508,7 @@ namespace DCL.Controllers
                 case SceneLifecycleHandler.State.WAITING_FOR_INIT_MESSAGES:
                     return $"{baseState}:{prettyName} - waiting for init messages...";
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
-                    int sharedComponentsCount = componentsManagerLegacy.GetSceneSharedComponentsCount();
-                    if (sharedComponentsCount > 0)
-                        return $"{baseState}:{prettyName} - left to ready:{sharedComponentsCount - sceneLifecycleHandler.disposableNotReadyCount}/{sharedComponentsCount} ({loadingProgress}%)";
-                    else
-                        return $"{baseState}:{prettyName} - no components. waiting...";
+                    return $"{baseState}:{prettyName} - {sceneLifecycleHandler.sceneResourcesLoadTracker.GetStateString()}";
                 case SceneLifecycleHandler.State.READY:
                     return $"{baseState}:{prettyName} - ready!";
             }
@@ -538,35 +536,7 @@ namespace DCL.Controllers
             switch (sceneLifecycleHandler.state)
             {
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
-
-                    foreach (string componentId in sceneLifecycleHandler.disposableNotReady)
-                    {
-                        if (componentsManagerLegacy.HasSceneSharedComponent(componentId))
-                        {
-                            var component = componentsManagerLegacy.GetSceneSharedComponent(componentId);
-
-                            Debug.Log($"Waiting for: {component.ToString()}");
-
-                            foreach (var entity in component.GetAttachedEntities())
-                            {
-                                var loader = LoadableShape.GetLoaderForEntity(entity);
-
-                                string loadInfo = "No loader";
-
-                                if (loader != null)
-                                {
-                                    loadInfo = loader.ToString();
-                                }
-
-                                Debug.Log($"This shape is attached to {entity.entityId} entity. Click here for highlight it.\nLoading info: {loadInfo}", entity.gameObject);
-                            }
-                        }
-                        else
-                        {
-                            Debug.Log($"Waiting for missing component? id: {componentId}");
-                        }
-                    }
-
+                    sceneLifecycleHandler.sceneResourcesLoadTracker.PrintWaitingResourcesDebugInfo();
                     break;
 
                 default:
@@ -585,8 +555,7 @@ namespace DCL.Controllers
             if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS ||
                 sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY)
             {
-                int sharedComponentsCount = componentsManagerLegacy.GetSceneSharedComponentsCount();
-                loadingProgress = sharedComponentsCount > 0 ? (sharedComponentsCount - sceneLifecycleHandler.disposableNotReadyCount) * 100f / sharedComponentsCount : 100f;
+                loadingProgress = sceneLifecycleHandler.loadingProgress;
             }
 
             OnLoadingStateUpdated?.Invoke(loadingProgress);

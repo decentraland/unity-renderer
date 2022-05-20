@@ -13,10 +13,10 @@ namespace DCL.Models
         public bool markedForCleanup { get; set; } = false;
         public bool isInsideBoundaries { get; set; } = false;
 
-        public Dictionary<string, IDCLEntity> children { get; private set; } = new Dictionary<string, IDCLEntity>();
+        public Dictionary<long, IDCLEntity> children { get; private set; } = new Dictionary<long, IDCLEntity>();
         public IDCLEntity parent { get; private set; }
         public GameObject gameObject { get; set; }
-        public string entityId { get; set; }
+        public long entityId { get; set; }
         public MeshesInfo meshesInfo { get; set; }
         public GameObject meshRootGameObject => meshesInfo.meshRootGameObject;
         public Renderer[] renderers => meshesInfo.renderers;

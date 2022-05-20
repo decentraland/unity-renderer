@@ -56,7 +56,7 @@ namespace DCL.Components
 
         void IComponent.RaiseOnAppliedChanges() { }
 
-        Transform IMonoBehaviour.GetTransform() => handler.entity?.gameObject.transform;
+        Transform IMonoBehaviour.GetTransform() => null;
 
         void ICleanable.Cleanup() => handler.Dispose();
     }

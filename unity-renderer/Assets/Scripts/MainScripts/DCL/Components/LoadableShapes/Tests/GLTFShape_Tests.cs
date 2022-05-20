@@ -13,17 +13,25 @@ using UnityGLTF;
 public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     [UnityTest]
     public IEnumerator ShapeUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         Assert.IsTrue(
@@ -36,7 +44,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         Assert.IsTrue(
@@ -47,7 +55,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [Test]
     public void CustomContentProvider()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         string mockupAssetId = "cdd5a4ea94388dd21babdecd26dd560f739dce2fbb8c99cc10a45bb8306b6076";
@@ -76,7 +84,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             }));
 
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
 
         Assert.IsTrue(gltfShape is LoadWrapper_GLTF);
 
@@ -92,7 +100,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator PreExistentShapeUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -101,7 +109,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         {
@@ -117,7 +125,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
             }));
 
-        gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+        gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         {
@@ -132,7 +140,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator PreExistentShapeImmediateUpdate()
     {
-        string entityId = "1";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
 
         var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -141,7 +149,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = LoadableShape.GetLoaderForEntity(scene.entities[entityId]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         TestUtils.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
@@ -150,7 +158,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
             }));
 
-        gltfShape = LoadableShape.GetLoaderForEntity(scene.entities[entityId]);
+        gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         Assert.AreEqual(1,
@@ -171,7 +179,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             }));
         var gltf1 = scene.componentsManagerLegacy.GetSceneSharedComponent(gltfId1);
 
-        LoadWrapper gltfLoader = LoadableShape.GetLoaderForEntity(entity);
+        LoadWrapper gltfLoader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new DCL.WaitUntil(() => gltfLoader.alreadyLoaded);
 
         Assert.AreEqual(gltf1, scene.componentsManagerLegacy.GetSharedComponent(entity, typeof(BaseShape)));
@@ -183,7 +191,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        gltfLoader = LoadableShape.GetLoaderForEntity(entity);
+        gltfLoader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new DCL.WaitUntil(() => gltfLoader.alreadyLoaded);
 
         Assert.AreEqual(scene.componentsManagerLegacy.GetSceneSharedComponent(gltfId2), scene.componentsManagerLegacy.GetSharedComponent(entity, typeof(BaseShape)));
@@ -197,7 +205,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [Category("Explicit")]
     public IEnumerator CollisionProperty()
     {
-        string entityId = "entityId";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;
@@ -211,7 +219,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        var shapeLoader = LoadableShape.GetLoaderForEntity(entity);
+        var shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new DCL.WaitUntil(() => shapeLoader.alreadyLoaded);
 
         yield return TestUtils.TestShapeCollision(shapeComponent, shapeModel, entity);
@@ -222,7 +230,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [Category("Explicit")]
     public IEnumerator VisibleProperty()
     {
-        string entityId = "entityId";
+        long entityId = 1;
         TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;
@@ -236,7 +244,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        var shapeLoader = LoadableShape.GetLoaderForEntity(entity);
+        var shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new DCL.WaitUntil(() => shapeLoader.alreadyLoaded);
 
         yield return TestUtils.TestOnPointerEventWithShapeVisibleProperty(shapeComponent, shapeModel, entity);
@@ -258,7 +266,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             JsonConvert.SerializeObject(shapeModel));
         var shape1Component = scene.componentsManagerLegacy.GetSceneSharedComponent(shape1Id);
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded == true);
 
         Animation animation = entity.meshRootGameObject.GetComponentInChildren<Animation>();
@@ -270,7 +278,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         yield return TestUtils.SharedComponentUpdate(shape1Component, shapeModel);
         
         Assert.IsFalse(animation.enabled);
-        
+
         shapeModel.visible = true;
         yield return TestUtils.SharedComponentUpdate(shape1Component, shapeModel);
         
@@ -305,7 +313,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         DCLAnimator animator = TestUtils.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
 
-        LoadWrapper gltfShape2 = GLTFShape.GetLoaderForEntity(entity);
+        LoadWrapper gltfShape2 = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new UnityEngine.WaitUntil(() => gltfShape2.alreadyLoaded == true);
 
         Assert.IsTrue(animator.animComponent != null);

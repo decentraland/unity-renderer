@@ -2,7 +2,6 @@
   "name": "DCL.Components.ParametrizedShape.Tests",
   "rootNamespace": "",
   "references": [
-    "GUID:e555144732b726c4cba5b0f6337fea75",
     "GUID:b1087c5731ff68448a0a9c625bb7e52d",
     "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
     "GUID:27619889b8ba8c24980f49ee34dbb44a",
@@ -19,7 +18,9 @@
     "GUID:0e39b687cf35c7e40a87f984cdaed9f5",
     "GUID:be0e3042b7c1c6e41ae8221ae6470d80",
     "GUID:ab04b35c8c4a57847889009b508e53ae",
-    "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+    "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+    "GUID:44a9db8f655ab05409802e5476cf9dd3",
+    "GUID:9a16a75a9de4ba2458b50ed374f1b28f"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

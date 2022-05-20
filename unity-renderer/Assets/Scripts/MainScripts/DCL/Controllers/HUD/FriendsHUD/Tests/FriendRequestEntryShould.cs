@@ -13,7 +13,7 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
-        GameObject go = Object.Instantiate((GameObject)Resources.Load(FRIEND_REQUEST_ENTRY_RESOURCE_NAME));
+        GameObject go = Object.Instantiate((GameObject) Resources.Load(FRIEND_REQUEST_ENTRY_RESOURCE_NAME));
         entry = go.GetComponent<FriendRequestEntry>();
         yield break;
     }
@@ -29,10 +29,19 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     {
         var model1snapshot = Texture2D.whiteTexture;
         var model2snapshot = Texture2D.blackTexture;
-        var model1 = new FriendEntry.Model() { userName = "test1", avatarSnapshotObserver = LazyTextureObserver.CreateWithTexture(model1snapshot) };
-        var model2 = new FriendEntry.Model() { userName = "test2", avatarSnapshotObserver = LazyTextureObserver.CreateWithTexture(model2snapshot) };
+        var model1 = new FriendEntry.Model
+        {
+            userId = "userId1",
+            userName = "test1",
+            avatarSnapshotObserver = LazyTextureObserver.CreateWithTexture(model1snapshot)
+        };
+        var model2 = new FriendEntry.Model
+        {
+            userId = "userId2",
+            userName = "test2",
+            avatarSnapshotObserver = LazyTextureObserver.CreateWithTexture(model2snapshot)
+        };
 
-        entry.userId = "userId1";
         entry.Populate(model1);
         entry.SetReceived(true);
 
@@ -43,7 +52,6 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(entry.acceptButton.gameObject.activeSelf);
         Assert.IsTrue(entry.rejectButton.gameObject.activeSelf);
 
-        entry.userId = "userId2";
         entry.Populate(model2);
         entry.SetReceived(false);
 
@@ -58,8 +66,10 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnAcceptedIsPressed()
     {
-        var model = new FriendEntry.Model() { };
-        entry.userId = "userId-1";
+        var model = new FriendEntry.Model
+        {
+            userId = "userId-1"
+        };
         entry.Populate(model);
 
         bool buttonPressed = false;
@@ -75,8 +85,10 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnCancelledIsPressed()
     {
-        var model = new FriendEntry.Model() { };
-        entry.userId = "userId-1";
+        var model = new FriendEntry.Model
+        {
+            userId = "userId-1"
+        };
         entry.Populate(model);
         bool buttonPressed = false;
         entry.OnCancelled += (x) =>
@@ -91,8 +103,10 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnMenuToggleIsPressed()
     {
-        var model = new FriendEntry.Model() { };
-        entry.userId = "userId-1";
+        var model = new FriendEntry.Model
+        {
+            userId = "userId-1"
+        };
         entry.Populate(model);
         bool buttonPressed = false;
         entry.OnMenuToggle += (x) =>
@@ -107,8 +121,10 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnRejectedIsPressed()
     {
-        var model = new FriendEntry.Model() { };
-        entry.userId = "userId-1";
+        var model = new FriendEntry.Model
+        {
+            userId = "userId-1"
+        };
         entry.Populate(model);
         bool buttonPressed = false;
         entry.OnRejected += (x) =>

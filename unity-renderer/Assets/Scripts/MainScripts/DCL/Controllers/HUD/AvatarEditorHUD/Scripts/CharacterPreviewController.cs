@@ -63,7 +63,7 @@ public class CharacterPreviewController : MonoBehaviour
             new NoLODs(),
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler(),
-            new EmoteAnimationEquipper(animator, DataStore.i.emotes)
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes) 
         );
     }
 
@@ -92,17 +92,29 @@ public class CharacterPreviewController : MonoBehaviour
     private async UniTaskVoid UpdateModelRoutine(AvatarModel newModel, Action onDone, CancellationToken ct)
     {
         currentAvatarModel.CopyFrom(newModel);
-        List<string> wearables = new List<string>(newModel.wearables);
-        wearables.Add(newModel.bodyShape);
-        await avatar.Load(wearables, new AvatarSettings
+        try
         {
-            bodyshapeId = newModel.bodyShape,
-            eyesColor = newModel.eyeColor,
-            hairColor = newModel.hairColor,
-            skinColor = newModel.skinColor
+            ct.ThrowIfCancellationRequested();
+            List<string> wearables = new List<string>(newModel.wearables);
+            wearables.Add(newModel.bodyShape);
+            await avatar.Load(wearables, new AvatarSettings
+            {
+                bodyshapeId = newModel.bodyShape,
+                eyesColor = newModel.eyeColor,
+                hairColor = newModel.hairColor,
+                skinColor = newModel.skinColor
 
-        }, ct);
-
+            }, ct);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+            return;
+        }
         onDone?.Invoke();
     }
 

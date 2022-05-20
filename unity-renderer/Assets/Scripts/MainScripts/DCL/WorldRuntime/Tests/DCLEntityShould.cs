@@ -11,7 +11,7 @@ public class DCLEntityShould
     public void CleanUpEntityComponents()
     {
         DecentralandEntity entity = new DecentralandEntity();
-        entity.entityId = "entityId";
+        entity.entityId = 345345;
         
         IParcelScene scene = Substitute.For<IParcelScene>();
         scene.componentsManagerLegacy.Returns(new ECSComponentsManagerLegacy(scene));

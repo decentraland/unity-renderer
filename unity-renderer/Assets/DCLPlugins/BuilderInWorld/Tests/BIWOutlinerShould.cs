@@ -13,13 +13,14 @@ using UnityEngine;
 
 public class BIWOutlinerShould : IntegrationTestSuite_Legacy
 {
-    private const string ENTITY_ID = "1";
+    private const long ENTITY_ID = 1;
     private BIWEntity entity;
     private BIWEntityHandler entityHandler;
     private BIWOutlinerController outlinerController;
     private IContext context;
     private IBuilderScene builderScene;
     private ParcelScene scene;
+    private CoreComponentsPlugin coreComponentsPlugin;
 
     protected override List<GameObject> SetUp_LegacySystems()
     {
@@ -31,7 +32,6 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
         result.Add(MainSceneFactory.CreateAudioHandler());
         result.Add(MainSceneFactory.CreateHudController());
         result.Add(MainSceneFactory.CreateMouseCatcher());
-        result.Add(MainSceneFactory.CreateSettingsController());
         result.Add(MainSceneFactory.CreateEventSystem());
         return result;
     }
@@ -41,6 +41,8 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         scene = TestUtils.CreateTestScene();
+        coreComponentsPlugin = new CoreComponentsPlugin();
+        BuilderInWorldPlugin.RegisterRuntimeComponents();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
 
@@ -50,7 +52,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[ENTITY_ID]);
+        LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[ENTITY_ID]);
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         outlinerController = new BIWOutlinerController();
@@ -137,6 +139,8 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        BuilderInWorldPlugin.UnregisterRuntimeComponents();
+        coreComponentsPlugin.Dispose();
         context.Dispose();
         yield return base.TearDown();
     }

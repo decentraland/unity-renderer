@@ -23,7 +23,7 @@ public class AvatarEditorHUDController : IHUD
     private const string URL_SELL_COLLECTIBLE_GENERIC = "https://market.decentraland.org/account";
     private const string URL_SELL_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}";
     private const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
-
+    private const string THIRD_PARTY_COLLECTIONS_FEATURE_FLAG = "third_party_collections";
     protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
     protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
 
@@ -40,6 +40,8 @@ public class AvatarEditorHUDController : IHUD
     DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
     DataStore_FeatureFlag featureFlagsDataStore => DataStore.i.featureFlags;
     private bool isSkinsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_skins");
+    
+    private readonly DataStore_FeatureFlag featureFlags;
 
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
     protected readonly AvatarEditorHUDModel model = new AvatarEditorHUDModel();
@@ -54,17 +56,24 @@ public class AvatarEditorHUDController : IHUD
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
     private bool avatarIsDirty = false;
     private float lastTimeOwnedWearablesChecked = 0;
+    internal bool collectionsAlreadyLoaded = false;
     private float prevRenderScale = 1.0f;
     private bool isAvatarPreviewReady;
+    private List<string> thirdPartyWearablesLoaded = new List<string>();
 
     internal IEmotesCustomizationComponentController emotesCustomizationComponentController;
+
+    private bool isThirdPartyCollectionsEnabled => featureFlags.flags.Get().IsFeatureEnabled(THIRD_PARTY_COLLECTIONS_FEATURE_FLAG);
 
     public AvatarEditorHUDView view;
 
     public event Action OnOpen;
     public event Action OnClose;
 
-    public AvatarEditorHUDController() { }
+    public AvatarEditorHUDController(DataStore_FeatureFlag featureFlags)
+    {
+        this.featureFlags = featureFlags;
+    }
 
     public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog, bool bypassUpdateAvatarPreview = false)
     {
@@ -107,6 +116,8 @@ public class AvatarEditorHUDController : IHUD
         }
 
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
+
+        view.SetThirdPartyCollectionsVisibility(isThirdPartyCollectionsEnabled);
     }
 
     public void SetCatalog(BaseDictionary<string, WearableItem> catalog)
@@ -148,7 +159,7 @@ public class AvatarEditorHUDController : IHUD
                          .Then((ownedWearables) =>
                          {
                              ownedWearablesAlreadyLoaded = true;
-                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
                              LoadUserProfile(userProfile, true);
                              view.ShowCollectiblesLoadingSpinner(false);
                              view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
@@ -239,11 +250,7 @@ public class AvatarEditorHUDController : IHUD
         if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
             return;
 
-        /*TODO: this has to be refactored, currently there is no other way of understanding if the user is a regular or a guest
-        *       due to the execution order of things. The init cannot be done below because that would mean to do it when the
-        *       menu is firstly opened
-        */
-        view.InitializeNavigationEvents(string.IsNullOrEmpty(userProfile.userName));
+        view.InitializeNavigationEvents(!userProfile.hasConnectedWeb3);
 
         CatalogController.wearableCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
 
@@ -285,7 +292,7 @@ public class AvatarEditorHUDController : IHUD
 
         EnsureWearablesCategoriesNotEmpty();
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
         isAvatarPreviewReady = true;
     }
 
@@ -356,31 +363,31 @@ public class AvatarEditorHUDController : IHUD
             }
         }
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(false);
     }
 
     public void HairColorClicked(Color color)
     {
         EquipHairColor(color);
         view.SelectHairColor(model.hairColor);
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
     public void SkinColorClicked(Color color)
     {
         EquipSkinColor(color);
         view.SelectSkinColor(model.skinColor);
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
     public void EyesColorClicked(Color color)
     {
         EquipEyesColor(color);
         view.SelectEyeColor(model.eyesColor);
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
-    protected virtual void UpdateAvatarPreview()
+    protected virtual void UpdateAvatarPreview(bool skipAudio)
     {
         if (bypassUpdateAvatarPreview)
             return;
@@ -394,42 +401,24 @@ public class AvatarEditorHUDController : IHUD
                 modelToUpdate.wearables.Add(emoteId);
         }
 
-        view.UpdateAvatarPreview(modelToUpdate);
+        view.UpdateAvatarPreview(modelToUpdate, skipAudio);
     }
 
     private void EquipHairColor(Color color)
     {
-        var colorToSet = color;
-        if (!hairColorList.colors.Any(x => x.AproxComparison(colorToSet)))
-        {
-            colorToSet = hairColorList.colors[hairColorList.defaultColor];
-        }
-
-        model.hairColor = colorToSet;
+        model.hairColor = color;
         view.SelectHairColor(model.hairColor);
     }
 
     private void EquipEyesColor(Color color)
     {
-        var colorToSet = color;
-        if (!eyeColorList.colors.Any(x => x.AproxComparison(color)))
-        {
-            colorToSet = eyeColorList.colors[eyeColorList.defaultColor];
-        }
-
-        model.eyesColor = colorToSet;
+        model.eyesColor = color;
         view.SelectEyeColor(model.eyesColor);
     }
 
     private void EquipSkinColor(Color color)
     {
-        var colorToSet = color;
-        if (!skinColorList.colors.Any(x => x.AproxComparison(colorToSet)))
-        {
-            colorToSet = skinColorList.colors[skinColorList.defaultColor];
-        }
-
-        model.skinColor = colorToSet;
+        model.skinColor = color;
         view.SelectSkinColor(model.skinColor);
     }
 
@@ -541,19 +530,17 @@ public class AvatarEditorHUDController : IHUD
                 AddWearable(iterator.Current.Key, iterator.Current.Value);
             }
         }
+
+        view.RefreshSelectorsSize();
     }
 
     private void AddWearable(string id, WearableItem wearable)
     {
         if (!wearable.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE) && userProfile.GetItemAmount(id) == 0)
-        {
             return;
-        }
 
         if (!wearablesByCategory.ContainsKey(wearable.data.category))
-        {
             wearablesByCategory.Add(wearable.data.category, new List<WearableItem>());
-        }
 
         wearablesByCategory[wearable.data.category].Add(wearable);
         view.AddWearable(wearable, userProfile.GetItemAmount(id),
@@ -579,8 +566,8 @@ public class AvatarEditorHUDController : IHUD
 
     public void RandomizeWearables()
     {
-        EquipHairColor(hairColorList.colors[Random.Range(0, hairColorList.colors.Count)]);
-        EquipEyesColor(eyeColorList.colors[Random.Range(0, eyeColorList.colors.Count)]);
+        EquipHairColor(view.GetRandomColor());
+        EquipEyesColor(view.GetRandomColor());
 
         List<WearableItem> wearablesToRemove = model.wearables.Where(x => !x.IsEmote()).ToList();
         foreach (var wearable in wearablesToRemove)
@@ -610,7 +597,7 @@ public class AvatarEditorHUDController : IHUD
             }
         }
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(false);
     }
 
     private List<WearableItem> GetWearablesReplacedBy(WearableItem wearableItem)
@@ -686,6 +673,7 @@ public class AvatarEditorHUDController : IHUD
             }
 
             LoadOwnedWereables(userProfile);
+            LoadCollections();
             Environment.i.messaging.manager.paused = DataStore.i.common.isSignUpFlow.Get();
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor);
 
@@ -796,7 +784,95 @@ public class AvatarEditorHUDController : IHUD
             avatarIsDirty = false;
         }
     }
-    
+
+    private void LoadCollections()
+    {
+        if (!isThirdPartyCollectionsEnabled || collectionsAlreadyLoaded)
+            return;
+
+        WearablesFetchingHelper.GetThirdPartyCollections()
+            .Then((collections) =>
+            {
+                view.LoadCollectionsDropdown(collections);
+                collectionsAlreadyLoaded = true;
+                LoadUserThirdPartyWearables();
+            })
+            .Catch((error) => Debug.LogError(error));
+    }
+
+    private void LoadUserThirdPartyWearables()
+    {
+        List<string> collectionIdsToLoad = new List<string>();
+        foreach (string wearableId in userProfile.avatar.wearables)
+        {
+            CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
+
+            if (wearable != null && wearable.IsFromThirdPartyCollection)
+            {
+                if (!collectionIdsToLoad.Contains(wearable.ThirdPartyCollectionId))
+                    collectionIdsToLoad.Add(wearable.ThirdPartyCollectionId);
+            }
+        }
+
+        foreach (string collectionId in collectionIdsToLoad)
+        {
+            view.ToggleThirdPartyCollection(collectionId, true);
+        }
+    }
+
+    public void ToggleThirdPartyCollection(bool isOn, string collectionId, string collectionName)
+    {
+        if (isOn)
+            FetchAndShowThirdPartyCollection(collectionId, collectionName);
+        else
+            RemoveThirdPartyCollection(collectionId);
+    }
+
+    private void FetchAndShowThirdPartyCollection(string collectionId, string collectionName)
+    {
+        view.BlockCollectionsDropdown(true);
+        CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
+            .Then(wearables =>
+            {
+                foreach (var wearable in wearables)
+                {
+                    if (!userProfile.ContainsInInventory(wearable.id))
+                    {
+                        userProfile.AddToInventory(wearable.id);
+                        
+                        if (!thirdPartyWearablesLoaded.Contains(wearable.id))
+                            thirdPartyWearablesLoaded.Add(wearable.id);
+                    }
+                }
+
+                view.BlockCollectionsDropdown(false);
+                LoadUserProfile(userProfile, true);
+            })
+            .Catch((error) =>
+            {
+                view.BlockCollectionsDropdown(false);
+                Debug.LogError(error);
+            });
+    }
+
+    private void RemoveThirdPartyCollection(string collectionId)
+    {
+        var wearablesToRemove = CatalogController.i.Wearables.GetValues()
+            .Where(wearable => !userProfile.HasEquipped(wearable.id)
+                               && wearable.ThirdPartyCollectionId == collectionId)
+            .Select(item => item.id)
+            .ToList();
+        CatalogController.i.Remove(wearablesToRemove);
+
+        foreach (string wearableId in wearablesToRemove)
+        {
+            userProfile.RemoveFromInventory(wearableId);
+            thirdPartyWearablesLoaded.Remove(wearableId);
+        }
+
+        LoadUserProfile(userProfile, true);
+    }
+
     private bool ShouldShowHideOtherWearablesToast(WearableItem wearable)
     {
         var isWearingSkinAlready = model.wearables.Any(item => item.IsSkin());
@@ -861,7 +937,7 @@ public class AvatarEditorHUDController : IHUD
         if (!isAvatarPreviewReady)
             return;
 
-        UpdateAvatarPreview();
+        UpdateAvatarPreview(true);
     }
 
     private void OnPreviewEmote(string emoteId) { view.PlayPreviewEmote(emoteId); }

@@ -5,8 +5,9 @@ using UnityEngine;
 
 public class ChatController_Mock : IChatController
 {
+    private readonly List<ChatMessage> entries = new List<ChatMessage>();
+    
     public event Action<ChatMessage> OnAddMessage;
-    List<ChatMessage> entries = new List<ChatMessage>();
 
     public double initTime => 0;
 
@@ -25,6 +26,13 @@ public class ChatController_Mock : IChatController
         if (message == null)
             return;
 
+        entries.Add(message);
+        OnAddMessage?.Invoke(message);
+    }
+
+    public void Send(ChatMessage message)
+    {
+        if (message == null) return;
         entries.Add(message);
         OnAddMessage?.Invoke(message);
     }

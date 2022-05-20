@@ -91,6 +91,7 @@ namespace DCL
         protected virtual void SetupPlugins()
         {
             pluginSystem = PluginSystemFactory.Create();
+            pluginSystem.Initialize();
         }
 
         protected virtual void SetupServices()
@@ -164,7 +165,6 @@ namespace DCL
             CreateEnvironment();
             MainSceneFactory.CreateAudioHandler();
             MainSceneFactory.CreateHudController();
-            MainSceneFactory.CreateSettingsController();
             MainSceneFactory.CreateNavMap();
             MainSceneFactory.CreateEventSystem();
         }

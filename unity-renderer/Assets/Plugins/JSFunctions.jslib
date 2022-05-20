@@ -16,6 +16,10 @@ mergeInto(LibraryManager.library, {
   MessageFromEngine: function(type, message) {
     window.DCL.MessageFromEngine(Pointer_stringify(type), Pointer_stringify(message));
   },
+  BinaryMessageFromEngine: function(sceneId, dataPtr, dataSize) {
+    var bytes = HEAPU8.subarray(dataPtr, dataPtr + dataSize)
+    window.DCL.BinaryMessageFromEngine(Pointer_stringify(sceneId), bytes);
+  },
   GetGraphicCard: function() {
     const glcontext = GL.currentContext.GLctx;
     const debugInfo = glcontext.getExtension('WEBGL_debug_renderer_info');
