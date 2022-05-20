@@ -29,13 +29,13 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     {
         var model1snapshot = Texture2D.whiteTexture;
         var model2snapshot = Texture2D.blackTexture;
-        var model1 = new FriendEntry.Model
+        var model1 = new FriendEntryModel
         {
             userId = "userId1",
             userName = "test1",
             avatarSnapshotObserver = LazyTextureObserver.CreateWithTexture(model1snapshot)
         };
-        var model2 = new FriendEntry.Model
+        var model2 = new FriendEntryModel
         {
             userId = "userId2",
             userName = "test2",
@@ -66,7 +66,7 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnAcceptedIsPressed()
     {
-        var model = new FriendEntry.Model
+        var model = new FriendEntryModel
         {
             userId = "userId-1"
         };
@@ -85,7 +85,7 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnCancelledIsPressed()
     {
-        var model = new FriendEntry.Model
+        var model = new FriendEntryModel
         {
             userId = "userId-1"
         };
@@ -103,7 +103,7 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnMenuToggleIsPressed()
     {
-        var model = new FriendEntry.Model
+        var model = new FriendEntryModel
         {
             userId = "userId-1"
         };
@@ -121,7 +121,7 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnRejectedIsPressed()
     {
-        var model = new FriendEntry.Model
+        var model = new FriendEntryModel
         {
             userId = "userId-1"
         };

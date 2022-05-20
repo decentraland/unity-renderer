@@ -38,10 +38,6 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
 
     public FriendEntryBase GetEntry(string userId) => null;
 
-    public void UpdateEntry(string userId, FriendEntryBase.Model model)
-    {
-    }
-
     public void DisplayFriendUserNotFound()
     {
     }
@@ -64,11 +60,11 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     {
     }
 
-    public void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction, FriendEntryBase.Model friendEntryModel)
+    public void Set(string userId, FriendshipAction friendshipAction, FriendEntryModel friendEntryModel)
     {
     }
 
-    public void Search(string userId)
+    public void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model)
     {
     }
 

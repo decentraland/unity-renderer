@@ -11,15 +11,15 @@ public class FriendsHUDController : IHUD
 {
     private const string PLAYER_PREFS_SEEN_FRIEND_COUNT = "SeenFriendsCount";
 
-    private readonly Dictionary<string, FriendEntryBase.Model> friends = new Dictionary<string, FriendEntryBase.Model>();
+    private readonly Dictionary<string, FriendEntryModel> friends = new Dictionary<string, FriendEntryModel>();
     private readonly DataStore dataStore;
-    
+
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
     private UserProfile ownUserProfile;
-    
+
     public IFriendsHUDComponentView View { get; private set; }
-    
+
     public event Action<string> OnPressWhisper;
     public event Action OnFriendsOpened;
     public event Action OnFriendsClosed;
@@ -31,13 +31,13 @@ public class FriendsHUDController : IHUD
 
     // TODO: refactor into dependency injection, solve static usages & define better responsibilities controller<->view
     public void Initialize(
-        IFriendsController friendsController, 
-        UserProfile ownUserProfile, 
+        IFriendsController friendsController,
+        UserProfile ownUserProfile,
         ISocialAnalytics socialAnalytics,
         IFriendsHUDComponentView view = null)
     {
         view ??= FriendsHUDComponentView.Create();
-        View = view;     
+        View = view;
         this.friendsController = friendsController;
         this.socialAnalytics = socialAnalytics;
 
@@ -101,8 +101,8 @@ public class FriendsHUDController : IHUD
 
         for (int i = 0; i < entriesCount; i++)
         {
-            entries[i].model.blocked = allBlockedUsers.Contains(entries[i].model.userId);
-            entries[i].Populate(entries[i].model);
+            entries[i].Model.blocked = allBlockedUsers.Contains(entries[i].Model.userId);
+            entries[i].Populate(entries[i].Model);
         }
     }
 
@@ -121,12 +121,13 @@ public class FriendsHUDController : IHUD
             });
 
             if (ownUserProfile != null)
-                socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userNameOrId, 0, PlayerActionSource.FriendsHUD);
+                socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userNameOrId, 0,
+                    PlayerActionSource.FriendsHUD);
 
             View.ShowRequestSendSuccess();
         }
     }
-    
+
     private bool AreAlreadyFriends(string userNameOrId)
     {
         var userId = userNameOrId;
@@ -135,16 +136,16 @@ public class FriendsHUDController : IHUD
 
         if (profile != default)
             userId = profile.userId;
-        
+
         return friendsController != null
                && friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND);
     }
-    
+
     private void OnUpdateUserStatus(string userId, FriendsController.UserStatus newStatus)
     {
         if (!friends.ContainsKey(userId))
-            friends[userId] = new FriendEntryBase.Model();
-        
+            friends[userId] = new FriendEntryModel();
+
         var model = friends[userId];
         model.userId = userId;
         model.status = newStatus.presence;
@@ -162,11 +163,14 @@ public class FriendsHUDController : IHUD
             model.realmServerName = string.Empty;
             model.realmLayerName = string.Empty;
         }
-
-        View.UpdateEntry(userId, model);
+        
+        View.Set(userId, newStatus.friendshipStatus, model);
     }
 
-    void OnFriendNotFound(string name) { View.DisplayFriendUserNotFound(); }
+    private void OnFriendNotFound(string name)
+    {
+        View.DisplayFriendUserNotFound();
+    }
 
     private void OnUpdateFriendship(string userId, FriendshipAction friendshipAction)
     {
@@ -179,8 +183,8 @@ public class FriendsHUDController : IHUD
         }
 
         if (!friends.ContainsKey(userId))
-            friends[userId] = new FriendEntryBase.Model();
-        
+            friends[userId] = new FriendEntryModel();
+
         var friendEntryModel = friends[userId];
         friendEntryModel.userId = userId;
         friendEntryModel.userName = userProfile.userName;
@@ -188,7 +192,7 @@ public class FriendsHUDController : IHUD
 
         if (ownUserProfile != null && ownUserProfile.blocked != null)
             friendEntryModel.blocked = ownUserProfile.blocked.Contains(userId);
-        View.UpdateFriendshipStatus(userId, friendshipAction, friendEntryModel);
+        View.Set(userId, friendshipAction, friendEntryModel);
         UpdateNotificationsCounter();
     }
 
@@ -226,7 +230,10 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private void HandleOpenWhisperChat(FriendEntry entry) { OnPressWhisper?.Invoke(entry.model.userId); }
+    private void HandleOpenWhisperChat(FriendEntry entry)
+    {
+        OnPressWhisper?.Invoke(entry.Model.userId);
+    }
 
     private void HandleUnfriend(string userId)
     {
@@ -244,13 +251,14 @@ public class FriendsHUDController : IHUD
             new FriendsController.FriendshipUpdateStatusMessage
             {
                 action = FriendshipAction.REJECTED,
-                userId = entry.model.userId
+                userId = entry.Model.userId
             });
-        
+
         UpdateNotificationsCounter();
 
         if (ownUserProfile != null)
-            socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, entry.model.userId, PlayerActionSource.FriendsHUD);
+            socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, entry.Model.userId,
+                PlayerActionSource.FriendsHUD);
     }
 
     private void HandleRequestCancelled(FriendRequestEntry entry)
@@ -259,11 +267,12 @@ public class FriendsHUDController : IHUD
             new FriendsController.FriendshipUpdateStatusMessage()
             {
                 action = FriendshipAction.CANCELLED,
-                userId = entry.model.userId
+                userId = entry.Model.userId
             });
 
         if (ownUserProfile != null)
-            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, entry.model.userId, PlayerActionSource.FriendsHUD);
+            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, entry.Model.userId,
+                PlayerActionSource.FriendsHUD);
     }
 
     private void HandleRequestAccepted(FriendRequestEntry entry)
@@ -272,11 +281,12 @@ public class FriendsHUDController : IHUD
             new FriendsController.FriendshipUpdateStatusMessage()
             {
                 action = FriendshipAction.APPROVED,
-                userId = entry.model.userId
+                userId = entry.Model.userId
             });
 
-        if(ownUserProfile != null)
-            socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.model.userId, PlayerActionSource.FriendsHUD);
+        if (ownUserProfile != null)
+            socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.Model.userId,
+                PlayerActionSource.FriendsHUD);
     }
 
     public void Dispose()

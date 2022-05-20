@@ -13,6 +13,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private const int PRE_INSTANTIATED_ENTRIES = 25;
     private const float NOTIFICATIONS_DURATION = 3;
     private const int AVATAR_SNAPSHOTS_PER_FRAME = 5;
+    private const int CREATION_AMOUNT_PER_FRAME = 5;
 
     [SerializeField] private GameObject enabledHeader;
     [SerializeField] private GameObject disabledHeader;
@@ -37,9 +38,12 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendRequestEntry> entries = new Dictionary<string, FriendRequestEntry>();
+    private readonly Dictionary<string, FriendRequestEntryModel> creationQueue =
+        new Dictionary<string, FriendRequestEntryModel>();
     private Pool entryPool;
     private string lastRequestSentUserName;
     private int currentAvatarSnapshotIndex;
+    private bool isLayoutDirty;
 
     public Dictionary<string, FriendRequestEntry> Entries => entries;
 
@@ -73,6 +77,11 @@ public class FriendRequestsTabComponentView : BaseComponentView
     {
         base.Update();
         
+        if (isLayoutDirty)
+            Utils.ForceRebuildLayoutImmediate((RectTransform) filledStateContainer.transform);
+        isLayoutDirty = false;
+
+        SetQueuedEntries();
         FetchAvatarSnapshotsForVisibleEntries();
     }
 
@@ -103,7 +112,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         Clear();
 
         foreach (var friend in model.friends)
-            Set(friend.userId, friend.model, friend.received);
+            Set(friend.userId, friend.model);
 
         if (model.isReceivedRequestsExpanded)
             receivedRequestsList.Expand();
@@ -146,16 +155,29 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     public FriendRequestEntry Get(string userId) => entries.ContainsKey(userId) ? entries[userId] : null;
 
-    public void Populate(string userId, FriendEntryBase.Model model)
+    public void Populate(string userId, FriendRequestEntryModel model)
     {
-        if (!entries.ContainsKey(userId)) return;
+        if (!entries.ContainsKey(userId))
+        {
+            if (creationQueue.ContainsKey(userId))
+                creationQueue[userId] = model;
+            return;
+        }
 
         var entry = entries[userId];
         entry.Populate(model);
     }
+    
+    public void Enqueue(string userId, FriendRequestEntryModel model) => creationQueue[userId] = model;
 
-    public void Set(string userId, FriendEntryBase.Model model, bool isReceived)
+    public void Set(string userId, FriendRequestEntryModel model)
     {
+        if (creationQueue.ContainsKey(userId))
+        {
+            creationQueue[userId] = model;
+            return;
+        }
+        
         if (!entries.ContainsKey(userId))
         {
             CreateEntry(userId);
@@ -164,9 +186,8 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
         var entry = entries[userId];
         entry.Populate(model);
-        entry.SetReceived(isReceived);
 
-        if (isReceived)
+        if (model.isReceived)
             receivedRequestsList.Add(userId, entry);
         else
             sentRequestsList.Add(userId, entry);
@@ -182,7 +203,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         NotificationsController.i?.ShowNotification(friendSearchFailedNotification);
     }
 
-    private void UpdateLayout() => ((RectTransform) filledStateContainer.transform).ForceUpdateLayout();
+    private void UpdateLayout() => isLayoutDirty = true;
 
     private void CreateEntry(string userId)
     {
@@ -259,12 +280,12 @@ public class FriendRequestsTabComponentView : BaseComponentView
         // Add placeholder friend to avoid affecting UX by roundtrip with kernel
         FriendsController.i?.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
         {
-            userId = requestEntry.model.userId,
+            userId = requestEntry.Model.userId,
             action = FriendshipAction.APPROVED
         });
 
         ShowFriendAcceptedNotification(requestEntry);
-        Remove(requestEntry.model.userId);
+        Remove(requestEntry.Model.userId);
         OnFriendRequestApproved?.Invoke(requestEntry);
     }
 
@@ -272,25 +293,25 @@ public class FriendRequestsTabComponentView : BaseComponentView
     {
         acceptedFriendNotification.model.timer = NOTIFICATIONS_DURATION;
         acceptedFriendNotification.model.groupID = NOTIFICATIONS_ID;
-        acceptedFriendNotification.model.message = $"You and {requestEntry.model.userName} are now friends!";
+        acceptedFriendNotification.model.message = $"You and {requestEntry.Model.userName} are now friends!";
         NotificationsController.i?.ShowNotification(acceptedFriendNotification);
     }
 
     private void OnEntryRejectButtonPressed(FriendRequestEntry requestEntry)
     {
-        Remove(requestEntry.model.userId);
+        Remove(requestEntry.Model.userId);
         OnRejectConfirmation?.Invoke(requestEntry);
     }
 
     private void OnEntryCancelButtonPressed(FriendRequestEntry requestEntry)
     {
-        Remove(requestEntry.model.userId);
+        Remove(requestEntry.Model.userId);
         OnCancelConfirmation?.Invoke(requestEntry);
     }
 
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)
     {
-        contextMenuPanel.Show(friendEntry.model.userId);
+        contextMenuPanel.Show(friendEntry.Model.userId);
         friendEntry.Dock(contextMenuPanel);
     }
 
@@ -305,8 +326,8 @@ public class FriendRequestsTabComponentView : BaseComponentView
         var friendEntryToBlock = Get(userId);
         if (friendEntryToBlock == null) return;
         // instantly refresh ui
-        friendEntryToBlock.model.blocked = blockUser;
-        Set(userId, friendEntryToBlock.model, friendEntryToBlock.isReceived);
+        friendEntryToBlock.Model.blocked = blockUser;
+        Set(userId, (FriendRequestEntryModel) friendEntryToBlock.Model);
     }
     
     private void FetchAvatarSnapshotsForVisibleEntries()
@@ -324,6 +345,18 @@ public class FriendRequestsTabComponentView : BaseComponentView
         if (currentAvatarSnapshotIndex >= entries.Count)
             currentAvatarSnapshotIndex = 0;
     }
+    
+    private void SetQueuedEntries()
+    {
+        if (creationQueue.Count == 0) return;
+
+        for (var i = 0; i < CREATION_AMOUNT_PER_FRAME && creationQueue.Count != 0; i++)
+        {
+            var pair = creationQueue.FirstOrDefault();
+            creationQueue.Remove(pair.Key);
+            Set(pair.Key, pair.Value);
+        }
+    }
 
     [Serializable]
     private class Model
@@ -337,7 +370,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         }
 
         [Serializable]
-        public class SerializableEntryModel : FriendEntryBase.Model
+        public class SerializableEntryModel : FriendRequestEntryModel
         {
         }
 

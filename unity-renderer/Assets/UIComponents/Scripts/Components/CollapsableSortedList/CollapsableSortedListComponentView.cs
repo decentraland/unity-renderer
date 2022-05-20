@@ -19,6 +19,7 @@ namespace UIComponents.CollapsableSortedList
         [SerializeField] private CollapsableSortedListModel model;
 
         private int filteredCount;
+        private bool isLayoutDirty;
 
         public Dictionary<K, V> Entries => entries;
 
@@ -29,6 +30,15 @@ namespace UIComponents.CollapsableSortedList
             base.OnEnable();
             UpdateEmptyState();
             UpdateLayout();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            
+            if (isLayoutDirty)
+                Utils.ForceRebuildLayoutImmediate((RectTransform) container);
+            isLayoutDirty = false;
         }
 
         public override void RefreshControl()
@@ -168,6 +178,6 @@ namespace UIComponents.CollapsableSortedList
             emptyStateContainer.SetActive(Count() == 0);
         }
 
-        private void UpdateLayout() => ((RectTransform) container).ForceUpdateLayout();
+        private void UpdateLayout() => isLayoutDirty = true;
     }
 }

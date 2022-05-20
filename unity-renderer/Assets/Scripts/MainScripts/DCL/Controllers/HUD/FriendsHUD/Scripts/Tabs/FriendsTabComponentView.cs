@@ -27,14 +27,15 @@ public class FriendsTabComponentView : BaseComponentView
     [SerializeField] private Model model;
     [SerializeField] private RectTransform viewport;
 
-    private readonly Dictionary<string, FriendEntryBase.Model> creationQueue =
-        new Dictionary<string, FriendEntryBase.Model>();
+    private readonly Dictionary<string, FriendEntryModel> creationQueue =
+        new Dictionary<string, FriendEntryModel>();
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendEntry> entries = new Dictionary<string, FriendEntry>();
     private Pool entryPool;
     private string lastSearch;
     private int currentAvatarSnapshotIndex;
+    private bool isLayoutDirty;
 
     public Dictionary<string, FriendEntry> Entries => entries;
 
@@ -63,7 +64,7 @@ public class FriendsTabComponentView : BaseComponentView
 
         int SortByAlphabeticalOrder(FriendEntryBase u1, FriendEntryBase u2)
         {
-            return string.Compare(u1.model.userName, u2.model.userName, StringComparison.InvariantCultureIgnoreCase);
+            return string.Compare(u1.Model.userName, u2.Model.userName, StringComparison.InvariantCultureIgnoreCase);
         }
 
         onlineFriendsList.list.SortingMethod = SortByAlphabeticalOrder;
@@ -115,6 +116,10 @@ public class FriendsTabComponentView : BaseComponentView
     public override void Update()
     {
         base.Update();
+        
+        if (isLayoutDirty)
+            Utils.ForceRebuildLayoutImmediate((RectTransform) filledStateContainer.transform);
+        isLayoutDirty = false;
 
         FetchAvatarSnapshotsForVisibleEntries();
         SetQueuedEntries();
@@ -166,7 +171,7 @@ public class FriendsTabComponentView : BaseComponentView
 
     public FriendEntry Get(string userId) => entries.ContainsKey(userId) ? entries[userId] : null;
 
-    public void Populate(string userId, FriendEntryBase.Model model)
+    public void Populate(string userId, FriendEntryModel model)
     {
         if (!entries.ContainsKey(userId))
         {
@@ -198,7 +203,7 @@ public class FriendsTabComponentView : BaseComponentView
         UpdateCounterLabel();
     }
 
-    public void Set(string userId, FriendEntryBase.Model model)
+    public void Set(string userId, FriendEntryModel model)
     {
         if (creationQueue.ContainsKey(userId))
         {
@@ -250,7 +255,7 @@ public class FriendsTabComponentView : BaseComponentView
             foreach (var pair in entries)
             {
                 searchResultsFriendList.list.Remove(pair.Key);
-                Populate(pair.Key, pair.Value.model);
+                Populate(pair.Key, pair.Value.Model);
             }
 
             if (ListByOnlineStatus)
@@ -302,10 +307,7 @@ public class FriendsTabComponentView : BaseComponentView
         UpdateCounterLabel();
     }
 
-    public void Enqueue(string userId, FriendEntryBase.Model model)
-    {
-        creationQueue[userId] = model;
-    }
+    public void Enqueue(string userId, FriendEntryModel model) => creationQueue[userId] = model;
     
     private void SetQueuedEntries()
     {
@@ -359,7 +361,7 @@ public class FriendsTabComponentView : BaseComponentView
 
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)
     {
-        contextMenuPanel.Show(friendEntry.model.userId);
+        contextMenuPanel.Show(friendEntry.Model.userId);
         friendEntry.Dock(contextMenuPanel);
     }
 
@@ -396,8 +398,8 @@ public class FriendsTabComponentView : BaseComponentView
         var friendEntryToBlock = Get(userId);
         if (friendEntryToBlock == null) return;
         // instantly refresh ui
-        friendEntryToBlock.model.blocked = blockUser;
-        Set(userId, friendEntryToBlock.model);
+        friendEntryToBlock.Model.blocked = blockUser;
+        Set(userId, friendEntryToBlock.Model);
     }
 
     private void HandleUnfriendRequest(string userId)
@@ -407,8 +409,8 @@ public class FriendsTabComponentView : BaseComponentView
         Remove(userId);
         OnDeleteConfirmation?.Invoke(userId);
     }
-    
-    private void UpdateLayout() => ((RectTransform) filledStateContainer.transform).ForceUpdateLayout();
+
+    private void UpdateLayout() => isLayoutDirty = true;
 
     [Serializable]
     private struct FriendListComponents

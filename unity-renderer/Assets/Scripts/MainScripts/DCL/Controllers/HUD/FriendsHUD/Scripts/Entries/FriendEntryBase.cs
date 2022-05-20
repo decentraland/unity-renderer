@@ -1,5 +1,4 @@
 using System;
-using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,20 +6,7 @@ using UnityEngine.UI;
 
 public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
 {
-    public class Model
-    {
-        public string userId;
-        public PresenceStatus status;
-        public string userName;
-        public Vector2 coords;
-        public string realm;
-        public string realmServerName;
-        public string realmLayerName;
-        public ILazyTextureObserver avatarSnapshotObserver;
-        public bool blocked;
-    }
-
-    public Model model { get; private set; } = new Model();
+    public FriendEntryModel Model { get; private set; } = new FriendEntryModel();
 
     public Image playerBlockedImage;
     
@@ -74,7 +60,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
         if (avatarFetchingEnabled) return;
         avatarFetchingEnabled = true;
         // TODO: replace image loading for ImageComponentView implementation
-        model?.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
+        Model?.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
     }
     
     public virtual void DisableAvatarSnapshotFetching()
@@ -82,17 +68,17 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
         if (!avatarFetchingEnabled) return;
         avatarFetchingEnabled = false;
         // TODO: replace image loading for ImageComponentView implementation
-        model?.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+        Model?.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
     }
 
-    public virtual void Populate(Model model)
+    public virtual void Populate(FriendEntryModel model)
     {
         if (playerNameText.text != model.userName)
             playerNameText.text = model.userName;
 
         playerBlockedImage.enabled = model.blocked;
 
-        this.model?.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+        Model?.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
 
         if (isActiveAndEnabled && avatarFetchingEnabled)
             // TODO: replace image loading for ImageComponentView implementation
@@ -103,7 +89,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
         if (offlineStatusContainer != null)
             offlineStatusContainer.SetActive(model.status != PresenceStatus.ONLINE && !model.blocked);
 
-        this.model = model;
+        Model = model;
     }
     
     public virtual bool IsVisible(RectTransform container)
@@ -117,6 +103,6 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
     {
         if (currentPlayerInfoCardId == null)
             currentPlayerInfoCardId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
-        currentPlayerInfoCardId.Set(model.userId);
+        currentPlayerInfoCardId.Set(Model.userId);
     }
 }

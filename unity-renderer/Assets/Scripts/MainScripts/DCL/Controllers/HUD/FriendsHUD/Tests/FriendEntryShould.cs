@@ -30,7 +30,7 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
         var mockSnapshotObserver = new LazyTextureObserver();
         mockSnapshotObserver.RefreshWithTexture(Texture2D.whiteTexture);
 
-        FriendEntry.Model model = new FriendEntry.Model
+        var model = new FriendEntryModel
         {
             userId = "userId-1",
             coords = Vector2.one,
@@ -51,7 +51,7 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenWhisperButtonIsPressed()
     {
-        var model = new FriendEntry.Model
+        var model = new FriendEntryModel
         {
             userId = "userId-1"
         };
@@ -69,7 +69,7 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnMenuToggleIsPressed()
     {
-        var model = new FriendEntry.Model
+        var model = new FriendEntryModel
         {
             userId = "userId-1"
         };

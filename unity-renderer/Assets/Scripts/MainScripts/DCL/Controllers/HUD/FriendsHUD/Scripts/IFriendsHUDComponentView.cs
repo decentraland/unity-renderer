@@ -19,15 +19,14 @@ public interface IFriendsHUDComponentView
     void ShowSpinner();
     List<FriendEntryBase> GetAllEntries();
     FriendEntryBase GetEntry(string userId);
-    void UpdateEntry(string userId, FriendEntryBase.Model model);
     void DisplayFriendUserNotFound();
     bool IsFriendListCreationReady();
     int GetReceivedFriendRequestCount();
     void Destroy();
     void Show();
     void Hide();
-    void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction, FriendEntryBase.Model friendEntryModel);
-    void Search(string userId);
+    void Set(string userId, FriendshipAction friendshipAction, FriendEntryModel model);
+    void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model);
     bool IsActive();
     void ShowRequestSendError(FriendRequestError error);
     void ShowRequestSendSuccess();
