@@ -34,7 +34,7 @@ namespace ExpressionsHUD_Test
         [Test]
         public void UpdateOwnUserProfileWhenExpressionIsCalled()
         {
-            controller.PlayEmote("wave");
+            controller.PlayEmote("wave", UserProfile.EmoteSource.EmotesWheel);
 
             Assert.AreEqual("wave", UserProfile.GetOwnUserProfile().avatar.expressionTriggerId);
         }
