@@ -1,30 +1,30 @@
 {
-  "name": "FeatureFlagTest",
-  "rootNamespace": "",
-  "references": [
-    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-    "GUID:e99faafecbf8dd74d8130597511b9b27",
-    "GUID:2995626b54c60644988f134a69a77450",
-    "GUID:28f74c468a54948bfa9f625c5d428f56",
-    "GUID:bd51ff2b035ce4ab4be7c38c43c88889",
-    "GUID:abdaa254ee6bdf34681e02aa51339504",
-    "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
-    "GUID:9b1692049926ebd49bdf1a94ce9e94a9",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "nunit.framework.dll",
-    "NSubstitute.dll",
-    "System.Threading.Tasks.Extensions.dll"
-  ],
-  "autoReferenced": false,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "FeatureFlagTest",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:e99faafecbf8dd74d8130597511b9b27",
+        "GUID:2995626b54c60644988f134a69a77450",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:bd51ff2b035ce4ab4be7c38c43c88889",
+        "GUID:abdaa254ee6bdf34681e02aa51339504",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:9b1692049926ebd49bdf1a94ce9e94a9",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

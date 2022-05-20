@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -268,16 +269,15 @@ namespace DCL.Components
 
         private void OnMaterialDetached(IDCLEntity entity)
         {
-            if (entity.meshRootGameObject == null)
-                return;
+            if (entity.meshRootGameObject != null)
+            {
+                entity.OnShapeUpdated -= OnShapeUpdated;
 
-            entity.OnShapeUpdated -= OnShapeUpdated;
+                var meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
 
-            var meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
-
-            if (meshRenderer && meshRenderer.sharedMaterial == material)
-                meshRenderer.sharedMaterial = null;
-
+                if (meshRenderer && meshRenderer.sharedMaterial == material)
+                    meshRenderer.sharedMaterial = null;
+            }
             DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, entity.entityId, material);
         }
 
@@ -328,6 +328,12 @@ namespace DCL.Components
 
             if (material != null)
             {
+                // we make sure we detach this material from every entity
+                // before disposing it
+                while ( attachedEntities.Count > 0 )
+                {
+                    DetachFrom(attachedEntities.First());
+                }
                 Utils.SafeDestroy(material);
             }
 

@@ -1,0 +1,24 @@
+# CRDT Uint8Array should return the same data
+# Messages sent over the wire
+{"key":1,"data":"Hola","timestamp":1}
+{"key":1,"data":"Hola","timestamp":1}
+# End of messages
+# Final CRDT State
+{1:{"timestamp":1,"data":"Hola"}}
+#
+# CRDT Uint8Array should return the bigger raw data
+# Messages sent over the wire
+{"key":1,"data":"b","timestamp":1}
+{"key":1,"data":"a","timestamp":1}
+# End of messages
+# Final CRDT State
+{1:{"timestamp":1,"data":"b"}}
+#
+# CRDT Uint8Array should return the bigger raw data. a.byteLength !== b.byteLength
+# Messages sent over the wire
+{"key":1,"data":"b","timestamp":1}
+{"key":1,"data":"aa","timestamp":1}
+# End of messages
+# Final CRDT State
+{1:{"timestamp":1,"data":"b"}}
+#

@@ -72,11 +72,9 @@ namespace Test.AvatarSystem
                    .Curate(Arg.Any<AvatarSettings>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
                    .Returns(x => throw new Exception("Curator failed"));
 
-
             var wearableIds = new List<string>();
 
             await TestUtils.ThrowsAsync<Exception>(avatar.Load(wearableIds, settings));
-            visibility.Received().AddGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             visibility.DidNotReceive().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             curator.Received().Curate(settings, wearableIds, Arg.Any<CancellationToken>());
             loader.DidNotReceiveWithAnyArgs()

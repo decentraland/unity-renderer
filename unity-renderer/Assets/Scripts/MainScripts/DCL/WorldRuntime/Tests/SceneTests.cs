@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using DCL.Components;
 using DCL.Configuration;
@@ -9,13 +10,17 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
+using Object = UnityEngine.Object;
 
 public class SceneTests : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
     private CoreComponentsPlugin coreComponentsPlugin;
+    private UUIDEventsPlugin uuidComponentsPlugin;
     private ISceneController sceneController => DCL.Environment.i.world.sceneController;
 
     protected override IEnumerator SetUp()
@@ -23,12 +28,15 @@ public class SceneTests : IntegrationTestSuite_Legacy
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
         coreComponentsPlugin = new CoreComponentsPlugin();
+        uuidComponentsPlugin = new UUIDEventsPlugin();
+
         DataStore.i.debugConfig.isDebugMode.Set(true);
     }
 
     protected override IEnumerator TearDown()
     {
         coreComponentsPlugin.Dispose();
+        uuidComponentsPlugin.Dispose();
         yield return base.TearDown();
     }
 
@@ -231,13 +239,13 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         scene.sceneLifecycleHandler.SetInitMessagesDone();
 
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.pendingResourcesCount);
     }
 
     [Test]
     public void ParcelScene_TrackDisposables_Empty()
     {
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.pendingResourcesCount);
     }
 
     [UnityTest]
@@ -306,11 +314,11 @@ public class SceneTests : IntegrationTestSuite_Legacy
             src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
         });
 
-        Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(1, scene.sceneLifecycleHandler.pendingResourcesCount);
         scene.sceneLifecycleHandler.SetInitMessagesDone();
-        Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(1, scene.sceneLifecycleHandler.pendingResourcesCount);
         yield return TestUtils.WaitForGLTFLoad(entity);
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.pendingResourcesCount);
     }
 
     [Test]
@@ -322,7 +330,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
         TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
 
-        Assert.AreEqual(3, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(3, scene.sceneLifecycleHandler.pendingResourcesCount);
     }
 
     [UnityTest]
@@ -331,11 +339,11 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public IEnumerator ParcelScene_TrackDisposables_InstantReadyDisposable()
     {
         var boxShape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-        Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(1, scene.sceneLifecycleHandler.pendingResourcesCount);
         scene.sceneLifecycleHandler.SetInitMessagesDone();
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.pendingResourcesCount);
         yield return boxShape.routine;
-        Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
+        Assert.AreEqual(0, scene.sceneLifecycleHandler.pendingResourcesCount);
     }
 
     [Test]
@@ -370,104 +378,65 @@ public class SceneTests : IntegrationTestSuite_Legacy
         Assert.IsNull(entity.parent);
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
     }
+    
+    [UnityTest]
+    public IEnumerator EntityComponentShouldBeRemovedCorreclty()
+    {
+        var classIds = Enum.GetValues(typeof(CLASS_ID_COMPONENT));
+        //var classIds = new[] { CLASS_ID_COMPONENT.UUID_ON_CLICK };
+        var ignoreIds = new List<CLASS_ID_COMPONENT>() { CLASS_ID_COMPONENT.NONE, CLASS_ID_COMPONENT.TRANSFORM, CLASS_ID_COMPONENT.UUID_CALLBACK };
 
-    [Test]
-    public void ConvertLegacyEntityIdsCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "Eed";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result,885819392);
-        Assert.AreEqual(result,legacyEntityId.GetHashCode() << 9);
-    }
-    
-    [Test]
-    public void ReserveThe512FirstEntitiesCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "Eed";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreNotEqual(result,-1273338300);
-        Assert.AreNotEqual(result,legacyEntityId.GetHashCode());
+        IDCLEntity entity = scene.CreateEntity(1);
+
+        foreach (CLASS_ID_COMPONENT classId in classIds)
+        {
+            if (ignoreIds.Contains(classId))
+                continue;
+ 
+            IEntityComponent component = scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entity.entityId, classId, "{}");
+            yield return null;
+
+            GameObject componentGO = component.GetTransform()?.gameObject;
+
+            bool hasGameObject = componentGO != null;
+            bool released = true;
+            bool isPooleable = false;
+            bool isGameObjectDestroyed = false;
+
+            if (hasGameObject)
+            {
+                DestroyGameObjectCallback destroy = componentGO.AddComponent<DestroyGameObjectCallback>();
+                destroy.OnDestroyed += () => isGameObjectDestroyed = true;
+            }
+
+            if (component is IPoolableObjectContainer pooleable && pooleable.poolableObject != null)
+            {
+                released = false;
+                isPooleable = true;
+                pooleable.poolableObject.OnRelease += () => released = true;
+            }
+
+            Assert.AreNotEqual(entity.gameObject, componentGO, $"component {classId} has same GameObject as entity");
+
+            scene.componentsManagerLegacy.EntityComponentRemove(entity.entityId, component.componentName);
+
+            yield return null;
+
+            if (!isPooleable && hasGameObject)
+            {
+                Assert.IsTrue(isGameObjectDestroyed, $"GameObject not destroyed for component {component.componentName} id {classId}");
+            }
+            Assert.IsTrue(released, $"component {component.componentName} id {classId} is IPoolableObjectContainer but was not released");
+            Assert.IsFalse(scene.componentsManagerLegacy.HasComponent(entity, classId), $"component {component.componentName} id {classId} was not removed from entity components dictionary");
+        }
     }
 
-    [Test]
-    public void EntityLegacyGiveRootCorrectly()
+    class DestroyGameObjectCallback : MonoBehaviour
     {
-        // Arrange
-        string legacyEntityId = "0";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result, (long) SpecialEntityId.SCENE_ROOT_ENTITY);
-    }
-    
-    [Test]
-    public void EntityLegacyGiveThirdPersonCameraEntityCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "PlayerEntityReference";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result, (long) SpecialEntityId.THIRD_PERSON_CAMERA_ENTITY_REFERENCE);
-    }
-        
-    [Test]
-    public void EntityLegacyGiveFirstPersonCameraEntityCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "FirstPersonCameraEntityReference";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result, (long) SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
-    }
-    
-    [Test]
-    public void EntityLegacyGiveAvatarPositionEntityCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "AvatarPositionEntityReference";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result, (long) SpecialEntityId.AVATAR_POSITION_REFERENCE);
-    }
-    
-    [Test]
-    public void EntityLegacyGiveAvatarEntityCorrectly()
-    {
-        // Arrange
-        string legacyEntityId = "AvatarEntityReference";
-        
-        // Act
-        EntityIdHelper helper = new EntityIdHelper();
-        long result = helper.EntityFromLegacyEntityString(legacyEntityId);
-        
-        // Assert
-        Assert.AreEqual(result, (long) SpecialEntityId.AVATAR_ENTITY_REFERENCE);
-    }
+        public event Action OnDestroyed;
+        private void OnDestroy()
+        {
+            OnDestroyed?.Invoke();
+        }
+    }    
 }

@@ -1,48 +1,95 @@
-using DCL.Helpers;
-using DCL.Interface;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
+using DCL.Helpers;
+using DCL.Interface;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
-using System.Text.RegularExpressions;
 using UnityEngine.EventSystems;
-using DCL;
+using UnityEngine.UI;
 
-public class ChatHUDView : MonoBehaviour
+public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 {
-    static string VIEW_PATH = "Chat Widget";
-    string ENTRY_PATH = "Chat Entry";
-    private const int MAX_CONTINUOUS_MESSAGES = 6;
-    private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
-    private const int TEMPORARILY_MUTE_MINUTES = 10;
+    private const string VIEW_PATH = "SocialBarV1/Chat";
 
-    public bool detectWhisper = true;
     public TMP_InputField inputField;
     public RectTransform chatEntriesContainer;
-
     public ScrollRect scrollRect;
-    public ChatHUDController controller;
     public GameObject messageHoverPanel;
     public GameObject messageHoverGotoPanel;
     public TextMeshProUGUI messageHoverText;
     public TextMeshProUGUI messageHoverGotoText;
     public UserContextMenu contextMenu;
     public UserContextConfirmationDialog confirmationDialog;
+    [SerializeField] private DefaultChatEntryFactory defaultChatEntryFactory;
+    [SerializeField] private Model model;
+    
+    [NonSerialized] protected List<ChatEntry> entries = new List<ChatEntry>();
 
-    [NonSerialized] public List<ChatEntry> entries = new List<ChatEntry>();
-    [NonSerialized] public List<DateSeparatorEntry> dateSeparators = new List<DateSeparatorEntry>();
+    private readonly ChatMessage currentMessage = new ChatMessage();
+    private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners =
+        new Dictionary<Action, UnityAction<string>>();
+    private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners =
+        new Dictionary<Action, UnityAction<string>>();
 
-    ChatMessage currentMessage = new ChatMessage();
-    Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
-    Match whisperRegexMatch;
-    private List<ChatEntry.Model> lastMessages = new List<ChatEntry.Model>();
-    private Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
+    private Coroutine updateLayoutRoutine;
 
-    public event UnityAction<string> OnPressPrivateMessage;
-    public event UnityAction<ChatMessage> OnSendMessage;
+    public event Action<string> OnMessageUpdated;
+
+    public event Action OnShowMenu
+    {
+        add
+        {
+            if (contextMenu != null)
+                contextMenu.OnShowMenu += value;
+        }
+        remove
+        {
+            if (contextMenu != null)
+                contextMenu.OnShowMenu -= value;
+        }
+    }
+
+    public event Action OnInputFieldSelected
+    {
+        add
+        {
+            void Action(string s) => value.Invoke();
+            inputFieldSelectedListeners[value] = Action;
+            inputField.onSelect.AddListener(Action);
+        }
+        remove
+        {
+            if (!inputFieldSelectedListeners.ContainsKey(value)) return;
+            inputField.onSelect.RemoveListener(inputFieldSelectedListeners[value]);
+            inputFieldSelectedListeners.Remove(value);
+        }
+    }
+
+    public event Action OnInputFieldDeselected
+    {
+        add
+        {
+            void Action(string s) => value.Invoke();
+            inputFieldUnselectedListeners[value] = Action;
+            inputField.onDeselect.AddListener(Action);
+        }
+        remove
+        {
+            if (!inputFieldUnselectedListeners.ContainsKey(value)) return;
+            inputField.onDeselect.RemoveListener(inputFieldUnselectedListeners[value]);
+            inputFieldUnselectedListeners.Remove(value);
+        }
+    }
+
+    public event Action<ChatMessage> OnSendMessage;
+
+    public int EntryCount => entries.Count;
+    public IChatEntryFactory ChatEntryFactory { get; set; }
+    public bool IsInputFieldSelected => inputField.isFocused;
 
     public static ChatHUDView Create()
     {
@@ -50,52 +97,44 @@ public class ChatHUDView : MonoBehaviour
         return view;
     }
 
-    public void Initialize(ChatHUDController controller, UnityAction<ChatMessage> OnSendMessage)
+    public override void Awake()
     {
-        this.controller = controller;
-        this.OnSendMessage += OnSendMessage;
+        base.Awake();
         inputField.onSubmit.AddListener(OnInputFieldSubmit);
         inputField.onSelect.AddListener(OnInputFieldSelect);
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
+        inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str));
+        ChatEntryFactory ??= defaultChatEntryFactory;
     }
-
-    private void OnInputFieldSubmit(string message)
+    
+    public override void OnEnable()
     {
-        currentMessage.body = message;
-        currentMessage.sender = UserProfile.GetOwnUserProfile().userId;
-        currentMessage.messageType = ChatMessage.Type.NONE;
-        currentMessage.recipient = string.Empty;
-
-        if (detectWhisper && !string.IsNullOrWhiteSpace(message))
-        {
-            whisperRegexMatch = whisperRegex.Match(message);
-
-            if (whisperRegexMatch.Success)
-            {
-                currentMessage.messageType = ChatMessage.Type.PRIVATE;
-                currentMessage.recipient = whisperRegexMatch.Groups[2].Value;
-                currentMessage.body = whisperRegexMatch.Groups[4].Value;
-            }
-        }
-
-        // A TMP_InputField is automatically marked as 'wasCanceled' when the ESC key is pressed
-        if (inputField.wasCanceled)
-            currentMessage.body = string.Empty;
-
-        OnSendMessage?.Invoke(currentMessage);
+        base.OnEnable();
+        Utils.ForceUpdateLayout(transform as RectTransform);
     }
 
-    private void OnInputFieldSelect(string message) { AudioScriptableObjects.inputFieldFocus.Play(true); }
-
-    private void OnInputFieldDeselect(string message) { AudioScriptableObjects.inputFieldUnfocus.Play(true); }
-
-    public void ResetInputField()
+    public void ResetInputField(bool loseFocus = false)
     {
         inputField.text = string.Empty;
         inputField.caretColor = Color.white;
+        if (loseFocus)
+            UnfocusInputField();
     }
 
-    void OnEnable() { Utils.ForceUpdateLayout(transform as RectTransform); }
+    public override void RefreshControl()
+    {
+        if (model.isInputFieldFocused)
+            FocusInputField();
+        SetInputFieldText(model.inputFieldText);
+        SetFadeoutMode(model.enableFadeoutMode);
+        if (model.isPreviewMode)
+            ActivatePreview();
+        else
+            DeactivatePreview();
+        ClearAllEntries();
+        foreach (var entry in model.entries)
+            AddEntry(entry);
+    }
 
     public void FocusInputField()
     {
@@ -103,26 +142,48 @@ public class ChatHUDView : MonoBehaviour
         inputField.Select();
     }
 
-    bool enableFadeoutMode = false;
+    public void UnfocusInputField() => EventSystem.current?.SetSelectedGameObject(null);
 
-    bool EntryIsVisible(ChatEntry entry)
+    public void SetInputFieldText(string text)
     {
-        int visibleCorners =
-            (entry.transform as RectTransform).CountCornersVisibleFrom(scrollRect.viewport.transform as RectTransform);
-        return visibleCorners > 0;
+        model.inputFieldText = text;
+        inputField.text = text;
+        inputField.MoveTextEnd(false);
     }
 
-    public void SetFadeoutMode(bool enabled)
+    public void ActivatePreview()
     {
-        enableFadeoutMode = enabled;
+        model.isPreviewMode = true;
+        
+        for (var i = 0; i < entries.Count; i++)
+        {
+            var entry = entries[i];
+            entry.ActivatePreview();
+        }
+    }
+
+    public void DeactivatePreview()
+    {
+        model.isPreviewMode = false;
+        
+        for (var i = 0; i < entries.Count; i++)
+        {
+            var entry = entries[i];
+            entry.DeactivatePreview();
+        }
+    }
+
+    private void SetFadeoutMode(bool enabled)
+    {
+        model.enableFadeoutMode = enabled;
 
         for (int i = 0; i < entries.Count; i++)
         {
-            ChatEntry entry = entries[i];
+            var entry = entries[i];
 
             if (enabled)
             {
-                entry.SetFadeout(EntryIsVisible(entry));
+                entry.SetFadeout(IsEntryVisible(entry));
             }
             else
             {
@@ -136,25 +197,25 @@ public class ChatHUDView : MonoBehaviour
         }
     }
 
-    public virtual void AddEntry(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
+    public virtual void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
     {
-        if (IsSpamming(chatEntryModel.senderName))
-            return;
+        var chatEntry = ChatEntryFactory.Create(model);
+        chatEntry.transform.SetParent(chatEntriesContainer, false);
 
-        var chatEntryGO = Instantiate(Resources.Load(ENTRY_PATH) as GameObject, chatEntriesContainer);
-        ChatEntry chatEntry = chatEntryGO.GetComponent<ChatEntry>();
-
-        if (enableFadeoutMode && EntryIsVisible(chatEntry))
+        if (this.model.enableFadeoutMode && IsEntryVisible(chatEntry))
             chatEntry.SetFadeout(true);
         else
             chatEntry.SetFadeout(false);
 
-        chatEntry.Populate(chatEntryModel);
+        chatEntry.Populate(model);
+        
+        if (this.model.isPreviewMode)
+            chatEntry.ActivatePreviewInstantly();
+        else
+            chatEntry.DeactivatePreviewInstantly();
 
-        if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
-            chatEntry.OnPress += OnPressPrivateMessage;
-
-        if (chatEntryModel.messageType == ChatMessage.Type.PUBLIC || chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
+        if (model.messageType == ChatMessage.Type.PUBLIC
+            || model.messageType == ChatMessage.Type.PRIVATE)
             chatEntry.OnPressRightButton += OnOpenContextMenu;
 
         chatEntry.OnTriggerHover += OnMessageTriggerHover;
@@ -166,95 +227,28 @@ public class ChatHUDView : MonoBehaviour
 
         SortEntries();
 
-        Utils.ForceUpdateLayout(chatEntry.transform as RectTransform, delayed: false);
+        if (updateLayoutRoutine != null)
+            StopCoroutine(updateLayoutRoutine);
+        if (gameObject.activeInHierarchy)
+            updateLayoutRoutine = StartCoroutine(UpdateLayoutOnNextFrame());
 
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
-
-        if (string.IsNullOrEmpty(chatEntryModel.senderId))
-            return;
-            
-        if (lastMessages.Count == 0)
-        {
-            lastMessages.Add(chatEntryModel);
-        }
-        else if(lastMessages[lastMessages.Count-1].senderName == chatEntryModel.senderName)
-        {
-            if (MessagesSentTooFast(lastMessages[lastMessages.Count - 1].timestamp, chatEntryModel.timestamp))
-            {
-                lastMessages.Add(chatEntryModel);
-                    
-                if (lastMessages.Count == MAX_CONTINUOUS_MESSAGES)
-                {
-                    temporarilyMutedSenders.Add(chatEntryModel.senderName, chatEntryModel.timestamp);
-                    lastMessages.Clear();
-                }
-            }
-            else
-            {
-                lastMessages.Clear();
-            }
-        }
-        else
-        {
-            lastMessages.Clear();
-        }
-    }
-    
-    bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
-    {
-        System.DateTime oldDateTime = CreateBaseDateTime().AddMilliseconds(oldMessageTimeStamp).ToLocalTime();
-        System.DateTime newDateTime = CreateBaseDateTime().AddMilliseconds(newMessageTimeStamp).ToLocalTime();
-
-        return (newDateTime - oldDateTime).TotalMilliseconds < MIN_MILLISECONDS_BETWEEN_MESSAGES;
     }
 
-    private bool IsSpamming(string senderName)
+    public void RemoveFirstEntry()
     {
-        if (string.IsNullOrEmpty(senderName))
-            return false;
-        
-        bool isSpamming = false;
-
-        if (temporarilyMutedSenders.ContainsKey(senderName))
-        {
-            System.DateTime muteTimestamp = CreateBaseDateTime().AddMilliseconds(temporarilyMutedSenders[senderName]).ToLocalTime();
-            if ((System.DateTime.Now - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
-                isSpamming = true;
-            else
-                temporarilyMutedSenders.Remove(senderName);
-        }
-
-        return isSpamming;
+        if (entries.Count <= 0) return;
+        Destroy(entries[0].gameObject);
+        entries.Remove(entries[0]);
     }
 
-    private System.DateTime CreateBaseDateTime()
+    public override void Hide(bool instant = false)
     {
-        return new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-    }
-
-    private void OnOpenContextMenu(ChatEntry chatEntry)
-    {
-        contextMenu.transform.position = chatEntry.contextMenuPositionReference.position;
-        contextMenu.transform.parent = this.transform;
-        contextMenu.Show(chatEntry.model.senderId);
-    }
-
-    protected virtual void OnMessageTriggerHover(ChatEntry chatEntry)
-    {
-        if (contextMenu == null || contextMenu.isVisible)
-            return;
-
-        messageHoverText.text = chatEntry.messageLocalDateTime;
-        messageHoverPanel.transform.position = chatEntry.hoverPanelPositionReference.position;
-        messageHoverPanel.SetActive(true);
-    }
-
-    protected virtual void OnMessageCoordinatesTriggerHover(ChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
-    {
-        messageHoverGotoText.text = $"{parcelCoordinates.ToString()} INFO";
-        messageHoverGotoPanel.transform.position = new Vector3(Input.mousePosition.x, chatEntry.hoverPanelPositionReference.transform.position.y, chatEntry.hoverPanelPositionReference.transform.position.z);
-        messageHoverGotoPanel.SetActive(true);
+        base.Hide(instant);
+        if (contextMenu == null) return;
+        contextMenu.Hide();
+        confirmationDialog.Hide();
     }
 
     public void OnMessageCancelHover()
@@ -263,15 +257,77 @@ public class ChatHUDView : MonoBehaviour
         messageHoverText.text = string.Empty;
     }
 
-    public void OnMessageCancelGotoHover()
+    public virtual void ClearAllEntries()
+    {
+        foreach (var entry in entries)
+            Destroy(entry.gameObject);
+        entries.Clear();
+    }
+
+    private bool IsEntryVisible(ChatEntry entry)
+    {
+        int visibleCorners =
+            (entry.transform as RectTransform).CountCornersVisibleFrom(scrollRect.viewport.transform as RectTransform);
+        return visibleCorners > 0;
+    }
+
+    private void OnInputFieldSubmit(string message)
+    {
+        currentMessage.body = message;
+        currentMessage.sender = string.Empty;
+        currentMessage.messageType = ChatMessage.Type.NONE;
+        currentMessage.recipient = string.Empty;
+
+        // A TMP_InputField is automatically marked as 'wasCanceled' when the ESC key is pressed
+        if (inputField.wasCanceled)
+            currentMessage.body = string.Empty;
+
+        OnSendMessage?.Invoke(currentMessage);
+    }
+
+    private void OnInputFieldSelect(string message)
+    {
+        AudioScriptableObjects.inputFieldFocus.Play(true);
+    }
+
+    private void OnInputFieldDeselect(string message)
+    {
+        AudioScriptableObjects.inputFieldUnfocus.Play(true);
+    }
+
+    private void OnOpenContextMenu(DefaultChatEntry chatEntry)
+    {
+        chatEntry.DockContextMenu((RectTransform) contextMenu.transform);
+        contextMenu.transform.parent = transform;
+        contextMenu.Show(chatEntry.Model.senderId);
+    }
+
+    protected virtual void OnMessageTriggerHover(DefaultChatEntry chatEntry)
+    {
+        if (contextMenu == null || contextMenu.isVisible)
+            return;
+
+        messageHoverText.text = chatEntry.messageLocalDateTime;
+        chatEntry.DockHoverPanel((RectTransform) messageHoverPanel.transform);
+        messageHoverPanel.SetActive(true);
+    }
+
+    private void OnMessageCoordinatesTriggerHover(DefaultChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
+    {
+        messageHoverGotoText.text = $"{parcelCoordinates} INFO";
+        chatEntry.DockHoverPanel((RectTransform) messageHoverGotoPanel.transform);
+        messageHoverGotoPanel.SetActive(true);
+    }
+
+    private void OnMessageCancelGotoHover()
     {
         messageHoverGotoPanel.SetActive(false);
         messageHoverGotoText.text = string.Empty;
     }
 
-    public void SortEntries()
+    private void SortEntries()
     {
-        entries = entries.OrderBy(x => x.model.timestamp).ToList();
+        entries = entries.OrderBy(x => x.Model.timestamp).ToList();
 
         int count = entries.Count;
         for (int i = 0; i < count; i++)
@@ -279,30 +335,24 @@ public class ChatHUDView : MonoBehaviour
             if (entries[i].transform.GetSiblingIndex() != i)
             {
                 entries[i].transform.SetSiblingIndex(i);
-                Utils.ForceUpdateLayout(entries[i].transform as RectTransform, delayed: false);
             }
         }
     }
 
-    public void CleanAllEntries()
+    private IEnumerator UpdateLayoutOnNextFrame()
     {
-        foreach (var entry in entries)
-        {
-            Destroy(entry.gameObject);
-        }
-
-        entries.Clear();
-
-        foreach (DateSeparatorEntry separator in dateSeparators)
-        {
-            Destroy(separator.gameObject);
-        }
-
-        dateSeparators.Clear();
+        yield return null;
+        Utils.ForceUpdateLayout(chatEntriesContainer, delayed: false);
+        updateLayoutRoutine = null;
     }
-    
-    public void SetGotoPanelStatus(bool isActive) 
+
+    [Serializable]
+    private struct Model
     {
-        DataStore.i.HUDs.gotoPanelVisible.Set(isActive);
+        public bool isPreviewMode;
+        public bool isInputFieldFocused;
+        public string inputFieldText;
+        public bool enableFadeoutMode;
+        public ChatEntryModel[] entries;
     }
 }
