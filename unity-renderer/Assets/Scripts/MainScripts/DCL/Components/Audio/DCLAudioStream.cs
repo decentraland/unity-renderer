@@ -22,6 +22,12 @@ namespace DCL.Components
         }
 
         private void Awake() { model = new Model(); }
+        
+        public override void Initialize(IParcelScene scene, IDCLEntity entity)
+        {
+            base.Initialize(scene, entity);
+            DataStore.i.sceneBoundariesChecker.Add(entity,this);
+        }
 
         public bool isPlaying { get; private set; } = false;
         private float settingsVolume = 0;
@@ -66,6 +72,7 @@ namespace DCL.Components
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
             StopStreaming();
+            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
         }
 
         private void UpdatePlayingState(bool forceStateUpdate)
