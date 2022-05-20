@@ -15,6 +15,10 @@ public class TaskbarButton : MonoBehaviour
     public Color notInteractableColor;
     public List<AppMode> compatibleModes;
     public GameObject firstTimeLabelIndicator;
+    
+    [Header("Transition")]
+    [SerializeField] private Sprite onImage;
+    [SerializeField] private Sprite offImage;
 
     public event System.Action<TaskbarButton> OnToggleOn;
     public event System.Action<TaskbarButton> OnToggleOff;
@@ -52,33 +56,27 @@ public class TaskbarButton : MonoBehaviour
 
     public void SetToggleState(bool on, bool useCallback = true)
     {
-        if (toggledOn == on)
-            return;
+        if (toggledOn == on) return;
 
         if (on && firstTimeLabelIndicator != null)
             firstTimeLabelIndicator.SetActive(false);
 
         SetLineIndicator(on);
+        SwapSprite(on);
+        toggledOn = on;
 
-        if (!useCallback)
+        if (useCallback)
         {
-            toggledOn = on;
-            return;
-        }
-
-        if (on)
-        {
-            OnToggleOn?.Invoke(this);
-            toggledOn = on;
-        }
-        else
-        {
-            toggledOn = on;
-            OnToggleOff?.Invoke(this);
+            if (on)
+                OnToggleOn?.Invoke(this);
+            else
+                OnToggleOff?.Invoke(this);    
         }
     }
 
-    public void SetLineIndicator(bool on)
+    private void SwapSprite(bool on) => iconImage.sprite = on ? onImage : offImage;
+
+    private void SetLineIndicator(bool on)
     {
         if (lineOnIndicator != null)
         {
