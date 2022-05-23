@@ -538,7 +538,7 @@ public class DCLCharacterController : MonoBehaviour
         float height = 0.875f;
 
         var reportPosition = characterPosition.worldPosition + (Vector3.up * height);
-        var compositeRotation = Quaternion.LookRotation(cameraForward.Get());
+        var compositeRotation = Quaternion.LookRotation(characterForward.HasValue() ? characterForward.Get().Value : cameraForward.Get());
         var playerHeight = height + (characterController.height / 2);
         var cameraRotation = Quaternion.LookRotation(cameraForward.Get());
 
