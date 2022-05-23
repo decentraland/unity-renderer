@@ -68,7 +68,7 @@ namespace DCL.ECSComponents
                 isAudioClipReady = false;
                 if (audioClip != null)
                     dataStore.sceneWorldObjects.RemoveAudioClip(scene.sceneData.id, audioClip);
-                keeperAudioClip.Forget(promiseAudioClip);
+                DisposePromise();
             }
             
             ApplyCurrentModel();
@@ -91,11 +91,20 @@ namespace DCL.ECSComponents
             isOutOfBoundaries = !isInsideBoundaries;
             UpdateAudioSourceVolume();
         }
-        
+
+        private void DisposePromise()
+        {
+            if (promiseAudioClip == null)
+                return;
+            
+            promiseAudioClip.OnSuccessEvent += OnAudioClipLoadComplete;
+            promiseAudioClip.OnFailEvent += OnAudioClipLoadFail;
+            
+            keeperAudioClip.Forget(promiseAudioClip);
+        }
         private void Dispose(IDCLEntity entity)
         {
-            if(promiseAudioClip != null)
-                keeperAudioClip.Forget(promiseAudioClip);
+            DisposePromise();
             
             if (audioClip != null)
                 dataStore.sceneWorldObjects.RemoveAudioClip(scene.sceneData.id, audioClip);
@@ -137,8 +146,7 @@ namespace DCL.ECSComponents
             }
             else if(isAudioClipReady)
             {
-                // PlayOneShot is faster ( about twice faster) than their Play counterpart
-                audioSource.PlayOneShot(audioClip);
+                audioSource.Play();
             }
         }
         
@@ -150,10 +158,9 @@ namespace DCL.ECSComponents
             
             bool shouldPlay = playedAtTimestamp != model.playedAtTimestamp ||
                               (model.playing && !audioSource.isPlaying);
-
-            //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
+            
             if (audioSource.enabled && model.playing && shouldPlay)
-                audioSource.PlayOneShot(clip);
+                audioSource.Play();
             
             playedAtTimestamp = model.playedAtTimestamp;
         }
@@ -173,7 +180,7 @@ namespace DCL.ECSComponents
         private void OnAudioClipLoadFail(Asset_AudioClip assetAudioClip, Exception exception)
         {
             Debug.LogError("Audio clip couldn't be loaded. Url: " +model.audioClipUrl + "     error: " + exception.Message);
-            keeperAudioClip.Forget(promiseAudioClip);
+            DisposePromise();
         }
 
         private void OnAudioSettingsChanged(AudioSettings settings)
