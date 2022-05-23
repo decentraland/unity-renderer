@@ -14,7 +14,7 @@ namespace KernelCommunication
             this.stream = stream;
         }
 
-        public unsafe void Write(int value)
+        public unsafe void WriteInt32(int value)
         {
             byte* ptr = (byte*)&value;
             stream.WriteByte(ptr[3]);
@@ -23,7 +23,7 @@ namespace KernelCommunication
             stream.WriteByte(ptr[0]);
         }
 
-        public unsafe void Write(long value)
+        public unsafe void WriteInt64(long value)
         {
             byte* ptr = (byte*)&value;
             stream.WriteByte(ptr[7]);
@@ -36,15 +36,15 @@ namespace KernelCommunication
             stream.WriteByte(ptr[0]);
         }
 
-        public void Write(byte[] value)
+        public void WriteBytes(byte[] value)
         {
             stream.Write(value, 0, value.Length);
         }
 
-        public void Write(string value)
+        public void WriteString(string value)
         {
             var bytes = Encoding.UTF8.GetBytes(value);
-            stream.Write(bytes, 0, value.Length);
+            stream.Write(bytes, 0, bytes.Length);
         }
 
         public void Dispose()

@@ -36,7 +36,7 @@ public class DCLWebSocketService : WebSocketBehavior
 #endif
     }
 
-    private void SendBinaryMessageToWeb(string sceneId, byte[] data)
+    private void SendBinaryMessageToKernel(string sceneId, byte[] data)
     {
 #if (UNITY_EDITOR || UNITY_STANDALONE)
         using (var memoryStream = new MemoryStream())
@@ -44,9 +44,9 @@ public class DCLWebSocketService : WebSocketBehavior
             using (var binaryWriter = new BinaryWriter(memoryStream))
             { 
                 byte[] sceneIdBuffer = Encoding.UTF8.GetBytes(sceneId);
-                binaryWriter.Write(sceneIdBuffer.Length);
-                binaryWriter.Write(sceneIdBuffer);
-                binaryWriter.Write(data);
+                binaryWriter.WriteInt32(sceneIdBuffer.Length);
+                binaryWriter.WriteBytes(sceneIdBuffer);
+                binaryWriter.WriteBytes(data);
                 Send(memoryStream.ToArray());
             }
         }
@@ -84,7 +84,7 @@ public class DCLWebSocketService : WebSocketBehavior
     {
         base.OnClose(e);
         WebInterface.OnMessageFromEngine -= SendMessageToWeb;
-        WebInterface.OnBinaryMessageFromEngine -= SendBinaryMessageToWeb;
+        WebInterface.OnBinaryMessageFromEngine -= SendBinaryMessageToKernel;
         DataStore.i.wsCommunication.communicationEstablished.Set(false);
     }
 
@@ -94,7 +94,7 @@ public class DCLWebSocketService : WebSocketBehavior
         base.OnOpen();
 
         WebInterface.OnMessageFromEngine += SendMessageToWeb;
-        WebInterface.OnBinaryMessageFromEngine += SendBinaryMessageToWeb;
+        WebInterface.OnBinaryMessageFromEngine += SendBinaryMessageToKernel;
         DataStore.i.wsCommunication.communicationEstablished.Set(true);
     }
 }
