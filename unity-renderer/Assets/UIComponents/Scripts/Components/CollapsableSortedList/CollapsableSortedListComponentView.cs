@@ -96,7 +96,6 @@ namespace UIComponents.CollapsableSortedList
             var entryTransform = value.transform;
             entryTransform.SetParent(container, false);
             entryTransform.localScale = Vector3.one;
-            Sort();
             UpdateEmptyState();
             UpdateLayout();
         }

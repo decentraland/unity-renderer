@@ -116,10 +116,12 @@ public class FriendsTabComponentView : BaseComponentView
     public override void Update()
     {
         base.Update();
-        
+
         if (isLayoutDirty)
             Utils.ForceRebuildLayoutImmediate((RectTransform) filledStateContainer.transform);
         isLayoutDirty = false;
+
+        SortDirtyLists();
 
         FetchAvatarSnapshotsForVisibleEntries();
         SetQueuedEntries();
@@ -189,16 +191,22 @@ public class FriendsTabComponentView : BaseComponentView
             {
                 offlineFriendsList.list.Remove(userId);
                 onlineFriendsList.list.Add(userId, entry);
+                onlineFriendsList.FlagAsPendingToSort();
             }
             else
             {
                 onlineFriendsList.list.Remove(userId);
                 offlineFriendsList.list.Add(userId, entry);
+                offlineFriendsList.FlagAsPendingToSort();
             }
         }
         else
+        {
             allFriendsList.list.Add(userId, entry);
+            allFriendsList.FlagAsPendingToSort();
+        }
 
+        UpdateLayout();
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
     }
@@ -262,9 +270,14 @@ public class FriendsTabComponentView : BaseComponentView
             {
                 offlineFriendsList.Show();
                 onlineFriendsList.Show();    
+                offlineFriendsList.Sort();
+                onlineFriendsList.Sort();
             }
             else
+            {
                 allFriendsList.Show();
+                allFriendsList.Sort();
+            }
         }
 
         if (!string.IsNullOrEmpty(search) && string.IsNullOrEmpty(lastSearch))
@@ -291,6 +304,7 @@ public class FriendsTabComponentView : BaseComponentView
             }
 
             searchResultsFriendList.Show();
+            searchResultsFriendList.Sort();
         }
 
         searchResultsFriendList.list.Filter(search);
@@ -411,6 +425,19 @@ public class FriendsTabComponentView : BaseComponentView
     }
 
     private void UpdateLayout() => isLayoutDirty = true;
+    
+    private void SortDirtyLists()
+    {
+        if (ListByOnlineStatus)
+        {
+            if (offlineFriendsList.IsSortingDirty)
+                offlineFriendsList.Sort();
+            if (onlineFriendsList.IsSortingDirty)
+                onlineFriendsList.Sort();
+        }
+        else if (allFriendsList.IsSortingDirty)
+            allFriendsList.Sort();
+    }
 
     [Serializable]
     private struct FriendListComponents
@@ -418,6 +445,8 @@ public class FriendsTabComponentView : BaseComponentView
         public CollapsableSortedFriendEntryList list;
         public TMP_Text countText;
         public GameObject headerContainer;
+        
+        public bool IsSortingDirty { get; private set; }
 
         public void Show()
         {
@@ -429,6 +458,14 @@ public class FriendsTabComponentView : BaseComponentView
         {
             list.Hide();
             headerContainer.SetActive(false);
+        }
+
+        public void FlagAsPendingToSort() => IsSortingDirty = true;
+
+        public void Sort()
+        {
+            list.Sort();
+            IsSortingDirty = false;
         }
     }
 
