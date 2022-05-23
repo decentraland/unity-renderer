@@ -53,6 +53,16 @@ namespace DCL.Controllers
             sceneLoadTracker = new SceneLoadTracker();
             sceneLoadTracker.Track(owner.componentsManagerLegacy, Environment.i.world.state);
             sceneLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
+   
+            DataStore.i.ecs7.sceneResources.OnAdded += ( sceneId,  list) =>
+            {
+                if (sceneId != ownerScene.sceneData.id)
+                    return;
+                
+                sceneLoadTracker.Dispose();
+                sceneLoadTracker.Track(list);
+                sceneLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
+            };
         }
 
         private void OnSceneSetData(LoadParcelScenesMessage.UnityParcelScene data)

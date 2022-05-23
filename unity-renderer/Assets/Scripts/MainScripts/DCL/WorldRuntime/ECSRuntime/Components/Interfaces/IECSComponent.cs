@@ -6,11 +6,6 @@ namespace DCL.ECSRuntime
     public interface IECSComponent
     {
         /// <summary>
-        /// Released when the component is ready
-        /// </summary>
-        event Action<IECSComponent> OnComponentReady;
-        
-        /// <summary>
         /// creates and add component to an entity
         /// </summary>
         /// <param name="entity">target entity</param>

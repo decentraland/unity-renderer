@@ -8,45 +8,46 @@ using UnityEngine;
 
 public class ComponentsLoadTrackerECS : IComponentsLoadTracker
 {
-    public int pendingResourcesCount => componentsNotReady.Count;
+    public int pendingResourcesCount => resourcesNotReady;
     
     public float loadingProgress 
     {
         get
         {
-            int sharedComponentsCount = componentsReady.Count;
+            int sharedComponentsCount = resourcesReady;
             return sharedComponentsCount > 0 ? (sharedComponentsCount - pendingResourcesCount) * 100f / sharedComponentsCount : 100f;
         }
     }
     
-    public event Action OnComponentsLoaded;
+    public event Action OnResourceLoaded;
     public event Action OnStatusUpdate;
     
-    // We are storing the whole component for debugging purposes, this way we can see which models are not loading if needed 
-    private List<IECSComponent> componentsNotReady = new List<IECSComponent>();
-    private List<IECSComponent> componentsReady = new List<IECSComponent>();
-    private IECSComponentsManager componentsManager;
+
+    private int resourcesNotReady;
+    private int resourcesReady;
+    private BaseCollection<IECSResourceLoaderTracker> resourceList;
     
-    public ComponentsLoadTrackerECS(IECSComponentsManager componentsManager)
+    public ComponentsLoadTrackerECS(BaseCollection<IECSResourceLoaderTracker> resourceList)
     {
-        this.componentsManager = componentsManager;
-        componentsManager.OnComponentAdded += ComponentAdded;
+        this.resourceList = resourceList;
+        resourceList.OnAdded += ResourceAdded;
     }
 
-    private void ComponentAdded(IECSComponent component)
+    private void ResourceAdded(IECSResourceLoaderTracker tracker)
     {
-        component.OnComponentReady += ComponentReady;
-        componentsNotReady.Add(component);
+        resourcesNotReady++;
+        tracker.OnResourceReady += ComponentReady;
     }
 
-    private void ComponentReady(IECSComponent component)
+    private void ComponentReady(IECSResourceLoaderTracker tracker)
     {
-        componentsNotReady.Remove(component);
-        componentsReady.Add(component);
+        tracker.OnResourceReady -= ComponentReady;
+        resourcesNotReady--;
+        resourcesReady++;
         
-        if (componentsNotReady.Count == 0)
+        if (resourcesNotReady == 0)
         {
-            OnComponentsLoaded?.Invoke();
+            OnResourceLoaded?.Invoke();
         }
         else
         {
@@ -56,27 +57,20 @@ public class ComponentsLoadTrackerECS : IComponentsLoadTracker
 
     public void Dispose()
     {
-        componentsManager.OnComponentAdded -= ComponentAdded;
+        resourceList.OnAdded -= ResourceAdded;
     }
 
     public void PrintWaitingResourcesDebugInfo()
     {
-        foreach (IECSComponent ecsComponent in componentsReady)
-        {
-            Debug.Log($"ComponentReady: {ecsComponent.ToString()}");
-        }
-        
-        foreach (IECSComponent ecsComponent in componentsNotReady)
-        {
-            Debug.Log($"Waiting for: {ecsComponent.ToString()}");
-        }
+        // TODO
+        Debug.Log(GetStateString());
     }
 
     public string GetStateString()
     {
-        int totalComponents = componentsNotReady.Count + componentsReady.Count;
+        int totalComponents = resourcesNotReady + resourcesReady;
         if (totalComponents > 0)
-            return $"left to ready:{totalComponents - componentsReady.Count}/{totalComponents} ({loadingProgress}%)";
+            return $"left to ready:{totalComponents - resourcesReady}/{totalComponents} ({loadingProgress}%)";
 
         return $"no components. waiting...";
     }

@@ -24,7 +24,7 @@ namespace Tests
             var loadedSubscriber = Substitute.For<IDummyEventSubscriber>();
             var updateSubscriber = Substitute.For<IDummyEventSubscriber>();
 
-            trackerLegacyEcs.OnComponentsLoaded += loadedSubscriber.React;
+            trackerLegacyEcs.OnResourceLoaded += loadedSubscriber.React;
             trackerLegacyEcs.OnStatusUpdate += updateSubscriber.React;
 
             var component0 = MockedSharedComponentHelper.Create("temptation0");
@@ -65,7 +65,7 @@ namespace Tests
         {
             var loadedSubscriber = Substitute.For<IDummyEventSubscriber>();
 
-            trackerLegacyEcs.OnComponentsLoaded += loadedSubscriber.React;
+            trackerLegacyEcs.OnResourceLoaded += loadedSubscriber.React;
 
             var component0 = MockedSharedComponentHelper.Create("temptation0");
 

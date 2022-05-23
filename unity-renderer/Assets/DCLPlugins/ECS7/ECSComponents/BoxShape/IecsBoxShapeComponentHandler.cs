@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
@@ -9,19 +10,25 @@ using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public class ECSBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>
+    public class IecsBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>, IECSResourceLoaderTracker
     {
+        public event Action<IECSResourceLoaderTracker> OnResourceReady;
+
         internal AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
 
-        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
+        {
+            DataStore.i.ecs7.AddResourceTracker(scene.sceneData.id, this);
+        }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
             DisposeMesh(scene);
+            DataStore.i.ecs7.RemoveResourceTracker(scene.sceneData.id, this);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSBoxShape model)
@@ -39,6 +46,7 @@ namespace DCL.ECSComponents
                 DisposeMesh(scene);
                 generatedMesh = shape.mesh;
                 GenerateRenderer(generatedMesh, scene, entity, model);
+                OnResourceReady?.Invoke(this);
             };
             AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
         }
