@@ -10,7 +10,8 @@ public class PrimitiveMeshModel
     public enum Type
     {
         Box,
-        Sphere
+        Sphere,
+        Plane
     }
 
     public PrimitiveMeshModel(Type type)
