@@ -34,20 +34,20 @@ namespace DCL.ECSComponents
 
         public static byte[] Serialize(ECSTransform model)
         {
-            binaryWriter.Write(model.position.x);
-            binaryWriter.Write(model.position.y);
-            binaryWriter.Write(model.position.z);
+            binaryWriter.WriteSingle(model.position.x);
+            binaryWriter.WriteSingle(model.position.y);
+            binaryWriter.WriteSingle(model.position.z);
 
-            binaryWriter.Write(model.rotation.x);
-            binaryWriter.Write(model.rotation.y);
-            binaryWriter.Write(model.rotation.z);
-            binaryWriter.Write(model.rotation.w);
+            binaryWriter.WriteSingle(model.rotation.x);
+            binaryWriter.WriteSingle(model.rotation.y);
+            binaryWriter.WriteSingle(model.rotation.z);
+            binaryWriter.WriteSingle(model.rotation.w);
 
-            binaryWriter.Write(model.scale.x);
-            binaryWriter.Write(model.scale.y);
-            binaryWriter.Write(model.scale.z);
+            binaryWriter.WriteSingle(model.scale.x);
+            binaryWriter.WriteSingle(model.scale.y);
+            binaryWriter.WriteSingle(model.scale.z);
 
-            binaryWriter.Write((int)model.parentId);
+            binaryWriter.WriteInt32((int)model.parentId);
 
             byte[] result = memoryStream.ToArray();
             memoryStream.SetLength(0);
