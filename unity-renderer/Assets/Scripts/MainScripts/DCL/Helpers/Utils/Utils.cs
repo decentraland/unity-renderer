@@ -83,11 +83,7 @@ namespace DCL.Helpers
 
             for (int i = 0; i < uvs.Length;)
             {
-                Vector2 tmpUv = Vector2.zero;
-                tmpUv.x = uvs[i++];
-                tmpUv.y = uvs[i++];
-
-                uvsResult[uvsResultIndex++] = tmpUv;
+                uvsResult[uvsResultIndex++] = new Vector2(uvs[i++],uvs[i++]);
             }
 
             return uvsResult;
