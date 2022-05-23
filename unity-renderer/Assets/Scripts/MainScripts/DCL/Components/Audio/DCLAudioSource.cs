@@ -44,6 +44,12 @@ namespace DCL.Components
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
+        public override void Initialize(IParcelScene scene, IDCLEntity entity)
+        {
+            base.Initialize(scene, entity);
+            DataStore.i.sceneBoundariesChecker.Add(entity,this);
+        }
+
         public void InitDCLAudioClip(DCLAudioClip dclAudioClip)
         {
             if (lastDCLAudioClip != null)
@@ -177,6 +183,7 @@ namespace DCL.Components
                 Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
+            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
         }
 
         public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
