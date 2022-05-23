@@ -90,7 +90,7 @@ public class ComponentCrdtWriteSystem : IDisposable
         {
             string sceneId = sceneIds[i];
             queuedMessages.TryGetValue(sceneId, out sceneMessages);
-            if (DispatchSceneMessages(currentSceneId, sceneMessages))
+            if (DispatchSceneMessages(sceneId, sceneMessages))
             {
                 queuedMessages.Remove(sceneId);
             }
