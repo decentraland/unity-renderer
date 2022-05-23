@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Skybox
@@ -15,40 +16,28 @@ namespace DCL.Skybox
     {
         private const string DOME_RESOURCES_PATH = "SkyboxPrefabs/Dome";
 
-        private GameObject skyboxElements;
-        private GameObject domeElements;
+        private readonly GameObject domeElements;
         private GameObject domePrefab;
         private FollowBehaviour followBehavior;
 
         Queue<DomeReferences> domeObjects = new Queue<DomeReferences>();
         Queue<DomeReferences> activeDomeObjects = new Queue<DomeReferences>();
 
-        public SkyboxDomeElements(GameObject skyboxElements)
+        public SkyboxDomeElements(GameObject domeElements)
         {
-            this.skyboxElements = skyboxElements;
-            // Get or instantiate Skybox elements GameObject
-            GetOrInstantiatePlanarElements();
+            this.domeElements = domeElements;
+            Initialize();
         }
 
-        private void GetOrInstantiatePlanarElements()
+        private void Initialize()
         {
-            Transform domeParentTransform = skyboxElements.transform.Find("Dome Elements");
-            if (domeParentTransform != null)
+            if (domeElements == null)
             {
-                domeElements = domeParentTransform.gameObject;
-            }
-            else
-            {
-                domeElements = new GameObject("Dome Elements");
-                domeElements.layer = LayerMask.NameToLayer("Skybox");
-                domeElements.transform.parent = skyboxElements.transform;
+                Debug.LogError("Dome Elements Container is null");
+                return;
             }
 
-            followBehavior = domeElements.GetComponent<FollowBehaviour>();
-            if (followBehavior == null)
-            {
-                followBehavior = domeElements.AddComponent<FollowBehaviour>();
-            }
+            followBehavior = domeElements.GetOrCreateComponent<FollowBehaviour>();
             followBehavior.followPos = true;
 
             for (int i = 0; i < domeElements.transform.childCount; i++)

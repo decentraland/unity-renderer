@@ -40,10 +40,10 @@ namespace DCL.Skybox
                 config.prefab = null;
             }
 
-            RenderSimpleValues.RenderFloatField("Radius", ref config.radius);
-            RenderSimpleValues.RenderFloatField("Y-Pos", ref config.yPos);
-            RenderSimpleValues.RenderBoolField("Follow Camera", ref config.followCamera);
-            RenderSimpleValues.RenderBoolField("Render In Main Camera", ref config.renderWithMainCamera);
+            RenderSimpleValues.RenderFloatField(SkyboxEditorLiterals.Planar3D.SCENE, ref config.radius);
+            RenderSimpleValues.RenderFloatField(SkyboxEditorLiterals.Planar3D.Y_POS, ref config.yPos);
+            RenderSimpleValues.RenderBoolField(SkyboxEditorLiterals.Planar3D.FOLLOW_CAMERA, ref config.followCamera);
+            RenderSimpleValues.RenderBoolField(SkyboxEditorLiterals.Planar3D.RENDER_IN_MAIN_CAMERA, ref config.renderWithMainCamera);
         }
     }
 }

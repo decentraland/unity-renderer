@@ -2,30 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = System.Object;
 
 namespace DCL.Skybox
 {
-
-    public class SkyboxElements
+    public class SkyboxElements : IDisposable
     {
-        private GameObject skyboxElementsGO;
         public SkyboxDomeElements domeElements;
         public SkyboxSatelliteElements satelliteElements;
         public SkyboxPlanarElements planarElements;
+        public SkyboxElementsReferences references;
 
         public SkyboxElements()
         {
-            skyboxElementsGO = GameObject.Find("Skybox Elements");
-            if (skyboxElementsGO == null)
-            {
-                skyboxElementsGO = new GameObject("Skybox Elements");
-                skyboxElementsGO.layer = LayerMask.NameToLayer("Skybox");
-                skyboxElementsGO.transform.position = Vector3.zero;
-            }
+            references = SkyboxElementsReferences.Create();
 
-            domeElements = new SkyboxDomeElements(skyboxElementsGO);
-            satelliteElements = new SkyboxSatelliteElements(skyboxElementsGO);
-            planarElements = new SkyboxPlanarElements(skyboxElementsGO);
+            domeElements = new SkyboxDomeElements(references.domeElementsGO);
+            satelliteElements = new SkyboxSatelliteElements(references.satelliteElementsGO);
+            planarElements = new SkyboxPlanarElements(references.planarElementsGO);
         }
 
         public void ApplyConfigTo3DElements(SkyboxConfiguration config, float dayTime, float normalizedDayTime, Light directionalLightGO = null, float cycleTime = 24, bool isEditor = false)
@@ -40,6 +34,15 @@ namespace DCL.Skybox
             domeElements.ResolveCameraDependency(currentTransform);
             satelliteElements.ResolveCameraDependency(currentTransform);
             planarElements.ResolveCameraDependency(currentTransform);
+        }
+
+        public void Dispose()
+        {
+#if UNITY_EDITOR
+            UnityEngine.Object.DestroyImmediate(references.gameObject);
+#else
+            UnityEngine.Object.Destroy(references.gameObject);
+#endif
         }
     }
 }

@@ -629,5 +629,7 @@ namespace DCL.Skybox
                 SkyboxController.i.ApplyAvatarColor(normalizedDayTime);
             }
         }
-    }
+
+        private void OnDestroy() { skyboxElements?.Dispose(); }
+    }    
 }

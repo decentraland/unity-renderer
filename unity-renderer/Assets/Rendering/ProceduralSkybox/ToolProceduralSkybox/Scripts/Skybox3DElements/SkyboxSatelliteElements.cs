@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Skybox
@@ -17,35 +18,28 @@ namespace DCL.Skybox
     {
         const string satelliteParentResourcePath = "SkyboxPrefabs/Satellite Parent";
 
-        private GameObject skyboxElements;
-        private GameObject satelliteElements;
+        private readonly GameObject satelliteElements;
         private GameObject satelliteParentPrefab;
         private FollowBehaviour followBehavior;
 
         Dictionary<GameObject, Queue<SatelliteReferences>> satelliteReferences = new Dictionary<GameObject, Queue<SatelliteReferences>>();
         List<SatelliteReferences> usedSatellites = new List<SatelliteReferences>();
 
-        public SkyboxSatelliteElements(GameObject skyboxElements)
+        public SkyboxSatelliteElements(GameObject satelliteElements)
         {
-            this.skyboxElements = skyboxElements;
-            // Get or instantiate Skybox elements GameObject
-            GetOrInstantiatePlanarElements();
+            this.satelliteElements = satelliteElements;
+            Initialize();
         }
 
-        private void GetOrInstantiatePlanarElements()
+        private void Initialize()
         {
-            Transform satelliteParentTransform = skyboxElements.transform.Find("Satellite Elements");
-
-            if (satelliteParentTransform != null)
+            if (satelliteElements == null)
             {
-                Object.DestroyImmediate(satelliteParentTransform.gameObject);
+                Debug.LogError("Satellite Elements Container is null");
+                return;
             }
 
-            satelliteElements = new GameObject("Satellite Elements");
-            satelliteElements.layer = LayerMask.NameToLayer("Skybox");
-            satelliteElements.transform.parent = skyboxElements.transform;
-
-            followBehavior = satelliteElements.AddComponent<FollowBehaviour>();
+            followBehavior = satelliteElements.GetOrCreateComponent<FollowBehaviour>();
             followBehavior.followPos = true;
             followBehavior.ignoreYAxis = true;
         }

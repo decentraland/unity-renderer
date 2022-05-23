@@ -146,5 +146,14 @@ namespace DCL.Skybox
             public const string INCLINATION = "Inclination";
             public const string ROTATION_TYPE = "Rotation Type";
         }
+
+        public static class Planar3D
+        {
+            public const string SCENE = "Scene";
+
+            public const string Y_POS = "Y-Pos";
+            public const string FOLLOW_CAMERA = "Follow Camera";
+            public const string RENDER_IN_MAIN_CAMERA = "Render In Main Camera";
+        }
     }
 }

@@ -15,8 +15,8 @@ namespace DCL.Skybox
     public class SkyboxPlanarElements
     {
         private const string LAYER = "Skybox";
-        private GameObject skyboxElementsGO;
-        private Transform planarElementsGO;
+
+        private readonly GameObject planarElements;
         private Transform planarCameraFollowingElements;
         private Transform planarStaticElements;
         private FollowBehaviour followObj;
@@ -24,32 +24,21 @@ namespace DCL.Skybox
         private Dictionary<GameObject, Queue<PlanarRefs>> planarReferences = new Dictionary<GameObject, Queue<PlanarRefs>>();
         private List<PlanarRefs> usedPlanes = new List<PlanarRefs>();
 
-        public SkyboxPlanarElements(GameObject skyboxElementsGO)
+        public SkyboxPlanarElements(GameObject planarElements)
         {
-            this.skyboxElementsGO = skyboxElementsGO;
+            this.planarElements = planarElements;
             // Get or instantiate Skybox elements GameObject
-            GetOrInstantiatePlanarElements();
+            Initialize();
         }
 
-        private void GetOrInstantiatePlanarElements()
+        private void Initialize()
         {
-            planarElementsGO = skyboxElementsGO.transform.Find("Planar Elements");
-
-            if (planarElementsGO != null)
-            {
-                UnityEngine.Object.DestroyImmediate(planarElementsGO.gameObject);
-            }
-
-            planarElementsGO = new GameObject("Planar Elements").transform;
-            planarElementsGO.parent = skyboxElementsGO.transform;
-            planarElementsGO.gameObject.layer = LayerMask.NameToLayer(LAYER);
-
             planarCameraFollowingElements = new GameObject("Camera Following").transform;
-            planarCameraFollowingElements.parent = planarElementsGO.transform;
+            planarCameraFollowingElements.parent = planarElements.transform;
             planarCameraFollowingElements.gameObject.layer = LayerMask.NameToLayer(LAYER);
 
             planarStaticElements = new GameObject("Static").transform;
-            planarStaticElements.parent = planarElementsGO.transform;
+            planarStaticElements.parent = planarElements.transform;
             planarStaticElements.gameObject.layer = LayerMask.NameToLayer(LAYER);
 
             // Add follow script
@@ -192,7 +181,7 @@ namespace DCL.Skybox
             GameObject obj = GameObject.Instantiate<GameObject>(config.prefab);
             obj.layer = LayerMask.NameToLayer(LAYER);
             obj.name = "Planar Layer";
-            obj.transform.parent = planarElementsGO;
+            obj.transform.parent = planarElements.transform;
             obj.transform.localPosition = Vector3.zero;
 
             PlanarRefs planar = new PlanarRefs();
