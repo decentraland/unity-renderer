@@ -1,4 +1,3 @@
-
 // UI Editable properties
 uniform sampler2D	_FaceTex;					// Alpha : Signed Distance
 uniform float		_FaceUVSpeedX;
@@ -83,3 +82,4 @@ uniform float 		_GradientScale;
 uniform float		_ScaleX;
 uniform float		_ScaleY;
 uniform float		_PerspectiveFilter;
+uniform float		_Sharpness;
