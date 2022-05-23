@@ -8,19 +8,19 @@ namespace KernelCommunication
         {
             //sizeof(messageHeader) + sizeof(componentHeader) + dataLength
             int messageLength = BinaryMessageConstants.CRDT_MESSAGE_BASE_HEADER_LENGTH + (((byte[])message.data)?.Length ?? 0);
-            var type = GetCRDTMessageType(message);
+            int type = GetCRDTMessageType(message);
 
-            binaryWriter.Write(messageLength);
-            binaryWriter.Write((int)type);
+            binaryWriter.WriteInt32(messageLength);
+            binaryWriter.WriteInt32(type);
 
             CRDTSerializer.Serialize(binaryWriter, message);
         }
 
-        private static KernelBinaryMessageType GetCRDTMessageType(CRDTMessage message)
+        private static int GetCRDTMessageType(CRDTMessage message)
         {
             if (message.data == null)
-                return KernelBinaryMessageType.DELETE_COMPONENT;
-            return KernelBinaryMessageType.PUT_COMPONENT;
+                return (int)KernelBinaryMessageType.DELETE_COMPONENT;
+            return (int)KernelBinaryMessageType.PUT_COMPONENT;
         }
     }
 }

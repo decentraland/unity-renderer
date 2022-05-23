@@ -11,14 +11,14 @@ namespace DCL.CRDT
             int componentId = CRDTUtils.ComponentIdFromKey(message.key);
             int dataLength = data?.Length ?? 0;
 
-            binaryWriter.Write(entityId);
-            binaryWriter.Write(componentId);
-            binaryWriter.Write(message.timestamp);
-            binaryWriter.Write(dataLength);
+            binaryWriter.WriteInt32(entityId);
+            binaryWriter.WriteInt32(componentId);
+            binaryWriter.WriteInt64(message.timestamp);
+            binaryWriter.WriteInt32(dataLength);
 
             if (dataLength > 0)
             {
-                binaryWriter.Write(data);
+                binaryWriter.WriteBytes(data);
             }
         }
     }
