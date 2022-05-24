@@ -110,6 +110,12 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()));
                 break;
+            case HUDElementID.VOICE_CHAT_HUD:
+                hudElement = new VoiceChatWindowController(
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()));
+                break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();
                 break;

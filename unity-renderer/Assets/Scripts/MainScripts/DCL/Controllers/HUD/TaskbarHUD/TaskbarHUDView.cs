@@ -20,6 +20,7 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
     [SerializeField] internal TaskbarButton emotesButton;
+    [SerializeField] internal TaskbarButton newVoiceChatButton;
     [SerializeField] internal GameObject experiencesContainer;
     [SerializeField] internal TaskbarButton experiencesButton;
     [SerializeField] internal RectTransform socialTooltipReference;
@@ -32,6 +33,7 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action<bool> OnChatToggle;
     public event System.Action<bool> OnFriendsToggle;
     public event System.Action<bool> OnEmotesToggle;
+    public event System.Action<bool> OnVoiceChatToggle;
     public event System.Action<bool> OnExperiencesToggle;
 
     internal static TaskbarHUDView Create()
@@ -49,6 +51,7 @@ public class TaskbarHUDView : MonoBehaviour
         buttonsByType[TaskbarButtonType.Emotes] = emotesButton;
         buttonsByType[TaskbarButtonType.Experiences] = experiencesButton;
         buttonsByType[TaskbarButtonType.Friends] = friendsButton;
+        buttonsByType[TaskbarButtonType.VoiceChat] = newVoiceChatButton;
 
         chatButton.transform.parent.gameObject.SetActive(false);
         friendsButton.transform.parent.gameObject.SetActive(false);
@@ -56,20 +59,24 @@ public class TaskbarHUDView : MonoBehaviour
         experiencesButton.transform.parent.gameObject.SetActive(false);
         voiceChatButtonPlaceholder.SetActive(false);
         voiceChatButton.gameObject.SetActive(false);
+        newVoiceChatButton.transform.parent.gameObject.SetActive(false);
 
         chatButton.Initialize();
         friendsButton.Initialize();
         emotesButton.Initialize();
         experiencesButton.Initialize();
+        newVoiceChatButton.Initialize();
 
         chatButton.OnToggleOn += ToggleOn;
         friendsButton.OnToggleOn += ToggleOn;
         emotesButton.OnToggleOn += ToggleOn;
         experiencesButton.OnToggleOn += ToggleOn;
+        newVoiceChatButton.OnToggleOn += ToggleOn;
         chatButton.OnToggleOff += ToggleOff;
         friendsButton.OnToggleOff += ToggleOff;
         emotesButton.OnToggleOff += ToggleOff;
         experiencesButton.OnToggleOff += ToggleOff;
+        newVoiceChatButton.OnToggleOff += ToggleOff;
     }
 
     private void OnDestroy()
@@ -90,6 +97,12 @@ public class TaskbarHUDView : MonoBehaviour
         {
             emotesButton.OnToggleOn -= ToggleOn;
             emotesButton.OnToggleOff -= ToggleOff;
+        }
+
+        if(newVoiceChatButton != null)
+        {
+            newVoiceChatButton.OnToggleOn -= ToggleOn;
+            newVoiceChatButton.OnToggleOff -= ToggleOff;
         }
 
         if (experiencesButton != null)
@@ -142,7 +155,9 @@ public class TaskbarHUDView : MonoBehaviour
             else if (obj == chatButton)
                 OnChatToggle?.Invoke(true);
             else if (obj == experiencesButton)
-                OnExperiencesToggle?.Invoke(true);    
+                OnExperiencesToggle?.Invoke(true);
+            else if (obj == newVoiceChatButton)
+                OnVoiceChatToggle?.Invoke(true);
         }
 
         foreach (var btn in buttonsByType.Values)
@@ -161,8 +176,10 @@ public class TaskbarHUDView : MonoBehaviour
                 OnEmotesToggle?.Invoke(false);
             else if (obj == chatButton)
                 OnChatToggle?.Invoke(false);
+            else if (obj == newVoiceChatButton)
+                OnVoiceChatToggle?.Invoke(false);
             else if (obj == experiencesButton)
-                OnExperiencesToggle?.Invoke(false);    
+                OnExperiencesToggle?.Invoke(false);
         }
             
         obj.SetToggleState(false, useCallback);
@@ -194,6 +211,11 @@ public class TaskbarHUDView : MonoBehaviour
         voiceChatButton.gameObject.SetActive(true);
     }
 
+    internal void ShowVoiceChatButton()
+    {
+        newVoiceChatButton.transform.parent.gameObject.SetActive(true);
+    }
+
     private void ShowBar(bool visible, bool instant = false)
     {
         if (visible)
@@ -214,6 +236,7 @@ public class TaskbarHUDView : MonoBehaviour
         Friends,
         Emotes,
         Chat,
-        Experiences
+        Experiences,
+        VoiceChat
     }
 }

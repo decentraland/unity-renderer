@@ -105,6 +105,9 @@ public class HUDController : IHUDController
     public UsersAroundListHUDController usersAroundListHud =>
         GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
 
+    public VoiceChatWindowController voiceChatHud =>
+        GetHUDElement(HUDElementID.VOICE_CHAT_HUD) as VoiceChatWindowController;
+
     public QuestsPanelHUDController questsPanelHUD =>
         GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
 
@@ -343,6 +346,13 @@ public class HUDController : IHUDController
                     minimapHud?.AddUsersAroundIndicator(usersAroundListHud);
                 }
 
+                break;
+            case HUDElementID.VOICE_CHAT_HUD:
+                CreateHudElement(configuration, hudElementId);
+                if (voiceChatHud != null)
+                {
+                    taskbarHud?.AddVoiceChatWindow(voiceChatHud);
+                }
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 CreateHudElement(configuration, hudElementId);
