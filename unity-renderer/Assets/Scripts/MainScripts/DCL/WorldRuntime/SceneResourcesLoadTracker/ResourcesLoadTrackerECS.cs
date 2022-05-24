@@ -6,7 +6,7 @@ using DCL.ECSRuntime;
 using DCL.WorldRuntime;
 using UnityEngine;
 
-public class ResourcesLoadTrackerECS : IComponentsLoadTracker
+public class ResourcesLoadTrackerECS : IResourcesLoadTracker
 {
     public int pendingResourcesCount => resourcesNotReady;
     
@@ -22,7 +22,6 @@ public class ResourcesLoadTrackerECS : IComponentsLoadTracker
     public event Action OnResourceLoaded;
     public event Action OnStatusUpdate;
     
-
     private int resourcesNotReady;
     private int resourcesReady;
     private BaseCollection<IECSResourceLoaderTracker> resourceList;
@@ -46,13 +45,9 @@ public class ResourcesLoadTrackerECS : IComponentsLoadTracker
         resourcesReady++;
         
         if (resourcesNotReady == 0)
-        {
             OnResourceLoaded?.Invoke();
-        }
         else
-        {
             OnStatusUpdate?.Invoke();
-        }
     }
 
     public void Dispose()
@@ -62,7 +57,8 @@ public class ResourcesLoadTrackerECS : IComponentsLoadTracker
 
     public void PrintWaitingResourcesDebugInfo()
     {
-        // TODO
+        // Note: if needed we can implement this functionality to the be more exact, we can implement a way to track the current resource 
+        // in the IECSResourceLoaderTracker
         Debug.Log(GetStateString());
     }
 

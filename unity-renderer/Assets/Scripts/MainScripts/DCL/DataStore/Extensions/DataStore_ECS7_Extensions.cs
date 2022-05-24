@@ -9,26 +9,25 @@ namespace DCL
     {
         public static void AddResourceTracker( this DataStore_ECS7 self, string sceneId, IECSResourceLoaderTracker resourceLoaderTracker)
         {
-            if (!self.sceneResources.ContainsKey(sceneId))
+            if (self.sceneResources.TryGetValue(sceneId, out BaseCollection<IECSResourceLoaderTracker> baseCollection))
+            {
+                baseCollection.Add(resourceLoaderTracker);
+            }
+            else
             {
                 var collection = new BaseCollection<IECSResourceLoaderTracker>();
                 collection.Add(resourceLoaderTracker);
                 self.sceneResources.Add(sceneId, collection);
             }
-            else
-            {
-                self.sceneResources[sceneId].Add(resourceLoaderTracker);
-            }
         }
-        
+
         public static void RemoveResourceTracker( this DataStore_ECS7 self, string sceneId, IECSResourceLoaderTracker resourceLoaderTracker)
         {
-            if (!self.sceneResources.ContainsKey(sceneId))
+            if (!self.sceneResources.TryGetValue(sceneId, out BaseCollection<IECSResourceLoaderTracker> baseCollection))
                 return;
 
-            self.sceneResources[sceneId].Remove(resourceLoaderTracker);
-
-            if (self.sceneResources[sceneId].Count() == 0)
+            baseCollection.Remove(resourceLoaderTracker);
+            if (baseCollection.Count() == 0)
                 self.sceneResources.Remove(sceneId);
         }
     }

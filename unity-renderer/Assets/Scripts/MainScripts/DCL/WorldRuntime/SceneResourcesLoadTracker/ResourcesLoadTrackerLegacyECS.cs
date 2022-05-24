@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DCL.WorldRuntime
 {
-    internal class ComponentsLoadTrackerLegacyECS : IComponentsLoadTracker
+    internal class ResourcesLoadTrackerLegacyECS : IResourcesLoadTracker
     {
         public int pendingResourcesCount => disposableNotReady?.Count ?? 0;
         public float loadingProgress
@@ -26,7 +26,7 @@ namespace DCL.WorldRuntime
 
         private List<string> disposableNotReady = new List<string>();
 
-        public ComponentsLoadTrackerLegacyECS(IECSComponentsManagerLegacy componentsManager, IWorldState worldState)
+        public ResourcesLoadTrackerLegacyECS(IECSComponentsManagerLegacy componentsManager, IWorldState worldState)
         {
             this.componentsManager = componentsManager;
             this.worldState = worldState; 

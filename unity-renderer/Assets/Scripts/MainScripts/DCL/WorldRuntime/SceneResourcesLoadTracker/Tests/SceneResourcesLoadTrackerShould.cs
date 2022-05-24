@@ -18,7 +18,7 @@ namespace Tests
         private IECSComponentsManagerLegacy componentsManager;
         private SceneLoadTracker loadTracker;
         private BaseCollection<IECSResourceLoaderTracker> baseList;
-        private BoxShapeComponentHandler hanlder;
+        private ECSBoxShapeComponentHandler hanlder;
         private IParcelScene parcelScene;
         private IDCLEntity entity;
         private GameObject gameObject;
@@ -43,7 +43,7 @@ namespace Tests
             loadTracker = new SceneLoadTracker();
             baseList = new BaseCollection<IECSResourceLoaderTracker>();
             loadTracker.Track(baseList);
-            hanlder = new BoxShapeComponentHandler();
+            hanlder = new ECSBoxShapeComponentHandler();
         }
 
         [TearDown]

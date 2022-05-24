@@ -6,16 +6,16 @@ using NUnit.Framework;
 
 namespace Tests
 {
-    public class ComponentsLoadTrackerLegacyECSShould
+    public class ResourcesLoadTrackerLegacyECSShould
     {
         private IECSComponentsManagerLegacy componentsManager;
-        private ComponentsLoadTrackerLegacyECS trackerLegacyEcs;
+        private ResourcesLoadTrackerLegacyECS trackerLegacyEcs;
 
         [SetUp]
         public void SetUp()
         {
             componentsManager = new ECSComponentsManagerLegacy(Substitute.For<IParcelScene>());
-            trackerLegacyEcs = new ComponentsLoadTrackerLegacyECS(componentsManager, Substitute.For<IWorldState>());
+            trackerLegacyEcs = new ResourcesLoadTrackerLegacyECS(componentsManager, Substitute.For<IWorldState>());
         }
 
         [Test]

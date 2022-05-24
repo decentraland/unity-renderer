@@ -12,7 +12,7 @@ namespace DCL.WorldRuntime
         public event Action OnResourcesLoaded;
         public event Action OnResourcesStatusUpdate;
 
-        internal IComponentsLoadTracker tracker;
+        internal IResourcesLoadTracker tracker;
 
         public void Track(BaseCollection<IECSResourceLoaderTracker> baseList)
         {
@@ -26,10 +26,10 @@ namespace DCL.WorldRuntime
         
         public void Track(IECSComponentsManagerLegacy componentsManagerLegacy, IWorldState worldState)
         {
-            if (tracker is ComponentsLoadTrackerLegacyECS)
+            if (tracker is ResourcesLoadTrackerLegacyECS)
                 return;
 
-            tracker = new ComponentsLoadTrackerLegacyECS(componentsManagerLegacy, worldState);
+            tracker = new ResourcesLoadTrackerLegacyECS(componentsManagerLegacy, worldState);
             tracker.OnResourceLoaded += TrackerResourceLoaded;
             tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
         }
