@@ -81,19 +81,19 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public void SetPrivateChat(PrivateChatModel model)
     {
-        // var user = model.user;
-        // directChatList.Set(user.userId, new PrivateChatEntry.PrivateChatEntryModel(
-        //     user.userId,
-        //     user.userName,
-        //     model.recentMessage.body,
-        //     user.face256SnapshotURL,
-        //     model.isBlocked,
-        //     model.isOnline,
-        //     model.recentMessage.timestamp));
-        // directChatList.Sort();
-        // UpdateHeaders();
-        // UpdateLayout();
-        // privateChatsSortingDirty = true;
+        var user = model.user;
+        directChatList.Set(user.userId, new PrivateChatEntry.PrivateChatEntryModel(
+            user.userId,
+            user.userName,
+            model.recentMessage.body,
+            user.face256SnapshotURL,
+            model.isBlocked,
+            model.isOnline,
+            model.recentMessage.timestamp));
+        directChatList.Sort();
+        UpdateHeaders();
+        UpdateLayout();
+        privateChatsSortingDirty = true;
     }
 
     public void RemovePrivateChat(string userId)
