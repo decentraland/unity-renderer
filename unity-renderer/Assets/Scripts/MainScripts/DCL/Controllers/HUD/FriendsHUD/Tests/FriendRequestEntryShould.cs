@@ -29,34 +29,32 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     {
         var model1snapshot = Texture2D.whiteTexture;
         var model2snapshot = Texture2D.blackTexture;
-        var model1 = new FriendEntryModel
+        var model1 = new FriendRequestEntryModel
         {
             userId = "userId1",
             userName = "test1",
-            avatarSnapshotObserver = LazyTextureObserver.CreateWithTexture(model1snapshot)
+            avatarSnapshotObserver = LazyTextureObserver.CreateWithTexture(model1snapshot),
+            isReceived = true
         };
-        var model2 = new FriendEntryModel
+        var model2 = new FriendRequestEntryModel
         {
             userId = "userId2",
             userName = "test2",
-            avatarSnapshotObserver = LazyTextureObserver.CreateWithTexture(model2snapshot)
+            avatarSnapshotObserver = LazyTextureObserver.CreateWithTexture(model2snapshot),
+            isReceived = false
         };
 
         entry.Populate(model1);
-        entry.SetReceived(true);
 
         Assert.AreEqual(model1.userName, entry.playerNameText.text);
-        Assert.AreEqual(model1snapshot, entry.playerImage.texture);
 
         Assert.IsFalse(entry.cancelButton.gameObject.activeSelf);
         Assert.IsTrue(entry.acceptButton.gameObject.activeSelf);
         Assert.IsTrue(entry.rejectButton.gameObject.activeSelf);
 
         entry.Populate(model2);
-        entry.SetReceived(false);
 
         Assert.AreEqual(model2.userName, entry.playerNameText.text);
-        Assert.AreEqual(model2snapshot, entry.playerImage.texture);
 
         Assert.IsTrue(entry.cancelButton.gameObject.activeSelf);
         Assert.IsFalse(entry.acceptButton.gameObject.activeSelf);
@@ -66,7 +64,7 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnAcceptedIsPressed()
     {
-        var model = new FriendEntryModel
+        var model = new FriendRequestEntryModel
         {
             userId = "userId-1"
         };
@@ -85,7 +83,7 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnCancelledIsPressed()
     {
-        var model = new FriendEntryModel
+        var model = new FriendRequestEntryModel
         {
             userId = "userId-1"
         };
@@ -103,7 +101,7 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnMenuToggleIsPressed()
     {
-        var model = new FriendEntryModel
+        var model = new FriendRequestEntryModel
         {
             userId = "userId-1"
         };
@@ -121,7 +119,7 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnRejectedIsPressed()
     {
-        var model = new FriendEntryModel
+        var model = new FriendRequestEntryModel
         {
             userId = "userId-1"
         };

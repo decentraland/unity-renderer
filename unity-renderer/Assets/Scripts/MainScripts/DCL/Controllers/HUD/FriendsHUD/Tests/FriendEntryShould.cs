@@ -45,7 +45,6 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
         entry.Populate(model);
 
         Assert.AreEqual(model.userName, entry.playerNameText.text);
-        Assert.AreEqual(entry.playerImage.texture, Texture2D.whiteTexture);
     }
 
     [Test]
