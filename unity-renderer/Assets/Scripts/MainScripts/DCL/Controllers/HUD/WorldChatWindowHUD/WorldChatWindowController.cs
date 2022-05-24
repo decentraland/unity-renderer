@@ -48,12 +48,12 @@ public class WorldChatWindowController : IHUD
         // TODO: this data should come from the chat service when channels are implemented
         view.SetPublicChannel(new PublicChatChannelModel(GENERAL_CHANNEL_ID, "nearby",
             "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed."));
-        // var privateChatsByRecipient = GetLastPrivateChatByRecipient(chatController.GetEntries());
-        // lastPrivateMessages = privateChatsByRecipient.ToDictionary(pair => pair.Key.userId, pair => pair.Value);
-        // recipientsFromPrivateChats = privateChatsByRecipient.Keys.ToDictionary(profile => profile.userId);
-        // ShowPrivateChats(privateChatsByRecipient);
-        // if (privateChatsByRecipient.Count == 0)
-        //     view.ShowPrivateChatsLoading();
+        var privateChatsByRecipient = GetLastPrivateChatByRecipient(chatController.GetEntries());
+        lastPrivateMessages = privateChatsByRecipient.ToDictionary(pair => pair.Key.userId, pair => pair.Value);
+        recipientsFromPrivateChats = privateChatsByRecipient.Keys.ToDictionary(profile => profile.userId);
+        ShowPrivateChats(privateChatsByRecipient);
+        if (privateChatsByRecipient.Count == 0)
+            view.ShowPrivateChatsLoading();
         chatController.OnAddMessage += HandleMessageAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
@@ -148,18 +148,18 @@ public class WorldChatWindowController : IHUD
     private void HandleMessageAdded(ChatMessage message)
     {
         if (message.messageType != ChatMessage.Type.PRIVATE) return;
-        // var profile = ExtractRecipient(message);
-        // if (profile == null) return;
-        // if (friendsController.isInitialized && !friendsController.IsFriend(profile.userId)) return;
-        // lastPrivateMessages[profile.userId] = message;
-        // recipientsFromPrivateChats[profile.userId] = profile;
-        // view.SetPrivateChat(new PrivateChatModel
-        // {
-        //     user = profile,
-        //     recentMessage = message,
-        //     isBlocked = ownUserProfile.IsBlocked(profile.userId),
-        //     isOnline = friendsController.GetUserStatus(profile.userId).presence == PresenceStatus.ONLINE
-        // });
+        var profile = ExtractRecipient(message);
+        if (profile == null) return;
+        if (friendsController.isInitialized && !friendsController.IsFriend(profile.userId)) return;
+        lastPrivateMessages[profile.userId] = message;
+        recipientsFromPrivateChats[profile.userId] = profile;
+        view.SetPrivateChat(new PrivateChatModel
+        {
+            user = profile,
+            recentMessage = message,
+            isBlocked = ownUserProfile.IsBlocked(profile.userId),
+            isOnline = friendsController.GetUserStatus(profile.userId).presence == PresenceStatus.ONLINE
+        });
     }
 
     private Dictionary<UserProfile, ChatMessage> GetLastPrivateChatByRecipient(IEnumerable<ChatMessage> messages)
