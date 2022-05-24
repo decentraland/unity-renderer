@@ -1,8 +1,15 @@
+using System.Collections;
 using DCL;
 using DCL.Controllers;
+using DCL.ECSComponents;
+using DCL.ECSRuntime;
+using DCL.Models;
 using DCL.WorldRuntime;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -10,91 +17,101 @@ namespace Tests
     {
         private IECSComponentsManagerLegacy componentsManager;
         private SceneLoadTracker loadTracker;
+        private BaseCollection<IECSResourceLoaderTracker> baseList;
+        private BoxShapeComponentHandler hanlder;
+        private IParcelScene parcelScene;
+        private IDCLEntity entity;
+        private GameObject gameObject;
 
         [SetUp]
         public void SetUp()
         {
-            componentsManager = new ECSComponentsManagerLegacy(Substitute.For<IParcelScene>());
+            // Configure Scene
+            parcelScene = Substitute.For<IParcelScene>();
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            sceneData.id = "IdTest";
+            parcelScene.Configure().sceneData.Returns(sceneData);
+            
+            // Configure entity
+            gameObject = new GameObject();
+            entity = Substitute.For<IDCLEntity>();
+            entity.Configure().gameObject.Returns(gameObject);
+            entity.Configure().entityId.Returns(5555);
+            
+            // Create components
+            componentsManager = new ECSComponentsManagerLegacy(parcelScene);
             loadTracker = new SceneLoadTracker();
+            baseList = new BaseCollection<IECSResourceLoaderTracker>();
+            loadTracker.Track(baseList);
+            hanlder = new BoxShapeComponentHandler();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            GameObject.Destroy(gameObject);
+            hanlder.OnComponentRemoved(parcelScene,entity);
+            DataStore.i.ecs7.RemoveResourceTracker("IdTest", hanlder);
         }
 
         [Test]
-        public void WaitSharedComponents()
+        public void DetectLoadOfResourcesCorrectly()
         {
-            loadTracker.Track(componentsManager, Substitute.For<IWorldState>());
+            // Arrange
+            baseList.Add(hanlder);
+            bool resourceLoaded = false;
+            loadTracker.OnResourcesLoaded += () =>
+            {
+                resourceLoaded = true;
+            };
+            hanlder.OnComponentCreated(parcelScene, entity);
+            
+            // Act
+            hanlder.OnComponentModelUpdated(parcelScene, entity,new ECSBoxShape());
 
-            var loadedSubscriber = Substitute.For<IDummyEventSubscriber>();
-            var updateSubscriber = Substitute.For<IDummyEventSubscriber>();
-
-            loadTracker.OnResourcesLoaded += loadedSubscriber.React;
-            loadTracker.OnResourcesStatusUpdate += updateSubscriber.React;
-
-            var component0 = MockedSharedComponentHelper.Create("temptation0");
-            var component1 = MockedSharedComponentHelper.Create("temptation1");
-
-            componentsManager.AddSceneSharedComponent(component0.id, component0.component);
-
-            Assert.AreEqual(1, loadTracker.pendingResourcesCount);
-
-            componentsManager.AddSceneSharedComponent(component1.id, component1.component);
-
-            Assert.IsTrue(loadTracker.ShouldWaitForPendingResources());
-            Assert.AreEqual(2, loadTracker.pendingResourcesCount);
-            Assert.AreEqual(0, loadTracker.loadingProgress);
-            Assert.IsTrue(loadTracker.ShouldWaitForPendingResources());
-
-            loadedSubscriber.DidNotReceive().React();
-
-            component0.SetAsReady();
-
-            updateSubscriber.Received(1).React();
-            loadedSubscriber.DidNotReceive().React();
-
-            component1.SetAsReady();
-
-            updateSubscriber.Received(1).React();
-            loadedSubscriber.Received(1).React();
-
-            Assert.AreEqual(0, loadTracker.pendingResourcesCount);
-            Assert.AreEqual(100, loadTracker.loadingProgress);
+            // Assert
+            Assert.IsTrue(resourceLoaded);
         }
 
         [Test]
-        public void NotWaitIfNoSharedComponents()
+        public void NotWaitIfNoResources()
         {
-            loadTracker.Track(componentsManager, Substitute.For<IWorldState>());
+            // Assert
             Assert.IsFalse(loadTracker.ShouldWaitForPendingResources());
             Assert.AreEqual(100, loadTracker.loadingProgress);
             Assert.AreEqual(0, loadTracker.pendingResourcesCount);
         }
 
         [Test]
-        public void IgnoreSharedComponentsAfterDisposed()
+        public void IgnoreResourcesAfterDisposed()
         {
-            loadTracker.Track(componentsManager, Substitute.For<IWorldState>());
+            // Arrange
+            hanlder.OnComponentCreated(parcelScene, entity);
+            
+            // Act
+            hanlder.OnComponentRemoved(parcelScene, entity);
 
-            var loadedSubscriber = Substitute.For<IDummyEventSubscriber>();
-
-            loadTracker.OnResourcesLoaded += loadedSubscriber.React;
-
-            var component0 = MockedSharedComponentHelper.Create("temptation0");
-            var component1 = MockedSharedComponentHelper.Create("temptation1");
-
-            componentsManager.AddSceneSharedComponent(component0.id, component0.component);
-
+            // Assert
+            Assert.IsFalse(loadTracker.ShouldWaitForPendingResources());
+            Assert.AreEqual(100, loadTracker.loadingProgress);
+            Assert.AreEqual(0, loadTracker.pendingResourcesCount);
+        }
+        
+        [Test]
+        public void WaitForAllComponentsToBeReady()
+        {
+            // Arrange
+            baseList.Add(hanlder);
+            hanlder.OnComponentCreated(parcelScene, entity);
             Assert.IsTrue(loadTracker.ShouldWaitForPendingResources());
-            component0.SetAsReady();
+            
+            // Act
+            hanlder.OnComponentModelUpdated(parcelScene, entity,new ECSBoxShape());
 
+            // Assert
+            Assert.IsFalse(loadTracker.ShouldWaitForPendingResources());
             Assert.AreEqual(100, loadTracker.loadingProgress);
             Assert.AreEqual(0, loadTracker.pendingResourcesCount);
-
-            loadTracker.Dispose();
-            componentsManager.AddSceneSharedComponent(component1.id, component1.component);
-
-            Assert.AreEqual(100, loadTracker.loadingProgress);
-            Assert.AreEqual(0, loadTracker.pendingResourcesCount);
-
-            loadedSubscriber.Received(1).React();
         }
     }
 }

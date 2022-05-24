@@ -15,7 +15,7 @@ namespace DCL.ECSComponents.Test
     {
         private IDCLEntity entity;
         private IParcelScene scene;
-        private IecsBoxShapeComponentHandler boxShapeComponentHandler;
+        private BoxShapeComponentHandler boxShapeComponentHandler;
         private GameObject gameObject;
 
         [SetUp]
@@ -24,7 +24,7 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            boxShapeComponentHandler = new IecsBoxShapeComponentHandler();
+            boxShapeComponentHandler = new BoxShapeComponentHandler();
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);

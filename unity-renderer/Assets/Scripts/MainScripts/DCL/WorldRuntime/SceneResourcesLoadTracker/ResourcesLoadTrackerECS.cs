@@ -6,7 +6,7 @@ using DCL.ECSRuntime;
 using DCL.WorldRuntime;
 using UnityEngine;
 
-public class ComponentsLoadTrackerECS : IComponentsLoadTracker
+public class ResourcesLoadTrackerECS : IComponentsLoadTracker
 {
     public int pendingResourcesCount => resourcesNotReady;
     
@@ -27,7 +27,7 @@ public class ComponentsLoadTrackerECS : IComponentsLoadTracker
     private int resourcesReady;
     private BaseCollection<IECSResourceLoaderTracker> resourceList;
     
-    public ComponentsLoadTrackerECS(BaseCollection<IECSResourceLoaderTracker> resourceList)
+    public ResourcesLoadTrackerECS(BaseCollection<IECSResourceLoaderTracker> resourceList)
     {
         this.resourceList = resourceList;
         resourceList.OnAdded += ResourceAdded;
@@ -36,12 +36,12 @@ public class ComponentsLoadTrackerECS : IComponentsLoadTracker
     private void ResourceAdded(IECSResourceLoaderTracker tracker)
     {
         resourcesNotReady++;
-        tracker.OnResourceReady += ComponentReady;
+        tracker.OnResourceReady += ResourceReady;
     }
 
-    private void ComponentReady(IECSResourceLoaderTracker tracker)
+    private void ResourceReady(IECSResourceLoaderTracker tracker)
     {
-        tracker.OnResourceReady -= ComponentReady;
+        tracker.OnResourceReady -= ResourceReady;
         resourcesNotReady--;
         resourcesReady++;
         

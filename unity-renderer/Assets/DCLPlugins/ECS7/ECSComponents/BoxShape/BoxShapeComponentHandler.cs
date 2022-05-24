@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public class IecsBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>, IECSResourceLoaderTracker
+    public class BoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>, IECSResourceLoaderTracker
     {
         public event Action<IECSResourceLoaderTracker> OnResourceReady;
 
