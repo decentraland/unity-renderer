@@ -174,7 +174,7 @@ half4 LitPassFragment(Varyings input) : SV_Target
 
     color.rgb = MixFog(color.rgb, inputData.fogCoord);    
     color.a = OutputAlpha(color.a, _Surface);    
-	color = clamp(fadeDithering(color, input.positionWS, input.positionSS) + (fresnel * _FresnelColor)* _FresnelColor.w, 0, 1);
+	color = fadeDithering(color, input.positionWS, input.positionSS) + (fresnel * _FresnelColor)* _FresnelColor.w;
 
     return color;
 }
