@@ -33,9 +33,6 @@
         Tags
         {
             "RenderPipeline"="UniversalPipeline"
-            "RenderType"="Opaque"
-            "UniversalMaterialType" = "Lit"
-            "Queue"="AlphaTest"
         }
         Pass
         {
@@ -1212,9 +1209,8 @@
             // Main
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-            #include "PBRForwardPass.hlsl"
-            ENDHLSL
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
+        #include "PBRForwardPass.hlsl"            ENDHLSL
         }
         Pass
         {
@@ -3476,8 +3472,9 @@
             // Main
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-            #include "ShadowCasterPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
+        #include "ShadowCasterPass.hlsl"
+
             ENDHLSL
         }
         Pass
@@ -4562,8 +4559,8 @@
             // Main
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-            #include "DepthOnlyPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
+        #include "DepthOnlyPass.hlsl"
             ENDHLSL
         }
         Pass
@@ -5668,8 +5665,9 @@
             // Main
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-            #include "DepthNormalsOnlyPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
+        #include "DepthNormalsOnlyPass.hlsl"
+
             ENDHLSL
         }
         Pass
@@ -7850,9 +7848,6 @@
         Tags
         {
             "RenderPipeline"="UniversalPipeline"
-            "RenderType"="Opaque"
-            "UniversalMaterialType" = "Lit"
-            "Queue"="AlphaTest"
         }
         Pass
         {
@@ -9028,9 +9023,8 @@
             // Main
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-            #include "PBRForwardPass.hlsl"
-            ENDHLSL
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
+        #include "PBRForwardPass.hlsl"            ENDHLSL
         }
         Pass
         {
@@ -10113,8 +10107,9 @@
             // Main
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-            #include "ShadowCasterPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
+        #include "ShadowCasterPass.hlsl"
+
             ENDHLSL
         }
         Pass
@@ -11198,8 +11193,8 @@
             // Main
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-            #include "DepthOnlyPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
+        #include "DepthOnlyPass.hlsl"
             ENDHLSL
         }
         Pass
@@ -12303,8 +12298,9 @@
             // Main
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-            #include "DepthNormalsOnlyPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
+        #include "DepthNormalsOnlyPass.hlsl"
+
             ENDHLSL
         }
         Pass
