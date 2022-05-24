@@ -20,7 +20,7 @@ namespace DCL.WorldRuntime
                 return;
 
             tracker = new ResourcesLoadTrackerECS(baseList);
-            tracker.OnResourceLoaded += TrackerResourceLoaded;
+            tracker.OnResourcesLoaded += TrackerResourcesLoaded;
             tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
         }
         
@@ -30,7 +30,7 @@ namespace DCL.WorldRuntime
                 return;
 
             tracker = new ResourcesLoadTrackerLegacyECS(componentsManagerLegacy, worldState);
-            tracker.OnResourceLoaded += TrackerResourceLoaded;
+            tracker.OnResourcesLoaded += TrackerResourcesLoaded;
             tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
         }
 
@@ -75,12 +75,12 @@ namespace DCL.WorldRuntime
             {
                 return;
             }
-            tracker.OnResourceLoaded -= TrackerResourceLoaded;
+            tracker.OnResourcesLoaded -= TrackerResourcesLoaded;
             tracker.OnStatusUpdate -= OnTrackerResourcesStatusUpdate;
             tracker.Dispose();
         }
 
-        private void TrackerResourceLoaded()
+        private void TrackerResourcesLoaded()
         {
             OnResourcesLoaded?.Invoke();
         }

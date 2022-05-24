@@ -19,7 +19,7 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
         }
     }
     
-    public event Action OnResourceLoaded;
+    public event Action OnResourcesLoaded;
     public event Action OnStatusUpdate;
     
     private int resourcesNotReady;
@@ -45,7 +45,7 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
         resourcesReady++;
         
         if (resourcesNotReady == 0)
-            OnResourceLoaded?.Invoke();
+            OnResourcesLoaded?.Invoke();
         else
             OnStatusUpdate?.Invoke();
     }

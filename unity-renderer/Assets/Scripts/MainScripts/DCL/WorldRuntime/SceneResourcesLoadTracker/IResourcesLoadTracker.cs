@@ -6,7 +6,7 @@ namespace DCL.WorldRuntime
     {
         int pendingResourcesCount { get; }
         float loadingProgress { get; }
-        event Action OnResourceLoaded;
+        event Action OnResourcesLoaded;
         event Action OnStatusUpdate;
         void PrintWaitingResourcesDebugInfo();
         string GetStateString();
