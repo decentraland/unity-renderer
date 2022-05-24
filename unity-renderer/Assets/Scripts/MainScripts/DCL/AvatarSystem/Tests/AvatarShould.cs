@@ -29,6 +29,7 @@ namespace Test.AvatarSystem
         private IGPUSkinning gpuSkinning;
         private IGPUSkinningThrottler gpuSkinningThrottler;
         private IEmoteAnimationEquipper emoteAnimationEquipper;
+        private IBaseAvatar baseAvatar;
 
         [SetUp]
         public void SetUp()
@@ -43,6 +44,7 @@ namespace Test.AvatarSystem
             gpuSkinning = Substitute.For<IGPUSkinning>();
             gpuSkinningThrottler = Substitute.For<IGPUSkinningThrottler>();
             emoteAnimationEquipper = Substitute.For<IEmoteAnimationEquipper>();
+            baseAvatar = Substitute.For<IBaseAvatar>();
             avatar = new Avatar(
                 curator,
                 loader,
@@ -51,7 +53,8 @@ namespace Test.AvatarSystem
                 lod,
                 gpuSkinning,
                 gpuSkinningThrottler,
-                emoteAnimationEquipper
+                emoteAnimationEquipper,
+                baseAvatar
             );
         }
 
