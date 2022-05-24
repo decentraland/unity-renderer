@@ -45,11 +45,11 @@ public class AvatarReveal : MonoBehaviour
             _ghostMaterial.SetColor("_Color", tempColor);
         }        
 
-        _ghostMaterial.SetVector("_RevealPosition", revealer.transform.position);
+        _ghostMaterial.SetVector("_RevealPosition", revealer.transform.localPosition);
 
         foreach (Material m in _materials)
         {
-            m.SetVector("_RevealPosition", revealer.transform.position);
+            m.SetVector("_RevealPosition", revealer.transform.localPosition);
         }
     }
 
