@@ -20,8 +20,8 @@ Shader "DCL/Toon Shader"
         [NoScaleOffset]_AvatarMap11("AvatarMap11", 2D) = "white" {}
         [NoScaleOffset]_AvatarMap12("AvatarMap12", 2D) = "white" {}
         _DitherFade("_DitherFade", Float) = 1
-        _RevealPosition("RevealPosition", Vector) = (0, 5, 0, 0)
-        _RevealNormal("RevealNormal", Vector) = (0, -1, 0, 0)
+        _RevealPosition("RevealPosition", Vector) = (0, 100, 0, 0)
+        _RevealNormal("RevealNormal", Vector) = (0, 1, 0, 0)
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
