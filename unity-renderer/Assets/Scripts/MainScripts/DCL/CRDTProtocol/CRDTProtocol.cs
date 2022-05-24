@@ -44,15 +44,15 @@ namespace DCL.CRDT
             return storedMessage;
         }
 
-        private CRDTMessage UpdateState(long key, object data, double remoteTimestamp)
+        private CRDTMessage UpdateState(long key, object data, long remoteTimestamp)
         {
-            double stateTimeStamp = 0;
+            long stateTimeStamp = 0;
             if (state.TryGetValue(key, out CRDTMessage storedMessage))
             {
                 stateTimeStamp = storedMessage.timestamp;
             }
 
-            double timestamp = Math.Max(remoteTimestamp, stateTimeStamp);
+            long timestamp = Math.Max(remoteTimestamp, stateTimeStamp);
             var newMessageState = new CRDTMessage()
             {
                 key = key,
