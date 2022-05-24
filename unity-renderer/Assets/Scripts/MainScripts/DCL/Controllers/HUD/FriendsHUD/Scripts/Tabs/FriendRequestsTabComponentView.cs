@@ -48,6 +48,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     public Dictionary<string, FriendRequestEntry> Entries => entries;
 
     public CollapsableSortedFriendEntryList ReceivedRequestsList => receivedRequestsList;
+    public int Count => Entries.Count + creationQueue.Count;
 
     public event Action<FriendRequestEntry> OnCancelConfirmation;
     public event Action<FriendRequestEntry> OnRejectConfirmation;

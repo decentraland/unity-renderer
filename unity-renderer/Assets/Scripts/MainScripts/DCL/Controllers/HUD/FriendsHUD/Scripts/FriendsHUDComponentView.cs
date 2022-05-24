@@ -51,6 +51,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         add => friendsTab.OnDeleteConfirmation += value;
         remove => friendsTab.OnDeleteConfirmation -= value;
     }
+    
+    public event Action OnRequireMoreFriends
+    {
+        add => friendsTab.OnRequireMoreFriends += value;
+        remove => friendsTab.OnRequireMoreFriends -= value;
+    }
 
     public event Action OnClose;
 
@@ -60,6 +66,9 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     {
         set => friendsTab.ListByOnlineStatus = value;
     }
+
+    public int FriendCount => friendsTab.Count;
+    public int FriendRequestCount => friendRequestsTab.Count;
 
     public static FriendsHUDComponentView Create()
     {
@@ -210,6 +219,15 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     public void ShowRequestSendSuccess()
     {
         friendRequestsTab.ShowRequestSuccessfullySentNotification();
+    }
+
+    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount) => friendsTab.ShowMoreFriendsToLoadHint(pendingFriendsCount);
+
+    public void HideMoreFriendsToLoadHint() => friendsTab.HideMoreFriendsToLoadHint();
+
+    public void ShowMoreRequestsToLoadHint(int pendingRequestsCount)
+    {
+        throw new NotImplementedException();
     }
 
     public override void RefreshControl()

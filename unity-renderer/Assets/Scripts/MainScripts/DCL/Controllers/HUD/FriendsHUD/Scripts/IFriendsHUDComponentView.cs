@@ -11,9 +11,12 @@ public interface IFriendsHUDComponentView
     event Action<FriendEntry> OnWhisper;
     event Action<string> OnDeleteConfirmation;
     event Action OnClose;
+    event Action OnRequireMoreFriends;
     
     RectTransform Transform { get; }
     bool ListByOnlineStatus { set; }
+    int FriendCount { get; }
+    int FriendRequestCount { get; }
 
     void HideSpinner();
     void ShowSpinner();
@@ -30,4 +33,7 @@ public interface IFriendsHUDComponentView
     bool IsActive();
     void ShowRequestSendError(FriendRequestError error);
     void ShowRequestSendSuccess();
+    void ShowMoreFriendsToLoadHint(int pendingFriendsCount);
+    void HideMoreFriendsToLoadHint();
+    void ShowMoreRequestsToLoadHint(int pendingRequestsCount);
 }

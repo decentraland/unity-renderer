@@ -11,8 +11,12 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public event Action<FriendEntry> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
     public event Action OnClose;
+    public event Action OnRequireMoreFriends;
+    
     public RectTransform Transform => (RectTransform) transform;
     public bool ListByOnlineStatus { get; set; }
+    public int FriendCount { get; }
+    public int FriendRequestCount { get; }
 
     private bool isDestroyed;
 
@@ -75,6 +79,18 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     }
 
     public void ShowRequestSendSuccess()
+    {
+    }
+
+    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount)
+    {
+    }
+
+    public void HideMoreFriendsToLoadHint()
+    {
+    }
+
+    public void ShowMoreRequestsToLoadHint(int pendingRequestsCount)
     {
     }
 }

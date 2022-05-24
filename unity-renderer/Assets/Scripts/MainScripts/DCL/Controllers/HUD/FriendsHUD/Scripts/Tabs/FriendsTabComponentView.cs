@@ -5,6 +5,7 @@ using DCL;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FriendsTabComponentView : BaseComponentView
 {
@@ -26,6 +27,10 @@ public class FriendsTabComponentView : BaseComponentView
     [SerializeField] private UserContextMenu contextMenuPanel;
     [SerializeField] private Model model;
     [SerializeField] private RectTransform viewport;
+    [Header("Load More Entries")]
+    [SerializeField] private Button loadMoreEntriesButton;
+    [SerializeField] private GameObject loadMoreEntriesContainer;
+    [SerializeField] private TMP_Text loadMoreEntriesLabel;
 
     private readonly Dictionary<string, FriendEntryModel> creationQueue =
         new Dictionary<string, FriendEntryModel>();
@@ -38,6 +43,7 @@ public class FriendsTabComponentView : BaseComponentView
     private bool isLayoutDirty;
 
     public Dictionary<string, FriendEntry> Entries => entries;
+    public int Count => entries.Count + creationQueue.Count;
 
     public bool DidDeferredCreationCompleted => creationQueue.Count == 0;
     public bool ListByOnlineStatus
@@ -52,6 +58,7 @@ public class FriendsTabComponentView : BaseComponentView
 
     public event Action<FriendEntry> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
+    public event Action OnRequireMoreFriends;
 
     public override void OnEnable()
     {
@@ -61,6 +68,7 @@ public class FriendsTabComponentView : BaseComponentView
         searchBar.OnSearchText += Filter;
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
         contextMenuPanel.OnUnfriend += HandleUnfriendRequest;
+        loadMoreEntriesButton.onClick.AddListener(RequestMoreFriendEntries);
 
         int SortByAlphabeticalOrder(FriendEntryBase u1, FriendEntryBase u2)
         {
@@ -82,6 +90,7 @@ public class FriendsTabComponentView : BaseComponentView
         searchBar.OnSearchText -= Filter;
         contextMenuPanel.OnBlock -= HandleFriendBlockRequest;
         contextMenuPanel.OnUnfriend -= HandleUnfriendRequest;
+        loadMoreEntriesButton.onClick.RemoveListener(RequestMoreFriendEntries);
     }
 
     public void Expand()
@@ -122,7 +131,6 @@ public class FriendsTabComponentView : BaseComponentView
         isLayoutDirty = false;
 
         SortDirtyLists();
-
         FetchAvatarSnapshotsForVisibleEntries();
         SetQueuedEntries();
     }
@@ -205,7 +213,8 @@ public class FriendsTabComponentView : BaseComponentView
             allFriendsList.list.Add(userId, entry);
             allFriendsList.FlagAsPendingToSort();
         }
-
+        
+        SetMoreEntriesContainerAtBottomOfScroll();
         UpdateLayout();
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
@@ -323,6 +332,20 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void Enqueue(string userId, FriendEntryModel model) => creationQueue[userId] = model;
     
+    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount)
+    {
+        loadMoreEntriesContainer.SetActive(true);
+        loadMoreEntriesLabel.SetText($"{pendingFriendsCount} friends hidden. Use the search bar to find them or click or click below to show more.");
+        SetMoreEntriesContainerAtBottomOfScroll();
+        UpdateLayout();
+    }
+    
+    public void HideMoreFriendsToLoadHint()
+    {
+        loadMoreEntriesContainer.SetActive(false);
+        UpdateLayout();
+    }
+
     private void SetQueuedEntries()
     {
         if (creationQueue.Count == 0) return;
@@ -437,6 +460,16 @@ public class FriendsTabComponentView : BaseComponentView
         }
         else if (allFriendsList.IsSortingDirty)
             allFriendsList.Sort();
+
+        SetMoreEntriesContainerAtBottomOfScroll();
+    }
+    
+    private void RequestMoreFriendEntries() => OnRequireMoreFriends?.Invoke();
+    
+    private void SetMoreEntriesContainerAtBottomOfScroll()
+    {
+        if (loadMoreEntriesContainer.activeSelf)
+            loadMoreEntriesContainer.transform.SetAsLastSibling();
     }
 
     [Serializable]
