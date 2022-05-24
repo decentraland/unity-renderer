@@ -118,7 +118,7 @@ public class TaskbarHUDController : IHUD
         publicChatChannel.SetVisibility(false);
         friendsHud?.SetVisibility(false);
         isExperiencesViewerOpen.Set(false);
-        voiceChatHud.SetVisibility(false);
+        voiceChatHud?.SetVisibility(false);
         isEmotesVisible.Set(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Emotes);
     }
@@ -148,7 +148,7 @@ public class TaskbarHUDController : IHUD
         publicChatChannel.SetVisibility(false);
         friendsHud?.SetVisibility(false);
         isEmotesVisible.Set(false);
-        voiceChatHud.SetVisibility(false);
+        voiceChatHud?.SetVisibility(false);
         isExperiencesViewerOpen.Set(true);
     }
 
@@ -200,7 +200,7 @@ public class TaskbarHUDController : IHUD
         friendsHud?.SetVisibility(false);
         isEmotesVisible.Set(false);
         isExperiencesViewerOpen.Set(false);
-        voiceChatHud.SetVisibility(false);
+        voiceChatHud?.SetVisibility(false);
         view.ToggleAllOff();
     }
 
@@ -265,7 +265,7 @@ public class TaskbarHUDController : IHUD
         publicChatChannel.SetVisibility(false);
         isExperiencesViewerOpen.Set(false);
         isEmotesVisible.Set(false);
-        voiceChatHud.SetVisibility(false);
+        voiceChatHud?.SetVisibility(false);
         friendsHud?.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Friends);
         chatBackWindow = friendsHud;
@@ -285,7 +285,7 @@ public class TaskbarHUDController : IHUD
         friendsHud?.SetVisibility(false);
         isExperiencesViewerOpen.Set(false);
         isEmotesVisible.Set(false);
-        voiceChatHud.SetVisibility(false);
+        voiceChatHud?.SetVisibility(false);
         privateChatWindow.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         chatToggleTargetWindow = privateChatWindow;
@@ -300,7 +300,7 @@ public class TaskbarHUDController : IHUD
         friendsHud?.SetVisibility(false);
         isEmotesVisible.Set(false);
         isExperiencesViewerOpen.Set(false);
-        voiceChatHud.SetVisibility(false);
+        voiceChatHud?.SetVisibility(false);
 
         if (lastActiveWindow != null)
             lastActiveWindow.SetVisibility(true);
@@ -340,7 +340,7 @@ public class TaskbarHUDController : IHUD
         friendsHud?.SetVisibility(false);
         isExperiencesViewerOpen.Set(false);
         isEmotesVisible.Set(false);
-        voiceChatHud.SetVisibility(false);
+        voiceChatHud?.SetVisibility(false);
         worldChatWindowHud.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         chatToggleTargetWindow = worldChatWindowHud;
