@@ -355,17 +355,17 @@ public class FriendsTabComponentView : BaseComponentView
             $"{pendingFriendsCount} friends hidden. Use the search bar to find them or click below to show more.");
         ShowMoreFriendsToLoadHint();
     }
+
+    public void HideMoreFriendsToLoadHint()
+    {
+        loadMoreEntriesContainer.SetActive(false);
+        UpdateLayout();
+    }
     
     private void ShowMoreFriendsToLoadHint()
     {
         loadMoreEntriesContainer.SetActive(true);
         SetMoreEntriesContainerAtBottomOfScroll();
-        UpdateLayout();
-    }
-
-    public void HideMoreFriendsToLoadHint()
-    {
-        loadMoreEntriesContainer.SetActive(false);
         UpdateLayout();
     }
 

@@ -12,6 +12,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public event Action<string> OnDeleteConfirmation;
     public event Action OnClose;
     public event Action OnRequireMoreFriends;
+    public event Action OnRequireMoreFriendRequests;
     public event Action<string> OnSearchFriendsRequested;
 
     public RectTransform Transform => (RectTransform) transform;
@@ -92,6 +93,10 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     }
 
     public void ShowMoreRequestsToLoadHint(int pendingRequestsCount)
+    {
+    }
+
+    public void HideMoreRequestsToLoadHint()
     {
     }
 

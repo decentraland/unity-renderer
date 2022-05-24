@@ -63,6 +63,7 @@ public class FriendsHUDController : IHUD
         view.OnDeleteConfirmation += HandleUnfriend;
         view.OnClose += HandleViewClosed;
         view.OnRequireMoreFriends += DisplayMoreFriends;
+        view.OnRequireMoreFriendRequests += DisplayMoreFriendRequests;
         view.OnSearchFriendsRequested += SearchFriends;
 
         if (ownUserProfile != null)
@@ -86,6 +87,7 @@ public class FriendsHUDController : IHUD
         }
         
         ShowOrHideMoreFriendsToLoadHint();
+        ShowOrHideMoreFriendRequestsToLoadHint();
     }
 
     private void HandleViewClosed() => SetVisibility(false);
@@ -376,6 +378,29 @@ public class FriendsHUDController : IHUD
 
         ShowOrHideMoreFriendsToLoadHint();
     }
+    
+    private void DisplayMoreFriendRequests()
+    {
+        for (var i = 0; i < LOAD_FRIENDS_ON_DEMAND_COUNT && pendingRequests.Count > 0; i++)
+        {
+            var userId = pendingRequests.Dequeue();
+            if (!friends.ContainsKey(userId)) continue;
+            var model = friends[userId];
+            var status = friendsController.GetUserStatus(userId);
+            if (status == null) continue;
+            View.Set(userId, status.friendshipStatus, model);
+        }
+
+        ShowOrHideMoreFriendRequestsToLoadHint();
+    }
+
+    private void ShowOrHideMoreFriendRequestsToLoadHint()
+    {
+        if (pendingRequests.Count == 0)
+            View.HideMoreRequestsToLoadHint();
+        else
+            View.ShowMoreRequestsToLoadHint(pendingRequests.Count);
+    }
 
     private void ShowOrHideMoreFriendsToLoadHint()
     {
@@ -444,6 +469,7 @@ public class FriendsHUDController : IHUD
             View.OnDeleteConfirmation -= HandleUnfriend;
             View.OnClose -= HandleViewClosed;
             View.OnRequireMoreFriends -= DisplayMoreFriends;
+            View.OnRequireMoreFriendRequests -= DisplayMoreFriendRequests;
             View.OnSearchFriendsRequested -= SearchFriends;
             View.Destroy();
         }

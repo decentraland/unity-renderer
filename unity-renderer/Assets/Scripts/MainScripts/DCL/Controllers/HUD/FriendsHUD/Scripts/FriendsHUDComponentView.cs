@@ -58,6 +58,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         remove => friendsTab.OnRequireMoreFriends -= value;
     }
 
+    public event Action OnRequireMoreFriendRequests
+    {
+        add => friendRequestsTab.OnRequireMoreEntries += value;
+        remove => friendRequestsTab.OnRequireMoreEntries -= value;
+    }
+
     public event Action<string> OnSearchFriendsRequested
     {
         add => friendsTab.OnSearchRequested += value;
@@ -233,10 +239,10 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public void HideMoreFriendsToLoadHint() => friendsTab.HideMoreFriendsToLoadHint();
 
-    public void ShowMoreRequestsToLoadHint(int pendingRequestsCount)
-    {
-        throw new NotImplementedException();
-    }
+    public void ShowMoreRequestsToLoadHint(int pendingRequestsCount) =>
+        friendRequestsTab.ShowMoreFriendsToLoadHint(pendingRequestsCount);
+
+    public void HideMoreRequestsToLoadHint() => friendRequestsTab.HideMoreFriendsToLoadHint();
 
     public bool ContainsFriend(string userId) => friendsTab.Get(userId) != null;
 

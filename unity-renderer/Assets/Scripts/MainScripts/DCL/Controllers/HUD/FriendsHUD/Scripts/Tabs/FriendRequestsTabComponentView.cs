@@ -5,6 +5,7 @@ using DCL;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FriendRequestsTabComponentView : BaseComponentView
 {
@@ -35,6 +36,11 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [SerializeField] private Notification acceptedFriendNotification;
     [SerializeField] private Notification alreadyFriendsNotification;
     [SerializeField] private Model model;
+    
+    [Header("Load More Entries")]
+    [SerializeField] private Button loadMoreEntriesButton;
+    [SerializeField] private GameObject loadMoreEntriesContainer;
+    [SerializeField] private TMP_Text loadMoreEntriesLabel;
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendRequestEntry> entries = new Dictionary<string, FriendRequestEntry>();
@@ -54,6 +60,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     public event Action<FriendRequestEntry> OnRejectConfirmation;
     public event Action<FriendRequestEntry> OnFriendRequestApproved;
     public event Action<string> OnFriendRequestSent;
+    public event Action OnRequireMoreEntries;
 
     public override void OnEnable()
     {
@@ -62,6 +69,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         searchBar.OnSubmit += SendFriendRequest;
         searchBar.OnSearchText += OnSearchInputValueChanged;
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
+        loadMoreEntriesButton.onClick.AddListener(RequestMoreEntries);
         UpdateLayout();
     }
 
@@ -71,6 +79,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         searchBar.OnSubmit -= SendFriendRequest;
         searchBar.OnSearchText -= OnSearchInputValueChanged;
         contextMenuPanel.OnBlock -= HandleFriendBlockRequest;
+        loadMoreEntriesButton.onClick.RemoveListener(RequestMoreEntries);
         NotificationsController.i?.DismissAllNotifications(NOTIFICATIONS_ID);
     }
 
@@ -83,7 +92,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         isLayoutDirty = false;
 
         SetQueuedEntries();
-        FetchAvatarSnapshotsForVisibleEntries();
+        FetchProfilePicturesForVisibleEntries();
     }
 
     public void Expand()
@@ -155,19 +164,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
     }
 
     public FriendRequestEntry Get(string userId) => entries.ContainsKey(userId) ? entries[userId] : null;
-
-    public void Populate(string userId, FriendRequestEntryModel model)
-    {
-        if (!entries.ContainsKey(userId))
-        {
-            if (creationQueue.ContainsKey(userId))
-                creationQueue[userId] = model;
-            return;
-        }
-
-        var entry = entries[userId];
-        entry.Populate(model);
-    }
     
     public void Enqueue(string userId, FriendRequestEntryModel model) => creationQueue[userId] = model;
 
@@ -195,6 +191,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
+        SetMoreEntriesContainerAtBottomOfScroll();
     }
 
     public void ShowUserNotFoundNotification()
@@ -263,7 +260,33 @@ public class FriendRequestsTabComponentView : BaseComponentView
         requestSentNotification.model.message = $"Your request to {lastRequestSentUserName} successfully sent!";
         NotificationsController.i?.ShowNotification(requestSentNotification);
     }
+    
+    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount)
+    {
+        loadMoreEntriesLabel.SetText(
+            $"{pendingFriendsCount} request hidden. Click below to show more.");
+        ShowMoreFriendsToLoadHint();
+    }
 
+    public void HideMoreFriendsToLoadHint()
+    {
+        loadMoreEntriesContainer.SetActive(false);
+        UpdateLayout();
+    }
+    
+    private void ShowMoreFriendsToLoadHint()
+    {
+        loadMoreEntriesContainer.SetActive(true);
+        SetMoreEntriesContainerAtBottomOfScroll();
+        UpdateLayout();
+    }
+    
+    private void SetMoreEntriesContainerAtBottomOfScroll()
+    {
+        if (loadMoreEntriesContainer.activeSelf)
+            loadMoreEntriesContainer.transform.SetAsLastSibling();
+    }
+    
     private void UpdateEmptyOrFilledState()
     {
         emptyStateContainer.SetActive(entries.Count == 0);
@@ -331,7 +354,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         Set(userId, (FriendRequestEntryModel) friendEntryToBlock.Model);
     }
     
-    private void FetchAvatarSnapshotsForVisibleEntries()
+    private void FetchProfilePicturesForVisibleEntries()
     {
         foreach (var entry in entries.Values.Skip(currentAvatarSnapshotIndex).Take(AVATAR_SNAPSHOTS_PER_FRAME))
         {
@@ -358,6 +381,8 @@ public class FriendRequestsTabComponentView : BaseComponentView
             Set(pair.Key, pair.Value);
         }
     }
+    
+    private void RequestMoreEntries() => OnRequireMoreEntries?.Invoke();
 
     [Serializable]
     private class Model
