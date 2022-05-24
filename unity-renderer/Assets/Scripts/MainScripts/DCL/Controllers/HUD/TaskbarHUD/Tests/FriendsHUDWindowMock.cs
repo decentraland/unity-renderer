@@ -12,7 +12,8 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public event Action<string> OnDeleteConfirmation;
     public event Action OnClose;
     public event Action OnRequireMoreFriends;
-    
+    public event Action<string> OnSearchFriendsRequested;
+
     public RectTransform Transform => (RectTransform) transform;
     public bool ListByOnlineStatus { get; set; }
     public int FriendCount { get; }
@@ -91,6 +92,16 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     }
 
     public void ShowMoreRequestsToLoadHint(int pendingRequestsCount)
+    {
+    }
+
+    public bool ContainsFriend(string userId) => false;
+
+    public void FilterFriends(Dictionary<string, FriendEntryModel> friends)
+    {
+    }
+
+    public void ClearFriendFilter()
     {
     }
 }

@@ -94,6 +94,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
     
     public virtual bool IsVisible(RectTransform container)
     {
+        if (!gameObject.activeSelf) return false;
         return ((RectTransform) transform).CountCornersVisibleFrom(container) > 0;
     }
 

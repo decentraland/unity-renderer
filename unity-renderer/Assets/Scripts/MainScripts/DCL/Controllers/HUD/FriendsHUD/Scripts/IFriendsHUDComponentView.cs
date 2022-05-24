@@ -12,6 +12,7 @@ public interface IFriendsHUDComponentView
     event Action<string> OnDeleteConfirmation;
     event Action OnClose;
     event Action OnRequireMoreFriends;
+    event Action<string> OnSearchFriendsRequested;
     
     RectTransform Transform { get; }
     bool ListByOnlineStatus { set; }
@@ -36,4 +37,7 @@ public interface IFriendsHUDComponentView
     void ShowMoreFriendsToLoadHint(int pendingFriendsCount);
     void HideMoreFriendsToLoadHint();
     void ShowMoreRequestsToLoadHint(int pendingRequestsCount);
+    bool ContainsFriend(string userId);
+    void FilterFriends(Dictionary<string, FriendEntryModel> friends);
+    void ClearFriendFilter();
 }

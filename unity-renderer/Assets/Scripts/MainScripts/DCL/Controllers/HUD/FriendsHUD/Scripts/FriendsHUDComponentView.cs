@@ -58,6 +58,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         remove => friendsTab.OnRequireMoreFriends -= value;
     }
 
+    public event Action<string> OnSearchFriendsRequested
+    {
+        add => friendsTab.OnSearchRequested += value;
+        remove => friendsTab.OnSearchRequested -= value;
+    }
+
     public event Action OnClose;
 
     public RectTransform Transform => transform as RectTransform;
@@ -180,6 +186,8 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model)
     {
+        Debug.Log($"Set {userId}, {friendshipStatus}, {model.userName}");
+        
         switch (friendshipStatus)
         {
             case FriendshipStatus.FRIEND:
@@ -229,6 +237,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     {
         throw new NotImplementedException();
     }
+
+    public bool ContainsFriend(string userId) => friendsTab.Get(userId) != null;
+
+    public void FilterFriends(Dictionary<string, FriendEntryModel> friends) => friendsTab.Filter(friends);
+
+    public void ClearFriendFilter() => friendsTab.ClearFilter();
 
     public override void RefreshControl()
     {
