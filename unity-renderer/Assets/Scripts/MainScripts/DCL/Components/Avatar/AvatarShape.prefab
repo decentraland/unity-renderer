@@ -65,6 +65,7 @@ Transform:
   - {fileID: 4675848658069725358}
   - {fileID: 3553539495342899975}
   - {fileID: 7911633839330093525}
+  - {fileID: 6819381185581944119}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -85,6 +86,7 @@ MonoBehaviour:
   avatarMovementController: {fileID: 122622683908687435}
   onloadParticlePrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
     type: 3}
+  baseCharacter: {fileID: 5575896486687800947}
   onPointerDown: {fileID: 3865137627712764486}
   everythingIsLoaded: 0
 --- !u!114 &122622683908687435
@@ -115,6 +117,87 @@ MonoBehaviour:
   - {fileID: 5854254909640412467}
   - {fileID: 5582000225371496597}
   - {fileID: 7213221244455466960}
+--- !u!1 &5575896486687800947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6819381185581944119}
+  - component: {fileID: 232532156006057137}
+  - component: {fileID: 5298257583003696257}
+  m_Layer: 23
+  m_Name: Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &6819381185581944119
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5575896486687800947}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.574, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2842120016485600253}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &232532156006057137
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5575896486687800947}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &5298257583003696257
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5575896486687800947}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &5582000225371496597
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,18 +244,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 703a54a14152d5746a40188f469a0c8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maleLocomotions:
-    idle: {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
-    walk: {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
-    run: {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
-    jump: {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
-    fall: {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
   femaleLocomotions:
     idle: {fileID: 7400000, guid: 62d81b2041d701b4381d66d17f7e246e, type: 2}
     walk: {fileID: 7400000, guid: db8c33ed0888f7b44af0b2acde9bd2b5, type: 2}
     run: {fileID: 7400000, guid: 1e3081b9c1f466743bc7602362784e93, type: 2}
     jump: {fileID: 7400000, guid: ec6a6c2a81a2b984f986fd6cbc8279d3, type: 2}
     fall: {fileID: 7400000, guid: 5e5b5c340739da142b767937144ef10b, type: 2}
+  maleLocomotions:
+    idle: {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
+    walk: {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
+    run: {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
+    jump: {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
+    fall: {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
   animation: {fileID: 0}
   blackboard:
     walkSpeedFactor: 0.5
@@ -273,6 +356,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collider: {fileID: 1314168606903342224}
+  hoverCanvas: {fileID: 0}
 --- !u!65 &1314168606903342224
 BoxCollider:
   m_ObjectHideFlags: 0

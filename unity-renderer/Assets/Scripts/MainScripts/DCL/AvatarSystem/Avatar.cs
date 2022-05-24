@@ -21,13 +21,14 @@ namespace AvatarSystem
         private readonly IGPUSkinning gpuSkinning;
         private readonly IGPUSkinningThrottler gpuSkinningThrottler;
         private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
+        private readonly IBaseAvatar baseAvatar;
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
 
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
 
-        public Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
+        public Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper, IBaseAvatar baseAvatar)
         {
             this.avatarCurator = avatarCurator;
             this.loader = loader;
@@ -37,6 +38,7 @@ namespace AvatarSystem
             this.gpuSkinning = gpuSkinning;
             this.gpuSkinningThrottler = gpuSkinningThrottler;
             this.emoteAnimationEquipper = emoteAnimationEquipper;
+            this.baseAvatar = baseAvatar;
         }
 
         /// <summary>
@@ -62,9 +64,9 @@ namespace AvatarSystem
                 WearableItem mouth = null;
                 List<WearableItem> wearables = null;
                 List<WearableItem> emotes = null;
+                baseAvatar.Initialize();
 
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
-
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
@@ -89,6 +91,7 @@ namespace AvatarSystem
                 gpuSkinningThrottler.Start();
 
                 status = IAvatar.Status.Loaded;
+                baseAvatar.FadeOut();
             }
             catch (OperationCanceledException)
             {

@@ -29,6 +29,7 @@ namespace DCL
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
         [SerializeField] private GameObject onloadParticlePrefab;
+        [SerializeField] private GameObject baseCharacter;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
         internal IPlayerName playerName;
@@ -67,7 +68,8 @@ namespace DCL
                 avatarLOD,
                 new SimpleGPUSkinning(),
                 new GPUSkinningThrottler(),
-                new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+                new EmoteAnimationEquipper(animator, DataStore.i.emotes),
+                new BaseAvatar(baseCharacter));
 
             if (avatarReporterController == null)
             {
