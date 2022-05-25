@@ -26,9 +26,9 @@ public class FriendEntry : FriendEntryBase
 
     private void Start()
     {
-        unreadNotificationBadge?.Initialize(ChatController.i, model.userId, Environment.i.serviceLocator.Get<ILastReadMessagesService>());
+        unreadNotificationBadge?.Initialize(ChatController.i, Model.userId, Environment.i.serviceLocator.Get<ILastReadMessagesService>());
         jumpInButton.Initialize(
-            FriendsController.i, model.userId, 
+            FriendsController.i, Model.userId, 
             new SocialAnalytics(
                 Environment.i.platform.serviceProviders.analytics,
                 new UserProfileWebInterfaceBridge()));
