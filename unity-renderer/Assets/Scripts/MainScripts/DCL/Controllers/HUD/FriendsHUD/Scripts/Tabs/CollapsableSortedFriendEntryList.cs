@@ -7,8 +7,11 @@ public class CollapsableSortedFriendEntryList : CollapsableSortedListComponentVi
     {   
         if (!gameObject.activeInHierarchy) return;
         var regex = new Regex(search, RegexOptions.IgnoreCase);
-        Filter(entry => regex.IsMatch(entry.model.userId)
-                        || regex.IsMatch(entry.model.userName));
+        Filter(entry =>
+        {
+            if (regex.IsMatch(entry.Model.userId)) return true;
+            return !string.IsNullOrEmpty(entry.Model.userName) && regex.IsMatch(entry.Model.userName);
+        });
         // throttling may intruduce race conditions & artifacts into the ui
         // StartCoroutine(FilterAsync(entry => regex.IsMatch(entry.model.userId)
         //     || regex.IsMatch(entry.model.userName)));
