@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace MainScripts.DCL.WorldRuntime.Tests
 {
-    public class SceneLifecycleHandlerShoul : IntegrationTestSuite
+    public class SceneLifecycleHandlerShould : IntegrationTestSuite
     {
         private SceneLifecycleHandler sceneLifecycleHandler;
         private ParcelScene parcelScene;
