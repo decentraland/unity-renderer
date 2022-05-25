@@ -13,7 +13,7 @@ namespace DCL.Test
 {
     public class SceneResourcesLoadTrackerShould
     {
-        private SceneLoadTracker loadTracker;
+        private SceneResourcesLoadTracker resourcesLoadTracker;
         private IParcelScene parcelScene;
         private IDCLEntity entity;
         private GameObject gameObject;
@@ -35,8 +35,8 @@ namespace DCL.Test
             entity.Configure().entityId.Returns(5555);
             
             // Create components
-            loadTracker = new SceneLoadTracker();
-            loadTracker.Track(sceneData.id);
+            resourcesLoadTracker = new SceneResourcesLoadTracker();
+            resourcesLoadTracker.Track(sceneData.id);
         }
 
         [TearDown]
@@ -51,7 +51,7 @@ namespace DCL.Test
         {
             // Arrange
             bool resourceLoaded = false;
-            loadTracker.OnResourcesLoaded += () =>
+            resourcesLoadTracker.OnResourcesLoaded += () =>
             {
                 resourceLoaded = true;
             };
@@ -68,9 +68,9 @@ namespace DCL.Test
         public void NotWaitIfNoResources()
         {
             // Assert
-            Assert.IsFalse(loadTracker.ShouldWaitForPendingResources());
-            Assert.AreEqual(100, loadTracker.loadingProgress);
-            Assert.AreEqual(0, loadTracker.pendingResourcesCount);
+            Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
+            Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
+            Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
         }
 
         [Test]
@@ -80,17 +80,17 @@ namespace DCL.Test
             string newModel = "NewModel";
             DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((parcelScene.sceneData.id, testModel));
             DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((parcelScene.sceneData.id, newModel));
-            Assert.IsTrue(loadTracker.ShouldWaitForPendingResources());
+            Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
             
             // Act
             DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((parcelScene.sceneData.id, testModel));
-            Assert.IsTrue(loadTracker.ShouldWaitForPendingResources());
+            Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
             DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((parcelScene.sceneData.id, newModel));
 
             // Assert
-            Assert.IsFalse(loadTracker.ShouldWaitForPendingResources());
-            Assert.AreEqual(100, loadTracker.loadingProgress);
-            Assert.AreEqual(0, loadTracker.pendingResourcesCount);
+            Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
+            Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
+            Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
         }
     }
 }

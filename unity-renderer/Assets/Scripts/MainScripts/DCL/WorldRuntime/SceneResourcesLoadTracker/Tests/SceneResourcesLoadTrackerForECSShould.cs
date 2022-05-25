@@ -15,7 +15,7 @@ namespace Tests
 {
     public class SceneResourcesLoadTrackerForECSShould
     {
-        private SceneLoadTracker loadTracker;
+        private SceneResourcesLoadTracker resourcesLoadTracker;
         private ECSBoxShapeComponentHandler hanlder;
         private IParcelScene parcelScene;
         private IDCLEntity entity;
@@ -37,8 +37,8 @@ namespace Tests
             entity.Configure().entityId.Returns(5555);
             
             // Create components
-            loadTracker = new SceneLoadTracker();
-            loadTracker.Track(sceneData.id);
+            resourcesLoadTracker = new SceneResourcesLoadTracker();
+            resourcesLoadTracker.Track(sceneData.id);
             hanlder = new ECSBoxShapeComponentHandler();
         }
 
@@ -55,7 +55,7 @@ namespace Tests
         {
             // Arrange
             bool resourceLoaded = false;
-            loadTracker.OnResourcesLoaded += () =>
+            resourcesLoadTracker.OnResourcesLoaded += () =>
             {
                 resourceLoaded = true;
             };
@@ -77,9 +77,9 @@ namespace Tests
             hanlder.OnComponentRemoved(parcelScene, entity);
 
             // Assert
-            Assert.IsFalse(loadTracker.ShouldWaitForPendingResources());
-            Assert.AreEqual(100, loadTracker.loadingProgress);
-            Assert.AreEqual(0, loadTracker.pendingResourcesCount);
+            Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
+            Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
+            Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
         }
         
         [Test]
@@ -94,9 +94,9 @@ namespace Tests
             hanlder.OnComponentModelUpdated(parcelScene, entity,model2);
 
             // Assert
-            Assert.IsFalse(loadTracker.ShouldWaitForPendingResources());
-            Assert.AreEqual(100, loadTracker.loadingProgress);
-            Assert.AreEqual(0, loadTracker.pendingResourcesCount);
+            Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
+            Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
+            Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
         }
     }
 }

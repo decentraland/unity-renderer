@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DCL.WorldRuntime
 {
-    public class SceneLoadTracker : IDisposable
+    public class SceneResourcesLoadTracker : IDisposable
     {
         public int pendingResourcesCount => tracker.pendingResourcesCount;
         public float loadingProgress => tracker.loadingProgress;

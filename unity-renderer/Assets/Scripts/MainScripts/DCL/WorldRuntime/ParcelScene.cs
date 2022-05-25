@@ -508,7 +508,7 @@ namespace DCL.Controllers
                 case SceneLifecycleHandler.State.WAITING_FOR_INIT_MESSAGES:
                     return $"{baseState}:{prettyName} - waiting for init messages...";
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
-                    return $"{baseState}:{prettyName} - {sceneLifecycleHandler.sceneLoadTracker.GetStateString()}";
+                    return $"{baseState}:{prettyName} - {sceneLifecycleHandler.SceneResourcesLoadTracker.GetStateString()}";
                 case SceneLifecycleHandler.State.READY:
                     return $"{baseState}:{prettyName} - ready!";
             }
@@ -536,7 +536,7 @@ namespace DCL.Controllers
             switch (sceneLifecycleHandler.state)
             {
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
-                    sceneLifecycleHandler.sceneLoadTracker.PrintWaitingResourcesDebugInfo();
+                    sceneLifecycleHandler.SceneResourcesLoadTracker.PrintWaitingResourcesDebugInfo();
                     break;
 
                 default:

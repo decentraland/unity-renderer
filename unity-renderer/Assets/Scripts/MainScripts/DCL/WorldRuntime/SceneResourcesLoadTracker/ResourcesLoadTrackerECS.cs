@@ -29,6 +29,33 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
         this.sceneId = sceneId;
         DataStore.i.ecs7.pendingSceneResources.OnRefCountUpdated += ResourcesUpdate;
     }
+    
+    public void Dispose()
+    {
+        DataStore.i.ecs7.pendingSceneResources.OnRefCountUpdated -= ResourcesUpdate;
+    }
+
+    public void PrintWaitingResourcesDebugInfo()
+    {
+        foreach (var model in resourcesNotReady)
+        {
+            Debug.Log($"This model is waiting to be loaded: " + model);
+        }
+    }
+
+    public string GetStateString()
+    {
+        int totalComponents = resourcesNotReady.Count + resourcesReady.Count;
+        if (totalComponents > 0)
+            return $"left to ready:{totalComponents - resourcesReady.Count}/{totalComponents} ({loadingProgress}%)";
+
+        return $"no components. waiting...";
+    }
+
+    public bool CheckPendingResources()
+    {
+        return pendingResourcesCount > 0;
+    }
 
     private void ResourcesUpdate((string sceneId, object model) kvp, int refCount)
     {
@@ -59,31 +86,5 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
             OnResourcesLoaded?.Invoke();
         else
             OnStatusUpdate?.Invoke();
-    }
-
-    public void Dispose()
-    {
-        DataStore.i.ecs7.pendingSceneResources.OnRefCountUpdated -= ResourcesUpdate;
-    }
-
-    public void PrintWaitingResourcesDebugInfo()
-    {
-        // Note: if needed we can implement this functionality to the be more exact, we can implement a way to track the current resource 
-        // in the IECSResourceLoaderTracker
-        Debug.Log(GetStateString());
-    }
-
-    public string GetStateString()
-    {
-        int totalComponents = resourcesNotReady.Count + resourcesReady.Count;
-        if (totalComponents > 0)
-            return $"left to ready:{totalComponents - resourcesReady.Count}/{totalComponents} ({loadingProgress}%)";
-
-        return $"no components. waiting...";
-    }
-
-    public bool CheckPendingResources()
-    {
-        return pendingResourcesCount > 0;
     }
 }
