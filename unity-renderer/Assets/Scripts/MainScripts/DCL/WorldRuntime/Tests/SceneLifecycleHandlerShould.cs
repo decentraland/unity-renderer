@@ -37,13 +37,13 @@ namespace MainScripts.DCL.WorldRuntime.Tests
         public void ChangeToTheNewTrackerIfECS7IsPresent()
         {
             // Arrange
-            var initialTracker = sceneLifecycleHandler.SceneResourcesLoadTracker.tracker;
+            var initialTracker = sceneLifecycleHandler.sceneResourcesLoadTracker.tracker;
 
             // Act
             DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((parcelScene.sceneData.id, new Object()));
 
             // Assert
-            Assert.AreNotEqual(sceneLifecycleHandler.SceneResourcesLoadTracker.tracker, initialTracker);
+            Assert.AreNotEqual(sceneLifecycleHandler.sceneResourcesLoadTracker.tracker, initialTracker);
         }
     }
 }

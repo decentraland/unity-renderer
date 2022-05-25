@@ -12,7 +12,7 @@ namespace DCL.ECSComponents
         internal Rendereable rendereable;
         internal ECSBoxShape model;
 
-        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity){ }
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
