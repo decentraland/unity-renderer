@@ -44,9 +44,9 @@ public class DCLWebSocketService : WebSocketBehavior
             using (var binaryWriter = new BinaryWriter(memoryStream))
             { 
                 byte[] sceneIdBuffer = Encoding.UTF8.GetBytes(sceneId);
-                binaryWriter.Write(sceneIdBuffer.Length);
-                binaryWriter.Write(sceneIdBuffer);
-                binaryWriter.Write(data);
+                binaryWriter.WriteInt32(sceneIdBuffer.Length);
+                binaryWriter.WriteBytes(sceneIdBuffer);
+                binaryWriter.WriteBytes(data);
                 Send(memoryStream.ToArray());
             }
         }
