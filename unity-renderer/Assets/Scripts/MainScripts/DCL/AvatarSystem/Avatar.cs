@@ -64,9 +64,9 @@ namespace AvatarSystem
                 WearableItem mouth = null;
                 List<WearableItem> wearables = null;
                 List<WearableItem> emotes = null;
-                baseAvatar.Initialize();
 
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
+                baseAvatar.Initialize(!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth));
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
@@ -91,7 +91,7 @@ namespace AvatarSystem
                 gpuSkinningThrottler.Start();
 
                 status = IAvatar.Status.Loaded;
-                baseAvatar.FadeOut();
+                baseAvatar.FadeOut(loader.combinedRenderer.gameObject.GetComponent<MeshRenderer>());
             }
             catch (OperationCanceledException)
             {

@@ -27,6 +27,13 @@ public class AvatarReveal : MonoBehaviour
             _materials.Add(r.material);
         }
     }
+
+    public void AddTarget(Renderer newTarget)
+    {
+        targets.Add(newTarget);
+        _materials.Add(newTarget.material);
+    }
+
     private void Update()
     {
         UpdateMaterials();
@@ -36,6 +43,7 @@ public class AvatarReveal : MonoBehaviour
             RevealAvatar();
         }
     }
+
     void UpdateMaterials()
     {
         if(_ghostMaterial.GetColor("_Color").a < 0.9f)
@@ -65,10 +73,14 @@ public class AvatarReveal : MonoBehaviour
                 revealParticles.Play();
             }
         }
-        else if (particles.isPlaying)
+        else 
         {
-            particles.Stop();
-            revealParticles.Stop();
+            if (particles.isPlaying)
+            {
+                particles.Stop();
+                revealParticles.Stop();
+            }
+            gameObject.SetActive(false);
         }
     }
 }

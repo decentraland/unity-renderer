@@ -6,33 +6,38 @@ namespace AvatarSystem
 {
     public class BaseAvatar : IBaseAvatar
     {
+        private AvatarReveal avatarRevealer;
+        private Transform avatarRevealerContainer;
 
-        private GameObject baseCharacter;
-
-        public BaseAvatar(GameObject baseCharacter) 
+        public BaseAvatar(Transform avatarRevealerContainer) 
         {
-            this.baseCharacter = baseCharacter;
+            this.avatarRevealerContainer = avatarRevealerContainer;
         }
 
-        public void Initialize() 
+        public void Initialize(bool resetLoading) 
         {
-            Debug.Log("Init");
-            if(baseCharacter != null)
-                baseCharacter.SetActive(true);
-            
-            FadeIn();
+            if (avatarRevealerContainer == null)
+                return;
+
+            if (avatarRevealer != null && resetLoading)
+                UnityEngine.Object.Destroy(avatarRevealer.gameObject);
+
+            if(resetLoading)
+                avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<AvatarReveal>();
         }
 
         public void FadeIn() 
         {
-            Debug.Log("Fade in");
         }
 
-        public void FadeOut() 
+        public void FadeOut(Renderer targetRenderer) 
         {
-            Debug.Log("Fade out");
-            if (baseCharacter != null)
-                baseCharacter?.SetActive(false);
+            if (avatarRevealerContainer == null) 
+                return;
+
+            avatarRevealer.AddTarget(targetRenderer);
+            avatarRevealer.avatarLoaded = true;
+            Debug.Log("Completed fade out");
         }
 
     }

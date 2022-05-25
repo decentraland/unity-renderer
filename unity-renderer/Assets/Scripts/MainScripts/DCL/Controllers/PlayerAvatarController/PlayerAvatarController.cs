@@ -26,7 +26,6 @@ public class PlayerAvatarController : MonoBehaviour
     public Collider avatarCollider;
     public AvatarVisibility avatarVisibility;
     [SerializeField] private GameObject loadingParticlesPrefab;
-    [SerializeField] private GameObject baseCharacter;
     public float cameraDistanceToDeactivate = 1.0f;
 
     private UserProfile userProfile => UserProfile.GetOwnUserProfile();
@@ -56,7 +55,7 @@ public class PlayerAvatarController : MonoBehaviour
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler(),
             new EmoteAnimationEquipper(animator, DataStore.i.emotes),
-            new BaseAvatar(baseCharacter));
+            new BaseAvatar(null));
 
         if ( UserProfileController.i != null )
         {

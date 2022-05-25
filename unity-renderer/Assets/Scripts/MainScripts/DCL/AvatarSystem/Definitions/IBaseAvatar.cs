@@ -6,8 +6,8 @@ namespace AvatarSystem
 {
     public interface IBaseAvatar
     {
-        void Initialize();
+        void Initialize(bool resetLoading);
         void FadeIn();
-        void FadeOut();
+        void FadeOut(Renderer targetRenderer);
     }
 }
