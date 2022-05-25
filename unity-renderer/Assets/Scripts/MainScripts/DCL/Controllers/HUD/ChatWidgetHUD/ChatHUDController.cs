@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -45,10 +46,10 @@ public class ChatHUDController : IDisposable
     public void Initialize(IChatHUDComponentView view)
     {
         this.view = view;
-        this.view.OnIterateChatHistoryDown -= FillInputWithPreviousMessage;
-        this.view.OnIterateChatHistoryDown += FillInputWithPreviousMessage;
-        this.view.OnIterateChatHistoryUp -= FillInputWithNextMessage;
-        this.view.OnIterateChatHistoryUp += FillInputWithNextMessage;
+        this.view.OnPreviousChatInHistory -= FillInputWithPreviousMessage;
+        this.view.OnPreviousChatInHistory += FillInputWithPreviousMessage;
+        this.view.OnNextChatInHistory -= FillInputWithNextMessage;
+        this.view.OnNextChatInHistory += FillInputWithNextMessage;
         this.view.OnShowMenu -= ContextMenu_OnShowMenu;
         this.view.OnShowMenu += ContextMenu_OnShowMenu;
         this.view.OnInputFieldSelected -= HandleInputFieldSelected;
@@ -103,8 +104,8 @@ public class ChatHUDController : IDisposable
         view.OnSendMessage -= HandleSendMessage;
         view.OnInputFieldSelected -= HandleInputFieldSelected;
         view.OnInputFieldDeselected -= HandleInputFieldDeselected;
-        view.OnIterateChatHistoryDown -= FillInputWithPreviousMessage;
-        view.OnIterateChatHistoryUp -= FillInputWithNextMessage;
+        view.OnPreviousChatInHistory -= FillInputWithPreviousMessage;
+        view.OnNextChatInHistory -= FillInputWithNextMessage;
         OnSendMessage = null;
         OnMessageUpdated = null;
         OnInputFieldSelected = null;
@@ -199,11 +200,15 @@ public class ChatHUDController : IDisposable
     private void RegisterMessageIteration(ChatMessage message)
     {
         if (string.IsNullOrEmpty(message.body)) return;
-        
+
+        lastMessagesSent.RemoveAll(s => s.Equals(message.body));
         lastMessagesSent.Insert(0, message.body);
 
         if (lastMessagesSent.Count > MAX_HISTORY_ITERATION)
             lastMessagesSent.RemoveAt(lastMessagesSent.Count - 1);
+        
+        if (!lastMessagesSent.Last().Equals(""))
+            lastMessagesSent.Add("");
     }
 
     private void ApplyWhisperAttributes(ChatMessage message)
@@ -292,6 +297,7 @@ public class ChatHUDController : IDisposable
     
     private void FillInputWithNextMessage()
     {
+        if (lastMessagesSent.Count == 0) return;
         view.FocusInputField();
         view.SetInputFieldText(lastMessagesSent[currentHistoryIteration]);
         currentHistoryIteration = (currentHistoryIteration + 1) % lastMessagesSent.Count;
