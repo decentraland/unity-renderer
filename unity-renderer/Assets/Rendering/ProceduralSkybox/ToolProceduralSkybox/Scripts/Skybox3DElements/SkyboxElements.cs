@@ -43,6 +43,7 @@ namespace DCL.Skybox
 #else
             UnityEngine.Object.Destroy(references.gameObject);
 #endif
+            references = null;
         }
     }
 }

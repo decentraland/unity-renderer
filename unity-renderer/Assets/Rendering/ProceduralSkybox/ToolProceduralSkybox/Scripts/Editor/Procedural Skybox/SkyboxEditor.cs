@@ -46,6 +46,8 @@ namespace DCL.Skybox
             window.InitializeWindow();
         }
 
+        private void OnDisable() { skyboxElements?.Dispose(); }
+
         void Initialize() { toolSize = AssetDatabase.LoadAssetAtPath<EditorToolMeasurements>(SkyboxEditorLiterals.Paths.toolMeasurementPath); }
 
         public void InitializeWindow() { EnsureDependencies(); }
@@ -150,6 +152,8 @@ namespace DCL.Skybox
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.EndScrollView();
+            if (Application.isPlaying && SkyboxController.i == null)
+                EditorGUILayout.HelpBox("There's no SkyboxController in the scene, try this in InitialScene!", MessageType.Warning);
         }
 
         private void RenderProfileControl()
@@ -621,7 +625,7 @@ namespace DCL.Skybox
             float normalizedDayTime = SkyboxUtils.GetNormalizedDayTime(timeOfTheDay);
             selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
 
-            skyboxElements.ApplyConfigTo3DElements(selectedConfiguration, timeOfTheDay, normalizedDayTime, directionalLight, SkyboxUtils.CYCLE_TIME, isEditor);
+            skyboxElements?.ApplyConfigTo3DElements(selectedConfiguration, timeOfTheDay, normalizedDayTime, directionalLight, SkyboxUtils.CYCLE_TIME, isEditor);
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)
@@ -629,7 +633,5 @@ namespace DCL.Skybox
                 SkyboxController.i.ApplyAvatarColor(normalizedDayTime);
             }
         }
-
-        private void OnDestroy() { skyboxElements?.Dispose(); }
-    }    
+    }
 }
