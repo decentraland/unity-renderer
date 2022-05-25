@@ -192,8 +192,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model)
     {
-        Debug.Log($"Set {userId}, {friendshipStatus}, {model.userName}");
-        
         switch (friendshipStatus)
         {
             case FriendshipStatus.FRIEND:
