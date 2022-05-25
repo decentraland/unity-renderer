@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using DCL;
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.ECSRuntime;
-using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public class ECSBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>, IECSResourceLoaderTracker
+    public class ECSBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>
     {
-        public event Action<IECSResourceLoaderTracker> OnResourceReady;
-
         internal AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
+        internal ECSBoxShape model;
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            DataStore.i.ecs7.AddResourceTracker(scene.sceneData.id, this);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -28,11 +21,12 @@ namespace DCL.ECSComponents
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
             DisposeMesh(scene);
-            DataStore.i.ecs7.RemoveResourceTracker(scene.sceneData.id, this);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSBoxShape model)
         {
+            this.model = model;
+            
             Mesh generatedMesh = null;
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
@@ -46,8 +40,8 @@ namespace DCL.ECSComponents
                 DisposeMesh(scene);
                 generatedMesh = shape.mesh;
                 GenerateRenderer(generatedMesh, scene, entity, model);
-                OnResourceReady?.Invoke(this);
             };
+            DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((scene.sceneData.id, model));
             AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
         }
 
@@ -65,6 +59,8 @@ namespace DCL.ECSComponents
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if(rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id,rendereable);
+            if(model != null)
+                DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((scene.sceneData.id, model));
             
             meshesInfo = null;
             rendereable = null;

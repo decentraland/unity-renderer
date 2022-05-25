@@ -8,11 +8,6 @@ using UnityEngine;
 public interface IECSComponentsManager
 {
     /// <summary>
-    /// Released when a new component has been added to the manager
-    /// </summary>
-    event Action<IECSComponent> OnComponentAdded;
-
-    /// <summary>
     /// deserialize data for a component. it will create the component if it does not exists
     /// </summary>
     /// <param name="componentId"></param>

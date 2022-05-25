@@ -1,23 +1,25 @@
 using System.Collections;
-using System.Collections.Generic;
+using DCL;
 using DCL.Controllers;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.WorldRuntime;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
-namespace DCL.Test
+namespace Tests
 {
-    public class SceneResourcesLoadTrackerShould
+    public class SceneResourcesLoadTrackerForECSShould
     {
         private SceneLoadTracker loadTracker;
+        private ECSBoxShapeComponentHandler hanlder;
         private IParcelScene parcelScene;
         private IDCLEntity entity;
         private GameObject gameObject;
-        private const string testModel = "TestModel";
 
         [SetUp]
         public void SetUp()
@@ -37,17 +39,19 @@ namespace DCL.Test
             // Create components
             loadTracker = new SceneLoadTracker();
             loadTracker.Track(sceneData.id);
+            hanlder = new ECSBoxShapeComponentHandler();
         }
 
         [TearDown]
         public void TearDown()
         {
             GameObject.Destroy(gameObject);
+            hanlder.OnComponentRemoved(parcelScene,entity);
             DataStore.i.ecs7.pendingSceneResources.Clear();
         }
 
         [Test]
-        public void DetectLoadOfResourcesCorrectly()
+        public void DetectLoadOfComponentCorrectly()
         {
             // Arrange
             bool resourceLoaded = false;
@@ -55,37 +59,39 @@ namespace DCL.Test
             {
                 resourceLoaded = true;
             };
-            DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((parcelScene.sceneData.id, testModel));
 
             // Act
-            DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((parcelScene.sceneData.id, testModel));
+            hanlder.OnComponentModelUpdated(parcelScene, entity,new ECSBoxShape());
 
             // Assert
             Assert.IsTrue(resourceLoaded);
         }
 
         [Test]
-        public void NotWaitIfNoResources()
+        public void IgnoreComponentAfterDisposed()
         {
+            // Arrange
+            hanlder.OnComponentCreated(parcelScene, entity);
+            
+            // Act
+            hanlder.OnComponentRemoved(parcelScene, entity);
+
             // Assert
             Assert.IsFalse(loadTracker.ShouldWaitForPendingResources());
             Assert.AreEqual(100, loadTracker.loadingProgress);
             Assert.AreEqual(0, loadTracker.pendingResourcesCount);
         }
-
+        
         [Test]
-        public void WaitForAllResourcesToBeReady()
+        public void WaitForAllComponentsToBeReady()
         {
             // Arrange
-            string newModel = "NewModel";
-            DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((parcelScene.sceneData.id, testModel));
-            DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((parcelScene.sceneData.id, newModel));
-            Assert.IsTrue(loadTracker.ShouldWaitForPendingResources());
-            
+            var model = new ECSBoxShape();
+            var model2 = new ECSBoxShape();
+
             // Act
-            DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((parcelScene.sceneData.id, testModel));
-            Assert.IsTrue(loadTracker.ShouldWaitForPendingResources());
-            DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((parcelScene.sceneData.id, newModel));
+            hanlder.OnComponentModelUpdated(parcelScene, entity,model);
+            hanlder.OnComponentModelUpdated(parcelScene, entity,model2);
 
             // Assert
             Assert.IsFalse(loadTracker.ShouldWaitForPendingResources());

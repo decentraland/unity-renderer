@@ -54,13 +54,13 @@ namespace DCL.Controllers
             sceneLoadTracker.Track(owner.componentsManagerLegacy, Environment.i.world.state);
             sceneLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
    
-            DataStore.i.ecs7.sceneResources.OnAdded += ( sceneId,  list) =>
+            DataStore.i.ecs7.pendingSceneResources.OnRefCountUpdated += ( sceneId,  amount) =>
             {
-                if (sceneId != ownerScene.sceneData.id)
+                if (sceneId.sceneId != ownerScene.sceneData.id)
                     return;
                 
                 sceneLoadTracker.Dispose();
-                sceneLoadTracker.Track(list);
+                sceneLoadTracker.Track(sceneId.sceneId);
                 sceneLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
             };
         }

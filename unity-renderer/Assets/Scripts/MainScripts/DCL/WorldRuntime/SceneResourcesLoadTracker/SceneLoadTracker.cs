@@ -14,12 +14,12 @@ namespace DCL.WorldRuntime
 
         internal IResourcesLoadTracker tracker;
 
-        public void Track(BaseCollection<IECSResourceLoaderTracker> baseList)
+        public void Track(string sceneId)
         {
             if (tracker is ResourcesLoadTrackerECS)
                 return;
 
-            tracker = new ResourcesLoadTrackerECS(baseList);
+            tracker = new ResourcesLoadTrackerECS(sceneId);
             tracker.OnResourcesLoaded += TrackerResourcesLoaded;
             tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
         }

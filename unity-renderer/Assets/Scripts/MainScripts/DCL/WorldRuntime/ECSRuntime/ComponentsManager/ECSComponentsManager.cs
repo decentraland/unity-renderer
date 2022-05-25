@@ -7,8 +7,6 @@ namespace DCL.ECSRuntime
 {
     public class ECSComponentsManager : IECSComponentsManager
     {
-        public event Action<IECSComponent> OnComponentAdded;
-        
         private readonly IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders;
         internal readonly Dictionary<int, IECSComponent> sceneComponents = new Dictionary<int, IECSComponent>();
         private readonly IParcelScene scene;
@@ -42,14 +40,14 @@ namespace DCL.ECSRuntime
             {
                 if (!component.HasComponent(entity))
                 {
-                    CreateComponent(entity,component);
+                    component.Create(entity);
                 }
             }
             else if (componentBuilders.TryGetValue(componentId, out ECSComponentsFactory.ECSComponentBuilder componentBuilder))
             {
                 component = componentBuilder.Invoke(scene);
                 sceneComponents.Add(componentId, component);
-                CreateComponent(entity,component);
+                component.Create(entity);
             }
             return component;
         }
@@ -115,12 +113,5 @@ namespace DCL.ECSRuntime
             }
             return false;
         }
-
-        private void CreateComponent(IDCLEntity entity, IECSComponent component)
-        {
-            component.Create(entity);
-            OnComponentAdded?.Invoke(component);
-        }
- 
     }
 }

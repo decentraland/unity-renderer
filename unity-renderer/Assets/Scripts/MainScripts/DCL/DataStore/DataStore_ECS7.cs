@@ -7,7 +7,7 @@ namespace DCL
     public class DataStore_ECS7
     {
         public BaseDictionary<IParcelScene, IECSComponentsManager> componentsManagers = new BaseDictionary<IParcelScene, IECSComponentsManager>();
-        public BaseDictionary<string, BaseCollection<IECSResourceLoaderTracker>> sceneResources = new BaseDictionary<string, BaseCollection<IECSResourceLoaderTracker>>();
+        public readonly BaseRefCountedCollection<(string sceneId, object model)> pendingSceneResources = new BaseRefCountedCollection<(string sceneId, object model)>();
         public ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
     }
 }

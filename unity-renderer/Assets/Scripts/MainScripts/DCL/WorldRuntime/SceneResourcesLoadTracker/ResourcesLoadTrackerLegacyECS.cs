@@ -29,7 +29,7 @@ namespace DCL.WorldRuntime
         public ResourcesLoadTrackerLegacyECS(IECSComponentsManagerLegacy componentsManager, IWorldState worldState)
         {
             this.componentsManager = componentsManager;
-            this.worldState = worldState; 
+            this.worldState = worldState;
 
             componentsManager.OnAddSharedComponent += OnSharedComponentAdded;
         }

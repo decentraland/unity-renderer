@@ -1,20 +1,18 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using DCL;
-using DCL.ECSRuntime;
 using DCL.WorldRuntime;
 using UnityEngine;
 
 public class ResourcesLoadTrackerECS : IResourcesLoadTracker
 {
-    public int pendingResourcesCount => resourcesNotReady;
+    public int pendingResourcesCount => resourcesNotReady.Count;
     
     public float loadingProgress 
     {
         get
         {
-            int sharedComponentsCount = resourcesReady;
+            int sharedComponentsCount = resourcesReady.Count;
             return sharedComponentsCount > 0 ? (sharedComponentsCount - pendingResourcesCount) * 100f / sharedComponentsCount : 100f;
         }
     }
@@ -22,29 +20,42 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
     public event Action OnResourcesLoaded;
     public event Action OnStatusUpdate;
     
-    private int resourcesNotReady;
-    private int resourcesReady;
-    private BaseCollection<IECSResourceLoaderTracker> resourceList;
+    private readonly List<object> resourcesNotReady = new List<object>();
+    private readonly List<object> resourcesReady = new List<object>();
+    private readonly string sceneId;
     
-    public ResourcesLoadTrackerECS(BaseCollection<IECSResourceLoaderTracker> resourceList)
+    public ResourcesLoadTrackerECS(string sceneId)
     {
-        this.resourceList = resourceList;
-        resourceList.OnAdded += ResourceAdded;
+        this.sceneId = sceneId;
+        DataStore.i.ecs7.pendingSceneResources.OnRefCountUpdated += ResourcesUpdate;
     }
 
-    private void ResourceAdded(IECSResourceLoaderTracker tracker)
+    private void ResourcesUpdate((string sceneId, object model) kvp, int refCount)
     {
-        resourcesNotReady++;
-        tracker.OnResourceReady += ResourceReady;
-    }
-
-    private void ResourceReady(IECSResourceLoaderTracker tracker)
-    {
-        tracker.OnResourceReady -= ResourceReady;
-        resourcesNotReady--;
-        resourcesReady++;
+        if (sceneId != kvp.sceneId)
+            return;
         
-        if (resourcesNotReady == 0)
+        if (refCount > 0)
+            PendingResourceAdded(kvp.model);
+        else
+            ResourceReady(kvp.model);
+    }
+
+    private void PendingResourceAdded(object model)
+    {
+        if(!resourcesNotReady.Contains(model))
+            resourcesNotReady.Add(model);
+    }
+
+    private void ResourceReady(object model)
+    {
+        if(resourcesNotReady.Contains(model))
+            resourcesNotReady.Remove(model);
+      
+        if(!resourcesReady.Contains(model))
+            resourcesReady.Add(model);
+        
+        if (resourcesNotReady.Count == 0)
             OnResourcesLoaded?.Invoke();
         else
             OnStatusUpdate?.Invoke();
@@ -52,7 +63,7 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
 
     public void Dispose()
     {
-        resourceList.OnAdded -= ResourceAdded;
+        DataStore.i.ecs7.pendingSceneResources.OnRefCountUpdated -= ResourcesUpdate;
     }
 
     public void PrintWaitingResourcesDebugInfo()
@@ -64,9 +75,9 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
 
     public string GetStateString()
     {
-        int totalComponents = resourcesNotReady + resourcesReady;
+        int totalComponents = resourcesNotReady.Count + resourcesReady.Count;
         if (totalComponents > 0)
-            return $"left to ready:{totalComponents - resourcesReady}/{totalComponents} ({loadingProgress}%)";
+            return $"left to ready:{totalComponents - resourcesReady.Count}/{totalComponents} ({loadingProgress}%)";
 
         return $"no components. waiting...";
     }

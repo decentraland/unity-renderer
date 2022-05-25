@@ -1,6 +1,5 @@
 using System;
 using DCL.Components;
-using DCL.ECSRuntime;
 using NSubstitute;
 
 namespace Tests

@@ -40,7 +40,7 @@ namespace MainScripts.DCL.WorldRuntime.Tests
             var initialTracker = sceneLifecycleHandler.sceneLoadTracker.tracker;
 
             // Act
-            DataStore.i.ecs7.AddResourceTracker(parcelScene.sceneData.id, Substitute.For<IECSResourceLoaderTracker>());
+            DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((parcelScene.sceneData.id, new Object()));
 
             // Assert
             Assert.AreNotEqual(sceneLifecycleHandler.sceneLoadTracker.tracker, initialTracker);
