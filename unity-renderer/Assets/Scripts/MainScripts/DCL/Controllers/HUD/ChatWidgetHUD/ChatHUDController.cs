@@ -189,7 +189,7 @@ public class ChatHUDController : IDisposable
     {
         var ownProfile = userProfileBridge.GetOwn();
         message.sender = ownProfile.userId;
-        RegisterMessageIteration(message);
+        RegisterMessageHistory(message);
         currentHistoryIteration = 0;
         if (IsSpamming(message.sender)) return;
         if (IsSpamming(ownProfile.userName)) return;
@@ -197,7 +197,7 @@ public class ChatHUDController : IDisposable
         OnSendMessage?.Invoke(message);
     }
 
-    private void RegisterMessageIteration(ChatMessage message)
+    private void RegisterMessageHistory(ChatMessage message)
     {
         if (string.IsNullOrEmpty(message.body)) return;
 

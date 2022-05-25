@@ -195,6 +195,54 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
     });
 
+    [Test]
+    public void DisplayNextMessageInHistory()
+    {
+        const string body = "hey";
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", body));
+        view.OnNextChatInHistory += Raise.Event<Action>();
+        
+        view.Received(1).SetInputFieldText(body);
+    }
+    
+    [Test]
+    public void DisplayPreviousMessageInHistory()
+    {
+        const string body = "hey";
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", body));
+        view.OnPreviousChatInHistory += Raise.Event<Action>();
+        
+        view.Received(1).SetInputFieldText(body);
+    }
+
+    [Test]
+    public void ResetInputWhenAllMessagesInHistoryWereIterated()
+    {
+        const string body = "hey";
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", body));
+        view.OnNextChatInHistory += Raise.Event<Action>();
+        view.OnNextChatInHistory += Raise.Event<Action>();
+        
+        view.Received(1).SetInputFieldText(body);
+        view.Received(1).SetInputFieldText("");
+    }
+    
+    [Test]
+    public void DoNotDuplicateMessagesInHistory()
+    {
+        const string body = "hey";
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", body));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "bleh"));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", body));
+        view.OnPreviousChatInHistory += Raise.Event<Action>();
+        view.OnPreviousChatInHistory += Raise.Event<Action>();
+        view.OnPreviousChatInHistory += Raise.Event<Action>();
+        
+        view.Received(1).SetInputFieldText(body);
+        view.Received(1).SetInputFieldText("bleh");
+        view.Received(1).SetInputFieldText("");
+    }
+
     private RegexProfanityFilter GivenProfanityFilter()
     {
         var wordProvider = Substitute.For<IProfanityWordProvider>();
