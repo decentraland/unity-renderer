@@ -16,6 +16,7 @@ namespace DCL.ECSComponents
             componentWriter.AddOrReplaceComponentSerializer<ECSTransform>(componentId, ECSTransformSerialization.Serialize);
 
             this.factory = factory;
+            this.componentWriter = componentWriter;
             this.componentId = componentId;
         }
 
