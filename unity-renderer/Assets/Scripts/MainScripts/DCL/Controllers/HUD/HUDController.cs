@@ -342,17 +342,12 @@ public class HUDController : IHUDController
             case HUDElementID.USERS_AROUND_LIST_HUD:
                 CreateHudElement(configuration, hudElementId);
                 if (usersAroundListHud != null)
-                {
                     minimapHud?.AddUsersAroundIndicator(usersAroundListHud);
-                }
 
-                break;
-            case HUDElementID.VOICE_CHAT_HUD:
-                CreateHudElement(configuration, hudElementId);
+                CreateHudElement(configuration, HUDElementID.VOICE_CHAT_HUD);
                 if (voiceChatHud != null)
-                {
                     taskbarHud?.AddVoiceChatWindow(voiceChatHud);
-                }
+
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 CreateHudElement(configuration, hudElementId);
