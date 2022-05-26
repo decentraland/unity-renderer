@@ -1,5 +1,4 @@
 using System;
-using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,20 +6,7 @@ using UnityEngine.UI;
 
 public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
 {
-    public class Model
-    {
-        public string userId;
-        public PresenceStatus status;
-        public string userName;
-        public Vector2 coords;
-        public string realm;
-        public string realmServerName;
-        public string realmLayerName;
-        public ILazyTextureObserver avatarSnapshotObserver;
-        public bool blocked;
-    }
-
-    public Model model { get; private set; } = new Model();
+    public FriendEntryModel Model { get; private set; } = new FriendEntryModel();
 
     public Image playerBlockedImage;
     
@@ -34,6 +20,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
     [SerializeField] protected internal Button passportButton;
     
     private StringVariable currentPlayerInfoCardId;
+    private bool avatarFetchingEnabled;
 
     public event Action<FriendEntryBase> OnMenuToggle;
 
@@ -58,49 +45,65 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
         panelTransform.position = menuPositionReference.position;
     }
 
-    private void OnEnable()
-    {
-        // TODO: replace image loading for ImageComponentView implementation
-        model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
-    }
-
     protected virtual void OnDisable()
     {
-        model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+        DisableAvatarSnapshotFetching();
     }
 
     protected void OnDestroy()
     {
-        model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+        DisableAvatarSnapshotFetching();
+    }
+    
+    public virtual void EnableAvatarSnapshotFetching()
+    {
+        if (avatarFetchingEnabled) return;
+        avatarFetchingEnabled = true;
+        // TODO: replace image loading for ImageComponentView implementation
+        Model?.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
+    }
+    
+    public virtual void DisableAvatarSnapshotFetching()
+    {
+        if (!avatarFetchingEnabled) return;
+        avatarFetchingEnabled = false;
+        // TODO: replace image loading for ImageComponentView implementation
+        Model?.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
     }
 
-    public virtual void Populate(Model model)
+    public virtual void Populate(FriendEntryModel model)
     {
         if (playerNameText.text != model.userName)
             playerNameText.text = model.userName;
 
         playerBlockedImage.enabled = model.blocked;
 
-        if (this.model != null && isActiveAndEnabled)
-        {
-            this.model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+        Model?.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+
+        if (isActiveAndEnabled && avatarFetchingEnabled)
+            // TODO: replace image loading for ImageComponentView implementation
             model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
-        }
 
         if (onlineStatusContainer != null)
             onlineStatusContainer.SetActive(model.status == PresenceStatus.ONLINE && !model.blocked);
         if (offlineStatusContainer != null)
             offlineStatusContainer.SetActive(model.status != PresenceStatus.ONLINE && !model.blocked);
 
-        this.model = model;
+        Model = model;
+    }
+    
+    public virtual bool IsVisible(RectTransform container)
+    {
+        if (!gameObject.activeSelf) return false;
+        return ((RectTransform) transform).CountCornersVisibleFrom(container) > 0;
     }
 
     private void OnAvatarImageChange(Texture2D texture) { playerImage.texture = texture; }
 
-    protected void ShowUserProfile()
+    private void ShowUserProfile()
     {
         if (currentPlayerInfoCardId == null)
             currentPlayerInfoCardId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
-        currentPlayerInfoCardId.Set(model.userId);
+        currentPlayerInfoCardId.Set(Model.userId);
     }
 }

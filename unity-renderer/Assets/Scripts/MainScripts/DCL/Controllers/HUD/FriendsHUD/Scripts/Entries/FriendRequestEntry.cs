@@ -25,6 +25,12 @@ public class FriendRequestEntry : FriendEntryBase
         cancelButton.onClick.AddListener(() => OnCancelled?.Invoke(this));
     }
 
+    public override void Populate(FriendEntryModel model)
+    {
+        base.Populate(model);
+        SetReceived(((FriendRequestEntryModel) model).isReceived);
+    }
+
     public void SetReceived(bool value)
     {
         isReceived = value;

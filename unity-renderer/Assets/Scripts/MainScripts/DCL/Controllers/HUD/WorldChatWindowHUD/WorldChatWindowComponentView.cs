@@ -22,6 +22,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] private WorldChatWindowModel model;
 
     private string lastSearch;
+    private bool privateChatsSortingDirty;
 
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
@@ -65,6 +66,15 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         searchResultsList.Initialize(chatController, lastReadMessagesService);
     }
 
+    public override void Update()
+    {
+        base.Update();
+        
+        if (privateChatsSortingDirty)
+            directChatList.Sort();
+        privateChatsSortingDirty = false;
+    }
+
     public void Show() => gameObject.SetActive(true);
 
     public void Hide() => gameObject.SetActive(false);
@@ -83,6 +93,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         directChatList.Sort();
         UpdateHeaders();
         UpdateLayout();
+        privateChatsSortingDirty = true;
     }
 
     public void RemovePrivateChat(string userId)
@@ -111,9 +122,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public void RefreshBlockedDirectMessages(List<string> blockedUsers)
     {
-        if (blockedUsers == null)
-            return;
-
+        if (blockedUsers == null) return;
         directChatList.RefreshBlockedEntries(blockedUsers);
     }
 
@@ -135,7 +144,9 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             searchResultsList.Export(publicChannelList, directChatList);
             searchResultsList.Hide();
             publicChannelList.Show();
+            publicChannelList.Sort();
             directChatList.Show();
+            directChatList.Sort();
             directChannelHeader.SetActive(true);
             searchResultsHeader.SetActive(false);
         }
@@ -144,6 +155,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         {
             searchResultsList.Import(publicChannelList, directChatList);
             searchResultsList.Show();
+            searchResultsList.Sort();
             publicChannelList.Hide();
             directChatList.Hide();
             directChannelHeader.SetActive(false);
