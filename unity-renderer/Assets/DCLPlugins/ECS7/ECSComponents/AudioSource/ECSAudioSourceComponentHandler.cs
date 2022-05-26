@@ -18,6 +18,7 @@ namespace DCL.ECSComponents
         
         private long playedAtTimestamp = 0;
         private bool isOutOfBoundaries = false;
+        private bool isAudioClipReady = false;
         
         private ECSAudioSource model;
         private IParcelScene scene;
@@ -38,13 +39,17 @@ namespace DCL.ECSComponents
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
+            this.scene = scene;
             audioSource = entity.gameObject.AddComponent<AudioSource>();
+            audioSource.spatialBlend = 1;
+            audioSource.dopplerLevel = 0.1f;
 
             if (settings != null)
                 settings.audioSettings.OnChanged += OnAudioSettingsChanged;
     
             dataStore.sceneBoundariesChecker.Add(entity,this);
             dataStore.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
+            sceneID.OnChange += OnCurrentSceneChanged;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -55,23 +60,27 @@ namespace DCL.ECSComponents
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSAudioSource model)
         {
             bool isSameClip = model.audioClipUrl == this.model?.audioClipUrl;
-            this.scene = scene;
             this.model = model;
             
-            ApplyCurrentModel();
-            
             // If the clip has changed, we need to forget the old clip
-            if(!isSameClip && promiseAudioClip != null)
-                keeperAudioClip.Forget(promiseAudioClip);
+            if (!isSameClip && promiseAudioClip != null)
+            {
+                isAudioClipReady = false;
+                if (audioClip != null)
+                    dataStore.sceneWorldObjects.RemoveAudioClip(scene.sceneData.id, audioClip);
+                DisposePromise();
+            }
             
-            promiseAudioClip = new AssetPromise_AudioClip(model.audioClipUrl, scene.contentProvider);
-            promiseAudioClip.OnSuccessEvent += OnAudioClipLoadComplete;
-            promiseAudioClip.OnFailEvent += OnAudioClipLoadFail;
+            ApplyCurrentModel();
 
-            keeperAudioClip.Keep(promiseAudioClip);
-            
-            sceneID.OnChange -= OnCurrentSceneChanged;
-            sceneID.OnChange += OnCurrentSceneChanged;
+            if (!isAudioClipReady && !isSameClip)
+            {
+                promiseAudioClip = new AssetPromise_AudioClip(model.audioClipUrl, scene.contentProvider);
+                promiseAudioClip.OnSuccessEvent += OnAudioClipLoadComplete;
+                promiseAudioClip.OnFailEvent += OnAudioClipLoadFail;
+
+                keeperAudioClip.Keep(promiseAudioClip);
+            }
         }
                 
         void IOutOfSceneBoundariesHandler.UpdateOutOfBoundariesState(bool isInsideBoundaries)
@@ -82,12 +91,23 @@ namespace DCL.ECSComponents
             isOutOfBoundaries = !isInsideBoundaries;
             UpdateAudioSourceVolume();
         }
-        
+
+        private void DisposePromise()
+        {
+            if (promiseAudioClip == null)
+                return;
+            
+            promiseAudioClip.OnSuccessEvent += OnAudioClipLoadComplete;
+            promiseAudioClip.OnFailEvent += OnAudioClipLoadFail;
+            
+            keeperAudioClip.Forget(promiseAudioClip);
+        }
         private void Dispose(IDCLEntity entity)
         {
-            if(promiseAudioClip != null)
-                keeperAudioClip.Forget(promiseAudioClip);
+            DisposePromise();
             
+            if (audioClip != null)
+                dataStore.sceneWorldObjects.RemoveAudioClip(scene.sceneData.id, audioClip);
             dataStore.sceneBoundariesChecker.Remove(entity,this);
             
             sceneID.OnChange -= OnCurrentSceneChanged;
@@ -124,17 +144,21 @@ namespace DCL.ECSComponents
                     audioSource.Stop();
                 }
             }
+            else if(isAudioClipReady)
+            {
+                audioSource.Play();
+            }
         }
         
         private void ApplyLoadedAudioClip(AudioClip clip)
         {
+            isAudioClipReady = true;
             if (audioSource.clip != clip)
                 audioSource.clip = clip;
             
             bool shouldPlay = playedAtTimestamp != model.playedAtTimestamp ||
                               (model.playing && !audioSource.isPlaying);
-
-            //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
+            
             if (audioSource.enabled && model.playing && shouldPlay)
                 audioSource.Play();
             
@@ -146,9 +170,6 @@ namespace DCL.ECSComponents
             if (assetAudioClip.audioClip == null)
                 return;
 
-            if (audioClip != null)
-                dataStore.sceneWorldObjects.RemoveAudioClip(scene.sceneData.id, audioClip);
-
             audioClip = assetAudioClip.audioClip;
 
             dataStore.sceneWorldObjects.AddAudioClip(scene.sceneData.id, audioClip);
@@ -159,7 +180,7 @@ namespace DCL.ECSComponents
         private void OnAudioClipLoadFail(Asset_AudioClip assetAudioClip, Exception exception)
         {
             Debug.LogError("Audio clip couldn't be loaded. Url: " +model.audioClipUrl + "     error: " + exception.Message);
-            keeperAudioClip.Forget(promiseAudioClip);
+            DisposePromise();
         }
 
         private void OnAudioSettingsChanged(AudioSettings settings)
@@ -193,7 +214,7 @@ namespace DCL.ECSComponents
         
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
         {
-            if (audioSource == null)
+            if (audioSource == null || model == null)
                 return;
             
             float volume = 0;

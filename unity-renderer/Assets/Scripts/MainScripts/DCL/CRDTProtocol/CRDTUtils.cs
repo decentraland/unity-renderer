@@ -7,7 +7,7 @@ namespace DCL.CRDT
             // we create an int64 that store both entityId and componentId.
             // entityId on the left 32 bit and componentId in the remaining 
             // 32 bits of the right
-            return (long)entityId << 32 | (long)componentId;
+            return (long)entityId << 32 | (uint)componentId;
         }
 
         public static int EntityIdFromKey(long key)

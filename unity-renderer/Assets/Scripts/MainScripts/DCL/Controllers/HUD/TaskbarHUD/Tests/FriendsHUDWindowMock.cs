@@ -11,8 +11,14 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public event Action<FriendEntry> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
     public event Action OnClose;
+    public event Action OnRequireMoreFriends;
+    public event Action OnRequireMoreFriendRequests;
+    public event Action<string> OnSearchFriendsRequested;
+
     public RectTransform Transform => (RectTransform) transform;
     public bool ListByOnlineStatus { get; set; }
+    public int FriendCount { get; }
+    public int FriendRequestCount { get; }
 
     private bool isDestroyed;
 
@@ -38,10 +44,6 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
 
     public FriendEntryBase GetEntry(string userId) => null;
 
-    public void UpdateEntry(string userId, FriendEntryBase.Model model)
-    {
-    }
-
     public void DisplayFriendUserNotFound()
     {
     }
@@ -64,11 +66,11 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     {
     }
 
-    public void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction, FriendEntryBase.Model friendEntryModel)
+    public void Set(string userId, FriendshipAction friendshipAction, FriendEntryModel friendEntryModel)
     {
     }
 
-    public void Search(string userId)
+    public void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model)
     {
     }
 
@@ -79,6 +81,32 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     }
 
     public void ShowRequestSendSuccess()
+    {
+    }
+
+    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount)
+    {
+    }
+
+    public void HideMoreFriendsToLoadHint()
+    {
+    }
+
+    public void ShowMoreRequestsToLoadHint(int pendingRequestsCount)
+    {
+    }
+
+    public void HideMoreRequestsToLoadHint()
+    {
+    }
+
+    public bool ContainsFriend(string userId) => false;
+
+    public void FilterFriends(Dictionary<string, FriendEntryModel> friends)
+    {
+    }
+
+    public void ClearFriendFilter()
     {
     }
 }
