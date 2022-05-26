@@ -3,15 +3,18 @@ using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
 {
-    public class ECSTransformPlugin : IDisposable
+    public class ECSTransformComponent : IDisposable
     {
         private readonly ECSComponentsFactory factory;
+        private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public ECSTransformPlugin(int componentId, ECSComponentsFactory factory)
+        public ECSTransformComponent(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
             ECSTransformHandler handler = new ECSTransformHandler();
             factory.AddOrReplaceComponent(componentId, ECSTransformSerialization.Deserialize, () => handler);
+            componentWriter.AddOrReplaceComponentSerializer<ECSTransform>(componentId, ECSTransformSerialization.Serialize);
+
             this.factory = factory;
             this.componentId = componentId;
         }
@@ -19,6 +22,7 @@ namespace DCL.ECSComponents
         public void Dispose()
         {
             factory.RemoveComponent(componentId);
+            componentWriter.RemoveComponentSerializer(componentId);
         }
     }
 }
