@@ -23,7 +23,17 @@ namespace DCL.ECSRuntime
             serializers[componentId] = serializer;
         }
 
+        public void RemoveComponentSerializer(int componentId)
+        {
+            serializers.Remove(componentId);
+        }
+
         public void PutComponent<T>(IParcelScene scene, IDCLEntity entity, int componentId, T model)
+        {
+            PutComponent(scene.sceneData.id, entity.entityId, componentId, model);
+        }
+
+        public void PutComponent<T>(string sceneId, long entityId, int componentId, T model)
         {
             if (!serializers.TryGetValue(componentId, out object serializer))
             {
@@ -33,7 +43,7 @@ namespace DCL.ECSRuntime
 
             if (serializer is Func<T, byte[]> typedSerializer)
             {
-                writeComponent(scene.sceneData.id, entity.entityId, componentId, typedSerializer(model));
+                writeComponent(sceneId, entityId, componentId, typedSerializer(model));
             }
             else
             {
@@ -43,7 +53,12 @@ namespace DCL.ECSRuntime
 
         public void RemoveComponent(IParcelScene scene, IDCLEntity entity, int componentId)
         {
-            writeComponent(scene.sceneData.id, entity.entityId, componentId, null);
+            RemoveComponent(scene.sceneData.id, entity.entityId, componentId);
+        }
+
+        public void RemoveComponent(string sceneId, long entityId, int componentId)
+        {
+            writeComponent(sceneId, entityId, componentId, null);
         }
 
         public void Dispose()
