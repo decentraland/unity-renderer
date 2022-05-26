@@ -1,17 +1,15 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using SocialFeaturesAnalytics;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 public class PlayerInfoCardHUDController : IHUD
 {
-    internal const string PASSPORT_OPENED_EVENT = "passport_opened";
-
     internal readonly PlayerInfoCardHUDView view;
     internal readonly StringVariable currentPlayerId;
     internal UserProfile currentUserProfile;
@@ -25,16 +23,21 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly InputAction_Trigger toggleWorldChatTrigger;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IWearableCatalogBridge wearableCatalogBridge;
-    private readonly RegexProfanityFilter profanityFilter;
+    private readonly IProfanityFilter profanityFilter;
     private readonly DataStore dataStore;
+    private readonly BooleanVariable playerInfoCardVisibleState;
     private readonly List<string> loadedWearables = new List<string>();
+    private readonly ISocialAnalytics socialAnalytics;
+    private double passportOpenStartTime = 0;
 
     public PlayerInfoCardHUDController(IFriendsController friendsController,
         StringVariable currentPlayerIdData,
         IUserProfileBridge userProfileBridge,
         IWearableCatalogBridge wearableCatalogBridge,
-        RegexProfanityFilter profanityFilter,
-        DataStore dataStore)
+        ISocialAnalytics socialAnalytics,
+        IProfanityFilter profanityFilter,
+        DataStore dataStore,
+        BooleanVariable playerInfoCardVisibleState)
     {
         this.friendsController = friendsController;
         view = PlayerInfoCardHUDView.CreateView();
@@ -44,8 +47,10 @@ public class PlayerInfoCardHUDController : IHUD
         currentPlayerId = currentPlayerIdData;
         this.userProfileBridge = userProfileBridge;
         this.wearableCatalogBridge = wearableCatalogBridge;
+        this.socialAnalytics = socialAnalytics;
         this.profanityFilter = profanityFilter;
         this.dataStore = dataStore;
+        this.playerInfoCardVisibleState = playerInfoCardVisibleState;
         currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
         OnCurrentPlayerIdChanged(currentPlayerId, null);
 
@@ -77,18 +82,23 @@ public class PlayerInfoCardHUDController : IHUD
 
     private void AddPlayerAsFriend()
     {
+        UserProfile currentUserProfile = userProfileBridge.Get(currentPlayerId);
+
         // Add fake action to avoid waiting for kernel
         userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
         {
             userId = currentPlayerId,
-            name = currentPlayerId
+            name = currentUserProfile != null ? currentUserProfile.userName : currentPlayerId
         });
+
         friendsController.RequestFriendship(currentPlayerId);
 
         WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
         {
             userId = currentPlayerId, action = FriendshipAction.REQUESTED_TO
         });
+
+        socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
     }
 
     private void CancelInvitation()
@@ -100,6 +110,8 @@ public class PlayerInfoCardHUDController : IHUD
         {
             userId = currentPlayerId, action = FriendshipAction.CANCELLED
         });
+
+        socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
     private void AcceptFriendRequest()
@@ -111,6 +123,8 @@ public class PlayerInfoCardHUDController : IHUD
         {
             userId = currentPlayerId, action = FriendshipAction.APPROVED
         });
+
+        socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
     private void RejectFriendRequest()
@@ -122,6 +136,8 @@ public class PlayerInfoCardHUDController : IHUD
         {
             userId = currentPlayerId, action = FriendshipAction.REJECTED
         });
+
+        socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
     private void OnCurrentPlayerIdChanged(string current, string previous)
@@ -135,6 +151,9 @@ public class PlayerInfoCardHUDController : IHUD
 
         if (currentUserProfile == null)
         {
+            if (playerInfoCardVisibleState.Get())
+                socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
+
             view.SetCardActive(false);
             wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
             loadedWearables.Clear();
@@ -147,10 +166,11 @@ public class PlayerInfoCardHUDController : IHUD
                      {
                          await AsyncSetUserProfile(currentUserProfile);
                          view.SetCardActive(true);
+                         socialAnalytics.SendPassportOpen();
                      })
                      .Forget();
 
-            GenericAnalytics.SendAnalytic(PASSPORT_OPENED_EVENT);
+            passportOpenStartTime = Time.realtimeSinceStartup;
         }
     }
 
@@ -162,8 +182,12 @@ public class PlayerInfoCardHUDController : IHUD
     }
     private async UniTask AsyncSetUserProfile(UserProfile userProfile)
     {
-        view.SetName(await FilterName(userProfile));
-        view.SetDescription(await FilterDescription(userProfile));
+        string filterName = await FilterName(userProfile);
+        string filterDescription = await FilterDescription(userProfile);
+        await UniTask.SwitchToMainThread();
+
+        view.SetName(filterName);
+        view.SetDescription(filterDescription);
         view.ClearCollectibles();
         view.SetIsBlocked(IsBlocked(userProfile.userId));
         LoadAndShowWearables(userProfile);
@@ -196,6 +220,7 @@ public class PlayerInfoCardHUDController : IHUD
         ownUserProfile.Block(currentUserProfile.userId);
         view.SetIsBlocked(true);
         WebInterface.SendBlockPlayer(currentUserProfile.userId);
+        socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
     }
 
     private void UnblockPlayer()
@@ -204,11 +229,13 @@ public class PlayerInfoCardHUDController : IHUD
         ownUserProfile.Unblock(currentUserProfile.userId);
         view.SetIsBlocked(false);
         WebInterface.SendUnblockPlayer(currentUserProfile.userId);
+        socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
     }
 
     private void ReportPlayer()
     {
         WebInterface.SendReportPlayer(currentPlayerId);
+        socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
     }
 
     public void Dispose()

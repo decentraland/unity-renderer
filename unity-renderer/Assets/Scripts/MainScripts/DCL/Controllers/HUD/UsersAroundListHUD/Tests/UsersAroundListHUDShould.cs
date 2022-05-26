@@ -3,6 +3,8 @@ using System.Collections;
 using DCL;
 using UnityEngine;
 using UnityEngine.TestTools;
+using SocialFeaturesAnalytics;
+using NSubstitute;
 
 public class UsersAroundListHUDShould : IntegrationTestSuite_Legacy
 {
@@ -12,7 +14,7 @@ public class UsersAroundListHUDShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        controller = new UsersAroundListHUDController();
+        controller = new UsersAroundListHUDController(Substitute.For<ISocialAnalytics>());
     }
 
     protected override IEnumerator TearDown()

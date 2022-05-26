@@ -31,6 +31,8 @@ namespace DCL.Components
         public long playedAtTimestamp = 0;
         private bool isOutOfBoundaries = false;
 
+        public override string componentName => "AudioSource";
+
         private void Awake()
         {
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();
@@ -40,6 +42,12 @@ namespace DCL.Components
                 Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
     
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
+        }
+
+        public override void Initialize(IParcelScene scene, IDCLEntity entity)
+        {
+            base.Initialize(scene, entity);
+            DataStore.i.sceneBoundariesChecker.Add(entity,this);
         }
 
         public void InitDCLAudioClip(DCLAudioClip dclAudioClip)
@@ -175,6 +183,7 @@ namespace DCL.Components
                 Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
+            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
         }
 
         public void UpdateOutOfBoundariesState(bool isInsideBoundaries)

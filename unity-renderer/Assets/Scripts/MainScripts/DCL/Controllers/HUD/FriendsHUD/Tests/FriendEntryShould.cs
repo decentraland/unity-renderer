@@ -30,8 +30,9 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
         var mockSnapshotObserver = new LazyTextureObserver();
         mockSnapshotObserver.RefreshWithTexture(Texture2D.whiteTexture);
 
-        FriendEntry.Model model = new FriendEntry.Model()
+        var model = new FriendEntryModel
         {
+            userId = "userId-1",
             coords = Vector2.one,
             avatarSnapshotObserver = mockSnapshotObserver,
             realm = "realm-test",
@@ -41,18 +42,18 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
             userName = "test-name"
         };
 
-        entry.userId = "userId-1";
         entry.Populate(model);
 
         Assert.AreEqual(model.userName, entry.playerNameText.text);
-        Assert.AreEqual(entry.playerImage.texture, Texture2D.whiteTexture);
     }
 
     [Test]
     public void SendProperEventWhenWhisperButtonIsPressed()
     {
-        var model = new FriendEntry.Model() { };
-        entry.userId = "userId-1";
+        var model = new FriendEntryModel
+        {
+            userId = "userId-1"
+        };
         entry.Populate(model);
         bool buttonPressed = false;
         entry.OnWhisperClick += (x) =>
@@ -67,8 +68,10 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void SendProperEventWhenOnMenuToggleIsPressed()
     {
-        var model = new FriendEntry.Model() { };
-        entry.userId = "userId-1";
+        var model = new FriendEntryModel
+        {
+            userId = "userId-1"
+        };
         entry.Populate(model);
         bool buttonPressed = false;
         entry.OnMenuToggle += (x) =>

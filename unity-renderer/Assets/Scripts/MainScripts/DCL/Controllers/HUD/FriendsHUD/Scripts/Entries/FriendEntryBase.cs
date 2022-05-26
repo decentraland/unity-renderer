@@ -1,94 +1,109 @@
 using System;
-using DCL;
-using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler
 {
-    public class Model
-    {
-        public PresenceStatus status;
-        public string userName;
-        public Vector2 coords;
-        public string realm;
-        public string realmServerName;
-        public string realmLayerName;
-        public ILazyTextureObserver avatarSnapshotObserver;
-        public bool blocked;
-    }
-
-    public Model model { get; private set; } = new Model();
-    [System.NonSerialized] public string userId;
+    public FriendEntryModel Model { get; private set; } = new FriendEntryModel();
 
     public Image playerBlockedImage;
-    public Transform menuPositionReference;
-
+    
+    [SerializeField] private RectTransform menuPositionReference;
     [SerializeField] protected internal TextMeshProUGUI playerNameText;
     [SerializeField] protected internal RawImage playerImage;
     [SerializeField] protected internal Button menuButton;
-    [SerializeField] protected internal Image backgroundImage;
-    [SerializeField] protected internal Sprite hoveredBackgroundSprite;
     [SerializeField] protected internal AudioEvent audioEventHover;
-    protected internal Sprite unhoveredBackgroundSprite;
+    [SerializeField] protected internal GameObject onlineStatusContainer;
+    [SerializeField] protected internal GameObject offlineStatusContainer;
+    [SerializeField] protected internal Button passportButton;
+    
+    private StringVariable currentPlayerInfoCardId;
+    private bool avatarFetchingEnabled;
 
-    public event System.Action<FriendEntryBase> OnMenuToggle;
+    public event Action<FriendEntryBase> OnMenuToggle;
 
     public virtual void Awake()
     {
-        unhoveredBackgroundSprite = backgroundImage.sprite;
         menuButton.onClick.RemoveAllListeners();
         menuButton.onClick.AddListener(() => OnMenuToggle?.Invoke(this));
+        passportButton?.onClick.RemoveAllListeners();
+        passportButton?.onClick.AddListener(ShowUserProfile);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        backgroundImage.sprite = hoveredBackgroundSprite;
-        menuButton.gameObject.SetActive(true);
-
         if (audioEventHover != null)
             audioEventHover.Play(true);
     }
-
-    public void OnPointerExit(PointerEventData eventData)
+    
+    public void Dock(UserContextMenu contextMenuPanel)
     {
-        backgroundImage.sprite = unhoveredBackgroundSprite;
-        menuButton.gameObject.SetActive(false);
-    }
-
-    private void OnEnable()
-    {
-        model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
+        var panelTransform = (RectTransform) contextMenuPanel.transform;
+        panelTransform.pivot = menuPositionReference.pivot;
+        panelTransform.position = menuPositionReference.position;
     }
 
     protected virtual void OnDisable()
     {
-        model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
-        OnPointerExit(null);
+        DisableAvatarSnapshotFetching();
     }
 
     protected void OnDestroy()
     {
-        model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+        DisableAvatarSnapshotFetching();
+    }
+    
+    public virtual void EnableAvatarSnapshotFetching()
+    {
+        if (avatarFetchingEnabled) return;
+        avatarFetchingEnabled = true;
+        // TODO: replace image loading for ImageComponentView implementation
+        Model?.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
+    }
+    
+    public virtual void DisableAvatarSnapshotFetching()
+    {
+        if (!avatarFetchingEnabled) return;
+        avatarFetchingEnabled = false;
+        // TODO: replace image loading for ImageComponentView implementation
+        Model?.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
     }
 
-    public virtual void Populate(Model model)
+    public virtual void Populate(FriendEntryModel model)
     {
         if (playerNameText.text != model.userName)
             playerNameText.text = model.userName;
 
         playerBlockedImage.enabled = model.blocked;
 
-        if (this.model != null && isActiveAndEnabled)
-        {
-            this.model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
-            model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
-        }
+        Model?.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
 
-        this.model = model;
+        if (isActiveAndEnabled && avatarFetchingEnabled)
+            // TODO: replace image loading for ImageComponentView implementation
+            model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
+
+        if (onlineStatusContainer != null)
+            onlineStatusContainer.SetActive(model.status == PresenceStatus.ONLINE && !model.blocked);
+        if (offlineStatusContainer != null)
+            offlineStatusContainer.SetActive(model.status != PresenceStatus.ONLINE && !model.blocked);
+
+        Model = model;
+    }
+    
+    public virtual bool IsVisible(RectTransform container)
+    {
+        if (!gameObject.activeSelf) return false;
+        return ((RectTransform) transform).CountCornersVisibleFrom(container) > 0;
     }
 
     private void OnAvatarImageChange(Texture2D texture) { playerImage.texture = texture; }
+
+    private void ShowUserProfile()
+    {
+        if (currentPlayerInfoCardId == null)
+            currentPlayerInfoCardId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+        currentPlayerInfoCardId.Set(Model.userId);
+    }
 }

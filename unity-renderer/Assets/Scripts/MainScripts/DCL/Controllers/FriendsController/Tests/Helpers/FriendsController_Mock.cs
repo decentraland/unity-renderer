@@ -21,10 +21,24 @@ public class FriendsController_Mock : IFriendsController
         friends.Remove(friendUserId);
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.NONE);
     }
+
+    public bool IsFriend(string userId) => friends.ContainsKey(userId);
     
+    public void RemoveFriend(string friendId)
+    {
+        if (!friends.ContainsKey(friendId)) return;
+        friends.Remove(friendId);
+        OnUpdateFriendship?.Invoke(friendId, FriendshipAction.DELETED);
+    }
+
     public FriendsController.UserStatus GetUserStatus(string userId)
     {
         return friends.ContainsKey(userId) ? friends[userId] : default;
+    }
+
+    public bool ContainsStatus(string friendId, FriendshipStatus status)
+    {
+        return friends.ContainsKey(friendId) && friends[friendId].friendshipStatus == status;
     }
 
     public void RequestFriendship(string friendUserId)

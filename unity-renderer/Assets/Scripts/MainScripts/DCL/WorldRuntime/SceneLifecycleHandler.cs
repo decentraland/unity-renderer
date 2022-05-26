@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
-using DCL.Components;
+using System;
 using DCL.Models;
+using DCL.WorldRuntime;
 using UnityEngine;
 
 namespace DCL.Controllers
@@ -22,10 +21,10 @@ namespace DCL.Controllers
             READY,
         }
 
-        public int disposableNotReadyCount => disposableNotReady.Count;
+        public int pendingResourcesCount => sceneResourcesLoadTracker.pendingResourcesCount;
+        public float loadingProgress => sceneResourcesLoadTracker.loadingProgress;
         public bool isReady => state == State.READY;
 
-        public List<string> disposableNotReady = new List<string>();
         State stateValue = State.NOT_READY;
 
         public State state
@@ -38,8 +37,10 @@ namespace DCL.Controllers
             }
         }
 
-        public event System.Action<ParcelScene> OnSceneReady;
-        public event System.Action<ParcelScene> OnStateRefreshed;
+        public SceneResourcesLoadTracker sceneResourcesLoadTracker { get; }
+
+        public event Action<ParcelScene> OnSceneReady;
+        public event Action<ParcelScene> OnStateRefreshed;
 
         private ParcelScene owner;
 
@@ -48,15 +49,10 @@ namespace DCL.Controllers
             state = State.NOT_READY;
             this.owner = ownerScene;
             owner.OnSetData += OnSceneSetData;
-            owner.componentsManagerLegacy.OnAddSharedComponent += OnAddSharedComponent;
-        }
 
-        private void OnAddSharedComponent(string id, ISharedComponent component)
-        {
-            if (state != State.READY)
-            {
-                disposableNotReady.Add(id);
-            }
+            sceneResourcesLoadTracker = new SceneResourcesLoadTracker();
+            sceneResourcesLoadTracker.Track(owner.componentsManagerLegacy, Environment.i.world.state);
+            sceneResourcesLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
         }
 
         private void OnSceneSetData(LoadParcelScenesMessage.UnityParcelScene data)
@@ -78,21 +74,14 @@ namespace DCL.Controllers
                 SetSceneReady();
         }
 
-        private void OnDisposableReady(ISharedComponent component)
+        private void OnResourcesStatusUpdated()
         {
             if (owner.isReleased)
                 return;
 
-            disposableNotReady.Remove(component.id);
-
             if (VERBOSE)
             {
-                Debug.Log($"{owner.sceneData.basePosition} Disposable objects left... {disposableNotReady.Count}");
-            }
-
-            if (disposableNotReady.Count == 0)
-            {
-                SetSceneReady();
+                Debug.Log($"{owner.sceneData.basePosition} Disposable objects left... {sceneResourcesLoadTracker.pendingResourcesCount}");
             }
 
             OnStateRefreshed?.Invoke(owner);
@@ -113,17 +102,10 @@ namespace DCL.Controllers
             state = State.WAITING_FOR_COMPONENTS;
             owner.RefreshLoadingState();
 
-            if (disposableNotReadyCount > 0)
+            if (sceneResourcesLoadTracker.ShouldWaitForPendingResources())
             {
-                //NOTE(Brian): Here, we have to split the iterations. If not, we will get repeated calls of
-                //             SetSceneReady(), as the disposableNotReady count is 1 and gets to 0
-                //             in each OnDisposableReady() call.
-                //NOTE(Adrian): We 
-                List<ISharedComponent> disposableComponentts = owner.componentsManagerLegacy.GetSceneSharedComponentsDictionary().Values.ToList();
-                for (int i = 0; i < disposableComponentts.Count; i++)
-                {
-                    disposableComponentts[i].CallWhenReady(OnDisposableReady);
-                }
+                sceneResourcesLoadTracker.OnResourcesLoaded -= SetSceneReady;
+                sceneResourcesLoadTracker.OnResourcesLoaded += SetSceneReady;
             }
             else
             {
@@ -137,7 +119,7 @@ namespace DCL.Controllers
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
-            
+
             if (state == State.READY)
                 return;
 
@@ -148,6 +130,10 @@ namespace DCL.Controllers
 
             Environment.i.world.sceneController.SendSceneReady(owner.sceneData.id);
             owner.RefreshLoadingState();
+
+            sceneResourcesLoadTracker.OnResourcesLoaded -= SetSceneReady;
+            sceneResourcesLoadTracker.OnResourcesStatusUpdate -= OnResourcesStatusUpdated;
+            sceneResourcesLoadTracker.Dispose();
 
             OnSceneReady?.Invoke(owner);
         }

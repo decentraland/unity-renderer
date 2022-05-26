@@ -42,7 +42,7 @@ namespace DCL.Helpers
 
         public static string CreateSceneMessage(string sceneId, string tag, string method, string payload) { return $"{sceneId}\t{method}\t{payload}\t{tag}\n"; }
 
-        static int entityCounter = 123;
+        static int entityCounter = 513;
         static int disposableIdCounter = 123;
 
         public static PB_Transform GetPBTransform(Vector3 position, Quaternion rotation, Vector3 scale)
