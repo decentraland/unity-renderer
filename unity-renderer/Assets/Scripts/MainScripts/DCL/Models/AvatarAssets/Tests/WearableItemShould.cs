@@ -51,6 +51,20 @@ namespace AvatarAssets_Test
                 Assert.IsTrue(wearable.DoesHide(category, BODY_SHAPE));
         }
 
+        [Test]
+        public void RemoveBodyshapeFromHidesWhenSanitizing()
+        {
+            var wearable = GivenSkinWearable(new [] { WearableLiterals.Categories.BODY_SHAPE });
+
+            wearable.SanitizeHidesLists();
+
+            Assert.IsFalse(wearable.data.hides.Contains(WearableLiterals.Categories.BODY_SHAPE));
+            foreach (WearableItem.Representation representation in wearable.data.representations)
+            {
+                Assert.IsFalse(representation.overrideHides.Contains(WearableLiterals.Categories.BODY_SHAPE));
+            }
+        }
+
         private WearableItem GivenSkinWearable(string[] customHides)
         {
             var wearable = new WearableItem
@@ -58,7 +72,14 @@ namespace AvatarAssets_Test
                 data = new WearableItem.Data
                 {
                     category = WearableLiterals.Categories.SKIN,
-                    representations = new[] {new WearableItem.Representation {bodyShapes = new[] {BODY_SHAPE}}},
+                    representations = new[]
+                    {
+                        new WearableItem.Representation
+                        {
+                            bodyShapes = new[] { BODY_SHAPE },
+                            overrideHides = customHides
+                        }
+                    },
                     hides = customHides
                 }
             };
