@@ -65,10 +65,7 @@ namespace AvatarSystem
 
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
 
-                if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
-                {
-                    visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
-                }
+                visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
 
                 await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
 
