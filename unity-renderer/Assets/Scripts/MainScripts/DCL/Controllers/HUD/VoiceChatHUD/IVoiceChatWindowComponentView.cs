@@ -8,7 +8,6 @@ public interface IVoiceChatWindowComponentView
     event Action<string> OnAllowUsersFilterChange;
 
     RectTransform Transform { get; }
-    bool IsActive { get; }
 
     void Show(bool instant = false);
     void Hide(bool instant = false);

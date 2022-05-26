@@ -25,7 +25,6 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     public event Action<string> OnAllowUsersFilterChange;
 
     public RectTransform Transform => (RectTransform)transform;
-    public bool IsActive => gameObject.activeInHierarchy;
 
     public override void Awake()
     {
@@ -115,7 +114,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
 
     internal static VoiceChatWindowComponentView Create()
     {
-        VoiceChatWindowComponentView voiceChatWindowComponentView = Instantiate(Resources.Load<GameObject>("SocialBarV1/VoiceChatHUD")).GetComponent<VoiceChatWindowComponentView>();
+        VoiceChatWindowComponentView voiceChatWindowComponentView = Instantiate(Resources.Load<GameObject>("VoiceChatHUD")).GetComponent<VoiceChatWindowComponentView>();
         voiceChatWindowComponentView.name = "_VoiceChatHUD";
 
         return voiceChatWindowComponentView;
