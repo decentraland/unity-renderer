@@ -13,6 +13,7 @@ namespace AvatarSystem
     {
         private const float RESCALING_BOUNDS_FACTOR = 100f;
         internal const string LOADING_VISIBILITY_CONSTRAIN = "Loading";
+        internal const string FACIAL_FEATURE_CONSTRAIN = "FacialFeat";
         private readonly IAvatarCurator avatarCurator;
         private readonly ILoader loader;
         private readonly IAnimator animator;
@@ -65,7 +66,11 @@ namespace AvatarSystem
 
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
 
-                visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
+                visibility.AddFacialFeaturesConstrain(FACIAL_FEATURE_CONSTRAIN);
+                if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
+                {
+                    visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
+                }
 
                 await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
 
@@ -81,6 +86,7 @@ namespace AvatarSystem
 
                 visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers);
                 visibility.RemoveGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
+                visibility.RemoveFacialFeaturesConstrain(FACIAL_FEATURE_CONSTRAIN);
 
                 lod.Bind(gpuSkinning.renderer);
                 gpuSkinningThrottler.Start();
