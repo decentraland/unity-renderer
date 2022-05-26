@@ -18,11 +18,17 @@ namespace DCL.Protobuf
         private const string PATH_TO_COMPONENTS = "/DCLPlugins/ECS7/ProtocolBuffers/Generated";
         private const string PATH_TO_COMPONENTS_DEFINITIONS = "/DCLPlugins/ECS7/ProtocolBuffers/Generated/Definitions";
         private const string PATH_TO_PROTO = "/DCLPlugins/ECS7/ProtocolBuffers/Editor/";
+        private const string COMPILED_VERSION_FILENAME = "version.txt";
         private const string PROTO_FILENAME = "protoc";
+
+        private const string PROTO_VERSION = "3.20.1";
 
         [MenuItem("Decentraland/Protobuf/UpdateModels")]
         public static void UpdateModels()
         {
+            // if(!IsProtoVersionValid())
+                // InstallProtoVersion();
+            
             DownloadProtoDefinitions();
             CompileAllProtobuffDefinitions();
         }
@@ -49,6 +55,7 @@ namespace DCL.Protobuf
             libraryInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryContent["dist-tags"].ToString());
             
             string nextVersion = libraryInfo["next"].ToString();
+            WriteCompiledVersion(nextVersion);
             UnityEngine.Debug.Log("@dcl/ecs next version: " + nextVersion);
             
             // Download the "package.json" of @dcl/ecs@next
@@ -128,7 +135,6 @@ namespace DCL.Protobuf
                     continue;
                 
                 // We get output path
-                string fileNameWithouthExtension = file.Name.Replace(file.Extension, "");
                 string outputPath = Application.dataPath + PATH_TO_COMPONENTS;
                 
                 // We compile the proto
@@ -147,12 +153,90 @@ namespace DCL.Protobuf
 
             Debug.Log("Models has been converted. Success: " +convertedCount + "    Failed: "+failedCount);
         }
+
+        private static bool IsProtoVersionValid()
+        {
+            string version = "--version";
+#if UNITY_EDITOR_WIN
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "protoc", Arguments = version,  RedirectStandardOutput = true };
+
+                Process proc = new Process() { StartInfo = startInfo };
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardError = true;
+                proc.Start();
+
+                string error = proc.StandardError.ReadToEnd();
+                proc.WaitForExit();
+                
+                version = proc.StandardOutput.ReadToEnd();
+                if (version.Contains(PROTO_VERSION))
+                    return true;
+                
+                return false;
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.Log("Protobuf version is not installed");
+                return false;
+            }
+#endif
+        }
+
+        private static void InstallProtoVersion()
+        {
+            string arguments = "install protoc " + PROTO_VERSION;
+            #if UNITY_EDITOR_WIN
+            // 
+            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "choco", Arguments = arguments};
+            
+            Process proc = new Process() { StartInfo = startInfo };
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.Start();
+            
+            string error = proc.StandardError.ReadToEnd();
+
+
+            if (error != "")
+            {
+                UnityEngine.Debug.LogError("Protobuf installation failed : " + error);
+            }
+            #endif
+        }
         
+        [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
         [InitializeOnLoadMethod]
         private static void OnProjectLoadedInEditor()
         {
-            var currentDownloadedVersion = EditorPrefs.GetString("Version", "");
-            
+            var currentDownloadedVersion = EditorPrefs.GetString("Version", "NotDownloaded");
+            var currentVersion = GetCompiledVersion();
+            if (currentVersion != currentDownloadedVersion)
+                UpdateModels();
+        }
+
+        
+        private static string GetCompiledVersion()
+        {
+            string path = Application.dataPath + PATH_TO_PROTO + COMPILED_VERSION_FILENAME;
+            //Read the text from directly from the test.txt file
+            StreamReader reader = new StreamReader(path);
+            string version = reader.ReadToEnd();
+            reader.Close();
+            return version;
+        }
+
+        private static void WriteCompiledVersion(string version)
+        {
+            EditorPrefs.SetString("Version", version);
+
+            string path = Application.dataPath +PATH_TO_PROTO + COMPILED_VERSION_FILENAME;
+            var sr = File.CreateText(path);
+            sr.WriteLine (version);
+            sr.Close();
         }
 
         private static bool CompileProtobufFile(string outputPath , string protoFileName)
