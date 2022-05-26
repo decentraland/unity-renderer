@@ -39,7 +39,7 @@ Material:
     m_Colors:
     - Color_0679a06095a34b1dbe5a595111800b38: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 0, g: 2.0571344, b: 3.9999995, a: 0}
-    - _RevealNormal: {r: 0, g: 1, b: 0, a: 0}
+    - _RevealNormal: {r: 0, g: -1, b: 0, a: 0}
     - _RevealPosition: {r: 0, g: 0, b: 0, a: 0}
     - _SecondaryColor: {r: 3.194459, g: 33.89676, b: 15.663916, a: 0.8862745}
   m_BuildTextureStacks: []
