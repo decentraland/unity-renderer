@@ -184,6 +184,20 @@ public class WearableItem
         return hides;
     }
 
+    public void SanitizeHidesLists()
+    {
+        //remove bodyshape from hides list 
+        if (data.hides != null)
+            data.hides = data.hides.Except(new [] { WearableLiterals.Categories.BODY_SHAPE }).ToArray();
+        for (int i = 0; i < data.representations.Length; i++)
+        {
+            Representation representation = data.representations[i];
+            if (representation.overrideHides != null)
+                representation.overrideHides = representation.overrideHides.Except(new [] { WearableLiterals.Categories.BODY_SHAPE }).ToArray();
+
+        }
+    }
+
     public bool DoesHide(string category, string bodyShape) => GetHidesList(bodyShape).Any(s => s == category);
 
     public bool IsCollectible() { return !string.IsNullOrEmpty(rarity); }
