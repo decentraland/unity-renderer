@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
@@ -8,6 +9,7 @@ using UnityEngine.UI;
 public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowView, IComponentModelConfig
 {
     private const int CREATION_AMOUNT_PER_FRAME = 5;
+    private const int AVATAR_SNAPSHOTS_PER_FRAME = 5;
 
     [SerializeField] private CollapsablePublicChannelListComponentView publicChannelList;
     [SerializeField] private CollapsableDirectChatListComponentView directChatList;
@@ -33,6 +35,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     private bool isSortingDirty;
     private bool isLayoutDirty;
     private Dictionary<string, PrivateChatModel> filteredPrivateChats;
+    private int currentAvatarSnapshotIndex;
 
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
@@ -99,6 +102,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         isLayoutDirty = false;
 
         SetQueuedEntries();
+        FetchProfilePicturesForVisibleEntries();
     }
 
     public void Show() => gameObject.SetActive(true);
@@ -264,5 +268,21 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
         for (var i = 0; i < CREATION_AMOUNT_PER_FRAME && creationQueue.Count > 0; i++)
             Set(creationQueue.Dequeue());
+    }
+    
+    private void FetchProfilePicturesForVisibleEntries()
+    {
+        foreach (var entry in directChatList.Entries.Values.Skip(currentAvatarSnapshotIndex).Take(AVATAR_SNAPSHOTS_PER_FRAME))
+        {
+            if (entry.IsVisible((RectTransform) scroll.transform))
+                entry.EnableAvatarSnapshotFetching();
+            else
+                entry.DisableAvatarSnapshotFetching();
+        }
+
+        currentAvatarSnapshotIndex += AVATAR_SNAPSHOTS_PER_FRAME;
+
+        if (currentAvatarSnapshotIndex >= directChatList.Entries.Count)
+            currentAvatarSnapshotIndex = 0;
     }
 }

@@ -166,7 +166,10 @@ public class WorldChatWindowController : IHUD
         if (ShouldDisplayPrivateChat(message))
             view.SetPrivateChat(CreatePrivateChatModel(message, profile));
         else if (!pendingPrivateChats.Contains(profile.userId))
+        {
             pendingPrivateChats.Enqueue(profile.userId);
+            UpdateMoreChannelsToLoadHint();
+        }
     }
 
     private bool ShouldDisplayPrivateChat(ChatMessage message)
