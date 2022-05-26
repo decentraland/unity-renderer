@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerComponentView, IComponentModelConfig
 {
@@ -9,10 +10,13 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
     [SerializeField] internal Sprite defaultUserSprite;
     [SerializeField] internal TextMeshProUGUI userName;
     [SerializeField] internal ButtonComponentView muteButton;
+    [SerializeField] internal Image muteButtonImage;
     [SerializeField] internal ButtonComponentView unmuteButton;
     [SerializeField] internal GameObject blockedGO;
     [SerializeField] internal GameObject friendLabel;
     [SerializeField] internal GameObject backgroundHover;
+    [SerializeField] internal Color talkingColor;
+    [SerializeField] internal Color nonTalkingColor;
 
     [Header("Configuration")]
     [SerializeField] internal VoiceChatPlayerComponentModel model;
@@ -38,9 +42,10 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
         if (model == null)
             return;
 
-        SetUserImage(model.userImage);
+        SetUserImage(model.userImageUrl);
         SetUserName(model.userName);
         SetAsMuted(model.isMuted);
+        SetAsTalking(model.isTalking);
         SetAsBlocked(model.isBlocked);
         SetAsFriend(model.isFriend);
         SetBackgroundHover(model.isBackgroundHover);
@@ -48,15 +53,15 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
 
     public void SetUserId(string userId) { model.userId = userId; }
 
-    public void SetUserImage(Texture2D texture)
+    public void SetUserImage(string url)
     {
-        model.userImage = texture;
+        model.userImageUrl = url;
 
         if (avatarPreview == null)
             return;
 
-        if (texture != null)
-            avatarPreview.SetImage(texture);
+        if (!string.IsNullOrEmpty(url))
+            avatarPreview.SetImage(url);
         else
             avatarPreview.SetImage(defaultUserSprite);
     }
@@ -82,6 +87,16 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
             unmuteButton.gameObject.SetActive(isMuted);
 
         OnMuteUser?.Invoke(model.userId, isMuted);
+    }
+
+    public void SetAsTalking(bool isTalking)
+    {
+        model.isTalking = isTalking;
+
+        if (muteButtonImage == null)
+            return;
+
+        muteButtonImage.color = isTalking ? talkingColor : nonTalkingColor;
     }
 
     public void SetAsBlocked(bool isBlocked)
@@ -120,5 +135,19 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
 
         muteButton.onClick.RemoveAllListeners();
         unmuteButton.onClick.RemoveAllListeners();
+    }
+
+    public override void OnFocus()
+    {
+        base.OnFocus();
+
+        SetBackgroundHover(true);
+    }
+
+    public override void OnLoseFocus()
+    {
+        base.OnLoseFocus();
+
+        SetBackgroundHover(false);
     }
 }
