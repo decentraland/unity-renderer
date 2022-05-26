@@ -12,8 +12,8 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
     {
         get
         {
-            int sharedComponentsCount = resourcesReady.Count;
-            return sharedComponentsCount > 0 ? (sharedComponentsCount - pendingResourcesCount) * 100f / sharedComponentsCount : 100f;
+            int resourcesReadyCount = resourcesReady.Count;
+            return resourcesReadyCount > 0 ? (resourcesReadyCount - pendingResourcesCount) * 100f / resourcesReadyCount : 100f;
         }
     }
     

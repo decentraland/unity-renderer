@@ -39,6 +39,11 @@ namespace DCL.ECSComponents
                 generatedMesh = shape.mesh;
                 GenerateRenderer(generatedMesh, scene, entity, model);
             };
+            primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
+            {
+                DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((scene.sceneData.id, model));
+            };
+            
             DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((scene.sceneData.id, model));
             AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
         }

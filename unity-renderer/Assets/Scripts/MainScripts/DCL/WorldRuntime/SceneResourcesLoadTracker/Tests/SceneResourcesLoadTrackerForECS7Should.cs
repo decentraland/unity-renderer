@@ -13,7 +13,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class SceneResourcesLoadTrackerForECSShould
+    public class SceneResourcesLoadTrackerForECS7Should
     {
         private SceneResourcesLoadTracker resourcesLoadTracker;
         private ECSBoxShapeComponentHandler hanlder;

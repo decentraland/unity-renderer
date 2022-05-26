@@ -57,15 +57,17 @@ namespace DCL.Controllers
             // This is done while the two ECS are living together, if we detect that a component from the new ECS has incremented a 
             // resource for the scene, we changed the track since that means that this scene is from the new ECS.
             // This should disappear when the old ecs is removed from the project. This should be the default track 
-            DataStore.i.ecs7.pendingSceneResources.OnRefCountUpdated += ( sceneId,  amount) =>
-            {
-                if (sceneId.sceneId != ownerScene.sceneData.id)
-                    return;
-                
-                sceneResourcesLoadTracker.Dispose();
-                sceneResourcesLoadTracker.Track(sceneId.sceneId);
-                sceneResourcesLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
-            };
+            DataStore.i.ecs7.pendingSceneResources.OnRefCountUpdated += ChangeTrackingSystem;
+        }
+
+        private void ChangeTrackingSystem((string sceneId, object model) kvp, int amount)
+        {
+            DataStore.i.ecs7.pendingSceneResources.OnRefCountUpdated -= ChangeTrackingSystem;
+            if (kvp.sceneId != owner.sceneData.id)
+                return;
+            
+            sceneResourcesLoadTracker.Dispose();
+            sceneResourcesLoadTracker.Track(kvp.sceneId);
         }
 
         private void OnSceneSetData(LoadParcelScenesMessage.UnityParcelScene data)
