@@ -1,17 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using DCL;
-using UnityEngine;
+using System;
+using DCL.ECSRuntime;
 
-public class ECS7ComponentsPlugin : IPlugin
+public class ECS7ComponentsPlugin : IDisposable
 {
-    public ECS7ComponentsPlugin()
-    {
-        // When we have clear how do we want to create components in the scenes, we should register here the components
-    }
-    
-    public void Dispose()
-    {
-        
-    }
+    public ECS7ComponentsPlugin(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter) { }
+
+    public void Dispose() { }
 }
