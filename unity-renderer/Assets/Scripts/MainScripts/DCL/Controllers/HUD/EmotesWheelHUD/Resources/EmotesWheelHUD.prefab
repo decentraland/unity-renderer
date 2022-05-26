@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -1.0469}
-  m_SizeDelta: {x: 114.5, y: 107}
+  m_SizeDelta: {x: 114.5, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2283060996213204405
 CanvasRenderer:
@@ -91,7 +91,7 @@ MonoBehaviour:
   img: {fileID: 3286633422065939508}
   mask: {fileID: 2800000, guid: ec2731182caf94ac1a2c3e37bed6c769, type: 3}
   innerColor: {r: 1, g: 1, b: 1, a: 1}
-  frameThickness: 1.04
+  frameThickness: {x: 1.04, y: 1.04}
   useTexture: 0
   gradientTexture: {fileID: 0}
   gradient:
@@ -311,7 +311,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -1.0469}
-  m_SizeDelta: {x: 114.5, y: 107}
+  m_SizeDelta: {x: 114.5, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4127546871641725451
 CanvasRenderer:
@@ -366,7 +366,7 @@ MonoBehaviour:
   img: {fileID: 7945366254323254870}
   mask: {fileID: 2800000, guid: ec2731182caf94ac1a2c3e37bed6c769, type: 3}
   innerColor: {r: 1, g: 1, b: 1, a: 1}
-  frameThickness: 1.04
+  frameThickness: {x: 1.04, y: 1.04}
   useTexture: 0
   gradientTexture: {fileID: 0}
   gradient:
@@ -2784,7 +2784,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -1.0469}
-  m_SizeDelta: {x: 114.5, y: 107}
+  m_SizeDelta: {x: 114.5, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &717648573501102964
 CanvasRenderer:
@@ -2839,7 +2839,7 @@ MonoBehaviour:
   img: {fileID: 1463959975058437995}
   mask: {fileID: 2800000, guid: ec2731182caf94ac1a2c3e37bed6c769, type: 3}
   innerColor: {r: 1, g: 1, b: 1, a: 1}
-  frameThickness: 1.04
+  frameThickness: {x: 1.04, y: 1.04}
   useTexture: 0
   gradientTexture: {fileID: 0}
   gradient:
@@ -3095,7 +3095,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -1.0469}
-  m_SizeDelta: {x: 114.5, y: 107}
+  m_SizeDelta: {x: 114.5, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8330271004773772298
 CanvasRenderer:
@@ -3150,7 +3150,7 @@ MonoBehaviour:
   img: {fileID: 5544463382206390233}
   mask: {fileID: 2800000, guid: ec2731182caf94ac1a2c3e37bed6c769, type: 3}
   innerColor: {r: 1, g: 1, b: 1, a: 1}
-  frameThickness: 1.04
+  frameThickness: {x: 1.04, y: 1.04}
   useTexture: 0
   gradientTexture: {fileID: 0}
   gradient:
@@ -3220,7 +3220,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -1.0469}
-  m_SizeDelta: {x: 114.5, y: 107}
+  m_SizeDelta: {x: 114.5, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7067273748789679836
 CanvasRenderer:
@@ -3275,7 +3275,7 @@ MonoBehaviour:
   img: {fileID: 4590362429385779218}
   mask: {fileID: 2800000, guid: ec2731182caf94ac1a2c3e37bed6c769, type: 3}
   innerColor: {r: 1, g: 1, b: 1, a: 1}
-  frameThickness: 1.04
+  frameThickness: {x: 1.04, y: 1.04}
   useTexture: 0
   gradientTexture: {fileID: 0}
   gradient:
@@ -4726,7 +4726,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -1.0469}
-  m_SizeDelta: {x: 114.5, y: 107}
+  m_SizeDelta: {x: 114.5, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7630876635705954429
 CanvasRenderer:
@@ -4781,7 +4781,7 @@ MonoBehaviour:
   img: {fileID: 8492539868596387011}
   mask: {fileID: 2800000, guid: ec2731182caf94ac1a2c3e37bed6c769, type: 3}
   innerColor: {r: 1, g: 1, b: 1, a: 1}
-  frameThickness: 1.04
+  frameThickness: {x: 1.04, y: 1.04}
   useTexture: 0
   gradientTexture: {fileID: 0}
   gradient:
@@ -4851,7 +4851,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -1.0469}
-  m_SizeDelta: {x: 114.5, y: 107}
+  m_SizeDelta: {x: 114.5, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7533207923114459259
 CanvasRenderer:
@@ -4906,7 +4906,7 @@ MonoBehaviour:
   img: {fileID: 2067691739005265287}
   mask: {fileID: 2800000, guid: ec2731182caf94ac1a2c3e37bed6c769, type: 3}
   innerColor: {r: 1, g: 1, b: 1, a: 1}
-  frameThickness: 1.04
+  frameThickness: {x: 1.04, y: 1.04}
   useTexture: 0
   gradientTexture: {fileID: 0}
   gradient:
@@ -5473,7 +5473,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -1.0469}
-  m_SizeDelta: {x: 114.5, y: 107}
+  m_SizeDelta: {x: 114.5, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3130572195893489946
 CanvasRenderer:
@@ -5528,7 +5528,7 @@ MonoBehaviour:
   img: {fileID: 8634535747397050840}
   mask: {fileID: 2800000, guid: ec2731182caf94ac1a2c3e37bed6c769, type: 3}
   innerColor: {r: 1, g: 1, b: 1, a: 1}
-  frameThickness: 1.04
+  frameThickness: {x: 1.04, y: 1.04}
   useTexture: 0
   gradientTexture: {fileID: 0}
   gradient:
@@ -6145,7 +6145,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -1.0469}
-  m_SizeDelta: {x: 114.5, y: 107}
+  m_SizeDelta: {x: 114.5, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7177369068492606285
 CanvasRenderer:
@@ -6200,7 +6200,7 @@ MonoBehaviour:
   img: {fileID: 8090275741662082595}
   mask: {fileID: 2800000, guid: ec2731182caf94ac1a2c3e37bed6c769, type: 3}
   innerColor: {r: 1, g: 1, b: 1, a: 1}
-  frameThickness: 1.04
+  frameThickness: {x: 1.04, y: 1.04}
   useTexture: 0
   gradientTexture: {fileID: 0}
   gradient:
@@ -7589,7 +7589,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -1.0469}
-  m_SizeDelta: {x: 114.5, y: 107}
+  m_SizeDelta: {x: 114.5, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7145619506874713435
 CanvasRenderer:
@@ -7644,7 +7644,7 @@ MonoBehaviour:
   img: {fileID: 3672579526309914589}
   mask: {fileID: 2800000, guid: ec2731182caf94ac1a2c3e37bed6c769, type: 3}
   innerColor: {r: 1, g: 1, b: 1, a: 1}
-  frameThickness: 1.04
+  frameThickness: {x: 1.04, y: 1.04}
   useTexture: 0
   gradientTexture: {fileID: 0}
   gradient:

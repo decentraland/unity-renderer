@@ -9,7 +9,7 @@ public class UIRadialRainbow : MonoBehaviour
     public Image img;
     public Texture mask;
     public Color innerColor = Color.white;
-    public float frameThickness = 1f;
+    public Vector2 frameThickness = new Vector2(1f,1f);
     public bool useTexture;
     public Texture gradientTexture;
     public Gradient gradient;
@@ -44,7 +44,7 @@ public class UIRadialRainbow : MonoBehaviour
     {
         targetMat.SetTexture("_Mask", mask);
         targetMat.SetColor("_InnerColor", innerColor);
-        targetMat.SetFloat("_FrameThickness", frameThickness);
+        targetMat.SetVector("_FrameThickness", frameThickness);
         targetMat.SetTexture("_Ramp", gradientTexture);
         targetMat.SetVector("_Speed", speed);
         targetMat.SetFloat("_Rotation", rotation);
