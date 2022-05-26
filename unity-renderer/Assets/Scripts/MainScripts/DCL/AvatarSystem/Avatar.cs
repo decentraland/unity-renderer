@@ -66,7 +66,7 @@ namespace AvatarSystem
 
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
 
-                visibility.AddFacialFeaturesConstrain(FACIAL_FEATURE_CONSTRAIN);
+                //visibility.AddFacialFeaturesConstrain(FACIAL_FEATURE_CONSTRAIN);
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
@@ -86,7 +86,7 @@ namespace AvatarSystem
 
                 visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers);
                 visibility.RemoveGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
-                visibility.RemoveFacialFeaturesConstrain(FACIAL_FEATURE_CONSTRAIN);
+                //visibility.RemoveFacialFeaturesConstrain(FACIAL_FEATURE_CONSTRAIN);
 
                 lod.Bind(gpuSkinning.renderer);
                 gpuSkinningThrottler.Start();
