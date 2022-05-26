@@ -147,6 +147,13 @@ namespace DCL.Protobuf
 
             Debug.Log("Models has been converted. Success: " +convertedCount + "    Failed: "+failedCount);
         }
+        
+        [InitializeOnLoadMethod]
+        private static void OnProjectLoadedInEditor()
+        {
+            var currentDownloadedVersion = EditorPrefs.GetString("Version", "");
+            
+        }
 
         private static bool CompileProtobufFile(string outputPath , string protoFileName)
         {
