@@ -51,6 +51,24 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         add => friendsTab.OnDeleteConfirmation += value;
         remove => friendsTab.OnDeleteConfirmation -= value;
     }
+    
+    public event Action OnRequireMoreFriends
+    {
+        add => friendsTab.OnRequireMoreFriends += value;
+        remove => friendsTab.OnRequireMoreFriends -= value;
+    }
+
+    public event Action OnRequireMoreFriendRequests
+    {
+        add => friendRequestsTab.OnRequireMoreEntries += value;
+        remove => friendRequestsTab.OnRequireMoreEntries -= value;
+    }
+
+    public event Action<string> OnSearchFriendsRequested
+    {
+        add => friendsTab.OnSearchRequested += value;
+        remove => friendsTab.OnSearchRequested -= value;
+    }
 
     public event Action OnClose;
 
@@ -60,6 +78,9 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     {
         set => friendsTab.ListByOnlineStatus = value;
     }
+
+    public int FriendCount => friendsTab.Count;
+    public int FriendRequestCount => friendRequestsTab.Count;
 
     public static FriendsHUDComponentView Create()
     {
@@ -109,12 +130,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         return (FriendEntryBase) friendsTab.Get(userId) ?? friendRequestsTab.Get(userId);
     }
 
-    public void UpdateEntry(string userId, FriendEntryBase.Model model)
-    {
-        friendsTab.Populate(userId, model);
-        friendRequestsTab.Populate(userId, model);
-    }
-
     public void DisplayFriendUserNotFound() => friendRequestsTab.ShowUserNotFoundNotification();
 
     public bool IsFriendListCreationReady() => friendsTab.DidDeferredCreationCompleted;
@@ -135,9 +150,9 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         gameObject.SetActive(false);
     }
 
-    public void UpdateFriendshipStatus(string userId,
+    public void Set(string userId,
         FriendshipAction friendshipAction,
-        FriendEntryBase.Model friendEntryModel)
+        FriendEntryModel model)
     {
         switch (friendshipAction)
         {
@@ -147,31 +162,59 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
                 break;
             case FriendshipAction.APPROVED:
                 friendRequestsTab.Remove(userId);
-                friendsTab.Enqueue(userId, friendEntryModel);
+                friendsTab.Enqueue(userId, model);
                 break;
             case FriendshipAction.REJECTED:
                 friendRequestsTab.Remove(userId);
+                friendsTab.Remove(userId);
                 break;
             case FriendshipAction.CANCELLED:
                 friendRequestsTab.Remove(userId);
+                friendsTab.Remove(userId);
                 break;
             case FriendshipAction.REQUESTED_FROM:
-                friendRequestsTab.Set(userId, friendEntryModel, true);
+                friendRequestsTab.Enqueue(userId, new FriendRequestEntryModel(model, true));
+                friendsTab.Remove(userId);
                 break;
             case FriendshipAction.REQUESTED_TO:
-                friendRequestsTab.Set(userId, friendEntryModel, false);
+                friendRequestsTab.Enqueue(userId, new FriendRequestEntryModel(model, false));
+                friendsTab.Remove(userId);
                 break;
             case FriendshipAction.DELETED:
                 friendRequestsTab.Remove(userId);
                 friendsTab.Remove(userId);
                 break;
             default:
-                Debug.LogError($"UpdateFriendshipStatus not supported: {friendshipAction}");
+                Debug.LogError($"FriendshipAction not supported: {friendshipAction}");
                 break;
         }
     }
 
-    public void Search(string userId) => FilterFriends(userId);
+    public void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model)
+    {
+        switch (friendshipStatus)
+        {
+            case FriendshipStatus.FRIEND:
+                friendsTab.Enqueue(userId, model);
+                friendRequestsTab.Remove(userId);
+                break;
+            case FriendshipStatus.NOT_FRIEND:
+                friendsTab.Remove(userId);
+                friendRequestsTab.Remove(userId);
+                break;
+            case FriendshipStatus.REQUESTED_TO:
+                friendsTab.Remove(userId);
+                friendRequestsTab.Enqueue(userId, new FriendRequestEntryModel(model, false));
+                break;
+            case FriendshipStatus.REQUESTED_FROM:
+                friendsTab.Remove(userId);
+                friendRequestsTab.Enqueue(userId, new FriendRequestEntryModel(model, true));
+                break;
+            default:
+                Debug.LogError($"FriendshipStatus not supported: {friendshipStatus}");
+                break;
+        }
+    }
 
     public bool IsActive() => gameObject.activeInHierarchy;
 
@@ -189,6 +232,21 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     {
         friendRequestsTab.ShowRequestSuccessfullySentNotification();
     }
+
+    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount) => friendsTab.ShowMoreFriendsToLoadHint(pendingFriendsCount);
+
+    public void HideMoreFriendsToLoadHint() => friendsTab.HideMoreFriendsToLoadHint();
+
+    public void ShowMoreRequestsToLoadHint(int pendingRequestsCount) =>
+        friendRequestsTab.ShowMoreFriendsToLoadHint(pendingRequestsCount);
+
+    public void HideMoreRequestsToLoadHint() => friendRequestsTab.HideMoreFriendsToLoadHint();
+
+    public bool ContainsFriend(string userId) => friendsTab.Get(userId) != null;
+
+    public void FilterFriends(Dictionary<string, FriendEntryModel> friends) => friendsTab.Filter(friends);
+
+    public void ClearFriendFilter() => friendsTab.ClearFilter();
 
     public override void RefreshControl()
     {
@@ -221,11 +279,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         }
         else
             throw new IndexOutOfRangeException();
-    }
-
-    private void FilterFriends(string search)
-    {
-        friendsTab.Filter(search);
     }
 
     [Serializable]
