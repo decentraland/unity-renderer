@@ -9,15 +9,16 @@ public class VoiceChatWindowController : IHUD
 {
     const float MUTE_STATUS_UPDATE_INTERVAL = 0.3f;
 
-    IVoiceChatWindowComponentView view;
-    ISocialAnalytics socialAnalytics;
-
     public IVoiceChatWindowComponentView View => view;
     
-    private UserProfile profile => UserProfile.GetOwnUserProfile();
+    private UserProfile ownProfile => UserProfile.GetOwnUserProfile();
     private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
+    private IVoiceChatWindowComponentView view;
+    private ISocialAnalytics socialAnalytics;
     private readonly HashSet<string> trackedUsersHashSet = new HashSet<string>();
+    private readonly Queue<VoiceChatPlayerComponentView> playersPool;
+    private readonly Dictionary<string, VoiceChatPlayerComponentView> currentPlayers;
     private readonly List<string> usersToMute = new List<string>();
     private readonly List<string> usersToUnmute = new List<string>();
     private Coroutine updateMuteStatusRoutine = null;    
@@ -26,13 +27,15 @@ public class VoiceChatWindowController : IHUD
     {
         this.socialAnalytics = socialAnalytics;
 
-        view = CreateView();
+        view = CreateVoiceChatWindowView();
         view.Hide(instant: true);
-        view.OnClose += OnViewClosed;
-        view.OnRequestMuteUser += OnMuteUser;
+        view.OnClose += CloseView;
         otherPlayers.OnAdded += OnOtherPlayersStatusAdded;
         otherPlayers.OnRemoved += OnOtherPlayerStatusRemoved;
-        profile.OnUpdate += OnUserProfileUpdate;
+        ownProfile.OnUpdate += OnUserProfileUpdated;
+
+        currentPlayers = new Dictionary<string, VoiceChatPlayerComponentView>();
+        playersPool = new Queue<VoiceChatPlayerComponentView>();
     }
 
     public void SetVisibility(bool visible)
@@ -43,6 +46,25 @@ public class VoiceChatWindowController : IHUD
             view.Hide();
     }
 
+    public void SetUsersMuted(string[] usersId, bool isMuted)
+    {
+        for (int i = 0; i < usersId.Length; i++)
+        {
+            if (!currentPlayers.TryGetValue(usersId[i], out VoiceChatPlayerComponentView elementView))
+                continue;
+                
+            elementView.SetAsMuted(isMuted);
+        }
+    }
+
+    public void SetUserRecording(string userId, bool isRecording)
+    {
+        if (!currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView elementView))
+            return;
+
+        elementView.SetAsTalking(isRecording);
+    }
+
     public void Dispose()
     {
         ReportMuteStatuses();
@@ -50,26 +72,98 @@ public class VoiceChatWindowController : IHUD
         if (updateMuteStatusRoutine != null)
             CoroutineStarter.Stop(updateMuteStatusRoutine);
 
-        view.OnClose -= OnViewClosed;
-        view.OnRequestMuteUser -= OnMuteUser;
+        view.OnClose -= CloseView;
         otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
         otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
-        profile.OnUpdate -= OnUserProfileUpdate;
+        ownProfile.OnUpdate -= OnUserProfileUpdated;
+
+        currentPlayers.Clear();
+        playersPool.Clear();
     }
 
-    internal void OnViewClosed() { SetVisibility(false); }
+    internal void CloseView() { SetVisibility(false); }
 
-    internal void OnMuteUser(string userId, bool mute)
+    internal void OnOtherPlayersStatusAdded(string userId, Player player)
     {
-        var list = mute ? usersToMute : usersToUnmute;
+        if (!currentPlayers.ContainsKey(player.id))
+        {
+            var otherProfile = UserProfileController.userProfilesCatalog.Get(player.id);
+
+            if (otherProfile != null)
+            {
+                VoiceChatPlayerComponentView elementView = null;
+                if (playersPool.Count > 0)
+                    elementView = playersPool.Dequeue();
+                else
+                {
+                    elementView = view.CreateNewPlayerInstance();
+                    elementView.OnMuteUser += MuteUser;
+                }
+
+                elementView.Configure(new VoiceChatPlayerComponentModel
+                {
+                    userId = otherProfile.userId,
+                    userImageUrl = otherProfile.face256SnapshotURL,
+                    userName = otherProfile.userName,
+                    isMuted = false,
+                    isTalking = false,
+                    isBlocked = false,
+                    isFriend = false,
+                    isBackgroundHover = false
+                });
+
+                elementView.SetActive(true);
+                currentPlayers.Add(player.id, elementView);
+                view.SetNumberOfPlayers(currentPlayers.Count);
+                CheckListEmptyState();
+            }
+        }
+
+        if (!trackedUsersHashSet.Contains(userId))
+        {
+            trackedUsersHashSet.Add(userId);
+
+            bool isMuted = ownProfile.muted.Contains(userId);
+            bool isBlocked = ownProfile.blocked != null ? ownProfile.blocked.Contains(userId) : false;
+
+            if (currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView elementView))
+            {
+                elementView.SetAsMuted(isMuted);
+                elementView.SetAsBlocked(isBlocked);
+            }
+        }
+    }
+
+    internal void OnOtherPlayerStatusRemoved(string userId, Player player)
+    {
+        if (trackedUsersHashSet.Contains(userId))
+            trackedUsersHashSet.Remove(userId);
+
+        if (!currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView elementView))
+            return;
+
+        if (!elementView)
+            return;
+
+        playersPool.Enqueue(elementView);
+        currentPlayers.Remove(userId);
+        view.SetNumberOfPlayers(currentPlayers.Count);
+        CheckListEmptyState();
+
+        elementView.SetActive(false);
+    }
+
+    internal void CheckListEmptyState() { view.SetEmptyListActive(currentPlayers.Count == 0); }
+
+    internal void MuteUser(string userId, bool isMuted)
+    {
+        var list = isMuted ? usersToMute : usersToUnmute;
         list.Add(userId);
 
         if (updateMuteStatusRoutine == null)
-        {
             updateMuteStatusRoutine = CoroutineStarter.Start(MuteStateUpdateRoutine());
-        }
 
-        if (mute)
+        if (isMuted)
             socialAnalytics.SendPlayerMuted(userId);
         else
             socialAnalytics.SendPlayerUnmuted(userId);
@@ -85,51 +179,28 @@ public class VoiceChatWindowController : IHUD
     internal void ReportMuteStatuses()
     {
         if (usersToUnmute.Count > 0)
-        {
             WebInterface.SetMuteUsers(usersToUnmute.ToArray(), false);
-        }
+
         if (usersToMute.Count > 0)
-        {
             WebInterface.SetMuteUsers(usersToMute.ToArray(), true);
-        }
+
         usersToUnmute.Clear();
         usersToMute.Clear();
     }
 
-    internal void OnOtherPlayersStatusAdded(string userId, Player player)
-    {
-        view.AddOrUpdatePlayer(player);
-
-        if (!trackedUsersHashSet.Contains(userId))
-        {
-            trackedUsersHashSet.Add(userId);
-
-            bool isMuted = profile.muted.Contains(userId);
-            bool isBlocked = profile.blocked != null ? profile.blocked.Contains(userId) : false;
-
-            view.SetUserMuted(userId, isMuted);
-            view.SetUserBlocked(userId, isBlocked);
-        }
-    }
-
-    internal void OnOtherPlayerStatusRemoved(string userId, Player player)
-    {
-        if (trackedUsersHashSet.Contains(userId))
-            trackedUsersHashSet.Remove(userId);
-
-        view.RemoveUser(userId);
-    }
-
-    private void OnUserProfileUpdate(UserProfile profile)
+    internal void OnUserProfileUpdated(UserProfile profile)
     {
         using (var iterator = trackedUsersHashSet.GetEnumerator())
         {
             while (iterator.MoveNext())
             {
-                view.SetUserBlocked(iterator.Current, profile.blocked != null ? profile.blocked.Contains(iterator.Current) : false);
+                if (currentPlayers.TryGetValue(iterator.Current, out VoiceChatPlayerComponentView elementView))
+                    elementView.SetAsBlocked(profile.blocked != null ? profile.blocked.Contains(iterator.Current) : false);
             }
         }
     }
 
-    protected internal virtual IVoiceChatWindowComponentView CreateView() => VoiceChatWindowComponentView.Create();
+    protected internal virtual IVoiceChatWindowComponentView CreateVoiceChatWindowView() => VoiceChatWindowComponentView.Create();
+
+    protected internal virtual IVoiceChatPlayerComponentView CreateVoiceChatPlayerView() => VoiceChatPlayerComponentView.Create();
 }

@@ -27,8 +27,17 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
     {
         base.Awake();
 
-        muteButton.onClick.AddListener(() => SetAsMuted(true));
-        unmuteButton.onClick.AddListener(() => SetAsMuted(false));
+        muteButton.onClick.AddListener(() =>
+        {
+            SetAsMuted(true);
+            OnMuteUser?.Invoke(model.userId, true);
+        });
+
+        unmuteButton.onClick.AddListener(() =>
+        {
+            SetAsMuted(false);
+            OnMuteUser?.Invoke(model.userId, false);
+        });
     }
 
     public void Configure(BaseComponentModel newModel)
@@ -85,8 +94,6 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
 
         if (unmuteButton != null)
             unmuteButton.gameObject.SetActive(isMuted);
-
-        OnMuteUser?.Invoke(model.userId, isMuted);
     }
 
     public void SetAsTalking(bool isTalking)
@@ -129,13 +136,7 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
         backgroundHover.SetActive(isHover);
     }
 
-    public override void Dispose()
-    {
-        base.Dispose();
-
-        muteButton.onClick.RemoveAllListeners();
-        unmuteButton.onClick.RemoveAllListeners();
-    }
+    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
     public override void OnFocus()
     {
@@ -149,5 +150,21 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
         base.OnLoseFocus();
 
         SetBackgroundHover(false);
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        muteButton.onClick.RemoveAllListeners();
+        unmuteButton.onClick.RemoveAllListeners();
+    }
+
+    internal static VoiceChatPlayerComponentView Create()
+    {
+        VoiceChatPlayerComponentView voiceChatWindowComponentView = Instantiate(Resources.Load<GameObject>("VoiceChatPlayer")).GetComponent<VoiceChatPlayerComponentView>();
+        voiceChatWindowComponentView.name = "_VoiceChatPlayer";
+
+        return voiceChatWindowComponentView;
     }
 }

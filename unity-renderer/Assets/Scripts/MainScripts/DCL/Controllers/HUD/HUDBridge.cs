@@ -52,12 +52,14 @@ public class HUDBridge : MonoBehaviour
     {
         var model = JsonUtility.FromJson<UserTalkingModel>(payload);
         HUDController.i.usersAroundListHud?.SetUserRecording(model.userId, model.talking);
+        HUDController.i.voiceChatHud?.SetUserRecording(model.userId, model.talking);
     }
 
     public void SetUsersMuted(string payload)
     {
         var model = JsonUtility.FromJson<UserMutedModel>(payload);
         HUDController.i.usersAroundListHud?.SetUsersMuted(model.usersId, model.muted);
+        HUDController.i.voiceChatHud?.SetUsersMuted(model.usersId, model.muted);
     }
 
     public void RequestTeleport(string teleportDataJson) { HUDController.i.teleportHud?.RequestTeleport(teleportDataJson); }

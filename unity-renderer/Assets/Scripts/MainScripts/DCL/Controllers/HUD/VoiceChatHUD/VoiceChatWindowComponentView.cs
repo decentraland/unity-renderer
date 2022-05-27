@@ -18,35 +18,24 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     [SerializeField] private ButtonComponentView leaveButton;
     [SerializeField] private TMP_Text playersText;
     [SerializeField] private DropdownComponentView allowUsersDropdown;
-    [SerializeField] private VoiceChatPlayerComponentView userElementView;
-    [SerializeField] private Transform usersContainer;
     [SerializeField] private GameObject emptyListGameObject;
+    [SerializeField] private VoiceChatPlayerComponentView playerPrefab;
+    [SerializeField] private Transform usersContainer;
 
     public event Action OnClose;
     public event Action<bool> OnJoinVoiceChat;
     public event Action<string> OnAllowUsersFilterChange;
-    public event Action<string, bool> OnRequestMuteUser;
 
     public RectTransform Transform => (RectTransform)transform;
-
-    internal Queue<VoiceChatPlayerComponentView> availableElements;
-    internal Dictionary<string, VoiceChatPlayerComponentView> userElementDictionary;
 
     public override void Awake()
     {
         base.Awake();
 
-        availableElements = new Queue<VoiceChatPlayerComponentView>();
-        userElementDictionary = new Dictionary<string, VoiceChatPlayerComponentView>();
-
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         joinButton.onClick.AddListener(() => SetAsJoined(true));
         leaveButton.onClick.AddListener(() => SetAsJoined(false));
         allowUsersDropdown.OnOptionSelectionChanged += AllowUsersOptionChanged;
-
-        userElementView.OnMuteUser += OnMuteUser;
-        userElementView.gameObject.SetActive(false);
-        availableElements.Enqueue(userElementView);
     }
 
     public override void Start()
@@ -66,96 +55,18 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
 
     public void SetNumberOfPlayers(int numPlayers) { playersText.text = $"PLAYERS ({numPlayers})"; }
 
-    public void AddOrUpdatePlayer(Player player)
-    {
-        if (userElementDictionary.ContainsKey(player.id))
-            return;
+    public void SetEmptyListActive(bool isActive) { emptyListGameObject.SetActive(isActive); }
 
-        var profile = UserProfileController.userProfilesCatalog.Get(player.id);
-
-        if (profile == null)
-            return;
-
-        VoiceChatPlayerComponentView view = null;
-        if (availableElements.Count > 0)
-        {
-            view = availableElements.Dequeue();
-        }
-        else
-        {
-            view = Instantiate(userElementView, usersContainer);
-            view.OnMuteUser += OnMuteUser;
-        }
-
-        view.gameObject.SetActive(true);
-        view.Configure(new VoiceChatPlayerComponentModel
-        {
-            userId = profile.userId,
-            userImageUrl = profile.face256SnapshotURL,
-            userName = profile.userName,
-            isMuted = false,
-            isTalking = false,
-            isBlocked = false,
-            isFriend = false,
-            isBackgroundHover = false
-        });
-
-        userElementDictionary.Add(player.id, view);
-        SetNumberOfPlayers(userElementDictionary.Count);
-        CheckListEmptyState();
-    }
-
-    public void RemoveUser(string userId)
-    {
-        if (!userElementDictionary.TryGetValue(userId, out VoiceChatPlayerComponentView elementView))
-            return;
-
-        if (!elementView)
-            return;
-
-        PoolElementView(elementView);
-        userElementDictionary.Remove(userId);
-        SetNumberOfPlayers(userElementDictionary.Count);
-        CheckListEmptyState();
-    }
-
-    public void SetUserRecording(string userId, bool isRecording)
-    {
-        if (!userElementDictionary.TryGetValue(userId, out VoiceChatPlayerComponentView elementView))
-            return;
-
-        elementView.SetAsTalking(isRecording);
-    }
-
-    public void SetUserMuted(string userId, bool isMuted)
-    {
-        if (!userElementDictionary.TryGetValue(userId, out VoiceChatPlayerComponentView elementView))
-            return;
-
-        elementView.SetAsMuted(isMuted);
-    }
-
-    public void SetUserBlocked(string userId, bool blocked)
-    {
-        if (!userElementDictionary.TryGetValue(userId, out VoiceChatPlayerComponentView elementView))
-            return;
-
-        elementView.SetAsBlocked(blocked);
-    }
+    public VoiceChatPlayerComponentView CreateNewPlayerInstance() => Instantiate(playerPrefab, usersContainer);
 
     public override void Dispose()
     {
-        base.Dispose();
-
         closeButton.onClick.RemoveAllListeners();
         joinButton.onClick.RemoveAllListeners();
         leaveButton.onClick.RemoveAllListeners();
         allowUsersDropdown.OnOptionSelectionChanged -= AllowUsersOptionChanged;
 
-        userElementView.OnMuteUser -= OnMuteUser;
-
-        userElementDictionary.Clear();
-        availableElements.Clear();
+        base.Dispose();
     }
 
     internal void ConfigureAllowUsersFilter()
@@ -203,18 +114,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         joinButton.gameObject.SetActive(!isJoined);
         leaveButton.gameObject.SetActive(isJoined);
         allowUsersDropdown.gameObject.SetActive(isJoined);
-
         OnJoinVoiceChat?.Invoke(isJoined);
-    }
-
-    internal void OnMuteUser(string userId, bool mute) { OnRequestMuteUser?.Invoke(userId, mute); }
-
-    internal void CheckListEmptyState() { emptyListGameObject.SetActive(userElementDictionary.Count == 0); }
-
-    internal void PoolElementView(VoiceChatPlayerComponentView element)
-    {
-        element.gameObject.SetActive(false);
-        availableElements.Enqueue(element);
     }
 
     internal static VoiceChatWindowComponentView Create()
