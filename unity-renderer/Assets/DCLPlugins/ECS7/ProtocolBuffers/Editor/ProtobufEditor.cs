@@ -209,7 +209,8 @@ namespace DCL.Protobuf
         }
         
         [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
-        [InitializeOnLoadMethod]
+        // Unccoment this line to make it work with the compilation time
+ //       [InitializeOnLoadMethod]
         private static void OnProjectLoadedInEditor()
         {
             var currentDownloadedVersion = EditorPrefs.GetString("Version", "NotDownloaded");
