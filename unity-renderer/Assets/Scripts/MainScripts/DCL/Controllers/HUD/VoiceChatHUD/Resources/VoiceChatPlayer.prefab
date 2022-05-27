@@ -124,9 +124,10 @@ MonoBehaviour:
   backgroundHover: {fileID: 4821310409670062188}
   talkingColor: {r: 0.38431373, g: 1, b: 0.40784314, a: 1}
   nonTalkingColor: {r: 0, g: 0, b: 0, a: 1}
+  menuButton: {fileID: 8394638887301643764}
   model:
     userId: 
-    userImage: {fileID: 0}
+    userImageUrl: 
     userName: User Name
     isMuted: 0
     isTalking: 0
@@ -2025,6 +2026,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb037d81b9c10ad439a13e356a17bab6, type: 3}
+--- !u!114 &8394638887301643764 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1442316120381234285, guid: fb037d81b9c10ad439a13e356a17bab6,
+    type: 3}
+  m_PrefabInstance: {fileID: 6952323390769193369}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6969764305812322484 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,

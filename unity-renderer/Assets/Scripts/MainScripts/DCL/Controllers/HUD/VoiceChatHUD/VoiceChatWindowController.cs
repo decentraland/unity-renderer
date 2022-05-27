@@ -11,11 +11,13 @@ public class VoiceChatWindowController : IHUD
 
     public IVoiceChatWindowComponentView View => view;
     
-    private UserProfile ownProfile => UserProfile.GetOwnUserProfile();
-    private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+    private UserProfile ownProfile => userProfileBridge.GetOwn();
 
     private IVoiceChatWindowComponentView view;
+    private IUserProfileBridge userProfileBridge;
+    private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
+    private DataStore dataStore;
     private readonly HashSet<string> trackedUsersHashSet = new HashSet<string>();
     private readonly Queue<VoiceChatPlayerComponentView> playersPool;
     private readonly Dictionary<string, VoiceChatPlayerComponentView> currentPlayers;
@@ -23,16 +25,24 @@ public class VoiceChatWindowController : IHUD
     private readonly List<string> usersToUnmute = new List<string>();
     private Coroutine updateMuteStatusRoutine = null;    
 
-    public VoiceChatWindowController(ISocialAnalytics socialAnalytics)
+    public VoiceChatWindowController(
+        IUserProfileBridge userProfileBridge,
+        IFriendsController friendsController,
+        ISocialAnalytics socialAnalytics,
+        DataStore dataStore)
     {
+        this.userProfileBridge = userProfileBridge;
+        this.friendsController = friendsController;
         this.socialAnalytics = socialAnalytics;
+        this.dataStore = dataStore;
 
         view = CreateVoiceChatWindowView();
         view.Hide(instant: true);
         view.OnClose += CloseView;
-        otherPlayers.OnAdded += OnOtherPlayersStatusAdded;
-        otherPlayers.OnRemoved += OnOtherPlayerStatusRemoved;
+        dataStore.player.otherPlayers.OnAdded += OnOtherPlayersStatusAdded;
+        dataStore.player.otherPlayers.OnRemoved += OnOtherPlayerStatusRemoved;
         ownProfile.OnUpdate += OnUserProfileUpdated;
+        friendsController.OnUpdateFriendship += OnUpdateFriendship;
 
         currentPlayers = new Dictionary<string, VoiceChatPlayerComponentView>();
         playersPool = new Queue<VoiceChatPlayerComponentView>();
@@ -73,9 +83,10 @@ public class VoiceChatWindowController : IHUD
             CoroutineStarter.Stop(updateMuteStatusRoutine);
 
         view.OnClose -= CloseView;
-        otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
-        otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
+        dataStore.player.otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
+        dataStore.player.otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
         ownProfile.OnUpdate -= OnUserProfileUpdated;
+        friendsController.OnUpdateFriendship -= OnUpdateFriendship;
 
         currentPlayers.Clear();
         playersPool.Clear();
@@ -108,7 +119,7 @@ public class VoiceChatWindowController : IHUD
                     isMuted = false,
                     isTalking = false,
                     isBlocked = false,
-                    isFriend = false,
+                    isFriend = friendsController.GetFriends().ContainsKey(userId),
                     isBackgroundHover = false
                 });
 
@@ -198,6 +209,14 @@ public class VoiceChatWindowController : IHUD
                     elementView.SetAsBlocked(profile.blocked != null ? profile.blocked.Contains(iterator.Current) : false);
             }
         }
+    }
+
+    internal void OnUpdateFriendship(string userId, FriendshipAction action)
+    {
+        currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView playerView);
+        
+        if (playerView != null)
+            playerView.SetAsFriend(action == FriendshipAction.APPROVED);
     }
 
     protected internal virtual IVoiceChatWindowComponentView CreateVoiceChatWindowView() => VoiceChatWindowComponentView.Create();

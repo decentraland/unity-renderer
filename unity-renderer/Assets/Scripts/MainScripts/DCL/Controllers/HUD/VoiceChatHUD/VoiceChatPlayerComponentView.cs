@@ -17,6 +17,7 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
     [SerializeField] internal GameObject backgroundHover;
     [SerializeField] internal Color talkingColor;
     [SerializeField] internal Color nonTalkingColor;
+    [SerializeField] internal ButtonComponentView menuButton;
 
     [Header("Configuration")]
     [SerializeField] internal VoiceChatPlayerComponentModel model;
@@ -130,10 +131,11 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
     {
         model.isBackgroundHover = isHover;
 
-        if (backgroundHover == null)
-            return;
+        if (backgroundHover != null)
+            backgroundHover.SetActive(isHover);
 
-        backgroundHover.SetActive(isHover);
+        if (menuButton != null)
+            menuButton.gameObject.SetActive(isHover);
     }
 
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
