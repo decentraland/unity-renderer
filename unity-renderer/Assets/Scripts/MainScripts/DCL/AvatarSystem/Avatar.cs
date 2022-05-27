@@ -13,7 +13,6 @@ namespace AvatarSystem
     {
         private const float RESCALING_BOUNDS_FACTOR = 100f;
         internal const string LOADING_VISIBILITY_CONSTRAIN = "Loading";
-        internal const string FACIAL_FEATURE_CONSTRAIN = "FacialFeat";
         private readonly IAvatarCurator avatarCurator;
         private readonly ILoader loader;
         private readonly IAnimator animator;
