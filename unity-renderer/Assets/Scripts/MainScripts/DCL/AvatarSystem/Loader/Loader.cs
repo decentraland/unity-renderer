@@ -57,7 +57,6 @@ namespace AvatarSystem
                 combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, ct);
 
                 facialFeaturesRenderers = new List<Renderer>();
-
                 if (headVisible)
                 {
                     if (eyes != null)
@@ -66,6 +65,15 @@ namespace AvatarSystem
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
                     if (mouth != null)
                         facialFeaturesRenderers.Add(bodyshapeLoader.mouthRenderer);
+                }
+                else
+                {
+                    if (bodyshapeLoader.eyesRenderer != null)
+                        bodyshapeLoader.eyesRenderer.enabled = false;
+                    if (bodyshapeLoader.eyebrowsRenderer != null)
+                        bodyshapeLoader.eyebrowsRenderer.enabled = false;
+                    if (bodyshapeLoader.mouthRenderer != null)
+                        bodyshapeLoader.mouthRenderer.enabled = false;
                 }
             }
             catch (OperationCanceledException)

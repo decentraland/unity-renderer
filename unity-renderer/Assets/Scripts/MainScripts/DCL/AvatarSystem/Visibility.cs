@@ -73,7 +73,7 @@ namespace AvatarSystem
 
         internal void UpdateFacialFeatureVisibility()
         {
-            if (facialFeatures == null && facialFeatures.Count == 0)
+            if (facialFeatures == null)
                 return;
 
             bool facialFeaturesVisibility = globalConstrains.Count == 0 && facialFeaturesConstrains.Count == 0;
