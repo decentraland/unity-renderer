@@ -224,8 +224,6 @@ public class HUDController : IHUDController
                         worldChatWindowHud.OnOpenPrivateChat += OpenPrivateChatWindow;
                         worldChatWindowHud.OnOpenPublicChannel -= OpenPublicChannelWindow;
                         worldChatWindowHud.OnOpenPublicChannel += OpenPublicChannelWindow;
-                        worldChatWindowHud.OnDeactivatePreview -= View_OnDeactivatePreview;
-                        worldChatWindowHud.OnDeactivatePreview += View_OnDeactivatePreview;
 
                         taskbarHud?.AddWorldChatWindow(worldChatWindowHud);
                     }
@@ -410,11 +408,6 @@ public class HUDController : IHUDController
         taskbarHud?.OpenPrivateChat(targetUserId);
     }
 
-    private void View_OnDeactivatePreview()
-    {
-        playerInfoCardHud?.CloseCard();
-    }
-
     private void PrivateChatWindowHud_OnPressBack()
     {
         PrivateChatWindow?.SetVisibility(false);
@@ -460,7 +453,6 @@ public class HUDController : IHUDController
         {
             worldChatWindowHud.OnOpenPrivateChat -= OpenPrivateChatWindow;
             worldChatWindowHud.OnOpenPublicChannel -= OpenPublicChannelWindow;
-            worldChatWindowHud.OnDeactivatePreview -= View_OnDeactivatePreview;
         }
 
         if (PrivateChatWindow != null)
