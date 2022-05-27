@@ -112,6 +112,7 @@ public class CatalogController : MonoBehaviour
         {
             if (!wearableCatalog.ContainsKey(wearableItem.id))
             {
+                wearableItem.SanitizeHidesLists();
                 wearableCatalog.Add(wearableItem.id, wearableItem);
 
                 if (!wearablesInUseCounters.ContainsKey(wearableItem.id))

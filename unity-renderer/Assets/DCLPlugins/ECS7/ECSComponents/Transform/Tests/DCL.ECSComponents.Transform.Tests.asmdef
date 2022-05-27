@@ -1,0 +1,27 @@
+{
+    "name": "DCL.ECSComponents.Transform.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5e1778ed041a41f7a0c13abb42ca70b6",
+        "GUID:acf268f98c0c4f078ee92d3caf34b5aa",
+        "GUID:50705a27cf244a1a9d6f1cbff611d646",
+        "GUID:37d2c04574c1d480d8c817e2a7c578e7",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
