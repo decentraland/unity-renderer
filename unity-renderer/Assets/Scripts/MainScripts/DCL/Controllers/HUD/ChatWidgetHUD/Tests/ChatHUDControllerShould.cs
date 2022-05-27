@@ -198,49 +198,51 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
     [Test]
     public void DisplayNextMessageInHistory()
     {
-        const string body = "hey";
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", body));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "hey"));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "sup"));
+        view.OnNextChatInHistory += Raise.Event<Action>();
         view.OnNextChatInHistory += Raise.Event<Action>();
         
-        view.Received(1).SetInputFieldText(body);
+        Received.InOrder(() =>
+        {
+            view.SetInputFieldText("sup");
+            view.SetInputFieldText("hey");
+        });
     }
     
     [Test]
     public void DisplayPreviousMessageInHistory()
     {
-        const string body = "hey";
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", body));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "hey"));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "sup"));
+        view.OnPreviousChatInHistory += Raise.Event<Action>();
         view.OnPreviousChatInHistory += Raise.Event<Action>();
         
-        view.Received(1).SetInputFieldText(body);
-    }
-
-    [Test]
-    public void ResetInputWhenAllMessagesInHistoryWereIterated()
-    {
-        const string body = "hey";
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", body));
-        view.OnNextChatInHistory += Raise.Event<Action>();
-        view.OnNextChatInHistory += Raise.Event<Action>();
-        
-        view.Received(1).SetInputFieldText(body);
-        view.Received(1).SetInputFieldText("");
+        Received.InOrder(() =>
+        {
+            view.SetInputFieldText("hey");
+            view.SetInputFieldText("sup");
+        });
     }
     
     [Test]
     public void DoNotDuplicateMessagesInHistory()
     {
-        const string body = "hey";
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", body));
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "bleh"));
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", body));
-        view.OnPreviousChatInHistory += Raise.Event<Action>();
-        view.OnPreviousChatInHistory += Raise.Event<Action>();
-        view.OnPreviousChatInHistory += Raise.Event<Action>();
+        const string repeatedMessage = "hey";
         
-        view.Received(1).SetInputFieldText(body);
-        view.Received(1).SetInputFieldText("bleh");
-        view.Received(1).SetInputFieldText("");
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", repeatedMessage));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", repeatedMessage));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "bleh"));
+        view.OnNextChatInHistory += Raise.Event<Action>();
+        view.OnNextChatInHistory += Raise.Event<Action>();
+        view.OnNextChatInHistory += Raise.Event<Action>();
+        
+        Received.InOrder(() =>
+        {
+            view.SetInputFieldText("bleh");
+            view.SetInputFieldText(repeatedMessage);
+            view.SetInputFieldText("bleh");
+        });
     }
 
     private RegexProfanityFilter GivenProfanityFilter()

@@ -206,9 +206,6 @@ public class ChatHUDController : IDisposable
 
         if (lastMessagesSent.Count > MAX_HISTORY_ITERATION)
             lastMessagesSent.RemoveAt(lastMessagesSent.Count - 1);
-        
-        if (!lastMessagesSent.Last().Equals(""))
-            lastMessagesSent.Add("");
     }
 
     private void ApplyWhisperAttributes(ChatMessage message)
@@ -311,11 +308,11 @@ public class ChatHUDController : IDisposable
             return;
         }
         
-        view.FocusInputField();
-        view.SetInputFieldText(lastMessagesSent[currentHistoryIteration]);
-
         currentHistoryIteration--;
         if (currentHistoryIteration < 0)
             currentHistoryIteration = lastMessagesSent.Count - 1;
+        
+        view.FocusInputField();
+        view.SetInputFieldText(lastMessagesSent[currentHistoryIteration]);
     }
 }
