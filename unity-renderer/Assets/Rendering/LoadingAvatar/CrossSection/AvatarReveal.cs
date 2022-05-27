@@ -31,6 +31,8 @@ public class AvatarReveal : MonoBehaviour
     public void AddTarget(Renderer newTarget)
     {
         targets.Add(newTarget);
+        newTarget.material.SetVector("_RevealPosition", Vector3.zero);
+        newTarget.material.SetVector("_RevealNormal", new Vector3(0, -1, 0));
         _materials.Add(newTarget.material);
     }
 
@@ -57,7 +59,7 @@ public class AvatarReveal : MonoBehaviour
 
         foreach (Material m in _materials)
         {
-            m.SetVector("_RevealPosition", revealer.transform.localPosition);
+            m.SetVector("_RevealPosition", -revealer.transform.localPosition);
         }
     }
 
