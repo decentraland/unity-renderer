@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class UIChargeWheel : MonoBehaviour
 {
-    Material material;
-
+    Material _material;
+    Image _img;
     public float speed = 1;
 
     public Color[] colors;
@@ -18,10 +18,21 @@ public class UIChargeWheel : MonoBehaviour
     
     void Start()
     {
-        Image img = GetComponent<Image>();
-        material = new Material(img.material);
-        img.material = material;
-        material.SetColor("_color01", colors[colorIndex]);
+        _img = GetComponent<Image>();
+
+        if (_img.maskable)
+        {
+            _material = _img.materialForRendering;
+        }
+        else
+        {
+            _material = new Material(_img.material);
+            _img.material = _material;
+        }
+
+        _material.SetColor("_color01", colors[colorIndex]);
+
+        head = Random.Range(0, 0.15f);
     }
 
     
@@ -33,22 +44,22 @@ public class UIChargeWheel : MonoBehaviour
         if (head < 1)
         {
             head += tempSpeedH * Time.deltaTime;
-
-            material.SetFloat("_fillHead", head);
+            head = Mathf.Clamp01(head);
+            _material.SetFloat("_fillHead", head);
         }
         else if(tail < 1)
         {
             tail += tempSpeedT * Time.deltaTime;
-
-            material.SetFloat("_fillTail", tail);
+            tail = Mathf.Clamp01(tail);
+            _material.SetFloat("_fillTail", tail);
         }
         else
         {
             head = 0;
             tail = 0;
 
-            material.SetFloat("_fillHead", head);
-            material.SetFloat("_fillTail", tail);
+            _material.SetFloat("_fillHead", head);
+            _material.SetFloat("_fillTail", tail);
 
             ColorChange();
         }
@@ -65,6 +76,6 @@ public class UIChargeWheel : MonoBehaviour
             colorIndex = 0;
         }
 
-        material.SetColor("_color01", colors[colorIndex]);
+        _material.SetColor("_color01", colors[colorIndex]);
     }
 }

@@ -31,6 +31,8 @@ export type RendererOptions = {
   onError?: (error: any) => void
   /** Legacy messaging system */
   onMessageLegacy: (type: string, payload: string) => void
+  /** scene binary messaging system */
+  onBinaryMessage: (sceneId: string, data: Uint8Array) => void
   /** used to append a ?v={} to the URL. Useful to debug cache issues */
   versionQueryParam?: string
   /** baseUrl where all the assets are deployed */
@@ -73,7 +75,7 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
   }
 
   const rendererVersion = options.versionQueryParam
-  const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy } = options
+  const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy, onBinaryMessage } = options
   const resolveWithBaseUrl = (file: string) => new URL(file + (rendererVersion ? "?v=" + rendererVersion : ""), baseUrl).toString()
 
   const enableBrotli =
@@ -105,6 +107,11 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
     MessageFromEngine(type: string, jsonEncodedMessage: string) {
       onMessageLegacy(type, jsonEncodedMessage)
     },
+
+    // This function is called from the unity renderer to send messages back to the scenes
+    BinaryMessageFromEngine(sceneId: string, data: Uint8Array) {
+      onBinaryMessage(sceneId, data)
+    }
   }
 
   const originalUnity = await createUnityInstance(canvas, config, onProgress, onSuccess, onError)

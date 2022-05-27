@@ -51,7 +51,7 @@ namespace DCL.EmotesWheel
 
             view = EmotesWheelView.Create();
             view.OnClose += OnViewClosed;
-            view.onEmoteClicked += PlayEmote;
+            view.onEmoteClicked += OnEmoteClicked;
             view.OnCustomizeClicked += OpenEmotesCustomizationSection;
 
             ownUserProfile.OnAvatarEmoteSet += OnAvatarEmoteSet;
@@ -196,7 +196,7 @@ namespace DCL.EmotesWheel
         public void Dispose()
         {
             view.OnClose -= OnViewClosed;
-            view.onEmoteClicked -= PlayEmote;
+            view.onEmoteClicked -= OnEmoteClicked;
             view.OnCustomizeClicked -= OpenEmotesCustomizationSection;
             closeWindow.OnTriggered -= OnCloseWindowPressed;
             ownUserProfile.OnAvatarEmoteSet -= OnAvatarEmoteSet;
@@ -231,12 +231,14 @@ namespace DCL.EmotesWheel
             }
         }
 
-        public void PlayEmote(string id) 
+        public void OnEmoteClicked(string id) { PlayEmote(id, UserProfile.EmoteSource.EmotesWheel); }
+
+        public void PlayEmote(string id, UserProfile.EmoteSource source)
         {
             if (string.IsNullOrEmpty(id))
                 return;
 
-            UserProfile.GetOwnUserProfile().SetAvatarExpression(id);
+            UserProfile.GetOwnUserProfile().SetAvatarExpression(id, source);
         }
 
         private void ConfigureShortcuts()
@@ -316,90 +318,90 @@ namespace DCL.EmotesWheel
             switch (action)
             {
                 case DCLAction_Trigger.ToggleEmoteShortcut0:
-                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[0]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[0]?.id, UserProfile.EmoteSource.Shortcut);
                     emoteJustTriggeredFromShortcut = true;
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut1:
-                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[1]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[1]?.id, UserProfile.EmoteSource.Shortcut);
                     emoteJustTriggeredFromShortcut = true;
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut2:
-                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[2]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[2]?.id, UserProfile.EmoteSource.Shortcut);
                     emoteJustTriggeredFromShortcut = true;
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut3:
-                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[3]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[3]?.id, UserProfile.EmoteSource.Shortcut);
                     emoteJustTriggeredFromShortcut = true;
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut4:
-                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[4]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[4]?.id, UserProfile.EmoteSource.Shortcut);
                     emoteJustTriggeredFromShortcut = true;
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut5:
-                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[5]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[5]?.id, UserProfile.EmoteSource.Shortcut);
                     emoteJustTriggeredFromShortcut = true;
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut6:
-                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[6]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[6]?.id, UserProfile.EmoteSource.Shortcut);
                     emoteJustTriggeredFromShortcut = true;
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut7:
-                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[7]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[7]?.id, UserProfile.EmoteSource.Shortcut);
                     emoteJustTriggeredFromShortcut = true;
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut8:
-                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[8]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[8]?.id, UserProfile.EmoteSource.Shortcut);
                     emoteJustTriggeredFromShortcut = true;
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut9:
-                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[9]?.id);
+                    PlayEmote(emotesCustomizationDataStore.equippedEmotes[9]?.id, UserProfile.EmoteSource.Shortcut);
                     emoteJustTriggeredFromShortcut = true;
                     break;
                 case DCLAction_Trigger.ToggleShortcut0:
                     if (emotesVisible.Get())
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[0]?.id);
+                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[0]?.id, UserProfile.EmoteSource.Shortcut);
                     break;
                 case DCLAction_Trigger.ToggleShortcut1:
                     if (emotesVisible.Get())
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[1]?.id);
+                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[1]?.id, UserProfile.EmoteSource.Shortcut);
                     break;
                 case DCLAction_Trigger.ToggleShortcut2:
                     if (emotesVisible.Get())
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[2]?.id);
+                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[2]?.id, UserProfile.EmoteSource.Shortcut);
                     break;
                 case DCLAction_Trigger.ToggleShortcut3:
                     if (emotesVisible.Get())
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[3]?.id);
+                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[3]?.id, UserProfile.EmoteSource.Shortcut);
                     break;
                 case DCLAction_Trigger.ToggleShortcut4:
                     if (emotesVisible.Get())
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[4]?.id);
+                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[4]?.id, UserProfile.EmoteSource.Shortcut);
                     break;
                 case DCLAction_Trigger.ToggleShortcut5:
                     if (emotesVisible.Get())
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[5]?.id);
+                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[5]?.id, UserProfile.EmoteSource.Shortcut);
                     break;
                 case DCLAction_Trigger.ToggleShortcut6:
                     if (emotesVisible.Get())
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[6]?.id);
+                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[6]?.id, UserProfile.EmoteSource.Shortcut);
                     break;
                 case DCLAction_Trigger.ToggleShortcut7:
                     if (emotesVisible.Get())
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[7]?.id);
+                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[7]?.id, UserProfile.EmoteSource.Shortcut);
                     break;
                 case DCLAction_Trigger.ToggleShortcut8:
                     if (emotesVisible.Get())
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[8]?.id);
+                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[8]?.id, UserProfile.EmoteSource.Shortcut);
                     break;
                 case DCLAction_Trigger.ToggleShortcut9:
                     if (emotesVisible.Get())
-                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[9]?.id);
+                        PlayEmote(emotesCustomizationDataStore.equippedEmotes[9]?.id, UserProfile.EmoteSource.Shortcut);
                     break;
             }
         }
 
         private void OnViewClosed() { emotesVisible.Set(false); }
-        private void OnAvatarEmoteSet(string id, long timestamp) { emotesVisible.Set(false); }
+        private void OnAvatarEmoteSet(string id, long timestamp, UserProfile.EmoteSource source) { emotesVisible.Set(false); }
         private void OnCloseWindowPressed(DCLAction_Trigger action) { emotesVisible.Set(false); }
 
         private void OnOpenEmotesCustomizationInputActionTriggered(DCLAction_Hold action)

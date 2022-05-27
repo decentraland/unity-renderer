@@ -105,8 +105,7 @@ namespace DCL
             var sceneData = self.sceneData[sceneId];
             sceneData.audioClips.Remove(clip);
         }
-
-
+        
         public static void AddRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
         {
             if (!self.sceneData.ContainsKey(sceneId))

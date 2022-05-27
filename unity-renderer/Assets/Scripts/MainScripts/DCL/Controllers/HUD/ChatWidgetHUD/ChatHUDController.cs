@@ -1,66 +1,68 @@
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Helpers;
 using DCL.Interface;
-using UnityEngine;
-using UnityEngine.Events;
-using Object = UnityEngine.Object;
 
 public class ChatHUDController : IDisposable
 {
-    public static int MAX_CHAT_ENTRIES { internal set; get; } = 30;
+    public const int MAX_CHAT_ENTRIES = 30;
+    private const int TEMPORARILY_MUTE_MINUTES = 10;
+    private const int MAX_CONTINUOUS_MESSAGES = 6;
+    private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
 
-    public ChatHUDView view;
-
-    public event UnityAction<string> OnPressPrivateMessage;
+    public event Action OnInputFieldSelected;
+    public event Action OnInputFieldDeselected;
+    public event Action<ChatMessage> OnSendMessage;
+    public event Action<string> OnMessageUpdated;
 
     private readonly DataStore dataStore;
+    private readonly IUserProfileBridge userProfileBridge;
+    private readonly bool detectWhisper;
     private readonly IProfanityFilter profanityFilter;
-    private InputAction_Trigger closeWindowTrigger;
+    private readonly Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
+    private readonly Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
+    private readonly List<ChatEntryModel> lastMessages = new List<ChatEntryModel>();
+    private IChatHUDComponentView view;
 
-    public ChatHUDController(DataStore dataStore, IProfanityFilter profanityFilter = null)
+    public ChatHUDController(DataStore dataStore,
+        IUserProfileBridge userProfileBridge,
+        bool detectWhisper,
+        IProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
+        this.userProfileBridge = userProfileBridge;
+        this.detectWhisper = detectWhisper;
         this.profanityFilter = profanityFilter;
     }
 
-    public void Initialize(ChatHUDView view = null, UnityAction<ChatMessage> onSendMessage = null)
+    public bool IsInputSelected => view.IsInputFieldSelected;
+
+    public void Initialize(IChatHUDComponentView view)
     {
-        this.view = view ?? ChatHUDView.Create();
-
-        this.view.Initialize(this, onSendMessage);
-
-        this.view.OnPressPrivateMessage -= View_OnPressPrivateMessage;
-        this.view.OnPressPrivateMessage += View_OnPressPrivateMessage;
-
-        if (this.view.contextMenu != null)
-        {
-            this.view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
-            this.view.contextMenu.OnShowMenu += ContextMenu_OnShowMenu;
-        }
-
-        closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
-        closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
-        closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
+        this.view = view;
+        this.view.OnShowMenu -= ContextMenu_OnShowMenu;
+        this.view.OnShowMenu += ContextMenu_OnShowMenu;
+        this.view.OnInputFieldSelected -= HandleInputFieldSelected;
+        this.view.OnInputFieldSelected += HandleInputFieldSelected;
+        this.view.OnInputFieldDeselected -= HandleInputFieldDeselected;
+        this.view.OnInputFieldDeselected += HandleInputFieldDeselected;
+        this.view.OnSendMessage -= HandleSendMessage;
+        this.view.OnSendMessage += HandleSendMessage;
+        this.view.OnMessageUpdated -= HandleMessageUpdated;
+        this.view.OnMessageUpdated += HandleMessageUpdated;
     }
 
-    void View_OnPressPrivateMessage(string friendUserId) { OnPressPrivateMessage?.Invoke(friendUserId); }
-
-    private void ContextMenu_OnShowMenu() { view.OnMessageCancelHover(); }
-
-    private void OnCloseButtonPressed(DCLAction_Trigger action)
+    public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false, bool spamFiltering = true)
     {
-        if (view.contextMenu != null)
-        {
-            view.contextMenu.Hide();
-            view.confirmationDialog.Hide();
-        }
+        AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom, spamFiltering).Forget();
     }
 
-    public async UniTask AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
+    public async UniTask AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false, bool spamFiltering = true)
     {
+        if (IsSpamming(chatEntryModel.senderName) && spamFiltering) return;
+        
         chatEntryModel.bodyText = ChatUtils.AddNoParse(chatEntryModel.bodyText);
 
         if (IsProfanityFilteringEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
@@ -75,32 +77,49 @@ public class ChatHUDController : IDisposable
         }
 
         await UniTask.SwitchToMainThread();
-        
+
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
-        if (view.entries.Count > MAX_CHAT_ENTRIES)
-        {
-            Object.Destroy(view.entries[0].gameObject);
-            view.entries.Remove(view.entries[0]);
-        }
+        if (view.EntryCount > MAX_CHAT_ENTRIES)
+            view.RemoveFirstEntry();
+        
+        if (string.IsNullOrEmpty(chatEntryModel.senderId)) return;
+
+        if (spamFiltering)
+            UpdateSpam(chatEntryModel);
     }
 
     public void Dispose()
     {
-        view.OnPressPrivateMessage -= View_OnPressPrivateMessage;
-        if (view.contextMenu != null)
-        {
-            view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
-        }
-        closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
-        Object.Destroy(view.gameObject);
+        view.OnShowMenu -= ContextMenu_OnShowMenu;
+        view.OnMessageUpdated -= HandleMessageUpdated;
+        view.OnSendMessage -= HandleSendMessage;
+        view.OnInputFieldSelected -= HandleInputFieldSelected;
+        view.OnInputFieldDeselected -= HandleInputFieldDeselected;
+        OnSendMessage = null;
+        OnMessageUpdated = null;
+        OnInputFieldSelected = null;
+        view.Dispose();
     }
 
-    public static ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)
-    {
-        ChatEntry.Model model = new ChatEntry.Model();
+    public void ClearAllEntries() => view.ClearAllEntries();
 
-        var ownProfile = UserProfile.GetOwnUserProfile();
+    public void ResetInputField(bool loseFocus = false) => view.ResetInputField(loseFocus);
+
+    public void FocusInputField() => view.FocusInputField();
+
+    public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
+    
+    public void UnfocusInputField() => view.UnfocusInputField();
+
+    public void ActivatePreview() => view.ActivatePreview();
+    
+    public void DeactivatePreview() => view.DeactivatePreview();
+
+    private ChatEntryModel ChatMessageToChatEntry(ChatMessage message)
+    {
+        var model = new ChatEntryModel();
+        var ownProfile = userProfileBridge.GetOwn();
 
         model.messageType = message.messageType;
         model.bodyText = message.body;
@@ -108,41 +127,137 @@ public class ChatHUDController : IDisposable
 
         if (message.recipient != null)
         {
-            var recipientProfile = UserProfileController.userProfilesCatalog.Get(message.recipient);
+            var recipientProfile = userProfileBridge.Get(message.recipient);
             model.recipientName = recipientProfile != null ? recipientProfile.userName : message.recipient;
         }
 
         if (message.sender != null)
         {
-            var senderProfile = UserProfileController.userProfilesCatalog.Get(message.sender);
+            var senderProfile = userProfileBridge.Get(message.sender);
             model.senderName = senderProfile != null ? senderProfile.userName : message.sender;
             model.senderId = message.sender;
         }
 
-        if (model.messageType == ChatMessage.Type.PRIVATE)
+        if (message.messageType == ChatMessage.Type.PRIVATE)
         {
             if (message.recipient == ownProfile.userId)
             {
-                model.subType = ChatEntry.Model.SubType.PRIVATE_FROM;
+                model.subType = ChatEntryModel.SubType.RECEIVED;
                 model.otherUserId = message.sender;
             }
             else if (message.sender == ownProfile.userId)
             {
-                model.subType = ChatEntry.Model.SubType.PRIVATE_TO;
+                model.subType = ChatEntryModel.SubType.SENT;
                 model.otherUserId = message.recipient;
             }
             else
             {
-                model.subType = ChatEntry.Model.SubType.NONE;
+                model.subType = ChatEntryModel.SubType.NONE;
             }
+        }
+        else if (message.messageType == ChatMessage.Type.PUBLIC)
+        {
+            model.subType = message.sender == ownProfile.userId
+                ? ChatEntryModel.SubType.SENT
+                : ChatEntryModel.SubType.RECEIVED;
         }
 
         return model;
     }
-    
+
+    private void ContextMenu_OnShowMenu() => view.OnMessageCancelHover();
+
     private bool IsProfanityFilteringEnabled()
     {
         return dataStore.settings.profanityChatFilteringEnabled.Get()
-            && profanityFilter != null;
+               && profanityFilter != null;
+    }
+
+    private void HandleMessageUpdated(string obj) => OnMessageUpdated?.Invoke(obj);
+
+    private void HandleSendMessage(ChatMessage message)
+    {
+        var ownProfile = userProfileBridge.GetOwn();
+        message.sender = ownProfile.userId;
+        if (IsSpamming(message.sender)) return;
+        if (IsSpamming(ownProfile.userName)) return;
+        ApplyWhisperAttributes(message);
+        OnSendMessage?.Invoke(message);
+    }
+
+    private void ApplyWhisperAttributes(ChatMessage message)
+    {
+        if (!detectWhisper) return;
+        var body = message.body;
+        if (string.IsNullOrWhiteSpace(body)) return;
+
+        var match = whisperRegex.Match(body);
+        if (!match.Success) return;
+
+        message.messageType = ChatMessage.Type.PRIVATE;
+        message.recipient = match.Groups[2].Value;
+        message.body = match.Groups[4].Value;
+    }
+
+    private void HandleInputFieldSelected() => OnInputFieldSelected?.Invoke();
+    
+    private void HandleInputFieldDeselected() => OnInputFieldDeselected?.Invoke();
+
+    private bool IsSpamming(string senderName)
+    {
+        if (string.IsNullOrEmpty(senderName)) return false;
+
+        var isSpamming = false;
+
+        if (!temporarilyMutedSenders.ContainsKey(senderName)) return false;
+        
+        var muteTimestamp = CreateBaseDateTime().AddMilliseconds(temporarilyMutedSenders[senderName]).ToLocalTime();
+        if ((DateTime.Now - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
+            isSpamming = true;
+        else
+            temporarilyMutedSenders.Remove(senderName);
+
+        return isSpamming;
+    }
+    
+    private void UpdateSpam(ChatEntryModel model)
+    {
+        if (lastMessages.Count == 0)
+        {
+            lastMessages.Add(model);
+        }
+        else if (lastMessages[lastMessages.Count - 1].senderName == model.senderName)
+        {
+            if (MessagesSentTooFast(lastMessages[lastMessages.Count - 1].timestamp, model.timestamp))
+            {
+                lastMessages.Add(model);
+
+                if (lastMessages.Count == MAX_CONTINUOUS_MESSAGES)
+                {
+                    temporarilyMutedSenders.Add(model.senderName, model.timestamp);
+                    lastMessages.Clear();
+                }
+            }
+            else
+            {
+                lastMessages.Clear();
+            }
+        }
+        else
+        {
+            lastMessages.Clear();
+        }
+    }
+
+    private bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
+    {
+        DateTime oldDateTime = CreateBaseDateTime().AddMilliseconds(oldMessageTimeStamp).ToLocalTime();
+        DateTime newDateTime = CreateBaseDateTime().AddMilliseconds(newMessageTimeStamp).ToLocalTime();
+        return (newDateTime - oldDateTime).TotalMilliseconds < MIN_MILLISECONDS_BETWEEN_MESSAGES;
+    }
+
+    private DateTime CreateBaseDateTime()
+    {
+        return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
     }
 }
