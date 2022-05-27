@@ -39,6 +39,7 @@ public class VoiceChatWindowController : IHUD
         view = CreateVoiceChatWindowView();
         view.Hide(instant: true);
         view.OnClose += CloseView;
+        view.OnJoinVoiceChat += JoinVoiceChat;
         dataStore.player.otherPlayers.OnAdded += OnOtherPlayersStatusAdded;
         dataStore.player.otherPlayers.OnRemoved += OnOtherPlayerStatusRemoved;
         ownProfile.OnUpdate += OnUserProfileUpdated;
@@ -83,6 +84,7 @@ public class VoiceChatWindowController : IHUD
             CoroutineStarter.Stop(updateMuteStatusRoutine);
 
         view.OnClose -= CloseView;
+        view.OnJoinVoiceChat -= JoinVoiceChat;
         dataStore.player.otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
         dataStore.player.otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
         ownProfile.OnUpdate -= OnUserProfileUpdated;
@@ -93,6 +95,19 @@ public class VoiceChatWindowController : IHUD
     }
 
     internal void CloseView() { SetVisibility(false); }
+
+    internal void JoinVoiceChat(bool isJoined)
+    { 
+        dataStore.player.isJoinedToVoiceChat.Set(isJoined);
+
+        using (var iterator = currentPlayers.GetEnumerator())
+        {
+            while (iterator.MoveNext())
+            {
+                iterator.Current.Value.SetAsJoined(isJoined);
+            }
+        }
+    }
 
     internal void OnOtherPlayersStatusAdded(string userId, Player player)
     {
@@ -120,6 +135,7 @@ public class VoiceChatWindowController : IHUD
                     isTalking = false,
                     isBlocked = false,
                     isFriend = friendsController.GetFriends().ContainsKey(userId),
+                    isJoined = dataStore.player.isJoinedToVoiceChat.Get(),
                     isBackgroundHover = false
                 });
 

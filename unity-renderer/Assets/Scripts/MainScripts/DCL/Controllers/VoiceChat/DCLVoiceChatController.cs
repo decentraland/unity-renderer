@@ -19,8 +19,8 @@ namespace DCL
         void Awake()
         {
             voiceChatStartedDelegate = (action) => StartVoiceChatRecording();
-            voiceChatFinishedDelegate = (action) => DCL.Interface.WebInterface.SendSetVoiceChatRecording(false);
-            voiceChatToggleDelegate = (action) => DCL.Interface.WebInterface.ToggleVoiceChatRecording();
+            voiceChatFinishedDelegate = (action) => StopVoiceChatRecording();
+            voiceChatToggleDelegate = (action) => ToggleVoiceChatRecording();
             voiceChatAction.OnStarted += voiceChatStartedDelegate;
             voiceChatAction.OnFinished += voiceChatFinishedDelegate;
             voiceChatToggleAction.OnTriggered += voiceChatToggleDelegate;
@@ -41,7 +41,10 @@ namespace DCL
 
         private void StartVoiceChatRecording()
         {
-            DCL.Interface.WebInterface.SendSetVoiceChatRecording(true);
+            if (!DataStore.i.player.isJoinedToVoiceChat.Get())
+                return;
+
+            Interface.WebInterface.SendSetVoiceChatRecording(true);
 
             if (firstTimeVoiceRecorded)
             {
@@ -53,6 +56,22 @@ namespace DCL
                 socialAnalytics.SendVoiceMessageStartedByFirstTime();
                 firstTimeVoiceRecorded = false;
             }
+        }
+
+        private void StopVoiceChatRecording()
+        {
+            if (!DataStore.i.player.isJoinedToVoiceChat.Get())
+                return;
+
+            Interface.WebInterface.SendSetVoiceChatRecording(false);
+        }
+
+        private void ToggleVoiceChatRecording()
+        {
+            if (!DataStore.i.player.isJoinedToVoiceChat.Get())
+                return;
+
+            Interface.WebInterface.ToggleVoiceChatRecording();
         }
     }
 }

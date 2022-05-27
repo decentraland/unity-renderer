@@ -9,6 +9,7 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
     [SerializeField] internal ImageComponentView avatarPreview;
     [SerializeField] internal Sprite defaultUserSprite;
     [SerializeField] internal TextMeshProUGUI userName;
+    [SerializeField] internal GameObject buttonsContainer;
     [SerializeField] internal ButtonComponentView muteButton;
     [SerializeField] internal Image muteButtonImage;
     [SerializeField] internal ButtonComponentView unmuteButton;
@@ -58,6 +59,7 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
         SetAsTalking(model.isTalking);
         SetAsBlocked(model.isBlocked);
         SetAsFriend(model.isFriend);
+        SetAsJoined(model.isJoined);
         SetBackgroundHover(model.isBackgroundHover);
     }
 
@@ -125,6 +127,16 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
             return;
 
         friendLabel.SetActive(isFriend);
+    }
+
+    public void SetAsJoined(bool isJoined)
+    {
+        model.isJoined = isJoined;
+
+        if (buttonsContainer == null)
+            return;
+
+        buttonsContainer.SetActive(isJoined);
     }
 
     public void SetBackgroundHover(bool isHover)

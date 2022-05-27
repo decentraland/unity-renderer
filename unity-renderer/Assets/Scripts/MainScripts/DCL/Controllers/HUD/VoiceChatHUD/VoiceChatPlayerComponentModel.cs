@@ -12,4 +12,5 @@ public class VoiceChatPlayerComponentModel : BaseComponentModel
     public bool isBlocked = false;
     public bool isFriend = false;
     public bool isBackgroundHover = false;
+    public bool isJoined = false;
 }

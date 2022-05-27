@@ -12,5 +12,6 @@ public interface IVoiceChatPlayerComponentView
     void SetAsBlocked(bool isBlocked);
     void SetAsFriend(bool isFriend);
     void SetBackgroundHover(bool isHover);
+    void SetAsJoined(bool isJoined);
     void SetActive(bool isActive);
 }
