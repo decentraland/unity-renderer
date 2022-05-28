@@ -96,16 +96,26 @@ public class TaskbarHUDController : IHUD
         if (show)
             OpenFriendsWindow();
         else
+        {
             friendsHud?.SetVisibility(false);
+            OpenPublicChannelOnPreviewMode();
+        }
+            
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
     private void HandleEmotesToggle(bool show)
     {
         if (show)
+        {
+            OpenPublicChannelOnPreviewMode();
             ShowEmotes();
+        }
         else
+        {
             isEmotesVisible.Set(false);
+            OpenPublicChannelOnPreviewMode();
+        }
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
@@ -113,7 +123,6 @@ public class TaskbarHUDController : IHUD
     {
         worldChatWindowHud.SetVisibility(false);
         privateChatWindow.SetVisibility(false);
-        publicChatChannel.SetVisibility(false);
         friendsHud?.SetVisibility(false);
         isExperiencesViewerOpen.Set(false);
         isEmotesVisible.Set(true);
@@ -125,7 +134,11 @@ public class TaskbarHUDController : IHUD
         if (show)
             ShowExperiences();
         else
+        {
             isExperiencesViewerOpen.Set(false);
+            OpenPublicChannelOnPreviewMode();
+        }
+            
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
@@ -233,8 +246,7 @@ public class TaskbarHUDController : IHUD
             return;
         }
 
-        if (controller.View.Transform.parent == view.leftWindowContainer)
-            return;
+        if (controller.View.Transform.parent == view.leftWindowContainer) return;
 
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
@@ -247,7 +259,7 @@ public class TaskbarHUDController : IHUD
 
     private void OpenPublicChannelOnPreviewMode()
     {
-        publicChatChannel.SetVisibility(true);
+        publicChatChannel.SetVisibility(true, false);
         publicChatChannel.ActivatePreviewModeInstantly();
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
     }
@@ -306,9 +318,10 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.SetVisibility(false);
         privateChatWindow.SetVisibility(false);
         publicChatChannel.SetVisibility(false);
+        view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
     }
 
-    public void OpenPublicChatChannel(string channelId)
+    public void OpenPublicChatChannel(string channelId, bool focusInputField)
     {
         publicChatChannel?.Setup(channelId);
         worldChatWindowHud?.SetVisibility(false);
@@ -316,7 +329,7 @@ public class TaskbarHUDController : IHUD
         friendsHud?.SetVisibility(false);
         isExperiencesViewerOpen?.Set(false);
         isEmotesVisible?.Set(false);
-        publicChatChannel?.SetVisibility(true);
+        publicChatChannel?.SetVisibility(true, focusInputField);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         chatToggleTargetWindow = publicChatChannel;
         chatInputTargetWindow = publicChatChannel;
@@ -357,12 +370,7 @@ public class TaskbarHUDController : IHUD
 
         privateChatWindow = controller;
 
-        controller.OnClosed += () =>
-        {
-            publicChatChannel.SetVisibility(true);
-            publicChatChannel.ActivatePreviewModeInstantly();
-            view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
-        };
+        controller.OnClosed += OpenPublicChannelOnPreviewMode;
     }
 
     public void AddPublicChatChannel(PublicChatChannelController controller)
@@ -412,13 +420,7 @@ public class TaskbarHUDController : IHUD
         view.ShowEmotesButton(); 
     }
 
-    private void IsEmotesVisibleChanged(bool current, bool previous)
-    {
-        if (current && !isEmotesVisible.Get())
-            return;
-
-        view.emotesButton.SetToggleState(current, false);
-    }
+    private void IsEmotesVisibleChanged(bool current, bool previous) => HandleEmotesToggle(current);
 
     private void InitializeExperiencesViewer(Transform currentViewTransform, Transform previousViewTransform)
     {
