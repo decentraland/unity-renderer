@@ -11,7 +11,6 @@ TestResults/
 Assets/InitTestScene*.unity
 Assets/InitTestScene*.unity.meta
 **/CurrentTestImages/
-Generated/
 
 .DS_Store
 .DS_Store?
@@ -21,6 +20,12 @@ Generated/
 ehthumbs.db
 Thumbs.db
 
+# ===================================== #
+# Our file generation system            #
+# ===================================== #
+
+Generated/
+Editor/bin/
 
 # ===================================== #
 # Visual Studio / MonoDevelop / Rider   #
