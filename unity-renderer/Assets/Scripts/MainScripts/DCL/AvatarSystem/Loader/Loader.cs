@@ -68,12 +68,8 @@ namespace AvatarSystem
                 }
                 else
                 {
-                    if (bodyshapeLoader.eyesRenderer != null)
-                        bodyshapeLoader.eyesRenderer.enabled = false;
-                    if (bodyshapeLoader.eyebrowsRenderer != null)
-                        bodyshapeLoader.eyebrowsRenderer.enabled = false;
-                    if (bodyshapeLoader.mouthRenderer != null)
-                        bodyshapeLoader.mouthRenderer.enabled = false;
+                    if(bodyshapeLoader != null)
+                        bodyshapeLoader.DisableFacialRenderers();
                 }
             }
             catch (OperationCanceledException)
