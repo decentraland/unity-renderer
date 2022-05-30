@@ -249,6 +249,7 @@ public class TaskbarHUDController : IHUD
         // view.ToggleAllOff();
         CloseFriendsWindow();
         CloseChatList();
+        CloseVoiceChatWindow();
         OpenPublicChannelOnPreviewMode();
     }
 
@@ -383,6 +384,12 @@ public class TaskbarHUDController : IHUD
         friendsHud?.SetVisibility(false);
         voiceChatHud?.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.VoiceChat);
+    }
+
+    private void CloseVoiceChatWindow()
+    {
+        voiceChatHud?.SetVisibility(false);
+        view.ToggleOff(TaskbarHUDView.TaskbarButtonType.VoiceChat);
     }
 
     public void AddPrivateChatWindow(PrivateChatWindowController controller)

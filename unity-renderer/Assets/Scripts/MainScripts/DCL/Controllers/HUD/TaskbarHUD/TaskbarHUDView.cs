@@ -177,6 +177,8 @@ public class TaskbarHUDView : MonoBehaviour
             OnExperiencesToggle?.Invoke(false);
         else if (obj == experiencesButton)
             OnExperiencesToggle?.Invoke(false);
+        else if (obj == newVoiceChatButton)
+            OnVoiceChatToggle?.Invoke(false);
     }
 
     internal void ShowChatButton()
