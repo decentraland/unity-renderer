@@ -25,7 +25,7 @@ Thumbs.db
 # ===================================== #
 
 Generated/
-Editor/bin/
+Editor/bin/*
 
 # ===================================== #
 # Visual Studio / MonoDevelop / Rider   #
