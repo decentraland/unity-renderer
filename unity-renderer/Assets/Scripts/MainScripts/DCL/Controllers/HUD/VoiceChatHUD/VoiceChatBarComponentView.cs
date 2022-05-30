@@ -24,10 +24,7 @@ public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarCompone
     {
         base.Awake();
 
-        endCallButton.onClick.AddListener(() =>
-        {
-            OnLeaveVoiceChat?.Invoke();
-        });
+        endCallButton.onClick.AddListener(() => OnLeaveVoiceChat?.Invoke());
     }
 
     public void Configure(BaseComponentModel newModel)
