@@ -4,5 +4,4 @@ using System;
 public class VoiceChatBarComponentModel : BaseComponentModel
 {
     public string playerName;
-    public bool isMuted = false;
 }

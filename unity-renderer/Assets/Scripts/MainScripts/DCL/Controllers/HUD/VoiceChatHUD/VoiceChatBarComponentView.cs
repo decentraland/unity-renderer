@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarComponentView, IComponentModelConfig
 {
+    private const string NOBADY_TALKING_MESSAGE = "Nobody is talking";
+
     [Header("Prefab References")]
     [SerializeField] internal VoiceChatButton voiceChatButton;
-    [SerializeField] internal GameObject playerNameContainer;
     [SerializeField] internal TMP_Text playerNameText;
     [SerializeField] internal Animator playerTalingAnimator;
     [SerializeField] internal ButtonComponentView endCallButton;
@@ -62,9 +63,17 @@ public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarCompone
         if (playerName == null)
             return;
 
-        playerNameText.text = playerName;
-        playerNameContainer.SetActive(!string.IsNullOrEmpty(playerName));
-        playerTalingAnimator.SetBool("Talking", !string.IsNullOrEmpty(playerName));
+        if (!string.IsNullOrEmpty(playerName))
+        {
+            playerNameText.text = playerName;
+            playerTalingAnimator.gameObject.SetActive(true);
+            playerTalingAnimator.SetBool("Talking", !string.IsNullOrEmpty(playerName));
+        }
+        else
+        {
+            playerNameText.text = NOBADY_TALKING_MESSAGE;
+            playerTalingAnimator.gameObject.SetActive(false);
+        }
     }
 
     public void PlayVoiceChatRecordingAnimation(bool recording) { voiceChatButton.SetOnRecording(recording); }
