@@ -9,11 +9,13 @@ public class VoiceChatWindowController : IHUD
 {
     const float MUTE_STATUS_UPDATE_INTERVAL = 0.3f;
 
-    public IVoiceChatWindowComponentView View => view;
-    
+    public IVoiceChatWindowComponentView VoiceChatWindowView => voiceChatWindowView;
+    public IVoiceChatBarComponentView VoiceChatBarView => voiceChatBarView;
+
     private UserProfile ownProfile => userProfileBridge.GetOwn();
 
-    private IVoiceChatWindowComponentView view;
+    private IVoiceChatWindowComponentView voiceChatWindowView;
+    private IVoiceChatBarComponentView voiceChatBarView;
     private IUserProfileBridge userProfileBridge;
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
@@ -36,10 +38,15 @@ public class VoiceChatWindowController : IHUD
         this.socialAnalytics = socialAnalytics;
         this.dataStore = dataStore;
 
-        view = CreateVoiceChatWindowView();
-        view.Hide(instant: true);
-        view.OnClose += CloseView;
-        view.OnJoinVoiceChat += JoinVoiceChat;
+        voiceChatWindowView = CreateVoiceChatWindowView();
+        voiceChatWindowView.Hide(instant: true);
+        voiceChatWindowView.OnClose += CloseView;
+        voiceChatWindowView.OnJoinVoiceChat += JoinVoiceChat;
+
+        voiceChatBarView = CreateVoiceChatBatView();
+        voiceChatBarView.Hide(instant: true);
+        voiceChatBarView.OnLeaveVoiceChat += LeaveVoiceChat;
+
         dataStore.player.otherPlayers.OnAdded += OnOtherPlayersStatusAdded;
         dataStore.player.otherPlayers.OnRemoved += OnOtherPlayerStatusRemoved;
         ownProfile.OnUpdate += OnUserProfileUpdated;
@@ -52,9 +59,9 @@ public class VoiceChatWindowController : IHUD
     public void SetVisibility(bool visible)
     {
         if (visible)
-            view.Show();
+            voiceChatWindowView.Show();
         else
-            view.Hide();
+            voiceChatWindowView.Hide();
     }
 
     public void SetUsersMuted(string[] usersId, bool isMuted)
@@ -83,8 +90,9 @@ public class VoiceChatWindowController : IHUD
         if (updateMuteStatusRoutine != null)
             CoroutineStarter.Stop(updateMuteStatusRoutine);
 
-        view.OnClose -= CloseView;
-        view.OnJoinVoiceChat -= JoinVoiceChat;
+        voiceChatWindowView.OnClose -= CloseView;
+        voiceChatWindowView.OnJoinVoiceChat -= JoinVoiceChat;
+        voiceChatBarView.OnLeaveVoiceChat -= LeaveVoiceChat;
         dataStore.player.otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
         dataStore.player.otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
         ownProfile.OnUpdate -= OnUserProfileUpdated;
@@ -107,7 +115,16 @@ public class VoiceChatWindowController : IHUD
                 iterator.Current.Value.SetAsJoined(isJoined);
             }
         }
+
+        voiceChatWindowView.SetAsJoined(isJoined);
+
+        if (isJoined)
+            voiceChatBarView.Show();
+        else
+            voiceChatBarView.Hide();
     }
+
+    internal void LeaveVoiceChat() { JoinVoiceChat(false); }
 
     internal void OnOtherPlayersStatusAdded(string userId, Player player)
     {
@@ -122,7 +139,7 @@ public class VoiceChatWindowController : IHUD
                     elementView = playersPool.Dequeue();
                 else
                 {
-                    elementView = view.CreateNewPlayerInstance();
+                    elementView = voiceChatWindowView.CreateNewPlayerInstance();
                     elementView.OnMuteUser += MuteUser;
                 }
 
@@ -141,7 +158,7 @@ public class VoiceChatWindowController : IHUD
 
                 elementView.SetActive(true);
                 currentPlayers.Add(player.id, elementView);
-                view.SetNumberOfPlayers(currentPlayers.Count);
+                voiceChatWindowView.SetNumberOfPlayers(currentPlayers.Count);
                 CheckListEmptyState();
             }
         }
@@ -174,13 +191,13 @@ public class VoiceChatWindowController : IHUD
 
         playersPool.Enqueue(elementView);
         currentPlayers.Remove(userId);
-        view.SetNumberOfPlayers(currentPlayers.Count);
+        voiceChatWindowView.SetNumberOfPlayers(currentPlayers.Count);
         CheckListEmptyState();
 
         elementView.SetActive(false);
     }
 
-    internal void CheckListEmptyState() { view.SetEmptyListActive(currentPlayers.Count == 0); }
+    internal void CheckListEmptyState() { voiceChatWindowView.SetEmptyListActive(currentPlayers.Count == 0); }
 
     internal void MuteUser(string userId, bool isMuted)
     {
@@ -236,6 +253,8 @@ public class VoiceChatWindowController : IHUD
     }
 
     protected internal virtual IVoiceChatWindowComponentView CreateVoiceChatWindowView() => VoiceChatWindowComponentView.Create();
+
+    protected internal virtual IVoiceChatBarComponentView CreateVoiceChatBatView() => VoiceChatBarComponentView.Create();
 
     protected internal virtual IVoiceChatPlayerComponentView CreateVoiceChatPlayerView() => VoiceChatPlayerComponentView.Create();
 }

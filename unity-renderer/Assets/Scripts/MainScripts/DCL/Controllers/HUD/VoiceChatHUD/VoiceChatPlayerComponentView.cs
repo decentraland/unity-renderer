@@ -2,7 +2,6 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
 public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
@@ -176,9 +175,9 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
 
     internal static VoiceChatPlayerComponentView Create()
     {
-        VoiceChatPlayerComponentView voiceChatWindowComponentView = Instantiate(Resources.Load<GameObject>("VoiceChatPlayer")).GetComponent<VoiceChatPlayerComponentView>();
-        voiceChatWindowComponentView.name = "_VoiceChatPlayer";
+        VoiceChatPlayerComponentView voiceChatPlayerComponentView = Instantiate(Resources.Load<GameObject>("VoiceChatPlayer")).GetComponent<VoiceChatPlayerComponentView>();
+        voiceChatPlayerComponentView.name = "_VoiceChatPlayer";
 
-        return voiceChatWindowComponentView;
+        return voiceChatPlayerComponentView;
     }
 }

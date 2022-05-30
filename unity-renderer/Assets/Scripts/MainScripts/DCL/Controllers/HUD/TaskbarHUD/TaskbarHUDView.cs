@@ -10,8 +10,9 @@ public class TaskbarHUDView : MonoBehaviour
     [Header("Taskbar Animation")] [SerializeField]
     internal ShowHideAnimator taskbarAnimator;
 
-    [Header("Left Side Config")] [SerializeField]
-    internal RectTransform leftWindowContainer;
+    [Header("Left Side Config")]
+    [SerializeField] internal RectTransform leftWindowContainer;
+    [SerializeField] internal RectTransform altSectionContainer;
 
     [SerializeField] internal ShowHideAnimator leftWindowContainerAnimator;
     [SerializeField] internal LayoutGroup leftWindowContainerLayout;

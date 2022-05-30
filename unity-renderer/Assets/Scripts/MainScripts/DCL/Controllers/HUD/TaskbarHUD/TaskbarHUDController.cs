@@ -433,20 +433,23 @@ public class TaskbarHUDController : IHUD
 
     public void AddVoiceChatWindow(VoiceChatWindowController controller)
     {
-        if (controller?.View == null)
+        if (controller?.VoiceChatWindowView == null)
         {
             Debug.LogWarning("AddVoiceChatWindow >>> Voice Chat window doesn't exist yet!");
             return;
         }
 
-        if (controller.View.Transform.parent == view.leftWindowContainer)
+        if (controller.VoiceChatWindowView.Transform.parent == view.leftWindowContainer)
             return;
 
-        controller.View.Transform.SetParent(view.leftWindowContainer, false);
+        controller.VoiceChatWindowView.Transform.SetParent(view.leftWindowContainer, false);
 
         voiceChatHud = controller;
         view.ShowVoiceChatButton();
-        voiceChatHud.View.OnClose += () => view.ToggleOff(TaskbarHUDView.TaskbarButtonType.VoiceChat);
+        voiceChatHud.VoiceChatWindowView.OnClose += () => view.ToggleOff(TaskbarHUDView.TaskbarButtonType.VoiceChat);
+
+        if (controller?.VoiceChatBarView != null)
+            controller.VoiceChatBarView.Transform.SetParent(view.altSectionContainer, false);
     }
 
     private void InitializeEmotesSelector(bool current, bool previous) 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowComponentView
+public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowComponentView, IComponentModelConfig
 {
     enum AllowUsersFilter
     {
@@ -22,6 +22,9 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     [SerializeField] private VoiceChatPlayerComponentView playerPrefab;
     [SerializeField] private Transform usersContainer;
 
+    [Header("Configuration")]
+    [SerializeField] internal VoiceChatWindowComponentModel model;
+
     public event Action OnClose;
     public event Action<bool> OnJoinVoiceChat;
     public event Action<string> OnAllowUsersFilterChange;
@@ -33,8 +36,8 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         base.Awake();
 
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
-        joinButton.onClick.AddListener(() => SetAsJoined(true));
-        leaveButton.onClick.AddListener(() => SetAsJoined(false));
+        joinButton.onClick.AddListener(() => OnJoinVoiceChat?.Invoke(true));
+        leaveButton.onClick.AddListener(() => OnJoinVoiceChat?.Invoke(false));
         allowUsersDropdown.OnOptionSelectionChanged += AllowUsersOptionChanged;
     }
 
@@ -43,11 +46,23 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         base.Start();
 
         ConfigureAllowUsersFilter();
-        SetNumberOfPlayers(0);
-        SetAsJoined(false);
     }
 
-    public override void RefreshControl() { }
+    public void Configure(BaseComponentModel newModel)
+    {
+        model = (VoiceChatWindowComponentModel)newModel;
+        RefreshControl();
+    }
+
+    public override void RefreshControl()
+    {
+        if (model == null)
+            return;
+
+        SetNumberOfPlayers(model.numberOfPlayers);
+        SetEmptyListActive(model.isEmptyListActive);
+        SetAsJoined(model.isJoined);
+    }
 
     public override void Show(bool instant = false) { gameObject.SetActive(true); }
 
@@ -56,6 +71,13 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     public void SetNumberOfPlayers(int numPlayers) { playersText.text = $"PLAYERS ({numPlayers})"; }
 
     public void SetEmptyListActive(bool isActive) { emptyListGameObject.SetActive(isActive); }
+
+    public void SetAsJoined(bool isJoined)
+    {
+        joinButton.gameObject.SetActive(!isJoined);
+        leaveButton.gameObject.SetActive(isJoined);
+        allowUsersDropdown.gameObject.SetActive(isJoined);
+    }
 
     public VoiceChatPlayerComponentView CreateNewPlayerInstance() => Instantiate(playerPrefab, usersContainer);
 
@@ -107,14 +129,6 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         allowUsersDropdown.SetTitle(optionName);
         OnAllowUsersFilterChange?.Invoke(optionId);
         allowUsersDropdown.Close();
-    }
-
-    internal void SetAsJoined(bool isJoined)
-    {
-        joinButton.gameObject.SetActive(!isJoined);
-        leaveButton.gameObject.SetActive(isJoined);
-        allowUsersDropdown.gameObject.SetActive(isJoined);
-        OnJoinVoiceChat?.Invoke(isJoined);
     }
 
     internal static VoiceChatWindowComponentView Create()

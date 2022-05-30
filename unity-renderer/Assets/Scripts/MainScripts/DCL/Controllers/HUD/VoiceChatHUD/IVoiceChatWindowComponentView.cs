@@ -13,5 +13,6 @@ public interface IVoiceChatWindowComponentView
     void Hide(bool instant = false);
     void SetNumberOfPlayers(int numPlayers);
     void SetEmptyListActive(bool isActive);
+    void SetAsJoined(bool isJoined);
     VoiceChatPlayerComponentView CreateNewPlayerInstance();
 }
