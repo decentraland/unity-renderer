@@ -457,6 +457,9 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
 
         yield return null;
 
+        if (optionsPanel == null)
+            yield break;
+
         RectTransform optionsPanelTransform = optionsPanel.transform as RectTransform;
         optionsPanelTransform.sizeDelta = new Vector2(
             optionsPanelTransform.sizeDelta.x, 
