@@ -60,7 +60,7 @@ public static class AssetBundleDepMapLoadHelper
             });
     }
 
-    public static void LoadDepMapFromJSON(string metadataJSON, string hash)
+    public static void LoadDepMapFromJSON( string metadataJSON, string hash)
     {
         AssetBundleMetadata metadata = JsonUtility.FromJson<AssetBundleMetadata>(metadataJSON);
 

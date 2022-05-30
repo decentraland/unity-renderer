@@ -8,7 +8,7 @@ namespace DCL
 {
     public class AssetPromise_AB : AssetPromise_WithUrl<Asset_AB>
     {
-        const string METADATA_FILENAME = "metadata.json";
+
 
         public static bool VERBOSE = false;
         public static int MAX_CONCURRENT_REQUESTS => CommonScriptableObjects.rendererState.Get() ? 30 : 256;
@@ -105,7 +105,8 @@ namespace DCL
             yield return WaitForConcurrentRequestsSlot();
 
             RegisterConcurrentRequest();
-#if (UNITY_EDITOR || UNITY_STANDALONE)
+            
+#if ((UNITY_EDITOR || UNITY_STANDALONE) && !UNITY_2020_3_34)
             asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, hash: Hash128.Compute(hash),
                 disposeOnCompleted: false);
 #else
@@ -132,25 +133,15 @@ namespace DCL
                 yield break;
             }
 
-            AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(asyncOp.webRequest);
-            asyncOp.Dispose();
-
-            if (assetBundle == null || asset == null)
-            {
-                OnFail?.Invoke(new Exception("Asset bundle or asset is null"));
-                failedRequestUrls.Add(finalUrl);
+            if (!LoadAssetBundle(OnFail, finalUrl))
                 yield break;
-            }
-
-            asset.ownerAssetBundle = assetBundle;
-            asset.assetBundleAssetName = assetBundle.name;
 
             // 2. Check internal metadata file (dependencies, version, timestamp) and if it doesn't exist, fetch the external depmap file (old way of handling ABs dependencies)
-            TextAsset metadata = assetBundle.LoadAsset<TextAsset>(METADATA_FILENAME);
+            TextAsset metadataText = asset.GetMetadata();
 
-            if (metadata != null)
+            if (metadataText != null)
             {
-                AssetBundleDepMapLoadHelper.LoadDepMapFromJSON(metadata.text, hash);
+                AssetBundleDepMapLoadHelper.LoadDepMapFromJSON(metadataText.text, hash);
             }
             else
             {
@@ -182,7 +173,24 @@ namespace DCL
                 yield return promise;
             }
 
-            assetBundlesLoader.MarkAssetBundleForLoad(asset, assetBundle, containerTransform, OnSuccess, OnFail);
+            assetBundlesLoader.MarkAssetBundleForLoad(asset, containerTransform, OnSuccess, OnFail);
+        }
+        private bool LoadAssetBundle(Action<Exception> OnFail, string finalUrl)
+        {
+            AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(asyncOp.webRequest);
+            asyncOp.Dispose();
+
+            if (assetBundle == null || asset == null)
+            {
+                OnFail?.Invoke(new Exception("Asset bundle or asset is null"));
+                failedRequestUrls.Add(finalUrl);
+
+                return false;
+            }
+
+            asset.SetAssetBundle(assetBundle);
+
+            return true;
         }
 
         public override string ToString()

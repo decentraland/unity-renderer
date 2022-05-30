@@ -163,7 +163,7 @@ namespace DCL
                 }
 
 #if UNITY_EDITOR
-                assetBundleModelGO.name = subPromise.asset.assetBundleAssetName;
+                assetBundleModelGO.name = subPromise.asset.GetName();
 #endif
                 assetBundleModelGO.transform.ResetLocalTRS();
 
