@@ -83,8 +83,9 @@ namespace DCL.Protobuf
                 UnityEngine.Debug.Log("@dcl/ecs@next url: " + tgzUrl);
 
             // Download package
+            string packageName = "dcl-ecs-next.tgz";
             client = new WebClient();
-            client.DownloadFile(tgzUrl, "dcl-ecs-next.tgz");
+            client.DownloadFile(tgzUrl, packageName);
             if (VERBOSE)
                 UnityEngine.Debug.Log("File downloaded dcl-ecs-next.tgz");
 
@@ -97,12 +98,8 @@ namespace DCL.Protobuf
                 Directory.CreateDirectory(destPackage);
 
                 // We unzip the library
-                ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "tar", Arguments = "-xvzf dcl-ecs-next.tgz -C " + destPackage, CreateNoWindow = true };
-                Process proc = new Process() { StartInfo = startInfo };
-                proc.Start();
-
-                proc.WaitForExit(5 * 1000);
-
+                Unzip(packageName,destPackage);
+                
                 if (VERBOSE)
                     UnityEngine.Debug.Log("Unzipped dcl-ecs-next.tgz");
 
@@ -214,12 +211,8 @@ namespace DCL.Protobuf
                 Directory.CreateDirectory(destPackage);
 
                 // We unzip the proto executable
-                ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "tar", Arguments = "-xvzf protoc -C " + destPackage, CreateNoWindow = true };
-                Process proc = new Process() { StartInfo = startInfo };
-                proc.Start();
-
-                proc.WaitForExit(5 * 1000);
-
+                Unzip(zipProtoFileName,destPackage);
+                
                 if (VERBOSE)
                     UnityEngine.Debug.Log("Unzipped protoc");
 
@@ -247,6 +240,21 @@ namespace DCL.Protobuf
             }
         }
 
+        private static void Unzip(string name, string path)
+        {
+#if UNITY_EDITOR_WIN
+            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "tar", Arguments = "-xvzf " + name + " -C " + path, CreateNoWindow = true };
+            Process proc = new Process() { StartInfo = startInfo };
+            proc.Start();
+
+            proc.WaitForExit(5 * 1000);
+#endif
+#if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
+                // TODO: unzip in mac and linux
+#endif
+
+        }
+        
         [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
         [InitializeOnLoadMethod]
         private static void OnProjectCompile()
