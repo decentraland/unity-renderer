@@ -299,15 +299,6 @@ public class HUDController : IHUDController
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
 
-                        if (!string.IsNullOrEmpty(extraPayload))
-                        {
-                            var config = JsonUtility.FromJson<TaskbarHUDController.Configuration>(extraPayload);
-                            if (config.enableVoiceChat)
-                            {
-                                taskbarHud.OnAddVoiceChat();
-                            }
-                        }
-
                         OnTaskbarCreation?.Invoke();
                     }
                 }

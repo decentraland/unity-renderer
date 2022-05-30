@@ -509,8 +509,6 @@ public class TaskbarHUDController : IHUD
             isExperiencesViewerOpen.Set(false);
     }
 
-    public void OnAddVoiceChat() { view.ShowVoiceChat(); }
-
     public void DisableFriendsWindow()
     {
         view.friendsButton.transform.parent.gameObject.SetActive(false);
@@ -555,10 +553,6 @@ public class TaskbarHUDController : IHUD
     private void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
 
     public void SetVisibility(bool visible) { view.SetVisibility(visible); }
-
-    public void SetVoiceChatRecording(bool recording) { view?.voiceChatButton.SetOnRecording(recording); }
-
-    public void SetVoiceChatEnabledByScene(bool enabled) { view?.voiceChatButton.SetEnabledByScene(enabled); }
 
     public void GoBackFromChat()
     {

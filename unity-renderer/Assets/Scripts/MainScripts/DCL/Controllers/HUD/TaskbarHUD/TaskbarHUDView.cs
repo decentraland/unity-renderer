@@ -15,12 +15,10 @@ public class TaskbarHUDView : MonoBehaviour
 
     [SerializeField] internal ShowHideAnimator leftWindowContainerAnimator;
     [SerializeField] internal LayoutGroup leftWindowContainerLayout;
-    [SerializeField] internal GameObject voiceChatButtonPlaceholder;
-    [SerializeField] internal VoiceChatButton voiceChatButton;
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
     [SerializeField] internal TaskbarButton emotesButton;
-    [SerializeField] internal TaskbarButton newVoiceChatButton;
+    [SerializeField] internal TaskbarButton voiceChatButton;
     [SerializeField] internal GameObject experiencesContainer;
     [SerializeField] internal TaskbarButton experiencesButton;
     [SerializeField] internal RectTransform socialTooltipReference;
@@ -51,32 +49,30 @@ public class TaskbarHUDView : MonoBehaviour
         buttonsByType[TaskbarButtonType.Emotes] = emotesButton;
         buttonsByType[TaskbarButtonType.Experiences] = experiencesButton;
         buttonsByType[TaskbarButtonType.Friends] = friendsButton;
-        buttonsByType[TaskbarButtonType.VoiceChat] = newVoiceChatButton;
+        buttonsByType[TaskbarButtonType.VoiceChat] = voiceChatButton;
 
         chatButton.transform.parent.gameObject.SetActive(false);
         friendsButton.transform.parent.gameObject.SetActive(false);
         emotesButton.transform.parent.gameObject.SetActive(false);
         experiencesButton.transform.parent.gameObject.SetActive(false);
-        voiceChatButtonPlaceholder.SetActive(false);
-        voiceChatButton.gameObject.SetActive(false);
-        newVoiceChatButton.transform.parent.gameObject.SetActive(false);
+        voiceChatButton.transform.parent.gameObject.SetActive(false);
 
         chatButton.Initialize();
         friendsButton.Initialize();
         emotesButton.Initialize();
         experiencesButton.Initialize();
-        newVoiceChatButton.Initialize();
+        voiceChatButton.Initialize();
 
         chatButton.OnToggleOn += ToggleOn;
         friendsButton.OnToggleOn += ToggleOn;
         emotesButton.OnToggleOn += ToggleOn;
         experiencesButton.OnToggleOn += ToggleOn;
-        newVoiceChatButton.OnToggleOn += ToggleOn;
+        voiceChatButton.OnToggleOn += ToggleOn;
         chatButton.OnToggleOff += ToggleOff;
         friendsButton.OnToggleOff += ToggleOff;
         emotesButton.OnToggleOff += ToggleOff;
         experiencesButton.OnToggleOff += ToggleOff;
-        newVoiceChatButton.OnToggleOff += ToggleOff;
+        voiceChatButton.OnToggleOff += ToggleOff;
     }
 
     private void OnDestroy()
@@ -99,10 +95,10 @@ public class TaskbarHUDView : MonoBehaviour
             emotesButton.OnToggleOff -= ToggleOff;
         }
 
-        if(newVoiceChatButton != null)
+        if(voiceChatButton != null)
         {
-            newVoiceChatButton.OnToggleOn -= ToggleOn;
-            newVoiceChatButton.OnToggleOff -= ToggleOff;
+            voiceChatButton.OnToggleOn -= ToggleOn;
+            voiceChatButton.OnToggleOff -= ToggleOff;
         }
 
         if (experiencesButton != null)
@@ -149,7 +145,7 @@ public class TaskbarHUDView : MonoBehaviour
             OnChatToggle?.Invoke(true);
         else if (obj == experiencesButton)
             OnExperiencesToggle?.Invoke(true);
-        else if (obj == newVoiceChatButton)
+        else if (obj == voiceChatButton)
             OnVoiceChatToggle?.Invoke(true);
     }
 
@@ -177,7 +173,7 @@ public class TaskbarHUDView : MonoBehaviour
             OnExperiencesToggle?.Invoke(false);
         else if (obj == experiencesButton)
             OnExperiencesToggle?.Invoke(false);
-        else if (obj == newVoiceChatButton)
+        else if (obj == voiceChatButton)
             OnVoiceChatToggle?.Invoke(false);
     }
 
@@ -201,15 +197,9 @@ public class TaskbarHUDView : MonoBehaviour
         experiencesButton.transform.parent.gameObject.SetActive(true);
     }
 
-    internal void ShowVoiceChat()
-    {
-        voiceChatButtonPlaceholder.SetActive(true);
-        voiceChatButton.gameObject.SetActive(true);
-    }
-
     internal void ShowVoiceChatButton()
     {
-        newVoiceChatButton.transform.parent.gameObject.SetActive(true);
+        voiceChatButton.transform.parent.gameObject.SetActive(true);
     }
 
     private void ShowBar(bool visible, bool instant = false)

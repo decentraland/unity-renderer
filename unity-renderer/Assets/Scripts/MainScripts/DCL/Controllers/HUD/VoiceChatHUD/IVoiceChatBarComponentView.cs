@@ -11,5 +11,6 @@ public interface IVoiceChatBarComponentView
     void Show(bool instant = false);
     void Hide(bool instant = false);
     void SetPlayerName(string userName);
-    void SetAsMuted(bool isMuted);
+    void PlayVoiceChatRecordingAnimation(bool recording);
+    void SetVoiceChatEnabledByScene(bool enabled);
 }

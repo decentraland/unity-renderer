@@ -85,6 +85,10 @@ public class VoiceChatWindowController : IHUD
         elementView.SetAsTalking(isRecording);
     }
 
+    public void SetVoiceChatRecording(bool recording) { voiceChatBarView.PlayVoiceChatRecordingAnimation(recording); }
+
+    public void SetVoiceChatEnabledByScene(bool enabled) { voiceChatBarView.SetVoiceChatEnabledByScene(enabled); }
+
     public void Dispose()
     {
         ReportMuteStatuses();

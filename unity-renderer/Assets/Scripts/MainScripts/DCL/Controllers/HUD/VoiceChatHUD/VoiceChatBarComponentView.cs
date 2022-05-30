@@ -5,10 +5,7 @@ using UnityEngine;
 public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
-    [SerializeField] internal GameObject micOnContainer;
-    [SerializeField] internal ButtonComponentView micOnButton;
-    [SerializeField] internal GameObject micOffContainer;
-    [SerializeField] internal ButtonComponentView micOffButton;
+    [SerializeField] internal VoiceChatButton voiceChatButton;
     [SerializeField] internal GameObject playerNameContainer;
     [SerializeField] internal TMP_Text playerNameText;
     [SerializeField] internal Animator playerTalingAnimator;
@@ -25,18 +22,6 @@ public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarCompone
     public override void Awake()
     {
         base.Awake();
-
-        micOnButton.onClick.AddListener(() =>
-        {
-            SetAsMuted(true);
-            OnMuteVoiceChat?.Invoke(true);
-        });
-
-        micOnButton.onClick.AddListener(() =>
-        {
-            SetAsMuted(false);
-            OnMuteVoiceChat?.Invoke(false);
-        });
 
         endCallButton.onClick.AddListener(() =>
         {
@@ -56,7 +41,6 @@ public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarCompone
             return;
 
         SetPlayerName(model.playerName);
-        SetAsMuted(model.isMuted);
     }
 
     public override void Show(bool instant = false) 
@@ -83,23 +67,14 @@ public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarCompone
         playerTalingAnimator.SetBool("Talking", !string.IsNullOrEmpty(playerName));
     }
 
-    public void SetAsMuted(bool isMuted)
-    {
-        model.isMuted = isMuted;
+    public void PlayVoiceChatRecordingAnimation(bool recording) { voiceChatButton.SetOnRecording(recording); }
 
-        if (micOnContainer != null)
-            micOnContainer.gameObject.SetActive(!isMuted);
-
-        if (micOffContainer != null)
-            micOffContainer.gameObject.SetActive(isMuted);
-    }
+    public void SetVoiceChatEnabledByScene(bool enabled) { voiceChatButton.SetEnabledByScene(enabled); }
 
     public override void Dispose()
     {
         base.Dispose();
 
-        micOnButton.onClick.RemoveAllListeners();
-        micOnButton.onClick.RemoveAllListeners();
         endCallButton.onClick.RemoveAllListeners();
     }
 
