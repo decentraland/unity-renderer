@@ -21,11 +21,11 @@ ehthumbs.db
 Thumbs.db
 
 # ===================================== #
-# Our file generation system            #
+# Proto generation system            #
 # ===================================== #
 
 Generated/
-Editor/bin/*
+bin/
 
 # ===================================== #
 # Visual Studio / MonoDevelop / Rider   #
