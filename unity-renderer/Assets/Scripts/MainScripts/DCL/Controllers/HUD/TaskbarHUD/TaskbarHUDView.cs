@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +28,7 @@ public class TaskbarHUDView : MonoBehaviour
     private readonly Dictionary<TaskbarButtonType, TaskbarButton> buttonsByType =
         new Dictionary<TaskbarButtonType, TaskbarButton>();
 
-    private TaskbarButtonType lastToggledOnButton = TaskbarButtonType.None;
+    private TaskbarButton lastToggledOnButton;
 
     public event System.Action<bool> OnChatToggle;
     public event System.Action<bool> OnFriendsToggle;
@@ -125,65 +124,59 @@ public class TaskbarHUDView : MonoBehaviour
         experiencesContainer.SetActive(visible);
     }
 
-    public void ToggleAllOff()
-    {
-        lastToggledOnButton = GetToggledOnButtonType();
-        foreach (var button in buttonsByType.Keys)
-            ToggleOff(button);
-    }
-
     public void ToggleOn(TaskbarButtonType buttonType) => ToggleOn(buttonsByType[buttonType], false);
 
     public void ToggleOff(TaskbarButtonType buttonType) => ToggleOff(buttonsByType[buttonType], false);
     
     private void ToggleOn(TaskbarButton obj) => ToggleOn(obj, true);
 
-    private TaskbarButtonType GetToggledOnButtonType()
-    {
-        return buttonsByType.Any(pair => pair.Value.toggledOn)
-            ? buttonsByType.First(pair => pair.Value.toggledOn).Key
-            : TaskbarButtonType.None;
-    }
-
     private void ToggleOn(TaskbarButton obj, bool useCallback)
     {
-        if (useCallback)
-        {
-            if (obj == friendsButton)
-                OnFriendsToggle?.Invoke(true);
-            if (obj == emotesButton)
-                OnEmotesToggle?.Invoke(true);
-            else if (obj == chatButton)
-                OnChatToggle?.Invoke(true);
-            else if (obj == experiencesButton)
-                OnExperiencesToggle?.Invoke(true);
-            else if (obj == newVoiceChatButton)
-                OnVoiceChatToggle?.Invoke(true);
-        }
-
+        var wasToggled = lastToggledOnButton == obj;
+        lastToggledOnButton = obj;
+        
         foreach (var btn in buttonsByType.Values)
             btn.SetToggleState(btn == obj, useCallback);
+
+        if (!useCallback) return;
+        if (wasToggled) return;
+        
+        if (obj == friendsButton)
+            OnFriendsToggle?.Invoke(true);
+        if (obj == emotesButton)
+            OnEmotesToggle?.Invoke(true);
+        else if (obj == chatButton)
+            OnChatToggle?.Invoke(true);
+        else if (obj == experiencesButton)
+            OnExperiencesToggle?.Invoke(true);
+        else if (obj == newVoiceChatButton)
+            OnVoiceChatToggle?.Invoke(true);
     }
 
     private void ToggleOff(TaskbarButton obj) => ToggleOff(obj, true);
 
     private void ToggleOff(TaskbarButton obj, bool useCallback)
     {
-        if (useCallback)
-        {
-            if (obj == friendsButton)
-                OnFriendsToggle?.Invoke(false);
-            if (obj == emotesButton)
-                OnEmotesToggle?.Invoke(false);
-            else if (obj == chatButton)
-                OnChatToggle?.Invoke(false);
-            else if (obj == newVoiceChatButton)
-                OnVoiceChatToggle?.Invoke(false);
-            else if (obj == experiencesButton)
-                OnExperiencesToggle?.Invoke(false);
-        }
-            
+        var wasToggled = lastToggledOnButton == obj;
+        
+        if (wasToggled)
+            lastToggledOnButton = null;
+        
         obj.SetToggleState(false, useCallback);
+
+        if (!useCallback) return;
+        if (!wasToggled) return;
+        
+        if (obj == friendsButton)
+            OnFriendsToggle?.Invoke(false);
+        if (obj == emotesButton)
+            OnEmotesToggle?.Invoke(false);
+        else if (obj == chatButton)
+            OnChatToggle?.Invoke(false);
+        else if (obj == experiencesButton)
+            OnExperiencesToggle?.Invoke(false);
+        else if (obj == experiencesButton)
+            OnExperiencesToggle?.Invoke(false);
     }
 
     internal void ShowChatButton()
@@ -223,12 +216,6 @@ public class TaskbarHUDView : MonoBehaviour
             taskbarAnimator.Show(instant);
         else
             taskbarAnimator.Hide(instant);
-    }
-
-    public void RestoreLastToggle()
-    {
-        if (lastToggledOnButton == TaskbarButtonType.None) return;
-        ToggleOn(lastToggledOnButton);
     }
 
     public enum TaskbarButtonType
