@@ -201,6 +201,7 @@ namespace DCL.Protobuf
             machine = "linux-x86_64";
 #endif
 
+            // We download the proto executable
             string name = $"protoc-{PROTO_VERSION}-{machine}.zip";
             string url = $"https://github.com/protocolbuffers/protobuf/releases/download/v{PROTO_VERSION}/{name}";
             string zipProtoFileName = "protoc";
@@ -210,10 +211,9 @@ namespace DCL.Protobuf
 
             try
             {
-
                 Directory.CreateDirectory(destPackage);
 
-                // We unzip the library
+                // We unzip the proto executable
                 ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "tar", Arguments = "-xvzf protoc -C " + destPackage, CreateNoWindow = true };
                 Process proc = new Process() { StartInfo = startInfo };
                 proc.Start();
@@ -228,19 +228,19 @@ namespace DCL.Protobuf
                 if (File.Exists(outputPath))
                     File.Delete(outputPath);
 
-                // We move the definitions to their correct path
+                // We move the executable to his correct path
                 Directory.Move(destPackage + "/bin/" + executableName, outputPath);
                 WriteVersion(PROTO_VERSION, EXECUTABLE_VERSION_FILENAME);
                 if (VERBOSE)
                     UnityEngine.Debug.Log("Success copying definitions in " + outputPath);
-
             }
             catch (Exception e)
             {
-                Debug.LogError("The download has failed " + e.Message);
+                Debug.LogError("The download of the executable has failed " + e.Message);
             }
             finally
             {
+                // We removed everything has has been created and it is not usefull anymore
                 File.Delete(zipProtoFileName);
                 if (Directory.Exists(destPackage))
                     Directory.Delete(destPackage, true);
@@ -248,10 +248,10 @@ namespace DCL.Protobuf
         }
 
         [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
-        // Unccoment this line to make it work with the compilation time
-        //       [InitializeOnLoadMethod]
+        [InitializeOnLoadMethod]
         private static void OnProjectLoadedInEditor()
         {
+            // The compiled version is a file that lives in the repo, if your local version is distinct it will generated them
             var currentDownloadedVersion = GetDownloadedVersion();
             var currentVersion = GetCompiledVersion();
             if (currentVersion != currentDownloadedVersion)
