@@ -19,6 +19,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     [SerializeField] private TMP_Text playersText;
     [SerializeField] private DropdownComponentView allowUsersDropdown;
     [SerializeField] private GameObject emptyListGameObject;
+    [SerializeField] private ButtonComponentView goToCrowdButton;
     [SerializeField] private VoiceChatPlayerComponentView playerPrefab;
     [SerializeField] private Transform usersContainer;
 
@@ -28,6 +29,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     public event Action OnClose;
     public event Action<bool> OnJoinVoiceChat;
     public event Action<string> OnAllowUsersFilterChange;
+    public event Action OnGoToCrowd;
 
     public RectTransform Transform => (RectTransform)transform;
 
@@ -38,6 +40,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         joinButton.onClick.AddListener(() => OnJoinVoiceChat?.Invoke(true));
         leaveButton.onClick.AddListener(() => OnJoinVoiceChat?.Invoke(false));
+        goToCrowdButton.onClick.AddListener(() => OnGoToCrowd?.Invoke());
         allowUsersDropdown.OnOptionSelectionChanged += AllowUsersOptionChanged;
     }
 
@@ -60,7 +63,6 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
             return;
 
         SetNumberOfPlayers(model.numberOfPlayers);
-        SetEmptyListActive(model.isEmptyListActive);
         SetAsJoined(model.isJoined);
     }
 
@@ -68,15 +70,29 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
 
     public override void Hide(bool instant = false) { gameObject.SetActive(false); }
 
-    public void SetNumberOfPlayers(int numPlayers) { playersText.text = $"PLAYERS ({numPlayers})"; }
+    public void SetNumberOfPlayers(int numPlayers) 
+    {
+        model.numberOfPlayers = numPlayers;
 
-    public void SetEmptyListActive(bool isActive) { emptyListGameObject.SetActive(isActive); }
+        if (playersText != null)
+            playersText.text = $"PLAYERS ({numPlayers})";
+
+        if (emptyListGameObject != null)
+            emptyListGameObject.SetActive(numPlayers == 0);
+    }
 
     public void SetAsJoined(bool isJoined)
     {
-        joinButton.gameObject.SetActive(!isJoined);
-        leaveButton.gameObject.SetActive(isJoined);
-        allowUsersDropdown.gameObject.SetActive(isJoined);
+        model.isJoined = isJoined;
+
+        if (joinButton != null)
+            joinButton.gameObject.SetActive(!isJoined);
+
+        if (leaveButton != null)
+            leaveButton.gameObject.SetActive(isJoined);
+
+        if (allowUsersDropdown != null)
+            allowUsersDropdown.gameObject.SetActive(isJoined);
     }
 
     public VoiceChatPlayerComponentView CreateNewPlayerInstance() => Instantiate(playerPrefab, usersContainer);

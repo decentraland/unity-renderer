@@ -6,13 +6,13 @@ public interface IVoiceChatWindowComponentView
     event Action OnClose;
     event Action<bool> OnJoinVoiceChat;
     event Action<string> OnAllowUsersFilterChange;
+    event Action OnGoToCrowd;
 
     RectTransform Transform { get; }
 
     void Show(bool instant = false);
     void Hide(bool instant = false);
     void SetNumberOfPlayers(int numPlayers);
-    void SetEmptyListActive(bool isActive);
     void SetAsJoined(bool isJoined);
     VoiceChatPlayerComponentView CreateNewPlayerInstance();
 }

@@ -42,6 +42,8 @@ public class VoiceChatWindowController : IHUD
         voiceChatWindowView.Hide(instant: true);
         voiceChatWindowView.OnClose += CloseView;
         voiceChatWindowView.OnJoinVoiceChat += JoinVoiceChat;
+        voiceChatWindowView.OnGoToCrowd += GoToCrowd;
+        voiceChatWindowView.SetNumberOfPlayers(0);
 
         voiceChatBarView = CreateVoiceChatBatView();
         voiceChatBarView.Hide(instant: true);
@@ -92,6 +94,7 @@ public class VoiceChatWindowController : IHUD
 
         voiceChatWindowView.OnClose -= CloseView;
         voiceChatWindowView.OnJoinVoiceChat -= JoinVoiceChat;
+        voiceChatWindowView.OnGoToCrowd -= GoToCrowd;
         voiceChatBarView.OnLeaveVoiceChat -= LeaveVoiceChat;
         dataStore.player.otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
         dataStore.player.otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
@@ -123,6 +126,8 @@ public class VoiceChatWindowController : IHUD
         else
             voiceChatBarView.Hide();
     }
+
+    internal void GoToCrowd() { WebInterface.GoToCrowd(); }
 
     internal void LeaveVoiceChat() { JoinVoiceChat(false); }
 
@@ -159,7 +164,6 @@ public class VoiceChatWindowController : IHUD
                 elementView.SetActive(true);
                 currentPlayers.Add(player.id, elementView);
                 voiceChatWindowView.SetNumberOfPlayers(currentPlayers.Count);
-                CheckListEmptyState();
             }
         }
 
@@ -192,12 +196,9 @@ public class VoiceChatWindowController : IHUD
         playersPool.Enqueue(elementView);
         currentPlayers.Remove(userId);
         voiceChatWindowView.SetNumberOfPlayers(currentPlayers.Count);
-        CheckListEmptyState();
 
         elementView.SetActive(false);
     }
-
-    internal void CheckListEmptyState() { voiceChatWindowView.SetEmptyListActive(currentPlayers.Count == 0); }
 
     internal void MuteUser(string userId, bool isMuted)
     {
