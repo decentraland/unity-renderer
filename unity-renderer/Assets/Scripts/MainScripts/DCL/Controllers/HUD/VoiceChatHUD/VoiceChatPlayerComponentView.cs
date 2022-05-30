@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
