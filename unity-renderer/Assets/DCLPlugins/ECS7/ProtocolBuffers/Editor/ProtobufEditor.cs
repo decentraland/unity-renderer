@@ -252,7 +252,6 @@ namespace DCL.Protobuf
 #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
                 // TODO: unzip in mac and linux
 #endif
-
         }
         
         [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
