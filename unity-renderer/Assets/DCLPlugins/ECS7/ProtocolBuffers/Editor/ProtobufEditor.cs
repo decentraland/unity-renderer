@@ -65,7 +65,7 @@ namespace DCL.Protobuf
 
             if (VERBOSE)
                 UnityEngine.Debug.Log("@dcl/ecs next version: " + nextVersion);
-
+            
             // Download the "package.json" of @dcl/ecs@next
             client = new WebClient();
             data = client.OpenRead(@"https://registry.npmjs.org/@dcl/ecs/" + nextVersion);
@@ -249,7 +249,7 @@ namespace DCL.Protobuf
 
         [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
         [InitializeOnLoadMethod]
-        private static void OnProjectLoadedInEditor()
+        private static void OnProjectCompile()
         {
             // The compiled version is a file that lives in the repo, if your local version is distinct it will generated them
             var currentDownloadedVersion = GetDownloadedVersion();
