@@ -1,0 +1,17 @@
+{
+    "name": "DCL.ECSComponents.Transform.Serialization",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5e1778ed041a41f7a0c13abb42ca70b6",
+        "GUID:168278a8a3b14a3ba0f7ee157fd1780b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

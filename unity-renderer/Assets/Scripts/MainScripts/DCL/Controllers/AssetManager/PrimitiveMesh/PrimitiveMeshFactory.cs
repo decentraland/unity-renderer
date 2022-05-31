@@ -26,6 +26,13 @@ public class PrimitiveMeshFactory : IPrimitiveMeshFactory
             case PrimitiveMeshModel.Type.Sphere:
                 mesh = PrimitiveMeshBuilder.BuildSphere(1f);
                 break;
+            case PrimitiveMeshModel.Type.Plane:
+                mesh = PrimitiveMeshBuilder.BuildPlane(1f);
+                if (meshModelModel.uvs != null && meshModelModel.uvs.Length > 0)
+                {
+                    mesh.uv = Utils.FloatArrayToV2List(meshModelModel.uvs);
+                }
+                break;
         }
         return mesh;
     }

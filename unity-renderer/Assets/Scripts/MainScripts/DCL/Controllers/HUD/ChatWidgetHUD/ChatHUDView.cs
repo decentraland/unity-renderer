@@ -26,6 +26,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public UserContextConfirmationDialog confirmationDialog;
     [SerializeField] private DefaultChatEntryFactory defaultChatEntryFactory;
     [SerializeField] private Model model;
+    [SerializeField] private InputAction_Trigger nextChatInHistoryInput;
+    [SerializeField] private InputAction_Trigger previousChatInHistoryInput;
     
     [NonSerialized] protected List<ChatEntry> entries = new List<ChatEntry>();
 
@@ -35,7 +37,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners =
         new Dictionary<Action, UnityAction<string>>();
 
-    private Coroutine updateLayoutRoutine;
+    private bool isLayoutDirty;
+    private bool isSortingDirty;
 
     public event Action<string> OnMessageUpdated;
 
@@ -85,6 +88,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         }
     }
 
+    public event Action OnPreviousChatInHistory;
+    public event Action OnNextChatInHistory;
+
     public event Action<ChatMessage> OnSendMessage;
 
     public int EntryCount => entries.Count;
@@ -110,7 +116,29 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public override void OnEnable()
     {
         base.OnEnable();
-        Utils.ForceUpdateLayout(transform as RectTransform);
+        UpdateLayout();
+        nextChatInHistoryInput.OnTriggered += HandleNextChatInHistoryInput;
+        previousChatInHistoryInput.OnTriggered += HandlePreviousChatInHistoryInput;
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        nextChatInHistoryInput.OnTriggered -= HandleNextChatInHistoryInput;
+        previousChatInHistoryInput.OnTriggered -= HandlePreviousChatInHistoryInput;
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        
+        if (isLayoutDirty)
+            chatEntriesContainer.ForceUpdateLayout(delayed: false);
+        isLayoutDirty = false;
+        
+        if (isSortingDirty)
+            SortEntriesImmediate();
+        isSortingDirty = false;
     }
 
     public void ResetInputField(bool loseFocus = false)
@@ -226,11 +254,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         entries.Add(chatEntry);
 
         SortEntries();
-
-        if (updateLayoutRoutine != null)
-            StopCoroutine(updateLayoutRoutine);
-        if (gameObject.activeInHierarchy)
-            updateLayoutRoutine = StartCoroutine(UpdateLayoutOnNextFrame());
+        UpdateLayout();
 
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
@@ -325,7 +349,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         messageHoverGotoText.text = string.Empty;
     }
 
-    private void SortEntries()
+    private void SortEntries() => isSortingDirty = true;
+
+    private void SortEntriesImmediate()
     {
         entries = entries.OrderBy(x => x.Model.timestamp).ToList();
 
@@ -333,18 +359,15 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         for (int i = 0; i < count; i++)
         {
             if (entries[i].transform.GetSiblingIndex() != i)
-            {
                 entries[i].transform.SetSiblingIndex(i);
-            }
         }
     }
+    
+    private void HandleNextChatInHistoryInput(DCLAction_Trigger action) => OnNextChatInHistory?.Invoke();
+    
+    private void HandlePreviousChatInHistoryInput(DCLAction_Trigger action) => OnPreviousChatInHistory?.Invoke();
 
-    private IEnumerator UpdateLayoutOnNextFrame()
-    {
-        yield return null;
-        Utils.ForceUpdateLayout(chatEntriesContainer, delayed: false);
-        updateLayoutRoutine = null;
-    }
+    private void UpdateLayout() => isLayoutDirty = true;
 
     [Serializable]
     private struct Model

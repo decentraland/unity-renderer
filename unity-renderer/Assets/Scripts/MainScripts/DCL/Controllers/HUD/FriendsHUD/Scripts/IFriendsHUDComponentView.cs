@@ -11,24 +11,35 @@ public interface IFriendsHUDComponentView
     event Action<FriendEntry> OnWhisper;
     event Action<string> OnDeleteConfirmation;
     event Action OnClose;
+    event Action OnRequireMoreFriends;
+    event Action OnRequireMoreFriendRequests;
+    event Action<string> OnSearchFriendsRequested;
     
     RectTransform Transform { get; }
     bool ListByOnlineStatus { set; }
+    int FriendCount { get; }
+    int FriendRequestCount { get; }
 
     void HideSpinner();
     void ShowSpinner();
     List<FriendEntryBase> GetAllEntries();
     FriendEntryBase GetEntry(string userId);
-    void UpdateEntry(string userId, FriendEntryBase.Model model);
     void DisplayFriendUserNotFound();
     bool IsFriendListCreationReady();
     int GetReceivedFriendRequestCount();
     void Destroy();
     void Show();
     void Hide();
-    void UpdateFriendshipStatus(string userId, FriendshipAction friendshipAction, FriendEntryBase.Model friendEntryModel);
-    void Search(string userId);
+    void Set(string userId, FriendshipAction friendshipAction, FriendEntryModel model);
+    void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model);
     bool IsActive();
     void ShowRequestSendError(FriendRequestError error);
     void ShowRequestSendSuccess();
+    void ShowMoreFriendsToLoadHint(int pendingFriendsCount);
+    void HideMoreFriendsToLoadHint();
+    void ShowMoreRequestsToLoadHint(int pendingRequestsCount);
+    void HideMoreRequestsToLoadHint();
+    bool ContainsFriend(string userId);
+    void FilterFriends(Dictionary<string, FriendEntryModel> friends);
+    void ClearFriendFilter();
 }
