@@ -18,7 +18,7 @@ namespace DCL.Protobuf
         private const string PATH_TO_COMPONENTS = "/DCLPlugins/ECS7/ProtocolBuffers/Generated";
         private const string PATH_TO_COMPONENTS_DEFINITIONS = "/DCLPlugins/ECS7/ProtocolBuffers/Generated/Definitions";
         private const string PATH_TO_PROTO = "/DCLPlugins/ECS7/ProtocolBuffers/Editor/";
-        private const string PROTO_FILENAME = "protoc";
+        private const string PROTO_COMMAND = "protoc";
 
         [MenuItem("Decentraland/Protobuf/UpdateModels")]
         public static void UpdateModels()
@@ -152,11 +152,10 @@ namespace DCL.Protobuf
         {
             // We prepare the paths for the conversion
             string filePath = Application.dataPath + PATH_TO_COMPONENTS_DEFINITIONS;
-            string proto_path = Application.dataPath + PATH_TO_PROTO + PROTO_FILENAME;
             string finalArguments = $"\"{filePath}/{protoFileName}\" --csharp_out \"{outputPath}\" --proto_path \"{filePath}\"";
             
             // This is the console to convert the proto
-            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = proto_path, Arguments = finalArguments };
+            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = PROTO_COMMAND, Arguments = finalArguments };
             
             Process proc = new Process() { StartInfo = startInfo };
             proc.StartInfo.UseShellExecute = false;
