@@ -9,6 +9,10 @@ using UnityEngine;
 public class FriendsHUDControllerShould
 {
     private const string OWN_USER_ID = "my-user";
+    private const string OTHER_USER_ID = "test-id-1";
+    private const string OTHER_USER_NAME = "woah";
+    private const int FRIENDS_COUNT = 7;
+    private const int FRIEND_REQUEST_SHOWN = 5;
 
     private FriendsHUDController controller;
     private IFriendsHUDComponentView view;
@@ -23,16 +27,22 @@ public class FriendsHUDControllerShould
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         friendsNotificationService = Substitute.For<IFriendsNotificationService>();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
+        var otherUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+        otherUserProfile.UpdateData(new UserProfileModel {userId = OTHER_USER_ID, name = OTHER_USER_NAME});
+        userProfileBridge.Get(OTHER_USER_ID).Returns(otherUserProfile);
+        userProfileBridge.GetByName(OTHER_USER_NAME).Returns(otherUserProfile);
         var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
         userProfileBridge.GetOwn().Returns(ownProfile);
         friendsController = Substitute.For<IFriendsController>();
+        friendsController.friendCount.Returns(FRIENDS_COUNT);
         controller = new FriendsHUDController(new DataStore(),
             friendsController,
             userProfileBridge,
             socialAnalytics,
             friendsNotificationService);
         view = Substitute.For<IFriendsHUDComponentView>();
+        view.FriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         controller.Initialize(view);
     }
 
@@ -66,51 +76,33 @@ public class FriendsHUDControllerShould
     [Test]
     public void SendFriendRequestByNameCorrectly()
     {
-        const string userId = "test-id-1";
-        const string userName = "waoh";
-        friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND).Returns(false);
-        var userProfile = ScriptableObject.CreateInstance<UserProfile>();
-        userProfile.UpdateData(new UserProfileModel {userId = userId, name = userName});
-        userProfileBridge.GetByName(userName).Returns(userProfile);
-        userProfileBridge.Get(userId).Returns(userProfile);
+        friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
-        view.OnFriendRequestSent += Raise.Event<Action<string>>(userName);
+        view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_NAME);
 
-        friendsController.Received(1).RequestFriendship(userName);
-        socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, userName, 0, PlayerActionSource.FriendsHUD);
+        friendsController.Received(1).RequestFriendship(OTHER_USER_NAME);
+        socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, OTHER_USER_NAME, 0, PlayerActionSource.FriendsHUD);
         view.Received(1).ShowRequestSendSuccess();
     }
 
     [Test]
     public void SendFriendRequestByIdCorrectly()
     {
-        const string userId = "test-id-1";
-        const string userName = "waoh";
-        friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND).Returns(false);
-        var userProfile = ScriptableObject.CreateInstance<UserProfile>();
-        userProfile.UpdateData(new UserProfileModel {userId = userId, name = userName});
-        userProfileBridge.GetByName(userName).Returns(userProfile);
-        userProfileBridge.Get(userId).Returns(userProfile);
+        friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
-        view.OnFriendRequestSent += Raise.Event<Action<string>>(userId);
+        view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_ID);
 
-        friendsController.Received(1).RequestFriendship(userId);
-        socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, userId, 0, PlayerActionSource.FriendsHUD);
+        friendsController.Received(1).RequestFriendship(OTHER_USER_ID);
+        socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD);
         view.Received(1).ShowRequestSendSuccess();
     }
 
     [Test]
     public void FailFriendRequestWhenAlreadyFriends()
     {
-        const string userId = "test-id-1";
-        const string userName = "waoh";
-        friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND).Returns(true);
-        var userProfile = ScriptableObject.CreateInstance<UserProfile>();
-        userProfile.UpdateData(new UserProfileModel {userId = userId, name = userName});
-        userProfileBridge.GetByName(userName).Returns(userProfile);
-        userProfileBridge.Get(userId).Returns(userProfile);
+        friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(true);
 
-        view.OnFriendRequestSent += Raise.Event<Action<string>>(userId);
+        view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_ID);
 
         view.Received(1).ShowRequestSendError(FriendRequestError.AlreadyFriends);
     }
@@ -123,20 +115,32 @@ public class FriendsHUDControllerShould
     [TestCase(FriendshipAction.REQUESTED_TO)]
     public void DisplayFriendAction(FriendshipAction friendshipAction)
     {
-        const string userId = "test-id-1";
-        const int friendCount = 7;
+        friendsController.OnUpdateFriendship +=
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, friendshipAction);
 
-        var userProfile = ScriptableObject.CreateInstance<UserProfile>();
-        userProfile.UpdateData(new UserProfileModel {userId = userId});
-        userProfileBridge.Get(userId).Returns(userProfile);
-        view.IsActive().Returns(true);
-        friendsController.friendCount.Returns(friendCount);
+        view.Received(1).Set(OTHER_USER_ID, friendshipAction, Arg.Is<FriendEntryModel>(f => f.userId == OTHER_USER_ID));
+    }
+
+    [Test]
+    public void DisplayFriendActionWhenSentRequest()
+    {
         view.FriendRequestCount.Returns(5);
 
         friendsController.OnUpdateFriendship +=
-            Raise.Event<Action<string, FriendshipAction>>(userId, friendshipAction);
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_TO);
 
-        view.Received(1).Set(userId, friendshipAction, Arg.Is<FriendEntryModel>(f => f.userId == userId));
+        view.Received(1).Set(OTHER_USER_ID, FriendshipAction.REQUESTED_TO, Arg.Is<FriendRequestEntryModel>(f => f.isReceived == false));
+    }
+    
+    [Test]
+    public void DisplayFriendActionWhenReceivedRequest()
+    {
+        view.FriendRequestCount.Returns(5);
+
+        friendsController.OnUpdateFriendship +=
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_FROM);
+
+        view.Received(1).Set(OTHER_USER_ID, FriendshipAction.REQUESTED_FROM, Arg.Is<FriendRequestEntryModel>(f => f.isReceived == true));
     }
 
     [TestCase("test-id-1", 43, 72, PresenceStatus.ONLINE, FriendshipStatus.FRIEND, "rl", "svn")]
@@ -168,40 +172,67 @@ public class FriendsHUDControllerShould
     }
 
     [Test]
+    public void UpdateUserStatusWhenRequestSent()
+    {
+        var status = new FriendsController.UserStatus
+        {
+            position = Vector2.zero,
+            presence = PresenceStatus.ONLINE,
+            friendshipStatus = FriendshipStatus.REQUESTED_TO,
+            realm = null,
+            userId = OTHER_USER_ID,
+            friendshipStartedTime = DateTime.UtcNow
+        };
+
+        friendsController.OnUpdateUserStatus +=
+            Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
+
+        view.Received(1).Set(OTHER_USER_ID, FriendshipStatus.REQUESTED_TO,
+            Arg.Is<FriendRequestEntryModel>(f => f.isReceived == false));
+    }
+    
+    [Test]
+    public void UpdateUserStatusWhenRequestReceived()
+    {
+        var status = new FriendsController.UserStatus
+        {
+            position = Vector2.zero,
+            presence = PresenceStatus.ONLINE,
+            friendshipStatus = FriendshipStatus.REQUESTED_FROM,
+            realm = null,
+            userId = OTHER_USER_ID,
+            friendshipStartedTime = DateTime.UtcNow
+        };
+
+        friendsController.OnUpdateUserStatus +=
+            Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
+
+        view.Received(1).Set(OTHER_USER_ID, FriendshipStatus.REQUESTED_FROM,
+            Arg.Is<FriendRequestEntryModel>(f => f.isReceived == true));
+    }
+
+    [Test]
     public void NotificationsAreUpdatedWhenFriendshipActionUpdates()
     {
-        const string userId = "test-id-1";
-        const int friendCount = 7;
-        const int friendRequestCount = 5;
-
-        var userProfile = ScriptableObject.CreateInstance<UserProfile>();
-        userProfile.UpdateData(new UserProfileModel {userId = userId});
-        userProfileBridge.Get(userId).Returns(userProfile);
         view.IsActive().Returns(true);
-        friendsController.friendCount.Returns(friendCount);
-        view.FriendRequestCount.Returns(friendRequestCount);
 
         friendsController.OnUpdateFriendship +=
-            Raise.Event<Action<string, FriendshipAction>>(userId, FriendshipAction.APPROVED);
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
 
-        friendsNotificationService.Received(1).MarkFriendsAsSeen(friendCount);
-        friendsNotificationService.Received(1).MarkRequestsAsSeen(friendRequestCount);
+        friendsNotificationService.Received(1).MarkFriendsAsSeen(FRIENDS_COUNT);
+        friendsNotificationService.Received(1).MarkRequestsAsSeen(FRIEND_REQUEST_SHOWN);
         friendsNotificationService.Received(1).UpdateUnseenFriends();
     }
 
     [Test]
     public void NotificationsAreUpdatedWhenIsVisible()
     {
-        const int friendCount = 7;
-        const int friendRequestCount = 5;
-        friendsController.friendCount.Returns(friendCount);
-        view.FriendRequestCount.Returns(friendRequestCount);
         view.IsActive().Returns(true);
 
         controller.SetVisibility(true);
 
-        friendsNotificationService.Received(1).MarkFriendsAsSeen(friendCount);
-        friendsNotificationService.Received(1).MarkRequestsAsSeen(friendRequestCount);
+        friendsNotificationService.Received(1).MarkFriendsAsSeen(FRIENDS_COUNT);
+        friendsNotificationService.Received(1).MarkRequestsAsSeen(FRIEND_REQUEST_SHOWN);
         friendsNotificationService.Received(1).UpdateUnseenFriends();
     }
 }
