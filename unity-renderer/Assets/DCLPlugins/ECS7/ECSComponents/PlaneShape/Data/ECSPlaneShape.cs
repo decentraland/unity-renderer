@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Google.Protobuf.Collections;
 using UnityEngine;
 
 namespace DCL.ECSComponents
 {
     public class ECSPlaneShape
     {
-        public float[] uvs;
+        public RepeatedField<float> uvs;
 
         public bool withCollisions = true;
         public bool isPointerBlocker = true;
