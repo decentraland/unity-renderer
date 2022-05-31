@@ -7,6 +7,7 @@ public interface IVoiceChatWindowComponentView
     event Action<bool> OnJoinVoiceChat;
     event Action<string> OnAllowUsersFilterChange;
     event Action OnGoToCrowd;
+    event Action<bool> OnMuteAll;
 
     RectTransform Transform { get; }
     UserContextMenu ContextMenuPanel { get; }

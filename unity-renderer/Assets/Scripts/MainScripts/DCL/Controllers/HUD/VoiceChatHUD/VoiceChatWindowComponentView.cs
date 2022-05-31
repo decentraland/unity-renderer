@@ -7,8 +7,8 @@ using static DCL.SettingsCommon.GeneralSettings;
 
 public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowComponentView, IComponentModelConfig
 {
-    private const string ALLOW_USERS_TITLE_ALL = "All users";
-    private const string ALLOW_USERS_TITLE_REGISTERED = "Verified users";
+    private const string ALLOW_USERS_TITLE_ALL = "All";
+    private const string ALLOW_USERS_TITLE_REGISTERED = "Registered Users";
     private const string ALLOW_USERS_TITLE_FRIENDS = "Friends";
 
     [Header("Prefab References")]
@@ -17,6 +17,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     [SerializeField] private ButtonComponentView leaveButton;
     [SerializeField] private TMP_Text playersText;
     [SerializeField] private DropdownComponentView allowUsersDropdown;
+    [SerializeField] private ToggleComponentView muteAllToggle;
     [SerializeField] private GameObject emptyListGameObject;
     [SerializeField] private ButtonComponentView goToCrowdButton;
     [SerializeField] private VoiceChatPlayerComponentView playerPrefab;
@@ -30,6 +31,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     public event Action<bool> OnJoinVoiceChat;
     public event Action<string> OnAllowUsersFilterChange;
     public event Action OnGoToCrowd;
+    public event Action<bool> OnMuteAll;
 
     public RectTransform Transform => (RectTransform)transform;
 
@@ -44,6 +46,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         leaveButton.onClick.AddListener(() => OnJoinVoiceChat?.Invoke(false));
         goToCrowdButton.onClick.AddListener(() => OnGoToCrowd?.Invoke());
         allowUsersDropdown.OnOptionSelectionChanged += AllowUsersOptionChanged;
+        muteAllToggle.OnSelectedChanged += OnMuteAllToggleChanged;
         Settings.i.generalSettings.OnChanged += OnSettingsChanged;
     }
 
@@ -100,6 +103,9 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
 
         if (allowUsersDropdown != null)
             allowUsersDropdown.gameObject.SetActive(isJoined);
+
+        if (muteAllToggle != null)
+            muteAllToggle.gameObject.SetActive(isJoined);
     }
 
     public VoiceChatPlayerComponentView CreateNewPlayerInstance() => Instantiate(playerPrefab, usersContainer);
@@ -110,6 +116,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         joinButton.onClick.RemoveAllListeners();
         leaveButton.onClick.RemoveAllListeners();
         allowUsersDropdown.OnOptionSelectionChanged -= AllowUsersOptionChanged;
+        muteAllToggle.OnSelectedChanged -= OnMuteAllToggleChanged;
         Settings.i.generalSettings.OnChanged -= OnSettingsChanged;
 
         base.Dispose();
@@ -166,7 +173,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         Settings.i.generalSettings.Apply(newSettings);
     }
 
-    void OnSettingsChanged(GeneralSettings settings) 
+    internal void OnSettingsChanged(GeneralSettings settings) 
     {
         switch (settings.voiceChatAllow)
         {
@@ -181,6 +188,8 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
                 break;
         }
     }
+
+    internal void OnMuteAllToggleChanged(bool isOn, string id, string text) { OnMuteAll?.Invoke(isOn); }
 
     internal static VoiceChatWindowComponentView Create()
     {

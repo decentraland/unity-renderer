@@ -31,7 +31,8 @@ public class VoiceChatWindowController : IHUD
     private readonly List<string> usersToUnmute = new List<string>();
     private readonly List<string> usersTalking = new List<string>();
     private bool isOwnPLayerTalking = false;
-    private Coroutine updateMuteStatusRoutine = null;    
+    private Coroutine updateMuteStatusRoutine = null;
+    private bool isMuteAll = false;
 
     public VoiceChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -49,6 +50,7 @@ public class VoiceChatWindowController : IHUD
         voiceChatWindowView.OnClose += CloseView;
         voiceChatWindowView.OnJoinVoiceChat += JoinVoiceChat;
         voiceChatWindowView.OnGoToCrowd += GoToCrowd;
+        voiceChatWindowView.OnMuteAll += MuteAll;
         voiceChatWindowView.SetNumberOfPlayers(0);
 
         voiceChatBarView = CreateVoiceChatBatView();
@@ -122,6 +124,7 @@ public class VoiceChatWindowController : IHUD
         voiceChatWindowView.OnClose -= CloseView;
         voiceChatWindowView.OnJoinVoiceChat -= JoinVoiceChat;
         voiceChatWindowView.OnGoToCrowd -= GoToCrowd;
+        voiceChatWindowView.OnMuteAll -= MuteAll;
         voiceChatBarView.OnLeaveVoiceChat -= LeaveVoiceChat;
         dataStore.player.otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
         dataStore.player.otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
@@ -159,9 +162,9 @@ public class VoiceChatWindowController : IHUD
         }
     }
 
-    internal void GoToCrowd() { WebInterface.GoToCrowd(); }
-
     internal void LeaveVoiceChat() { JoinVoiceChat(false); }
+
+    internal void GoToCrowd() { WebInterface.GoToCrowd(); }
 
     internal void OnOtherPlayersStatusAdded(string userId, Player player)
     {
@@ -212,6 +215,9 @@ public class VoiceChatWindowController : IHUD
                 elementView.SetAsMuted(isMuted);
                 elementView.SetAsBlocked(isBlocked);
             }
+
+            if (isMuteAll && !isMuted)
+                MuteUser(userId, true);
         }
 
         SetWhichPlayerIsTalking();
@@ -235,6 +241,24 @@ public class VoiceChatWindowController : IHUD
         elementView.SetActive(false);
 
         SetWhichPlayerIsTalking();
+    }
+
+    internal void MuteAll(bool isMute)
+    {
+        isMuteAll = isMute;
+
+        if (isMute)
+            usersToUnmute.Clear();
+        else
+            usersToMute.Clear();
+
+        using (var iterator = trackedUsersHashSet.GetEnumerator())
+        {
+            while (iterator.MoveNext())
+            {
+                MuteUser(iterator.Current, isMute);
+            }
+        }
     }
 
     internal void MuteUser(string userId, bool isMuted)
