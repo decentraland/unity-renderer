@@ -1,17 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
-using DCL;
-using UnityEngine;
+using System;
+using DCL.ECSComponents;
+using DCL.ECSRuntime;
 
-public class ECS7ComponentsPlugin : IPlugin
+public class ECS7ComponentsPlugin : IDisposable
 {
-    public ECS7ComponentsPlugin()
+
+    private readonly ECSTransformComponent transformComponent;
+
+    public ECS7ComponentsPlugin(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
     {
-        // When we have clear how do we want to create components in the scenes, we should register here the components
+        transformComponent = new ECSTransformComponent(1, componentsFactory, componentsWriter);
     }
-    
+
     public void Dispose()
     {
-        
+        transformComponent.Dispose();
     }
 }

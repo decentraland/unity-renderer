@@ -32,6 +32,15 @@ namespace DCL.ECSRuntime
         }
 
         /// <summary>
+        /// Remove component from components builder dictionary
+        /// </summary>
+        /// <param name="componentId"></param>
+        public void RemoveComponent(int componentId)
+        {
+            components.Remove(componentId);
+        }
+
+        /// <summary>
         /// creates a component builder
         /// </summary>
         /// <param name="deserializer"></param>

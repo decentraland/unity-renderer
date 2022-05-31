@@ -281,6 +281,50 @@ namespace Test.AvatarSystem
         });
 
         [UnityTest]
+        public IEnumerator DisablesFacialWhenHeadIsHidden() => UniTask.ToCoroutine(async () =>
+        {
+            WearableItem wearableItem = CatalogController.wearableCatalog[WEARABLE_IDS[0]];
+            wearableItem.data.hides = new string[] { WearableLiterals.Misc.HEAD };
+            var bodyShapeLoader = Substitute.For<IBodyshapeLoader>();
+            wearableLoaderFactory.Configure()
+                                 .GetBodyshapeLoader(Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>())
+                                 .Returns(x => bodyShapeLoader);
+           
+            wearableLoaderFactory.Configure()
+                                 .GetWearableLoader(Arg.Any<WearableItem>())
+                                 .Returns(x => GetMockedWearableLoaderWithPrimitive(wearableItem, container));
+
+            var combined = CreatePrimitive(container.transform, "CombinedRenderer");
+            meshCombiner.container.Returns(combined);
+            meshCombiner.renderer.Returns(combined.GetComponent<SkinnedMeshRenderer>());
+            meshCombiner.Configure().Combine(Arg.Any<SkinnedMeshRenderer>(), Arg.Any<SkinnedMeshRenderer[]>(), Arg.Any<Material>()).Returns(true);
+
+            SkinnedMeshRenderer bonesContainerReceivedByCombiner = null;
+            SkinnedMeshRenderer[] renderersReceivedByCombiner = null;
+            meshCombiner.Combine(
+                            Arg.Do<SkinnedMeshRenderer>(x => bonesContainerReceivedByCombiner = x),
+                            Arg.Do<SkinnedMeshRenderer[]>(x => renderersReceivedByCombiner = x))
+                        .Returns(true);
+
+
+            await loader.Load(
+                CatalogController.wearableCatalog[FEMALE_ID],
+                CatalogController.wearableCatalog[EYES_ID],
+                CatalogController.wearableCatalog[EYEBROWS_ID],
+                CatalogController.wearableCatalog[MOUTH_ID],
+                new List<WearableItem>() { wearableItem },
+                new AvatarSettings()
+                {
+                    bodyshapeId = WearableLiterals.BodyShapes.FEMALE,
+                    eyesColor = Color.blue,
+                    hairColor = Color.yellow,
+                    skinColor = Color.green
+                }
+            );
+            bodyShapeLoader.Received().DisableFacialRenderers();
+        });
+
+        [UnityTest]
         public IEnumerator ThrowWithFailedBodyshape() => UniTask.ToCoroutine(async () =>
         {
             wearableLoaderFactory.Configure()
