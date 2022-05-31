@@ -50,21 +50,15 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
 
     public bool IsFriendListCreationReady() => false;
 
-    public int GetReceivedFriendRequestCount() => 0;
-
     public void Destroy()
     {
         if (isDestroyed) return;
         Destroy(gameObject);
     }
 
-    public void Show()
-    {
-    }
+    public void Show() => gameObject.SetActive(true);
 
-    public void Hide()
-    {
-    }
+    public void Hide() => gameObject.SetActive(false);
 
     public void Set(string userId, FriendshipAction friendshipAction, FriendEntryModel friendEntryModel)
     {
