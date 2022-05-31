@@ -186,36 +186,12 @@ namespace DCL.Components
                 if (loadable != null)
                     loadable.initialVisibility = model.visible;
             }
-            
-            // We don't show shapes on entities that don't have a transform, otherwise they appear outside the scene bounds
-            if (entity.scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TRANSFORM))
-            {
+                
                 var shapeModel = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
                 ConfigureVisibility(entity.meshRootGameObject, shapeModel.visible, entity.meshesInfo.renderers);
                 
                 if(!scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
                     entity.meshesInfo.animation.enabled = model.visible;
-            }
-            else
-            {
-                ConfigureVisibility(entity.meshRootGameObject, false, entity.meshesInfo.renderers);
-                entity.OnBaseComponentAdded -= OnEntityBaseComponentAttached;
-                entity.OnBaseComponentAdded += OnEntityBaseComponentAttached;
-            }
-        }
-        
-        void OnEntityBaseComponentAttached(CLASS_ID_COMPONENT classId, IDCLEntity entity)
-        {
-            if (classId != CLASS_ID_COMPONENT.TRANSFORM)
-                return;
-            
-            var model = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
-            ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
-                
-            if(!scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
-                entity.meshesInfo.animation.enabled = model.visible;
-            
-            entity.OnBaseComponentAdded -= OnEntityBaseComponentAttached;
         }
 
         protected virtual void ConfigureColliders(IDCLEntity entity) { CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model)); }
