@@ -12,7 +12,8 @@ public class PrimitiveMeshModel
     {
         Box,
         Sphere,
-        Plane
+        Plane,
+        Cylinder
     }
 
     public PrimitiveMeshModel(Type type)
@@ -21,6 +22,8 @@ public class PrimitiveMeshModel
     }
 
     public Type type;
+    public float radiusTop;
+    public float radiusBottom;
     public RepeatedField<float> uvs = new RepeatedField<float>();
     
     protected bool Equals(PrimitiveMeshModel other)
