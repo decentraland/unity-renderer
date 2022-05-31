@@ -86,7 +86,7 @@ MonoBehaviour:
   onloadParticlePrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
     type: 3}
   avatarRevealContainer: {fileID: 2023324331845805768}
-  armatureContainer: {fileID: 8445935176943965636}
+  armatureContainer: {fileID: 5582000225371496597}
   onPointerDown: {fileID: 3865137627712764486}
   everythingIsLoaded: 0
 --- !u!114 &122622683908687435
@@ -189,7 +189,6 @@ MonoBehaviour:
   target: {fileID: 2842120016485600253}
   runMinSpeed: 6
   walkMinSpeed: 0.1
-  container: {fileID: 0}
 --- !u!114 &3298290865927950122
 MonoBehaviour:
   m_ObjectHideFlags: 0

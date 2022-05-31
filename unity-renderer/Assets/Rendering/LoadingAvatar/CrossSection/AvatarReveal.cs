@@ -14,7 +14,6 @@ public class AvatarReveal : MonoBehaviour
     public float revealSpeed;
 
     public float fadeInSpeed;
-    public Renderer ghostDummy;
     Material _ghostMaterial;
     
     public List<Renderer> targets = new List<Renderer>();
@@ -22,7 +21,7 @@ public class AvatarReveal : MonoBehaviour
 
     private void Start()
     {
-        _ghostMaterial = ghostDummy.material;
+        _ghostMaterial = meshRenderer.material;
 
         foreach (Renderer r in targets)
         {
@@ -84,7 +83,7 @@ public class AvatarReveal : MonoBehaviour
                 particles.Stop();
                 revealParticles.Stop();
             }
-            gameObject.SetActive(false);
+            meshRenderer.enabled = false;
         }
     }
 }
