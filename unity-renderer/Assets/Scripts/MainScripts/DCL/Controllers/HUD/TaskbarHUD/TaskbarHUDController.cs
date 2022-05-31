@@ -235,7 +235,10 @@ public class TaskbarHUDController : IHUD
         // view.ToggleAllOff();
         CloseFriendsWindow();
         CloseChatList();
-        OpenPublicChannelOnPreviewMode();
+        
+        if (!privateChatWindow.View.IsActive
+            && !publicChatChannel.View.IsActive)
+            OpenPublicChannelOnPreviewMode();
     }
 
     public void AddWorldChatWindow(WorldChatWindowController controller)
@@ -439,7 +442,8 @@ public class TaskbarHUDController : IHUD
         if (current)
             return;
 
-        view.experiencesButton.SetToggleState(false, false);
+        view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Experiences);
+        OpenPublicChannelOnPreviewMode();
     }
 
     private void NumOfLoadedExperiencesChanged(int current, int previous)
