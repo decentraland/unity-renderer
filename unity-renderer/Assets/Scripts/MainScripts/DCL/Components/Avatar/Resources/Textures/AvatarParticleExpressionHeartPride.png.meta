@@ -1,37 +1,40 @@
 fileFormatVersion: 2
-guid: 85d6fa68939213d489bad857621e2796
+guid: 442f06e710f18804e8fbbaae7286f8a7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1963845958742357998
-    second: AvatarParticleExpressionHeartPride_0
+      213: -5678512871157408403
+    second: AvatarParticleExpressionHeartPride 1_0
   - first:
-      213: 2867782543290939051
-    second: AvatarParticleExpressionHeartPride_1
+      213: -6134993809297719219
+    second: AvatarParticleExpressionHeartPride 1_1
   - first:
-      213: 7010944537311281634
-    second: AvatarParticleExpressionHeartPride_2
+      213: -5653411428424605918
+    second: AvatarParticleExpressionHeartPride 1_2
   - first:
-      213: -4368468631126535990
-    second: AvatarParticleExpressionHeartPride_3
+      213: -6234104402273833510
+    second: AvatarParticleExpressionHeartPride 1_3
   - first:
-      213: 6742681830430328498
-    second: AvatarParticleExpressionHeartPride_4
+      213: -23437870716378929
+    second: AvatarParticleExpressionHeartPride 1_4
   - first:
-      213: -241883638187169623
-    second: AvatarParticleExpressionHeartPride_5
+      213: 6726948905552063219
+    second: AvatarParticleExpressionHeartPride 1_5
   - first:
-      213: 8890448229390791921
-    second: AvatarParticleExpressionHeartPride_6
+      213: 7065040574335784077
+    second: AvatarParticleExpressionHeartPride 1_6
   - first:
-      213: -8164254622701902531
-    second: AvatarParticleExpressionHeartPride_7
+      213: -2592509462476873157
+    second: AvatarParticleExpressionHeartPride 1_7
   - first:
-      213: 5325486820111362789
-    second: AvatarParticleExpressionHeartPride_8
+      213: 5026146890834185380
+    second: AvatarParticleExpressionHeartPride 1_8
   - first:
-      213: 7091995426309117335
-    second: AvatarParticleExpressionHeartPride_9
+      213: -5677250123261470903
+    second: AvatarParticleExpressionHeartPride 1_9
+  - first:
+      213: -924287825326529467
+    second: AvatarParticleExpressionHeartPride 1_10
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -121,7 +124,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: AvatarParticleExpressionHeartPride_0
+      name: AvatarParticleExpressionHeartPride 1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -135,14 +138,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 218439361840fb4e0800000000000000
-      internalID: -1963845958742357998
+      spriteID: d6ddd2631aed131b0800000000000000
+      internalID: -5678512871157408403
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AvatarParticleExpressionHeartPride_1
+      name: AvatarParticleExpressionHeartPride 1_1
       rect:
         serializedVersion: 2
         x: 256
@@ -156,14 +159,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ba63ce967096cc720800000000000000
-      internalID: 2867782543290939051
+      spriteID: d40c69192af1cdaa0800000000000000
+      internalID: -6134993809297719219
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AvatarParticleExpressionHeartPride_2
+      name: AvatarParticleExpressionHeartPride 1_2
       rect:
         serializedVersion: 2
         x: 512
@@ -177,14 +180,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2e1876e39e0eb4160800000000000000
-      internalID: 7010944537311281634
+      spriteID: 22f1e97424c0b81b0800000000000000
+      internalID: -5653411428424605918
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AvatarParticleExpressionHeartPride_3
+      name: AvatarParticleExpressionHeartPride 1_3
       rect:
         serializedVersion: 2
         x: 768
@@ -198,14 +201,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ac01445dce41063c0800000000000000
-      internalID: -4368468631126535990
+      spriteID: adde4c963130c79a0800000000000000
+      internalID: -6234104402273833510
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AvatarParticleExpressionHeartPride_4
+      name: AvatarParticleExpressionHeartPride 1_4
       rect:
         serializedVersion: 2
         x: 1024
@@ -219,14 +222,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2b6c7488661d29d50800000000000000
-      internalID: 6742681830430328498
+      spriteID: fc0a8a9716bbcaff0800000000000000
+      internalID: -23437870716378929
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AvatarParticleExpressionHeartPride_5
+      name: AvatarParticleExpressionHeartPride 1_5
       rect:
         serializedVersion: 2
         x: 1280
@@ -240,14 +243,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9a8efd4dc18a4acf0800000000000000
-      internalID: -241883638187169623
+      spriteID: 3fa22a1836cea5d50800000000000000
+      internalID: 6726948905552063219
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AvatarParticleExpressionHeartPride_6
+      name: AvatarParticleExpressionHeartPride 1_6
       rect:
         serializedVersion: 2
         x: 1536
@@ -261,14 +264,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1f4b6de9f87316b70800000000000000
-      internalID: 8890448229390791921
+      spriteID: d84910d58f01c0260800000000000000
+      internalID: 7065040574335784077
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AvatarParticleExpressionHeartPride_7
+      name: AvatarParticleExpressionHeartPride 1_7
       rect:
         serializedVersion: 2
         x: 1792
@@ -282,14 +285,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d35230e3dadb2be80800000000000000
-      internalID: -8164254622701902531
+      spriteID: b322a3c216e850cd0800000000000000
+      internalID: -2592509462476873157
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AvatarParticleExpressionHeartPride_8
+      name: AvatarParticleExpressionHeartPride 1_8
       rect:
         serializedVersion: 2
         x: 2048
@@ -303,14 +306,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5ea23c81c0ee7e940800000000000000
-      internalID: 5325486820111362789
+      spriteID: 4ac0b11b7f570c540800000000000000
+      internalID: 5026146890834185380
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AvatarParticleExpressionHeartPride_9
+      name: AvatarParticleExpressionHeartPride 1_9
       rect:
         serializedVersion: 2
         x: 2304
@@ -324,8 +327,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 79599d5e344db6260800000000000000
-      internalID: 7091995426309117335
+      spriteID: 94715fd971b5631b0800000000000000
+      internalID: -5677250123261470903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AvatarParticleExpressionHeartPride 1_10
+      rect:
+        serializedVersion: 2
+        x: 2560
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 544a135be154c23f0800000000000000
+      internalID: -924287825326529467
       vertices: []
       indices: 
       edges: []
@@ -333,7 +357,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 165a302ece90e1d4b8149e8929a0d213
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

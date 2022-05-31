@@ -1614,25 +1614,27 @@ ParticleSystem:
     uvChannelMask: -1
     rowMode: 1
     sprites:
-    - sprite: {fileID: -1963845958742357998, guid: 85d6fa68939213d489bad857621e2796,
+    - sprite: {fileID: -5678512871157408403, guid: 442f06e710f18804e8fbbaae7286f8a7,
         type: 3}
-    - sprite: {fileID: 2867782543290939051, guid: 85d6fa68939213d489bad857621e2796,
+    - sprite: {fileID: -6134993809297719219, guid: 442f06e710f18804e8fbbaae7286f8a7,
         type: 3}
-    - sprite: {fileID: 7010944537311281634, guid: 85d6fa68939213d489bad857621e2796,
+    - sprite: {fileID: -5653411428424605918, guid: 442f06e710f18804e8fbbaae7286f8a7,
         type: 3}
-    - sprite: {fileID: -4368468631126535990, guid: 85d6fa68939213d489bad857621e2796,
+    - sprite: {fileID: -6234104402273833510, guid: 442f06e710f18804e8fbbaae7286f8a7,
         type: 3}
-    - sprite: {fileID: 6742681830430328498, guid: 85d6fa68939213d489bad857621e2796,
+    - sprite: {fileID: -23437870716378929, guid: 442f06e710f18804e8fbbaae7286f8a7,
         type: 3}
-    - sprite: {fileID: -241883638187169623, guid: 85d6fa68939213d489bad857621e2796,
+    - sprite: {fileID: 6726948905552063219, guid: 442f06e710f18804e8fbbaae7286f8a7,
         type: 3}
-    - sprite: {fileID: 8890448229390791921, guid: 85d6fa68939213d489bad857621e2796,
+    - sprite: {fileID: 7065040574335784077, guid: 442f06e710f18804e8fbbaae7286f8a7,
         type: 3}
-    - sprite: {fileID: -8164254622701902531, guid: 85d6fa68939213d489bad857621e2796,
+    - sprite: {fileID: -2592509462476873157, guid: 442f06e710f18804e8fbbaae7286f8a7,
         type: 3}
-    - sprite: {fileID: 5325486820111362789, guid: 85d6fa68939213d489bad857621e2796,
+    - sprite: {fileID: 5026146890834185380, guid: 442f06e710f18804e8fbbaae7286f8a7,
         type: 3}
-    - sprite: {fileID: 7091995426309117335, guid: 85d6fa68939213d489bad857621e2796,
+    - sprite: {fileID: -5677250123261470903, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
+    - sprite: {fileID: -924287825326529467, guid: 442f06e710f18804e8fbbaae7286f8a7,
         type: 3}
     flipU: 0
     flipV: 0
