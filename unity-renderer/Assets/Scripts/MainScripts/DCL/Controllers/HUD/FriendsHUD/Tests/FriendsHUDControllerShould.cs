@@ -2,12 +2,10 @@ using System;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
-using System.Collections;
 using DCL;
 using UnityEngine;
-using UnityEngine.TestTools;
 
-public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
+public class FriendsHUDControllerShould
 {
     private const string OWN_USER_ID = "my-user";
     
@@ -18,31 +16,29 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
     private IFriendsNotificationService friendsNotificationService;
     private IUserProfileBridge userProfileBridge;
 
-    [UnitySetUp]
-    protected override IEnumerator SetUp()
+    [SetUp]
+    public void SetUp()
     {
-        yield return base.SetUp();
-
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         friendsNotificationService = Substitute.For<IFriendsNotificationService>();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownProfile.UpdateData(new UserProfileModel{userId = OWN_USER_ID});
         userProfileBridge.GetOwn().Returns(ownProfile);
+        friendsController = Substitute.For<IFriendsController>();
         controller = new FriendsHUDController(new DataStore(),
             friendsController,
             userProfileBridge,
             socialAnalytics,
             friendsNotificationService);
-        friendsController = Substitute.For<IFriendsController>();
         view = Substitute.For<IFriendsHUDComponentView>();
         controller.Initialize(view);
     }
 
-    protected override IEnumerator TearDown()
+    [TearDown]
+    public void TearDown()
     {
         controller.Dispose();
-        yield return base.TearDown();
     }
 
     [Test]
@@ -51,7 +47,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         const string id = "test-id-1";
         
         var pressedWhisper = false;
-        controller.OnPressWhisper += (x) => { pressedWhisper = x == id; };
+        controller.OnPressWhisper += x => pressedWhisper = x == id;
         
         view.OnWhisper += Raise.Event<Action<FriendEntryModel>>(new FriendEntryModel {userId = id});
         
@@ -79,8 +75,8 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         
         view.OnFriendRequestSent += Raise.Event<Action<string>>(userName);
         
-        friendsController.Received(1).RequestFriendship(userId);
-        socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, userId, 0, PlayerActionSource.FriendsHUD);
+        friendsController.Received(1).RequestFriendship(userName);
+        socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, userName, 0, PlayerActionSource.FriendsHUD);
         view.Received(1).ShowRequestSendSuccess();
     }
     
@@ -171,6 +167,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
         const int friendRequestCount = 5;
         friendsController.friendCount.Returns(friendCount);
         view.FriendRequestCount.Returns(friendRequestCount);
+        view.IsActive().Returns(true);
         
         controller.SetVisibility(true);
 

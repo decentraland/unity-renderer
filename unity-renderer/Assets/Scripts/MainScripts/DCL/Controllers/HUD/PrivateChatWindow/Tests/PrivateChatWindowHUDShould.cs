@@ -4,15 +4,12 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
-using DCL.Helpers;
 using NSubstitute;
 using UnityEngine;
-using UnityEngine.TestTools;
 using SocialFeaturesAnalytics;
 
 public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 {
-    private NotificationsController notificationsController;
     private PrivateChatWindowController controller;
     private IPrivateChatComponentView view;
     private IChatHUDComponentView internalChatView;
@@ -20,7 +17,6 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
     private UserProfileModel testProfileModel;
     private IUserProfileBridge userProfileBridge;
     private ISocialAnalytics socialAnalytics;
-    private IFriendsNotificationService friendsNotificationService;
 
     protected override IEnumerator SetUp()
     {
@@ -30,9 +26,6 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         internalChatView = Substitute.For<IChatHUDComponentView>();
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         view.ChatHUD.Returns(internalChatView);
-
-        notificationsController =
-            TestUtils.CreateComponentWithGameObject<NotificationsController>("NotificationsController");
 
         UserProfile ownProfile = UserProfile.GetOwnUserProfile();
 
@@ -53,13 +46,10 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         userProfileBridge.GetOwn().Returns(ownUserProfile);
         userProfileBridge.Get(ownProfileModel.userId).Returns(ownUserProfile);
         userProfileBridge.Get(testProfileModel.userId).Returns(testUserProfile);
-
-        friendsNotificationService = Substitute.For<IFriendsNotificationService>();
     }
 
     protected override IEnumerator TearDown()
     {
-        UnityEngine.Object.Destroy(notificationsController.gameObject);
         controller.Dispose();
         yield return base.TearDown();
     }
@@ -135,34 +125,20 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         Assert.IsFalse(isViewActive);
     }
 
-    [UnityTest]
-    public IEnumerator OpenFriendsHUDOnBackButtonPressed()
+    [Test]
+    public void TriggerBackEventWhenViewTriggersBack()
     {
-        IChatController chatController = Substitute.For<IChatController>();
+        var chatController = Substitute.For<IChatController>();
         chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
         InitializeChatWindowController(chatController);
 
-        // Initialize friends HUD
-        notificationsController.Initialize(new NotificationHUDController());
-
-        var friendsHudController = new FriendsHUDController(new DataStore(),
-            new FriendsController_Mock(),
-            userProfileBridge,
-            socialAnalytics,
-            friendsNotificationService);
-        friendsHudController.Initialize(Substitute.For<IFriendsHUDComponentView>());
-
-        Assert.IsTrue(view != null, "Friends hud view is null?");
-        Assert.IsTrue(controller != null, "Friends hud controller is null?");
+        var backEventCalled = false;
+        controller.OnPressBack += () => backEventCalled = true;
 
         controller.SetVisibility(true);
         view.OnPressBack += Raise.Event<Action>();
-        yield return null;
-
-        Assert.AreEqual(true, friendsHudController.View.IsActive());
-
-        friendsHudController.Dispose();
-        notificationsController.Dispose();
+        
+        Assert.IsTrue(backEventCalled);
     }
 
     private void InitializeChatWindowController(IChatController chatController)
