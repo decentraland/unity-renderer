@@ -10,7 +10,7 @@ public interface IVoiceChatBarComponentView
 
     void Show(bool instant = false);
     void Hide(bool instant = false);
-    void SetPlayerName(string userName);
+    void SetTalkingMessage(bool isSomeoneTalking, string message);
     void PlayVoiceChatRecordingAnimation(bool recording);
     void SetVoiceChatEnabledByScene(bool enabled);
 }

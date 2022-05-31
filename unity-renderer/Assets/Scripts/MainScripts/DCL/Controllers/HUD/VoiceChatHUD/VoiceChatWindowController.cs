@@ -8,6 +8,10 @@ using UnityEngine;
 public class VoiceChatWindowController : IHUD
 {
     const float MUTE_STATUS_UPDATE_INTERVAL = 0.3f;
+    private const string TALKING_MESSAGE_YOU = "You";
+    private const string TALKING_MESSAGE_JUST_YOU_IN_THE_VOICE_CHAT = "Just you in the voice chat";
+    private const string TALKING_MESSAGE_NOBODY_TALKING = "Nobody is talking";
+    private const string TALKING_MESSAGE_SEVERAL_PEOPLE_TALKING = "Several people talking";
 
     public IVoiceChatWindowComponentView VoiceChatWindowView => voiceChatWindowView;
     public IVoiceChatBarComponentView VoiceChatBarView => voiceChatBarView;
@@ -25,6 +29,8 @@ public class VoiceChatWindowController : IHUD
     private readonly Dictionary<string, VoiceChatPlayerComponentView> currentPlayers;
     private readonly List<string> usersToMute = new List<string>();
     private readonly List<string> usersToUnmute = new List<string>();
+    private readonly List<string> usersTalking = new List<string>();
+    private bool isOwnPLayerTalking = false;
     private Coroutine updateMuteStatusRoutine = null;    
 
     public VoiceChatWindowController(
@@ -83,9 +89,26 @@ public class VoiceChatWindowController : IHUD
             return;
 
         elementView.SetAsTalking(isRecording);
+
+        if (isRecording)
+        {
+            if (!usersTalking.Contains(userId))
+                usersTalking.Add(userId);
+        }
+        else
+        {
+            usersTalking.Remove(userId);
+        }
+
+        SetWhichPlayerIsTalking();
     }
 
-    public void SetVoiceChatRecording(bool recording) { voiceChatBarView.PlayVoiceChatRecordingAnimation(recording); }
+    public void SetVoiceChatRecording(bool recording) 
+    { 
+        voiceChatBarView.PlayVoiceChatRecordingAnimation(recording);
+        isOwnPLayerTalking = recording;
+        SetWhichPlayerIsTalking();
+    }
 
     public void SetVoiceChatEnabledByScene(bool enabled) { voiceChatBarView.SetVoiceChatEnabledByScene(enabled); }
 
@@ -126,9 +149,14 @@ public class VoiceChatWindowController : IHUD
         voiceChatWindowView.SetAsJoined(isJoined);
 
         if (isJoined)
+        {
             voiceChatBarView.Show();
+            SetWhichPlayerIsTalking();
+        }
         else
+        {
             voiceChatBarView.Hide();
+        }
     }
 
     internal void GoToCrowd() { WebInterface.GoToCrowd(); }
@@ -184,6 +212,8 @@ public class VoiceChatWindowController : IHUD
                 elementView.SetAsBlocked(isBlocked);
             }
         }
+
+        SetWhichPlayerIsTalking();
     }
 
     internal void OnOtherPlayerStatusRemoved(string userId, Player player)
@@ -202,6 +232,8 @@ public class VoiceChatWindowController : IHUD
         voiceChatWindowView.SetNumberOfPlayers(currentPlayers.Count);
 
         elementView.SetActive(false);
+
+        SetWhichPlayerIsTalking();
     }
 
     internal void MuteUser(string userId, bool isMuted)
@@ -255,6 +287,23 @@ public class VoiceChatWindowController : IHUD
         
         if (playerView != null)
             playerView.SetAsFriend(action == FriendshipAction.APPROVED);
+    }
+
+    internal void SetWhichPlayerIsTalking()
+    {
+        if (isOwnPLayerTalking)
+            voiceChatBarView.SetTalkingMessage(true, TALKING_MESSAGE_YOU);
+        else if (currentPlayers.Count == 0)
+            voiceChatBarView.SetTalkingMessage(false, TALKING_MESSAGE_JUST_YOU_IN_THE_VOICE_CHAT);
+        else if (usersTalking.Count == 0)
+            voiceChatBarView.SetTalkingMessage(false, TALKING_MESSAGE_NOBODY_TALKING);
+        else if (usersTalking.Count == 1)
+        {
+            UserProfile userProfile = userProfileBridge.Get(usersTalking[0]);
+            voiceChatBarView.SetTalkingMessage(true, userProfile != null ? userProfile.userName : usersTalking[0]);
+        }
+        else
+            voiceChatBarView.SetTalkingMessage(true, TALKING_MESSAGE_SEVERAL_PEOPLE_TALKING);
     }
 
     protected internal virtual IVoiceChatWindowComponentView CreateVoiceChatWindowView() => VoiceChatWindowComponentView.Create();

@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarComponentView, IComponentModelConfig
 {
-    private const string NOBADY_TALKING_MESSAGE = "Nobody is talking";
-
     [Header("Prefab References")]
     [SerializeField] internal VoiceChatButton voiceChatButton;
-    [SerializeField] internal TMP_Text playerNameText;
-    [SerializeField] internal Animator playerTalingAnimator;
+    [SerializeField] internal GameObject someoneTalkingContainer;
+    [SerializeField] internal TMP_Text someoneTalkingText;
+    [SerializeField] internal TMP_Text altText;
+    [SerializeField] internal Animator someoneTalkingAnimator;
     [SerializeField] internal ButtonComponentView endCallButton;
 
     [Header("Configuration")]
@@ -38,38 +38,35 @@ public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarCompone
         if (model == null)
             return;
 
-        SetPlayerName(model.playerName);
+        SetTalkingMessage(model.isSomeoneTalking, model.message);
     }
 
-    public override void Show(bool instant = false) 
-    { 
-        gameObject.SetActive(true);
-        SetPlayerName(model.playerName);
-    }
+    public override void Show(bool instant = false) { gameObject.SetActive(true); }
 
-    public override void Hide(bool instant = false)
-    { 
-        gameObject.SetActive(false);
-        SetPlayerName(string.Empty);
-    }
+    public override void Hide(bool instant = false) { gameObject.SetActive(false); }
 
-    public void SetPlayerName(string playerName)
+    public void SetTalkingMessage(bool isSomeoneTalking, string message)
     {
-        model.playerName = playerName;
+        model.message = message;
 
-        if (playerName == null)
-            return;
+        if (someoneTalkingContainer != null)
+            someoneTalkingContainer.SetActive(isSomeoneTalking);
 
-        if (!string.IsNullOrEmpty(playerName))
+        if (altText != null)
+            altText.gameObject.SetActive(!isSomeoneTalking);
+
+        if (isSomeoneTalking)
         {
-            playerNameText.text = playerName;
-            playerTalingAnimator.gameObject.SetActive(true);
-            playerTalingAnimator.SetBool("Talking", !string.IsNullOrEmpty(playerName));
+            if (someoneTalkingText != null)
+            {
+                someoneTalkingText.text = message;
+                someoneTalkingAnimator.SetBool("Talking", !string.IsNullOrEmpty(message));
+            }
         }
         else
         {
-            playerNameText.text = NOBADY_TALKING_MESSAGE;
-            playerTalingAnimator.gameObject.SetActive(false);
+            if (altText != null)
+                altText.text = message;
         }
     }
 

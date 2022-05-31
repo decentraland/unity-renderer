@@ -3,5 +3,6 @@ using System;
 [Serializable]
 public class VoiceChatBarComponentModel : BaseComponentModel
 {
-    public string playerName;
+    public string message;
+    public bool isSomeoneTalking;
 }
