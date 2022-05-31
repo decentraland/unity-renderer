@@ -9,6 +9,7 @@ namespace DCL.Skybox
     public class Config3DDome : Config3DBase
     {
         public TextureLayer layers = new TextureLayer();
+        public float domeRadius = SkyboxUtils.DOME_DEFAULT_SIZE;
 
         public Config3DDome(string name)
         {

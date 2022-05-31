@@ -25,7 +25,6 @@ namespace DCL.Skybox
         public List<TransitioningFloat> renderDistance;
 
         public Texture2D texture;
-        public Texture2D textureNormal;
         public Cubemap cubemap;
         public Gradient color;
         public Vector2 tiling;
@@ -51,7 +50,6 @@ namespace DCL.Skybox
         public Vector2 speed_Vector2;
         [FormerlySerializedAs("speed")]
         public float speed_float;
-        public float normalIntensity;
 
         // Particles
         public bool particleExpanded;
@@ -217,6 +215,13 @@ namespace DCL.Skybox
     {
         Speed,
         PointBased
+    }
+
+    public enum RotationType
+    {
+        Fixed,
+        Rotate,
+        LookAtOrbit
     }
 
     [System.Serializable]
