@@ -1,16 +1,15 @@
+using DCL.SettingsCommon;
 using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static DCL.SettingsCommon.GeneralSettings;
 
 public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowComponentView, IComponentModelConfig
 {
-    enum AllowUsersFilter
-    {
-        All,
-        Registered,
-        Friends
-    }
+    private const string ALLOW_USERS_TITLE_ALL = "All users";
+    private const string ALLOW_USERS_TITLE_REGISTERED = "Verified users";
+    private const string ALLOW_USERS_TITLE_FRIENDS = "Friends";
 
     [Header("Prefab References")]
     [SerializeField] private ButtonComponentView closeButton;
@@ -45,6 +44,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         leaveButton.onClick.AddListener(() => OnJoinVoiceChat?.Invoke(false));
         goToCrowdButton.onClick.AddListener(() => OnGoToCrowd?.Invoke());
         allowUsersDropdown.OnOptionSelectionChanged += AllowUsersOptionChanged;
+        Settings.i.generalSettings.OnChanged += OnSettingsChanged;
     }
 
     public override void Start()
@@ -110,6 +110,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         joinButton.onClick.RemoveAllListeners();
         leaveButton.onClick.RemoveAllListeners();
         allowUsersDropdown.OnOptionSelectionChanged -= AllowUsersOptionChanged;
+        Settings.i.generalSettings.OnChanged -= OnSettingsChanged;
 
         base.Dispose();
     }
@@ -121,27 +122,27 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
             new ToggleComponentModel
             {
                 isOn = true,
-                id = AllowUsersFilter.All.ToString(),
-                text = AllowUsersFilter.All.ToString(),
+                id = VoiceChatAllow.ALL_USERS.ToString(),
+                text = ALLOW_USERS_TITLE_ALL,
                 isTextActive = true
             },
             new ToggleComponentModel
             {
                 isOn = false,
-                id = AllowUsersFilter.Registered.ToString(),
-                text = AllowUsersFilter.Registered.ToString(),
+                id = VoiceChatAllow.VERIFIED_ONLY.ToString(),
+                text = ALLOW_USERS_TITLE_REGISTERED,
                 isTextActive = true
             },
             new ToggleComponentModel
             {
                 isOn = false,
-                id = AllowUsersFilter.Friends.ToString(),
-                text = AllowUsersFilter.Friends.ToString(),
+                id = VoiceChatAllow.FRIENDS_ONLY.ToString(),
+                text = ALLOW_USERS_TITLE_FRIENDS,
                 isTextActive = true
             }
         });
 
-        AllowUsersOptionChanged(true, AllowUsersFilter.All.ToString(), AllowUsersFilter.All.ToString());
+        AllowUsersOptionChanged(true, VoiceChatAllow.ALL_USERS.ToString(), ALLOW_USERS_TITLE_ALL);
     }
 
     internal void AllowUsersOptionChanged(bool isOn, string optionId, string optionName)
@@ -152,6 +153,33 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         allowUsersDropdown.SetTitle(optionName);
         OnAllowUsersFilterChange?.Invoke(optionId);
         allowUsersDropdown.Close();
+
+        var newSettings = Settings.i.generalSettings.Data;
+
+        if (optionId == VoiceChatAllow.ALL_USERS.ToString())
+            newSettings.voiceChatAllow = VoiceChatAllow.ALL_USERS;
+        else if (optionId == VoiceChatAllow.VERIFIED_ONLY.ToString())
+            newSettings.voiceChatAllow = VoiceChatAllow.VERIFIED_ONLY;
+        else if (optionId == VoiceChatAllow.FRIENDS_ONLY.ToString())
+            newSettings.voiceChatAllow = VoiceChatAllow.FRIENDS_ONLY;
+
+        Settings.i.generalSettings.Apply(newSettings);
+    }
+
+    void OnSettingsChanged(GeneralSettings settings) 
+    {
+        switch (settings.voiceChatAllow)
+        {
+            case VoiceChatAllow.ALL_USERS:
+                allowUsersDropdown.GetOption(0).isOn = true;
+                break;
+            case VoiceChatAllow.VERIFIED_ONLY:
+                allowUsersDropdown.GetOption(1).isOn = true;
+                break;
+            case VoiceChatAllow.FRIENDS_ONLY:
+                allowUsersDropdown.GetOption(2).isOn = true;
+                break;
+        }
     }
 
     internal static VoiceChatWindowComponentView Create()
