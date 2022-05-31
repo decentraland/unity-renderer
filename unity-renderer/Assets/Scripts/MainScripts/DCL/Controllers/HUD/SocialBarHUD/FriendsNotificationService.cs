@@ -36,7 +36,6 @@ public class FriendsNotificationService : IFriendsNotificationService
 
     public void MarkRequestsAsSeen(int count)
     {
-        // var pendingFriendRequestsSO = NotificationScriptableObjects.pendingFriendRequests;
         memoryPendingFriendRequestsRepository.Set(count);
     }
 
@@ -50,7 +49,6 @@ public class FriendsNotificationService : IFriendsNotificationService
         if (newFriends < 0)
             newFriends = 0;
 
-        // var newApprovedFriendsSO = NotificationScriptableObjects.newApprovedFriends;
         memoryNewApprovedFriendsRepository.Set(newFriends);
     }
 }
