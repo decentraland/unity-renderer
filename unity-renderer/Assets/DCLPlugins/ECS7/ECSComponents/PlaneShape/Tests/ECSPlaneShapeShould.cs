@@ -46,7 +46,7 @@ namespace DCL.ECSComponents.Test
         public void UpdateComponentCorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
 
             // Act
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -59,7 +59,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeComponentCorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Act
@@ -73,7 +73,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             planeShapeComponentHandler.meshesInfo = null;
 
@@ -89,7 +89,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullPromiseCorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             planeShapeComponentHandler.primitiveMeshPromisePrimitive = null;
 
@@ -105,7 +105,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullMeshInfoCorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             planeShapeComponentHandler.meshesInfo = null;
 
@@ -122,7 +122,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullRendereableCorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             planeShapeComponentHandler.rendereable = null;
 
