@@ -6,8 +6,12 @@ namespace AvatarSystem
 {
     public interface IBaseAvatar
     {
+
+        SkinnedMeshRenderer meshRenderer { get; }
+
         void Initialize(bool resetLoading);
-        void FadeIn();
+        SkinnedMeshRenderer GetMainRenderer();
+        GameObject GetArmatureContainer();
         void FadeOut(Renderer targetRenderer);
     }
 }

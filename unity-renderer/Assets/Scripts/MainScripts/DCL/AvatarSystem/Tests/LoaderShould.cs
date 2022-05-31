@@ -260,7 +260,8 @@ namespace Test.AvatarSystem
                     eyesColor = Color.blue,
                     hairColor = Color.yellow,
                     skinColor = Color.green
-                }
+                },
+                null
             );
 
             Assert.AreEqual(meshCombiner.renderer, loader.combinedRenderer);
@@ -319,7 +320,8 @@ namespace Test.AvatarSystem
                     eyesColor = Color.blue,
                     hairColor = Color.yellow,
                     skinColor = Color.green
-                }
+                },
+                null
             );
             bodyShapeLoader.Received().DisableFacialRenderers();
         });
@@ -351,7 +353,8 @@ namespace Test.AvatarSystem
                         eyesColor = Color.blue,
                         hairColor = Color.yellow,
                         skinColor = Color.green
-                    }
+                    },
+                    null
                 ));
         });
 
@@ -401,7 +404,8 @@ namespace Test.AvatarSystem
                     eyesColor = Color.blue,
                     hairColor = Color.yellow,
                     skinColor = Color.green
-                }
+                },
+                null
             );
 
             Assert.AreEqual(meshCombiner.renderer, loader.combinedRenderer);
@@ -456,7 +460,8 @@ namespace Test.AvatarSystem
                         eyesColor = Color.blue,
                         hairColor = Color.yellow,
                         skinColor = Color.green
-                    }
+                    },
+                    null
                 ));
         });
 

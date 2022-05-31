@@ -67,17 +67,16 @@ namespace AvatarSystem
 
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
                 baseAvatar.Initialize(!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth));
+                animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
                 }
-
-                await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
+                
+                await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, baseAvatar.GetMainRenderer(), linkedCt);
 
                 //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
-
-                animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
 
                 emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
 
@@ -91,7 +90,7 @@ namespace AvatarSystem
                 gpuSkinningThrottler.Start();
 
                 status = IAvatar.Status.Loaded;
-                baseAvatar.FadeOut(loader.combinedRenderer.gameObject.GetComponent<MeshRenderer>());
+                baseAvatar.FadeOut(loader.combinedRenderer);
             }
             catch (OperationCanceledException)
             {

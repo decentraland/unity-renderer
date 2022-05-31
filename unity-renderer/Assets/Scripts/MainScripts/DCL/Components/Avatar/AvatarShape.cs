@@ -30,6 +30,7 @@ namespace DCL
         public AvatarMovementController avatarMovementController;
         [SerializeField] private GameObject onloadParticlePrefab;
         [SerializeField] private Transform avatarRevealContainer;
+        [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
         internal IPlayerName playerName;
@@ -60,6 +61,7 @@ namespace DCL
             Visibility visibility = new Visibility();
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer);
             avatar = new Avatar(
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
@@ -69,7 +71,7 @@ namespace DCL
                 new SimpleGPUSkinning(),
                 new GPUSkinningThrottler(),
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes),
-                new BaseAvatar(avatarRevealContainer));
+                baseAvatar);
 
             if (avatarReporterController == null)
             {

@@ -4900,6 +4900,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aef1ef1579e3a9c45927f7d27e4adbee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  meshRenderer: {fileID: 8888930580705803861}
   avatarLoaded: 0
   revealer: {fileID: 9157638741447638595}
   finalPosition: {fileID: 9157638743150229430}

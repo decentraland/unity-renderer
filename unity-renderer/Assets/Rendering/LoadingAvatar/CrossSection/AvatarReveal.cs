@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class AvatarReveal : MonoBehaviour
 {
+    public SkinnedMeshRenderer meshRenderer;
     public bool avatarLoaded;
     public GameObject revealer;
     public Transform finalPosition;

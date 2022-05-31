@@ -8,10 +8,23 @@ namespace AvatarSystem
     {
         private AvatarReveal avatarRevealer;
         private Transform avatarRevealerContainer;
+        public GameObject armatureContainer;
+        public SkinnedMeshRenderer meshRenderer { get; private set; }
 
-        public BaseAvatar(Transform avatarRevealerContainer) 
+        public BaseAvatar(Transform avatarRevealerContainer, GameObject armatureContainer) 
         {
             this.avatarRevealerContainer = avatarRevealerContainer;
+            this.armatureContainer = armatureContainer;
+        }
+
+        public GameObject GetArmatureContainer()
+        {
+            return armatureContainer;
+        }
+
+        public SkinnedMeshRenderer GetMainRenderer()
+        {
+            return avatarRevealer.meshRenderer;
         }
 
         public void Initialize(bool resetLoading) 
@@ -24,10 +37,8 @@ namespace AvatarSystem
 
             if(resetLoading)
                 avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<AvatarReveal>();
-        }
 
-        public void FadeIn() 
-        {
+            meshRenderer = avatarRevealer.meshRenderer;
         }
 
         public void FadeOut(Renderer targetRenderer) 
@@ -37,7 +48,6 @@ namespace AvatarSystem
 
             avatarRevealer.AddTarget(targetRenderer);
             avatarRevealer.avatarLoaded = true;
-            Debug.Log("Completed fade out");
         }
 
     }

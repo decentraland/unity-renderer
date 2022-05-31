@@ -21,6 +21,8 @@ public class PlayerAvatarController : MonoBehaviour
     private AvatarSystem.Avatar avatar;
     private CancellationTokenSource avatarLoadingCts = null;
     public GameObject avatarContainer;
+    public GameObject armatureContainer;
+    public Transform loadingAvatarContainer;
     private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
 
     public Collider avatarCollider;
@@ -46,6 +48,7 @@ public class PlayerAvatarController : MonoBehaviour
             new UserProfileWebInterfaceBridge());
 
         AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+        BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer);
         avatar = new AvatarSystem.Avatar(
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
@@ -55,7 +58,7 @@ public class PlayerAvatarController : MonoBehaviour
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler(),
             new EmoteAnimationEquipper(animator, DataStore.i.emotes),
-            new BaseAvatar(null));
+            baseAvatar);
 
         if ( UserProfileController.i != null )
         {
