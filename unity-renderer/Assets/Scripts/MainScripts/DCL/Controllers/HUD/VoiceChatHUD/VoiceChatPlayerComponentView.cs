@@ -19,11 +19,13 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
     [SerializeField] internal Color talkingColor;
     [SerializeField] internal Color nonTalkingColor;
     [SerializeField] internal ButtonComponentView menuButton;
+    [SerializeField] private RectTransform menuPositionReference;
 
     [Header("Configuration")]
     [SerializeField] internal VoiceChatPlayerComponentModel model;
 
     public event Action<string, bool> OnMuteUser;
+    public event Action<string> OnContextMenuOpen;
 
     public override void Awake()
     {
@@ -40,6 +42,8 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
             SetAsMuted(false);
             OnMuteUser?.Invoke(model.userId, false);
         });
+
+        menuButton.onClick.AddListener(() => OnContextMenuOpen?.Invoke(model.userId));
     }
 
     public void Configure(BaseComponentModel newModel)
@@ -152,6 +156,14 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
 
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
+    public void DockAndOpenUserContextMenu(UserContextMenu contextMenuPanel)
+    {
+        var panelTransform = (RectTransform)contextMenuPanel.transform;
+        panelTransform.pivot = menuPositionReference.pivot;
+        panelTransform.position = menuPositionReference.position;
+        contextMenuPanel.Show(model.userId);
+    }
+
     public override void OnFocus()
     {
         base.OnFocus();
@@ -172,6 +184,7 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
 
         muteButton.onClick.RemoveAllListeners();
         unmuteButton.onClick.RemoveAllListeners();
+        menuButton.onClick.RemoveAllListeners();
     }
 
     internal static VoiceChatPlayerComponentView Create()

@@ -3,6 +3,7 @@ using System;
 public interface IVoiceChatPlayerComponentView
 {
     event Action<string, bool> OnMuteUser;
+    event Action<string> OnContextMenuOpen;
 
     void SetUserId(string userId);
     void SetUserImage(string url);
@@ -14,4 +15,5 @@ public interface IVoiceChatPlayerComponentView
     void SetBackgroundHover(bool isHover);
     void SetAsJoined(bool isJoined);
     void SetActive(bool isActive);
+    void DockAndOpenUserContextMenu(UserContextMenu contextMenuPanel);
 }

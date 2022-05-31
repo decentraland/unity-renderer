@@ -9,6 +9,7 @@ public interface IVoiceChatWindowComponentView
     event Action OnGoToCrowd;
 
     RectTransform Transform { get; }
+    UserContextMenu ContextMenuPanel { get; }
 
     void Show(bool instant = false);
     void Hide(bool instant = false);

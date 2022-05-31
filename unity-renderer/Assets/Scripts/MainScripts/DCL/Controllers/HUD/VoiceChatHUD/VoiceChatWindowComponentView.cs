@@ -22,6 +22,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     [SerializeField] private ButtonComponentView goToCrowdButton;
     [SerializeField] private VoiceChatPlayerComponentView playerPrefab;
     [SerializeField] private Transform usersContainer;
+    [SerializeField] private UserContextMenu contextMenuPanel;
 
     [Header("Configuration")]
     [SerializeField] internal VoiceChatWindowComponentModel model;
@@ -32,6 +33,8 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     public event Action OnGoToCrowd;
 
     public RectTransform Transform => (RectTransform)transform;
+
+    public UserContextMenu ContextMenuPanel => contextMenuPanel;
 
     public override void Awake()
     {
@@ -68,7 +71,11 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
 
     public override void Show(bool instant = false) { gameObject.SetActive(true); }
 
-    public override void Hide(bool instant = false) { gameObject.SetActive(false); }
+    public override void Hide(bool instant = false)
+    {
+        contextMenuPanel.Hide();
+        gameObject.SetActive(false);
+    }
 
     public void SetNumberOfPlayers(int numPlayers) 
     {

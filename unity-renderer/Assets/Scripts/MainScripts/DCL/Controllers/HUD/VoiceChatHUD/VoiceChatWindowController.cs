@@ -178,6 +178,7 @@ public class VoiceChatWindowController : IHUD
                 {
                     elementView = voiceChatWindowView.CreateNewPlayerInstance();
                     elementView.OnMuteUser += MuteUser;
+                    elementView.OnContextMenuOpen += OpenContextMenu;
                 }
 
                 elementView.Configure(new VoiceChatPlayerComponentModel
@@ -267,6 +268,13 @@ public class VoiceChatWindowController : IHUD
 
         usersToUnmute.Clear();
         usersToMute.Clear();
+    }
+
+    internal void OpenContextMenu(string userId)
+    {
+        currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView elementView);
+        if (elementView != null)
+            elementView.DockAndOpenUserContextMenu(voiceChatWindowView.ContextMenuPanel);
     }
 
     internal void OnUserProfileUpdated(UserProfile profile)
