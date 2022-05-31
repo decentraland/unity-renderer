@@ -1,12 +1,9 @@
 using System;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using DCL;
+using DCL.ECS7;
 using DCL.ECSComponents;
-using UnityEngine;
 
 public class ECS7ComponentsPlugin : IDisposable
 {

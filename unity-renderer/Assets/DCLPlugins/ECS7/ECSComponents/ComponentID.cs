@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public static class ComponentID 
+namespace DCL.ECS7
 {
-    public const int BOX_SHAPE = 1013;
+    public static class ComponentID 
+    {
+        public const int BOX_SHAPE = 1013;
+    }
 }
