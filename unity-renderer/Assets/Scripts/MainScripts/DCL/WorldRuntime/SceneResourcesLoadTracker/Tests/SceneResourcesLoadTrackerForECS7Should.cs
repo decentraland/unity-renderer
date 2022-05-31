@@ -39,7 +39,7 @@ namespace Tests
             // Create components
             resourcesLoadTracker = new SceneResourcesLoadTracker();
             resourcesLoadTracker.Track(sceneData.id);
-            hanlder = new ECSBoxShapeComponentHandler();
+            hanlder = new ECSBoxShapeComponentHandler(DataStore.i.ecs7);
         }
 
         [TearDown]

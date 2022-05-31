@@ -12,6 +12,13 @@ namespace DCL.ECSComponents
         internal Rendereable rendereable;
         internal ECSBoxShape model;
 
+        private readonly DataStore_ECS7 dataStore;
+        
+        public ECSBoxShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
+        {
+            dataStore = dataStoreEcs7;
+        }
+
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -41,10 +48,10 @@ namespace DCL.ECSComponents
             };
             primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
             {
-                DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((scene.sceneData.id, model));
+                dataStore.RemovePendingResource(scene.sceneData.id, model);
             };
             
-            DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((scene.sceneData.id, model));
+            dataStore.AddPendingResource(scene.sceneData.id, model);
             AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
         }
 
@@ -63,7 +70,7 @@ namespace DCL.ECSComponents
             if(rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id,rendereable);
             if(model != null)
-                DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((scene.sceneData.id, model));
+                dataStore.RemovePendingResource(scene.sceneData.id, model);
             
             meshesInfo = null;
             rendereable = null;

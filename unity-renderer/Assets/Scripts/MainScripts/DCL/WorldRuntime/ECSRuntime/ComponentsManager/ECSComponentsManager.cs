@@ -5,7 +5,7 @@ using DCL.Models;
 
 namespace DCL.ECSRuntime
 {
-    public class ECSComponentsManager : IECSComponentsManager
+    public class ECSComponentsManager
     {
         private readonly IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders;
         internal readonly Dictionary<int, IECSComponent> sceneComponents = new Dictionary<int, IECSComponent>();

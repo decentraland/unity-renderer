@@ -52,10 +52,10 @@ namespace DCL.Test
             {
                 resourceLoaded = true;
             };
-            DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((parcelScene.sceneData.id, testModel));
+            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.id, testModel);
 
             // Act
-            DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((parcelScene.sceneData.id, testModel));
+            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.id, testModel);
 
             // Assert
             Assert.IsTrue(resourceLoaded);
@@ -75,14 +75,14 @@ namespace DCL.Test
         {
             // Arrange
             string newModel = "NewModel";
-            DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((parcelScene.sceneData.id, testModel));
-            DataStore.i.ecs7.pendingSceneResources.IncreaseRefCount((parcelScene.sceneData.id, newModel));
+            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.id, testModel);
+            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.id, newModel);
             Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
             
             // Act
-            DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((parcelScene.sceneData.id, testModel));
+            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.id, testModel);
             Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
-            DataStore.i.ecs7.pendingSceneResources.DecreaseRefCount((parcelScene.sceneData.id, newModel));
+            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.id, newModel);
 
             // Assert
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());

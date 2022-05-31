@@ -19,7 +19,7 @@ namespace DCL.WorldRuntime
             if (tracker is ResourcesLoadTrackerECS)
                 return;
 
-            tracker = new ResourcesLoadTrackerECS(sceneId);
+            tracker = new ResourcesLoadTrackerECS(DataStore.i.ecs7,sceneId);
             tracker.OnResourcesLoaded += TrackerResourcesLoaded;
             tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
         }

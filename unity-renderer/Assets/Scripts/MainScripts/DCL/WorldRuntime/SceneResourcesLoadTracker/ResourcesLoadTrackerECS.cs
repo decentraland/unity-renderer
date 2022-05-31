@@ -12,7 +12,7 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
     {
         get
         {
-            int resourcesReadyCount = resourcesReady.Count;
+            int resourcesReadyCount = resourcesReady;
             return resourcesReadyCount > 0 ? (resourcesReadyCount - pendingResourcesCount) * 100f / resourcesReadyCount : 100f;
         }
     }
@@ -20,19 +20,23 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
     public event Action OnResourcesLoaded;
     public event Action OnStatusUpdate;
     
+    private int resourcesReady;
+    
     private readonly List<object> resourcesNotReady = new List<object>();
-    private readonly List<object> resourcesReady = new List<object>();
     private readonly string sceneId;
+    private readonly DataStore_ECS7 dataStore;
     
-    public ResourcesLoadTrackerECS(string sceneId)
+    public ResourcesLoadTrackerECS(DataStore_ECS7 dataStoreEcs7,string sceneId)
     {
+        this.dataStore = dataStoreEcs7;
         this.sceneId = sceneId;
-        DataStore.i.ecs7.pendingSceneResources.OnRefCountUpdated += ResourcesUpdate;
+        dataStore.pendingSceneResources.AddOrSet(sceneId, new BaseRefCountedCollection<object>());
+        dataStore.pendingSceneResources[sceneId].OnRefCountUpdated += ResourcesUpdate;
     }
-    
+
     public void Dispose()
     {
-        DataStore.i.ecs7.pendingSceneResources.OnRefCountUpdated -= ResourcesUpdate;
+        dataStore.pendingSceneResources[sceneId].OnRefCountUpdated -= ResourcesUpdate;
     }
 
     public void PrintWaitingResourcesDebugInfo()
@@ -45,9 +49,9 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
 
     public string GetStateString()
     {
-        int totalComponents = resourcesNotReady.Count + resourcesReady.Count;
+        int totalComponents = resourcesNotReady.Count + resourcesReady;
         if (totalComponents > 0)
-            return $"left to ready:{totalComponents - resourcesReady.Count}/{totalComponents} ({loadingProgress}%)";
+            return $"left to ready:{totalComponents - resourcesReady}/{totalComponents} ({loadingProgress}%)";
 
         return $"no components. waiting...";
     }
@@ -57,15 +61,12 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
         return pendingResourcesCount > 0;
     }
 
-    private void ResourcesUpdate((string sceneId, object model) kvp, int refCount)
+    private void ResourcesUpdate(object model, int refCount)
     {
-        if (sceneId != kvp.sceneId)
-            return;
-        
         if (refCount > 0)
-            PendingResourceAdded(kvp.model);
+            PendingResourceAdded(model);
         else
-            ResourceReady(kvp.model);
+            ResourceReady(model);
     }
 
     private void PendingResourceAdded(object model)
@@ -78,9 +79,8 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
     {
         if(resourcesNotReady.Contains(model))
             resourcesNotReady.Remove(model);
-      
-        if(!resourcesReady.Contains(model))
-            resourcesReady.Add(model);
+
+        resourcesReady++;
         
         if (resourcesNotReady.Count == 0)
             OnResourcesLoaded?.Invoke();
