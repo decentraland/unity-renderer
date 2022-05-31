@@ -40,6 +40,7 @@ public interface IFriendsHUDComponentView
     void ShowMoreRequestsToLoadHint(int pendingRequestsCount);
     void HideMoreRequestsToLoadHint();
     bool ContainsFriend(string userId);
+    bool ContainsFriendRequest(string userId);
     void FilterFriends(Dictionary<string, FriendEntryModel> friends);
     void ClearFriendFilter();
 }

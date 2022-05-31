@@ -195,8 +195,8 @@ public class FriendsHUDController : IHUD
 
     private void OnUpdateUserStatus(string userId, FriendsController.UserStatus newStatus)
     {
-        var shouldDisplay = true;
-        var model = GetOrCreateModel(userId, newStatus, ref shouldDisplay);
+        var shouldDisplay = ShouldBeDisplayed(newStatus);
+        var model = GetOrCreateModel(userId, newStatus);
         model.CopyFrom(newStatus);
 
         if (shouldDisplay)
@@ -215,8 +215,8 @@ public class FriendsHUDController : IHUD
             return;
         }
 
-        var shouldDisplay = true;
-        var model = GetOrCreateModel(userId, friendshipAction, ref shouldDisplay);
+        var shouldDisplay = ShouldBeDisplayed(userId, friendshipAction);
+        var model = GetOrCreateModel(userId, friendshipAction);
         model.CopyFrom(userProfile);
 
         if (ownUserProfile != null && ownUserProfile.blocked != null)
@@ -231,7 +231,7 @@ public class FriendsHUDController : IHUD
             EnqueueOnPendingToLoad(userId, friendshipAction);
     }
 
-    private FriendEntryModel GetOrCreateModel(string userId, FriendshipAction friendshipAction, ref bool shouldDisplay)
+    private FriendEntryModel GetOrCreateModel(string userId, FriendshipAction friendshipAction)
     {
         if (!friends.ContainsKey(userId))
         {
@@ -247,8 +247,6 @@ public class FriendsHUDController : IHUD
             }
             else
                 friends[userId] = new FriendEntryModel();
-
-            shouldDisplay = ShouldBeDisplayed(friendshipAction);
         }
         else
         {
@@ -267,7 +265,7 @@ public class FriendsHUDController : IHUD
         return friends[userId];
     }
 
-    private FriendEntryModel GetOrCreateModel(string userId, FriendsController.UserStatus newStatus, ref bool shouldDisplay)
+    private FriendEntryModel GetOrCreateModel(string userId, FriendsController.UserStatus newStatus)
     {
         if (!friends.ContainsKey(userId))
         {
@@ -281,8 +279,6 @@ public class FriendsHUDController : IHUD
             }
             else
                 friends[userId] = new FriendEntryModel();
-
-            shouldDisplay = ShouldBeDisplayed(newStatus);
         }
         else
         {
@@ -327,24 +323,24 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private bool ShouldBeDisplayed(FriendshipAction friendshipAction)
+    private bool ShouldBeDisplayed(string userId, FriendshipAction friendshipAction)
     {
         return friendshipAction switch
         {
-            FriendshipAction.APPROVED => View.FriendCount <= INITIAL_DISPLAYED_FRIEND_COUNT,
-            FriendshipAction.REQUESTED_FROM => View.FriendRequestCount <= INITIAL_DISPLAYED_FRIEND_COUNT,
+            FriendshipAction.APPROVED => View.FriendCount <= INITIAL_DISPLAYED_FRIEND_COUNT || View.ContainsFriend(userId),
+            FriendshipAction.REQUESTED_FROM => View.FriendRequestCount <= INITIAL_DISPLAYED_FRIEND_COUNT || View.ContainsFriendRequest(userId),
             _ => true
         };
     }
 
-    private bool ShouldBeDisplayed(FriendsController.UserStatus newStatus)
+    private bool ShouldBeDisplayed(FriendsController.UserStatus status)
     {
-        if (newStatus.presence == PresenceStatus.ONLINE) return true;
+        if (status.presence == PresenceStatus.ONLINE) return true;
         
-        return newStatus.friendshipStatus switch
+        return status.friendshipStatus switch
         {
-            FriendshipStatus.FRIEND => View.FriendCount < INITIAL_DISPLAYED_FRIEND_COUNT,
-            FriendshipStatus.REQUESTED_FROM => View.FriendRequestCount < INITIAL_DISPLAYED_FRIEND_COUNT,
+            FriendshipStatus.FRIEND => View.FriendCount < INITIAL_DISPLAYED_FRIEND_COUNT || View.ContainsFriend(status.userId),
+            FriendshipStatus.REQUESTED_FROM => View.FriendRequestCount < INITIAL_DISPLAYED_FRIEND_COUNT || View.ContainsFriendRequest(status.userId),
             _ => true
         };
     }

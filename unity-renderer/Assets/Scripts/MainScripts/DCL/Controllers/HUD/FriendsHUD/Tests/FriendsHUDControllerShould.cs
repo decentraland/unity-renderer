@@ -235,4 +235,121 @@ public class FriendsHUDControllerShould
         friendsNotificationService.Received(1).MarkRequestsAsSeen(FRIEND_REQUEST_SHOWN);
         friendsNotificationService.Received(1).UpdateUnseenFriends();
     }
+
+    [Test]
+    public void EnqueueFriendWhenTooManyEntriesDisplayed()
+    {
+        view.FriendCount.Returns(10000);
+        
+        friendsController.OnUpdateFriendship +=
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
+        friendsController.OnUpdateFriendship +=
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
+        
+        view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipAction) default, default);
+        view.Received(1).ShowMoreFriendsToLoadHint(2);
+    }
+    
+    [Test]
+    public void EnqueueFriendRequestWhenTooManyEntriesDisplayed()
+    {
+        view.FriendRequestCount.Returns(10000);
+        
+        friendsController.OnUpdateFriendship +=
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_FROM);
+        friendsController.OnUpdateFriendship +=
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_FROM);
+        
+        view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipAction) default, default);
+        view.Received(1).ShowMoreRequestsToLoadHint(2);
+    }
+
+    [Test]
+    public void DisplayFriendWhenTooManyEntriesButIsAlreadyShown()
+    {
+        view.ContainsFriend(OTHER_USER_ID).Returns(true);
+        view.FriendCount.Returns(10000);
+        
+        friendsController.OnUpdateFriendship +=
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
+        
+        view.Received(1).Set(OTHER_USER_ID, FriendshipAction.APPROVED, Arg.Is<FriendEntryModel>(f => f.userId == OTHER_USER_ID));
+    }
+    
+    [Test]
+    public void DisplayRequestWhenTooManyEntriesButIsAlreadyShown()
+    {
+        view.ContainsFriendRequest(OTHER_USER_ID).Returns(true);
+        view.FriendRequestCount.Returns(10000);
+        
+        friendsController.OnUpdateFriendship +=
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_TO);
+        
+        view.Received(1).Set(OTHER_USER_ID, FriendshipAction.REQUESTED_TO, Arg.Is<FriendRequestEntryModel>(f => f.userId == OTHER_USER_ID));
+    }
+    
+    [Test]
+    public void AlwaysDisplayOnlineUsersWhenTooManyEntries()
+    {
+        view.FriendCount.Returns(10000);
+        
+        var status = new FriendsController.UserStatus
+        {
+            position = Vector2.zero,
+            presence = PresenceStatus.ONLINE,
+            friendshipStatus = FriendshipStatus.FRIEND,
+            realm = null,
+            userId = OTHER_USER_ID,
+            friendshipStartedTime = DateTime.UtcNow
+        };
+
+        friendsController.OnUpdateUserStatus +=
+            Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
+
+        view.Received(1).Set(OTHER_USER_ID, FriendshipStatus.FRIEND, Arg.Is<FriendEntryModel>(f => f.userId == OTHER_USER_ID));
+    }
+    
+    [Test]
+    public void EnqueueUserStatusWhenTooManyEntries()
+    {
+        view.FriendCount.Returns(10000);
+        
+        var status = new FriendsController.UserStatus
+        {
+            position = Vector2.zero,
+            presence = PresenceStatus.OFFLINE,
+            friendshipStatus = FriendshipStatus.FRIEND,
+            realm = null,
+            userId = OTHER_USER_ID,
+            friendshipStartedTime = DateTime.UtcNow
+        };
+
+        friendsController.OnUpdateUserStatus +=
+            Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
+
+        view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipStatus) default, default);
+        view.Received(1).ShowMoreFriendsToLoadHint(1);
+    }
+    
+    [Test]
+    public void EnqueueUserStatusAsRequestWhenTooManyEntries()
+    {
+        view.FriendRequestCount.Returns(10000);
+        
+        var status = new FriendsController.UserStatus
+        {
+            position = Vector2.zero,
+            presence = PresenceStatus.OFFLINE,
+            friendshipStatus = FriendshipStatus.REQUESTED_FROM,
+            realm = null,
+            userId = OTHER_USER_ID,
+            friendshipStartedTime = DateTime.UtcNow
+        };
+
+        friendsController.OnUpdateUserStatus +=
+            Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
+
+        view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipStatus) default, default);
+        view.Received(1).ShowMoreRequestsToLoadHint(1);
+    }
 }

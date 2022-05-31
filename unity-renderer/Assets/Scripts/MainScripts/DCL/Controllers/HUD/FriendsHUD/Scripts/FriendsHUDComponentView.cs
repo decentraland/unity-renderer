@@ -246,6 +246,8 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public bool ContainsFriend(string userId) => friendsTab.Get(userId) != null;
 
+    public bool ContainsFriendRequest(string userId) => friendRequestsTab.Get(userId) != null;
+
     public void FilterFriends(Dictionary<string, FriendEntryModel> friends) => friendsTab.Filter(friends);
 
     public void ClearFriendFilter() => friendsTab.ClearFilter();

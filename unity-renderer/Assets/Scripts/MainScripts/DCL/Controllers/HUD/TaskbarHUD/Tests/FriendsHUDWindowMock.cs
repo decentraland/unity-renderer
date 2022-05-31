@@ -100,6 +100,8 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
 
     public bool ContainsFriend(string userId) => false;
 
+    public bool ContainsFriendRequest(string userId) => false;
+
     public void FilterFriends(Dictionary<string, FriendEntryModel> friends)
     {
     }
