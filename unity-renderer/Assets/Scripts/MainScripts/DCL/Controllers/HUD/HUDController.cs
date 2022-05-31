@@ -269,7 +269,7 @@ public class HUDController : IHUDController
 
                     if (friendsHud != null)
                     {
-                        friendsHud.Initialize(FriendsController.i, UserProfile.GetOwnUserProfile(), socialAnalytics);
+                        friendsHud.Initialize(FriendsHUDComponentView.Create());
                         friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
                         friendsHud.OnPressWhisper += OpenPrivateChatWindow;
 

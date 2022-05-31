@@ -1,4 +1,4 @@
-using DCL.Helpers;
+using System;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -9,184 +9,173 @@ using UnityEngine.TestTools;
 
 public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
 {
-    UserProfileController userProfileController;
-    private NotificationsController notificationsController;
-    FriendsHUDController controller;
-    IFriendsHUDComponentView view;
-    FriendsController_Mock friendsController;
-    ISocialAnalytics socialAnalytics;
+    private const string OWN_USER_ID = "my-user";
+    
+    private FriendsHUDController controller;
+    private IFriendsHUDComponentView view;
+    private IFriendsController friendsController;
+    private ISocialAnalytics socialAnalytics;
+    private IFriendsNotificationService friendsNotificationService;
+    private IUserProfileBridge userProfileBridge;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
-        notificationsController = TestUtils.CreateComponentWithGameObject<NotificationsController>("NotificationsController");
-        notificationsController.Initialize(new NotificationHUDController());
-
-        userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
-        controller = new FriendsHUDController(new DataStore());
-        friendsController = new FriendsController_Mock();
         socialAnalytics = Substitute.For<ISocialAnalytics>();
-        controller.Initialize(friendsController, UserProfile.GetOwnUserProfile(), socialAnalytics);
-        view = controller.View;
-
-        Assert.IsTrue(view != null, "Friends hud view is null?");
-        Assert.IsTrue(controller != null, "Friends hud controller is null?");
+        friendsNotificationService = Substitute.For<IFriendsNotificationService>();
+        userProfileBridge = Substitute.For<IUserProfileBridge>();
+        var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
+        ownProfile.UpdateData(new UserProfileModel{userId = OWN_USER_ID});
+        userProfileBridge.GetOwn().Returns(ownProfile);
+        controller = new FriendsHUDController(new DataStore(),
+            friendsController,
+            userProfileBridge,
+            socialAnalytics,
+            friendsNotificationService);
+        friendsController = Substitute.For<IFriendsController>();
+        view = Substitute.For<IFriendsHUDComponentView>();
+        controller.Initialize(view);
     }
 
     protected override IEnumerator TearDown()
     {
-        UnityEngine.Object.Destroy(userProfileController.gameObject);
-        notificationsController.Dispose();
-        UnityEngine.Object.Destroy(notificationsController.gameObject);
-
         controller.Dispose();
         yield return base.TearDown();
     }
 
-    [UnityTest]
-    public IEnumerator ReactCorrectlyToWhisperClick()
+    [Test]
+    public void ReactCorrectlyToWhisperClick()
     {
-        var id = "test-id-1";
-        yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id);
-        var entry = TestHelpers_Friends.GetEntry(view, id);
-        Assert.IsNotNull(entry);
-
-        bool pressedWhisper = false;
+        const string id = "test-id-1";
+        
+        var pressedWhisper = false;
         controller.OnPressWhisper += (x) => { pressedWhisper = x == id; };
-        entry.whisperButton.onClick.Invoke();
+        
+        view.OnWhisper += Raise.Event<Action<FriendEntryModel>>(new FriendEntryModel {userId = id});
+        
         Assert.IsTrue(pressedWhisper);
     }
 
-    [UnityTest]
-    public IEnumerator ReactCorrectlyToPassportClick()
+    [Test]
+    public void HandleUsernameErrorCorrectly()
     {
-        var id = "test-id-1";
-        yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id);
-        var entry = TestHelpers_Friends.GetEntry(view, id);
-        Assert.IsNotNull(entry);
-
-        var currentPlayerId = Resources.Load<StringVariable>(UserContextMenu.CURRENT_PLAYER_ID);
-
-        Assert.AreNotEqual(id, currentPlayerId.Get());
-        entry.passportButton.onClick.Invoke();
-        Assert.AreEqual(id, currentPlayerId.Get());
+        friendsController.OnFriendNotFound += Raise.Event<Action<string>>("test");
+        
+        view.Received(1).DisplayFriendUserNotFound();
     }
 
     [Test]
-    public void HandleUsernameErrorCorrectly() { friendsController.RaiseOnFriendNotFound("test"); }
-
-    // TODO: redo this test.. needs FriendsHUDController to be refactored first
-    // [Test]
-    // public void SendFriendRequestCorrectly()
-    // {
-    //     bool messageSent = false;
-    //
-    //     string id = "user test";
-    //     Action<string, string> callback = (name, payload) =>
-    //     {
-    //         var msg = JsonUtility.FromJson<FriendsController.FriendshipUpdateStatusMessage>(payload);
-    //         if (msg.action == FriendshipAction.REQUESTED_TO &&
-    //             msg.userId == id)
-    //         {
-    //             messageSent = true;
-    //         }
-    //     };
-    //
-    //     WebInterface.OnMessageFromEngine += callback;
-    //
-    //     view.Search(id);
-    //
-    //     Assert.IsTrue(messageSent);
-    //
-    //     WebInterface.OnMessageFromEngine -= callback;
-    // }
-
-    [UnityTest]
-    public IEnumerator ReactCorrectlyToFriendApproved()
+    public void SendFriendRequestByNameCorrectly()
     {
-        var id = "test-id-1";
-        yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id, FriendshipAction.APPROVED);
-        var entry = TestHelpers_Friends.GetEntry(view, id);
-        Assert.IsNotNull(entry);
+        const string userId = "test-id-1";
+        const string userName = "waoh";
+        friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND).Returns(false);
+        var userProfile = ScriptableObject.CreateInstance<UserProfile>();
+        userProfile.UpdateData(new UserProfileModel{userId = userId, name = userName});
+        userProfileBridge.GetByName(userName).Returns(userProfile);
+        userProfileBridge.Get(userId).Returns(userProfile);
+        
+        view.OnFriendRequestSent += Raise.Event<Action<string>>(userName);
+        
+        friendsController.Received(1).RequestFriendship(userId);
+        socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, userId, 0, PlayerActionSource.FriendsHUD);
+        view.Received(1).ShowRequestSendSuccess();
+    }
+    
+    [Test]
+    public void SendFriendRequestByIdCorrectly()
+    {
+        const string userId = "test-id-1";
+        const string userName = "waoh";
+        friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND).Returns(false);
+        var userProfile = ScriptableObject.CreateInstance<UserProfile>();
+        userProfile.UpdateData(new UserProfileModel{userId = userId, name = userName});
+        userProfileBridge.GetByName(userName).Returns(userProfile);
+        userProfileBridge.Get(userId).Returns(userProfile);
+        
+        view.OnFriendRequestSent += Raise.Event<Action<string>>(userId);
+        
+        friendsController.Received(1).RequestFriendship(userId);
+        socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, userId, 0, PlayerActionSource.FriendsHUD);
+        view.Received(1).ShowRequestSendSuccess();
+    }
+    
+    [Test]
+    public void FailFriendRequestWhenAlreadyFriends()
+    {
+        const string userId = "test-id-1";
+        const string userName = "waoh";
+        friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND).Returns(true);
+        var userProfile = ScriptableObject.CreateInstance<UserProfile>();
+        userProfile.UpdateData(new UserProfileModel{userId = userId, name = userName});
+        userProfileBridge.GetByName(userName).Returns(userProfile);
+        userProfileBridge.Get(userId).Returns(userProfile);
+        
+        view.OnFriendRequestSent += Raise.Event<Action<string>>(userId);
 
-        friendsController.RaiseUpdateFriendship(id, FriendshipAction.DELETED);
-        entry = controller.View.GetEntry(id) as FriendEntry;
-        Assert.IsNull(entry);
+        view.Received(1).ShowRequestSendError(FriendRequestError.AlreadyFriends);
     }
 
-    [UnityTest]
-    public IEnumerator ReactCorrectlyToFriendRejected()
+    [TestCase(FriendshipAction.APPROVED)]
+    [TestCase(FriendshipAction.REQUESTED_FROM)]
+    [TestCase(FriendshipAction.DELETED)]
+    [TestCase(FriendshipAction.REJECTED)]
+    [TestCase(FriendshipAction.CANCELLED)]
+    [TestCase(FriendshipAction.REQUESTED_TO)]
+    public void DisplayFriendAction(FriendshipAction friendshipAction)
     {
-        var id = "test-id-1";
-        yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id, FriendshipAction.NONE);
+        const string userId = "test-id-1";
+        const int friendCount = 7;
+        
+        var userProfile = ScriptableObject.CreateInstance<UserProfile>();
+        userProfile.UpdateData(new UserProfileModel{userId = userId});
+        userProfileBridge.Get(userId).Returns(userProfile);
+        view.IsActive().Returns(true);
+        friendsController.friendCount.Returns(friendCount);
+        view.FriendRequestCount.Returns(5);
+        
+        friendsController.OnUpdateFriendship +=
+            Raise.Event<Action<string, FriendshipAction>>(userId, friendshipAction);
 
-        friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_FROM);
-        friendsController.RaiseUpdateFriendship(id, FriendshipAction.REJECTED);
-
-        var entry = controller.View.GetEntry(id);
-        Assert.IsNull(entry);
+        view.Received(1).Set(userId, friendshipAction, Arg.Is<FriendEntryModel>(f => f.userId == userId));
     }
 
-    // TODO: the view should be mocked to test this correctly 
-    // [UnityTest]
-    // public IEnumerator ReactCorrectlyToFriendCancelled()
-    // {
-    //     var id = "test-id-1";
-    //     yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, id, FriendshipAction.NONE);
-    //
-    //     friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_TO);
-    //     var entry = controller.View.GetEntry(id);
-    //     Assert.IsNotNull(entry);
-    //     friendsController.RaiseUpdateFriendship(id, FriendshipAction.CANCELLED);
-    //     yield return null;
-    //     entry = controller.View.GetEntry(id);
-    //     Assert.IsNull(entry);
-    // }
-
-    NotificationBadge GetBadge(string path)
+    [Test]
+    public void NotificationsAreUpdatedWhenFriendshipActionUpdates()
     {
-        GameObject prefab = Resources.Load(path) as GameObject;
-        Assert.IsTrue(prefab != null);
-        GameObject go = this.InstantiateTestGameObject(prefab);
-        Assert.IsTrue(go != null);
+        const string userId = "test-id-1";
+        const int friendCount = 7;
+        const int friendRequestCount = 5;
+        
+        var userProfile = ScriptableObject.CreateInstance<UserProfile>();
+        userProfile.UpdateData(new UserProfileModel{userId = userId});
+        userProfileBridge.Get(userId).Returns(userProfile);
+        view.IsActive().Returns(true);
+        friendsController.friendCount.Returns(friendCount);
+        view.FriendRequestCount.Returns(friendRequestCount);
+        
+        friendsController.OnUpdateFriendship +=
+            Raise.Event<Action<string, FriendshipAction>>(userId, FriendshipAction.APPROVED);
 
-        var noti = go.GetComponent<NotificationBadge>();
-        noti.Initialize();
-
-        return noti;
+        friendsNotificationService.Received(1).MarkFriendsAsSeen(friendCount);
+        friendsNotificationService.Received(1).MarkRequestsAsSeen(friendRequestCount);
+        friendsNotificationService.Received(1).UpdateUnseenFriends();
     }
+    
+    [Test]
+    public void NotificationsAreUpdatedWhenIsVisible()
+    {
+        const int friendCount = 7;
+        const int friendRequestCount = 5;
+        friendsController.friendCount.Returns(friendCount);
+        view.FriendRequestCount.Returns(friendRequestCount);
+        
+        controller.SetVisibility(true);
 
-    // TODO: redo this test.. needs FriendsHUDController to be refactored first
-    // [UnityTest]
-    // public IEnumerator TaskbarNotificationBadgeHasCorrectValue()
-    // {
-    //     PlayerPrefsUtils.SetInt(FriendsHUDController.PLAYER_PREFS_SEEN_FRIEND_COUNT, 0);
-    //
-    //     var friendsRequestBadge = GetBadge("NotificationBadge_FriendsRequestTab");
-    //     var friendsTaskbarBadge = GetBadge("NotificationBadge_FriendsButton");
-    //
-    //     controller.SetVisibility(false);
-    //
-    //     yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, "friend-1");
-    //     yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, "friend-2");
-    //     yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, "friend-3");
-    //     yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, "friend-4");
-    //     yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, "friend-5", FriendshipAction.REQUESTED_FROM);
-    //
-    //     Assert.AreEqual(1, friendsRequestBadge.finalValue);
-    //     Assert.AreEqual(5, friendsTaskbarBadge.finalValue);
-    //
-    //     controller.SetVisibility(true);
-    //
-    //     Assert.AreEqual(1, friendsRequestBadge.finalValue);
-    //     Assert.AreEqual(1, friendsTaskbarBadge.finalValue);
-    //
-    //     yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, "friend-5", FriendshipAction.APPROVED);
-    //     yield return TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, view, "friend-6", FriendshipAction.REQUESTED_FROM);
-    //
-    //     Assert.AreEqual(1, friendsRequestBadge.finalValue);
-    //     Assert.AreEqual(1, friendsTaskbarBadge.finalValue);
-    // }
+        friendsNotificationService.Received(1).MarkFriendsAsSeen(friendCount);
+        friendsNotificationService.Received(1).MarkRequestsAsSeen(friendRequestCount);
+        friendsNotificationService.Received(1).UpdateUnseenFriends();
+    }
 }

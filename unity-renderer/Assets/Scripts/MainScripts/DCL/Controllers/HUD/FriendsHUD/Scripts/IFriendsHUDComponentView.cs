@@ -4,11 +4,11 @@ using UnityEngine;
 
 public interface IFriendsHUDComponentView
 {
-    event Action<FriendRequestEntry> OnFriendRequestApproved;
-    event Action<FriendRequestEntry> OnCancelConfirmation;
-    event Action<FriendRequestEntry> OnRejectConfirmation;
+    event Action<FriendRequestEntryModel> OnFriendRequestApproved;
+    event Action<FriendRequestEntryModel> OnCancelConfirmation;
+    event Action<FriendRequestEntryModel> OnRejectConfirmation;
     event Action<string> OnFriendRequestSent;
-    event Action<FriendEntry> OnWhisper;
+    event Action<FriendEntryModel> OnWhisper;
     event Action<string> OnDeleteConfirmation;
     event Action OnClose;
     event Action OnRequireMoreFriends;
@@ -31,6 +31,7 @@ public interface IFriendsHUDComponentView
     void Hide();
     void Set(string userId, FriendshipAction friendshipAction, FriendEntryModel model);
     void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model);
+    void Populate(string userId, FriendEntryModel model);
     bool IsActive();
     void ShowRequestSendError(FriendRequestError error);
     void ShowRequestSendSuccess();

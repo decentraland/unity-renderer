@@ -61,7 +61,7 @@ public class FriendsTabComponentView : BaseComponentView
         }
     }
 
-    public event Action<FriendEntry> OnWhisper;
+    public event Action<FriendEntryModel> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
     public event Action OnRequireMoreFriends;
 
@@ -417,10 +417,7 @@ public class FriendsTabComponentView : BaseComponentView
         entry.OnWhisperClick += OnEntryWhisperClick;
     }
 
-    private void OnEntryWhisperClick(FriendEntry friendEntry)
-    {
-        OnWhisper?.Invoke(friendEntry);
-    }
+    private void OnEntryWhisperClick(FriendEntry friendEntry) => OnWhisper?.Invoke(friendEntry.Model);
 
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)
     {

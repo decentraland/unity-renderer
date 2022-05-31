@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
 {
-    public event Action<FriendRequestEntry> OnFriendRequestApproved;
-    public event Action<FriendRequestEntry> OnCancelConfirmation;
-    public event Action<FriendRequestEntry> OnRejectConfirmation;
+    public event Action<FriendRequestEntryModel> OnFriendRequestApproved;
+    public event Action<FriendRequestEntryModel> OnCancelConfirmation;
+    public event Action<FriendRequestEntryModel> OnRejectConfirmation;
     public event Action<string> OnFriendRequestSent;
-    public event Action<FriendEntry> OnWhisper;
+    public event Action<FriendEntryModel> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
     public event Action OnClose;
     public event Action OnRequireMoreFriends;
@@ -71,6 +71,10 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     }
 
     public void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model)
+    {
+    }
+
+    public void Populate(string userId, FriendEntryModel model)
     {
     }
 

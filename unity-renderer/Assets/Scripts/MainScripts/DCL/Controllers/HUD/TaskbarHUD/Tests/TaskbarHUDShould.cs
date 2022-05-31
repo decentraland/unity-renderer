@@ -71,9 +71,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void AddFriendWindowProperly()
     {
-        friendsHudController = new FriendsHUDController(new DataStore());
-        friendsHudController.Initialize(null, UserProfile.GetOwnUserProfile(), socialAnalytics,
-            new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
+        friendsHudController = new FriendsHUDController(new DataStore(), friendsController, Substitute.For<IUserProfileBridge>(),
+            socialAnalytics, Substitute.For<IFriendsNotificationService>());
+        friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 
         Assert.IsTrue(friendsHudController.View.Transform.parent == view.leftWindowContainer,
@@ -122,8 +122,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         publicChatChannelController.Initialize(new GameObject("PublicChatChannelWindowMock").AddComponent<PublicChatChannelWindowMock>());
         controller.AddPublicChatChannel(publicChatChannelController);
 
-        friendsHudController = new FriendsHUDController(new DataStore());
-        friendsHudController.Initialize(friendsController, UserProfile.GetOwnUserProfile(), socialAnalytics);
+        friendsHudController = new FriendsHUDController(new DataStore(), friendsController, Substitute.For<IUserProfileBridge>(),
+            socialAnalytics, Substitute.For<IFriendsNotificationService>());
+        friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 
         Assert.IsFalse(view.chatButton.toggledOn);

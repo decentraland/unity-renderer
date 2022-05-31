@@ -51,7 +51,12 @@ public class HUDFactory : IHUDFactory
                 hudElement = new TermsOfServiceHUDController();
                 break;
             case HUDElementID.FRIENDS:
-                hudElement = new FriendsHUDController(DataStore.i);
+                hudElement = new FriendsHUDController(DataStore.i, new WebInterfaceFriendsController(FriendsController.i),
+                    new UserProfileWebInterfaceBridge(),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
+                    Environment.i.serviceLocator.Get<IFriendsNotificationService>());
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(

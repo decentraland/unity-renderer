@@ -20,6 +20,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
     private UserProfileModel testProfileModel;
     private IUserProfileBridge userProfileBridge;
     private ISocialAnalytics socialAnalytics;
+    private IFriendsNotificationService friendsNotificationService;
 
     protected override IEnumerator SetUp()
     {
@@ -52,6 +53,8 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         userProfileBridge.GetOwn().Returns(ownUserProfile);
         userProfileBridge.Get(ownProfileModel.userId).Returns(ownUserProfile);
         userProfileBridge.Get(testProfileModel.userId).Returns(testUserProfile);
+
+        friendsNotificationService = Substitute.For<IFriendsNotificationService>();
     }
 
     protected override IEnumerator TearDown()
@@ -142,8 +145,12 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         // Initialize friends HUD
         notificationsController.Initialize(new NotificationHUDController());
 
-        FriendsHUDController friendsHudController = new FriendsHUDController(new DataStore());
-        friendsHudController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile(), socialAnalytics);
+        var friendsHudController = new FriendsHUDController(new DataStore(),
+            new FriendsController_Mock(),
+            userProfileBridge,
+            socialAnalytics,
+            friendsNotificationService);
+        friendsHudController.Initialize(Substitute.For<IFriendsHUDComponentView>());
 
         Assert.IsTrue(view != null, "Friends hud view is null?");
         Assert.IsTrue(controller != null, "Friends hud controller is null?");

@@ -41,6 +41,10 @@ namespace DCL
                 ChatController.i,
                 new DefaultPlayerPrefs(),
                 new UserProfileWebInterfaceBridge()));
+            result.Register<IFriendsNotificationService>(() => new FriendsNotificationService(new DefaultPlayerPrefs(),
+                FriendsController.i,
+                NotificationScriptableObjects.pendingFriendRequests,
+                NotificationScriptableObjects.newApprovedFriends));
 
             return result;
         }
