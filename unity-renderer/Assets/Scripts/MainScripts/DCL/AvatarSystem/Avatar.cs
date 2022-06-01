@@ -65,9 +65,9 @@ namespace AvatarSystem
                 List<WearableItem> wearables = null;
                 List<WearableItem> emotes = null;
 
-                (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
                 baseAvatar.Initialize(!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth));
                 animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
+                (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
@@ -77,7 +77,7 @@ namespace AvatarSystem
 
                 //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
-
+                
                 emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
 
                 gpuSkinning.Prepare(loader.combinedRenderer);

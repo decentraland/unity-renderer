@@ -31,9 +31,12 @@ public class AvatarReveal : MonoBehaviour
 
     public void AddTarget(MeshRenderer newTarget)
     {
+        if (newTarget == null)
+            return;
+
         targets.Add(newTarget);
-        newTarget.material.SetVector("_RevealPosition", Vector3.zero);
-        newTarget.material.SetVector("_RevealNormal", new Vector3(0, -1, 0));
+        newTarget?.material.SetVector("_RevealPosition", Vector3.zero);
+        newTarget?.material.SetVector("_RevealNormal", new Vector3(0, -1, 0));
         _materials.Add(newTarget.material);
     }
 
