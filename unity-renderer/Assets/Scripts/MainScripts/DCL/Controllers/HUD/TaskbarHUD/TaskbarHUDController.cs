@@ -323,7 +323,12 @@ public class TaskbarHUDController : IHUD
 
         IHUD visibleWindow;
 
-        if (lastActiveWindow != null)
+        if (lastActiveWindow == publicChatChannel)
+        {
+            publicChatChannel.SetVisibility(true, true);
+            visibleWindow = lastActiveWindow;
+        }
+        else if (lastActiveWindow != null)
         {
             lastActiveWindow.SetVisibility(true);
             visibleWindow = lastActiveWindow;
