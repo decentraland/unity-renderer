@@ -33,6 +33,8 @@ public class VoiceChatWindowController : IHUD
     private bool isOwnPLayerTalking = false;
     private Coroutine updateMuteStatusRoutine = null;
     private bool isMuteAll = false;
+    private bool isOpenByFirstTime = true;
+    private bool isJoined = false;
 
     public VoiceChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -64,12 +66,21 @@ public class VoiceChatWindowController : IHUD
 
         currentPlayers = new Dictionary<string, VoiceChatPlayerComponentView>();
         playersPool = new Queue<VoiceChatPlayerComponentView>();
+
+        JoinVoiceChat(false);
     }
 
     public void SetVisibility(bool visible)
     {
         if (visible)
+        {
             voiceChatWindowView.Show();
+
+            if (isOpenByFirstTime)
+                JoinVoiceChat(true);
+
+            isOpenByFirstTime = false;
+        }
         else
             voiceChatWindowView.Hide();
     }
@@ -160,6 +171,13 @@ public class VoiceChatWindowController : IHUD
         {
             voiceChatBarView.Hide();
         }
+
+        this.isJoined = isJoined;
+
+        if (!isJoined)
+            MuteAll(true);
+        else if (!isMuteAll)
+            MuteAll(false);
     }
 
     internal void LeaveVoiceChat() { JoinVoiceChat(false); }
@@ -216,7 +234,7 @@ public class VoiceChatWindowController : IHUD
                 elementView.SetAsBlocked(isBlocked);
             }
 
-            if (isMuteAll && !isMuted)
+            if ((isMuteAll || !isJoined) && !isMuted)
                 MuteUser(userId, true);
         }
 
@@ -245,7 +263,8 @@ public class VoiceChatWindowController : IHUD
 
     internal void MuteAll(bool isMute)
     {
-        isMuteAll = isMute;
+        if (isJoined)
+            isMuteAll = isMute;
 
         if (isMute)
             usersToUnmute.Clear();

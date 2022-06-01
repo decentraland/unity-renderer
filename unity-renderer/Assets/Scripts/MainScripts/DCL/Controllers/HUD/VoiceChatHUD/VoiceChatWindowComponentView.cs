@@ -85,7 +85,10 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         model.numberOfPlayers = numPlayers;
 
         if (playersText != null)
+        {
             playersText.text = $"PLAYERS ({numPlayers})";
+            playersText.gameObject.SetActive(numPlayers > 0);
+        }
 
         if (emptyListGameObject != null)
             emptyListGameObject.SetActive(numPlayers == 0);
@@ -100,12 +103,6 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
 
         if (leaveButton != null)
             leaveButton.gameObject.SetActive(isJoined);
-
-        if (allowUsersDropdown != null)
-            allowUsersDropdown.gameObject.SetActive(isJoined);
-
-        if (muteAllToggle != null)
-            muteAllToggle.gameObject.SetActive(isJoined);
     }
 
     public VoiceChatPlayerComponentView CreateNewPlayerInstance() => Instantiate(playerPrefab, usersContainer);
