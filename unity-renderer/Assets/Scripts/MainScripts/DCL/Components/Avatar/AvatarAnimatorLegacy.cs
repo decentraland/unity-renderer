@@ -333,6 +333,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     public void EquipEmote(string emoteId, AnimationClip clip)
     {
+        if (animation == null)
+            return;
+
         if (animation.GetClip(emoteId) != null)
             animation.RemoveClip(emoteId);
         animation.AddClip(clip, emoteId);
@@ -340,6 +343,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     public void UnequipEmote(string emoteId)
     {
+        if (animation == null)
+            return;
+
         if (animation.GetClip(emoteId) == null)
             return;
         animation.RemoveClip(emoteId);
