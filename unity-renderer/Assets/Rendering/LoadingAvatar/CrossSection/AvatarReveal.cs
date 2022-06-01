@@ -29,7 +29,7 @@ public class AvatarReveal : MonoBehaviour
         }
     }
 
-    public void AddTarget(Renderer newTarget)
+    public void AddTarget(MeshRenderer newTarget)
     {
         targets.Add(newTarget);
         newTarget.material.SetVector("_RevealPosition", Vector3.zero);

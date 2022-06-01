@@ -90,7 +90,7 @@ namespace AvatarSystem
                 gpuSkinningThrottler.Start();
 
                 status = IAvatar.Status.Loaded;
-                baseAvatar.FadeOut(loader.combinedRenderer);
+                baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>());
             }
             catch (OperationCanceledException)
             {

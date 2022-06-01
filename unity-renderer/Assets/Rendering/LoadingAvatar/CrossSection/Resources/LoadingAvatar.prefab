@@ -19482,6 +19482,11 @@ PrefabInstance:
       propertyPath: m_AABB.m_Extent.z
       value: 17.423431
       objectReference: {fileID: 0}
+    - target: {fileID: 8297353812498863351, guid: 5ad03556e33af42169fb862f1454855a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 837a583d37c902a4d8f5d3acdf6117a4, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: -5814230247879327577, guid: 5ad03556e33af42169fb862f1454855a,
     type: 3}

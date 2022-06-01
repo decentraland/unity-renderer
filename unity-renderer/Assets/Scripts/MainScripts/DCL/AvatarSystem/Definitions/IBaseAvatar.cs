@@ -12,6 +12,6 @@ namespace AvatarSystem
         void Initialize(bool resetLoading);
         SkinnedMeshRenderer GetMainRenderer();
         GameObject GetArmatureContainer();
-        void FadeOut(Renderer targetRenderer);
+        void FadeOut(MeshRenderer targetRenderer);
     }
 }

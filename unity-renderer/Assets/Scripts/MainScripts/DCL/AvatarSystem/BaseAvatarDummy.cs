@@ -41,7 +41,7 @@ namespace AvatarSystem
             meshRenderer = meshHolder.meshRenderer;
         }
 
-        public void FadeOut(Renderer targetRenderer) { }
+        public void FadeOut(MeshRenderer targetRenderer) { }
 
     }
 }
