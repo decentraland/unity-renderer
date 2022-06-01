@@ -365,6 +365,8 @@ namespace UnityGLTF
                 {
                     _isRunning = false;
                     _isCompleted = true;
+                    
+                    instantiatedGLTFObject.SetLoading(false);
                 }
             }
         }
@@ -391,15 +393,17 @@ namespace UnityGLTF
         /// </summary>
         private void InitializeGltfTopLevelObject()
         {
-            InstantiatedGLTFObject instantiatedGltfObject = CreatedObject.AddComponent<InstantiatedGLTFObject>();
+            instantiatedGLTFObject = CreatedObject.AddComponent<InstantiatedGLTFObject>();
 
-            instantiatedGltfObject.CachedData = new RefCountedCacheData
+            instantiatedGLTFObject.CachedData = new RefCountedCacheData
             {
                 MaterialCache = _assetCache.MaterialCache,
                 TextureCache = _assetCache.TextureCache,
                 MeshCache = _assetCache.MeshCache,
                 animationCache = _assetCache.AnimationCache
             };
+            
+            instantiatedGLTFObject.SetLoading(true);
         }
 
         private async UniTask ConstructBufferData(Node node, CancellationToken token)
@@ -1604,6 +1608,7 @@ namespace UnityGLTF
         }
 
         HashSet<GameObject> skeletonGameObjects = new HashSet<GameObject>();
+        private InstantiatedGLTFObject instantiatedGLTFObject;
 
         private BoneWeight[] CreateBoneWeightArray(Vector4[] joints, Vector4[] weights, int vertCount)
         {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace MainScripts.DCL.Analytics.PerformanceAnalytics
 {
@@ -53,11 +54,12 @@ namespace MainScripts.DCL.Analytics.PerformanceAnalytics
             loaded--;
         }
 
-        // We only reset failed and cancelled count as once we report them, we dont need to track them further
         public void Reset()
         {
             failed = 0;
             cancelled = 0;
+            loaded = 0;
+            loading = 0;
         }
         public (int loading, int failed, int cancelled, int loaded) GetData() { return (loading, failed, cancelled, loaded); }
     }

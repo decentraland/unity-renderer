@@ -9,6 +9,8 @@ namespace UnityGLTF
     /// </summary>
     public class InstantiatedGLTFObject : MonoBehaviour
     {
+        private bool isLoading = false;
+        
         /// <summary>
         /// Ref-counted cache data for this object.
         /// The same instance of this cached data will be used for all copies of this GLTF object,
@@ -58,8 +60,9 @@ namespace UnityGLTF
 
         private void OnDestroy()
         {
-            PerformanceAnalytics.GLTFTracker.TrackUnloaded();
+            if (!isLoading) PerformanceAnalytics.GLTFTracker.TrackUnloaded();
             CachedData = null;
         }
+        public void SetLoading(bool b) { isLoading = b; }
     }
 }
