@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using AssetPromiseKeeper_Tests;
 using DCL;
+using DCL.ECSComponents;
 using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
         protected override AssetPromise_PrimitiveMesh CreatePromise()
         {
             PrimitiveMeshModel model = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
+            model.primitiveModel = new PBBoxShape();
             var prom = new AssetPromise_PrimitiveMesh(model);
             return prom;
         }
