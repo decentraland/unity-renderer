@@ -111,6 +111,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     [Header("Prefab References")]
     [SerializeField] internal Button button;
     [SerializeField] internal TMP_Text title;
+    [SerializeField] internal GameObject searchBarContainer;
     [SerializeField] internal SearchBarComponentView searchBar;
     [SerializeField] internal GameObject optionsPanel;
     [SerializeField] internal Image contentMaskImage;
@@ -218,7 +219,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         UpdateSelectAllOptionStatus();
         SetSelectAllOptionActive(model.showSelectAllOption);
 
-        searchBar.gameObject.SetActive(options.Count > 0);
+        searchBarContainer.SetActive(options.Count > 0);
         contentMaskImage.enabled = options.Count > 0;
         emptyContentMessage.gameObject.SetActive(options.Count == 0);
 
@@ -424,6 +425,9 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         {
             SetSelectAll(isOn);
         }
+
+        if (!isMultiselect)
+            Close();
     }
 
     internal void UpdateSelectAllOptionStatus()

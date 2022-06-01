@@ -136,21 +136,24 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
                 isOn = true,
                 id = VoiceChatAllow.ALL_USERS.ToString(),
                 text = ALLOW_USERS_TITLE_ALL,
-                isTextActive = true
+                isTextActive = true,
+                changeTextColorOnSelect = true
             },
             new ToggleComponentModel
             {
                 isOn = false,
                 id = VoiceChatAllow.VERIFIED_ONLY.ToString(),
                 text = ALLOW_USERS_TITLE_REGISTERED,
-                isTextActive = true
+                isTextActive = true,
+                changeTextColorOnSelect = true
             },
             new ToggleComponentModel
             {
                 isOn = false,
                 id = VoiceChatAllow.FRIENDS_ONLY.ToString(),
                 text = ALLOW_USERS_TITLE_FRIENDS,
-                isTextActive = true
+                isTextActive = true,
+                changeTextColorOnSelect = true
             }
         });
 
@@ -164,7 +167,6 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
 
         allowUsersDropdown.SetTitle(optionName);
         OnAllowUsersFilterChange?.Invoke(optionId);
-        allowUsersDropdown.Close();
 
         var newSettings = Settings.i.generalSettings.Data;
 

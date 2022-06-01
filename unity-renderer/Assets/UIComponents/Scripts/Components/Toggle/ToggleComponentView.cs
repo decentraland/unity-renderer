@@ -53,6 +53,8 @@ public interface IToggleComponentView
     /// </summary>
     /// <param name="isOn"></param>
     void SetIsOnWithoutNotify(bool isOn);
+
+    void SetChangeTextColorOnSelect(bool changeTextColorOnSelect);
 }
 
 public class ToggleComponentView : BaseComponentView, IToggleComponentView, IComponentModelConfig
@@ -62,6 +64,8 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
     [SerializeField] internal TMP_Text text;
     [SerializeField] GameObject activeOn = null;
     [SerializeField] GameObject activeOff = null;
+    [SerializeField] Color textColorOnUnselected;
+    [SerializeField] Color textColorOnSelected;
 
     [Header("Configuration")]
     [SerializeField] internal ToggleComponentModel model;
@@ -103,8 +107,12 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
     {
         if (activeOn)
             activeOn.gameObject.SetActive(isOn);
+        
         if (activeOff)
             activeOff.gameObject.SetActive(!isOn);
+
+        if (text != null && model.changeTextColorOnSelect)
+            text.color = isOn ? textColorOnSelected : textColorOnUnselected;
     }
 
     private void ToggleChanged(bool isOn) 
@@ -128,6 +136,7 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
         isOn = model.isOn;
         SetText(model.text);
         SetTextActive(model.isTextActive);
+        SetChangeTextColorOnSelect(model.changeTextColorOnSelect);
     }
 
     public void SetText(string newText)
@@ -167,4 +176,6 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
         toggle.SetIsOnWithoutNotify(isOn);
         RefreshActiveStatus();
     }
+
+    public void SetChangeTextColorOnSelect(bool changeTextColorOnSelect) { model.changeTextColorOnSelect = changeTextColorOnSelect; }
 }
