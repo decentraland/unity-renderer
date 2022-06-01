@@ -29,10 +29,9 @@ namespace DCL.ECSComponents
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
 
             PrimitiveMeshModel primitiveMeshModelModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Cylinder);
-            primitiveMeshModelModel.primitiveModel = model;
-            
             primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
-            primitiveMeshPromisePrimitive.model.primitiveModel = model;
+            primitiveMeshPromisePrimitive.model.radiusBottom = model.RadiusBottom;
+            primitiveMeshPromisePrimitive.model.radiusTop = model.RadiusTop;
             
             primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>
             {
