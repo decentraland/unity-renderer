@@ -53,19 +53,18 @@ Shader "Unlit/S_UIRainbow"
         // Render State
         Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest[unity_GUIZTestMode]
+        ZTest[unity_GUIZTestMode] //ZTest LEqual
         ZWrite Off
 
         Stencil
         {
-            Ref[_Stencil]
-            Comp[_StencilComp]
-            Pass[_StencilOp]
-            ReadMask[_StencilReadMask]
-            WriteMask[_StencilWriteMask]
+          Ref[_Stencil]
+          Comp[_StencilComp]
+          Pass[_StencilOp]
+          ReadMask[_StencilReadMask]
+          WriteMask[_StencilWriteMask]
         }
         ColorMask[_ColorMask]
-
         // Debug
         // <None>
 
@@ -96,7 +95,9 @@ Shader "Unlit/S_UIRainbow"
         #define ATTRIBUTES_NEED_NORMAL
         #define ATTRIBUTES_NEED_TANGENT
         #define ATTRIBUTES_NEED_TEXCOORD0
+        #define ATTRIBUTES_NEED_COLOR
         #define VARYINGS_NEED_TEXCOORD0
+        #define VARYINGS_NEED_COLOR
         #define FEATURES_GRAPH_VERTEX
         /* WARNING: $splice Could not find named fragment 'PassInstancing' */
         #define SHADERPASS SHADERPASS_UNLIT
@@ -119,6 +120,7 @@ Shader "Unlit/S_UIRainbow"
         float3 normalOS : NORMAL;
         float4 tangentOS : TANGENT;
         float4 uv0 : TEXCOORD0;
+        float4 color : COLOR;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : INSTANCEID_SEMANTIC;
         #endif
@@ -127,6 +129,7 @@ Shader "Unlit/S_UIRainbow"
     {
         float4 positionCS : SV_POSITION;
         float4 texCoord0;
+        float4 color;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : CUSTOM_INSTANCE_ID;
         #endif
@@ -143,6 +146,7 @@ Shader "Unlit/S_UIRainbow"
     struct SurfaceDescriptionInputs
     {
         float4 uv0;
+        float4 VertexColor;
         float3 TimeParameters;
     };
     struct VertexDescriptionInputs
@@ -155,6 +159,7 @@ Shader "Unlit/S_UIRainbow"
     {
         float4 positionCS : SV_POSITION;
         float4 interp0 : TEXCOORD0;
+        float4 interp1 : TEXCOORD1;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : CUSTOM_INSTANCE_ID;
         #endif
@@ -174,6 +179,7 @@ Shader "Unlit/S_UIRainbow"
         PackedVaryings output;
         output.positionCS = input.positionCS;
         output.interp0.xyzw = input.texCoord0;
+        output.interp1.xyzw = input.color;
         #if UNITY_ANY_INSTANCING_ENABLED
         output.instanceID = input.instanceID;
         #endif
@@ -193,6 +199,7 @@ Shader "Unlit/S_UIRainbow"
         Varyings output;
         output.positionCS = input.positionCS;
         output.texCoord0 = input.interp0.xyzw;
+        output.color = input.interp1.xyzw;
         #if UNITY_ANY_INSTANCING_ENABLED
         output.instanceID = input.instanceID;
         #endif
@@ -659,6 +666,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_G_5 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.g;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_B_6 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.b;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.a;
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_R_1 = IN.VertexColor[0];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_G_2 = IN.VertexColor[1];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_B_3 = IN.VertexColor[2];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_A_4 = IN.VertexColor[3];
+    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Split_05d9212f9c5a46bfaa1216c01464649d_A_4, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
     float4 _UV_d52384c31428497c96ea3f25c8eda27c_Out_0 = IN.uv0;
     float _Split_a0286ffc35d5467db414a90445c4fee1_R_1 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[0];
     float _Split_a0286ffc35d5467db414a90445c4fee1_G_2 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[1];
@@ -728,10 +741,10 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Lerp_float(_Lerp_01782d9f26fc41feb1ab053084082d10_Out_3, _Saturate_74c47e72df254c619b44cfda87fa3e64_Out_1, _Step_c11a05776c5a4e84b4c88fa1d2216826_Out_2, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3);
     float _Step_dfe1c3ffced5468ea191776599782797_Out_2;
     Unity_Step_float(0.5, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3, _Step_dfe1c3ffced5468ea191776599782797_Out_2);
-    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
-    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
+    float _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
+    Unity_Multiply_float(_Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2);
     surface.BaseColor = (_Lerp_7cacdd323bf4418dbd3437281b99d35b_Out_3.xyz);
-    surface.Alpha = _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    surface.Alpha = _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
     return surface;
 }
 
@@ -759,6 +772,7 @@ VertexDescriptionInputs BuildVertexDescriptionInputs(Attributes input)
 
 
     output.uv0 = input.texCoord0;
+    output.VertexColor = input.color;
     output.TimeParameters = _TimeParameters.xyz; // This is mainly for LW as HD overwrite this value
 #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
 #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN output.FaceSign =                    IS_FRONT_VFACE(input.cullFace, true, false);
@@ -821,7 +835,9 @@ Pass
         #define ATTRIBUTES_NEED_NORMAL
         #define ATTRIBUTES_NEED_TANGENT
         #define ATTRIBUTES_NEED_TEXCOORD0
+        #define ATTRIBUTES_NEED_COLOR
         #define VARYINGS_NEED_TEXCOORD0
+        #define VARYINGS_NEED_COLOR
         #define FEATURES_GRAPH_VERTEX
         /* WARNING: $splice Could not find named fragment 'PassInstancing' */
         #define SHADERPASS SHADERPASS_SHADOWCASTER
@@ -844,6 +860,7 @@ Pass
         float3 normalOS : NORMAL;
         float4 tangentOS : TANGENT;
         float4 uv0 : TEXCOORD0;
+        float4 color : COLOR;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : INSTANCEID_SEMANTIC;
         #endif
@@ -852,6 +869,7 @@ Pass
     {
         float4 positionCS : SV_POSITION;
         float4 texCoord0;
+        float4 color;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : CUSTOM_INSTANCE_ID;
         #endif
@@ -868,6 +886,7 @@ Pass
     struct SurfaceDescriptionInputs
     {
         float4 uv0;
+        float4 VertexColor;
     };
     struct VertexDescriptionInputs
     {
@@ -879,6 +898,7 @@ Pass
     {
         float4 positionCS : SV_POSITION;
         float4 interp0 : TEXCOORD0;
+        float4 interp1 : TEXCOORD1;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : CUSTOM_INSTANCE_ID;
         #endif
@@ -898,6 +918,7 @@ Pass
         PackedVaryings output;
         output.positionCS = input.positionCS;
         output.interp0.xyzw = input.texCoord0;
+        output.interp1.xyzw = input.color;
         #if UNITY_ANY_INSTANCING_ENABLED
         output.instanceID = input.instanceID;
         #endif
@@ -917,6 +938,7 @@ Pass
         Varyings output;
         output.positionCS = input.positionCS;
         output.texCoord0 = input.interp0.xyzw;
+        output.color = input.interp1.xyzw;
         #if UNITY_ANY_INSTANCING_ENABLED
         output.instanceID = input.instanceID;
         #endif
@@ -995,6 +1017,11 @@ SAMPLER(sampler_MainTex);
 
 // Graph Functions
 
+void Unity_Multiply_float(float A, float B, out float Out)
+{
+    Out = A * B;
+}
+
 void Unity_OneMinus_float(float In, out float Out)
 {
     Out = 1 - In;
@@ -1023,11 +1050,6 @@ void Unity_Step_float(float Edge, float In, out float Out)
 void Unity_Lerp_float(float A, float B, float T, out float Out)
 {
     Out = lerp(A, B, T);
-}
-
-void Unity_Multiply_float(float A, float B, out float Out)
-{
-    Out = A * B;
 }
 
 // Graph Vertex
@@ -1062,6 +1084,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_G_5 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.g;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_B_6 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.b;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.a;
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_R_1 = IN.VertexColor[0];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_G_2 = IN.VertexColor[1];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_B_3 = IN.VertexColor[2];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_A_4 = IN.VertexColor[3];
+    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Split_05d9212f9c5a46bfaa1216c01464649d_A_4, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
     float4 _UV_d52384c31428497c96ea3f25c8eda27c_Out_0 = IN.uv0;
     float _Split_a0286ffc35d5467db414a90445c4fee1_R_1 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[0];
     float _Split_a0286ffc35d5467db414a90445c4fee1_G_2 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[1];
@@ -1131,9 +1159,9 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Lerp_float(_Lerp_01782d9f26fc41feb1ab053084082d10_Out_3, _Saturate_74c47e72df254c619b44cfda87fa3e64_Out_1, _Step_c11a05776c5a4e84b4c88fa1d2216826_Out_2, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3);
     float _Step_dfe1c3ffced5468ea191776599782797_Out_2;
     Unity_Step_float(0.5, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3, _Step_dfe1c3ffced5468ea191776599782797_Out_2);
-    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
-    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
-    surface.Alpha = _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    float _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
+    Unity_Multiply_float(_Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2);
+    surface.Alpha = _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
     return surface;
 }
 
@@ -1161,6 +1189,7 @@ VertexDescriptionInputs BuildVertexDescriptionInputs(Attributes input)
 
 
     output.uv0 = input.texCoord0;
+    output.VertexColor = input.color;
 #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
 #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN output.FaceSign =                    IS_FRONT_VFACE(input.cullFace, true, false);
 #else
@@ -1222,7 +1251,9 @@ Pass
         #define ATTRIBUTES_NEED_NORMAL
         #define ATTRIBUTES_NEED_TANGENT
         #define ATTRIBUTES_NEED_TEXCOORD0
+        #define ATTRIBUTES_NEED_COLOR
         #define VARYINGS_NEED_TEXCOORD0
+        #define VARYINGS_NEED_COLOR
         #define FEATURES_GRAPH_VERTEX
         /* WARNING: $splice Could not find named fragment 'PassInstancing' */
         #define SHADERPASS SHADERPASS_DEPTHONLY
@@ -1245,6 +1276,7 @@ Pass
         float3 normalOS : NORMAL;
         float4 tangentOS : TANGENT;
         float4 uv0 : TEXCOORD0;
+        float4 color : COLOR;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : INSTANCEID_SEMANTIC;
         #endif
@@ -1253,6 +1285,7 @@ Pass
     {
         float4 positionCS : SV_POSITION;
         float4 texCoord0;
+        float4 color;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : CUSTOM_INSTANCE_ID;
         #endif
@@ -1269,6 +1302,7 @@ Pass
     struct SurfaceDescriptionInputs
     {
         float4 uv0;
+        float4 VertexColor;
     };
     struct VertexDescriptionInputs
     {
@@ -1280,6 +1314,7 @@ Pass
     {
         float4 positionCS : SV_POSITION;
         float4 interp0 : TEXCOORD0;
+        float4 interp1 : TEXCOORD1;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : CUSTOM_INSTANCE_ID;
         #endif
@@ -1299,6 +1334,7 @@ Pass
         PackedVaryings output;
         output.positionCS = input.positionCS;
         output.interp0.xyzw = input.texCoord0;
+        output.interp1.xyzw = input.color;
         #if UNITY_ANY_INSTANCING_ENABLED
         output.instanceID = input.instanceID;
         #endif
@@ -1318,6 +1354,7 @@ Pass
         Varyings output;
         output.positionCS = input.positionCS;
         output.texCoord0 = input.interp0.xyzw;
+        output.color = input.interp1.xyzw;
         #if UNITY_ANY_INSTANCING_ENABLED
         output.instanceID = input.instanceID;
         #endif
@@ -1396,6 +1433,11 @@ SAMPLER(sampler_MainTex);
 
 // Graph Functions
 
+void Unity_Multiply_float(float A, float B, out float Out)
+{
+    Out = A * B;
+}
+
 void Unity_OneMinus_float(float In, out float Out)
 {
     Out = 1 - In;
@@ -1424,11 +1466,6 @@ void Unity_Step_float(float Edge, float In, out float Out)
 void Unity_Lerp_float(float A, float B, float T, out float Out)
 {
     Out = lerp(A, B, T);
-}
-
-void Unity_Multiply_float(float A, float B, out float Out)
-{
-    Out = A * B;
 }
 
 // Graph Vertex
@@ -1463,6 +1500,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_G_5 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.g;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_B_6 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.b;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.a;
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_R_1 = IN.VertexColor[0];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_G_2 = IN.VertexColor[1];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_B_3 = IN.VertexColor[2];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_A_4 = IN.VertexColor[3];
+    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Split_05d9212f9c5a46bfaa1216c01464649d_A_4, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
     float4 _UV_d52384c31428497c96ea3f25c8eda27c_Out_0 = IN.uv0;
     float _Split_a0286ffc35d5467db414a90445c4fee1_R_1 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[0];
     float _Split_a0286ffc35d5467db414a90445c4fee1_G_2 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[1];
@@ -1532,9 +1575,9 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Lerp_float(_Lerp_01782d9f26fc41feb1ab053084082d10_Out_3, _Saturate_74c47e72df254c619b44cfda87fa3e64_Out_1, _Step_c11a05776c5a4e84b4c88fa1d2216826_Out_2, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3);
     float _Step_dfe1c3ffced5468ea191776599782797_Out_2;
     Unity_Step_float(0.5, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3, _Step_dfe1c3ffced5468ea191776599782797_Out_2);
-    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
-    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
-    surface.Alpha = _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    float _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
+    Unity_Multiply_float(_Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2);
+    surface.Alpha = _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
     return surface;
 }
 
@@ -1562,6 +1605,7 @@ VertexDescriptionInputs BuildVertexDescriptionInputs(Attributes input)
 
 
     output.uv0 = input.texCoord0;
+    output.VertexColor = input.color;
 #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
 #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN output.FaceSign =                    IS_FRONT_VFACE(input.cullFace, true, false);
 #else
@@ -1581,178 +1625,186 @@ VertexDescriptionInputs BuildVertexDescriptionInputs(Attributes input)
 
     ENDHLSL
 }
-}
-SubShader
-{
-    Tags
-    {
-        "RenderPipeline" = "UniversalPipeline"
-        "RenderType" = "Transparent"
-        "UniversalMaterialType" = "Unlit"
-        "Queue" = "Transparent"
     }
-    Pass
+        SubShader
     {
-        Name "Pass"
         Tags
         {
-        // LightMode: <None>
+            "RenderPipeline" = "UniversalPipeline"
+            "RenderType" = "Transparent"
+            "UniversalMaterialType" = "Unlit"
+            "Queue" = "Transparent"
+        }
+        Pass
+        {
+            Name "Pass"
+            Tags
+            {
+            // LightMode: <None>
+        }
+
+        // Render State
+        Cull Off
+    Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+    ZTest LEqual
+    ZWrite Off
+
+        // Debug
+        // <None>
+
+        // --------------------------------------------------
+        // Pass
+
+        HLSLPROGRAM
+
+        // Pragmas
+        #pragma target 4.5
+    #pragma exclude_renderers gles gles3 glcore
+    #pragma multi_compile_instancing
+    #pragma multi_compile_fog
+    #pragma multi_compile _ DOTS_INSTANCING_ON
+    #pragma vertex vert
+    #pragma fragment frag
+
+        // DotsInstancingOptions: <None>
+        // HybridV1InjectedBuiltinProperties: <None>
+
+        // Keywords
+        #pragma multi_compile _ LIGHTMAP_ON
+    #pragma multi_compile _ DIRLIGHTMAP_COMBINED
+    #pragma shader_feature _ _SAMPLE_GI
+        // GraphKeywords: <None>
+
+        // Defines
+        #define _SURFACE_TYPE_TRANSPARENT 1
+        #define ATTRIBUTES_NEED_NORMAL
+        #define ATTRIBUTES_NEED_TANGENT
+        #define ATTRIBUTES_NEED_TEXCOORD0
+        #define ATTRIBUTES_NEED_COLOR
+        #define VARYINGS_NEED_TEXCOORD0
+        #define VARYINGS_NEED_COLOR
+        #define FEATURES_GRAPH_VERTEX
+        /* WARNING: $splice Could not find named fragment 'PassInstancing' */
+        #define SHADERPASS SHADERPASS_UNLIT
+        /* WARNING: $splice Could not find named fragment 'DotsInstancingVars' */
+
+        // Includes
+        #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
+    #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Texture.hlsl"
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+    #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
+
+        // --------------------------------------------------
+        // Structs and Packing
+
+        struct Attributes
+    {
+        float3 positionOS : POSITION;
+        float3 normalOS : NORMAL;
+        float4 tangentOS : TANGENT;
+        float4 uv0 : TEXCOORD0;
+        float4 color : COLOR;
+        #if UNITY_ANY_INSTANCING_ENABLED
+        uint instanceID : INSTANCEID_SEMANTIC;
+        #endif
+    };
+    struct Varyings
+    {
+        float4 positionCS : SV_POSITION;
+        float4 texCoord0;
+        float4 color;
+        #if UNITY_ANY_INSTANCING_ENABLED
+        uint instanceID : CUSTOM_INSTANCE_ID;
+        #endif
+        #if (defined(UNITY_STEREO_MULTIVIEW_ENABLED)) || (defined(UNITY_STEREO_INSTANCING_ENABLED) && (defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE)))
+        uint stereoTargetEyeIndexAsBlendIdx0 : BLENDINDICES0;
+        #endif
+        #if (defined(UNITY_STEREO_INSTANCING_ENABLED))
+        uint stereoTargetEyeIndexAsRTArrayIdx : SV_RenderTargetArrayIndex;
+        #endif
+        #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
+        FRONT_FACE_TYPE cullFace : FRONT_FACE_SEMANTIC;
+        #endif
+    };
+    struct SurfaceDescriptionInputs
+    {
+        float4 uv0;
+        float4 VertexColor;
+        float3 TimeParameters;
+    };
+    struct VertexDescriptionInputs
+    {
+        float3 ObjectSpaceNormal;
+        float3 ObjectSpaceTangent;
+        float3 ObjectSpacePosition;
+    };
+    struct PackedVaryings
+    {
+        float4 positionCS : SV_POSITION;
+        float4 interp0 : TEXCOORD0;
+        float4 interp1 : TEXCOORD1;
+        #if UNITY_ANY_INSTANCING_ENABLED
+        uint instanceID : CUSTOM_INSTANCE_ID;
+        #endif
+        #if (defined(UNITY_STEREO_MULTIVIEW_ENABLED)) || (defined(UNITY_STEREO_INSTANCING_ENABLED) && (defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE)))
+        uint stereoTargetEyeIndexAsBlendIdx0 : BLENDINDICES0;
+        #endif
+        #if (defined(UNITY_STEREO_INSTANCING_ENABLED))
+        uint stereoTargetEyeIndexAsRTArrayIdx : SV_RenderTargetArrayIndex;
+        #endif
+        #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
+        FRONT_FACE_TYPE cullFace : FRONT_FACE_SEMANTIC;
+        #endif
+    };
+
+        PackedVaryings PackVaryings(Varyings input)
+    {
+        PackedVaryings output;
+        output.positionCS = input.positionCS;
+        output.interp0.xyzw = input.texCoord0;
+        output.interp1.xyzw = input.color;
+        #if UNITY_ANY_INSTANCING_ENABLED
+        output.instanceID = input.instanceID;
+        #endif
+        #if (defined(UNITY_STEREO_MULTIVIEW_ENABLED)) || (defined(UNITY_STEREO_INSTANCING_ENABLED) && (defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE)))
+        output.stereoTargetEyeIndexAsBlendIdx0 = input.stereoTargetEyeIndexAsBlendIdx0;
+        #endif
+        #if (defined(UNITY_STEREO_INSTANCING_ENABLED))
+        output.stereoTargetEyeIndexAsRTArrayIdx = input.stereoTargetEyeIndexAsRTArrayIdx;
+        #endif
+        #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
+        output.cullFace = input.cullFace;
+        #endif
+        return output;
+    }
+    Varyings UnpackVaryings(PackedVaryings input)
+    {
+        Varyings output;
+        output.positionCS = input.positionCS;
+        output.texCoord0 = input.interp0.xyzw;
+        output.color = input.interp1.xyzw;
+        #if UNITY_ANY_INSTANCING_ENABLED
+        output.instanceID = input.instanceID;
+        #endif
+        #if (defined(UNITY_STEREO_MULTIVIEW_ENABLED)) || (defined(UNITY_STEREO_INSTANCING_ENABLED) && (defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE)))
+        output.stereoTargetEyeIndexAsBlendIdx0 = input.stereoTargetEyeIndexAsBlendIdx0;
+        #endif
+        #if (defined(UNITY_STEREO_INSTANCING_ENABLED))
+        output.stereoTargetEyeIndexAsRTArrayIdx = input.stereoTargetEyeIndexAsRTArrayIdx;
+        #endif
+        #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
+        output.cullFace = input.cullFace;
+        #endif
+        return output;
     }
 
-    // Render State
-    Cull Off
-Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-ZTest LEqual
-ZWrite Off
-
-// Debug
-// <None>
-
-// --------------------------------------------------
-// Pass
-
-HLSLPROGRAM
-
-// Pragmas
-#pragma target 4.5
-#pragma exclude_renderers gles gles3 glcore
-#pragma multi_compile_instancing
-#pragma multi_compile_fog
-#pragma multi_compile _ DOTS_INSTANCING_ON
-#pragma vertex vert
-#pragma fragment frag
-
-    // DotsInstancingOptions: <None>
-    // HybridV1InjectedBuiltinProperties: <None>
-
-    // Keywords
-    #pragma multi_compile _ LIGHTMAP_ON
-#pragma multi_compile _ DIRLIGHTMAP_COMBINED
-#pragma shader_feature _ _SAMPLE_GI
-    // GraphKeywords: <None>
-
-    // Defines
-    #define _SURFACE_TYPE_TRANSPARENT 1
-    #define ATTRIBUTES_NEED_NORMAL
-    #define ATTRIBUTES_NEED_TANGENT
-    #define ATTRIBUTES_NEED_TEXCOORD0
-    #define VARYINGS_NEED_TEXCOORD0
-    #define FEATURES_GRAPH_VERTEX
-    /* WARNING: $splice Could not find named fragment 'PassInstancing' */
-    #define SHADERPASS SHADERPASS_UNLIT
-    /* WARNING: $splice Could not find named fragment 'DotsInstancingVars' */
-
-    // Includes
-    #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
-#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Texture.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
-
     // --------------------------------------------------
-    // Structs and Packing
+    // Graph
 
-    struct Attributes
-{
-    float3 positionOS : POSITION;
-    float3 normalOS : NORMAL;
-    float4 tangentOS : TANGENT;
-    float4 uv0 : TEXCOORD0;
-    #if UNITY_ANY_INSTANCING_ENABLED
-    uint instanceID : INSTANCEID_SEMANTIC;
-    #endif
-};
-struct Varyings
-{
-    float4 positionCS : SV_POSITION;
-    float4 texCoord0;
-    #if UNITY_ANY_INSTANCING_ENABLED
-    uint instanceID : CUSTOM_INSTANCE_ID;
-    #endif
-    #if (defined(UNITY_STEREO_MULTIVIEW_ENABLED)) || (defined(UNITY_STEREO_INSTANCING_ENABLED) && (defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE)))
-    uint stereoTargetEyeIndexAsBlendIdx0 : BLENDINDICES0;
-    #endif
-    #if (defined(UNITY_STEREO_INSTANCING_ENABLED))
-    uint stereoTargetEyeIndexAsRTArrayIdx : SV_RenderTargetArrayIndex;
-    #endif
-    #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
-    FRONT_FACE_TYPE cullFace : FRONT_FACE_SEMANTIC;
-    #endif
-};
-struct SurfaceDescriptionInputs
-{
-    float4 uv0;
-    float3 TimeParameters;
-};
-struct VertexDescriptionInputs
-{
-    float3 ObjectSpaceNormal;
-    float3 ObjectSpaceTangent;
-    float3 ObjectSpacePosition;
-};
-struct PackedVaryings
-{
-    float4 positionCS : SV_POSITION;
-    float4 interp0 : TEXCOORD0;
-    #if UNITY_ANY_INSTANCING_ENABLED
-    uint instanceID : CUSTOM_INSTANCE_ID;
-    #endif
-    #if (defined(UNITY_STEREO_MULTIVIEW_ENABLED)) || (defined(UNITY_STEREO_INSTANCING_ENABLED) && (defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE)))
-    uint stereoTargetEyeIndexAsBlendIdx0 : BLENDINDICES0;
-    #endif
-    #if (defined(UNITY_STEREO_INSTANCING_ENABLED))
-    uint stereoTargetEyeIndexAsRTArrayIdx : SV_RenderTargetArrayIndex;
-    #endif
-    #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
-    FRONT_FACE_TYPE cullFace : FRONT_FACE_SEMANTIC;
-    #endif
-};
-
-    PackedVaryings PackVaryings(Varyings input)
-{
-    PackedVaryings output;
-    output.positionCS = input.positionCS;
-    output.interp0.xyzw = input.texCoord0;
-    #if UNITY_ANY_INSTANCING_ENABLED
-    output.instanceID = input.instanceID;
-    #endif
-    #if (defined(UNITY_STEREO_MULTIVIEW_ENABLED)) || (defined(UNITY_STEREO_INSTANCING_ENABLED) && (defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE)))
-    output.stereoTargetEyeIndexAsBlendIdx0 = input.stereoTargetEyeIndexAsBlendIdx0;
-    #endif
-    #if (defined(UNITY_STEREO_INSTANCING_ENABLED))
-    output.stereoTargetEyeIndexAsRTArrayIdx = input.stereoTargetEyeIndexAsRTArrayIdx;
-    #endif
-    #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
-    output.cullFace = input.cullFace;
-    #endif
-    return output;
-}
-Varyings UnpackVaryings(PackedVaryings input)
-{
-    Varyings output;
-    output.positionCS = input.positionCS;
-    output.texCoord0 = input.interp0.xyzw;
-    #if UNITY_ANY_INSTANCING_ENABLED
-    output.instanceID = input.instanceID;
-    #endif
-    #if (defined(UNITY_STEREO_MULTIVIEW_ENABLED)) || (defined(UNITY_STEREO_INSTANCING_ENABLED) && (defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE)))
-    output.stereoTargetEyeIndexAsBlendIdx0 = input.stereoTargetEyeIndexAsBlendIdx0;
-    #endif
-    #if (defined(UNITY_STEREO_INSTANCING_ENABLED))
-    output.stereoTargetEyeIndexAsRTArrayIdx = input.stereoTargetEyeIndexAsRTArrayIdx;
-    #endif
-    #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
-    output.cullFace = input.cullFace;
-    #endif
-    return output;
-}
-
-// --------------------------------------------------
-// Graph
-
-// Graph Properties
-CBUFFER_START(UnityPerMaterial)
+    // Graph Properties
+    CBUFFER_START(UnityPerMaterial)
 float4 _Mask_TexelSize;
 float4 _Ramp_TexelSize;
 float _Fill;
@@ -2199,6 +2251,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_G_5 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.g;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_B_6 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.b;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.a;
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_R_1 = IN.VertexColor[0];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_G_2 = IN.VertexColor[1];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_B_3 = IN.VertexColor[2];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_A_4 = IN.VertexColor[3];
+    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Split_05d9212f9c5a46bfaa1216c01464649d_A_4, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
     float4 _UV_d52384c31428497c96ea3f25c8eda27c_Out_0 = IN.uv0;
     float _Split_a0286ffc35d5467db414a90445c4fee1_R_1 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[0];
     float _Split_a0286ffc35d5467db414a90445c4fee1_G_2 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[1];
@@ -2268,10 +2326,10 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Lerp_float(_Lerp_01782d9f26fc41feb1ab053084082d10_Out_3, _Saturate_74c47e72df254c619b44cfda87fa3e64_Out_1, _Step_c11a05776c5a4e84b4c88fa1d2216826_Out_2, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3);
     float _Step_dfe1c3ffced5468ea191776599782797_Out_2;
     Unity_Step_float(0.5, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3, _Step_dfe1c3ffced5468ea191776599782797_Out_2);
-    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
-    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
+    float _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
+    Unity_Multiply_float(_Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2);
     surface.BaseColor = (_Lerp_7cacdd323bf4418dbd3437281b99d35b_Out_3.xyz);
-    surface.Alpha = _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    surface.Alpha = _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
     return surface;
 }
 
@@ -2299,6 +2357,7 @@ VertexDescriptionInputs BuildVertexDescriptionInputs(Attributes input)
 
 
     output.uv0 = input.texCoord0;
+    output.VertexColor = input.color;
     output.TimeParameters = _TimeParameters.xyz; // This is mainly for LW as HD overwrite this value
 #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
 #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN output.FaceSign =                    IS_FRONT_VFACE(input.cullFace, true, false);
@@ -2362,7 +2421,9 @@ Pass
         #define ATTRIBUTES_NEED_NORMAL
         #define ATTRIBUTES_NEED_TANGENT
         #define ATTRIBUTES_NEED_TEXCOORD0
+        #define ATTRIBUTES_NEED_COLOR
         #define VARYINGS_NEED_TEXCOORD0
+        #define VARYINGS_NEED_COLOR
         #define FEATURES_GRAPH_VERTEX
         /* WARNING: $splice Could not find named fragment 'PassInstancing' */
         #define SHADERPASS SHADERPASS_SHADOWCASTER
@@ -2385,6 +2446,7 @@ Pass
         float3 normalOS : NORMAL;
         float4 tangentOS : TANGENT;
         float4 uv0 : TEXCOORD0;
+        float4 color : COLOR;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : INSTANCEID_SEMANTIC;
         #endif
@@ -2393,6 +2455,7 @@ Pass
     {
         float4 positionCS : SV_POSITION;
         float4 texCoord0;
+        float4 color;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : CUSTOM_INSTANCE_ID;
         #endif
@@ -2409,6 +2472,7 @@ Pass
     struct SurfaceDescriptionInputs
     {
         float4 uv0;
+        float4 VertexColor;
     };
     struct VertexDescriptionInputs
     {
@@ -2420,6 +2484,7 @@ Pass
     {
         float4 positionCS : SV_POSITION;
         float4 interp0 : TEXCOORD0;
+        float4 interp1 : TEXCOORD1;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : CUSTOM_INSTANCE_ID;
         #endif
@@ -2439,6 +2504,7 @@ Pass
         PackedVaryings output;
         output.positionCS = input.positionCS;
         output.interp0.xyzw = input.texCoord0;
+        output.interp1.xyzw = input.color;
         #if UNITY_ANY_INSTANCING_ENABLED
         output.instanceID = input.instanceID;
         #endif
@@ -2458,6 +2524,7 @@ Pass
         Varyings output;
         output.positionCS = input.positionCS;
         output.texCoord0 = input.interp0.xyzw;
+        output.color = input.interp1.xyzw;
         #if UNITY_ANY_INSTANCING_ENABLED
         output.instanceID = input.instanceID;
         #endif
@@ -2536,6 +2603,11 @@ SAMPLER(sampler_MainTex);
 
 // Graph Functions
 
+void Unity_Multiply_float(float A, float B, out float Out)
+{
+    Out = A * B;
+}
+
 void Unity_OneMinus_float(float In, out float Out)
 {
     Out = 1 - In;
@@ -2564,11 +2636,6 @@ void Unity_Step_float(float Edge, float In, out float Out)
 void Unity_Lerp_float(float A, float B, float T, out float Out)
 {
     Out = lerp(A, B, T);
-}
-
-void Unity_Multiply_float(float A, float B, out float Out)
-{
-    Out = A * B;
 }
 
 // Graph Vertex
@@ -2603,6 +2670,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_G_5 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.g;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_B_6 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.b;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.a;
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_R_1 = IN.VertexColor[0];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_G_2 = IN.VertexColor[1];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_B_3 = IN.VertexColor[2];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_A_4 = IN.VertexColor[3];
+    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Split_05d9212f9c5a46bfaa1216c01464649d_A_4, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
     float4 _UV_d52384c31428497c96ea3f25c8eda27c_Out_0 = IN.uv0;
     float _Split_a0286ffc35d5467db414a90445c4fee1_R_1 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[0];
     float _Split_a0286ffc35d5467db414a90445c4fee1_G_2 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[1];
@@ -2672,9 +2745,9 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Lerp_float(_Lerp_01782d9f26fc41feb1ab053084082d10_Out_3, _Saturate_74c47e72df254c619b44cfda87fa3e64_Out_1, _Step_c11a05776c5a4e84b4c88fa1d2216826_Out_2, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3);
     float _Step_dfe1c3ffced5468ea191776599782797_Out_2;
     Unity_Step_float(0.5, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3, _Step_dfe1c3ffced5468ea191776599782797_Out_2);
-    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
-    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
-    surface.Alpha = _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    float _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
+    Unity_Multiply_float(_Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2);
+    surface.Alpha = _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
     return surface;
 }
 
@@ -2702,6 +2775,7 @@ VertexDescriptionInputs BuildVertexDescriptionInputs(Attributes input)
 
 
     output.uv0 = input.texCoord0;
+    output.VertexColor = input.color;
 #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
 #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN output.FaceSign =                    IS_FRONT_VFACE(input.cullFace, true, false);
 #else
@@ -2764,7 +2838,9 @@ Pass
         #define ATTRIBUTES_NEED_NORMAL
         #define ATTRIBUTES_NEED_TANGENT
         #define ATTRIBUTES_NEED_TEXCOORD0
+        #define ATTRIBUTES_NEED_COLOR
         #define VARYINGS_NEED_TEXCOORD0
+        #define VARYINGS_NEED_COLOR
         #define FEATURES_GRAPH_VERTEX
         /* WARNING: $splice Could not find named fragment 'PassInstancing' */
         #define SHADERPASS SHADERPASS_DEPTHONLY
@@ -2787,6 +2863,7 @@ Pass
         float3 normalOS : NORMAL;
         float4 tangentOS : TANGENT;
         float4 uv0 : TEXCOORD0;
+        float4 color : COLOR;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : INSTANCEID_SEMANTIC;
         #endif
@@ -2795,6 +2872,7 @@ Pass
     {
         float4 positionCS : SV_POSITION;
         float4 texCoord0;
+        float4 color;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : CUSTOM_INSTANCE_ID;
         #endif
@@ -2811,6 +2889,7 @@ Pass
     struct SurfaceDescriptionInputs
     {
         float4 uv0;
+        float4 VertexColor;
     };
     struct VertexDescriptionInputs
     {
@@ -2822,6 +2901,7 @@ Pass
     {
         float4 positionCS : SV_POSITION;
         float4 interp0 : TEXCOORD0;
+        float4 interp1 : TEXCOORD1;
         #if UNITY_ANY_INSTANCING_ENABLED
         uint instanceID : CUSTOM_INSTANCE_ID;
         #endif
@@ -2841,6 +2921,7 @@ Pass
         PackedVaryings output;
         output.positionCS = input.positionCS;
         output.interp0.xyzw = input.texCoord0;
+        output.interp1.xyzw = input.color;
         #if UNITY_ANY_INSTANCING_ENABLED
         output.instanceID = input.instanceID;
         #endif
@@ -2860,6 +2941,7 @@ Pass
         Varyings output;
         output.positionCS = input.positionCS;
         output.texCoord0 = input.interp0.xyzw;
+        output.color = input.interp1.xyzw;
         #if UNITY_ANY_INSTANCING_ENABLED
         output.instanceID = input.instanceID;
         #endif
@@ -2938,6 +3020,11 @@ SAMPLER(sampler_MainTex);
 
 // Graph Functions
 
+void Unity_Multiply_float(float A, float B, out float Out)
+{
+    Out = A * B;
+}
+
 void Unity_OneMinus_float(float In, out float Out)
 {
     Out = 1 - In;
@@ -2966,11 +3053,6 @@ void Unity_Step_float(float Edge, float In, out float Out)
 void Unity_Lerp_float(float A, float B, float T, out float Out)
 {
     Out = lerp(A, B, T);
-}
-
-void Unity_Multiply_float(float A, float B, out float Out)
-{
-    Out = A * B;
 }
 
 // Graph Vertex
@@ -3005,6 +3087,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_G_5 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.g;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_B_6 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.b;
     float _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7 = _SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_RGBA_0.a;
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_R_1 = IN.VertexColor[0];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_G_2 = IN.VertexColor[1];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_B_3 = IN.VertexColor[2];
+    float _Split_05d9212f9c5a46bfaa1216c01464649d_A_4 = IN.VertexColor[3];
+    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Split_05d9212f9c5a46bfaa1216c01464649d_A_4, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
     float4 _UV_d52384c31428497c96ea3f25c8eda27c_Out_0 = IN.uv0;
     float _Split_a0286ffc35d5467db414a90445c4fee1_R_1 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[0];
     float _Split_a0286ffc35d5467db414a90445c4fee1_G_2 = _UV_d52384c31428497c96ea3f25c8eda27c_Out_0[1];
@@ -3074,9 +3162,9 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Lerp_float(_Lerp_01782d9f26fc41feb1ab053084082d10_Out_3, _Saturate_74c47e72df254c619b44cfda87fa3e64_Out_1, _Step_c11a05776c5a4e84b4c88fa1d2216826_Out_2, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3);
     float _Step_dfe1c3ffced5468ea191776599782797_Out_2;
     Unity_Step_float(0.5, _Lerp_abcd4750aa0c49f9b7e3b3ba872b8995_Out_3, _Step_dfe1c3ffced5468ea191776599782797_Out_2);
-    float _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
-    Unity_Multiply_float(_SampleTexture2D_3d0e856edd734a90b0fd103edbdaf058_A_7, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2);
-    surface.Alpha = _Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2;
+    float _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
+    Unity_Multiply_float(_Multiply_cdf08e66ce82418ab6ea28efe8fae1b3_Out_2, _Step_dfe1c3ffced5468ea191776599782797_Out_2, _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2);
+    surface.Alpha = _Multiply_5c470095b80346f0a6905e75ebcd9178_Out_2;
     return surface;
 }
 
@@ -3104,6 +3192,7 @@ VertexDescriptionInputs BuildVertexDescriptionInputs(Attributes input)
 
 
     output.uv0 = input.texCoord0;
+    output.VertexColor = input.color;
 #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
 #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN output.FaceSign =                    IS_FRONT_VFACE(input.cullFace, true, false);
 #else
@@ -3123,6 +3212,6 @@ VertexDescriptionInputs BuildVertexDescriptionInputs(Attributes input)
 
     ENDHLSL
 }
-}
-FallBack "Hidden/Shader Graph/FallbackError"
+    }
+        FallBack "Hidden/Shader Graph/FallbackError"
 }
