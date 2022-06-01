@@ -56,11 +56,11 @@ namespace DCL.Protobuf
             libraryJsonString = reader.ReadToEnd();
             data.Close();
             reader.Close();
-
+            
             // Process the response
-            libraryContent = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryJsonString);
+			libraryContent = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryJsonString);
             libraryInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryContent["dist-tags"].ToString());
-
+            
             string nextVersion = libraryInfo["next"].ToString();
 
             if (VERBOSE)
@@ -92,7 +92,7 @@ namespace DCL.Protobuf
             string destPackage = "dcl-ecs-" + nextVersion;
             if (Directory.Exists(destPackage))
                 Directory.Delete(destPackage, true);
-
+            
             try
             {
                 Directory.CreateDirectory(destPackage);
@@ -315,7 +315,7 @@ namespace DCL.Protobuf
             proc.StartInfo.RedirectStandardOutput = true;
             proc.StartInfo.RedirectStandardError = true;
             proc.Start();
-
+            
             string error = proc.StandardError.ReadToEnd();
             proc.WaitForExit();
 
