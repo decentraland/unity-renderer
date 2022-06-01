@@ -1,10 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using DCL;
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.ECSRuntime;
-using DCL.Helpers;
-using DCL.Interface;
 using DCL.Models;
 using DCL.ECSComponents;
 using UnityEngine;
@@ -16,6 +11,14 @@ namespace DCL.ECSComponents
         internal AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
+        internal PBBoxShape model;
+
+        private readonly DataStore_ECS7 dataStore;
+        
+        public ECSBoxShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
+        {
+            dataStore = dataStoreEcs7;
+        }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
@@ -28,6 +31,8 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBBoxShape model)
         {
+            this.model = model;
+            
             Mesh generatedMesh = null;
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
@@ -42,6 +47,12 @@ namespace DCL.ECSComponents
                 generatedMesh = shape.mesh;
                 GenerateRenderer(generatedMesh, scene, entity, model);
             };
+            primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
+            {
+                dataStore.RemovePendingResource(scene.sceneData.id, model);
+            };
+            
+            dataStore.AddPendingResource(scene.sceneData.id, model);
             AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
         }
 
@@ -59,6 +70,8 @@ namespace DCL.ECSComponents
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if(rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id,rendereable);
+            if(model != null)
+                dataStore.RemovePendingResource(scene.sceneData.id, model);
             
             meshesInfo = null;
             rendereable = null;

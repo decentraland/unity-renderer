@@ -1,20 +1,25 @@
+using System.Collections;
+using DCL;
 using DCL.Controllers;
+using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.WorldRuntime;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
-namespace DCL.Test
+namespace Tests
 {
-    public class SceneResourcesLoadTrackerShould
+    public class SceneResourcesLoadTrackerForECS7Should
     {
         private SceneResourcesLoadTracker resourcesLoadTracker;
+        private ECSBoxShapeComponentHandler hanlder;
         private IParcelScene parcelScene;
         private IDCLEntity entity;
         private GameObject gameObject;
-        private const string testModel = "TestModel";
 
         [SetUp]
         public void SetUp()
@@ -34,17 +39,19 @@ namespace DCL.Test
             // Create components
             resourcesLoadTracker = new SceneResourcesLoadTracker();
             resourcesLoadTracker.Track(sceneData.id);
+            hanlder = new ECSBoxShapeComponentHandler(DataStore.i.ecs7);
         }
 
         [TearDown]
         public void TearDown()
         {
             GameObject.Destroy(gameObject);
+            hanlder.OnComponentRemoved(parcelScene,entity);
             DataStore.i.ecs7.pendingSceneResources.Clear();
         }
 
         [Test]
-        public void DetectLoadOfResourcesCorrectly()
+        public void DetectLoadOfComponentCorrectly()
         {
             // Arrange
             bool resourceLoaded = false;
@@ -52,37 +59,39 @@ namespace DCL.Test
             {
                 resourceLoaded = true;
             };
-            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.id, testModel);
 
             // Act
-            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.id, testModel);
+            hanlder.OnComponentModelUpdated(parcelScene, entity,new PBBoxShape());
 
             // Assert
             Assert.IsTrue(resourceLoaded);
         }
 
         [Test]
-        public void NotWaitIfNoResources()
+        public void IgnoreComponentAfterDisposed()
         {
+            // Arrange
+            hanlder.OnComponentCreated(parcelScene, entity);
+            
+            // Act
+            hanlder.OnComponentRemoved(parcelScene, entity);
+
             // Assert
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
             Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
             Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
         }
-
+        
         [Test]
-        public void WaitForAllResourcesToBeReady()
+        public void WaitForAllComponentsToBeReady()
         {
             // Arrange
-            string newModel = "NewModel";
-            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.id, testModel);
-            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.id, newModel);
-            Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
-            
+            var model = new PBBoxShape();
+            var model2 = new PBBoxShape();
+
             // Act
-            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.id, testModel);
-            Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
-            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.id, newModel);
+            hanlder.OnComponentModelUpdated(parcelScene, entity,model);
+            hanlder.OnComponentModelUpdated(parcelScene, entity,model2);
 
             // Assert
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());

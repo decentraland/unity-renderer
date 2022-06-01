@@ -20,7 +20,7 @@ public class ECS7ComponentsPlugin : IDisposable
     {
         DataStore.i.ecs7.componentsFactory.AddOrReplaceComponent(ComponentID.BOX_SHAPE,
             data => PBBoxShape.Parser.ParseFrom((byte[])data),
-            () =>  new ECSBoxShapeComponentHandler());
+            () =>  new ECSBoxShapeComponentHandler(DataStore.i.ecs7));
     }
 
     public void Dispose()
