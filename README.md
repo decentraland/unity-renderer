@@ -109,12 +109,13 @@ When the steps are followed, you will be able to run the local Unity build by go
 
 - [How to use Unity visual tests](docs/how-to-use-unity-visual-tests.md)
 - [How to profile a local Unity build remotely](docs/how-to-profile-a-local-unity-build-remotely.md)
-
+- [How to connect the Editor with play.decentraland.org](docs/how-to-connect-with-play-decentraland-org.md)
 For more advanced topics, don't forget to check out our [Architecture Decisions Records](https://github.com/decentraland/adr) (ADR) repository.
 
 ## Setup CircleCI
 
 [Setup CircleCI](docs/setup-circleci.md)
+
 ## Copyright info
 
 This repository is protected with a standard Apache 2 license. See the terms and conditions in

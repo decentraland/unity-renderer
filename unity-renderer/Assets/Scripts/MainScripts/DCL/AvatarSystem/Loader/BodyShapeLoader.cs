@@ -16,9 +16,9 @@ namespace AvatarSystem
         public WearableItem eyes { get; }
         public WearableItem eyebrows { get; }
         public WearableItem mouth { get; }
-        public SkinnedMeshRenderer eyesRenderer { get; private set; }
-        public SkinnedMeshRenderer eyebrowsRenderer { get; private set; }
-        public SkinnedMeshRenderer mouthRenderer { get; private set; }
+        public SkinnedMeshRenderer eyesRenderer { get; internal set; }
+        public SkinnedMeshRenderer eyebrowsRenderer { get; internal set; }
+        public SkinnedMeshRenderer mouthRenderer { get; internal set; }
         public SkinnedMeshRenderer headRenderer { get; private set; }
         public SkinnedMeshRenderer feetRenderer { get; private set; }
         public SkinnedMeshRenderer upperBodyRenderer { get; private set; }
@@ -142,6 +142,16 @@ namespace AvatarSystem
             if (this.mouth?.id != mouth?.id) return false;
             if (this.eyes?.id != eyes?.id) return false;
             return true;
+        }
+
+        public void DisableFacialRenderers()
+        {
+            if (eyesRenderer != null)
+                eyesRenderer.enabled = false;
+            if (eyebrowsRenderer != null)
+                eyebrowsRenderer.enabled = false;
+            if (mouthRenderer != null)
+                mouthRenderer.enabled = false;
         }
 
         public void Dispose()
