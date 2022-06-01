@@ -154,9 +154,9 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
             Destroy(gameObject);
     }
 
-    public void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
+    public virtual void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
 
-    public void OnPointerExit(PointerEventData eventData) { OnLoseFocus(); }
+    public virtual void OnPointerExit(PointerEventData eventData) { OnLoseFocus(); }
 
     private void OnDestroy()
     {
