@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using DCL.ECSComponents;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -12,7 +11,7 @@ public class MeshFactoryShould
         // Arrange
         PrimitiveMeshFactory primitiveMeshFactory = new PrimitiveMeshFactory();
         PrimitiveMeshModel meshModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-        meshModel.primitiveModel = new PBBoxShape();
+            
         // Act
         Mesh mesh = primitiveMeshFactory.CreateMesh(meshModel);
         
@@ -26,7 +25,7 @@ public class MeshFactoryShould
         // Arrange
         PrimitiveMeshFactory primitiveMeshFactory = new PrimitiveMeshFactory();
         PrimitiveMeshModel meshModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Sphere);
-        meshModel.primitiveModel = new PBBoxShape();   
+            
         // Act
         Mesh mesh = primitiveMeshFactory.CreateMesh(meshModel);
         

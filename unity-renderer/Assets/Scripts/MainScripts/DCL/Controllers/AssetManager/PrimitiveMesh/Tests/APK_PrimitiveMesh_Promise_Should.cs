@@ -18,7 +18,6 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
         protected AssetPromise_PrimitiveMesh CreatePromise()
         {
             PrimitiveMeshModel model = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            model.primitiveModel = new PBBoxShape();
             var prom = new AssetPromise_PrimitiveMesh(model);
             return prom;
         }
