@@ -331,7 +331,7 @@ namespace DCL.Controllers
 
         protected void OnAddEntity(IDCLEntity entity)
         {
-            // The outer bounds check is cheaper than the regular check
+            // The outer bounds check is way cheaper than the regular check
             RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
             
             AddEntityBasedOnPriority(entity);

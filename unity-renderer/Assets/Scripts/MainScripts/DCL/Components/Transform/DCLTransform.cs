@@ -56,6 +56,9 @@ namespace DCL.Components
                 entity.gameObject.transform.localPosition = DCLTransform.model.position;
                 entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
                 entity.gameObject.transform.localScale = DCLTransform.model.scale;
+
+                // This is already done at ECSComponentsManagerLegacy
+                // DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
             }
         }
 

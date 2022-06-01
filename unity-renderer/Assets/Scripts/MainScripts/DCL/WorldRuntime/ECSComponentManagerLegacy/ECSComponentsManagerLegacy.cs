@@ -399,7 +399,7 @@ namespace DCL
                 return null;
             }
 
-            IEntityComponent targetComponent = null;
+            IEntityComponent newComponent = null;
 
             var overrideCreate = Environment.i.world.componentFactory.createOverrides;
             
@@ -412,36 +412,36 @@ namespace DCL
 
             if (!HasComponent(entity, classId))
             {
-                targetComponent = componentFactory.CreateComponent((int) classId) as IEntityComponent;
+                newComponent = componentFactory.CreateComponent((int) classId) as IEntityComponent;
 
-                if (targetComponent != null)
+                if (newComponent != null)
                 {
-                    AddComponent(entity, classId, targetComponent);
+                    AddComponent(entity, classId, newComponent);
 
-                    targetComponent.Initialize(scene, entity);
+                    newComponent.Initialize(scene, entity);
 
                     if (data is string json)
                     {
-                        targetComponent.UpdateFromJSON(json);
+                        newComponent.UpdateFromJSON(json);
                     }
                     else
                     {
-                        targetComponent.UpdateFromModel(data as BaseModel);
+                        newComponent.UpdateFromModel(data as BaseModel);
                     }
                 }
             }
             else
             {
-                targetComponent = EntityComponentUpdate(entity, classId, data as string);
+                newComponent = EntityComponentUpdate(entity, classId, data as string);
             }
 
-            if (targetComponent != null && targetComponent is IOutOfSceneBoundariesHandler)
+            if (newComponent != null && newComponent is IOutOfSceneBoundariesHandler)
                 sceneBoundsChecker?.AddEntityToBeChecked(entity);
 
             physicsSyncController.MarkDirty();
             cullingController.MarkDirty();
 
-            return targetComponent;
+            return newComponent;
         }
 
         public IEntityComponent EntityComponentUpdate(IDCLEntity entity, CLASS_ID_COMPONENT classId,
