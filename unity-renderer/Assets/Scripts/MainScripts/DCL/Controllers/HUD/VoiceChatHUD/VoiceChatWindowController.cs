@@ -3,6 +3,7 @@ using DCL.Interface;
 using SocialFeaturesAnalytics;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class VoiceChatWindowController : IHUD
@@ -94,6 +95,8 @@ public class VoiceChatWindowController : IHUD
                 
             elementView.SetAsMuted(isMuted);
         }
+
+        CheckMuteAllState();
     }
 
     public void SetUserRecording(string userId, bool isRecording)
@@ -239,6 +242,7 @@ public class VoiceChatWindowController : IHUD
         }
 
         SetWhichPlayerIsTalking();
+        CheckMuteAllState();
     }
 
     internal void OnOtherPlayerStatusRemoved(string userId, Player player)
@@ -259,6 +263,7 @@ public class VoiceChatWindowController : IHUD
         elementView.SetActive(false);
 
         SetWhichPlayerIsTalking();
+        CheckMuteAllState();
     }
 
     internal void MuteAll(bool isMute)
@@ -355,6 +360,12 @@ public class VoiceChatWindowController : IHUD
         }
         else
             voiceChatBarView.SetTalkingMessage(true, TALKING_MESSAGE_SEVERAL_PEOPLE_TALKING);
+    }
+
+    internal void CheckMuteAllState()
+    {
+        isMuteAll = currentPlayers.Count(x => x.Value.model.isMuted) == currentPlayers.Count();
+        voiceChatWindowView.SetMuteAllIsOn(isMuteAll, false);
     }
 
     protected internal virtual IVoiceChatWindowComponentView CreateVoiceChatWindowView() => VoiceChatWindowComponentView.Create();

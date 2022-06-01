@@ -47,6 +47,12 @@ public interface IToggleComponentView
     /// Return if the toggle is Interactable or not
     /// </summary>
     bool IsInteractable();
+
+    /// <summary>
+    /// Set the state of the toggle as On/Off without notify event.
+    /// </summary>
+    /// <param name="isOn"></param>
+    void SetIsOnWithoutNotify(bool isOn);
 }
 
 public class ToggleComponentView : BaseComponentView, IToggleComponentView, IComponentModelConfig
@@ -149,5 +155,16 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
     {
         model.isTextActive = isActive;
         text.gameObject.SetActive(isActive); 
+    }
+
+    public void SetIsOnWithoutNotify(bool isOn) 
+    {
+        model.isOn = isOn;
+
+        if (toggle == null)
+            return;
+
+        toggle.SetIsOnWithoutNotify(isOn);
+        RefreshActiveStatus();
     }
 }

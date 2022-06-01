@@ -105,6 +105,14 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
             leaveButton.gameObject.SetActive(isJoined);
     }
 
+    public void SetMuteAllIsOn(bool isOn, bool notify = true)
+    {
+        if (notify)
+            muteAllToggle.isOn = isOn;
+        else
+            muteAllToggle.SetIsOnWithoutNotify(isOn);
+    }
+
     public VoiceChatPlayerComponentView CreateNewPlayerInstance() => Instantiate(playerPrefab, usersContainer);
 
     public override void Dispose()
