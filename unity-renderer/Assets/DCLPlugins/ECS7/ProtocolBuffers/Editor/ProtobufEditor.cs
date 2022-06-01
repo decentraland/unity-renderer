@@ -190,11 +190,9 @@ namespace DCL.Protobuf
 #if UNITY_EDITOR_WIN
             machine = "win64";
             executableName = "protoc.exe";
-#endif
-#if UNITY_EDITOR_OSX
+#elif UNITY_EDITOR_OSX
             machine = "osx-x86_64";
-#endif
-#if UNITY_EDITOR_LINUX
+#elif UNITY_EDITOR_LINUX
             machine = "linux-x86_64";
 #endif
 
@@ -248,8 +246,7 @@ namespace DCL.Protobuf
             proc.Start();
 
             proc.WaitForExit(5 * 1000);
-#endif
-#if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
+#elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
                 // TODO: unzip in mac and linux
 #endif
         }
