@@ -18,18 +18,20 @@ namespace DCL
         FilterMode filterMode;
         bool storeDefaultTextureInAdvance = false;
         bool storeTexAsNonReadable = false;
+        private readonly int maxTextureSize;
 
         WebRequestAsyncOperation webRequestOp = null;
 
-        public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE, bool storeDefaultTextureInAdvance = false, bool storeTexAsNonReadable = true)
+        public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE, bool storeDefaultTextureInAdvance = false, bool storeTexAsNonReadable = true, int? overrideMaxTextureSize = null)
         {
             url = textureUrl;
             wrapMode = textureWrapMode;
             filterMode = textureFilterMode;
             this.storeDefaultTextureInAdvance = storeDefaultTextureInAdvance;
             this.storeTexAsNonReadable = storeTexAsNonReadable;
-            idWithDefaultTexSettings = ConstructId(url, DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE);
-            idWithTexSettings = UsesDefaultWrapAndFilterMode() ? idWithDefaultTexSettings : ConstructId(url, wrapMode, filterMode);
+            maxTextureSize = overrideMaxTextureSize ?? DataStore.i.textureSize.generalMaxSize.Get();
+            idWithDefaultTexSettings = ConstructId(url, DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, maxTextureSize);
+            idWithTexSettings = UsesDefaultWrapAndFilterMode() ? idWithDefaultTexSettings : ConstructId(url, wrapMode, filterMode, maxTextureSize);
         }
 
         protected override void OnAfterLoadOrReuse() { }
@@ -61,7 +63,9 @@ namespace DCL
                     {
                         if (asset != null)
                         {
-                            asset.texture = DownloadHandlerTexture.GetContent(webRequestResult.webRequest);
+                            Texture2D texture = DownloadHandlerTexture.GetContent(webRequestResult.webRequest);
+                            asset.texture = TextureHelpers.ClampSize(texture, maxTextureSize, useGPUCopy: false);
+
                             if (TextureUtils.IsQuestionMarkPNG(asset.texture))
                                 OnFail?.Invoke(new Exception("The texture is a question mark"));
                             else
@@ -86,6 +90,7 @@ namespace DCL
                     byte[] decodedTexture = Convert.FromBase64String(substring);
                     asset.texture = new Texture2D(1, 1);
                     asset.texture.LoadImage(decodedTexture);
+                    asset.texture = TextureHelpers.ClampSize(asset.texture, maxTextureSize);
                     OnSuccess?.Invoke();
                 }
                 catch (Exception e)
@@ -134,7 +139,7 @@ namespace DCL
             return true;
         }
 
-        string ConstructId(string textureUrl, TextureWrapMode textureWrapMode, FilterMode textureFilterMode) { return ((int)textureWrapMode).ToString() + ((int)textureFilterMode).ToString() + textureUrl; }
+        string ConstructId(string textureUrl, TextureWrapMode textureWrapMode, FilterMode textureFilterMode, int maxSize) { return $"{((int)textureWrapMode)}{((int)textureFilterMode)}{textureUrl}{maxSize}"; }
 
         public override object GetId()
         {
