@@ -335,7 +335,7 @@ public class TaskbarHUDController : IHUD
         }
         else
         {
-            publicChatChannel.SetVisibility(true);
+            publicChatChannel.SetVisibility(true, true);
             visibleWindow = publicChatChannel;
         }
 
