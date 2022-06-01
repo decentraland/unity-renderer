@@ -5,7 +5,6 @@ using System.Linq;
 using DCL.Controllers;
 using DCL.Models;
 using Google.Protobuf;
-using Google.Protobuf.Collections;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;

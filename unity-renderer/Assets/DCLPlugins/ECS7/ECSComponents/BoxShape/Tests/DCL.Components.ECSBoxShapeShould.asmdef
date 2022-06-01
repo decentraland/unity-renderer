@@ -32,7 +32,8 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "NSubstitute.dll",
-        "System.Threading.Tasks.Extensions.dll"
+        "System.Threading.Tasks.Extensions.dll",
+        "Google.Protobuf.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

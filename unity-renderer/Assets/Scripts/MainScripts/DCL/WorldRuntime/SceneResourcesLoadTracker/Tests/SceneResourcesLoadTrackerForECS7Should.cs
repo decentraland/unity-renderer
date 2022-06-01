@@ -61,7 +61,7 @@ namespace Tests
             };
 
             // Act
-            hanlder.OnComponentModelUpdated(parcelScene, entity,new ECSBoxShape());
+            hanlder.OnComponentModelUpdated(parcelScene, entity,new PBBoxShape());
 
             // Assert
             Assert.IsTrue(resourceLoaded);
@@ -86,8 +86,8 @@ namespace Tests
         public void WaitForAllComponentsToBeReady()
         {
             // Arrange
-            var model = new ECSBoxShape();
-            var model2 = new ECSBoxShape();
+            var model = new PBBoxShape();
+            var model2 = new PBBoxShape();
 
             // Act
             hanlder.OnComponentModelUpdated(parcelScene, entity,model);

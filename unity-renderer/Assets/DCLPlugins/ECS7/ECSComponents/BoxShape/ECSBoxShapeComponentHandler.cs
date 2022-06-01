@@ -11,7 +11,7 @@ namespace DCL.ECSComponents
         internal AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
-        internal ECSBoxShape model;
+        internal PBBoxShape model;
 
         private readonly DataStore_ECS7 dataStore;
         
