@@ -33,7 +33,7 @@ namespace DCL.ECSComponents
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
 
             PrimitiveMeshModel primitiveMeshModelModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            primitiveMeshModelModel.uvs = model.Uvs;
+            primitiveMeshModelModel.primitiveModel = model;
 
             primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
             primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>

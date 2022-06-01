@@ -22,13 +22,11 @@ public class PrimitiveMeshModel
     }
 
     public Type type;
-    public float radiusTop;
-    public float radiusBottom;
-    public RepeatedField<float> uvs = new RepeatedField<float>();
+    public object primitiveModel;
     
     protected bool Equals(PrimitiveMeshModel other)
     {
-        return type == other.type && Equals(uvs, other.uvs);
+        return type == other.type && Equals(primitiveModel, other.primitiveModel);
     }
     
     public override bool Equals(object obj)
@@ -46,7 +44,7 @@ public class PrimitiveMeshModel
     {
         unchecked
         {
-            return ((int) type * 397) ^ (uvs != null ? uvs.GetHashCode() : 0);
+            return ((int) type * 397) ^ (primitiveModel != null ? primitiveModel.GetHashCode() : 0);
         }
     }
 }

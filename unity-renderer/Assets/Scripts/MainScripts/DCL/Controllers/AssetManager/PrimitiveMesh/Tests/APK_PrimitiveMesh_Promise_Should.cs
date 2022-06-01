@@ -3,6 +3,7 @@ using DCL;
 using DCL.Helpers;
 using System.Collections;
 using System.Linq;
+using DCL.ECSComponents;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -97,7 +98,10 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
                 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
                 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1
             };
-            model2.uvs.Add(uvs.ToList());
+            PBBoxShape boxShape = new PBBoxShape(); 
+            boxShape.Uvs.Add(uvs.ToList());
+            model2.primitiveModel = boxShape;
+            
             Asset_PrimitiveMesh loadedAsset = null;
             var prom = CreatePromise(model);
 
