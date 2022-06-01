@@ -63,10 +63,11 @@ namespace DCL.Controllers
 
         private void ChangeTrackingSystem(IParcelScene scene, ECSComponentsManager manager)
         {
-            DataStore.i.ecs7.componentsManagers.OnAdded -= ChangeTrackingSystem;
             if (scene.sceneData.id != owner.sceneData.id)
                 return;
             
+            DataStore.i.ecs7.componentsManagers.OnAdded -= ChangeTrackingSystem;
+
             sceneResourcesLoadTracker.Dispose();
             sceneResourcesLoadTracker.Track(scene.sceneData.id);
         }
