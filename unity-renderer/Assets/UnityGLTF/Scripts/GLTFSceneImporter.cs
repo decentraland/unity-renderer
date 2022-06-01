@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 #if !WINDOWS_UWP
 using System.Threading;
 #endif
@@ -258,6 +259,7 @@ namespace UnityGLTF
         {
             try
             {
+                PerformanceAnalytics.GLTFTracker.TrackLoading();
                 token.ThrowIfCancellationRequested();
 
                 lock (this)
@@ -342,10 +344,20 @@ namespace UnityGLTF
                             Object.DestroyImmediate(skeleton);
                     }
                 }
+                
+                PerformanceAnalytics.GLTFTracker.TrackLoaded();
             }
-            catch (Exception e) when (!(e is OperationCanceledException))
+            catch (Exception e)
             {
-                throw;
+                if (e is OperationCanceledException)
+                {
+                    PerformanceAnalytics.GLTFTracker.TrackCancelled();
+                }
+                else
+                {
+                    PerformanceAnalytics.GLTFTracker.TrackFailed();
+                    throw; 
+                }
             }
             finally
             {

@@ -7,17 +7,16 @@ namespace DCL
 {
     public class PerformanceMetricsController
     {
-        private LinealBufferHiccupCounter tracker = new LinealBufferHiccupCounter();
         private const int SAMPLES_SIZE = 1000; // Send performance report every 1000 samples
-        private char[] encodedSamples = new char[SAMPLES_SIZE];
-        private int currentIndex = 0;
 
-        [SerializeField] private PerformanceMetricsDataVariable performanceMetricsDataVariable;
+        private LinealBufferHiccupCounter tracker = new LinealBufferHiccupCounter();
+        private char[] encodedSamples = new char[SAMPLES_SIZE];
+        private PerformanceMetricsDataVariable performanceMetricsDataVariable;
+        private int currentIndex = 0;
 
         public PerformanceMetricsController()
         {
-            performanceMetricsDataVariable =
-                Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
+            performanceMetricsDataVariable = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
         }
 
         public void Update()
@@ -49,8 +48,11 @@ namespace DCL
 
         private void Report(string encodedSamples)
         {
-            WebInterface.SendPerformanceReport(encodedSamples, Settings.i.qualitySettings.Data.fpsCap,
-                tracker.CurrentHiccupCount(), tracker.GetHiccupSum(), tracker.GetTotalSeconds());
+            WebInterface.SendPerformanceReport(encodedSamples, 
+                Settings.i.qualitySettings.Data.fpsCap,
+                tracker.CurrentHiccupCount(),
+                tracker.GetHiccupSum(),
+                tracker.GetTotalSeconds());
         }
     }
 }

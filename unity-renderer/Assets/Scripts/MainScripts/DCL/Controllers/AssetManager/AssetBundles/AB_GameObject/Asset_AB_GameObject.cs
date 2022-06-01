@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DCL.Configuration;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using UnityEngine;
 
 namespace DCL
@@ -41,6 +42,11 @@ namespace DCL
 
         public override void Cleanup()
         {
+            for (int i = 0; i < textures.Count; i++)
+            {
+                PerformanceAnalytics.ABTextureTracker.Untrack();
+            }
+            
             AssetPromiseKeeper_AB.i.Forget(ownerPromise);
             Object.Destroy(container);
         }
@@ -54,6 +60,20 @@ namespace DCL
         {
             container.transform.parent = null;
             container.transform.position = EnvironmentSettings.MORDOR;
+        }
+        public void SetTextures(HashSet<Texture> texturesHashSet)
+        {
+            if (textures.Count > 0)
+            {
+                Debug.LogWarning("Overriding textures?");
+            }
+            
+            textures = texturesHashSet;
+
+            for (int i = 0; i < textures.Count; i++)
+            {
+                PerformanceAnalytics.ABTextureTracker.Track();
+            }
         }
     }
 }

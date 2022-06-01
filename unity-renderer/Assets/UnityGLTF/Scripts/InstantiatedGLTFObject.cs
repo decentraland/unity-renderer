@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using MainScripts.DCL.Analytics.PerformanceAnalytics;
+using UnityEngine;
 using UnityGLTF.Cache;
 
 namespace UnityGLTF
@@ -57,6 +58,7 @@ namespace UnityGLTF
 
         private void OnDestroy()
         {
+            PerformanceAnalytics.GLTFTracker.TrackUnloaded();
             CachedData = null;
         }
     }

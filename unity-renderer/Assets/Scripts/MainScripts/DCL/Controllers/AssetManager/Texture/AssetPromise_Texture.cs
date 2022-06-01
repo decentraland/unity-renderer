@@ -1,5 +1,6 @@
 using System;
 using DCL.Helpers;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -42,6 +43,12 @@ namespace DCL
         {
             if (webRequestOp != null)
                 webRequestOp.Dispose();
+        }
+
+        public override void Cleanup()
+        {
+            PerformanceAnalytics.PromiseTextureTracker.Untrack();
+            base.Cleanup();
         }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
@@ -129,6 +136,8 @@ namespace DCL
                 Debug.Log("add to library fail?");
                 return false;
             }
+            
+            PerformanceAnalytics.PromiseTextureTracker.Track();
 
             asset = library.Get(asset.id);
             return true;
