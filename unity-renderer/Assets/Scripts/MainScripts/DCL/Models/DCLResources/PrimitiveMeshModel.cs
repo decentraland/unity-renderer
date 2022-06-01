@@ -28,7 +28,7 @@ public class PrimitiveMeshModel
     
     protected bool Equals(PrimitiveMeshModel other)
     {
-        return type == other.type && Equals(uvs, other.uvs);
+        return type == other.type && radiusTop.Equals(other.radiusTop) && radiusBottom.Equals(other.radiusBottom) && Equals(uvs, other.uvs);
     }
     
     public override bool Equals(object obj)
@@ -46,7 +46,11 @@ public class PrimitiveMeshModel
     {
         unchecked
         {
-            return ((int) type * 397) ^ (uvs != null ? uvs.GetHashCode() : 0);
+            int hashCode = (int) type;
+            hashCode = (hashCode * 397) ^ radiusTop.GetHashCode();
+            hashCode = (hashCode * 397) ^ radiusBottom.GetHashCode();
+            hashCode = (hashCode * 397) ^ (uvs != null ? uvs.GetHashCode() : 0);
+            return hashCode;
         }
     }
 }
