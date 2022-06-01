@@ -19,7 +19,7 @@ We need to change the config in the WebBrowser
 
 #### Chrome:
 
-Option 1: Enable the following option: chrome://flags/#allow-insecure-localhost
+Option 1: Enable the following option: chrome://flags/#allow-insecure-localhost and then restart Chrome completely
 
 Option 2: Start Chrome with the --ignore-certificate-errors
 
