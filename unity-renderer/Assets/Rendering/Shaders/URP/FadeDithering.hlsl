@@ -5,8 +5,7 @@ float4 fadeDithering(float4 color, float3 positionWS, float4 positionSS)
 {
 	bool insideFadeThreshold;
 	float3 worldPos = positionWS;
-    if(worldPos.y < 0)
-        clip(-1);
+    clip(worldPos.y + 0.1f);
 
 	if ( _FadeDirection == 0 )
 		insideFadeThreshold = worldPos.y < _CullYPlane;
