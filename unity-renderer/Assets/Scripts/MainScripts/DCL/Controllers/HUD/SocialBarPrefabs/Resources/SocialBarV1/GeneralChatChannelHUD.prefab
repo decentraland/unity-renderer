@@ -82,7 +82,7 @@ MonoBehaviour:
   - {fileID: 1841170242913198830}
   - {fileID: 1465780631268768265}
   - {fileID: 2676580422195266286}
-  previewModeSize: {x: 410, y: 330}
+  previewModeSize: {x: 410, y: 350}
 --- !u!225 &3013135254997361945
 CanvasGroup:
   m_ObjectHideFlags: 0
