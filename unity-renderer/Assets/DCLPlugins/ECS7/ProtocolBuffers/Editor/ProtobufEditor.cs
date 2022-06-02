@@ -280,7 +280,7 @@ namespace DCL.Protobuf
         }
         
         [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
-        [InitializeOnLoadMethod]
+        [UnityEditor.Callbacks.DidReloadScripts]
         private static void OnProjectCompile()
         {
             // The compiled version is a file that lives in the repo, if your local version is distinct it will generated them
@@ -290,11 +290,13 @@ namespace DCL.Protobuf
                 UpdateModels(currentVersion);
         }
 
+        
         private static string GetDownloadedVersion()
         {
             string path = Application.dataPath + PATH_TO_GENERATED + "/" + DOWNLOADED_VERSION_FILENAME;
             return GetVersion(path);
         }
+
 
         private static string GetCompiledVersion()
         {
