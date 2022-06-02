@@ -89,7 +89,7 @@ MonoBehaviour:
   - {fileID: 869161738090150756}
   - {fileID: 8449268174740436361}
   - {fileID: 8365916295481987895}
-  previewModeSize: {x: 410, y: 400}
+  previewModeSize: {x: 410, y: 330}
 --- !u!114 &6801816554211203788
 MonoBehaviour:
   m_ObjectHideFlags: 0

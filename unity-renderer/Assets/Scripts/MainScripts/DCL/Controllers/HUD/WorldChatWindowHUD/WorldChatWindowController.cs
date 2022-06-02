@@ -65,7 +65,7 @@ public class WorldChatWindowController : IHUD
             HandleMessageAdded(value);
         
         if (!friendsController.isInitialized)
-            if (ownUserProfile != null && ownUserProfile.isGuest)
+            if (ownUserProfile?.hasConnectedWeb3 ?? false)
                 view.ShowPrivateChatsLoading();
         
         chatController.OnAddMessage += HandleMessageAdded;
