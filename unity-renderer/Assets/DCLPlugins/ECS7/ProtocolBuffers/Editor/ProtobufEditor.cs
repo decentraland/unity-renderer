@@ -56,6 +56,7 @@ namespace DCL.Protobuf
 
             DownloadProtoDefinitions(version);
             CompileAllProtobuffDefinitions(version);
+            AssetDatabase.Refresh();
         }
 
         public static string GetLatestProtoVersion()
