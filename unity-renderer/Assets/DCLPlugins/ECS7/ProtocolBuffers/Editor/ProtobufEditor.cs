@@ -81,7 +81,7 @@ namespace DCL.Protobuf
             DownloadProtoDefinitions(nextVersion);
         }
         
-        public static void DownloadProtoDefinitions(string nextVersion)
+        public static void DownloadProtoDefinitions(string version)
         {
             WebClient client;
             Stream data;
@@ -90,11 +90,11 @@ namespace DCL.Protobuf
             Dictionary<string, object> libraryContent, libraryInfo;
             
             if (VERBOSE)
-                UnityEngine.Debug.Log("@dcl/ecs version: " + nextVersion);
+                UnityEngine.Debug.Log("@dcl/ecs version: " + version);
             
             // Download the "package.json" of @dcl/ecs@next
             client = new WebClient();
-            data = client.OpenRead(@"https://registry.npmjs.org/@dcl/ecs/" + nextVersion);
+            data = client.OpenRead(@"https://registry.npmjs.org/@dcl/ecs/" + version);
             reader = new StreamReader(data);
             libraryJsonString = reader.ReadToEnd();
             data.Close();
@@ -115,7 +115,7 @@ namespace DCL.Protobuf
             if (VERBOSE)
                 UnityEngine.Debug.Log("File downloaded dcl-ecs-next.tgz");
 
-            string destPackage = "dcl-ecs-" + nextVersion;
+            string destPackage = "dcl-ecs-" + version;
             if (Directory.Exists(destPackage))
                 Directory.Delete(destPackage, true);
 
@@ -125,7 +125,7 @@ namespace DCL.Protobuf
 
                 // We unzip the library
                 Tar(packageName,destPackage);
-                Debug.Log("CAMBIOOO ");
+
                 if (VERBOSE)
                     UnityEngine.Debug.Log("Unzipped dcl-ecs-next.tgz");
 
@@ -136,7 +136,7 @@ namespace DCL.Protobuf
 
                 // We move the definitions to their correct path
                 Directory.Move(destPackage + "/package/dist/components/definitions", componentDefinitionPath);
-                WriteVersion(nextVersion, DOWNLOADED_VERSION_FILENAME);
+                WriteVersion(version, DOWNLOADED_VERSION_FILENAME);
                 if (VERBOSE)
                     UnityEngine.Debug.Log("Success copying definitions in " + componentDefinitionPath);
             }
