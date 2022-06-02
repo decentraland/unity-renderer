@@ -65,7 +65,8 @@ public class WorldChatWindowController : IHUD
             HandleMessageAdded(value);
         
         if (!friendsController.isInitialized)
-            view.ShowPrivateChatsLoading();
+            if (ownUserProfile != null && ownUserProfile.isGuest)
+                view.ShowPrivateChatsLoading();
         
         chatController.OnAddMessage += HandleMessageAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
