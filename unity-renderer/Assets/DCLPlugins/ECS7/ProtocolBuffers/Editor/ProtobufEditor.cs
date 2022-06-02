@@ -4,8 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Text;
+using ICSharpCode.SharpZipLib.GZip;
+using ICSharpCode.SharpZipLib.Tar;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -98,8 +101,8 @@ namespace DCL.Protobuf
                 Directory.CreateDirectory(destPackage);
 
                 // We unzip the library
-                Unzip(packageName,destPackage);
-                
+                Tar(packageName,destPackage);
+                Debug.Log("CAMBIOOO ");
                 if (VERBOSE)
                     UnityEngine.Debug.Log("Unzipped dcl-ecs-next.tgz");
 
@@ -238,14 +241,24 @@ namespace DCL.Protobuf
             }
         }
 
+        private static void Tar(string name, string path)
+        {
+            using (Stream inStream = File.OpenRead (name))
+            using (Stream gzipStream = new GZipInputStream (inStream)) {
+                TarArchive tarArchive = TarArchive.CreateInputTarArchive(gzipStream, Encoding.ASCII);
+                tarArchive.ExtractContents (path);
+            }
+        }
+        
         private static void Unzip(string name, string path)
         {
+            ZipFile.ExtractToDirectory(name, path);
 #if UNITY_EDITOR_WIN
-            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "tar", Arguments = "-xvzf " + name + " -C " + path, CreateNoWindow = true };
-            Process proc = new Process() { StartInfo = startInfo };
-            proc.Start();
-
-            proc.WaitForExit(5 * 1000);
+            // ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "tar", Arguments = "-xvzf " + name + " -C " + path, CreateNoWindow = true };
+            // Process proc = new Process() { StartInfo = startInfo };
+            // proc.Start();
+            //
+            // proc.WaitForExit(5 * 1000);
 #elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
                 // TODO: unzip in mac and linux
 #endif
