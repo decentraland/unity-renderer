@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
+using ICSharpCode.SharpZipLib.Zip;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -33,18 +34,23 @@ namespace DCL.Protobuf
 
         private const string PROTO_VERSION = "3.12.3";
 
-        [MenuItem("Decentraland/Protobuf/UpdateModels")]
+        [MenuItem("Decentraland/Protobuf/UpdateModels with the latest version")]
         public static void UpdateModels()
+        {
+            var lastVersion = GetLatestProtoVersion();
+            UpdateModels(lastVersion);
+        }
+        
+        public static void UpdateModels(string version)
         {
             if (!IsProtoVersionValid())
                 DownloadProtobuffExecutable();
 
-            string downloadedVersion = DownloadProtoDefinitions();
-            CompileAllProtobuffDefinitions(downloadedVersion);
+            DownloadProtoDefinitions(version);
+            CompileAllProtobuffDefinitions(version);
         }
 
-        [MenuItem("Decentraland/Protobuf/Download proto definitions (For debugging)")]
-        public static string DownloadProtoDefinitions()
+        public static string GetLatestProtoVersion()
         {
             WebClient client;
             Stream data;
@@ -65,9 +71,26 @@ namespace DCL.Protobuf
             libraryInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryContent["dist-tags"].ToString());
 
             string nextVersion = libraryInfo["next"].ToString();
-
+            return nextVersion;
+        }
+        
+        [MenuItem("Decentraland/Protobuf/Download latest proto definitions (For debugging)")]
+        public static void DownloadLatestProtoDefinitions()
+        {
+            var nextVersion = GetLatestProtoVersion();
+            DownloadProtoDefinitions(nextVersion);
+        }
+        
+        public static void DownloadProtoDefinitions(string nextVersion)
+        {
+            WebClient client;
+            Stream data;
+            StreamReader reader;
+            string libraryJsonString;
+            Dictionary<string, object> libraryContent, libraryInfo;
+            
             if (VERBOSE)
-                UnityEngine.Debug.Log("@dcl/ecs next version: " + nextVersion);
+                UnityEngine.Debug.Log("@dcl/ecs version: " + nextVersion);
             
             // Download the "package.json" of @dcl/ecs@next
             client = new WebClient();
@@ -127,8 +150,6 @@ namespace DCL.Protobuf
                 if (File.Exists("dcl-ecs-next.tgz"))
                     File.Delete("dcl-ecs-next.tgz");
             }
-
-            return nextVersion;
         }
 
         [MenuItem("Decentraland/Protobuf/Regenerate models (For debugging)")]
@@ -252,16 +273,10 @@ namespace DCL.Protobuf
         
         private static void Unzip(string name, string path)
         {
-            ZipFile.ExtractToDirectory(name, path);
-#if UNITY_EDITOR_WIN
-            // ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "tar", Arguments = "-xvzf " + name + " -C " + path, CreateNoWindow = true };
-            // Process proc = new Process() { StartInfo = startInfo };
-            // proc.Start();
-            //
-            // proc.WaitForExit(5 * 1000);
-#elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
-                // TODO: unzip in mac and linux
-#endif
+            FastZip fastZip = new FastZip();
+            string fileFilter = null;
+            
+            fastZip.ExtractZip(name, path, fileFilter);
         }
         
         [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
@@ -272,7 +287,7 @@ namespace DCL.Protobuf
             var currentDownloadedVersion = GetDownloadedVersion();
             var currentVersion = GetCompiledVersion();
             if (currentVersion != currentDownloadedVersion)
-                UpdateModels();
+                UpdateModels(currentVersion);
         }
 
         private static string GetDownloadedVersion()
