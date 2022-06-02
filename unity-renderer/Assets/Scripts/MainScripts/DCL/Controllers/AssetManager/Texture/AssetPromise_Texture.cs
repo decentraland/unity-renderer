@@ -65,7 +65,7 @@ namespace DCL
                         {
                             Texture2D texture = DownloadHandlerTexture.GetContent(webRequestResult.webRequest);
                             asset.texture = TextureHelpers.ClampSize(texture, maxTextureSize, useGPUCopy: false);
-
+                            asset.resizingFactor = TextureHelpers.GetScalingFactor(texture.width, texture.height, maxTextureSize);
                             if (TextureUtils.IsQuestionMarkPNG(asset.texture))
                                 OnFail?.Invoke(new Exception("The texture is a question mark"));
                             else
@@ -90,6 +90,7 @@ namespace DCL
                     byte[] decodedTexture = Convert.FromBase64String(substring);
                     asset.texture = new Texture2D(1, 1);
                     asset.texture.LoadImage(decodedTexture);
+                    asset.resizingFactor = TextureHelpers.GetScalingFactor(asset.texture.width, asset.texture.height, maxTextureSize);
                     asset.texture = TextureHelpers.ClampSize(asset.texture, maxTextureSize);
                     OnSuccess?.Invoke();
                 }
