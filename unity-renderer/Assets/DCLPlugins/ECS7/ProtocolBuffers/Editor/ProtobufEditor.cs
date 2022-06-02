@@ -145,6 +145,7 @@ namespace DCL.Protobuf
                 // We move the definitions to their correct path
                 Directory.Move(destPackage + "/package/dist/components/definitions", componentDefinitionPath);
                 WriteVersion(version, DOWNLOADED_VERSION_FILENAME);
+                
                 if (VERBOSE)
                     UnityEngine.Debug.Log("Success copying definitions in " + componentDefinitionPath);
             }
@@ -302,7 +303,6 @@ namespace DCL.Protobuf
             if (currentVersion != currentDownloadedVersion)
                 UpdateModels(currentVersion);
         }
-
         
         private static string GetDownloadedVersion()
         {
