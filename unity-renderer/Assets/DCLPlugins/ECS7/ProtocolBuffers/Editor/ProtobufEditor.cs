@@ -15,11 +15,19 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 using Newtonsoft.Json;
+using UnityEditor.Compilation;
 
 namespace DCL.Protobuf
 {
+    [InitializeOnLoad]
     public static class ProtobufEditor
     {
+        static ProtobufEditor()
+        {
+            CompilationPipeline.compilationStarted += OnProjectCompile;
+            OnProjectCompile();
+        }
+        
         private const bool VERBOSE = false;
         private const string PATH_TO_GENERATED = "/DCLPlugins/ECS7/ProtocolBuffers/Generated";
         private const string PATH_TO_COMPONENTS_DEFINITIONS = "/DCLPlugins/ECS7/ProtocolBuffers/Generated/Definitions";
@@ -279,10 +287,17 @@ namespace DCL.Protobuf
             fastZip.ExtractZip(name, path, fileFilter);
         }
         
+        private static void OnProjectCompile(object test)
+        {
+        
+        }            
+        
+        
         [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
         [UnityEditor.Callbacks.DidReloadScripts]
         private static void OnProjectCompile()
         {
+
             // The compiled version is a file that lives in the repo, if your local version is distinct it will generated them
             var currentDownloadedVersion = GetDownloadedVersion();
             var currentVersion = GetCompiledVersion();
