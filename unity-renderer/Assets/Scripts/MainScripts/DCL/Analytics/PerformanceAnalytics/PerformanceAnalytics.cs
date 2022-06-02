@@ -49,11 +49,6 @@ namespace MainScripts.DCL.Analytics.PerformanceAnalytics
             loaded++;
         }
 
-        public void TrackUnloaded()
-        {
-            loaded--;
-        }
-
         public void Reset()
         {
             failed = 0;

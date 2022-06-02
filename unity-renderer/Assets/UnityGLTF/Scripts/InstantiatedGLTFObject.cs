@@ -60,7 +60,6 @@ namespace UnityGLTF
 
         private void OnDestroy()
         {
-            if (!isLoading) PerformanceAnalytics.GLTFTracker.TrackUnloaded();
             CachedData = null;
         }
         public void SetLoading(bool b) { isLoading = b; }

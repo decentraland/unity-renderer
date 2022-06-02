@@ -116,20 +116,4 @@ public class GLTFSceneImporterShould
         Assert.AreEqual(1, failed, "Failed GLTFs");
         Assert.AreEqual(0, cancelled, "Cancelled GLTFs");
     }
-    
-    [UnityTest]
-    public IEnumerator TrackUnloadedGLTFCorrectly()
-    {
-        Task task = gltfLoader.LoadScene(cancellationTokenSource.Token);
-
-        yield return new WaitUntil(() => task.IsCompleted);
-
-        Object.DestroyImmediate(gltfLoader.CreatedObject);
-        
-        (int loading, int failed, int cancelled, int loaded) = PerformanceAnalytics.GLTFTracker.GetData();
-        Assert.AreEqual(0, loaded, "Loaded GLTFs");
-        Assert.AreEqual(0, loading, "Loading GLTFs");
-        Assert.AreEqual(0, failed, "Failed GLTFs");
-        Assert.AreEqual(0, cancelled, "Cancelled GLTFs");
-    }
 }

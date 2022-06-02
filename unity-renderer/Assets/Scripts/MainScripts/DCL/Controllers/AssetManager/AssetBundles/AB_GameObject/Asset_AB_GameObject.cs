@@ -39,7 +39,6 @@ namespace DCL
             return result;
         }
 
-
         public override void Cleanup()
         {
             for (int i = 0; i < textures.Count; i++)
