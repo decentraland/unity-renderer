@@ -1,17 +1,13 @@
 {
-    "name": "DCL.Protobuf",
+    "name": "DCL.Components.ProtobufData",
     "rootNamespace": "",
     "references": [],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "Google.Protobuf.dll",
-        "Newtonsoft.Json.dll",
-        "ICSharpCode.SharpZipLib.dll"
+        "Google.Protobuf.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
