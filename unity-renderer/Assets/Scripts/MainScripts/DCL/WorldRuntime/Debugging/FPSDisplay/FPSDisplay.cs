@@ -186,6 +186,10 @@ namespace DCL.FPSDisplay
             result += GetEmptyLine();
             result += GetTitle("Textures");
             result += GetLine($"GLTF: {PerformanceAnalytics.GLTFTextureTracker.Get()}, AB: {PerformanceAnalytics.ABTextureTracker.Get()}, Prom: {PerformanceAnalytics.PromiseTextureTracker.Get()}");
+            result += GetEmptyLine();
+            result += GetTitle("Messages");
+            result += GetLine($"Processed: {PerformanceAnalytics.MessagesProcessedTracker.Get()}, Enqueued: {PerformanceAnalytics.MessagesEnqueuedTracker.Get()}");
+
             return result;
         }
         private string DrawGeneralData()

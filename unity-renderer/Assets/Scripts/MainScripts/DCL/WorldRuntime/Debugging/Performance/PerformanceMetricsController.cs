@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using DCL.Controllers;
 using DCL.Interface;
 using DCL.FPSDisplay;
 using DCL.SettingsCommon;
@@ -48,6 +50,20 @@ namespace DCL
 
         private void Report(string encodedSamples)
         {
+            Dictionary<string,IParcelScene>.ValueCollection loadedScenesValues = Environment.i.world.state.loadedScenes.Values;
+
+            var totalMemoryScore = 0L;
+            foreach (IParcelScene parcelScene in loadedScenesValues)
+            {
+                var coords = parcelScene.sceneData.basePosition;
+                long parcelMemoryScore = parcelScene.metricsCounter.currentCount.totalMemoryScore;
+                totalMemoryScore += parcelMemoryScore;
+                
+                Debug.Log($"Memory score: ({coords.x},{coords.y}) {parcelMemoryScore}");
+            }
+            
+            // Get all PerformanceAnalytics data here
+            // TODO: Add above data to the performance report
             WebInterface.SendPerformanceReport(encodedSamples, 
                 Settings.i.qualitySettings.Data.fpsCap,
                 tracker.CurrentHiccupCount(),

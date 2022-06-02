@@ -63,15 +63,12 @@ namespace MainScripts.DCL.Analytics.PerformanceAnalytics
     {
         public static readonly LoadingTracker GLTFTracker = new LoadingTracker();
         public static readonly LoadingTracker ABTracker = new LoadingTracker();
-        public static readonly Dictionary<(int x, int y), int> sceneMemoryScore = new Dictionary<(int x, int y), int>();
 
         public static readonly SimpleTracker GLTFTextureTracker = new SimpleTracker();
         public static readonly SimpleTracker ABTextureTracker = new SimpleTracker();
         public static readonly SimpleTracker PromiseTextureTracker = new SimpleTracker();
 
-        public static void TrackSceneMemoryScore(int x, int y, int score)
-        {
-            sceneMemoryScore[(x, y)] = score;
-        }
+        public static readonly SimpleTracker MessagesEnqueuedTracker = new SimpleTracker();
+        public static readonly SimpleTracker MessagesProcessedTracker = new SimpleTracker();
     }
 }
