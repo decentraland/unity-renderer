@@ -118,6 +118,10 @@ MonoBehaviour:
     inputFieldText: 
     enableFadeoutMode: 0
     entries: []
+  nextChatInHistoryInput: {fileID: 11400000, guid: b5e17dbeae28f8748b3308516c99e26d,
+    type: 2}
+  previousChatInHistoryInput: {fileID: 11400000, guid: 963604f308a161b4daa2e9ad5a9beba4,
+    type: 2}
   separatorEntryPrefab: {fileID: 717124712886577979, guid: 66a008a71d1e6d043a1066b0e45db3ca,
     type: 3}
 --- !u!225 &4634647665024068242

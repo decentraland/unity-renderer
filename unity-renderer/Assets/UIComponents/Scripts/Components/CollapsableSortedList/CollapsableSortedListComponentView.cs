@@ -122,7 +122,7 @@ namespace UIComponents.CollapsableSortedList
             UpdateLayout();
         }
 
-        public void Filter(Func<V, bool> comparision)
+        public virtual void Filter(Func<V, bool> comparision)
         {
             filteredCount = 0;
 

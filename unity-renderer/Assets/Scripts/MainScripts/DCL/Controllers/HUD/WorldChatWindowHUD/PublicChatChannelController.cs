@@ -24,7 +24,6 @@ public class PublicChatChannelController : IHUD
     private double initTimeInSeconds;
     private string channelId;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
-    private bool isFirstFocusSkipped;
     private bool skipChatInputTrigger;
     internal string lastPrivateMessageRecipient = string.Empty;
 
@@ -146,18 +145,16 @@ public class PublicChatChannelController : IHUD
         chatController.Send(message);
         socialAnalytics.SendChannelMessageSent(message.sender, message.body.Length, channelId);
     }
-
-    public void SetVisibility(bool visible)
+    
+    public void SetVisibility(bool visible, bool focusInputField)
     {
         if (visible)
         {
             View.Show();
             MarkChatMessagesAsRead();
-            // this is a terrible patch to keep preview mode activated at the start of the session
-            // the root of the problem comes from race conditions from input field's event triggers
-            if (isFirstFocusSkipped)
+            
+            if (focusInputField)
                 chatHudController.FocusInputField();
-            isFirstFocusSkipped = true;
         }
         else
         {
@@ -165,6 +162,8 @@ public class PublicChatChannelController : IHUD
             View.Hide();
         }
     }
+
+    public void SetVisibility(bool visible) => SetVisibility(visible, false);
 
     private async UniTaskVoid ReloadAllChats()
     {
