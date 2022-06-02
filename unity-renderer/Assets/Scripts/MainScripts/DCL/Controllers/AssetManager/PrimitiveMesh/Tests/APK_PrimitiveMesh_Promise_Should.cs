@@ -2,7 +2,6 @@
 using DCL;
 using DCL.Helpers;
 using System.Collections;
-using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -88,7 +87,7 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
         {
             PrimitiveMeshModel model = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
             PrimitiveMeshModel model2 = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            float[] uvs = new float[]
+            model2.uvs = new float[]
             {
                 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
                 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
@@ -97,7 +96,6 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
                 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
                 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1
             };
-            model2.uvs.Add(uvs.ToList());
             Asset_PrimitiveMesh loadedAsset = null;
             var prom = CreatePromise(model);
 

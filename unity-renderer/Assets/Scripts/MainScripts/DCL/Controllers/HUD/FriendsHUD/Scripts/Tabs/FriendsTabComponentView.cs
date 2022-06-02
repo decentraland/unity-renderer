@@ -229,6 +229,7 @@ public class FriendsTabComponentView : BaseComponentView
             }
         }
 
+        SetMoreEntriesContainerAtBottomOfScroll();
         UpdateLayout();
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
@@ -364,6 +365,7 @@ public class FriendsTabComponentView : BaseComponentView
     private void ShowMoreFriendsToLoadHint()
     {
         loadMoreEntriesContainer.SetActive(true);
+        SetMoreEntriesContainerAtBottomOfScroll();
         UpdateLayout();
     }
 
@@ -489,9 +491,17 @@ public class FriendsTabComponentView : BaseComponentView
         
         if (searchResultsFriendList.IsSortingDirty)
             searchResultsFriendList.Sort();
+
+        SetMoreEntriesContainerAtBottomOfScroll();
     }
 
     private void RequestMoreFriendEntries() => OnRequireMoreFriends?.Invoke();
+
+    private void SetMoreEntriesContainerAtBottomOfScroll()
+    {
+        if (loadMoreEntriesContainer.activeSelf)
+            loadMoreEntriesContainer.transform.SetAsLastSibling();
+    }
 
     [Serializable]
     private struct FriendListComponents

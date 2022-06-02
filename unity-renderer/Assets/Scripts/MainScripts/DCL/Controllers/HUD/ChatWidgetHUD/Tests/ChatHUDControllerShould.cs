@@ -195,56 +195,6 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
     });
 
-    [Test]
-    public void DisplayNextMessageInHistory()
-    {
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "hey"));
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "sup"));
-        view.OnNextChatInHistory += Raise.Event<Action>();
-        view.OnNextChatInHistory += Raise.Event<Action>();
-        
-        Received.InOrder(() =>
-        {
-            view.SetInputFieldText("sup");
-            view.SetInputFieldText("hey");
-        });
-    }
-    
-    [Test]
-    public void DisplayPreviousMessageInHistory()
-    {
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "hey"));
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "sup"));
-        view.OnPreviousChatInHistory += Raise.Event<Action>();
-        view.OnPreviousChatInHistory += Raise.Event<Action>();
-        
-        Received.InOrder(() =>
-        {
-            view.SetInputFieldText("hey");
-            view.SetInputFieldText("sup");
-        });
-    }
-    
-    [Test]
-    public void DoNotDuplicateMessagesInHistory()
-    {
-        const string repeatedMessage = "hey";
-        
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", repeatedMessage));
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", repeatedMessage));
-        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "bleh"));
-        view.OnNextChatInHistory += Raise.Event<Action>();
-        view.OnNextChatInHistory += Raise.Event<Action>();
-        view.OnNextChatInHistory += Raise.Event<Action>();
-        
-        Received.InOrder(() =>
-        {
-            view.SetInputFieldText("bleh");
-            view.SetInputFieldText(repeatedMessage);
-            view.SetInputFieldText("bleh");
-        });
-    }
-
     private RegexProfanityFilter GivenProfanityFilter()
     {
         var wordProvider = Substitute.For<IProfanityWordProvider>();

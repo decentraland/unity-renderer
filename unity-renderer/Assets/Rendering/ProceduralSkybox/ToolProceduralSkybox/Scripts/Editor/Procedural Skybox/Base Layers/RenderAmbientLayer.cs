@@ -9,13 +9,13 @@ namespace DCL.Skybox
     {
         public static void RenderLayer(ref float timeOfTheDay, EditorToolMeasurements toolSize, SkyboxConfiguration config)
         {
-            config.ambientTrilight = EditorGUILayout.Toggle(SkyboxEditorLiterals.Labels.useGradient, config.ambientTrilight);
+            config.ambientTrilight = EditorGUILayout.Toggle(SkyboxEditorLiterals.useGradient, config.ambientTrilight);
 
             if (config.ambientTrilight)
             {
-                RenderSimpleValues.RenderColorGradientField(config.ambientSkyColor, SkyboxEditorLiterals.LayerProperties.ambientSkyColor, 0, 24, true);
-                RenderSimpleValues.RenderColorGradientField(config.ambientEquatorColor, SkyboxEditorLiterals.LayerProperties.ambientEquatorColor, 0, 24, true);
-                RenderSimpleValues.RenderColorGradientField(config.ambientGroundColor, SkyboxEditorLiterals.LayerProperties.ambientGroundColor, 0, 24, true);
+                RenderSimpleValues.RenderColorGradientField(config.ambientSkyColor, SkyboxEditorLiterals.ambientSkyColor, 0, 24, true);
+                RenderSimpleValues.RenderColorGradientField(config.ambientEquatorColor, SkyboxEditorLiterals.ambientEquatorColor, 0, 24, true);
+                RenderSimpleValues.RenderColorGradientField(config.ambientGroundColor, SkyboxEditorLiterals.ambientGroundColor, 0, 24, true);
             }
 
         }

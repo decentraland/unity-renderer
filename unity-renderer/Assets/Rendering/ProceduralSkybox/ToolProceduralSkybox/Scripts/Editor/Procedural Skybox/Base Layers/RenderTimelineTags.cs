@@ -19,11 +19,11 @@ namespace DCL.Skybox
                 EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
                 // Text field for name of event
-                EditorGUILayout.LabelField(SkyboxEditorLiterals.Labels.name, GUILayout.Width(50));
+                EditorGUILayout.LabelField(SkyboxEditorLiterals.name, GUILayout.Width(50));
                 config.timelineTags[i].tag = EditorGUILayout.TextField(config.timelineTags[i].tag, GUILayout.Width(70));
 
                 // Start time
-                EditorGUILayout.LabelField(SkyboxEditorLiterals.LayerProperties.start, GUILayout.Width(45));
+                EditorGUILayout.LabelField(SkyboxEditorLiterals.start, GUILayout.Width(45));
                 GUILayout.Space(0);
                 config.timelineTags[i].startTime = EditorGUILayout.FloatField(config.timelineTags[i].startTime, GUILayout.Width(50));
                 SkyboxEditorUtils.ClampToDayTime(ref config.timelineTags[i].startTime);
@@ -31,7 +31,7 @@ namespace DCL.Skybox
                 // End time
                 if (!config.timelineTags[i].isTrigger)
                 {
-                    EditorGUILayout.LabelField(SkyboxEditorLiterals.LayerProperties.end, GUILayout.Width(40));
+                    EditorGUILayout.LabelField(SkyboxEditorLiterals.end, GUILayout.Width(40));
                     GUILayout.Space(0);
                     config.timelineTags[i].endTime = EditorGUILayout.FloatField(config.timelineTags[i].endTime, GUILayout.Width(50));
                     SkyboxEditorUtils.ClampToDayTime(ref config.timelineTags[i].endTime);
@@ -42,10 +42,10 @@ namespace DCL.Skybox
                 }
 
                 // no end time
-                config.timelineTags[i].isTrigger = EditorGUILayout.ToggleLeft(SkyboxEditorLiterals.LayerProperties.trigger, config.timelineTags[i].isTrigger, GUILayout.Width(80));
+                config.timelineTags[i].isTrigger = EditorGUILayout.ToggleLeft(SkyboxEditorLiterals.trigger, config.timelineTags[i].isTrigger, GUILayout.Width(80));
 
                 // Remove Button
-                if (GUILayout.Button(SkyboxEditorLiterals.Characters.sign_remove, GUILayout.Width(30)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_remove, GUILayout.Width(30)))
                 {
                     config.timelineTags.RemoveAt(i);
                 }
@@ -55,7 +55,7 @@ namespace DCL.Skybox
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(20);
-            if (GUILayout.Button(SkyboxEditorLiterals.Characters.sign_add, GUILayout.Width(30)))
+            if (GUILayout.Button(SkyboxEditorLiterals.sign_add, GUILayout.Width(30)))
             {
                 config.timelineTags.Add(new TimelineTagsDuration(timeOfTheDay));
             }

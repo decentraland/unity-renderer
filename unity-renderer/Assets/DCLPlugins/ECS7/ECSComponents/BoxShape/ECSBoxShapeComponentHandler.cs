@@ -1,24 +1,19 @@
-﻿using DCL.Controllers;
+﻿using System.Collections;
+using System.Collections.Generic;
+using DCL;
+using DCL.Controllers;
 using DCL.ECSRuntime;
+using DCL.Helpers;
 using DCL.Models;
-using DCL.ECSComponents;
 using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public class ECSBoxShapeComponentHandler : IECSComponentHandler<PBBoxShape>
+    public class ECSBoxShapeComponentHandler : IECSComponentHandler<ECSBoxShape>
     {
         internal AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
-        internal PBBoxShape model;
-
-        private readonly DataStore_ECS7 dataStore;
-        
-        public ECSBoxShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
-        {
-            dataStore = dataStoreEcs7;
-        }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
@@ -29,16 +24,14 @@ namespace DCL.ECSComponents
             DisposeMesh(scene);
         }
 
-        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBBoxShape model)
+        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSBoxShape model)
         {
-            this.model = model;
-            
             Mesh generatedMesh = null;
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
 
             PrimitiveMeshModel primitiveMeshModelModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            primitiveMeshModelModel.uvs = model.Uvs;
+            primitiveMeshModelModel.uvs = model.uvs;
 
             primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
             primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>
@@ -47,18 +40,12 @@ namespace DCL.ECSComponents
                 generatedMesh = shape.mesh;
                 GenerateRenderer(generatedMesh, scene, entity, model);
             };
-            primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
-            {
-                dataStore.RemovePendingResource(scene.sceneData.id, model);
-            };
-            
-            dataStore.AddPendingResource(scene.sceneData.id, model);
             AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
         }
 
-        private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBBoxShape model)
+        private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, ECSBoxShape model)
         {
-            meshesInfo = ECSComponentsUtils.GenerateMeshInfo(entity, mesh, entity.gameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
+            meshesInfo = ECSComponentsUtils.GenerateMeshInfo(entity, mesh, entity.gameObject, model.visible, model.withCollisions, model.isPointerBlocker);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
@@ -70,8 +57,6 @@ namespace DCL.ECSComponents
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if(rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id,rendereable);
-            if(model != null)
-                dataStore.RemovePendingResource(scene.sceneData.id, model);
             
             meshesInfo = null;
             rendereable = null;

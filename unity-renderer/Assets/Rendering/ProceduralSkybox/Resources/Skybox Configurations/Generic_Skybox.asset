@@ -103,15 +103,11 @@ MonoBehaviour:
   horizonWidth: []
   horizonHeight: []
   horizonMask: {fileID: 2800000, guid: 0da79a6b573fd2440888585d294e07d3, type: 3}
-  horizonMaskTiling: {x: 0, y: 0}
-  horizonMaskOffset: {x: 0, y: 0}
-  horizonPlaneTexture: {fileID: 0}
-  horizonPlaneTiling: {x: 0, y: 0}
-  horizonPlaneOffset: {x: 0, y: 0}
+  horizonMaskValues: {x: -0.98, y: 0, z: -1.77}
   horizonPlaneColor:
     serializedVersion: 2
-    key0: {r: 0, g: 0, b: 0, a: 1}
-    key1: {r: 0, g: 0, b: 0, a: 1}
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
     key2: {r: 1, g: 1, b: 1, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
@@ -138,8 +134,6 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   horizonPlaneHeight: []
-  horizonPlaneSmoothRange: {x: 0, y: 0.021739125}
-  horizonLightIntensity: 0
   ambientTrilight: 1
   ambientSkyColor:
     serializedVersion: 2
@@ -378,7 +372,7 @@ MonoBehaviour:
     - percentage: 50
       value: {x: 0.65027386, y: 0.26341134, z: -0.27774805, w: 0.65621215}
     - percentage: 50
-      value: {x: 0.65026563, y: 0.2633952, z: -0.27776712, w: 0.6562187}
+      value: {x: 0.650266, y: 0.26339623, z: -0.2777664, w: 0.6562183}
     - percentage: 82.5
       value: {x: 0.30581713, y: -0.2345742, z: -0.6375546, w: 0.66706437}
     - percentage: 100
@@ -426,6 +420,7 @@ MonoBehaviour:
     tintPercentage: 0
     renderDistance: []
     texture: {fileID: 0}
+    textureNormal: {fileID: 0}
     cubemap: {fileID: 8900000, guid: f61d7b727f05abf47bd40d677f08330d, type: 3}
     color:
       serializedVersion: 2
@@ -468,6 +463,7 @@ MonoBehaviour:
     speed_Vector3: {x: 0, y: 0, z: 0}
     speed_Vector2: {x: 0, y: 0}
     speed_float: 0
+    normalIntensity: 0
     particleExpanded: 0
     particleTiling: {x: 1, y: 1}
     particlesOffset: {x: 0, y: 0}
@@ -500,6 +496,7 @@ MonoBehaviour:
     tintPercentage: 0
     renderDistance: []
     texture: {fileID: 2800000, guid: 1f19dbb2b85e7a94987d2b6cb4687dde, type: 3}
+    textureNormal: {fileID: 0}
     cubemap: {fileID: 0}
     color:
       serializedVersion: 2
@@ -540,6 +537,7 @@ MonoBehaviour:
     speed_Vector3: {x: 0, y: 0, z: 0}
     speed_Vector2: {x: 0.01, y: 0}
     speed_float: 0
+    normalIntensity: 0
     particleExpanded: 0
     particleTiling: {x: 1, y: 1}
     particlesOffset: {x: 0, y: 0}
@@ -578,6 +576,7 @@ MonoBehaviour:
     tintPercentage: 0
     renderDistance: []
     texture: {fileID: 2800000, guid: e115b258140375c48b22b4bdf6b4ae5b, type: 3}
+    textureNormal: {fileID: 0}
     cubemap: {fileID: 0}
     color:
       serializedVersion: 2
@@ -626,6 +625,7 @@ MonoBehaviour:
     speed_Vector3: {x: 0, y: 0, z: 0}
     speed_Vector2: {x: 0, y: 0}
     speed_float: 0
+    normalIntensity: 0
     particleExpanded: 0
     particleTiling: {x: 1, y: 1}
     particlesOffset: {x: 0, y: 0}
@@ -664,6 +664,7 @@ MonoBehaviour:
     tintPercentage: 0
     renderDistance: []
     texture: {fileID: 2800000, guid: e115b258140375c48b22b4bdf6b4ae5b, type: 3}
+    textureNormal: {fileID: 0}
     cubemap: {fileID: 0}
     color:
       serializedVersion: 2
@@ -712,6 +713,7 @@ MonoBehaviour:
     speed_Vector3: {x: 0, y: 0, z: 0}
     speed_Vector2: {x: 0, y: 0}
     speed_float: 0
+    normalIntensity: 0
     particleExpanded: 0
     particleTiling: {x: 1, y: 1}
     particlesOffset: {x: 0, y: 0}
@@ -732,7 +734,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 1
-    renderType: 0
+    renderType: 1
     layerType: 2
     enabled: 1
     nameInEditor: Moon
@@ -744,6 +746,7 @@ MonoBehaviour:
     tintPercentage: 100
     renderDistance: []
     texture: {fileID: 2800000, guid: e115b258140375c48b22b4bdf6b4ae5b, type: 3}
+    textureNormal: {fileID: 0}
     cubemap: {fileID: 0}
     color:
       serializedVersion: 2
@@ -794,6 +797,7 @@ MonoBehaviour:
     speed_Vector3: {x: 0, y: 0, z: 0}
     speed_Vector2: {x: 0, y: 0}
     speed_float: 0
+    normalIntensity: 0
     particleExpanded: 0
     particleTiling: {x: 1, y: 1}
     particlesOffset: {x: 0, y: 0}
@@ -832,6 +836,7 @@ MonoBehaviour:
     tintPercentage: 100
     renderDistance: []
     texture: {fileID: 0}
+    textureNormal: {fileID: 0}
     cubemap: {fileID: 8900000, guid: 0095a9bafa47e9048995bf8ca764aeee, type: 3}
     color:
       serializedVersion: 2
@@ -872,6 +877,7 @@ MonoBehaviour:
     speed_Vector3: {x: 0, y: 0.4, z: 0}
     speed_Vector2: {x: 0, y: 0}
     speed_float: 0
+    normalIntensity: 0
     particleExpanded: 0
     particleTiling: {x: 1, y: 1}
     particlesOffset: {x: 0, y: 0}
@@ -904,6 +910,7 @@ MonoBehaviour:
     tintPercentage: 47.5
     renderDistance: []
     texture: {fileID: 0}
+    textureNormal: {fileID: 0}
     cubemap: {fileID: 8900000, guid: 6916db5be836ac04fa4b08138fc15fb9, type: 3}
     color:
       serializedVersion: 2
@@ -944,6 +951,7 @@ MonoBehaviour:
     speed_Vector3: {x: 0, y: 1, z: 0}
     speed_Vector2: {x: 0, y: 0}
     speed_float: 0
+    normalIntensity: 0
     particleExpanded: 0
     particleTiling: {x: 1, y: 1}
     particlesOffset: {x: 0, y: 0}
@@ -982,6 +990,3 @@ MonoBehaviour:
     startTime: 20.7
     endTime: 8
     isTrigger: 0
-  additional3Dconfig: []
-  satelliteLayers: []
-  planarLayers: []

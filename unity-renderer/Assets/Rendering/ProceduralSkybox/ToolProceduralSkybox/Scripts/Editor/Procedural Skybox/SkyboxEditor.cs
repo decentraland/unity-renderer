@@ -34,7 +34,6 @@ namespace DCL.Skybox
         private List<RightPanelPins> rightPanelPins = new List<RightPanelPins>() { new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = "Background Layer" } };
 
         private CopyFunctionality copyPasteObj;
-        private SkyboxElements skyboxElements;
 
         [MenuItem("Window/Skybox Editor")]
         static void Init()
@@ -46,9 +45,7 @@ namespace DCL.Skybox
             window.InitializeWindow();
         }
 
-        private void OnDisable() { skyboxElements?.Dispose(); }
-
-        void Initialize() { toolSize = AssetDatabase.LoadAssetAtPath<EditorToolMeasurements>(SkyboxEditorLiterals.Paths.toolMeasurementPath); }
+        void Initialize() { toolSize = AssetDatabase.LoadAssetAtPath<EditorToolMeasurements>(SkyboxEditorLiterals.toolMeasurementPath); }
 
         public void InitializeWindow() { EnsureDependencies(); }
 
@@ -63,7 +60,7 @@ namespace DCL.Skybox
             timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, SkyboxUtils.CYCLE_TIME);
 
-            ApplyOnMaterial(false);
+            ApplyOnMaterial();
 
             if (timeOfTheDay >= SkyboxUtils.CYCLE_TIME)
             {
@@ -101,7 +98,7 @@ namespace DCL.Skybox
 
             if (GUI.changed)
             {
-                ApplyOnMaterial(true);
+                ApplyOnMaterial();
             }
         }
 
@@ -134,9 +131,9 @@ namespace DCL.Skybox
             style.alignment = TextAnchor.MiddleLeft;
             style.fixedWidth = (position.width - toolSize.toolRightPadding) / 2;
             EditorGUILayout.BeginVertical(style);
-            if (GUILayout.Button(SkyboxEditorLiterals.Labels.timeLineTags, GUILayout.Width(100)))
+            if (GUILayout.Button(SkyboxEditorLiterals.timeLineTags, GUILayout.Width(100)))
             {
-                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Timeline_Tags, name = SkyboxEditorLiterals.Labels.timeLineTags });
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Timeline_Tags, name = SkyboxEditorLiterals.timeLineTags });
             }
             EditorGUILayout.EndVertical();
 
@@ -144,16 +141,14 @@ namespace DCL.Skybox
             style.alignment = TextAnchor.MiddleRight;
             style.fixedWidth = 100;
             EditorGUILayout.BeginVertical(style);
-            if (GUILayout.Button(SkyboxEditorLiterals.Labels.config))
+            if (GUILayout.Button(SkyboxEditorLiterals.config))
             {
-                Selection.activeObject = AssetDatabase.LoadAssetAtPath<EditorToolMeasurements>(SkyboxEditorLiterals.Paths.toolMeasurementPath);
+                Selection.activeObject = AssetDatabase.LoadAssetAtPath<EditorToolMeasurements>(SkyboxEditorLiterals.toolMeasurementPath);
             }
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.EndScrollView();
-            if (Application.isPlaying && SkyboxController.i == null)
-                EditorGUILayout.HelpBox("There's no SkyboxController in the scene, try this in InitialScene!", MessageType.Warning);
         }
 
         private void RenderProfileControl()
@@ -161,10 +156,10 @@ namespace DCL.Skybox
             if (creatingNewConfig)
             {
                 EditorGUILayout.BeginHorizontal();
-                GUILayout.Label(SkyboxEditorLiterals.Labels.name);
+                GUILayout.Label(SkyboxEditorLiterals.name);
                 newConfigName = EditorGUILayout.TextField(newConfigName, GUILayout.Width(200));
 
-                if (GUILayout.Button(SkyboxEditorLiterals.Labels.create, GUILayout.Width(50)))
+                if (GUILayout.Button(SkyboxEditorLiterals.create, GUILayout.Width(50)))
                 {
                     // Make new configuration
                     selectedConfiguration = AddNewConfiguration(newConfigName);
@@ -179,7 +174,7 @@ namespace DCL.Skybox
                     }
                 }
 
-                if (GUILayout.Button(SkyboxEditorLiterals.Labels.cancel, GUILayout.Width(50)))
+                if (GUILayout.Button(SkyboxEditorLiterals.cancel, GUILayout.Width(50)))
                 {
                     creatingNewConfig = false;
                 }
@@ -189,7 +184,7 @@ namespace DCL.Skybox
             {
                 EditorGUILayout.BeginHorizontal();
 
-                EditorGUILayout.LabelField(SkyboxEditorLiterals.Labels.currentProfile);
+                EditorGUILayout.LabelField(SkyboxEditorLiterals.currentProfile);
                 selectedConfiguration = (SkyboxConfiguration)EditorGUILayout.ObjectField(selectedConfiguration, typeof(SkyboxConfiguration), false);
 
                 if (selectedConfiguration != configurations[selectedConfigurationIndex])
@@ -202,7 +197,7 @@ namespace DCL.Skybox
                     }
                 }
 
-                if (GUILayout.Button(SkyboxEditorLiterals.Characters.sign_add, GUILayout.Width(50)))
+                if (GUILayout.Button(SkyboxEditorLiterals.sign_add, GUILayout.Width(50)))
                 {
                     creatingNewConfig = true;
                 }
@@ -219,14 +214,14 @@ namespace DCL.Skybox
             timeOfTheDay = EditorGUILayout.Slider(timeOfTheDay, 0.01f, SkyboxUtils.CYCLE_TIME);
             if (isPaused)
             {
-                if (GUILayout.Button(SkyboxEditorLiterals.Labels.play))
+                if (GUILayout.Button(SkyboxEditorLiterals.play))
                 {
                     ResumeTime();
                 }
             }
             else
             {
-                if (GUILayout.Button(SkyboxEditorLiterals.Labels.pause))
+                if (GUILayout.Button(SkyboxEditorLiterals.pause))
                 {
                     PauseTime();
                 }
@@ -234,7 +229,7 @@ namespace DCL.Skybox
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(SkyboxEditorLiterals.Labels.cycle);
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.cycle);
             lifecycleDuration = EditorGUILayout.FloatField(lifecycleDuration);
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
@@ -249,72 +244,50 @@ namespace DCL.Skybox
             leftPanelScrollPos = EditorGUILayout.BeginScrollView(leftPanelScrollPos, true, false);
             EditorGUILayout.BeginVertical();
             // Render BG Layer Button
-            if (GUILayout.Button(SkyboxEditorLiterals.Layers.backgroundLayer, EditorStyles.toolbarButton))
+            if (GUILayout.Button(SkyboxEditorLiterals.backgroundLayer, EditorStyles.toolbarButton))
             {
-                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = SkyboxEditorLiterals.Layers.backgroundLayer });
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = SkyboxEditorLiterals.backgroundLayer });
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
-            if (GUILayout.Button(SkyboxEditorLiterals.Layers.horizonPlane, EditorStyles.toolbarButton))
+            if (GUILayout.Button(SkyboxEditorLiterals.ambientLayer, EditorStyles.toolbarButton))
             {
-                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Horizon_Plane, name = SkyboxEditorLiterals.Layers.horizonPlane });
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Ambient_Layer, name = SkyboxEditorLiterals.ambientLayer });
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
-            if (GUILayout.Button(SkyboxEditorLiterals.Layers.ambientLayer, EditorStyles.toolbarButton))
+            if (GUILayout.Button(SkyboxEditorLiterals.avatarLayer, EditorStyles.toolbarButton))
             {
-                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Ambient_Layer, name = SkyboxEditorLiterals.Layers.ambientLayer });
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Avatar_Layer, name = SkyboxEditorLiterals.avatarLayer });
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
-            if (GUILayout.Button(SkyboxEditorLiterals.Layers.avatarLayer, EditorStyles.toolbarButton))
+            if (GUILayout.Button(SkyboxEditorLiterals.fogLayer, EditorStyles.toolbarButton))
             {
-                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Avatar_Layer, name = SkyboxEditorLiterals.Layers.avatarLayer });
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Fog_Layer, name = SkyboxEditorLiterals.fogLayer });
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
-            if (GUILayout.Button(SkyboxEditorLiterals.Layers.fogLayer, EditorStyles.toolbarButton))
+            if (GUILayout.Button(SkyboxEditorLiterals.directionalLightLayer, EditorStyles.toolbarButton))
             {
-                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Fog_Layer, name = SkyboxEditorLiterals.Layers.fogLayer });
-            }
-
-            EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
-            if (GUILayout.Button(SkyboxEditorLiterals.Layers.directionalLightLayer, EditorStyles.toolbarButton))
-            {
-                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Directional_Light_Layer, name = SkyboxEditorLiterals.Layers.directionalLightLayer });
+                AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Directional_Light_Layer, name = SkyboxEditorLiterals.directionalLightLayer });
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
 
             // Render Base 2D layers
-            EditorGUILayout.LabelField(SkyboxEditorLiterals.Layers.twoDLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.twoDLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
 
             RenderLeftPanelBaseSkyboxLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, renderingOrderList, copyPasteObj);
 
-            // Render Domes List
-            EditorGUILayout.LabelField(SkyboxEditorLiterals.Layers.RenderDomeLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
+            // Render 3D layers
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.threeDLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
 
-            RenderLeftPanelDomeLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, copyPasteObj);
-
-            EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
-
-            // Render Satellite list
-            EditorGUILayout.LabelField(SkyboxEditorLiterals.Layers.RenderSatelliteLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
-
-            EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
-
-            RenderLeftPanelSatelliteLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, copyPasteObj);
-
-            // Render Satellite list
-            EditorGUILayout.LabelField(SkyboxEditorLiterals.Layers.RenderPlanarLayers, EditorStyles.label, GUILayout.Width(leftPanelWidth - 10), GUILayout.ExpandWidth(false));
-
-            EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
-
-            RenderLeftPanelPlanarLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, copyPasteObj);
+            RenderLeftPanel3DLayers.Render(ref timeOfTheDay, toolSize, selectedConfiguration, AddToRightPanel, copyPasteObj);
 
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndScrollView();
@@ -424,9 +397,6 @@ namespace DCL.Skybox
                 case SkyboxEditorToolsParts.BG_Layer:
                     RenderBackgroundColorLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration);
                     break;
-                case SkyboxEditorToolsParts.Horizon_Plane:
-                    RenderHorizonPlane.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration);
-                    break;
                 case SkyboxEditorToolsParts.Ambient_Layer:
                     RenderAmbientLayer.RenderLayer(ref timeOfTheDay, toolSize, selectedConfiguration);
                     break;
@@ -443,13 +413,7 @@ namespace DCL.Skybox
                     RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.baseSkyboxTargetLayer);
                     break;
                 case SkyboxEditorToolsParts.Elements3D_Dome:
-                    RenderDome3DLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.targetDomeElement);
-                    break;
-                case SkyboxEditorToolsParts.Elements3D_Satellite:
-                    RenderSatellite3DLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.targetSatelliteElement);
-                    break;
-                case SkyboxEditorToolsParts.Elements3D_Planar:
-                    RenderPlanar3DLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.targetPlanarElement);
+                    RenderTextureLayer.RenderLayer(ref timeOfTheDay, toolSize, obj.targetDomeElement.layers);
                     break;
                 default:
                     break;
@@ -467,7 +431,7 @@ namespace DCL.Skybox
             style.normal.textColor = toolSize.rightPanelHeadingTextColor.textColor;
             EditorGUILayout.LabelField(text, style, GUILayout.Width(200));
 
-            string btnTxt = (obj.pinned) ? SkyboxEditorLiterals.Labels.unpin : SkyboxEditorLiterals.Labels.pin;
+            string btnTxt = (obj.pinned) ? SkyboxEditorLiterals.unpin : SkyboxEditorLiterals.pin;
             if (GUILayout.Button(btnTxt, GUILayout.Width(50)))
             {
                 obj.pinned = !obj.pinned;
@@ -528,15 +492,17 @@ namespace DCL.Skybox
             // Make a directional light object if can't find
             if (directionalLight == null)
             {
-                GameObject temp = new GameObject(SkyboxEditorLiterals.Labels.sunObjectName);
+                GameObject temp = new GameObject(SkyboxEditorLiterals.sunObjectName);
                 // Add the light component
                 directionalLight = temp.AddComponent<Light>();
                 directionalLight.type = LightType.Directional;
             }
 
-            if (skyboxElements == null)
+            // Init 3D
+            if (skyboxObjects == null)
             {
-                skyboxElements = new SkyboxElements();
+                skyboxObjects = new SkyboxElements();
+                skyboxObjects.Initialize3DObjects(selectedConfiguration);
             }
         }
 
@@ -549,7 +515,6 @@ namespace DCL.Skybox
                 selectedConfiguration = SkyboxController.i.GetCurrentConfiguration();
                 overridingController = SkyboxController.i.SetOverrideController(true);
                 timeOfTheDay = SkyboxController.i.GetCurrentTimeOfTheDay();
-                skyboxElements = SkyboxController.i.GetSkyboxElements();
                 UpdateConfigurationsList();
             }
         }
@@ -585,7 +550,7 @@ namespace DCL.Skybox
             // If no configurations exist, make and select new one.
             if (configurations == null || configurations.Count < 1)
             {
-                selectedConfiguration = AddNewConfiguration(SkyboxEditorLiterals.Labels.defaultskyboxName);
+                selectedConfiguration = AddNewConfiguration(SkyboxEditorLiterals.defaultskyboxName);
 
                 configurations = new List<SkyboxConfiguration>();
                 configurations.Add(selectedConfiguration);
@@ -619,13 +584,13 @@ namespace DCL.Skybox
 
         void PauseTime() { isPaused = true; }
 
-        private void ApplyOnMaterial(bool isEditor)
+        private SkyboxElements skyboxObjects;
+        private void ApplyOnMaterial()
         {
             EnsureDependencies();
             float normalizedDayTime = SkyboxUtils.GetNormalizedDayTime(timeOfTheDay);
             selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
-
-            skyboxElements?.ApplyConfigTo3DElements(selectedConfiguration, timeOfTheDay, normalizedDayTime, directionalLight, SkyboxUtils.CYCLE_TIME, isEditor);
+            selectedConfiguration.ApplyDomeConfigurations(skyboxObjects.GetOrderedGameobjectList(selectedConfiguration.additional3Dconfig), timeOfTheDay, normalizedDayTime, 1, directionalLight);
 
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)

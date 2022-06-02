@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Google.Protobuf.Collections;
 using UnityEngine;
 
 public class PrimitiveMeshModel 
@@ -21,7 +20,7 @@ public class PrimitiveMeshModel
     }
 
     public Type type;
-    public RepeatedField<float> uvs = new RepeatedField<float>();
+    public float[] uvs;
     
     protected bool Equals(PrimitiveMeshModel other)
     {

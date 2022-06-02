@@ -48,8 +48,6 @@ public enum DCLAction_Trigger
     ToggleEmoteShortcut7 = 149,
     ToggleEmoteShortcut8 = 150,
     ToggleEmoteShortcut9 = 151,
-    ChatPreviousInHistory = 152,
-    ChatNextInHistory = 153,
 
     Expression_Wave = 201,
     Expression_FistPump = 202,
@@ -321,12 +319,6 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.ToggleEmoteShortcut9:
                     InputProcessor.FromKey(action, KeyCode.Alpha9, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.B });
-                    break;
-                case DCLAction_Trigger.ChatNextInHistory:
-                    InputProcessor.FromKey(action, KeyCode.UpArrow, modifiers: InputProcessor.Modifier.OnlyWithInputFocused);
-                    break;
-                case DCLAction_Trigger.ChatPreviousInHistory:
-                    InputProcessor.FromKey(action, KeyCode.DownArrow, modifiers: InputProcessor.Modifier.OnlyWithInputFocused);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
                     InputProcessor.FromKey(action, KeyCode.Alpha1,
@@ -600,8 +592,7 @@ public static class InputProcessor
         None = 0b0000000, // No modifier needed
         NeedsPointerLocked = 0b0000001, // The pointer must be locked to the game
         FocusNotInInput = 0b0000010, // The game focus cannot be in an input field
-        NotInStartMenu = 0b0000100, // The game focus cannot be in full-screen start menu
-        OnlyWithInputFocused = 0b0001000 // The game focus must be in an input field
+        NotInStartMenu = 0b0000100 // The game focus cannot be in full-screen start menu
     }
 
     /// <summary>
@@ -641,12 +632,7 @@ public static class InputProcessor
         if (IsModifierSet(modifiers, Modifier.NeedsPointerLocked) && !DCL.Helpers.Utils.IsCursorLocked)
             return false;
 
-        var isInputFieldFocused = FocusIsInInputField();
-        
-        if (IsModifierSet(modifiers, Modifier.FocusNotInInput) && isInputFieldFocused)
-            return false;
-        
-        if (IsModifierSet(modifiers, Modifier.OnlyWithInputFocused) && !isInputFieldFocused)
+        if (IsModifierSet(modifiers, Modifier.FocusNotInInput) && FocusIsInInputField())
             return false;
 
         if (IsModifierSet(modifiers, Modifier.NotInStartMenu) && IsStartMenuVisible())

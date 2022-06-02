@@ -8,8 +8,6 @@ public interface IChatHUDComponentView
     event Action OnShowMenu;
     event Action OnInputFieldSelected;
     event Action OnInputFieldDeselected;
-    event Action OnPreviousChatInHistory;
-    event Action OnNextChatInHistory;
     
     int EntryCount { get; }
 

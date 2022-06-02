@@ -1093,7 +1093,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -0.000024681574}
-  m_SizeDelta: {x: 0, y: -483}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &3956694658099104561
 MonoBehaviour:
@@ -1807,10 +1807,6 @@ MonoBehaviour:
     inputFieldText: 
     enableFadeoutMode: 0
     entries: []
-  nextChatInHistoryInput: {fileID: 11400000, guid: b5e17dbeae28f8748b3308516c99e26d,
-    type: 2}
-  previousChatInHistoryInput: {fileID: 11400000, guid: 963604f308a161b4daa2e9ad5a9beba4,
-    type: 2}
 --- !u!1 &8305413179443684899
 GameObject:
   m_ObjectHideFlags: 0

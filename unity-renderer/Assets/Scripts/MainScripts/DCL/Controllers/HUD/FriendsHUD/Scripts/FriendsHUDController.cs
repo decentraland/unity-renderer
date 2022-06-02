@@ -437,6 +437,7 @@ public class FriendsHUDController : IHUD
         {
             foreach (var model in filteredFriends)
             {
+                // Display missing friends
                 if (View.ContainsFriend(model.userId)) return;
                 var status = friendsController.GetUserStatus(model.userId);
                 if (status == null) continue;

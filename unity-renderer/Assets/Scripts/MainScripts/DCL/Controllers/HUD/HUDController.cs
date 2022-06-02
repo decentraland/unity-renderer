@@ -221,6 +221,8 @@ public class HUDController : IHUDController
                         worldChatWindowHud.OnOpenPrivateChat += OpenPrivateChatWindow;
                         worldChatWindowHud.OnOpenPublicChannel -= OpenPublicChannelWindow;
                         worldChatWindowHud.OnOpenPublicChannel += OpenPublicChannelWindow;
+                        worldChatWindowHud.OnDeactivatePreview -= View_OnDeactivatePreview;
+                        worldChatWindowHud.OnDeactivatePreview += View_OnDeactivatePreview;
 
                         taskbarHud?.AddWorldChatWindow(worldChatWindowHud);
                     }
@@ -231,19 +233,23 @@ public class HUDController : IHUDController
                 if (PublicChatChannelHud == null)
                 {
                     CreateHudElement(configuration, HUDElementID.PUBLIC_CHAT_CHANNEL);
-                    PublicChatChannelHud.Initialize();
-                    PublicChatChannelHud.OnBack -= HandlePublicChatChannelBacked;
-                    PublicChatChannelHud.OnBack += HandlePublicChatChannelBacked;
-                    PublicChatChannelHud.OnClosed -= HandlePublicChatChannelClosed;
-                    PublicChatChannelHud.OnClosed += HandlePublicChatChannelClosed;
+                    if (PublicChatChannelHud != null)
+                    {
+                        PublicChatChannelHud.Initialize();
+                        PublicChatChannelHud.OnBack -= HandlePublicChatChannelBacked;
+                        PublicChatChannelHud.OnBack += HandlePublicChatChannelBacked;
+                        PublicChatChannelHud.OnClosed -= HandlePublicChatChannelClosed;
+                        PublicChatChannelHud.OnClosed += HandlePublicChatChannelClosed;
+                        PublicChatChannelHud.SetVisibility(false);
+                    }
                     taskbarHud?.AddPublicChatChannel(PublicChatChannelHud);
                     // TODO: this call should be removed when chat notifications are implemented
-                    taskbarHud?.OpenPublicChatChannel("general", false);
+                    taskbarHud?.OpenPublicChatChannel("general");
                     PublicChatChannelHud.ActivatePreviewModeInstantly();
                 }
                 else
                     UpdateHudElement(configuration, HUDElementID.PUBLIC_CHAT_CHANNEL);
-
+                
                 if (PrivateChatWindow == null)
                 {
                     CreateHudElement(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
@@ -391,12 +397,17 @@ public class HUDController : IHUDController
 
     private void OpenPublicChannelWindow(string channelId)
     {
-        taskbarHud?.OpenPublicChatChannel(channelId, true);
+        taskbarHud?.OpenPublicChatChannel(channelId);
     }
 
     private void OpenPrivateChatWindow(string targetUserId)
     {
         taskbarHud?.OpenPrivateChat(targetUserId);
+    }
+
+    private void View_OnDeactivatePreview()
+    {
+        playerInfoCardHud?.CloseCard();
     }
 
     private void PrivateChatWindowHud_OnPressBack()
@@ -444,6 +455,7 @@ public class HUDController : IHUDController
         {
             worldChatWindowHud.OnOpenPrivateChat -= OpenPrivateChatWindow;
             worldChatWindowHud.OnOpenPublicChannel -= OpenPublicChannelWindow;
+            worldChatWindowHud.OnDeactivatePreview -= View_OnDeactivatePreview;
         }
 
         if (PrivateChatWindow != null)
@@ -454,7 +466,7 @@ public class HUDController : IHUDController
             PublicChatChannelHud.OnClosed -= HandlePublicChatChannelClosed;
             PublicChatChannelHud.OnBack -= HandlePublicChatChannelBacked;
         }
-
+            
 
         if (friendsHud != null)
             friendsHud.OnPressWhisper -= OpenPrivateChatWindow;

@@ -96,26 +96,16 @@ public class TaskbarHUDController : IHUD
         if (show)
             OpenFriendsWindow();
         else
-        {
             friendsHud?.SetVisibility(false);
-            OpenPublicChannelOnPreviewMode();
-        }
-            
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
     private void HandleEmotesToggle(bool show)
     {
         if (show)
-        {
-            OpenPublicChannelOnPreviewMode();
             ShowEmotes();
-        }
         else
-        {
             isEmotesVisible.Set(false);
-            OpenPublicChannelOnPreviewMode();
-        }
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
@@ -123,6 +113,7 @@ public class TaskbarHUDController : IHUD
     {
         worldChatWindowHud.SetVisibility(false);
         privateChatWindow.SetVisibility(false);
+        publicChatChannel.SetVisibility(false);
         friendsHud?.SetVisibility(false);
         isExperiencesViewerOpen.Set(false);
         isEmotesVisible.Set(true);
@@ -134,11 +125,7 @@ public class TaskbarHUDController : IHUD
         if (show)
             ShowExperiences();
         else
-        {
             isExperiencesViewerOpen.Set(false);
-            OpenPublicChannelOnPreviewMode();
-        }
-            
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
@@ -171,10 +158,7 @@ public class TaskbarHUDController : IHUD
             OpenFriendsWindow();
         }
         else
-        {
             CloseFriendsWindow();
-            OpenPublicChannelOnPreviewMode();
-        }
     }
 
     private void ToggleWorldChatTrigger_OnTriggered(DCLAction_Trigger action)
@@ -199,10 +183,11 @@ public class TaskbarHUDController : IHUD
         if (mouseCatcher.isLocked) return;
         worldChatWindowHud.SetVisibility(false);
         privateChatWindow.SetVisibility(false);
+        publicChatChannel.SetVisibility(false);
         friendsHud?.SetVisibility(false);
         isEmotesVisible.Set(false);
         isExperiencesViewerOpen.Set(false);
-        OpenPublicChannelOnPreviewMode();
+        view.ToggleAllOff();
     }
 
     private void HandleChatToggle(bool show)
@@ -213,10 +198,7 @@ public class TaskbarHUDController : IHUD
             OpenLastActiveChatWindow(chatToggleTargetWindow);
         }
         else
-        {
             CloseAnyChatWindow();
-            OpenPublicChannelOnPreviewMode();
-        }
         
         OnAnyTaskbarButtonClicked?.Invoke();
     }
@@ -235,7 +217,6 @@ public class TaskbarHUDController : IHUD
         // view.ToggleAllOff();
         CloseFriendsWindow();
         CloseChatList();
-        OpenPublicChannelOnPreviewMode();
     }
 
     public void AddWorldChatWindow(WorldChatWindowController controller)
@@ -246,7 +227,8 @@ public class TaskbarHUDController : IHUD
             return;
         }
 
-        if (controller.View.Transform.parent == view.leftWindowContainer) return;
+        if (controller.View.Transform.parent == view.leftWindowContainer)
+            return;
 
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
@@ -254,14 +236,12 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud = controller;
 
         view.ShowChatButton();
-        worldChatWindowHud.View.OnClose += OpenPublicChannelOnPreviewMode;
-    }
-
-    private void OpenPublicChannelOnPreviewMode()
-    {
-        publicChatChannel.SetVisibility(true, false);
-        publicChatChannel.ActivatePreviewModeInstantly();
-        view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
+        worldChatWindowHud.View.OnClose += () =>
+        {
+            if (!privateChatWindow.View.IsActive
+                && !publicChatChannel.View.IsActive)
+                view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
+        };
     }
 
     private void OpenFriendsWindow()
@@ -321,7 +301,7 @@ public class TaskbarHUDController : IHUD
         view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
     }
 
-    public void OpenPublicChatChannel(string channelId, bool focusInputField)
+    public void OpenPublicChatChannel(string channelId)
     {
         publicChatChannel?.Setup(channelId);
         worldChatWindowHud?.SetVisibility(false);
@@ -329,7 +309,7 @@ public class TaskbarHUDController : IHUD
         friendsHud?.SetVisibility(false);
         isExperiencesViewerOpen?.Set(false);
         isEmotesVisible?.Set(false);
-        publicChatChannel?.SetVisibility(true, focusInputField);
+        publicChatChannel?.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         chatToggleTargetWindow = publicChatChannel;
         chatInputTargetWindow = publicChatChannel;
@@ -370,7 +350,12 @@ public class TaskbarHUDController : IHUD
 
         privateChatWindow = controller;
 
-        controller.OnClosed += OpenPublicChannelOnPreviewMode;
+        controller.OnClosed += () =>
+        {
+            if (!worldChatWindowHud.View.IsActive
+                && !publicChatChannel.View.IsActive)
+                view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
+        };
     }
 
     public void AddPublicChatChannel(PublicChatChannelController controller)
@@ -388,7 +373,12 @@ public class TaskbarHUDController : IHUD
         
         publicChatChannel = controller;
 
-        controller.OnClosed += OpenPublicChannelOnPreviewMode;
+        controller.OnClosed += () =>
+        {
+            if (!worldChatWindowHud.View.IsActive
+                && !privateChatWindow.View.IsActive)
+                view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
+        };
     }
 
     public void AddFriendsWindow(FriendsHUDController controller)
@@ -407,11 +397,7 @@ public class TaskbarHUDController : IHUD
 
         friendsHud = controller;
         view.ShowFriendsButton();
-        friendsHud.View.OnClose += () =>
-        {
-            view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Friends);
-            OpenPublicChannelOnPreviewMode();
-        };
+        friendsHud.View.OnClose += () => view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Friends);
     }
 
     private void InitializeEmotesSelector(bool current, bool previous) 
@@ -420,7 +406,13 @@ public class TaskbarHUDController : IHUD
         view.ShowEmotesButton(); 
     }
 
-    private void IsEmotesVisibleChanged(bool current, bool previous) => HandleEmotesToggle(current);
+    private void IsEmotesVisibleChanged(bool current, bool previous)
+    {
+        if (current && !isEmotesVisible.Get())
+            return;
+
+        view.emotesButton.SetToggleState(current, false);
+    }
 
     private void InitializeExperiencesViewer(Transform currentViewTransform, Transform previousViewTransform)
     {

@@ -87,8 +87,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4bc13df453704ca4c960cfa8af49991f, type: 2}
   - {fileID: 11400000, guid: 09d22c21282b4c54b93fa430c7eaefcb, type: 2}
   - {fileID: 11400000, guid: bf65a8845e8fc764a9314582d5d29a83, type: 2}
-  - {fileID: 11400000, guid: b5e17dbeae28f8748b3308516c99e26d, type: 2}
-  - {fileID: 11400000, guid: 963604f308a161b4daa2e9ad5a9beba4, type: 2}
   holdActions:
   - {fileID: 11400000, guid: 8eddef1fc072ec845aeb62f5e1041b52, type: 2}
   - {fileID: 11400000, guid: 0cfb8d150b7d6934d856665cf924d01d, type: 2}

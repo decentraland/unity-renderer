@@ -8,12 +8,9 @@ public interface IWorldChatWindowView
     event Action<string> OnOpenPrivateChat;
     event Action<string> OnOpenPublicChannel;
     event Action<string> OnUnfriend;
-    event Action<string> OnSearchChannelRequested;
-    event Action OnRequireMorePrivateChats;
     
     RectTransform Transform { get; }
     bool IsActive { get; }
-    int PrivateChannelsCount { get; }
 
     void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService);
     void Show();
@@ -25,8 +22,4 @@ public interface IWorldChatWindowView
     void HidePrivateChatsLoading();
     void RefreshBlockedDirectMessages(List<string> blockedUsers);
     void Dispose();
-    void ClearFilter();
-    void HideMoreChatsToLoadHint();
-    void ShowMoreChatsToLoadHint(int count);
-    void Filter(Dictionary<string,PrivateChatModel> privateChats, Dictionary<string,PublicChatChannelModel> publicChannels);
 }

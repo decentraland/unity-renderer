@@ -79,6 +79,6 @@ namespace Tests
 
             Assert.AreEqual(0, trackerLegacyEcs.pendingResourcesCount);
             Assert.AreEqual(100, trackerLegacyEcs.loadingProgress);
-        }  
+        }        
     }
 }

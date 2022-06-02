@@ -257,24 +257,6 @@ namespace Test.AvatarSystem
             bodyshapeLoader.mouthRetriever.Received().Dispose();
         });
 
-        [Test]
-        public void DisablesFacialRenderersOnHideFace()
-        {
-            bodyshapeLoader.eyesRenderer = (SkinnedMeshRenderer)GetPrimitiveMockingBodypart(container.transform, "eyes");
-            bodyshapeLoader.eyebrowsRenderer = (SkinnedMeshRenderer)GetPrimitiveMockingBodypart(container.transform, "eyebrows");
-            bodyshapeLoader.mouthRenderer = (SkinnedMeshRenderer)GetPrimitiveMockingBodypart(container.transform, "mouth");
-
-            Assert.IsTrue(bodyshapeLoader.eyesRenderer.enabled);
-            Assert.IsTrue(bodyshapeLoader.eyebrowsRenderer.enabled);
-            Assert.IsTrue(bodyshapeLoader.mouthRenderer.enabled);
-
-            bodyshapeLoader.DisableFacialRenderers();
-
-            Assert.IsFalse(bodyshapeLoader.eyesRenderer.enabled);
-            Assert.IsFalse(bodyshapeLoader.eyebrowsRenderer.enabled);
-            Assert.IsFalse(bodyshapeLoader.mouthRenderer.enabled);
-        }
-
         private Rendereable PrepareRendereable(BodyParts bodyparts)
         {
             return new Rendereable()
