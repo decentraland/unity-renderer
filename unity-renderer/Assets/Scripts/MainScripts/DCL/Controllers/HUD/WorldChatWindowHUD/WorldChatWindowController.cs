@@ -207,8 +207,14 @@ public class WorldChatWindowController : IHUD
     private UserProfile ExtractRecipient(ChatMessage message) =>
         userProfileBridge.Get(message.sender != ownUserProfile.userId ? message.sender : message.recipient);
 
-    private void OnUserProfileUpdate(UserProfile profile) => view.RefreshBlockedDirectMessages(profile.blocked);
-    
+    private void OnUserProfileUpdate(UserProfile profile)
+    {
+        view.RefreshBlockedDirectMessages(profile.blocked);
+        
+        if (!profile.hasConnectedWeb3)
+            view.HidePrivateChatsLoading();
+    }
+
     private void ShowOrHideMoreFriendsToLoadHint()
     {
         if (pendingPrivateChats.Count == 0)
