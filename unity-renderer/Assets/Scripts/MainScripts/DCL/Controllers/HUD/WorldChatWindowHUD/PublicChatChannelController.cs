@@ -10,6 +10,7 @@ public class PublicChatChannelController : IHUD
     public IChannelChatWindowView View { get; private set; }
     public event Action OnBack;
     public event Action OnClosed;
+    public event Action<bool> OnPreviewModeChanged;
 
     private readonly IChatController chatController;
     private readonly ILastReadMessagesService lastReadMessagesService;
@@ -188,6 +189,7 @@ public class PublicChatChannelController : IHUD
         deactivatePreviewCancellationToken = new CancellationTokenSource();
         View.ActivatePreviewInstantly();
         chatHudController.ActivatePreview();
+        OnPreviewModeChanged?.Invoke(true);
     }
 
     private void MarkChatMessagesAsRead() => lastReadMessagesService.MarkAllRead(channelId);
@@ -258,16 +260,18 @@ public class PublicChatChannelController : IHUD
         ActivatePreview();
     }
     
-    private void ActivatePreview()
+    public void ActivatePreview()
     {
         View.ActivatePreview();
         chatHudController.ActivatePreview();
+        OnPreviewModeChanged?.Invoke(true);
     }
 
-    private void DeactivatePreview()
+    public void DeactivatePreview()
     {
         View.DeactivatePreview();
         chatHudController.DeactivatePreview();
+        OnPreviewModeChanged?.Invoke(false);
     }
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)

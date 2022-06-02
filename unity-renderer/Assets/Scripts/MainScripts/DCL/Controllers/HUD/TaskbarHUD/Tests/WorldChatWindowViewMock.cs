@@ -8,8 +8,11 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChannel;
     public event Action<string> OnUnfriend;
+    public event Action<string> OnSearchChannelRequested;
+    public event Action OnRequireMorePrivateChats;
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeSelf;
+    public int PrivateChannelsCount { get; }
 
     private bool isDestroyed;
 
@@ -60,4 +63,22 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
         if (isDestroyed) return;
         Destroy(gameObject);
     }
+
+    public void ClearFilter()
+    {
+    }
+
+    public void HideMoreChatsToLoadHint()
+    {
+    }
+
+    public void ShowMoreChatsToLoadHint(int count)
+    {
+    }
+
+    public void Filter(Dictionary<string, PrivateChatModel> privateChats, Dictionary<string, PublicChatChannelModel> publicChannels)
+    {
+    }
+
+    public bool ContainsPrivateChannel(string userId) => false;
 }
