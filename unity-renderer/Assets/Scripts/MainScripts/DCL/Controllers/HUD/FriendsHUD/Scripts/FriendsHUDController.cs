@@ -194,7 +194,10 @@ public class FriendsHUDController : IHUD
         }
 
         if (shouldDisplay)
+        {
             View.Set(userId, newStatus.friendshipStatus, model);
+            UpdateNotificationsCounter();
+        }
         else
         {
             switch (newStatus.friendshipStatus)
@@ -282,10 +285,10 @@ public class FriendsHUDController : IHUD
         }
 
         var pendingFriendRequestsSO = NotificationScriptableObjects.pendingFriendRequests;
-        int receivedRequestsCount = View.GetReceivedFriendRequestCount();
-
+        
         if (pendingFriendRequestsSO != null)
         {
+            var receivedRequestsCount = friendsController.ReceivedRequestCount;
             pendingFriendRequestsSO.Set(receivedRequestsCount);
         }
 
