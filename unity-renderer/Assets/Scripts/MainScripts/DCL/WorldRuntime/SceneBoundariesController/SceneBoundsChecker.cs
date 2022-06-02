@@ -29,6 +29,7 @@ namespace DCL.Controllers
 
         public void Initialize()
         {
+            Debug.Log("Initializing Scene Bounds Checker... " + this.GetHashCode());
             Start();
         }
 
@@ -100,6 +101,7 @@ namespace DCL.Controllers
                         }
                     }
 
+
                     checkedEntities.Clear();
 
                     lastCheckTime = Time.realtimeSinceStartup;
@@ -162,7 +164,9 @@ namespace DCL.Controllers
         public void RemovePersistent(IDCLEntity entity)
         {
             if (persistentEntities.Contains(entity))
-                persistentEntities.Remove(entity);
+            {
+                persistentEntities.Remove(entity);               
+            }
         }
 
         /// <summary>
@@ -171,7 +175,7 @@ namespace DCL.Controllers
         ///
         public bool WasAddedAsPersistent(IDCLEntity entity) { return persistentEntities.Contains(entity); }
 
-        public void RemoveEntityToBeChecked(IDCLEntity entity)
+        public void RemoveEntityToBeCheckedAndResetState(IDCLEntity entity)
         {
             if (!enabled)
                 return;
@@ -217,9 +221,6 @@ namespace DCL.Controllers
 
             var loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
-                return;
-
-            if (!entity.scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TRANSFORM))
                 return;
             
             // entity.meshesInfo.RecalculateBounds();
@@ -294,7 +295,10 @@ namespace DCL.Controllers
             UpdateComponents(entity, isInsideBoundaries);
         }
 
-        protected void UpdateEntityMeshesValidState(MeshesInfo meshesInfo, bool isInsideBoundaries) { feedbackStyle.ApplyFeedback(meshesInfo, isInsideBoundaries); }
+        protected void UpdateEntityMeshesValidState(MeshesInfo meshesInfo, bool isInsideBoundaries)
+        {
+            feedbackStyle.ApplyFeedback(meshesInfo, isInsideBoundaries);
+        }
 
         protected void UpdateEntityCollidersValidState(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
@@ -331,7 +335,7 @@ namespace DCL.Controllers
 
         protected void OnAddEntity(IDCLEntity entity)
         {
-            // The outer bounds check is way cheaper than the regular check
+            // The outer bounds check is cheaper than the regular check
             RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
             
             AddEntityBasedOnPriority(entity);
@@ -342,7 +346,8 @@ namespace DCL.Controllers
             highPrioEntitiesToCheck.Remove(entity);
             entitiesToCheck.Remove(entity);
             persistentEntities.Remove(entity);
-            feedbackStyle.ApplyFeedback(entity.meshesInfo, true);
+            
+            SetMeshesAndComponentsInsideBoundariesState(entity, true);
         }
 
         protected void AddEntityBasedOnPriority(IDCLEntity entity)

@@ -270,7 +270,7 @@ public class BIWEntity
             }
 
             DCL.Environment.i.world.sceneBoundsChecker?.RunEntityEvaluation(rootEntity);
-            DCL.Environment.i.world.sceneBoundsChecker?.RemoveEntityToBeChecked(rootEntity);
+            DCL.Environment.i.world.sceneBoundsChecker?.RemoveEntityToBeCheckedAndResetState(rootEntity);
         }
 
         DestroyColliders();

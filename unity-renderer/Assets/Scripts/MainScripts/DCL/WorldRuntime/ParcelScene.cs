@@ -383,7 +383,7 @@ namespace DCL.Controllers
             if (Environment.i.world.sceneBoundsChecker.enabled)
             {
                 entity.OnShapeUpdated -= Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked;
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(entity);
+                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(entity);
             }
 
             if (removeImmediatelyFromEntitiesList)
@@ -471,7 +471,7 @@ namespace DCL.Controllers
                 // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
                 me.SetParent(null);
                 me.gameObject.transform.SetParent(firstPersonCameraTransform, false);
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
+                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(me);
                 Environment.i.world.sceneBoundsChecker.AddPersistent(me);
                 return;
             }
@@ -490,7 +490,7 @@ namespace DCL.Controllers
                 // It will simply rotate with the avatar, regardless of where the camera is pointing
                 me.SetParent(null);
                 me.gameObject.transform.SetParent(avatarTransform, false);
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
+                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(me);
                 Environment.i.world.sceneBoundsChecker.AddPersistent(me);
                 return;
             }

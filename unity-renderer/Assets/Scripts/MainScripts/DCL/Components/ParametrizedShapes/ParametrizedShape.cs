@@ -51,18 +51,8 @@ namespace DCL.Components
 
             if (visibilityDirty)
             {
-                // We shouldn't show shapes on entities that don't have a transform, otherwise they apear outside the scene bounds almost always
-                if (entity.scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TRANSFORM))
-                {
-                    ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
-                    visibilityDirty = false;
-                }
-                else
-                {
-                    ConfigureVisibility(entity.meshRootGameObject, false, entity.meshesInfo.renderers);
-                    entity.OnBaseComponentAdded -= OnEntityBaseComponentAttached;
-                    entity.OnBaseComponentAdded += OnEntityBaseComponentAttached;
-                }
+                ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
+                visibilityDirty = false;
             }
 
             if (collisionsDirty)
@@ -77,17 +67,6 @@ namespace DCL.Components
             }
          
             DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
-        }
-
-        void OnEntityBaseComponentAttached(CLASS_ID_COMPONENT classId, IDCLEntity entity)
-        {
-            if (classId != CLASS_ID_COMPONENT.TRANSFORM)
-                return;
-            
-            ConfigureVisibility(entity.meshRootGameObject, ((T)model).visible, entity.meshesInfo.renderers);
-            visibilityDirty = false;
-            
-            entity.OnBaseComponentAdded -= OnEntityBaseComponentAttached;
         }
 
         void OnShapeAttached(IDCLEntity entity)

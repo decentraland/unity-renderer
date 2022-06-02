@@ -84,11 +84,11 @@ namespace DCL
             UnregisterConcurrentRequest();
         }
 
-        protected override void OnAfterLoadOrReuse()
+        protected override void OnBeforeLoadOrReuse()
         {
         }
-
-        protected override void OnBeforeLoadOrReuse()
+        
+        protected override void OnAfterLoadOrReuse()
         {
         }
 
