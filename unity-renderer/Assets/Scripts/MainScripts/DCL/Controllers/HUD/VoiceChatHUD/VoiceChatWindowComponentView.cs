@@ -1,4 +1,3 @@
-using DCL.SettingsCommon;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -47,7 +46,6 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         goToCrowdButton.onClick.AddListener(() => OnGoToCrowd?.Invoke());
         allowUsersDropdown.OnOptionSelectionChanged += AllowUsersOptionChanged;
         muteAllToggle.OnSelectedChanged += OnMuteAllToggleChanged;
-        Settings.i.generalSettings.OnChanged += OnSettingsChanged;
     }
 
     public override void Start()
@@ -113,6 +111,8 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
             muteAllToggle.SetIsOnWithoutNotify(isOn);
     }
 
+    public void SelectAllowUsersOption(int optionIndex) { allowUsersDropdown.GetOption(optionIndex).isOn = true; }
+
     public VoiceChatPlayerComponentView CreateNewPlayerInstance() => Instantiate(playerPrefab, usersContainer);
 
     public override void Dispose()
@@ -122,7 +122,6 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         leaveButton.onClick.RemoveAllListeners();
         allowUsersDropdown.OnOptionSelectionChanged -= AllowUsersOptionChanged;
         muteAllToggle.OnSelectedChanged -= OnMuteAllToggleChanged;
-        Settings.i.generalSettings.OnChanged -= OnSettingsChanged;
 
         base.Dispose();
     }
@@ -167,33 +166,6 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
 
         allowUsersDropdown.SetTitle(optionName);
         OnAllowUsersFilterChange?.Invoke(optionId);
-
-        var newSettings = Settings.i.generalSettings.Data;
-
-        if (optionId == VoiceChatAllow.ALL_USERS.ToString())
-            newSettings.voiceChatAllow = VoiceChatAllow.ALL_USERS;
-        else if (optionId == VoiceChatAllow.VERIFIED_ONLY.ToString())
-            newSettings.voiceChatAllow = VoiceChatAllow.VERIFIED_ONLY;
-        else if (optionId == VoiceChatAllow.FRIENDS_ONLY.ToString())
-            newSettings.voiceChatAllow = VoiceChatAllow.FRIENDS_ONLY;
-
-        Settings.i.generalSettings.Apply(newSettings);
-    }
-
-    internal void OnSettingsChanged(GeneralSettings settings) 
-    {
-        switch (settings.voiceChatAllow)
-        {
-            case VoiceChatAllow.ALL_USERS:
-                allowUsersDropdown.GetOption(0).isOn = true;
-                break;
-            case VoiceChatAllow.VERIFIED_ONLY:
-                allowUsersDropdown.GetOption(1).isOn = true;
-                break;
-            case VoiceChatAllow.FRIENDS_ONLY:
-                allowUsersDropdown.GetOption(2).isOn = true;
-                break;
-        }
     }
 
     internal void OnMuteAllToggleChanged(bool isOn, string id, string text) { OnMuteAll?.Invoke(isOn); }

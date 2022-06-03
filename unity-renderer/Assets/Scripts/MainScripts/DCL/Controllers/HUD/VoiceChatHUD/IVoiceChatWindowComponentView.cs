@@ -1,3 +1,4 @@
+using DCL.SettingsCommon;
 using System;
 using UnityEngine;
 
@@ -17,5 +18,6 @@ public interface IVoiceChatWindowComponentView
     void SetNumberOfPlayers(int numPlayers);
     void SetAsJoined(bool isJoined);
     void SetMuteAllIsOn(bool isOn, bool notify = true);
+    void SelectAllowUsersOption(int optionIndex);
     VoiceChatPlayerComponentView CreateNewPlayerInstance();
 }

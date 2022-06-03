@@ -3,6 +3,7 @@ using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.Interface;
+using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using SignupHUD;
 using SocialFeaturesAnalytics;
@@ -117,7 +118,8 @@ public class HUDFactory : IHUDFactory
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    DataStore.i);
+                    DataStore.i,
+                    Settings.i);
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();

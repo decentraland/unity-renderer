@@ -1,10 +1,12 @@
 using DCL;
 using DCL.Interface;
+using DCL.SettingsCommon;
 using SocialFeaturesAnalytics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static DCL.SettingsCommon.GeneralSettings;
 
 public class VoiceChatWindowController : IHUD
 {
@@ -25,6 +27,7 @@ public class VoiceChatWindowController : IHUD
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
     private DataStore dataStore;
+    private Settings settings;
     private readonly HashSet<string> trackedUsersHashSet = new HashSet<string>();
     private readonly Queue<VoiceChatPlayerComponentView> playersPool;
     private readonly Dictionary<string, VoiceChatPlayerComponentView> currentPlayers;
@@ -41,12 +44,14 @@ public class VoiceChatWindowController : IHUD
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics,
-        DataStore dataStore)
+        DataStore dataStore,
+        Settings settings)
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
         this.socialAnalytics = socialAnalytics;
         this.dataStore = dataStore;
+        this.settings = settings;
 
         voiceChatWindowView = CreateVoiceChatWindowView();
         voiceChatWindowView.Hide(instant: true);
@@ -54,6 +59,7 @@ public class VoiceChatWindowController : IHUD
         voiceChatWindowView.OnJoinVoiceChat += JoinVoiceChat;
         voiceChatWindowView.OnGoToCrowd += GoToCrowd;
         voiceChatWindowView.OnMuteAll += MuteAll;
+        voiceChatWindowView.OnAllowUsersFilterChange += ChangeAllowUsersFilter;
         voiceChatWindowView.SetNumberOfPlayers(0);
 
         voiceChatBarView = CreateVoiceChatBatView();
@@ -64,6 +70,8 @@ public class VoiceChatWindowController : IHUD
         dataStore.player.otherPlayers.OnRemoved += OnOtherPlayerStatusRemoved;
         ownProfile.OnUpdate += OnUserProfileUpdated;
         friendsController.OnUpdateFriendship += OnUpdateFriendship;
+
+        settings.generalSettings.OnChanged += OnSettingsChanged;
 
         currentPlayers = new Dictionary<string, VoiceChatPlayerComponentView>();
         playersPool = new Queue<VoiceChatPlayerComponentView>();
@@ -139,11 +147,13 @@ public class VoiceChatWindowController : IHUD
         voiceChatWindowView.OnJoinVoiceChat -= JoinVoiceChat;
         voiceChatWindowView.OnGoToCrowd -= GoToCrowd;
         voiceChatWindowView.OnMuteAll -= MuteAll;
+        voiceChatWindowView.OnAllowUsersFilterChange -= ChangeAllowUsersFilter;
         voiceChatBarView.OnLeaveVoiceChat -= LeaveVoiceChat;
         dataStore.player.otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
         dataStore.player.otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
         ownProfile.OnUpdate -= OnUserProfileUpdated;
         friendsController.OnUpdateFriendship -= OnUpdateFriendship;
+        settings.generalSettings.OnChanged -= OnSettingsChanged;
 
         currentPlayers.Clear();
         playersPool.Clear();
@@ -153,7 +163,7 @@ public class VoiceChatWindowController : IHUD
 
     internal void JoinVoiceChat(bool isJoined)
     { 
-        dataStore.player.isJoinedToVoiceChat.Set(isJoined);
+        dataStore.voiceChat.isJoinedToVoiceChat.Set(isJoined);
 
         using (var iterator = currentPlayers.GetEnumerator())
         {
@@ -178,9 +188,17 @@ public class VoiceChatWindowController : IHUD
         this.isJoined = isJoined;
 
         if (!isJoined)
+        {
             MuteAll(true);
-        else if (!isMuteAll)
-            MuteAll(false);
+            socialAnalytics.SendVoiceChannelDisconnection();
+        }
+        else
+        {
+            if (!isMuteAll)
+                MuteAll(false);
+
+            socialAnalytics.SendVoiceChannelConnection(currentPlayers.Count);
+        }
     }
 
     internal void LeaveVoiceChat() { JoinVoiceChat(false); }
@@ -214,7 +232,7 @@ public class VoiceChatWindowController : IHUD
                     isTalking = false,
                     isBlocked = false,
                     isFriend = friendsController.GetFriends().ContainsKey(userId),
-                    isJoined = dataStore.player.isJoinedToVoiceChat.Get(),
+                    isJoined = dataStore.voiceChat.isJoinedToVoiceChat.Get(),
                     isBackgroundHover = false
                 });
 
@@ -318,6 +336,20 @@ public class VoiceChatWindowController : IHUD
         usersToMute.Clear();
     }
 
+    internal void ChangeAllowUsersFilter(string optionId)
+    {
+        var newSettings = settings.generalSettings.Data;
+
+        if (optionId == VoiceChatAllow.ALL_USERS.ToString())
+            newSettings.voiceChatAllow = VoiceChatAllow.ALL_USERS;
+        else if (optionId == VoiceChatAllow.VERIFIED_ONLY.ToString())
+            newSettings.voiceChatAllow = VoiceChatAllow.VERIFIED_ONLY;
+        else if (optionId == VoiceChatAllow.FRIENDS_ONLY.ToString())
+            newSettings.voiceChatAllow = VoiceChatAllow.FRIENDS_ONLY;
+
+        settings.generalSettings.Apply(newSettings);
+    }
+
     internal void OpenContextMenu(string userId)
     {
         currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView elementView);
@@ -343,6 +375,24 @@ public class VoiceChatWindowController : IHUD
         
         if (playerView != null)
             playerView.SetAsFriend(action == FriendshipAction.APPROVED);
+    }
+
+    internal void OnSettingsChanged(GeneralSettings settings)
+    {
+        switch (settings.voiceChatAllow)
+        {
+            case VoiceChatAllow.ALL_USERS:
+                voiceChatWindowView.SelectAllowUsersOption(0);
+                break;
+            case VoiceChatAllow.VERIFIED_ONLY:
+                voiceChatWindowView.SelectAllowUsersOption(1);
+                break;
+            case VoiceChatAllow.FRIENDS_ONLY:
+                voiceChatWindowView.SelectAllowUsersOption(2);
+                break;
+        }
+
+        socialAnalytics.SendVoiceChatPreferencesChanged(settings.voiceChatAllow);
     }
 
     internal void SetWhichPlayerIsTalking()

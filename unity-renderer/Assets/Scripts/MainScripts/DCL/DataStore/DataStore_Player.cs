@@ -12,6 +12,5 @@ namespace DCL
         public readonly BaseDictionary<string, Player> otherPlayers = new BaseDictionary<string, Player>();
         public readonly BaseVariable<Player> ownPlayer = new BaseVariable<Player>();
         public readonly BaseVariable<bool> canPlayerMove = new BaseVariable<bool>(true);
-        public readonly BaseVariable<bool> isJoinedToVoiceChat = new BaseVariable<bool>(false);
     }
 }
