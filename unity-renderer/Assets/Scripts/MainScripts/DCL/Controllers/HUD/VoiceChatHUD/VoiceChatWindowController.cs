@@ -75,8 +75,6 @@ public class VoiceChatWindowController : IHUD
 
         currentPlayers = new Dictionary<string, VoiceChatPlayerComponentView>();
         playersPool = new Queue<VoiceChatPlayerComponentView>();
-
-        JoinVoiceChat(false);
     }
 
     public void SetVisibility(bool visible)
@@ -163,8 +161,6 @@ public class VoiceChatWindowController : IHUD
 
     internal void JoinVoiceChat(bool isJoined)
     { 
-        dataStore.voiceChat.isJoinedToVoiceChat.Set(isJoined);
-
         using (var iterator = currentPlayers.GetEnumerator())
         {
             while (iterator.MoveNext())
@@ -182,6 +178,8 @@ public class VoiceChatWindowController : IHUD
         }
         else
         {
+            dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, false), true);
+            isOwnPLayerTalking = false;
             voiceChatBarView.Hide();
         }
 
@@ -197,6 +195,8 @@ public class VoiceChatWindowController : IHUD
             MuteAll(voiceChatWindowView.isMuteAllOn);
             socialAnalytics.SendVoiceChannelConnection(currentPlayers.Count);
         }
+
+        dataStore.voiceChat.isJoinedToVoiceChat.Set(isJoined);
     }
 
     internal void LeaveVoiceChat() { JoinVoiceChat(false); }
