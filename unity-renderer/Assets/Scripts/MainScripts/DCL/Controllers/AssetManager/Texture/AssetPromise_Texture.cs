@@ -45,12 +45,6 @@ namespace DCL
                 webRequestOp.Dispose();
         }
 
-        public override void Cleanup()
-        {
-            PerformanceAnalytics.PromiseTextureTracker.Untrack();
-            base.Cleanup();
-        }
-
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
             // Reuse the already-stored default texture, we duplicate it and set the needed config afterwards in AddToLibrary()

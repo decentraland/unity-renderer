@@ -13,10 +13,10 @@ namespace MainScripts.DCL.Analytics.PerformanceAnalytics
         {
             count++;
         }
-
-        public void Untrack()
+        
+        public void Reset()
         {
-            count--;
+            count = 0;
         }
     }
     public class LoadingTracker
@@ -70,5 +70,16 @@ namespace MainScripts.DCL.Analytics.PerformanceAnalytics
 
         public static readonly SimpleTracker MessagesEnqueuedTracker = new SimpleTracker();
         public static readonly SimpleTracker MessagesProcessedTracker = new SimpleTracker();
+
+        public static void ResetAll()
+        {
+            GLTFTracker.Reset();
+            ABTracker.Reset();
+            GLTFTextureTracker.Reset();
+            ABTextureTracker.Reset();
+            PromiseTextureTracker.Reset();
+            MessagesEnqueuedTracker.Reset();
+            MessagesProcessedTracker.Reset();
+        }
     }
 }

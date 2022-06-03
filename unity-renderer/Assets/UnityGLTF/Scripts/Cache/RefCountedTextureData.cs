@@ -22,7 +22,6 @@ namespace UnityGLTF.Cache
         {
             PersistentAssetCache.RemoveImage(id);
             Object.Destroy(Texture);
-            PerformanceAnalytics.GLTFTextureTracker.Untrack();
         }
     }
 

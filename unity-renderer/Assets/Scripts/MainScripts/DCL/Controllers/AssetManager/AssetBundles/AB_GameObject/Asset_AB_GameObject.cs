@@ -41,11 +41,6 @@ namespace DCL
 
         public override void Cleanup()
         {
-            for (int i = 0; i < textures.Count; i++)
-            {
-                PerformanceAnalytics.ABTextureTracker.Untrack();
-            }
-            
             AssetPromiseKeeper_AB.i.Forget(ownerPromise);
             Object.Destroy(container);
         }
