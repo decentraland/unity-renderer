@@ -14,6 +14,10 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     private const bool KERNEL_CAN_REMOVE_ENTRIES = false;
     public bool isInitialized { get; private set; } = false;
+
+    public int ReceivedRequestCount =>
+        friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
+    
     public Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
     [System.Serializable]

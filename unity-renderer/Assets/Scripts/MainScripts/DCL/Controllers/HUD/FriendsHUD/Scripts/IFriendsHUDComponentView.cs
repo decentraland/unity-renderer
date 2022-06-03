@@ -26,7 +26,6 @@ public interface IFriendsHUDComponentView
     FriendEntryBase GetEntry(string userId);
     void DisplayFriendUserNotFound();
     bool IsFriendListCreationReady();
-    int GetReceivedFriendRequestCount();
     void Destroy();
     void Show();
     void Hide();

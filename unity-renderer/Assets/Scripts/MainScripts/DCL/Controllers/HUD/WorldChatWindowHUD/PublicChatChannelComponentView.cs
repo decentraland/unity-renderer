@@ -14,8 +14,10 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     [SerializeField] private ChatHUDView chatView;
     [SerializeField] private PublicChatChannelModel model;
     [SerializeField] private CanvasGroup[] previewCanvasGroup;
+    [SerializeField] private Vector2 previewModeSize;
     
     private Coroutine alphaRoutine;
+    private Vector2 originalSize;
 
     public event Action OnClose;
     public event Action OnBack;
@@ -34,6 +36,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     public override void Awake()
     {
         base.Awake();
+        originalSize = ((RectTransform) transform).sizeDelta;
         backButton.onClick.AddListener(() => OnBack?.Invoke());
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
     }
@@ -70,6 +73,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
             StopCoroutine(alphaRoutine);
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
+        ((RectTransform) transform).sizeDelta = previewModeSize;
     }
 
     public void ActivatePreviewInstantly()
@@ -80,6 +84,8 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         const float alphaTarget = 0f;
         foreach (var group in previewCanvasGroup)
             group.alpha = alphaTarget;
+
+        ((RectTransform) transform).sizeDelta = previewModeSize;
     }
 
     public void DeactivatePreview()
@@ -98,6 +104,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
             StopCoroutine(alphaRoutine);
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
+        ((RectTransform) transform).sizeDelta = originalSize;
     }
 
     public void Configure(BaseComponentModel newModel) => Configure((PublicChatChannelModel) newModel);
