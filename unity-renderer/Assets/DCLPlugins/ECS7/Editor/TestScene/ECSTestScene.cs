@@ -22,12 +22,6 @@ public class ECSTestScene : MonoBehaviour
     {
         componentWriter.PutComponent(sceneId, 0, 1,
             new ECSTransform() { position = new Vector3(100, 100, 100) });
-
-        var textModel = new PBTextShape();
-        textModel.Text = "Test";
-        textModel.Font = "SansSerif";
-        componentWriter.PutComponent(sceneId,0,ComponentID.TEXT_SHAPE,
-            textModel);
     }
 
     private static IEnumerator LoadScene(Action<string, IECSComponentWriter> sceneScript)
