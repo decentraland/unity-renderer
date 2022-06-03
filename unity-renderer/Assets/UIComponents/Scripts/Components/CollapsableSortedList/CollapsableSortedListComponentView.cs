@@ -86,7 +86,7 @@ namespace UIComponents.CollapsableSortedList
             model.isVisible = false;
         }
 
-        public virtual V Get(K key) => entries[key];
+        public virtual V Get(K key) => entries.TryGetValue(key, out var value) ? value : null;
 
         public virtual void Add(K key, V value)
         {

@@ -20,7 +20,7 @@ public class ECS7ComponentsPlugin : IDisposable
         // Box Shape
         componentsFactory.AddOrReplaceComponent(ComponentID.BOX_SHAPE,
             data => PBBoxShape.Parser.ParseFrom((byte[])data),
-            () =>  new ECSBoxShapeComponentHandler());
+            () =>  new ECSBoxShapeComponentHandler(DataStore.i.ecs7));
         
         // Plane Shape
         componentsFactory.AddOrReplaceComponent(ComponentID.PLANE_SHAPE,

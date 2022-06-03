@@ -5,7 +5,6 @@ using System.Linq;
 using DCL.Controllers;
 using DCL.Models;
 using Google.Protobuf;
-using Google.Protobuf.Collections;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -28,7 +27,7 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            boxShapeComponentHandler = new ECSBoxShapeComponentHandler();
+            boxShapeComponentHandler = new ECSBoxShapeComponentHandler(DataStore.i.ecs7);
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
