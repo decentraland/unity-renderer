@@ -24,6 +24,8 @@ public class GLTFSceneImporterShould
     [SetUp]
     public void SetUp()
     {
+        PerformanceAnalytics.ResetAll();
+
         cancellationTokenSource = new CancellationTokenSource();
         string fullPath = Path.Combine(rootDirectoryPath, FILE_NAME);
         fileLoader = new GLTFFileLoader(Path.GetDirectoryName(rootDirectoryPath));
@@ -44,7 +46,6 @@ public class GLTFSceneImporterShould
     {
         stream.Dispose();
         Object.DestroyImmediate(gltfLoader.CreatedObject);
-        PerformanceAnalytics.GLTFTracker.Reset();
     }
     
     [UnityTest]
