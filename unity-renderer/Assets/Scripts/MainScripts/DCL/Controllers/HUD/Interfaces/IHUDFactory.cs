@@ -62,9 +62,7 @@ namespace DCL
         EMOTES = 32,
         PUBLIC_CHAT_CHANNEL = 33,
 
-        VOICE_CHAT_HUD = 34,
-
-        COUNT = 35
+        COUNT = 34
     }
 
     public interface IHUDFactory : IService
