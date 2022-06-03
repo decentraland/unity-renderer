@@ -14,6 +14,8 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     private const string TOP = "top";
     private const string LEFT = "left";
     private const string RIGHT = "right";
+    
+    private const string COMPONENT_NAME = "TextShape";
 
     internal GameObject textGameObject;
     internal TextMeshPro textComponent;
@@ -32,7 +34,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
     {
-        textGameObject = new GameObject("TextShape");
+        textGameObject = new GameObject(COMPONENT_NAME);
         textGameObject.AddComponent<MeshRenderer>();
         rectTransform = textGameObject.AddComponent<RectTransform>();
         textComponent = textGameObject.AddComponent<TextMeshPro>();
@@ -51,6 +53,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         textGameObject = null;
         textComponent = null;
         rectTransform = null;
+        currentModel = null;
     }
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTextShape model)

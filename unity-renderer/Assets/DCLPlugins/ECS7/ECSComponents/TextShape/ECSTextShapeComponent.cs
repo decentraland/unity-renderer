@@ -30,14 +30,5 @@ namespace DCL.ECSComponents
             factory.RemoveComponent(componentId);
             componentWriter.RemoveComponentSerializer(componentId);
         }
-        
-        internal byte[] SerializeComponent(PBTextShape model)
-        {
-            int size = model.CalculateSize();
-            byte[] buffer = new byte[size];
-            CodedOutputStream output = new CodedOutputStream(buffer);
-            model.WriteTo(output);
-            return buffer;
-        }
     }
 }
