@@ -365,8 +365,7 @@ namespace UnityGLTF
                 {
                     _isRunning = false;
                     _isCompleted = true;
-                    
-                    instantiatedGLTFObject.SetLoading(false);
+
                 }
             }
         }
@@ -402,8 +401,7 @@ namespace UnityGLTF
                 MeshCache = _assetCache.MeshCache,
                 animationCache = _assetCache.AnimationCache
             };
-            
-            instantiatedGLTFObject.SetLoading(true);
+
         }
 
         private async UniTask ConstructBufferData(Node node, CancellationToken token)
