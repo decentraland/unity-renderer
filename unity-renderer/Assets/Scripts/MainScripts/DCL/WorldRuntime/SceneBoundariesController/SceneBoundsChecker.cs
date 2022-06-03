@@ -13,23 +13,21 @@ namespace DCL.Controllers
         public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
         public bool enabled => entitiesCheckRoutine != null;
         public float timeBetweenChecks { get; set; } = 0.5f;
-
-        // We use Hashset instead of Queue to be able to have a unique representation of each entity when added.
-        HashSet<IDCLEntity> highPrioEntitiesToCheck = new HashSet<IDCLEntity>();
-        HashSet<IDCLEntity> entitiesToCheck = new HashSet<IDCLEntity>();
-        HashSet<IDCLEntity> checkedEntities = new HashSet<IDCLEntity>();
-        Coroutine entitiesCheckRoutine = null;
-        float lastCheckTime;
-        private HashSet<IDCLEntity> persistentEntities = new HashSet<IDCLEntity>();
-
         public int entitiesToCheckCount => entitiesToCheck.Count;
         public int highPrioEntitiesToCheckCount => highPrioEntitiesToCheck.Count;
 
+        private const bool VERBOSE = true;
+        private Logger logger = new Logger("SceneBoundsChecker") {verboseEnabled = VERBOSE};
+        private HashSet<IDCLEntity> highPrioEntitiesToCheck = new HashSet<IDCLEntity>();
+        private HashSet<IDCLEntity> entitiesToCheck = new HashSet<IDCLEntity>();
+        private HashSet<IDCLEntity> checkedEntities = new HashSet<IDCLEntity>();
+        private HashSet<IDCLEntity> persistentEntities = new HashSet<IDCLEntity>();
         private ISceneBoundsFeedbackStyle feedbackStyle;
+        private Coroutine entitiesCheckRoutine = null;
+        private float lastCheckTime;
 
         public void Initialize()
         {
-            Debug.Log("Initializing Scene Bounds Checker... " + this.GetHashCode());
             Start();
         }
 
@@ -52,7 +50,7 @@ namespace DCL.Controllers
 
         // TODO: Improve MessagingControllersManager.i.timeBudgetCounter usage once we have the centralized budget controller for our immortal coroutines
         IEnumerator CheckEntities()
-        {
+        {   
             while (true)
             {
                 float elapsedTime = Time.realtimeSinceStartup - lastCheckTime;
@@ -64,13 +62,19 @@ namespace DCL.Controllers
                     void processEntitiesList(HashSet<IDCLEntity> entities)
                     {
                         if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
+                        {
+                            logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
                             return;
+                        }
 
                         using HashSet<IDCLEntity>.Enumerator iterator = entities.GetEnumerator();
                         while (iterator.MoveNext())
                         {
                             if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
-                                break;
+                            {
+                                logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
+                                return;
+                            }
 
                             float startTime = Time.realtimeSinceStartup;
 
@@ -86,7 +90,7 @@ namespace DCL.Controllers
 
                     processEntitiesList(highPrioEntitiesToCheck);
                     processEntitiesList(entitiesToCheck);
-
+                    
                     // As we can't modify the hashset while traversing it, we keep track of the entities that should be removed afterwards
                     using (var iterator = checkedEntities.GetEnumerator())
                     {
@@ -100,7 +104,8 @@ namespace DCL.Controllers
                             }
                         }
                     }
-
+                    
+                    logger.Verbose($"Finished checking entities: checked entities {checkedEntities.Count}; entitiesToCheck left: {entitiesToCheck.Count}; highPriorityEntities left: {highPrioEntitiesToCheck.Count}");
 
                     checkedEntities.Clear();
 
@@ -163,10 +168,7 @@ namespace DCL.Controllers
 
         public void RemovePersistent(IDCLEntity entity)
         {
-            if (persistentEntities.Contains(entity))
-            {
-                persistentEntities.Remove(entity);               
-            }
+            persistentEntities.Remove(entity);
         }
 
         /// <summary>
@@ -352,10 +354,13 @@ namespace DCL.Controllers
 
         protected void AddEntityBasedOnPriority(IDCLEntity entity)
         {
-            if (IsHighPrioEntity(entity) && !highPrioEntitiesToCheck.Contains(entity))
+            if (IsHighPrioEntity(entity))
+            {
                 highPrioEntitiesToCheck.Add(entity);
-            else if (!entitiesToCheck.Contains(entity))
-                entitiesToCheck.Add(entity);
+                return;
+            }
+            
+            entitiesToCheck.Add(entity);
         }
 
         protected bool IsHighPrioEntity(IDCLEntity entity)
