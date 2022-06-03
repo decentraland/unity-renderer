@@ -56,7 +56,7 @@ namespace DCL.Protobuf
 
             DownloadProtoDefinitions(version);
             CompileAllProtobuffDefinitions(version);
-            AssetDatabase.Refresh();
+            CompilationPipeline.RequestScriptCompilation();
         }
 
         public static string GetLatestProtoVersion()
@@ -295,7 +295,6 @@ namespace DCL.Protobuf
         }            
         
         [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
-        // [UnityEditor.Callbacks.DidReloadScripts]
         private static void OnProjectCompile()
         {
             // The compiled version is a file that lives in the repo, if your local version is distinct it will generated them
