@@ -14,18 +14,18 @@ public class ECS7ComponentsPlugin : IDisposable
     {
         transformComponent = new ECSTransformComponent(1, componentsFactory, componentsWriter);
         RegisterComponents();
+        
+        // Cylinder Shape
+        componentsFactory.AddOrReplaceComponent(ComponentID.CYLINDER_SHAPE,
+            data => PBCylinderShape.Parser.ParseFrom((byte[])data),
+            () =>  new ECSCylinderShapeComponentHandler());
     }
 
     public void RegisterComponents()
     {
         DataStore.i.ecs7.componentsFactory.AddOrReplaceComponent(ComponentID.BOX_SHAPE,
             data => PBBoxShape.Parser.ParseFrom((byte[])data),
-            () =>  new ECSBoxShapeComponentHandler()); 
-        
-        // Cylinder Shape
-        DataStore.i.ecs7.componentsFactory.AddOrReplaceComponent(ComponentID.CYLINDER_SHAPE,
-            data => PBCylinderShape.Parser.ParseFrom((byte[])data),
-            () =>  new ECSCylinderShapeComponentHandler());
+            () =>  new ECSBoxShapeComponentHandler());
     }
 
     public void Dispose()
