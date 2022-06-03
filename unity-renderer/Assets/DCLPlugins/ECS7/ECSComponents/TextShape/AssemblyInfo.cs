@@ -1,3 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DCL.Components.ECSSphereShapeShould")]
+[assembly: InternalsVisibleTo("DCL.Components.ECSTextShapeShould")]

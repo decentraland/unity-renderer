@@ -25,6 +25,7 @@ public class ECSTestScene : MonoBehaviour
 
         var textModel = new PBTextShape();
         textModel.Text = "Test";
+        textModel.Font = "SansSerif";
         componentWriter.PutComponent(sceneId,0,ComponentID.TEXT_SHAPE,
             textModel);
     }

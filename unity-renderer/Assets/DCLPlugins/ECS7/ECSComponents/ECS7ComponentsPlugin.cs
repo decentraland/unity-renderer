@@ -9,17 +9,14 @@ public class ECS7ComponentsPlugin : IDisposable
 {
 
     private readonly ECSTransformComponent transformComponent;
+    private readonly ECSTextShapeComponent textShapeComponent;
 
     public ECS7ComponentsPlugin(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
     {
         transformComponent = new ECSTransformComponent(1, componentsFactory, componentsWriter);
-        RegisterComponents();
+        textShapeComponent = new ECSTextShapeComponent(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
         
-        // Text Shape
-        DataStore.i.ecs7.componentsFactory.AddOrReplaceComponent(ComponentID.TEXT_SHAPE,
-            data => PBTextShape.Parser.ParseFrom((byte[])data),
-            () =>  new ECSTextShapeComponentHandler(DataStore.i.ecs7));
-        componentsWriter.AddOrReplaceComponentSerializer<PBTextShape>(ComponentID.TEXT_SHAPE, Serializer.Seri);
+        RegisterComponents();
     }
 
     public void RegisterComponents()
@@ -32,7 +29,7 @@ public class ECS7ComponentsPlugin : IDisposable
     public void Dispose()
     {
         transformComponent.Dispose();
+        textShapeComponent.Dispose();
         DataStore.i.ecs7.componentsFactory.RemoveComponent(ComponentID.BOX_SHAPE);
-        DataStore.i.ecs7.componentsFactory.RemoveComponent(ComponentID.TEXT_SHAPE);
     }
 }
