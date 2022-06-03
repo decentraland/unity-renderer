@@ -71,15 +71,13 @@ namespace DCL
                 tracker.HiccupsSum,
                 tracker.GetTotalSeconds());
 
-            encodedSamples[currentIndex] = (char) deltaInMs;
+            encodedSamples[currentIndex++] = (char) deltaInMs;
 
             if (trackProfileRecords)
             {
                 totalAllocSample += gcAllocatedInFrameRecorder.LastValue;
             }
-            
-            currentIndex++;
-            
+
             if (currentIndex == SAMPLES_SIZE)
             {
                 currentIndex = 0;
@@ -92,9 +90,7 @@ namespace DCL
         private void Report(string encodedSamples)
         {
 
-            // parcel memory scoring
             Dictionary<string, IParcelScene>.ValueCollection loadedScenesValues = worldState.loadedScenes.Values;
-
             scenesMemoryScore.Clear();
             foreach (IParcelScene parcelScene in loadedScenesValues)
             {

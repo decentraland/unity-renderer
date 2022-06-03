@@ -57,11 +57,6 @@ namespace DCL
         }
         public void SetTextures(HashSet<Texture> texturesHashSet)
         {
-            if (textures.Count > 0)
-            {
-                Debug.LogWarning("Overriding textures?");
-            }
-            
             textures = texturesHashSet;
 
             for (int i = 0; i < textures.Count; i++)
