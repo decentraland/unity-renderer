@@ -58,6 +58,9 @@ namespace SceneBoundariesCheckerTests
 
         [UnityTest]
         public IEnumerator EntitiesAreBeingCorrectlyRegistered() { yield return SBC_Asserts.EntitiesAreBeingCorrectlyRegistered(scene); }
+        
+        [UnityTest]
+        public IEnumerator EntityIsEvaluatedOnReparenting() { yield return SBC_Asserts.EntityIsEvaluatedOnReparenting(scene); }
 
         [UnityTest]
         public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.PShapeIsInvalidatedWhenStartingOutOfBounds(scene); }

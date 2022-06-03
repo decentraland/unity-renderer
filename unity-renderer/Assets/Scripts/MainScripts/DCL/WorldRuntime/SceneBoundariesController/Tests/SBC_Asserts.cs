@@ -42,6 +42,24 @@ namespace SceneBoundariesCheckerTests
             Assert.AreEqual(0, scene.entities.Count, "entity count should be zero");
             Assert.AreEqual(0, Environment.i.world.sceneBoundsChecker.entitiesToCheckCount, "entities to check should be zero!");
         }
+        
+        public static IEnumerator EntityIsEvaluatedOnReparenting(ParcelScene scene)
+        {
+            var boxShape = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(8, 2, 8));
+            var shapeEntity = boxShape.attachedEntities.First();
+
+            yield return null;
+            AssertMeshIsValid(shapeEntity.meshesInfo);
+         
+            var newParentEntity = TestUtils.CreateSceneEntity(scene);
+            TestUtils.SetEntityTransform(scene, newParentEntity, new DCLTransform.Model { position = new Vector3(100, 1, 100) });
+            
+            // Our entities parenting moves the child's local position to Vector3.zero by default...
+            TestUtils.SetEntityParent(scene, shapeEntity, newParentEntity);
+            
+            yield return null;
+            AssertMeshIsInvalid(shapeEntity.meshesInfo);
+        }
 
         public static IEnumerator PShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
         {
