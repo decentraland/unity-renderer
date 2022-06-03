@@ -52,8 +52,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private bool isLayoutDirty;
 
     public Dictionary<string, FriendRequestEntry> Entries => entries;
-
-    public CollapsableSortedFriendEntryList ReceivedRequestsList => receivedRequestsList;
     public int Count => Entries.Count + creationQueue.Count;
 
     public event Action<FriendRequestEntry> OnCancelConfirmation;

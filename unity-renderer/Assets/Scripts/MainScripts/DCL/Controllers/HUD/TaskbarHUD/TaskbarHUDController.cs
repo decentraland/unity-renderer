@@ -262,7 +262,8 @@ public class TaskbarHUDController : IHUD
         CloseFriendsWindow();
         CloseChatList();
         CloseVoiceChatWindow();
-        
+        isExperiencesViewerOpen.Set(false);
+
         if (!privateChatWindow.View.IsActive
             && !publicChatChannel.View.IsActive)
             OpenPublicChannelOnPreviewMode();
