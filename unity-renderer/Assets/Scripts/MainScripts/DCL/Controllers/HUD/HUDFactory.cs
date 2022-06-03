@@ -106,12 +106,6 @@ public class HUDFactory : IHUDFactory
                 hudElement = new HelpAndSupportHUDController();
                 break;
             case HUDElementID.USERS_AROUND_LIST_HUD:
-                hudElement = new UsersAroundListHUDController(
-                    new SocialAnalytics(
-                        Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
-                break;
-            case HUDElementID.VOICE_CHAT_HUD:
                 hudElement = new VoiceChatWindowController(
                     new UserProfileWebInterfaceBridge(),
                     FriendsController.i,
