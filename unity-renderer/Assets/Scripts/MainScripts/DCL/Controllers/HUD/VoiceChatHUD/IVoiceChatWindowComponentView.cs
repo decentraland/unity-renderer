@@ -12,6 +12,7 @@ public interface IVoiceChatWindowComponentView
 
     RectTransform Transform { get; }
     UserContextMenu ContextMenuPanel { get; }
+    bool isMuteAllOn { get; }
 
     void Show(bool instant = false);
     void Hide(bool instant = false);

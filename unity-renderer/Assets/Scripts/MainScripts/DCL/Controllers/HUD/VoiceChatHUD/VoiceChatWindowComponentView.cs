@@ -36,6 +36,8 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
 
     public UserContextMenu ContextMenuPanel => contextMenuPanel;
 
+    public bool isMuteAllOn => muteAllToggle.isOn;
+
     public override void Awake()
     {
         base.Awake();

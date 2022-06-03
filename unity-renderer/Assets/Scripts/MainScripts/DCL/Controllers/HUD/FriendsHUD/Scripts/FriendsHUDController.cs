@@ -315,12 +315,6 @@ public class FriendsHUDController : IHUD
 
     private void HandleUnfriend(string userId)
     {
-        WebInterface.UpdateFriendshipStatus(
-            new FriendsController.FriendshipUpdateStatusMessage()
-            {
-                action = FriendshipAction.DELETED,
-                userId = userId
-            });
     }
 
     private void HandleRequestRejected(FriendRequestEntry entry)

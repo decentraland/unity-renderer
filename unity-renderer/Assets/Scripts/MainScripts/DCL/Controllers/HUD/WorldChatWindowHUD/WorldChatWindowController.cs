@@ -105,7 +105,6 @@ public class WorldChatWindowController : IHUD
 
     private void HandleUnfriend(string friendId)
     {
-        friendsController.RemoveFriend(friendId);
     }
 
     private void HandleFriendsControllerInitialization()

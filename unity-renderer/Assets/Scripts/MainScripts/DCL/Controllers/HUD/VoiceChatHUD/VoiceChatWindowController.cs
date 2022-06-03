@@ -58,7 +58,7 @@ public class VoiceChatWindowController : IHUD
         voiceChatWindowView.OnClose += CloseView;
         voiceChatWindowView.OnJoinVoiceChat += JoinVoiceChat;
         voiceChatWindowView.OnGoToCrowd += GoToCrowd;
-        voiceChatWindowView.OnMuteAll += MuteAll;
+        voiceChatWindowView.OnMuteAll += OnMuteAllToggled;
         voiceChatWindowView.OnAllowUsersFilterChange += ChangeAllowUsersFilter;
         voiceChatWindowView.SetNumberOfPlayers(0);
 
@@ -146,7 +146,7 @@ public class VoiceChatWindowController : IHUD
         voiceChatWindowView.OnClose -= CloseView;
         voiceChatWindowView.OnJoinVoiceChat -= JoinVoiceChat;
         voiceChatWindowView.OnGoToCrowd -= GoToCrowd;
-        voiceChatWindowView.OnMuteAll -= MuteAll;
+        voiceChatWindowView.OnMuteAll -= OnMuteAllToggled;
         voiceChatWindowView.OnAllowUsersFilterChange -= ChangeAllowUsersFilter;
         voiceChatBarView.OnLeaveVoiceChat -= LeaveVoiceChat;
         dataStore.player.otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
@@ -194,9 +194,7 @@ public class VoiceChatWindowController : IHUD
         }
         else
         {
-            if (!isMuteAll)
-                MuteAll(false);
-
+            MuteAll(voiceChatWindowView.isMuteAllOn);
             socialAnalytics.SendVoiceChannelConnection(currentPlayers.Count);
         }
     }
@@ -284,10 +282,19 @@ public class VoiceChatWindowController : IHUD
         CheckMuteAllState();
     }
 
+    internal void OnMuteAllToggled(bool isMute)
+    {
+        isMuteAll = isMute;
+
+        if (!isJoined)
+            return;
+
+        MuteAll(isMute);
+    }
+
     internal void MuteAll(bool isMute)
     {
-        if (isJoined)
-            isMuteAll = isMute;
+        isMuteAll = isMute;
 
         if (isMute)
             usersToUnmute.Clear();
@@ -414,6 +421,9 @@ public class VoiceChatWindowController : IHUD
 
     internal void CheckMuteAllState()
     {
+        if (!isJoined)
+            return;
+
         isMuteAll = currentPlayers.Count(x => x.Value.model.isMuted) == currentPlayers.Count();
         voiceChatWindowView.SetMuteAllIsOn(isMuteAll, false);
     }
