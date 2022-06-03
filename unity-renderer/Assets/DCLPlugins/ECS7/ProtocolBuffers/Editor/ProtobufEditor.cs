@@ -309,8 +309,7 @@ namespace DCL.Protobuf
             string path = Application.dataPath + PATH_TO_GENERATED + "/" + DOWNLOADED_VERSION_FILENAME;
             return GetVersion(path);
         }
-
-
+        
         private static string GetCompiledVersion()
         {
             string path = Application.dataPath + PATH_TO_FOLDER + COMPILED_VERSION_FILENAME;
