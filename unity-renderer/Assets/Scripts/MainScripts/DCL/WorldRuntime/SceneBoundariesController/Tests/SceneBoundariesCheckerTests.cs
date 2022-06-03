@@ -66,6 +66,18 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
+        public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform() { yield return SBC_Asserts.PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(scene); }
+        
+        [UnityTest]
+        public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(scene); }
+        
+        [UnityTest]
+        public IEnumerator PShapeIsEvaluatedAfterCorrectTransformAttachment() { yield return SBC_Asserts.PShapeIsEvaluatedAfterCorrectTransformAttachment(scene); }
+        
+        [UnityTest]
+        public IEnumerator GLTFShapeIsEvaluatedAfterCorrectTransformAttachment() { yield return SBC_Asserts.GLTFShapeIsEvaluatedAfterCorrectTransformAttachment(scene); }
+        
+        [UnityTest]
         public IEnumerator PShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.PShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]

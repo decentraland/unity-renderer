@@ -69,6 +69,74 @@ namespace SceneBoundariesCheckerTests
             AssertMeshIsInvalid(entity.meshesInfo);
         }
         
+        public static IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(ParcelScene scene)
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
+                JsonConvert.SerializeObject(new BoxShape.Model { })
+            );
+            
+            yield return null;
+            AssertMeshIsInvalid(entity.meshesInfo);
+        }
+        
+        public static IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(ParcelScene scene)
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+                new
+                {
+                    src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
+                }));
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
+            yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
+            
+            yield return null;
+            AssertMeshIsInvalid(entity.meshesInfo);
+        }
+        
+        public static IEnumerator PShapeIsEvaluatedAfterCorrectTransformAttachment(ParcelScene scene)
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
+                JsonConvert.SerializeObject(new BoxShape.Model { })
+            );
+            
+            yield return null;
+            AssertMeshIsInvalid(entity.meshesInfo);
+            
+            yield return null;
+            TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
+            
+            yield return null;
+            AssertMeshIsValid(entity.meshesInfo);
+        }
+        
+        public static IEnumerator GLTFShapeIsEvaluatedAfterCorrectTransformAttachment(ParcelScene scene)
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+                new
+                {
+                    src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
+                }));
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
+            yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
+            
+            yield return null;
+            AssertMeshIsInvalid(entity.meshesInfo);
+            
+            yield return null;
+            TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
+            
+            yield return null;
+            AssertMeshIsValid(entity.meshesInfo);
+        }
+        
         public static IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
         {
             var entity = TestUtils.CreateSceneEntity(scene);
