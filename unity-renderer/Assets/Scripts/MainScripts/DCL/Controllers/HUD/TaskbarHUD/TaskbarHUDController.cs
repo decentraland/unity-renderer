@@ -249,7 +249,6 @@ public class TaskbarHUDController : IHUD
         CloseChatList();
         isExperiencesViewerOpen.Set(false);
 
-
         if (!privateChatWindow.View.IsActive
             && !publicChatChannel.View.IsActive)
             OpenPublicChannelOnPreviewMode();
