@@ -8,13 +8,14 @@
         "GUID:27619889b8ba8c24980f49ee34dbb44a",
         "GUID:f3ff0d2ae2a1ab1459abc81b66a9b4db"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll",
-        "NSubstitute.dll"
+        "nunit.framework.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
