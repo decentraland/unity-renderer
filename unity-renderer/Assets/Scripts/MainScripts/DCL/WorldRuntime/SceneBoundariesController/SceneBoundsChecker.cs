@@ -15,7 +15,7 @@ namespace DCL.Controllers
         public int entitiesToCheckCount => entitiesToCheck.Count;
         public int highPrioEntitiesToCheckCount => highPrioEntitiesToCheck.Count;
 
-        private const bool VERBOSE = true;
+        private const bool VERBOSE = false;
         private Logger logger = new Logger("SceneBoundsChecker") {verboseEnabled = VERBOSE};
         private HashSet<IDCLEntity> highPrioEntitiesToCheck = new HashSet<IDCLEntity>();
         private HashSet<IDCLEntity> entitiesToCheck = new HashSet<IDCLEntity>();
