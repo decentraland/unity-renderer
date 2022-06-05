@@ -1,4 +1,3 @@
-using DCL.Components;
 using DCL.Models;
 using UnityEngine;
 using System.Collections.Generic;
@@ -327,9 +326,12 @@ namespace DCL.Controllers
 
         protected void UpdateComponents(IDCLEntity entity, bool isInsideBoundaries)
         {
-            IOutOfSceneBoundariesHandler[] components = entity.gameObject.GetComponentsInChildren<IOutOfSceneBoundariesHandler>();
+            if(!DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity.entityId))
+                return;
+            
+            List<IOutOfSceneBoundariesHandler> components = DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId];
 
-            for (int i = 0; i < components.Length; i++)
+            for (int i = 0; i < components.Count; i++)
             {
                 components[i].UpdateOutOfBoundariesState(isInsideBoundaries);
             }

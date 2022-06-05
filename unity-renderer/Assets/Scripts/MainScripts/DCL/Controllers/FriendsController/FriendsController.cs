@@ -14,6 +14,10 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     private const bool KERNEL_CAN_REMOVE_ENTRIES = false;
     public bool isInitialized { get; private set; } = false;
+
+    public int ReceivedRequestCount =>
+        friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
+    
     public Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
     [System.Serializable]
@@ -57,6 +61,12 @@ public class FriendsController : MonoBehaviour, IFriendsController
         return friends[userId];
     }
 
+    public bool ContainsStatus(string friendId, FriendshipStatus status)
+    {
+        if (!friends.ContainsKey(friendId)) return false;
+        return friends[friendId].friendshipStatus == status;
+    }
+
     public event Action<string, UserStatus> OnUpdateUserStatus;
     public event Action<string, FriendshipAction> OnUpdateFriendship;
     public event Action<string> OnFriendNotFound;
@@ -70,6 +80,17 @@ public class FriendsController : MonoBehaviour, IFriendsController
         {
             userId = friendUserId,
             action = FriendshipAction.REJECTED
+        });
+    }
+
+    public bool IsFriend(string userId) => friends.ContainsKey(userId);
+    
+    public void RemoveFriend(string friendId)
+    {
+        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        {
+            action = FriendshipAction.DELETED,
+            userId = friendId
         });
     }
 
@@ -249,5 +270,19 @@ public class FriendsController : MonoBehaviour, IFriendsController
         }
 
         return FriendshipStatus.NOT_FRIEND;
+    }
+    
+    [ContextMenu("Change user stats to online")]
+    public void FakeOnlineFriend()
+    {
+        var friend = friends.Values.First();
+        UpdateUserStatus(new UserStatus
+        {
+            userId = friend.userId,
+            position = friend.position,
+            presence = PresenceStatus.ONLINE,
+            friendshipStatus = friend.friendshipStatus,
+            friendshipStartedTime = friend.friendshipStartedTime
+        });
     }
 }

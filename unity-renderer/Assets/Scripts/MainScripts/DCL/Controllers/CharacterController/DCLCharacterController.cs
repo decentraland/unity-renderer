@@ -23,6 +23,9 @@ public class DCLCharacterController : MonoBehaviour
 
     [Header("Collisions")]
     public LayerMask groundLayers;
+    
+    [Header("Additional Camera Layers")]
+    public LayerMask cameraLayers;
 
     [System.NonSerialized]
     public bool initialPositionAlreadySet = false;
@@ -49,6 +52,7 @@ public class DCLCharacterController : MonoBehaviour
     Vector3 velocity = Vector3.zero;
 
     public bool isWalking { get; private set; } = false;
+    public bool isMovingByUserInput { get; private set; } = false;
     public bool isJumping { get; private set; } = false;
     public bool isGrounded { get; private set; }
     public bool isOnMovingPlatform { get; private set; }
@@ -306,6 +310,11 @@ public class DCLCharacterController : MonoBehaviour
                 if (characterXAxis.GetValue() < -CONTROLLER_DRIFT_OFFSET)
                     forwardTarget -= xzPlaneRight;
 
+                if (forwardTarget.Equals(Vector3.zero))
+                    isMovingByUserInput = false;
+                else
+                    isMovingByUserInput = true;
+
 
                 forwardTarget.Normalize();
                 velocity += forwardTarget * speed;
@@ -471,7 +480,7 @@ public class DCLCharacterController : MonoBehaviour
 
     public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo)
     {
-        if (CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo))
+        if (CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers | cameraLayers , out hitInfo))
             return true;
 
         return IsLastCollisionGround();
@@ -529,7 +538,7 @@ public class DCLCharacterController : MonoBehaviour
         float height = 0.875f;
 
         var reportPosition = characterPosition.worldPosition + (Vector3.up * height);
-        var compositeRotation = Quaternion.LookRotation(cameraForward.Get());
+        var compositeRotation = Quaternion.LookRotation(characterForward.HasValue() ? characterForward.Get().Value : cameraForward.Get());
         var playerHeight = height + (characterController.height / 2);
         var cameraRotation = Quaternion.LookRotation(cameraForward.Get());
 

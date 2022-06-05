@@ -9,33 +9,38 @@ namespace DCL.Skybox
     {
         public static void RenderLayer(ref float timeOfTheDay, EditorToolMeasurements toolSize, SkyboxConfiguration config)
         {
-            RenderSimpleValues.RenderColorGradientField(config.skyColor, SkyboxEditorLiterals.skyColor, 0, 24);
-            RenderSimpleValues.RenderColorGradientField(config.horizonColor, SkyboxEditorLiterals.horizonColor, 0, 24);
-            RenderSimpleValues.RenderColorGradientField(config.groundColor, SkyboxEditorLiterals.groundColor, 0, 24);
+            RenderSimpleValues.RenderColorGradientField(config.skyColor, SkyboxEditorLiterals.LayerProperties.skyColor, 0, 24);
+            RenderSimpleValues.RenderColorGradientField(config.horizonColor, SkyboxEditorLiterals.LayerProperties.horizonColor, 0, 24);
+            RenderSimpleValues.RenderColorGradientField(config.groundColor, SkyboxEditorLiterals.LayerProperties.groundColor, 0, 24);
             RenderHorizonLayer(ref timeOfTheDay, toolSize, config);
         }
 
         static void RenderHorizonLayer(ref float timeOfTheDay, EditorToolMeasurements toolSize, SkyboxConfiguration selectedConfiguration)
         {
             EditorGUILayout.Separator();
-            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, selectedConfiguration.horizonHeight, SkyboxEditorLiterals.horizonHeight, SkyboxEditorLiterals.percentage, SkyboxEditorLiterals.value, true, -1, 1);
+            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, selectedConfiguration.horizonHeight, SkyboxEditorLiterals.LayerProperties.horizonHeight, SkyboxEditorLiterals.LayerProperties.percentage, SkyboxEditorLiterals.LayerProperties.value, true, -1, 1);
 
             EditorGUILayout.Space(10);
-            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, selectedConfiguration.horizonWidth, SkyboxEditorLiterals.horizonWidth, SkyboxEditorLiterals.percentage, SkyboxEditorLiterals.value, true, -1, 1);
+            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, selectedConfiguration.horizonWidth, SkyboxEditorLiterals.LayerProperties.horizonWidth, SkyboxEditorLiterals.LayerProperties.percentage, SkyboxEditorLiterals.LayerProperties.value, true, -1, 1);
 
             EditorGUILayout.Separator();
 
             // Horizon Mask
-            RenderSimpleValues.RenderTexture(SkyboxEditorLiterals.texture, ref selectedConfiguration.horizonMask);
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.LayerProperties.horizonMask, EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
 
-            // Horizon mask values
-            RenderSimpleValues.RenderVector3Field(SkyboxEditorLiterals.horizonMaskValues, ref selectedConfiguration.horizonMaskValues);
+            RenderSimpleValues.RenderTexture(SkyboxEditorLiterals.LayerProperties.texture, ref selectedConfiguration.horizonMask);
 
-            // Horizon Plane color
-            RenderSimpleValues.RenderColorGradientField(selectedConfiguration.horizonPlaneColor, SkyboxEditorLiterals.horizonPlaneColor, 0, 24);
+            // Horizon Mask values
+            EditorGUILayout.LabelField(SkyboxEditorLiterals.LayerProperties.horizonMaskValues, EditorStyles.boldLabel);
 
-            // Horizon Height
-            RenderTransitioningVariables.RenderTransitioningFloat(toolSize, ref timeOfTheDay, selectedConfiguration.horizonPlaneHeight, SkyboxEditorLiterals.horizonPlaneHeight, SkyboxEditorLiterals.percentage, SkyboxEditorLiterals.value, true, -1, 0);
+            EditorGUI.indentLevel++;
+            // Tiling
+            RenderSimpleValues.RenderVector2Field(SkyboxEditorLiterals.LayerProperties.tiling, ref selectedConfiguration.horizonMaskTiling);
+            // Offset
+            RenderSimpleValues.RenderVector2Field(SkyboxEditorLiterals.LayerProperties.offset, ref selectedConfiguration.horizonMaskOffset);
+            EditorGUI.indentLevel--;
+            EditorGUI.indentLevel--;
         }
     }
 }

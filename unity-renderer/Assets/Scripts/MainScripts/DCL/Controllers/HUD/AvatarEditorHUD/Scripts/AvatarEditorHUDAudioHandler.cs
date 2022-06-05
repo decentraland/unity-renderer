@@ -218,9 +218,9 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
                     eventMusic.Play();
             }
 
-            view.eyeColorSelector.OnColorChanged += OnEyeColorChanged;
-            view.skinColorSelector.OnColorChanged += OnSkinColorChanged;
-            view.hairColorSelector.OnColorChanged += OnHairColorChanged;
+            view.eyeColorPickerComponent.OnColorChanged += OnEyeColorChanged;
+            view.skinColorSelector.OnColorSelectorChange += OnSkinColorChanged;
+            view.hairColorPickerComponent.OnColorChanged += OnHairColorChanged;
             view.OnAvatarAppear += OnAvatarAppear;
         }
         else
@@ -231,9 +231,9 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
                 StartCoroutine(musicFadeOut);
             }
 
-            view.eyeColorSelector.OnColorChanged -= OnEyeColorChanged;
-            view.skinColorSelector.OnColorChanged -= OnSkinColorChanged;
-            view.hairColorSelector.OnColorChanged -= OnHairColorChanged;
+            view.eyeColorPickerComponent.OnColorChanged -= OnEyeColorChanged;
+            view.skinColorSelector.OnColorSelectorChange -= OnSkinColorChanged;
+            view.hairColorPickerComponent.OnColorChanged -= OnHairColorChanged;
             view.OnAvatarAppear -= OnAvatarAppear;
         }
     }

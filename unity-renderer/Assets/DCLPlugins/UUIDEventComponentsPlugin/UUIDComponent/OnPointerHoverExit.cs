@@ -24,5 +24,7 @@ namespace DCL.Components
         {
             return (int) CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT;
         }
+
+        protected override string uuidComponentName => "pointerHoverExit";
     }
 }

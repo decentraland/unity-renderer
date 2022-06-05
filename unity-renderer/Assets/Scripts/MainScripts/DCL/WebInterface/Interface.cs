@@ -359,7 +359,7 @@ namespace DCL.Interface
         [System.Serializable]
         public class HitEntityInfo
         {
-            public long entityId;
+            public string entityId;
             public string meshName;
         }
 
@@ -658,6 +658,8 @@ namespace DCL.Interface
             public float time;
         }
 
+        public static event Action<string, byte[]> OnBinaryMessageFromEngine;
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -667,6 +669,7 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
     [DllImport("__Internal")] public static extern bool CheckURLParam(string targetParam);
+    [DllImport("__Internal")] public static extern void BinaryMessageFromEngine(string sceneId, byte[] bytes, int size);
         
     public static System.Action<string, string> OnMessageFromEngine;
 #else
@@ -731,6 +734,15 @@ namespace DCL.Interface
 
         public static string GetGraphicCard() => "In Editor Graphic Card";
 #endif
+
+        public static void SendBinaryMessage(string sceneId, byte[] bytes)
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            BinaryMessageFromEngine(sceneId, bytes, bytes.Length);
+#else
+            OnBinaryMessageFromEngine?.Invoke(sceneId, bytes);
+#endif
+        }        
 
         public static void SendMessage(string type)
         {

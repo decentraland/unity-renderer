@@ -44,5 +44,11 @@ namespace DCL.Helpers
         }
 
         public static void Save() { PlayerPrefs.Save(); }
+
+        public static float GetFloat(string key, float defaultValue = 0f) =>
+            PlayerPrefs.GetFloat(key, defaultValue);
+
+        public static void SetFloat(string key, float value) =>
+            PlayerPrefs.SetFloat(key, value);
     }
 }

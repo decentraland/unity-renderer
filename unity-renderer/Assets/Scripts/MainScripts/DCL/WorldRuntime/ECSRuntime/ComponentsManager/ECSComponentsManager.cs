@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Models;
@@ -74,6 +75,41 @@ namespace DCL.ECSRuntime
             if (sceneComponents.TryGetValue(componentId, out IECSComponent component))
             {
                 return component.Remove(entity);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// remove all components of a given entity
+        /// </summary>
+        /// <param name="entity"></param>
+        public void RemoveAllComponents(IDCLEntity entity)
+        {
+            using (var iterator = sceneComponents.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    iterator.Current.Value.Remove(entity);
+                }
+            }
+        }
+
+        /// <summary>
+        /// get if entity has any component
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool HasAnyComponent(IDCLEntity entity)
+        {
+            using (var iterator = sceneComponents.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    if (iterator.Current.Value.HasComponent(entity))
+                    {
+                        return true;
+                    }
+                }
             }
             return false;
         }

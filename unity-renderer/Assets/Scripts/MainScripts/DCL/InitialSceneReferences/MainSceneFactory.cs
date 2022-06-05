@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
@@ -45,8 +46,6 @@ namespace DCL
         public static GameObject CreateAudioHandler() => LoadAndInstantiate("HUDAudioHandler");
 
         public static GameObject CreateNavMap() => LoadAndInstantiate("NavMap");
-
-        public static GameObject CreateSettingsController() => LoadAndInstantiate("SettingsController");
 
         public static GameObject CreateEnvironment(string prefabPath = "Environment")
         {
