@@ -430,6 +430,28 @@ namespace DCL.Interface
             public int hiccupsInThousandFrames;
             public float hiccupsTime;
             public float totalTime;
+            public int gltfInProgress;
+            public int gltfFailed;
+            public int gltfCancelled;
+            public int gltfLoaded;
+            public int abInProgress;
+            public int abFailed;
+            public int abCancelled;
+            public int abLoaded;
+            public int gltfTexturesLoaded;
+            public int abTexturesLoaded;
+            public int promiseTexturesLoaded;
+            public int enqueuedMessages;
+            public int processedMessages;
+            public int playerCount;
+            public int loadRadius;
+            public Dictionary<Vector2Int, long> sceneScores;
+            public object drawCalls; //int *
+            public object memoryReserved; //long, in total bytes *
+            public object memoryUsage; //long, in total bytes *
+            public object totalGCAlloc; //long, in total bytes, its the sum of all GCAllocs per frame over 1000 frames *
+
+            //* is NULL if SendProfilerMetrics is false
         }
 
         [System.Serializable]
@@ -753,13 +775,17 @@ namespace DCL.Interface
         public static void SendMessage<T>(string type, T message)
         {
             string messageJson = JsonUtility.ToJson(message);
-
+            SendJson(type, messageJson);
+        }
+        
+        public static void SendJson(string type, string json)
+        {
             if (VERBOSE)
             {
-                Debug.Log($"Sending message: " + messageJson);
+                Debug.Log($"Sending message: " + json);
             }
 
-            MessageFromEngine(type, messageJson);
+            MessageFromEngine(type, json);
         }
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
@@ -1208,16 +1234,9 @@ namespace DCL.Interface
 
         public static void SaveUserTutorialStep(int newTutorialStep) { SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep }); }
 
-        public static void SendPerformanceReport(string encodedFrameTimesInMS, bool usingFPSCap, int hiccupsInThousandFrames, float hiccupsTime, float totalTime)
+        public static void SendPerformanceReport(string performanceReportPayload)
         {
-            SendMessage("PerformanceReport", new PerformanceReportPayload()
-            {
-                samples = encodedFrameTimesInMS,
-                fpsIsCapped = usingFPSCap,
-                hiccupsInThousandFrames = hiccupsInThousandFrames,
-                hiccupsTime = hiccupsTime,
-                totalTime = totalTime
-            });
+            SendJson("PerformanceReport", performanceReportPayload);
         }
 
         public static void SendSystemInfoReport() { SendMessage("SystemInfoReport", new SystemInfoReportPayload()); }
