@@ -182,8 +182,9 @@ namespace SceneBoundariesCheckerTests
         public static IEnumerator PShapeIsInvalidatedWhenLeavingBounds(ParcelScene scene)
         {
             var boxShape = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(8, 1, 8));
-            yield return null;
 
+            yield return null;
+            yield return null;
             var entity = boxShape.attachedEntities.First();
 
             AssertMeshIsValid(entity.meshesInfo);
@@ -256,8 +257,9 @@ namespace SceneBoundariesCheckerTests
         {
             var boxShape = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(8, 5, 8));
             var entity = boxShape.attachedEntities.First();
-            yield return null;
 
+            yield return null;
+            yield return null;
             AssertMeshIsValid(entity.meshesInfo);
 
             // Move object to surpass the scene height boundaries
@@ -266,7 +268,6 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
             yield return null;
-
             AssertMeshIsInvalid(entity.meshesInfo);
         }
 
@@ -274,15 +275,17 @@ namespace SceneBoundariesCheckerTests
         {
             long entityId = 11;
             TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
-            yield return null;
 
+            yield return null;
+            yield return null;
             AssertMeshIsValid(scene.entities[entityId].meshesInfo);
 
             // Attach child
             long childEntityId = 20;
             TestUtils.InstantiateEntityWithShape(scene, childEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
+            
             yield return null;
-
+            yield return null;
             AssertMeshIsValid(scene.entities[childEntityId].meshesInfo);
 
             TestUtils.SetEntityParent(scene, childEntityId, entityId);
@@ -293,7 +296,6 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
             yield return null;
-
             AssertMeshIsInvalid(scene.entities[childEntityId].meshesInfo);
         }
 
