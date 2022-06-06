@@ -13,7 +13,7 @@ namespace DCL
     public class PerformanceMetricsController
     {
         private const int SAMPLES_SIZE = 1000; // Send performance report every 1000 samples
-        private const string PROFILER_METRICS_FEATURE_FLAG = "SendProfilerMetrics";
+        private const string PROFILER_METRICS_FEATURE_FLAG = "explorer-profiler-metrics";
 
         private readonly LinealBufferHiccupCounter tracker = new LinealBufferHiccupCounter();
         private readonly char[] encodedSamples = new char[SAMPLES_SIZE];
