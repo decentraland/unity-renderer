@@ -334,6 +334,7 @@ namespace DCL
             playerNameContainer.SetActive(false);
 
         }
+
         public void RemoveHideModifier()
         {
             avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
