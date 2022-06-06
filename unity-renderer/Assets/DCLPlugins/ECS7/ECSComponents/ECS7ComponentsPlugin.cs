@@ -8,19 +8,21 @@ using DCL.SettingsCommon;
 
 public class ECS7ComponentsPlugin : IDisposable
 {
-
     private readonly ECSTransformComponent transformComponent;
+    private readonly NFTShapeRegister nftShapeRegister;
     private readonly ECSComponentsFactory componentsFactory;
 
     public ECS7ComponentsPlugin(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
     {
         this.componentsFactory = componentsFactory;
         transformComponent = new ECSTransformComponent(ComponentID.TRANSFORM, componentsFactory, componentsWriter);
+        nftShapeRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter);
 
         // Box Shape
         componentsFactory.AddOrReplaceComponent(ComponentID.BOX_SHAPE,
             data => PBBoxShape.Parser.ParseFrom((byte[])data),
             () =>  new ECSBoxShapeComponentHandler(DataStore.i.ecs7));
+        componentsWriter.AddOrReplaceComponentSerializer<PBBoxShape>(ComponentID.BOX_SHAPE, NFTShapeSerializator.Serialize);
 
         // Plane Shape
         componentsFactory.AddOrReplaceComponent(ComponentID.PLANE_SHAPE,
@@ -51,6 +53,7 @@ public class ECS7ComponentsPlugin : IDisposable
     public void Dispose()
     {
         transformComponent.Dispose();
+        nftShapeRegister.Dispose();
         componentsFactory.RemoveComponent(ComponentID.BOX_SHAPE);
         componentsFactory.RemoveComponent(ComponentID.BOX_SHAPE);
         componentsFactory.RemoveComponent(ComponentID.PLANE_SHAPE);

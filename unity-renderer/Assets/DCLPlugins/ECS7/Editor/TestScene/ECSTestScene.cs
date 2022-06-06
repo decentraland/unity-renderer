@@ -3,11 +3,13 @@ using System.Collections;
 using System.Reflection;
 using DCL;
 using DCL.Camera;
+using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Interface;
 using DCL.Models;
 using UnityEngine;
+using Color = DCL.ECSComponents.Color;
 using Environment = DCL.Environment;
 
 public class ECSTestScene : MonoBehaviour
@@ -21,6 +23,30 @@ public class ECSTestScene : MonoBehaviour
     {
         componentWriter.PutComponent(sceneId, 0, 1,
             new ECSTransform() { position = new Vector3(100, 100, 100) });
+        AddNFTComponent(sceneId, componentWriter);
+        AddBoxComponent(sceneId, componentWriter);
+    }
+
+    private static void AddBoxComponent(string sceneId, IECSComponentWriter componentWriter)
+    {
+        PBBoxShape model = new PBBoxShape();
+        model.Visible = true;
+        componentWriter.PutComponent(sceneId,1,ComponentID.BOX_SHAPE,
+            model );
+    }
+    
+    private static void AddNFTComponent(string sceneId, IECSComponentWriter componentWriter)
+    {
+        PBNFTShape model = new PBNFTShape();
+        model.Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722";
+        model.Visible = true;
+        model.Color = new Color();
+        model.Style = 6;
+        model.Color.Red = 0f;
+        model.Color.Green = 0f;
+        model.Color.Blue = 1f;
+        componentWriter.PutComponent(sceneId,2,ComponentID.NFT_SHAPE,
+            model );
     }
 
     private static IEnumerator LoadScene(Action<string, IECSComponentWriter> sceneScript)
