@@ -290,7 +290,9 @@ namespace DCL.ECSComponents.Test
             
             // Assert
             Assert.AreEqual( model.OutlineWidth, textShapeComponentHandler.textComponent.outlineWidth);
-            Assert.AreEqual( outlineColor, textShapeComponentHandler.textComponent.outlineColor);
+            Assert.AreEqual( outlineColor.b, textShapeComponentHandler.textComponent.outlineColor.b/255f);
+            Assert.AreEqual( outlineColor.r, textShapeComponentHandler.textComponent.outlineColor.r/255f);
+            Assert.AreEqual( outlineColor.g, textShapeComponentHandler.textComponent.outlineColor.g/255f);
         }
         
         [Test]
