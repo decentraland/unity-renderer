@@ -13,7 +13,7 @@ namespace DCL
     public class PerformanceMetricsController
     {
         private const int SAMPLES_SIZE = 1000; // Send performance report every 1000 samples
-        private const string PROFILER_METRICS_FEATURE_FLAG = "explorer-profiler-metrics";
+        private const string PROFILER_METRICS_FEATURE_FLAG = "profiler_metrics";
 
         private readonly LinealBufferHiccupCounter tracker = new LinealBufferHiccupCounter();
         private readonly char[] encodedSamples = new char[SAMPLES_SIZE];
@@ -30,7 +30,7 @@ namespace DCL
         private int currentIndex = 0;
         private long totalAllocSample;
         private bool isTrackingProfileRecords = false;
-        private readonly Dictionary<Vector2Int, long> scenesMemoryScore = new Dictionary<Vector2Int, long>();
+        private readonly Dictionary<string, long> scenesMemoryScore = new Dictionary<string, long>();
 
         public PerformanceMetricsController()
         {
@@ -99,7 +99,7 @@ namespace DCL
                 if (coords.x == 0 && coords.y == 0)
                     continue; // we ignore global scene
 
-                scenesMemoryScore.Add(coords, parcelScene.metricsCounter.currentCount.totalMemoryScore);
+                scenesMemoryScore.Add(parcelScene.sceneData.id, parcelScene.metricsCounter.currentCount.totalMemoryScore);
             }
 
             object drawCalls = null;
