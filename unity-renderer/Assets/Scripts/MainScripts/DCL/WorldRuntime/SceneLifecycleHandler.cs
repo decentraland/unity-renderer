@@ -1,4 +1,5 @@
 using System;
+using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.WorldRuntime;
 using UnityEngine;
@@ -53,6 +54,22 @@ namespace DCL.Controllers
             sceneResourcesLoadTracker = new SceneResourcesLoadTracker();
             sceneResourcesLoadTracker.Track(owner.componentsManagerLegacy, Environment.i.world.state);
             sceneResourcesLoadTracker.OnResourcesStatusUpdate += OnResourcesStatusUpdated;
+   
+            // This is done while the two ECS are living together, if we detect that a component from the new ECS has incremented a 
+            // resource for the scene, we changed the track since that means that this scene is from the new ECS.
+            // This should disappear when the old ecs is removed from the project. This should be the default track 
+            DataStore.i.ecs7.componentsManagers.OnAdded += ChangeTrackingSystem;
+        }
+
+        private void ChangeTrackingSystem(IParcelScene scene, ECSComponentsManager manager)
+        {
+            if (scene.sceneData.id != owner.sceneData.id)
+                return;
+            
+            DataStore.i.ecs7.componentsManagers.OnAdded -= ChangeTrackingSystem;
+
+            sceneResourcesLoadTracker.Dispose();
+            sceneResourcesLoadTracker.Track(scene.sceneData.id);
         }
 
         private void OnSceneSetData(LoadParcelScenesMessage.UnityParcelScene data)

@@ -89,5 +89,5 @@ Material:
     - _GradientPositions: {r: 0, g: 0, b: 0, a: 0}
     - _GradientPositions01: {r: 0, g: 0.33299762, b: 0.66599524, a: 1}
     - _GradientPositions02: {r: 1, g: 1, b: 1, a: 1}
-    - _Speed: {r: 0, g: 0, b: 0, a: 0}
+    - _Speed: {r: -0.025, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

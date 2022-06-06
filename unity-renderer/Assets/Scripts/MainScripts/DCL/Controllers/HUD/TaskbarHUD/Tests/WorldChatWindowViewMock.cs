@@ -79,4 +79,6 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     public void Filter(Dictionary<string, PrivateChatModel> privateChats, Dictionary<string, PublicChatChannelModel> publicChannels)
     {
     }
+
+    public bool ContainsPrivateChannel(string userId) => false;
 }

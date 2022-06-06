@@ -65,7 +65,8 @@ public class WorldChatWindowController : IHUD
             HandleMessageAdded(value);
         
         if (!friendsController.isInitialized)
-            view.ShowPrivateChatsLoading();
+            if (ownUserProfile?.hasConnectedWeb3 ?? false)
+                view.ShowPrivateChatsLoading();
         
         chatController.OnAddMessage += HandleMessageAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
@@ -131,13 +132,22 @@ public class WorldChatWindowController : IHUD
         if (status.friendshipStatus == FriendshipStatus.FRIEND)
         {
             var profile = recipientsFromPrivateChats[userId];
-            view.SetPrivateChat(new PrivateChatModel
+            
+            if (ShouldDisplayPrivateChat(profile.userId))
             {
-                user = profile,
-                recentMessage = lastPrivateMessages[userId],
-                isBlocked = ownUserProfile.IsBlocked(userId),
-                isOnline = status.presence == PresenceStatus.ONLINE
-            });
+                view.SetPrivateChat(new PrivateChatModel
+                {
+                    user = profile,
+                    recentMessage = lastPrivateMessages[userId],
+                    isBlocked = ownUserProfile.IsBlocked(userId),
+                    isOnline = status.presence == PresenceStatus.ONLINE
+                });
+            }
+            else if (!pendingPrivateChats.Contains(profile.userId))
+            {
+                pendingPrivateChats.Enqueue(profile.userId);
+                UpdateMoreChannelsToLoadHint();
+            }
         }
         else if (status.friendshipStatus == FriendshipStatus.NOT_FRIEND)
         {
@@ -151,7 +161,10 @@ public class WorldChatWindowController : IHUD
         if (message.messageType != ChatMessage.Type.PRIVATE) return;
         var profile = ExtractRecipient(message);
         if (profile == null) return;
-        if (friendsController.isInitialized && !friendsController.IsFriend(profile.userId)) return;
+        
+        if (friendsController.isInitialized)
+            if (!friendsController.IsFriend(profile.userId))
+                return;
 
         if (lastPrivateMessages.ContainsKey(profile.userId))
         {
@@ -163,7 +176,7 @@ public class WorldChatWindowController : IHUD
         
         recipientsFromPrivateChats[profile.userId] = profile;
 
-        if (ShouldDisplayPrivateChat(message))
+        if (ShouldDisplayPrivateChat(profile.userId))
             view.SetPrivateChat(CreatePrivateChatModel(message, profile));
         else if (!pendingPrivateChats.Contains(profile.userId))
         {
@@ -172,11 +185,12 @@ public class WorldChatWindowController : IHUD
         }
     }
 
-    private bool ShouldDisplayPrivateChat(ChatMessage message)
+    private bool ShouldDisplayPrivateChat(string userId)
     {
+        if (!friendsController.isInitialized) return false;
         if (view.PrivateChannelsCount < INITIAL_DISPLAYED_PRIVATE_CHAT_COUNT) return true;
-        var messageTimestamp = DateTimeOffset.FromUnixTimeMilliseconds((long) message.timestamp);
-        return (DateTime.UtcNow - messageTimestamp).TotalDays <= 1;
+        if (view.ContainsPrivateChannel(userId)) return true;
+        return false;
     }
 
     private PrivateChatModel CreatePrivateChatModel(ChatMessage recentMessage, UserProfile profile)
@@ -193,8 +207,14 @@ public class WorldChatWindowController : IHUD
     private UserProfile ExtractRecipient(ChatMessage message) =>
         userProfileBridge.Get(message.sender != ownUserProfile.userId ? message.sender : message.recipient);
 
-    private void OnUserProfileUpdate(UserProfile profile) => view.RefreshBlockedDirectMessages(profile.blocked);
-    
+    private void OnUserProfileUpdate(UserProfile profile)
+    {
+        view.RefreshBlockedDirectMessages(profile.blocked);
+        
+        if (!profile.hasConnectedWeb3)
+            view.HidePrivateChatsLoading();
+    }
+
     private void ShowOrHideMoreFriendsToLoadHint()
     {
         if (pendingPrivateChats.Count == 0)

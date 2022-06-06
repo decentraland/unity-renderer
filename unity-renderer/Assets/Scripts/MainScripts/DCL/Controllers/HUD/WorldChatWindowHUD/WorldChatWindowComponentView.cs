@@ -31,11 +31,12 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] private GameObject loadMoreEntriesContainer;
     [SerializeField] private TMP_Text loadMoreEntriesLabel;
 
-    private readonly Queue<PrivateChatModel> creationQueue = new Queue<PrivateChatModel>();
+    private readonly Dictionary<string, PrivateChatModel> creationQueue = new Dictionary<string, PrivateChatModel>();
     private bool isSortingDirty;
     private bool isLayoutDirty;
     private Dictionary<string, PrivateChatModel> filteredPrivateChats;
     private int currentAvatarSnapshotIndex;
+    private bool isLoadingPrivateChannels;
 
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
@@ -88,6 +89,8 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         base.Update();
 
+        SetQueuedEntries();
+
         if (isSortingDirty)
         {
             directChatList.Sort();
@@ -101,7 +104,6 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             ((RectTransform) scroll.transform).ForceUpdateLayout();
         isLayoutDirty = false;
 
-        SetQueuedEntries();
         FetchProfilePicturesForVisibleEntries();
     }
 
@@ -109,7 +111,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public void Hide() => gameObject.SetActive(false);
 
-    public void SetPrivateChat(PrivateChatModel model) => creationQueue.Enqueue(model);
+    public void SetPrivateChat(PrivateChatModel model) => creationQueue[model.user.userId] = model;
 
     public void RemovePrivateChat(string userId)
     {
@@ -161,9 +163,14 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         searchResultsList.Hide();
         publicChannelList.Show();
         publicChannelList.Sort();
-        directChatList.Show();
-        directChatList.Sort();
-        directChannelHeader.SetActive(true);
+        
+        if (!isLoadingPrivateChannels)
+        {
+            directChatList.Show();
+            directChatList.Sort();
+            directChannelHeader.SetActive(true);    
+        }
+        
         searchResultsHeader.SetActive(false);
 
         directChatList.Filter(entry => true);
@@ -199,6 +206,9 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         UpdateHeaders();
     }
 
+    public bool ContainsPrivateChannel(string userId) => creationQueue.ContainsKey(userId)
+                                                         || directChatList.Get(userId) != null;
+
     public override void RefreshControl()
     {
         publicChannelList.Clear();
@@ -214,7 +224,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         var user = model.user;
         var userId = user.userId;
-        
+
         var entry = new PrivateChatEntry.PrivateChatEntryModel(
             user.userId,
             user.userName,
@@ -227,12 +237,11 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         if (filteredPrivateChats?.ContainsKey(userId) ?? false)
         {
             directChatList.Remove(userId);
-            publicChannelList.Remove(userId);
             searchResultsList.Set(entry);
         }
         else
             directChatList.Set(userId, entry);
-        
+
         UpdateHeaders();
         UpdateLayout();
         SortLists();
@@ -252,6 +261,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         directChatsLoadingContainer.SetActive(visible);
         directChatsContainer.SetActive(!visible);
         scroll.enabled = !visible;
+        isLoadingPrivateChannels = visible;
     }
 
     private void UpdateHeaders()
@@ -267,12 +277,17 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         if (creationQueue.Count == 0) return;
 
         for (var i = 0; i < CREATION_AMOUNT_PER_FRAME && creationQueue.Count > 0; i++)
-            Set(creationQueue.Dequeue());
+        {
+            var (userId, model) = creationQueue.First();
+            creationQueue.Remove(userId);
+            Set(model);
+        }
     }
-    
+
     private void FetchProfilePicturesForVisibleEntries()
     {
-        foreach (var entry in directChatList.Entries.Values.Skip(currentAvatarSnapshotIndex).Take(AVATAR_SNAPSHOTS_PER_FRAME))
+        foreach (var entry in directChatList.Entries.Values.Skip(currentAvatarSnapshotIndex)
+                     .Take(AVATAR_SNAPSHOTS_PER_FRAME))
         {
             if (entry.IsVisible((RectTransform) scroll.transform))
                 entry.EnableAvatarSnapshotFetching();

@@ -6,63 +6,68 @@ using UnityEngine;
 
 namespace DCL.Skybox
 {
-    public class RenderLeftPanel3DLayers
+    public static class RenderLeftPanelSatelliteLayers
     {
         public static void Render(ref float timeOfTheDay, EditorToolMeasurements toolSize, SkyboxConfiguration config, Action<RightPanelPins> AddToRightPanel, CopyFunctionality copyPasteObj)
         {
-            // Loop through texture layer and print the name of all layers
-            for (int i = 0; i < config.additional3Dconfig.Count; i++)
+            // Loop through satellite list and print the name of all layers
+            for (int i = 0; i < config.satelliteLayers.Count; i++)
             {
 
                 EditorGUILayout.BeginHorizontal(toolSize.leftPanelHorizontal);
 
-                config.additional3Dconfig[i].enabled = EditorGUILayout.Toggle(config.additional3Dconfig[i].enabled, GUILayout.Width(toolSize.layerActiveCheckboxSize), GUILayout.Height(toolSize.layerActiveCheckboxSize));
+                config.satelliteLayers[i].enabled = EditorGUILayout.Toggle(config.satelliteLayers[i].enabled, GUILayout.Width(toolSize.layerActiveCheckboxSize), GUILayout.Height(toolSize.layerActiveCheckboxSize));
 
-                if (GUILayout.Button(config.additional3Dconfig[i].layers.nameInEditor, GUILayout.Width(toolSize.layerButtonWidth)))
+                if (GUILayout.Button(config.satelliteLayers[i].nameInEditor, GUILayout.Width(toolSize.layerButtonWidth)))
                 {
-                    AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Elements3D_Dome, name = config.additional3Dconfig[i].layers.nameInEditor, targetDomeElement = config.additional3Dconfig[i] });
+                    AddToRightPanel(new RightPanelPins { part = SkyboxEditorToolsParts.Elements3D_Satellite, name = config.satelliteLayers[i].nameInEditor, targetSatelliteElement = config.satelliteLayers[i] });
                 }
 
                 if (i == 0)
                 {
                     GUI.enabled = false;
                 }
-                if (GUILayout.Button(SkyboxEditorLiterals.upArrow.ToString()))
+                if (GUILayout.Button(SkyboxEditorLiterals.Characters.upArrow.ToString()))
                 {
-                    Config3DDome temp = null;
+                    Config3DSatellite temp = null;
 
                     if (i >= 1)
                     {
-                        temp = config.additional3Dconfig[i - 1];
-                        config.additional3Dconfig[i - 1] = config.additional3Dconfig[i];
-                        config.additional3Dconfig[i] = temp;
+                        temp = config.satelliteLayers[i - 1];
+                        config.satelliteLayers[i - 1] = config.satelliteLayers[i];
+                        config.satelliteLayers[i] = temp;
                     }
                 }
 
                 GUI.enabled = true;
 
-                if (i == config.additional3Dconfig.Count - 1)
+                if (i == config.satelliteLayers.Count - 1)
                 {
                     GUI.enabled = false;
                 }
 
-                if (GUILayout.Button(SkyboxEditorLiterals.downArrow.ToString()))
+                if (GUILayout.Button(SkyboxEditorLiterals.Characters.downArrow.ToString()))
                 {
-                    Config3DDome temp = null;
-                    if (i < (config.additional3Dconfig.Count - 1))
+                    Config3DSatellite temp = null;
+                    if (i < (config.satelliteLayers.Count - 1))
                     {
-                        temp = config.additional3Dconfig[i + 1];
-                        config.additional3Dconfig[i + 1] = config.additional3Dconfig[i];
-                        config.additional3Dconfig[i] = temp;
+                        temp = config.satelliteLayers[i + 1];
+                        config.satelliteLayers[i + 1] = config.satelliteLayers[i];
+                        config.satelliteLayers[i] = temp;
                     }
                     break;
                 }
 
                 GUI.enabled = true;
 
-                // Rendering marker
+                //if (GUILayout.Button(SkyboxEditorLiterals.sign_remove))
+                //{
+                //    config.satelliteLayers.RemoveAt(i);
+                //    break;
+                //}
+
                 Color circleColor = Color.green;
-                switch (config.additional3Dconfig[i].layers.renderType)
+                switch (config.satelliteLayers[i].renderType)
                 {
                     case LayerRenderType.Rendering:
                         circleColor = Color.green;
@@ -83,7 +88,7 @@ namespace DCL.Skybox
                 Color normalContentColor = GUI.color;
                 GUI.color = circleColor;
 
-                EditorGUILayout.LabelField(SkyboxEditorLiterals.renderMarker.ToString(), SkyboxEditorStyles.Instance.renderingMarkerStyle, GUILayout.Width(20), GUILayout.Height(20));
+                EditorGUILayout.LabelField(SkyboxEditorLiterals.Characters.renderMarker.ToString(), SkyboxEditorStyles.Instance.renderingMarkerStyle, GUILayout.Width(20), GUILayout.Height(20));
 
                 GUI.color = normalContentColor;
 
@@ -91,61 +96,60 @@ namespace DCL.Skybox
                 if (GUILayout.Button(":", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     ArrayList list = new ArrayList();
-                    list.Add(config.additional3Dconfig);
+                    list.Add(config.satelliteLayers);
                     list.Add(i);
 
                     // Anonymous method for delete operation
                     GenericMenu.MenuFunction2 deleteBtnClicked = (object obj) =>
                     {
                         ArrayList list = obj as ArrayList;
-                        List<Config3DDome> domeList = list[0] as List<Config3DDome>;
+                        List<Config3DSatellite> satellites = list[0] as List<Config3DSatellite>;
                         int index = (int)list[1];
-                        domeList.RemoveAt(index);
+                        satellites.RemoveAt(index);
                     };
 
                     // Anonymous method for Add operation
                     GenericMenu.MenuFunction2 addBtnClicked = (object obj) =>
                     {
                         ArrayList list = obj as ArrayList;
-                        List<Config3DDome> domeList = list[0] as List<Config3DDome>;
+                        List<Config3DSatellite> satellites = list[0] as List<Config3DSatellite>;
                         int index = (int)list[1];
-                        domeList.Insert(index + 1, new Config3DDome("Dome " + (domeList.Count + 1)));
+                        satellites.Insert(index + 1, new Config3DSatellite("Satellite " + (satellites.Count + 1)));
                     };
 
                     // Anonymous method for copy layer
                     GenericMenu.MenuFunction2 copyBtnClicked = (object obj) =>
                     {
                         ArrayList list = obj as ArrayList;
-                        List<Config3DDome> layerList = list[0] as List<Config3DDome>;
+                        List<Config3DSatellite> satellites = list[0] as List<Config3DSatellite>;
                         int index = (int)list[1];
-                        copyPasteObj.SetDome(layerList[index]);
+                        copyPasteObj.SetSatellite(satellites[index]);
                     };
 
                     // Anonymous method for Paste layer
                     GenericMenu.MenuFunction2 pasteBtnClicked = (object obj) =>
                     {
                         ArrayList list = obj as ArrayList;
-                        List<Config3DDome> layerList = list[0] as List<Config3DDome>;
+                        List<Config3DSatellite> satellites = list[0] as List<Config3DSatellite>;
                         int index = (int)list[1];
-                        layerList[index] = copyPasteObj.GetCopiedDome().DeepCopy();
+                        satellites[index] = copyPasteObj.GetCopiedSatellite().DeepCopy();
                     };
-                    ShowDomeContextMenu(copyPasteObj, deleteBtnClicked, addBtnClicked, copyBtnClicked, pasteBtnClicked, list);
+                    ShowSatelliteContextMenu(copyPasteObj, deleteBtnClicked, addBtnClicked, copyBtnClicked, pasteBtnClicked, list);
                 }
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             }
             Rect r = EditorGUILayout.BeginHorizontal();
-            if (GUI.Button(new Rect(r.width - 35, r.y, 25, 25), SkyboxEditorLiterals.sign_add))
+            if (GUI.Button(new Rect(r.width - 35, r.y, 25, 25), SkyboxEditorLiterals.Characters.sign_add))
             {
-                config.additional3Dconfig.Add(new Config3DDome("Dome " + (config.additional3Dconfig.Count + 1)));
+                config.satelliteLayers.Add(new Config3DSatellite("Satellite " + (config.satelliteLayers.Count + 1)));
             }
-
-            EditorGUILayout.Space(25);
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(25);
         }
 
-        private static void ShowDomeContextMenu(CopyFunctionality copyPasteObj, GenericMenu.MenuFunction2 OnDeleteBtnClicked, GenericMenu.MenuFunction2 OnAddBtnClicked, GenericMenu.MenuFunction2 OnCopyBtnClicked, GenericMenu.MenuFunction2 OnPasteBtnClicked, object list)
+        private static void ShowSatelliteContextMenu(CopyFunctionality copyPasteObj, GenericMenu.MenuFunction2 OnDeleteBtnClicked, GenericMenu.MenuFunction2 OnAddBtnClicked, GenericMenu.MenuFunction2 OnCopyBtnClicked, GenericMenu.MenuFunction2 OnPasteBtnClicked, object list)
         {
             // Create menu
             GenericMenu menu = new GenericMenu();
@@ -156,7 +160,7 @@ namespace DCL.Skybox
             menu.AddItem(new GUIContent("Copy"), false, OnCopyBtnClicked, list);
 
             // Paste option
-            if (copyPasteObj.IsDomeAvailable())
+            if (copyPasteObj.IsSatelliteAvailable())
             {
                 menu.AddItem(new GUIContent("Paste"), false, OnPasteBtnClicked, list);
             }

@@ -10,6 +10,7 @@ namespace DCL.Skybox
         /// Time for one complete circle. In Hours. default 24
         /// </summary>
         public const float CYCLE_TIME = 24;
+        public const float DOME_DEFAULT_SIZE = 50;
 
         public static float GetNormalizedDayTime(float timeOfTheDay)
         {
@@ -33,8 +34,14 @@ namespace DCL.Skybox
         public static readonly int HorizonWidth = Shader.PropertyToID("_horizonWidth");
         public static readonly int HorizonMask = Shader.PropertyToID("_horizonMask");
         public static readonly int HorizonMaskValues = Shader.PropertyToID("_horizonMaskValues");
-        public static readonly int HorizonPlaneColor = Shader.PropertyToID("_HorizonPlaneColor");
+        public static readonly int HorizonPlane = Shader.PropertyToID("_horizonPlane");
+        public static readonly int HorizonPlaneValues = Shader.PropertyToID("_horizonPlaneValues");
+        public static readonly int HorizonPlaneColor = Shader.PropertyToID("_horizonPlaneColor");
         public static readonly int HorizonPlaneHeight = Shader.PropertyToID("_horizonPlaneHeight");
+        public static readonly int PlaneSmoothRange = Shader.PropertyToID("_smoothRange");
+        public static readonly int HorizonLightIntensity = Shader.PropertyToID("_horizonLigthIntesity");
+        public static readonly int FogIntensity = Shader.PropertyToID("_fogIntesity");
+        public static readonly int Opacity = Shader.PropertyToID("_Opacity");
 
         static SkyboxShaderUtils() { CacheShaderProperties(); }
 
