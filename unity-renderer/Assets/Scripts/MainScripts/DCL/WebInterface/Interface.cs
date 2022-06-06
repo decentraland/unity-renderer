@@ -446,10 +446,10 @@ namespace DCL.Interface
             public int playerCount;
             public int loadRadius;
             public Dictionary<Vector2Int, long> sceneScores;
-            object drawCalls; //int *
-            object memoryReserved; //long, in total bytes *
-            object memoryUsage; //long, in total bytes *
-            object totalGCAlloc; //long, in total bytes, its the sum of all GCAllocs per frame over 1000 frames *
+            public object drawCalls; //int *
+            public object memoryReserved; //long, in total bytes *
+            public object memoryUsage; //long, in total bytes *
+            public object totalGCAlloc; //long, in total bytes, its the sum of all GCAllocs per frame over 1000 frames *
 
             //* is NULL if SendProfilerMetrics is false
         }
