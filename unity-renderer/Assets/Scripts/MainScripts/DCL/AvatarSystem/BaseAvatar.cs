@@ -32,10 +32,7 @@ namespace AvatarSystem
             if (avatarRevealerContainer == null)
                 return;
 
-            if (avatarRevealer != null && resetLoading)
-                UnityEngine.Object.Destroy(avatarRevealer.gameObject);
-
-            if(resetLoading)
+            if (avatarRevealer == null)
                 avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<AvatarReveal>();
 
             meshRenderer = avatarRevealer.meshRenderer;

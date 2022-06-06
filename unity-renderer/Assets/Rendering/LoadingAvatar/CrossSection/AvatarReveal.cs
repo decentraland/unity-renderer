@@ -19,8 +19,11 @@ public class AvatarReveal : MonoBehaviour
     public List<Renderer> targets = new List<Renderer>();
     List<Material> _materials = new List<Material>();
 
+    private Vector3 revealerStartingPosition;
+
     private void Start()
     {
+        revealerStartingPosition = revealer.transform.position;
         _ghostMaterial = meshRenderer.material;
 
         foreach (Renderer r in targets)

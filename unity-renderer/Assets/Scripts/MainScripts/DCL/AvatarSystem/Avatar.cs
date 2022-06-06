@@ -79,7 +79,6 @@ namespace AvatarSystem
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
                 
                 emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
-
                 gpuSkinning.Prepare(loader.combinedRenderer);
                 gpuSkinningThrottler.Bind(gpuSkinning);
 

@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6693538414670061813}
-  m_Layer: 23
+  m_Layer: 15
   m_Name: LoadingAvatarContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}

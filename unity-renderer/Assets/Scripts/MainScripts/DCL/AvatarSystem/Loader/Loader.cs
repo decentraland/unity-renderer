@@ -52,9 +52,16 @@ namespace AvatarSystem
                     throw new Exception($"Couldnt load (nor fallback) wearables with required category: {string.Join(", ", ConstructRequiredFailedWearablesList(loaders.Values))}");
 
                 AvatarSystemUtils.CopyBones(bonesContainer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
-                
-                if(bodyshapeLoader.rendereable != null)
+
+                if (bodyshapeLoader.rendereable != null)
+                {
+                    Debug.Log("not null");
                     AvatarSystemUtils.CopyBones(bonesContainer, bodyshapeLoader.rendereable.renderers.OfType<SkinnedMeshRenderer>());
+                }
+                else 
+                {
+                    Debug.Log("null");
+                }
                 
                 (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(settings.bodyshapeId, wearables);
 
