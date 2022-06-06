@@ -1,23 +1,56 @@
+using System.Collections.Generic;
+using DCL.Controllers;
 using DCL.Interface;
 using DCL.FPSDisplay;
 using DCL.SettingsCommon;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
+using Newtonsoft.Json;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace DCL
 {
     public class PerformanceMetricsController
     {
-        private LinealBufferHiccupCounter tracker = new LinealBufferHiccupCounter();
         private const int SAMPLES_SIZE = 1000; // Send performance report every 1000 samples
-        private char[] encodedSamples = new char[SAMPLES_SIZE];
-        private int currentIndex = 0;
+        private const string PROFILER_METRICS_FEATURE_FLAG = "explorer-profiler-metrics";
 
-        [SerializeField] private PerformanceMetricsDataVariable performanceMetricsDataVariable;
+        private readonly LinealBufferHiccupCounter tracker = new LinealBufferHiccupCounter();
+        private readonly char[] encodedSamples = new char[SAMPLES_SIZE];
+        private readonly PerformanceMetricsDataVariable performanceMetricsDataVariable;
+        private IWorldState worldState => Environment.i.world.state;
+        private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
+        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+        private GeneralSettings generalSettings => Settings.i.generalSettings.Data;
+        private ProfilerRecorder drawCallsRecorder;
+        private ProfilerRecorder reservedMemoryRecorder;
+        private ProfilerRecorder usedMemoryRecorder;
+        private ProfilerRecorder gcAllocatedInFrameRecorder;
+        private bool trackProfileRecords;
+        private int currentIndex = 0;
+        private long totalAllocSample;
+        private bool isTrackingProfileRecords = false;
+        private readonly Dictionary<Vector2Int, long> scenesMemoryScore = new Dictionary<Vector2Int, long>();
 
         public PerformanceMetricsController()
         {
-            performanceMetricsDataVariable =
-                Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
+            performanceMetricsDataVariable = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
+
+            featureFlags.OnChange += OnFeatureFlagChange;
+            OnFeatureFlagChange(featureFlags.Get(), null);
+        }
+        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
+        {
+            trackProfileRecords = current.IsFeatureEnabled(PROFILER_METRICS_FEATURE_FLAG);
+
+            if (trackProfileRecords && !isTrackingProfileRecords)
+            {
+                drawCallsRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count");
+                reservedMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "Total Reserved Memory");
+                usedMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "Total Used Memory");
+                gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
+                isTrackingProfileRecords = true;
+            }
         }
 
         public void Update()
@@ -40,17 +73,99 @@ namespace DCL
 
             encodedSamples[currentIndex++] = (char) deltaInMs;
 
+            if (trackProfileRecords)
+            {
+                totalAllocSample += gcAllocatedInFrameRecorder.LastValue;
+            }
+
             if (currentIndex == SAMPLES_SIZE)
             {
                 currentIndex = 0;
                 Report(new string(encodedSamples));
+                totalAllocSample = 0;
             }
+
         }
 
         private void Report(string encodedSamples)
         {
-            WebInterface.SendPerformanceReport(encodedSamples, Settings.i.qualitySettings.Data.fpsCap,
-                tracker.CurrentHiccupCount(), tracker.GetHiccupSum(), tracker.GetTotalSeconds());
+
+            Dictionary<string, IParcelScene>.ValueCollection loadedScenesValues = worldState.loadedScenes.Values;
+            scenesMemoryScore.Clear();
+            foreach (IParcelScene parcelScene in loadedScenesValues)
+            {
+                var coords = parcelScene.sceneData.basePosition;
+
+                if (coords.x == 0 && coords.y == 0)
+                    continue; // we ignore global scene
+
+                scenesMemoryScore.Add(coords, parcelScene.metricsCounter.currentCount.totalMemoryScore);
+            }
+
+            object drawCalls = null;
+            object totalMemoryReserved = null;
+            object totalMemoryUsage = null;
+            object totalGCAlloc = null;
+
+            if (trackProfileRecords)
+            {
+                drawCalls = (int)drawCallsRecorder.LastValue;
+                totalMemoryReserved = reservedMemoryRecorder.LastValue;
+                totalMemoryUsage = usedMemoryRecorder.LastValue;
+                totalGCAlloc = totalAllocSample;
+            }
+
+            var playerCount = otherPlayers.Count();
+            var loadRadius = generalSettings.scenesLoadRadius;
+
+            (int gltfloading, int gltffailed, int gltfcancelled, int gltfloaded) = PerformanceAnalytics.GLTFTracker.GetData();
+            (int abloading, int abfailed, int abcancelled, int abloaded) = PerformanceAnalytics.ABTracker.GetData();
+            var gltfTextures = PerformanceAnalytics.GLTFTextureTracker.Get();
+            var abTextures = PerformanceAnalytics.ABTextureTracker.Get();
+            var promiseTextures = PerformanceAnalytics.PromiseTextureTracker.Get();
+            var queuedMessages = PerformanceAnalytics.MessagesEnqueuedTracker.Get();
+            var processedMessages = PerformanceAnalytics.MessagesProcessedTracker.Get();
+
+            bool usingFPSCap = Settings.i.qualitySettings.Data.fpsCap;
+
+            int hiccupsInThousandFrames = tracker.CurrentHiccupCount();
+
+            float hiccupsTime = tracker.GetHiccupSum();
+
+            float totalTime = tracker.GetTotalSeconds();
+            
+            WebInterface.PerformanceReportPayload performanceReportPayload = new WebInterface.PerformanceReportPayload
+            {
+                samples = encodedSamples,
+                fpsIsCapped = usingFPSCap,
+                hiccupsInThousandFrames = hiccupsInThousandFrames,
+                hiccupsTime = hiccupsTime,
+                totalTime = totalTime,
+                gltfInProgress = gltfloading,
+                gltfFailed = gltffailed,
+                gltfCancelled = gltfcancelled,
+                gltfLoaded = gltfloaded,
+                abInProgress = abloading,
+                abFailed = abfailed,
+                abCancelled = abcancelled,
+                abLoaded = abloaded,
+                gltfTexturesLoaded = gltfTextures,
+                abTexturesLoaded = abTextures,
+                promiseTexturesLoaded = promiseTextures,
+                enqueuedMessages = queuedMessages,
+                processedMessages = processedMessages,
+                playerCount = playerCount,
+                loadRadius = (int)loadRadius,
+                sceneScores = scenesMemoryScore,
+                drawCalls = drawCalls,
+                memoryReserved = totalMemoryReserved,
+                memoryUsage = totalMemoryUsage,
+                totalGCAlloc = totalGCAlloc
+            };
+
+            var result = JsonConvert.SerializeObject(performanceReportPayload);
+            WebInterface.SendPerformanceReport(result);
+            PerformanceAnalytics.ResetAll();
         }
     }
 }
