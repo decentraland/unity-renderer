@@ -43,8 +43,9 @@ public class FriendsHUDController : IHUD
         this.friendsNotificationService = friendsNotificationService;
     }
 
-    public void Initialize(IFriendsHUDComponentView view)
+    public void Initialize(IFriendsHUDComponentView view = null)
     {
+        view ??= FriendsHUDComponentView.Create();
         View = view;
 
         view.ListByOnlineStatus = dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_by_online_status");
