@@ -29,7 +29,29 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBNFTShape model)
         {
+            entity.meshesInfo.meshRootGameObject = NFTShapeFactory.InstantiateLoaderController(model.style);
+            entity.meshesInfo.currentShape = this;
 
+            entity.meshRootGameObject.name = componentName + " mesh";
+            entity.meshRootGameObject.transform.SetParent(entity.gameObject.transform);
+            entity.meshRootGameObject.transform.ResetLocalTRS();
+
+            var loaderController = entity.meshRootGameObject.GetComponent<NFTShapeLoaderController>();
+
+            if (loaderController)
+                loaderController.Initialize(infoLoadHelper, assetLoadHelper);    
+            
+            entity.OnShapeUpdated += UpdateBackgroundColor;
+
+            var loadableShape = Environment.i.world.state.GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
+
+            loadableShape.entity = entity;
+            loadableShape.initialVisibility = model.visible;
+
+            loadableShape.withCollisions = model.withCollisions;
+            loadableShape.backgroundColor = model.color;
+
+            loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
         }
         
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBNFTShape model)
