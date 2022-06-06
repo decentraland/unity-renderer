@@ -72,12 +72,12 @@ namespace DCL.ECSComponents.Test
             audioSourceComponentHandler.isRendererActive = true;
 
             // We prepare the models
-            ECSAudioStream model = CreateAudioStreamModel();
-            model.playing = false;
+            PBAudioStream model = CreateAudioStreamModel();
+            model.Playing = false;
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
             
-            ECSAudioStream model2 = CreateAudioStreamModel();
-            model2.playing = true;
+            PBAudioStream model2 = CreateAudioStreamModel();
+            model2.Playing = true;
             
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
@@ -90,12 +90,12 @@ namespace DCL.ECSComponents.Test
         public void UpdateVolumeModelComponentCorrectly()
         {
             // Arrange
-            ECSAudioStream model = CreateAudioStreamModel();
-            model.volume = 0f;
+            PBAudioStream model = CreateAudioStreamModel();
+            model.Volume = 0f;
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
             
-            ECSAudioStream model2 = CreateAudioStreamModel();
-            model2.volume = 1f;
+            PBAudioStream model2 = CreateAudioStreamModel();
+            model2.Volume = 1f;
             
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
@@ -109,26 +109,26 @@ namespace DCL.ECSComponents.Test
         {
             // Arrange
             string expectedUrl = "NewUrl";
-            ECSAudioStream model = CreateAudioStreamModel();
-            model.url = "OldUrl";
+            PBAudioStream model = CreateAudioStreamModel();
+            model.Url = "OldUrl";
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
             
-            ECSAudioStream model2 = CreateAudioStreamModel();
-            model2.url = expectedUrl;
+            PBAudioStream model2 = CreateAudioStreamModel();
+            model2.Url = expectedUrl;
             
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
 
             // Assert
-            Assert.AreEqual(expectedUrl,audioSourceComponentHandler.model.url);
+            Assert.AreEqual(expectedUrl,audioSourceComponentHandler.model.Url);
         }
         
         [Test]
         public void PlayAudioIfConditionsAreMeet()
         {
             // Arrange
-            ECSAudioStream model = CreateAudioStreamModel();
-            model.playing = true;
+            PBAudioStream model = CreateAudioStreamModel();
+            model.Playing = true;
             audioSourceComponentHandler.isInsideBoundaries = true;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
@@ -144,8 +144,8 @@ namespace DCL.ECSComponents.Test
         public void StopAudioIfRendererIsDisable()
         {
             // Arrange
-            ECSAudioStream model = CreateAudioStreamModel();
-            model.playing = true;
+            PBAudioStream model = CreateAudioStreamModel();
+            model.Playing = true;
             audioSourceComponentHandler.isInsideBoundaries = true;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = false;
@@ -161,8 +161,8 @@ namespace DCL.ECSComponents.Test
         public void StopAudioIfItsOutsideScene()
         {
             // Arrange
-            ECSAudioStream model = CreateAudioStreamModel();
-            model.playing = true;
+            PBAudioStream model = CreateAudioStreamModel();
+            model.Playing = true;
             audioSourceComponentHandler.isInsideBoundaries = true;
             audioSourceComponentHandler.isInsideScene = false;
             audioSourceComponentHandler.isRendererActive = true;
@@ -178,8 +178,8 @@ namespace DCL.ECSComponents.Test
         public void StopAudioIfItsOutsideBoundaries()
         {
             // Arrange
-            ECSAudioStream model = CreateAudioStreamModel();
-            model.playing = true;
+            PBAudioStream model = CreateAudioStreamModel();
+            model.Playing = true;
             audioSourceComponentHandler.isInsideBoundaries = false;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
@@ -195,7 +195,7 @@ namespace DCL.ECSComponents.Test
         public IEnumerator DisposeComponentCorrectly()
         {
             // Arrange
-            ECSAudioStream model = CreateAudioStreamModel();
+            PBAudioStream model = CreateAudioStreamModel();
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
         
             // Act
@@ -206,13 +206,13 @@ namespace DCL.ECSComponents.Test
             Assert.IsNull(audioSourceComponentHandler.audioSource);
         }
 
-        private ECSAudioStream CreateAudioStreamModel()
+        private PBAudioStream CreateAudioStreamModel()
         {
-            ECSAudioStream model = new ECSAudioStream()
+            PBAudioStream model = new PBAudioStream()
             {
-                url = "https://audio.dcl.guru/radio/8110/radio.mp3",
-                playing = true,
-                volume = 1f
+                Url = "https://audio.dcl.guru/radio/8110/radio.mp3",
+                Playing = true,
+                Volume = 1f
             };
             return model;
         }
