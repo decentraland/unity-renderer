@@ -131,7 +131,7 @@ namespace Test.AvatarSystem
             await avatar.Load(new List<string>(), settings);
 
             Assert.AreEqual(extents, avatar.extents);
-            animator.Received().Prepare(settings.bodyshapeId, combinedRenderer.gameObject);
+            animator.Received().Prepare(settings.bodyshapeId, null);
             gpuSkinning.Received().Prepare(combinedRenderer);
             gpuSkinningThrottler.Received().Bind(gpuSkinning);
             visibility.Received().Bind(gpuSkinnedRenderer, facialFeatures);

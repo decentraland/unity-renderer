@@ -273,7 +273,6 @@ namespace Test.AvatarSystem
             };
             allRenderers.AddRange(loader.loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
             //Assert the mesh combiner received the proper data
-            Assert.AreEqual(loader.bodyshapeLoader.upperBodyRenderer, bonesContainerReceivedByCombiner);
             Assert.AreEqual(allRenderers.Count, renderersReceivedByCombiner.Length);
             for (var i = 0; i < allRenderers.Count; i++)
             {
@@ -321,7 +320,7 @@ namespace Test.AvatarSystem
                     hairColor = Color.yellow,
                     skinColor = Color.green
                 },
-                null
+                meshCombiner.renderer
             );
             bodyShapeLoader.Received().DisableFacialRenderers();
         });
@@ -417,7 +416,6 @@ namespace Test.AvatarSystem
             };
             allRenderers.AddRange(loader.loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
             //Assert the mesh combiner received the proper data
-            Assert.AreEqual(loader.bodyshapeLoader.upperBodyRenderer, bonesContainerReceivedByCombiner);
             Assert.AreEqual(allRenderers.Count, renderersReceivedByCombiner.Length);
             for (var i = 0; i < allRenderers.Count; i++)
             {
