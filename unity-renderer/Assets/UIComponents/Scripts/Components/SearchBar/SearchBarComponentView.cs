@@ -47,6 +47,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
     [SerializeField] internal SearchBarComponentModel model;
 
     public event Action<string> OnSearchText;
+    public event Action<string> OnSubmit;
 
     internal Coroutine searchWhileTypingRoutine;
     internal float lastValueChangeTime = 0;
@@ -54,7 +55,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
     public override void Awake()
     {
         base.Awake();
-
+        
         inputField.onValueChanged.AddListener(OnValueChanged);
         inputField.onSubmit.AddListener(SubmitSearch);
         inputField.onSelect.AddListener(SelectInput);
@@ -95,6 +96,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         inputField.text = value;
         SetSearchMode();
         OnSearchText?.Invoke(value);
+        OnSubmit?.Invoke(value);
     }
 
     public void ClearSearch()

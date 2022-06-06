@@ -1,0 +1,16 @@
+{
+    "name": "DCL.CRDTProtocol.Executor.Interface",
+    "rootNamespace": "",
+    "references": [
+        "GUID:80f579cff5cf4136aa8969bf6fa1098c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

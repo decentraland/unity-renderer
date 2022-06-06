@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class FriendsController_Mock : IFriendsController
 {
@@ -14,6 +15,9 @@ public class FriendsController_Mock : IFriendsController
 
     public bool isInitialized => true;
 
+    public int ReceivedRequestCount =>
+        friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
+
     public Dictionary<string, FriendsController.UserStatus> GetFriends() { return friends; }
     
     public void RejectFriendship(string friendUserId)
@@ -21,10 +25,24 @@ public class FriendsController_Mock : IFriendsController
         friends.Remove(friendUserId);
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.NONE);
     }
+
+    public bool IsFriend(string userId) => friends.ContainsKey(userId);
     
+    public void RemoveFriend(string friendId)
+    {
+        if (!friends.ContainsKey(friendId)) return;
+        friends.Remove(friendId);
+        OnUpdateFriendship?.Invoke(friendId, FriendshipAction.DELETED);
+    }
+
     public FriendsController.UserStatus GetUserStatus(string userId)
     {
         return friends.ContainsKey(userId) ? friends[userId] : default;
+    }
+
+    public bool ContainsStatus(string friendId, FriendshipStatus status)
+    {
+        return friends.ContainsKey(friendId) && friends[friendId].friendshipStatus == status;
     }
 
     public void RequestFriendship(string friendUserId)

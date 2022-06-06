@@ -57,7 +57,6 @@ namespace AvatarSystem
                 combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, ct);
 
                 facialFeaturesRenderers = new List<Renderer>();
-                
                 if (headVisible)
                 {
                     if (eyes != null)
@@ -66,6 +65,11 @@ namespace AvatarSystem
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
                     if (mouth != null)
                         facialFeaturesRenderers.Add(bodyshapeLoader.mouthRenderer);
+                }
+                else
+                {
+                    if(bodyshapeLoader != null)
+                        bodyshapeLoader.DisableFacialRenderers();
                 }
             }
             catch (OperationCanceledException)
@@ -100,7 +104,7 @@ namespace AvatarSystem
         private async UniTask LoadBodyshape(AvatarSettings settings, WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<IWearableLoader> loadersToCleanUp, CancellationToken ct)
         {
             //We get a new loader if any of the subparts of the bodyshape changes
-            if (bodyshapeLoader == null || !bodyshapeLoader.IsValid(bodyshape, eyebrows, eyes, mouth))
+            if (!IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
             {
                 loadersToCleanUp.Add(bodyshapeLoader);
                 bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
@@ -157,6 +161,11 @@ namespace AvatarSystem
 
         public Transform[] GetBones() { return bodyshapeLoader?.upperBodyRenderer?.bones; }
 
+        public bool IsValidForBodyShape(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth)
+        {
+            return bodyshapeLoader != null && bodyshapeLoader.IsValid(bodyshape, eyebrows, eyes, mouth);
+        }
+
         private async UniTask<SkinnedMeshRenderer> MergeAvatar(AvatarSettings settings, List<WearableItem> wearables,
             bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible,
             CancellationToken ct)
@@ -168,7 +177,6 @@ namespace AvatarSystem
             // once that's fixed we can remove this wait
             // AttachExternalCancellation is needed because cancellation will take a wait to trigger
             await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
-
             var featureFlags = DataStore.i.featureFlags.flags.Get();
             avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
             avatarMeshCombiner.enableCombinedMesh = false;

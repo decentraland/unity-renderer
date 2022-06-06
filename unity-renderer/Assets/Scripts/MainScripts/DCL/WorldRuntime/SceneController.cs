@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
+using DCL.CRDT;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -331,6 +332,15 @@ namespace DCL
                                 DataStore.i.common.onOpenNFTPrompt.Set(new NFTPromptModel(payload.contactAddress, payload.tokenId,
                                     payload.comment), true);
 
+                            break;
+                        }
+
+                    case MessagingTypes.CRDT_MESSAGE:
+                        {
+                            if (msgPayload is CRDTMessage crdtMessage)
+                            {
+                                scene.crdtExecutor.Execute(crdtMessage);
+                            }
                             break;
                         }
 

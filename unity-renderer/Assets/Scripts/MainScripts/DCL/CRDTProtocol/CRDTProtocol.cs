@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace DCL
+namespace DCL.CRDT
 {
     public class CRDTProtocol
     {
-        internal readonly Dictionary<string, CRDTMessage> state = new Dictionary<string, CRDTMessage>();
+        internal readonly Dictionary<long, CRDTMessage> state = new Dictionary<long, CRDTMessage>();
 
         public CRDTMessage ProcessMessage(CRDTMessage message)
         {
@@ -38,22 +38,31 @@ namespace DCL
             return UpdateState(message.key, message.data, message.timestamp);
         }
 
-        private CRDTMessage UpdateState(string key, object data, double remoteTimestamp)
+        public CRDTMessage GetSate(long key)
         {
-            double stateTimeStamp = 0;
+            state.TryGetValue(key, out CRDTMessage storedMessage);
+            return storedMessage;
+        }
+
+        private CRDTMessage UpdateState(long key, object data, long remoteTimestamp)
+        {
+            long stateTimeStamp = 0;
             if (state.TryGetValue(key, out CRDTMessage storedMessage))
             {
                 stateTimeStamp = storedMessage.timestamp;
             }
-            else
+
+            long timestamp = Math.Max(remoteTimestamp, stateTimeStamp);
+            var newMessageState = new CRDTMessage()
             {
-                storedMessage = new CRDTMessage() { key = key };
-                state.Add(key, storedMessage);
-            }
-            double timestamp = Math.Max(remoteTimestamp, stateTimeStamp);
-            storedMessage.timestamp = timestamp;
-            storedMessage.data = data;
-            return storedMessage;
+                key = key,
+                timestamp = timestamp,
+                data = data
+            };
+
+            state[key] = newMessageState;
+
+            return newMessageState;
         }
 
         internal static bool IsSameData(object a, object b)

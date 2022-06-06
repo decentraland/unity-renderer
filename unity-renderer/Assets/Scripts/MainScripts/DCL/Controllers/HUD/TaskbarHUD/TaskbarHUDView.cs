@@ -4,13 +4,13 @@ using UnityEngine.UI;
 
 public class TaskbarHUDView : MonoBehaviour
 {
-    const string VIEW_PATH = "Taskbar";
+    private const string VIEW_PATH = "Taskbar";
 
-    [Header("Taskbar Animation")]
-    [SerializeField] internal ShowHideAnimator taskbarAnimator;
+    [Header("Taskbar Animation")] [SerializeField]
+    internal ShowHideAnimator taskbarAnimator;
 
-    [Header("Left Side Config")]
-    [SerializeField] internal RectTransform leftWindowContainer;
+    [Header("Left Side Config")] [SerializeField]
+    internal RectTransform leftWindowContainer;
 
     [SerializeField] internal ShowHideAnimator leftWindowContainerAnimator;
     [SerializeField] internal LayoutGroup leftWindowContainerLayout;
@@ -19,56 +19,36 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
     [SerializeField] internal TaskbarButton emotesButton;
-    [SerializeField] internal ChatHeadGroupView chatHeadsGroup;
-
     [SerializeField] internal GameObject experiencesContainer;
     [SerializeField] internal TaskbarButton experiencesButton;
-
     [SerializeField] internal RectTransform socialTooltipReference;
 
-    [Header("Old TaskbarCompatibility (temporal)")]
-    [SerializeField] internal RectTransform taskbarPanelTransf;
+    private readonly Dictionary<TaskbarButtonType, TaskbarButton> buttonsByType =
+        new Dictionary<TaskbarButtonType, TaskbarButton>();
 
-    [SerializeField] internal Image taskbarPanelImage;
+    private TaskbarButton lastToggledOnButton;
 
-    internal TaskbarHUDController controller;
-    internal bool isBarVisible = true;
+    public event System.Action<bool> OnChatToggle;
+    public event System.Action<bool> OnFriendsToggle;
+    public event System.Action<bool> OnEmotesToggle;
+    public event System.Action<bool> OnExperiencesToggle;
 
-    public event System.Action OnChatToggleOn;
-    public event System.Action OnChatToggleOff;
-    public event System.Action OnFriendsToggleOn;
-    public event System.Action OnFriendsToggleOff;
-    public event System.Action OnEmotesToggleOn;
-    public event System.Action OnEmotesToggleOff;
-    public event System.Action OnExperiencesToggleOn;
-    public event System.Action OnExperiencesToggleOff;
-
-    internal List<TaskbarButton> GetButtonList()
-    {
-        var taskbarButtonList = new List<TaskbarButton>();
-        taskbarButtonList.Add(chatButton);
-        taskbarButtonList.Add(friendsButton);
-        taskbarButtonList.Add(emotesButton);
-        taskbarButtonList.AddRange(chatHeadsGroup.chatHeads);
-        taskbarButtonList.Add(experiencesButton);
-
-        return taskbarButtonList;
-    }
-
-    internal static TaskbarHUDView Create(TaskbarHUDController controller, IChatController chatController,
-        IFriendsController friendsController)
+    internal static TaskbarHUDView Create()
     {
         var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<TaskbarHUDView>();
-        view.Initialize(controller, chatController, friendsController);
+        view.Initialize();
         return view;
     }
 
-    public void Initialize(TaskbarHUDController controller, IChatController chatController,
-        IFriendsController friendsController)
+    private void Initialize()
     {
-        this.controller = controller;
-
         ShowBar(true, true);
+
+        buttonsByType[TaskbarButtonType.Chat] = chatButton;
+        buttonsByType[TaskbarButtonType.Emotes] = emotesButton;
+        buttonsByType[TaskbarButtonType.Experiences] = experiencesButton;
+        buttonsByType[TaskbarButtonType.Friends] = friendsButton;
+
         chatButton.transform.parent.gameObject.SetActive(false);
         friendsButton.transform.parent.gameObject.SetActive(false);
         emotesButton.transform.parent.gameObject.SetActive(false);
@@ -76,144 +56,151 @@ public class TaskbarHUDView : MonoBehaviour
         voiceChatButtonPlaceholder.SetActive(false);
         voiceChatButton.gameObject.SetActive(false);
 
-        chatHeadsGroup.Initialize(chatController, friendsController);
         chatButton.Initialize();
         friendsButton.Initialize();
         emotesButton.Initialize();
         experiencesButton.Initialize();
 
-        chatHeadsGroup.OnHeadToggleOn += OnWindowToggleOn;
-        chatHeadsGroup.OnHeadToggleOff += OnWindowToggleOff;
+        chatButton.OnToggleOn += ToggleOn;
+        friendsButton.OnToggleOn += ToggleOn;
+        emotesButton.OnToggleOn += ToggleOn;
+        experiencesButton.OnToggleOn += ToggleOn;
+        chatButton.OnToggleOff += ToggleOff;
+        friendsButton.OnToggleOff += ToggleOff;
+        emotesButton.OnToggleOff += ToggleOff;
+        experiencesButton.OnToggleOff += ToggleOff;
+    }
 
-        chatButton.OnToggleOn += OnWindowToggleOn;
-        chatButton.OnToggleOff += OnWindowToggleOff;
+    private void OnDestroy()
+    {
+        if (chatButton != null)
+        {
+            chatButton.OnToggleOn -= ToggleOn;
+            chatButton.OnToggleOff -= ToggleOff;
+        }
 
-        friendsButton.OnToggleOn += OnWindowToggleOn;
-        friendsButton.OnToggleOff += OnWindowToggleOff;
+        if (friendsButton != null)
+        {
+            friendsButton.OnToggleOn -= ToggleOn;
+            friendsButton.OnToggleOff -= ToggleOff;
+        }
 
-        emotesButton.OnToggleOn += OnWindowToggleOn;
-        emotesButton.OnToggleOff += OnWindowToggleOff;
+        if (emotesButton != null)
+        {
+            emotesButton.OnToggleOn -= ToggleOn;
+            emotesButton.OnToggleOff -= ToggleOff;
+        }
+
+        if (experiencesButton != null)
+        {
+            experiencesButton.OnToggleOn -= ToggleOn;
+            experiencesButton.OnToggleOff -= ToggleOff;
+        }
+    }
+
+    public void Destroy() => Destroy(gameObject);
+
+    public void SetVisibility(bool visible)
+    {
+        gameObject.SetActive(visible);
+    }
+
+    public void SetExperiencesVisibility(bool visible)
+    {
+        experiencesContainer.SetActive(visible);
+    }
+
+    public void ToggleOn(TaskbarButtonType buttonType) => ToggleOn(buttonsByType[buttonType], false);
+
+    public void ToggleOff(TaskbarButtonType buttonType) => ToggleOff(buttonsByType[buttonType], false);
+    
+    private void ToggleOn(TaskbarButton obj) => ToggleOn(obj, true);
+
+    private void ToggleOn(TaskbarButton obj, bool useCallback)
+    {
+        var wasToggled = lastToggledOnButton == obj;
+        lastToggledOnButton = obj;
         
-        experiencesButton.OnToggleOn += OnWindowToggleOn;
-        experiencesButton.OnToggleOff += OnWindowToggleOff;
-    }
+        foreach (var btn in buttonsByType.Values)
+            btn.SetToggleState(btn == obj, useCallback);
 
-    private void OnWindowToggleOff(TaskbarButton obj)
-    {
+        if (!useCallback) return;
+        if (wasToggled) return;
+        
         if (obj == friendsButton)
-            OnFriendsToggleOff?.Invoke();
+            OnFriendsToggle?.Invoke(true);
         if (obj == emotesButton)
-            OnEmotesToggleOff?.Invoke();
+            OnEmotesToggle?.Invoke(true);
         else if (obj == chatButton)
-            OnChatToggleOff?.Invoke();
+            OnChatToggle?.Invoke(true);
         else if (obj == experiencesButton)
-            OnExperiencesToggleOff?.Invoke();
-
-        if (AllButtonsToggledOff())
-        {
-            chatButton.SetToggleState(false, useCallback: false);
-            controller.worldChatWindowHud.SetVisibility(true);
-        }
+            OnExperiencesToggle?.Invoke(true);
     }
 
-    public bool AllButtonsToggledOff()
+    private void ToggleOff(TaskbarButton obj) => ToggleOff(obj, true);
+
+    private void ToggleOff(TaskbarButton obj, bool useCallback)
     {
-        var btns = GetButtonList();
+        var wasToggled = lastToggledOnButton == obj;
+        
+        if (wasToggled)
+            lastToggledOnButton = null;
+        
+        obj.SetToggleState(false, useCallback);
 
-        bool allToggledOff = true;
-
-        foreach (var btn in btns)
-        {
-            if (btn.toggledOn)
-                allToggledOff = false;
-        }
-
-        return allToggledOff;
-    }
-
-    private void OnWindowToggleOn(TaskbarButton obj)
-    {
+        if (!useCallback) return;
+        if (!wasToggled) return;
+        
         if (obj == friendsButton)
-            OnFriendsToggleOn?.Invoke();
+            OnFriendsToggle?.Invoke(false);
         if (obj == emotesButton)
-            OnEmotesToggleOn?.Invoke();
+            OnEmotesToggle?.Invoke(false);
         else if (obj == chatButton)
-            OnChatToggleOn?.Invoke();
+            OnChatToggle?.Invoke(false);
         else if (obj == experiencesButton)
-            OnExperiencesToggleOn?.Invoke();
-
-        SelectButton(obj);
+            OnExperiencesToggle?.Invoke(false);
     }
 
-    public void SelectButton(TaskbarButton obj)
+    internal void ShowChatButton()
     {
-        var taskbarButtonList = GetButtonList();
-
-        foreach (var btn in taskbarButtonList)
-        {
-            if (btn != obj)
-                btn.SetToggleState(false, useCallback: true);
-        }
+        chatButton.transform.parent.gameObject.SetActive(true);
     }
 
-    internal void OnAddChatWindow() { chatButton.transform.parent.gameObject.SetActive(true); }
+    internal void ShowFriendsButton()
+    {
+        friendsButton.transform.parent.gameObject.SetActive(true);
+    }
 
-    internal void OnAddFriendsWindow() { friendsButton.transform.parent.gameObject.SetActive(true); }
+    internal void ShowEmotesButton()
+    {
+        emotesButton.transform.parent.gameObject.SetActive(true);
+    }
 
-    internal void OnAddEmotesWindow() { emotesButton.transform.parent.gameObject.SetActive(true); }
+    internal void ShowExperiencesButton()
+    {
+        experiencesButton.transform.parent.gameObject.SetActive(true);
+    }
 
-    internal void OnAddExperiencesWindow() { experiencesButton.transform.parent.gameObject.SetActive(true); }
-
-    internal void OnAddVoiceChat()
+    internal void ShowVoiceChat()
     {
         voiceChatButtonPlaceholder.SetActive(true);
         voiceChatButton.gameObject.SetActive(true);
     }
 
-    internal void ShowBar(bool visible, bool instant = false)
+    private void ShowBar(bool visible, bool instant = false)
     {
         if (visible)
             taskbarAnimator.Show(instant);
         else
             taskbarAnimator.Hide(instant);
-
-        isBarVisible = visible;
     }
 
-    public void SetVisibility(bool visible) { gameObject.SetActive(visible); }
-
-    public void SetExperiencesVisbility(bool visible) { experiencesContainer.SetActive(visible); }
-
-    private void OnDestroy()
+    public enum TaskbarButtonType
     {
-        if (chatHeadsGroup != null)
-        {
-            chatHeadsGroup.OnHeadToggleOn -= OnWindowToggleOn;
-            chatHeadsGroup.OnHeadToggleOff -= OnWindowToggleOff;
-        }
-
-        if (chatButton != null)
-        {
-            chatButton.OnToggleOn -= OnWindowToggleOn;
-            chatButton.OnToggleOff -= OnWindowToggleOff;
-        }
-
-        if (friendsButton != null)
-        {
-            friendsButton.OnToggleOn -= OnWindowToggleOn;
-            friendsButton.OnToggleOff -= OnWindowToggleOff;
-        }
-
-        if (emotesButton != null)
-        {
-            emotesButton.OnToggleOn -= OnWindowToggleOn;
-            emotesButton.OnToggleOff -= OnWindowToggleOff;
-        }
-
-        if (experiencesButton != null)
-        {
-            experiencesButton.OnToggleOn -= OnWindowToggleOn;
-            experiencesButton.OnToggleOff -= OnWindowToggleOff;
-        }
+        None,
+        Friends,
+        Emotes,
+        Chat,
+        Experiences
     }
 }

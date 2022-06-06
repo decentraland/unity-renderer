@@ -344,6 +344,9 @@ MonoBehaviour:
   groundLayers:
     serializedVersion: 2
     m_Bits: 1025
+  cameraLayers:
+    serializedVersion: 2
+    m_Bits: 131072
   jumpAction: {fileID: 11400000, guid: 8eddef1fc072ec845aeb62f5e1041b52, type: 2}
   sprintAction: {fileID: 11400000, guid: 0cfb8d150b7d6934d856665cf924d01d, type: 2}
   moveVelocity: {x: 0, y: 0, z: 0}
