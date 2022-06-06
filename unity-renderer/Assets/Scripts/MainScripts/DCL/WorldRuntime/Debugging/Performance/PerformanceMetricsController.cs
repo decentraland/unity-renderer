@@ -42,7 +42,7 @@ namespace DCL
         private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
         {
             trackProfileRecords = current.IsFeatureEnabled(PROFILER_METRICS_FEATURE_FLAG);
-            trackProfileRecords = true; // DELETE THIS BEFORE RFR
+
             if (trackProfileRecords && !isTrackingProfileRecords)
             {
                 drawCallsRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count");
