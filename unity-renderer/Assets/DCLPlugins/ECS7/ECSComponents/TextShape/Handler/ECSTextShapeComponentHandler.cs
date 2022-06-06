@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
+using DCL.ECS7.TextShape;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -14,17 +15,12 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     private const string TOP = "top";
     private const string LEFT = "left";
     private const string RIGHT = "right";
-    
-    private const string COMPONENT_NAME = "TextShape";
 
-    internal GameObject textGameObject;
-    internal TextMeshPro textComponent;
-    internal RectTransform rectTransform;
-    internal AssetPromise_Font promise;
-    
     private PBTextShape currentModel;
     private readonly DataStore_ECS7 dataStore;
     private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
+
+    private Dictionary<long, TextShapeEntityReference> entityReferences = new Dictionary<long, TextShapeEntityReference>();
 
     public ECSTextShapeComponentHandler(DataStore_ECS7 dataStoreEcs7, AssetPromiseKeeper_Font fontPromiseKeeper)
     {
@@ -34,11 +30,8 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
     {
-        textGameObject = new GameObject(COMPONENT_NAME);
-        textGameObject.AddComponent<MeshRenderer>();
-        rectTransform = textGameObject.AddComponent<RectTransform>();
-        textComponent = textGameObject.AddComponent<TextMeshPro>();
-        textGameObject.transform.SetParent(scene.GetSceneTransform());
+        TextShapeEntityReference entityReference = new TextShapeEntityReference(scene, entity);
+        entityReferences.Add(entity.entityId,entityReference);
     }
 
     public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
