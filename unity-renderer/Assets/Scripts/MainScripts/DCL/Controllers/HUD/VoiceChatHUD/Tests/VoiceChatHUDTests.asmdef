@@ -9,7 +9,12 @@
         "VoiceChatHUD",
         "LazyTextureObserver",
         "UserContextMenu",
-        "Settings"
+        "Settings",
+        "UserProfile",
+        "FriendsController",
+        "SocialAnalytics",
+        "DataStore",
+        "IntegrationTestSuite"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

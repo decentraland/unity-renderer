@@ -29,18 +29,30 @@ public class VoiceChatWindowController : IHUD
     private DataStore dataStore;
     private Settings settings;
     private readonly HashSet<string> trackedUsersHashSet = new HashSet<string>();
-    private readonly Queue<VoiceChatPlayerComponentView> playersPool;
-    private readonly Dictionary<string, VoiceChatPlayerComponentView> currentPlayers;
+    private readonly Queue<VoiceChatPlayerComponentView> playersPool = new Queue<VoiceChatPlayerComponentView>();
+    internal Dictionary<string, VoiceChatPlayerComponentView> currentPlayers = new Dictionary<string, VoiceChatPlayerComponentView>();
     private readonly List<string> usersToMute = new List<string>();
     private readonly List<string> usersToUnmute = new List<string>();
     private readonly List<string> usersTalking = new List<string>();
-    private bool isOwnPLayerTalking = false;
+    internal bool isOwnPLayerTalking = false;
     private Coroutine updateMuteStatusRoutine = null;
     private bool isMuteAll = false;
     private bool isOpenByFirstTime = true;
     private bool isJoined = false;
 
+    public VoiceChatWindowController() { }
+
     public VoiceChatWindowController(
+        IUserProfileBridge userProfileBridge,
+        IFriendsController friendsController,
+        ISocialAnalytics socialAnalytics,
+        DataStore dataStore,
+        Settings settings)
+    {
+        Initialize(userProfileBridge, friendsController, socialAnalytics, dataStore, settings);
+    }
+
+    public void Initialize(
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics,
@@ -72,9 +84,6 @@ public class VoiceChatWindowController : IHUD
         friendsController.OnUpdateFriendship += OnUpdateFriendship;
 
         settings.generalSettings.OnChanged += OnSettingsChanged;
-
-        currentPlayers = new Dictionary<string, VoiceChatPlayerComponentView>();
-        playersPool = new Queue<VoiceChatPlayerComponentView>();
     }
 
     public void SetVisibility(bool visible)
