@@ -214,6 +214,7 @@ public class FriendsHUDControllerShould
     [Test]
     public void NotificationsAreUpdatedWhenFriendshipActionUpdates()
     {
+        friendsController.ReceivedRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         view.IsActive().Returns(true);
 
         friendsController.OnUpdateFriendship +=
@@ -227,6 +228,7 @@ public class FriendsHUDControllerShould
     [Test]
     public void NotificationsAreUpdatedWhenIsVisible()
     {
+        friendsController.ReceivedRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         view.IsActive().Returns(true);
 
         controller.SetVisibility(true);

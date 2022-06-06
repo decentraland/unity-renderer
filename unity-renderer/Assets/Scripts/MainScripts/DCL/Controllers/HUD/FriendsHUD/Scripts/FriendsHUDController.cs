@@ -355,7 +355,7 @@ public class FriendsHUDController : IHUD
         if (View.IsActive())
             friendsNotificationService.MarkFriendsAsSeen(friendsController.friendCount);
 
-        friendsNotificationService.MarkRequestsAsSeen(View.ReceivedRequestCount);
+        friendsNotificationService.MarkRequestsAsSeen(friendsController.ReceivedRequestCount);
         friendsNotificationService.UpdateUnseenFriends();
     }
 
