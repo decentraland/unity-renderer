@@ -11,17 +11,17 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     private const string ALLOW_USERS_TITLE_FRIENDS = "Friends";
 
     [Header("Prefab References")]
-    [SerializeField] private ButtonComponentView closeButton;
-    [SerializeField] private ButtonComponentView joinButton;
-    [SerializeField] private ButtonComponentView leaveButton;
-    [SerializeField] private TMP_Text playersText;
-    [SerializeField] private DropdownComponentView allowUsersDropdown;
-    [SerializeField] private ToggleComponentView muteAllToggle;
-    [SerializeField] private GameObject emptyListGameObject;
-    [SerializeField] private ButtonComponentView goToCrowdButton;
-    [SerializeField] private VoiceChatPlayerComponentView playerPrefab;
-    [SerializeField] private Transform usersContainer;
-    [SerializeField] private UserContextMenu contextMenuPanel;
+    [SerializeField] internal ButtonComponentView closeButton;
+    [SerializeField] internal ButtonComponentView joinButton;
+    [SerializeField] internal ButtonComponentView leaveButton;
+    [SerializeField] internal TMP_Text playersText;
+    [SerializeField] internal DropdownComponentView allowUsersDropdown;
+    [SerializeField] internal ToggleComponentView muteAllToggle;
+    [SerializeField] internal GameObject emptyListGameObject;
+    [SerializeField] internal ButtonComponentView goToCrowdButton;
+    [SerializeField] internal VoiceChatPlayerComponentView playerPrefab;
+    [SerializeField] internal Transform usersContainer;
+    [SerializeField] internal UserContextMenu contextMenuPanel;
 
     [Header("Configuration")]
     [SerializeField] internal VoiceChatWindowComponentModel model;
