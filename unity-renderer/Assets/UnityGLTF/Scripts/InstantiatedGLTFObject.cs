@@ -1,5 +1,4 @@
-﻿using MainScripts.DCL.Analytics.PerformanceAnalytics;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityGLTF.Cache;
 
 namespace UnityGLTF
