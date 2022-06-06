@@ -1495,9 +1495,9 @@ ParticleSystem:
         m_NumAlphaKeys: 2
   UVModule:
     serializedVersion: 2
-    enabled: 0
-    mode: 0
-    timeMode: 0
+    enabled: 1
+    mode: 1
+    timeMode: 1
     fps: 30
     frameOverTime:
       serializedVersion: 2
@@ -1554,8 +1554,8 @@ ParticleSystem:
         m_RotationOrder: 4
     startFrame:
       serializedVersion: 2
-      minMaxState: 0
-      scalar: 0
+      minMaxState: 3
+      scalar: 0.9999
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1605,7 +1605,7 @@ ParticleSystem:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    speedRange: {x: 0, y: 1}
+    speedRange: {x: 0, y: 0}
     tilesX: 1
     tilesY: 1
     animationType: 0
@@ -1614,7 +1614,28 @@ ParticleSystem:
     uvChannelMask: -1
     rowMode: 1
     sprites:
-    - sprite: {fileID: 0}
+    - sprite: {fileID: -5678512871157408403, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
+    - sprite: {fileID: -6134993809297719219, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
+    - sprite: {fileID: -5653411428424605918, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
+    - sprite: {fileID: -6234104402273833510, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
+    - sprite: {fileID: -23437870716378929, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
+    - sprite: {fileID: 6726948905552063219, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
+    - sprite: {fileID: 7065040574335784077, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
+    - sprite: {fileID: -2592509462476873157, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
+    - sprite: {fileID: 5026146890834185380, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
+    - sprite: {fileID: -5677250123261470903, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
+    - sprite: {fileID: -924287825326529467, guid: 442f06e710f18804e8fbbaae7286f8a7,
+        type: 3}
     flipU: 0
     flipV: 0
   VelocityModule:
