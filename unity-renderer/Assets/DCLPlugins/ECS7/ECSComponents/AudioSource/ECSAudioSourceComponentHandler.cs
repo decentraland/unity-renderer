@@ -11,7 +11,7 @@ using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents
 {
-    public class ECSAudioSourceComponentHandler : IECSComponentHandler<ECSAudioSource>, IOutOfSceneBoundariesHandler
+    public class ECSAudioSourceComponentHandler : IECSComponentHandler<PBAudioSource>, IOutOfSceneBoundariesHandler
     {
         internal AudioSource audioSource;
         internal AssetPromise_AudioClip promiseAudioClip;
@@ -20,7 +20,7 @@ namespace DCL.ECSComponents
         private bool isOutOfBoundaries = false;
         private bool isAudioClipReady = false;
         
-        private ECSAudioSource model;
+        private PBAudioSource model;
         private IParcelScene scene;
         private AudioClip audioClip;
 
@@ -57,9 +57,9 @@ namespace DCL.ECSComponents
             Dispose(entity);
         }
 
-        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSAudioSource model)
+        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAudioSource model)
         {
-            bool isSameClip = model.audioClipUrl == this.model?.audioClipUrl;
+            bool isSameClip = model.AudioClipUrl == this.model?.AudioClipUrl;
             this.model = model;
             
             // If the clip has changed, we need to forget the old clip
@@ -75,7 +75,7 @@ namespace DCL.ECSComponents
 
             if (!isAudioClipReady && !isSameClip)
             {
-                promiseAudioClip = new AssetPromise_AudioClip(model.audioClipUrl, scene.contentProvider);
+                promiseAudioClip = new AssetPromise_AudioClip(model.AudioClipUrl, scene.contentProvider);
                 promiseAudioClip.OnSuccessEvent += OnAudioClipLoadComplete;
                 promiseAudioClip.OnFailEvent += OnAudioClipLoadFail;
 
@@ -132,12 +132,12 @@ namespace DCL.ECSComponents
             }
             
             UpdateAudioSourceVolume();
-            audioSource.loop = model.loop;
-            audioSource.pitch = model.pitch;
+            audioSource.loop = model.Loop;
+            audioSource.pitch = model.Pitch;
             audioSource.spatialBlend = 1;
             audioSource.dopplerLevel = 0.1f;
 
-            if (!model.playing)
+            if (!model.Playing)
             {
                 if (audioSource.isPlaying)
                 {
@@ -156,13 +156,13 @@ namespace DCL.ECSComponents
             if (audioSource.clip != clip)
                 audioSource.clip = clip;
             
-            bool shouldPlay = playedAtTimestamp != model.playedAtTimestamp ||
-                              (model.playing && !audioSource.isPlaying);
+            bool shouldPlay = playedAtTimestamp != model.PlayedAtTimestamp ||
+                              (model.Playing && !audioSource.isPlaying);
             
-            if (audioSource.enabled && model.playing && shouldPlay)
+            if (audioSource.enabled && model.Playing && shouldPlay)
                 audioSource.Play();
             
-            playedAtTimestamp = model.playedAtTimestamp;
+            playedAtTimestamp = model.PlayedAtTimestamp;
         }
 
         private void OnAudioClipLoadComplete(Asset_AudioClip assetAudioClip)
@@ -179,7 +179,7 @@ namespace DCL.ECSComponents
 
         private void OnAudioClipLoadFail(Asset_AudioClip assetAudioClip, Exception exception)
         {
-            Debug.LogError("Audio clip couldn't be loaded. Url: " +model.audioClipUrl + "     error: " + exception.Message);
+            Debug.LogError("Audio clip couldn't be loaded. Url: " +model.AudioClipUrl + "     error: " + exception.Message);
             DisposePromise();
         }
 
@@ -202,12 +202,12 @@ namespace DCL.ECSComponents
             {
                 AudioSettings audioSettingsData =
                     settings != null ? settings.audioSettings.Data : new AudioSettings();
-                newVolume = model.volume * Utils.ToVolumeCurve(
+                newVolume = model.Volume * Utils.ToVolumeCurve(
                     dataStore.virtualAudioMixer.sceneSFXVolume.Get() * audioSettingsData.sceneSFXVolume *
                     audioSettingsData.masterVolume);
             }
 
-            bool isCurrentScene = scene.isPersistent || scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
+            bool isCurrentScene = scene.isPersistent || scene.sceneData.id == sceneID.Get();
 
             audioSource.volume = isCurrentScene ? newVolume : 0f;
         }
@@ -220,7 +220,7 @@ namespace DCL.ECSComponents
             float volume = 0;
 
             if (scene.isPersistent || scene.sceneData.id == currentSceneId)
-                volume = model.volume;
+                volume = model.Volume;
             
             audioSource.volume = volume;
         }

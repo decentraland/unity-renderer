@@ -19,8 +19,10 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] private Button optionsButton;
     [SerializeField] private Model model;
     [SerializeField] private CanvasGroup[] previewCanvasGroup;
+    [SerializeField] private Vector2 previewModeSize;
     
     private Coroutine alphaRoutine;
+    private Vector2 originalSize;
 
     public event Action OnPressBack;
     public event Action OnMinimize;
@@ -46,6 +48,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     public override void Awake()
     {
         base.Awake();
+        originalSize = ((RectTransform) transform).sizeDelta;
         backButton.onClick.AddListener(() => OnPressBack?.Invoke());
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         optionsButton.onClick.AddListener(ShowOptions);
@@ -84,6 +87,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             StopCoroutine(alphaRoutine);
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
+        ((RectTransform) transform).sizeDelta = previewModeSize;
     }
 
     public void DeactivatePreview()
@@ -102,6 +106,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             StopCoroutine(alphaRoutine);
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
+        ((RectTransform) transform).sizeDelta = originalSize;
     }
 
     public override void RefreshControl()

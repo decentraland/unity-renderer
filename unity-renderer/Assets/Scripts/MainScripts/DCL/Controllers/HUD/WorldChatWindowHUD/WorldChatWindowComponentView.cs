@@ -36,6 +36,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     private bool isLayoutDirty;
     private Dictionary<string, PrivateChatModel> filteredPrivateChats;
     private int currentAvatarSnapshotIndex;
+    private bool isLoadingPrivateChannels;
 
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
@@ -162,9 +163,14 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         searchResultsList.Hide();
         publicChannelList.Show();
         publicChannelList.Sort();
-        directChatList.Show();
-        directChatList.Sort();
-        directChannelHeader.SetActive(true);
+        
+        if (!isLoadingPrivateChannels)
+        {
+            directChatList.Show();
+            directChatList.Sort();
+            directChannelHeader.SetActive(true);    
+        }
+        
         searchResultsHeader.SetActive(false);
 
         directChatList.Filter(entry => true);
@@ -255,6 +261,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         directChatsLoadingContainer.SetActive(visible);
         directChatsContainer.SetActive(!visible);
         scroll.enabled = !visible;
+        isLoadingPrivateChannels = visible;
     }
 
     private void UpdateHeaders()
