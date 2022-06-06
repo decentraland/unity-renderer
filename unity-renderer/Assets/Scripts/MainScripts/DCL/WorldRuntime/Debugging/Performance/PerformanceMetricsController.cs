@@ -94,10 +94,9 @@ namespace DCL
             scenesMemoryScore.Clear();
             foreach (IParcelScene parcelScene in loadedScenesValues)
             {
-                var coords = parcelScene.sceneData.basePosition;
-
-                if (coords.x == 0 && coords.y == 0)
-                    continue; // we ignore global scene
+                // we ignore global scene
+                if (parcelScene.isPersistent)
+                    continue; 
 
                 scenesMemoryScore.Add(parcelScene.sceneData.id, parcelScene.metricsCounter.currentCount.totalMemoryScore);
             }
