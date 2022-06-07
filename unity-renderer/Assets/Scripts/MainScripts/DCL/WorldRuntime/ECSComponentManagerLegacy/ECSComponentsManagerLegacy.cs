@@ -421,13 +421,9 @@ namespace DCL
                     targetComponent.Initialize(scene, entity);
 
                     if (data is string json)
-                    {
                         targetComponent.UpdateFromJSON(json);
-                    }
                     else
-                    {
                         targetComponent.UpdateFromModel(data as BaseModel);
-                    }
                 }
             }
             else
@@ -436,7 +432,7 @@ namespace DCL
             }
 
             if (targetComponent != null && targetComponent is IOutOfSceneBoundariesHandler)
-                sceneBoundsChecker?.AddEntityToBeChecked(entity);
+                sceneBoundsChecker?.AddEntityToBeChecked(entity, classId == CLASS_ID_COMPONENT.TRANSFORM);
 
             physicsSyncController.MarkDirty();
             cullingController.MarkDirty();

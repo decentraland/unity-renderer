@@ -62,7 +62,8 @@ namespace DCL.Controllers
                     {
                         if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
                         {
-                            logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
+                            if(VERBOSE)
+                                logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
                             return;
                         }
 
@@ -71,7 +72,8 @@ namespace DCL.Controllers
                         {
                             if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
                             {
-                                logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
+                                if(VERBOSE)
+                                    logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
                                 return;
                             }
 
@@ -104,7 +106,8 @@ namespace DCL.Controllers
                         }
                     }
                     
-                    logger.Verbose($"Finished checking entities: checked entities {checkedEntities.Count}; entitiesToCheck left: {entitiesToCheck.Count}; highPriorityEntities left: {highPrioEntitiesToCheck.Count}");
+                    if(VERBOSE)
+                        logger.Verbose($"Finished checking entities: checked entities {checkedEntities.Count}; entitiesToCheck left: {entitiesToCheck.Count}; highPriorityEntities left: {highPrioEntitiesToCheck.Count}");
 
                     checkedEntities.Clear();
 
@@ -143,13 +146,18 @@ namespace DCL.Controllers
         {
             Stop();
         }
-
+        
         public void AddEntityToBeChecked(IDCLEntity entity)
+        {
+            AddEntityToBeChecked(entity, false);
+        }
+
+        public void AddEntityToBeChecked(IDCLEntity entity, bool runPreliminaryEvaluation)
         {
             if (!enabled)
                 return;
 
-            OnAddEntity(entity);
+            OnAddEntity(entity, runPreliminaryEvaluation);
         }
 
         /// <summary>
@@ -337,10 +345,13 @@ namespace DCL.Controllers
             }
         }
 
-        protected void OnAddEntity(IDCLEntity entity)
+        protected void OnAddEntity(IDCLEntity entity, bool runPreliminaryEvaluation = false)
         {
-            // The outer bounds check is cheaper than the regular check
-            RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
+            if (runPreliminaryEvaluation)
+            {
+                // The outer bounds check is cheaper than the regular check
+                RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
+            }
             
             AddEntityBasedOnPriority(entity);
         }

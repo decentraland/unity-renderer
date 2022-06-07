@@ -19,6 +19,7 @@ namespace DCL.Controllers
         void Start();
         void Stop();
         void AddEntityToBeChecked(IDCLEntity entity);
+        void AddEntityToBeChecked(IDCLEntity entity, bool runPreliminaryEvaluation);
 
         /// <summary>
         /// Add an entity that will be consistently checked, until manually removed from the list.

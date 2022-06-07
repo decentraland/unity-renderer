@@ -333,7 +333,7 @@ namespace DCL.Controllers
             newEntity.OnCleanupEvent += po.OnCleanup;
 
             if (Environment.i.world.sceneBoundsChecker.enabled)
-                newEntity.OnShapeUpdated += Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked;
+                newEntity.OnShapeUpdated += OnEntityShapeUpdated;
 
             entities.Add(id, newEntity);
 
@@ -342,6 +342,11 @@ namespace DCL.Controllers
             OnEntityAdded?.Invoke(newEntity);
 
             return newEntity;
+        }
+
+        void OnEntityShapeUpdated(IDCLEntity entity)
+        {
+            Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(entity, true);
         }
 
         public void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true)
@@ -388,7 +393,7 @@ namespace DCL.Controllers
 
             if (Environment.i.world.sceneBoundsChecker.enabled)
             {
-                entity.OnShapeUpdated -= Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked;
+                entity.OnShapeUpdated -= OnEntityShapeUpdated;
                 Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(entity);
             }
 
@@ -436,7 +441,7 @@ namespace DCL.Controllers
 
                 entities.Clear();
 
-                // TODO: Does it make sense that 'RemoveAllEntities()' destroys the whole scene GO in this scenario??
+                // TODO: Does it make sense that 'RemoveAllEntities()' destroys the whole scene GameObject?
                 if (gameObject != null)
                     Destroy(gameObject);
             }
