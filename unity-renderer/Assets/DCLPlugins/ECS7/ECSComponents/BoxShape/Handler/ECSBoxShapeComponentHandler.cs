@@ -46,6 +46,8 @@ namespace DCL.ECSComponents
                 DisposeMesh(scene);
                 generatedMesh = shape.mesh;
                 GenerateRenderer(generatedMesh, scene, entity, model);
+                entity.OnShapeLoaded?.Invoke(entity);
+                entity.OnShapeUpdated?.Invoke(entity);
             };
             primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
             {
