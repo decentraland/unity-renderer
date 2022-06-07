@@ -31,12 +31,16 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     public event Action<string> OnAllowUsersFilterChange;
     public event Action OnGoToCrowd;
     public event Action<bool> OnMuteAll;
+    public event Action<string, bool> OnMuteUser;
 
     public RectTransform Transform => (RectTransform)transform;
-
-    public UserContextMenu ContextMenuPanel => contextMenuPanel;
-
     public bool isMuteAllOn => muteAllToggle.isOn;
+    public int numberOfPlayers => currentPlayers.Count;
+    public int numberOfPlayersTalking => usersTalking.Count;
+
+    private readonly Queue<VoiceChatPlayerComponentView> playersPool = new Queue<VoiceChatPlayerComponentView>();
+    private readonly Dictionary<string, VoiceChatPlayerComponentView> currentPlayers = new Dictionary<string, VoiceChatPlayerComponentView>();
+    private readonly List<string> usersTalking = new List<string>();
 
     public override void Awake()
     {
@@ -103,19 +107,118 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
 
         if (leaveButton != null)
             leaveButton.gameObject.SetActive(isJoined);
-    }
 
-    public void SetMuteAllIsOn(bool isOn, bool notify = true)
-    {
-        if (notify)
-            muteAllToggle.isOn = isOn;
-        else
-            muteAllToggle.SetIsOnWithoutNotify(isOn);
+        using (var iterator = currentPlayers.GetEnumerator())
+        {
+            while (iterator.MoveNext())
+            {
+                iterator.Current.Value.SetAsJoined(isJoined);
+            }
+        }
     }
 
     public void SelectAllowUsersOption(int optionIndex) { allowUsersDropdown.GetOption(optionIndex).isOn = true; }
 
-    public VoiceChatPlayerComponentView CreateNewPlayerInstance() => Instantiate(playerPrefab, usersContainer);
+    public void SetPlayerMuted(string userId, bool isMuted)
+    {
+        if (!currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView elementView))
+            return;
+
+        elementView.SetAsMuted(isMuted);
+    }
+
+    public void SetPlayerRecording(string userId, bool isRecording)
+    {
+        if (!currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView elementView))
+            return;
+
+        elementView.SetAsTalking(isRecording);
+
+        if (isRecording)
+        {
+            if (!usersTalking.Contains(userId))
+                usersTalking.Add(userId);
+        }
+        else
+        {
+            usersTalking.Remove(userId);
+        }
+    }
+
+    public void SetPlayerBlocked(string userId, bool isBlocked)
+    {
+        if (currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView elementView))
+            elementView.SetAsBlocked(isBlocked);
+    }
+
+    public void SetPlayerAsFriend(string userId, bool isFriend)
+    {
+        currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView playerView);
+
+        if (playerView != null)
+            playerView.SetAsFriend(isFriend);
+    }
+
+    public void SetPlayerAsJoined(string userId, bool isJoined)
+    {
+        currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView playerView);
+
+        if (playerView != null)
+            playerView.SetAsJoined(isJoined);
+    }
+
+    public void AddOrUpdatePlayer(UserProfile otherProfile)
+    {
+        if (currentPlayers.ContainsKey(otherProfile.userId))
+            return;
+
+        VoiceChatPlayerComponentView elementView = null;
+
+        if (playersPool.Count > 0)
+        {
+            elementView = playersPool.Dequeue();
+        }
+        else
+        {
+            elementView = Instantiate(playerPrefab, usersContainer);
+            elementView.OnContextMenuOpen += OpenContextMenu;
+            elementView.OnMuteUser += MuteUser;
+        }
+
+        elementView.Configure(new VoiceChatPlayerComponentModel
+        {
+            userId = otherProfile.userId,
+            userImageUrl = otherProfile.face256SnapshotURL,
+            userName = otherProfile.userName,
+            isMuted = false,
+            isTalking = false,
+            isBlocked = false,
+            isFriend = false,
+            isJoined = false,
+            isBackgroundHover = false
+        });
+
+        elementView.SetActive(true);
+        currentPlayers.Add(otherProfile.userId, elementView);
+        SetNumberOfPlayers(currentPlayers.Count);
+    }
+
+    public void RemoveUser(string userId)
+    {
+        if (!currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView elementView))
+            return;
+
+        if (!elementView)
+            return;
+
+        playersPool.Enqueue(elementView);
+        currentPlayers.Remove(userId);
+        SetNumberOfPlayers(currentPlayers.Count);
+
+        elementView.SetActive(false);
+    }
+
+    public string GetUserTalkingByIndex(int index) { return usersTalking[index]; }
 
     public override void Dispose()
     {
@@ -124,6 +227,9 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         leaveButton.onClick.RemoveAllListeners();
         allowUsersDropdown.OnOptionSelectionChanged -= AllowUsersOptionChanged;
         muteAllToggle.OnSelectedChanged -= OnMuteAllToggleChanged;
+
+        currentPlayers.Clear();
+        playersPool.Clear();
 
         base.Dispose();
     }
@@ -171,6 +277,16 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     }
 
     internal void OnMuteAllToggleChanged(bool isOn, string id, string text) { OnMuteAll?.Invoke(isOn); }
+
+    internal void MuteUser(string userId, bool isMute) { OnMuteUser?.Invoke(userId, isMute); }
+
+    internal void OpenContextMenu(string userId)
+    {
+        currentPlayers.TryGetValue(userId, out VoiceChatPlayerComponentView elementView);
+
+        if (elementView != null)
+            elementView.DockAndOpenUserContextMenu(contextMenuPanel);
+    }
 
     internal static VoiceChatWindowComponentView Create()
     {
