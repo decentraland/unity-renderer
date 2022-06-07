@@ -14,7 +14,9 @@
         "FriendsController",
         "SocialAnalytics",
         "DataStore",
-        "IntegrationTestSuite"
+        "IntegrationTestSuite",
+        "BaseVariable",
+        "PlayerModels"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -11,10 +11,10 @@ using static DCL.SettingsCommon.GeneralSettings;
 public class VoiceChatWindowController : IHUD
 {
     const float MUTE_STATUS_UPDATE_INTERVAL = 0.3f;
-    private const string TALKING_MESSAGE_YOU = "You";
-    private const string TALKING_MESSAGE_JUST_YOU_IN_THE_VOICE_CHAT = "Just you in the voice chat";
-    private const string TALKING_MESSAGE_NOBODY_TALKING = "Nobody is talking";
-    private const string TALKING_MESSAGE_SEVERAL_PEOPLE_TALKING = "Several people talking";
+    internal const string TALKING_MESSAGE_YOU = "You";
+    internal const string TALKING_MESSAGE_JUST_YOU_IN_THE_VOICE_CHAT = "Just you in the voice chat";
+    internal const string TALKING_MESSAGE_NOBODY_TALKING = "Nobody is talking";
+    internal const string TALKING_MESSAGE_SEVERAL_PEOPLE_TALKING = "Several people talking";
 
     public IVoiceChatWindowComponentView VoiceChatWindowView => voiceChatWindowView;
     public IVoiceChatBarComponentView VoiceChatBarView => voiceChatBarView;
@@ -31,14 +31,14 @@ public class VoiceChatWindowController : IHUD
     private readonly HashSet<string> trackedUsersHashSet = new HashSet<string>();
     private readonly Queue<VoiceChatPlayerComponentView> playersPool = new Queue<VoiceChatPlayerComponentView>();
     internal Dictionary<string, VoiceChatPlayerComponentView> currentPlayers = new Dictionary<string, VoiceChatPlayerComponentView>();
-    private readonly List<string> usersToMute = new List<string>();
-    private readonly List<string> usersToUnmute = new List<string>();
-    private readonly List<string> usersTalking = new List<string>();
+    internal readonly List<string> usersToMute = new List<string>();
+    internal readonly List<string> usersToUnmute = new List<string>();
+    internal readonly List<string> usersTalking = new List<string>();
     internal bool isOwnPLayerTalking = false;
     private Coroutine updateMuteStatusRoutine = null;
-    private bool isMuteAll = false;
+    internal bool isMuteAll = false;
     private bool isOpenByFirstTime = true;
-    private bool isJoined = false;
+    internal bool isJoined = false;
 
     public VoiceChatWindowController() { }
 
