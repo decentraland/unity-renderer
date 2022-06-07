@@ -18,9 +18,6 @@ public class ECS7ComponentsPlugin : IDisposable
         this.componentsFactory = componentsFactory;
         transformComponent = new ECSTransformComponent(ComponentID.TRANSFORM, componentsFactory, componentsWriter);
         textShapeComponent = new ECSTextShapeComponent(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
-        
-        RegisterComponents();
-    }
 
         // Box Shape
         componentsFactory.AddOrReplaceComponent(ComponentID.BOX_SHAPE,
