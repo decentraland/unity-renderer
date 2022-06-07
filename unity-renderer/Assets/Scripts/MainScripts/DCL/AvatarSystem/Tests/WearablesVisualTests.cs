@@ -22,7 +22,7 @@ public class WearablesVisualTests : VisualTestsBase
     {
         yield return base.SetUp();
 
-        combiner = new AvatarMeshCombinerHelper();
+        combiner = new AvatarMeshCombinerHelper(keepPose: false);
         combiner.uploadMeshToGpu = false;
         combiner.prepareMeshForGpuSkinning = false;
 

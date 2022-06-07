@@ -81,7 +81,7 @@ namespace DCL
         /// <param name="renderers">Renderers to be combined.</param>
         /// <param name="materialAsset">Material asset to be used in the resulting Output object. This Material will be instantiated for each sub-mesh generated.</param>
         /// <returns>An Output object with the mesh and materials. Output.isValid will return true if the combining is successful.</returns>
-        public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset)
+        public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset, bool keepPose = true)
         {
             Output result = new Output();
             (Vector3 pos, Quaternion rot, Vector3 scale)[] bonesTransforms = bones.Select(x => (x.position, x.rotation, x.localScale)).ToArray();
@@ -154,11 +154,14 @@ namespace DCL
             result.materials = flattenedMaterialsData.materials.ToArray();
             result.isValid = true;
 
-            for (int i = 0; i < bones.Length; i++)
+            if (keepPose)
             {
-                bones[i].position = bonesTransforms[i].pos;
-                bones[i].rotation = bonesTransforms[i].rot;
-                bones[i].localScale = bonesTransforms[i].scale;
+                for (int i = 0; i < bones.Length; i++)
+                {
+                    bones[i].position = bonesTransforms[i].pos;
+                    bones[i].rotation = bonesTransforms[i].rot;
+                    bones[i].localScale = bonesTransforms[i].scale;
+                }
             }
 
             return result;

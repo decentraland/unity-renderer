@@ -42,8 +42,13 @@ namespace DCL
         public bool enableCombinedMesh { get; set; } = true;
 
         private AvatarMeshCombiner.Output? lastOutput;
+        private bool keepPose;
 
-        public AvatarMeshCombinerHelper (GameObject container = null) { this.container = container; }
+        public AvatarMeshCombinerHelper (GameObject container = null, bool keepPose = true) 
+        { 
+            this.container = container;
+            this.keepPose = keepPose;
+        }
 
         /// <summary>
         /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
@@ -112,7 +117,8 @@ namespace DCL
                 bonesContainer.sharedMesh.bindposes,
                 bonesContainer.bones,
                 renderers,
-                materialAsset);
+                materialAsset,
+                keepPose);
 
             if ( !output.isValid )
             {
