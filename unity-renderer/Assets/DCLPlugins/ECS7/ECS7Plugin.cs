@@ -1,24 +1,28 @@
 using DCL;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
 
-public class ECS7Plugin : IPlugin
+namespace DCL.ECS7
 {
-    private readonly ComponentCrdtWriteSystem crdtWriteSystem;
-    private readonly IECSComponentWriter componentWriter;
-    private readonly ECS7ComponentsPlugin componentsPlugin;
-
-    public ECS7Plugin()
+    public class ECS7Plugin : IPlugin
     {
-        crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.platform.updateEventHandler, Environment.i.world.state);
-        componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
+        private readonly ComponentCrdtWriteSystem crdtWriteSystem;
+        private readonly IECSComponentWriter componentWriter;
+        private readonly ECS7ComponentsPlugin componentsPlugin;
 
-        componentsPlugin = new ECS7ComponentsPlugin(DataStore.i.ecs7.componentsFactory, componentWriter);
-    }
+        public ECS7Plugin()
+        {
+            crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.platform.updateEventHandler, Environment.i.world.state);
+            componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
-    public void Dispose()
-    {
-        componentsPlugin.Dispose();
-        crdtWriteSystem.Dispose();
-        componentWriter.Dispose();
+            componentsPlugin = new ECS7ComponentsPlugin(DataStore.i.ecs7.componentsFactory, componentWriter);
+        }
+
+        public void Dispose()
+        {
+            componentsPlugin.Dispose();
+            crdtWriteSystem.Dispose();
+            componentWriter.Dispose();
+        }
     }
 }
