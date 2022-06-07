@@ -1,0 +1,16 @@
+﻿syntax = "proto3";
+
+// ComponentDefinition.ComponentID=20;
+// This parameter is processed by the tool
+
+package decentraland.ecs;
+option csharp_namespace = "DCL.ECSComponents";
+
+message PBAudioSource {  
+  bool playing = 1;
+  float volume = 2;
+  bool loop = 3;
+  float pitch = 4;
+  int32 played_at_timestamp = 5;
+  string audio_clip_url = 6;
+}

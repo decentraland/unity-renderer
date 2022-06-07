@@ -47,7 +47,7 @@ namespace DCL.ECSComponents.Test
         public void UpdateComponentCorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
 
             // Act
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -60,7 +60,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeComponentCorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Act
@@ -74,7 +74,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             sphereShapeComponentHandler.meshesInfo = null;
 
@@ -90,7 +90,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullPromiseCorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             sphereShapeComponentHandler.primitiveMeshPromisePrimitive = null;
 
@@ -106,7 +106,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullMeshInfoCorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             sphereShapeComponentHandler.meshesInfo = null;
 
@@ -123,7 +123,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullRendereableCorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             sphereShapeComponentHandler.rendereable = null;
 
