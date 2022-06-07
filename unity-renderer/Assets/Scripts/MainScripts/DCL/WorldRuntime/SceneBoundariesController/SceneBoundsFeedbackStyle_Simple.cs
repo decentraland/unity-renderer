@@ -6,11 +6,6 @@ namespace DCL.Controllers
 {
     public class SceneBoundsFeedbackStyle_Simple : ISceneBoundsFeedbackStyle
     {
-        // TODO: Fix this class to take shapes 'visible' model value into account...
-        // disabledRenderers should be a collection of MeshesInfo (maybe a hashset)
-        // ApplyFeedback() -> meshesInfo.renderers[i].enabled = isInsideBoundaries && meshesInfo.currentShape.IsVisible();
-        // Then CleanFeedback() should use ApplyFeedback(meshesInfo, true) for each meshesInfo
-        
         private readonly List<Renderer> disabledRenderers = new List<Renderer>();
 
         public void ApplyFeedback(MeshesInfo meshesInfo, bool isInsideBoundaries)
@@ -28,7 +23,7 @@ namespace DCL.Controllers
 
                 if (isInsideBoundaries == meshesInfo.renderers[i].enabled)
                     continue;
-                
+
                 meshesInfo.renderers[i].enabled = isInsideBoundaries;
 
                 if (isInsideBoundaries && disabledRenderers.Contains(meshesInfo.renderers[i]))
