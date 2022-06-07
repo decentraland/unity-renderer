@@ -28,12 +28,8 @@ namespace AvatarSystem
 
         public void Initialize()
         {
-            if (avatarRevealerContainer == null)
-                return;
-
             if (meshRenderer == null)
                 meshRenderer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatarDummy"), avatarRevealerContainer).GetComponentInChildren<SkinnedMeshRenderer>();
-
         }
 
         public void FadeOut(MeshRenderer targetRenderer) { }

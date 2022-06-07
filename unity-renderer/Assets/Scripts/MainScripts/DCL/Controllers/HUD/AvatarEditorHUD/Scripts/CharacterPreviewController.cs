@@ -42,7 +42,6 @@ public class CharacterPreviewController : MonoBehaviour
 
     [SerializeField] private GameObject avatarContainer;
     [SerializeField] private Transform avatarRevealContainer;
-    [SerializeField] private GameObject armatureContainer;
     private IAvatar avatar;
     private readonly AvatarModel currentAvatarModel = new AvatarModel { wearables = new List<string>() };
     private CancellationTokenSource loadingCts = new CancellationTokenSource();
@@ -57,7 +56,7 @@ public class CharacterPreviewController : MonoBehaviour
             { CameraFocus.BodySnapshot, bodySnapshotTemplate },
         };
         IAnimator animator = avatarContainer.gameObject.GetComponentInChildren<IAnimator>();
-        BaseAvatarDummy baseAvatar = new BaseAvatarDummy(avatarRevealContainer, armatureContainer);
+        BaseAvatarDummy baseAvatar = new BaseAvatarDummy(avatarRevealContainer, avatarContainer);
         avatar = new AvatarSystem.Avatar(
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),

@@ -29,9 +29,6 @@ namespace AvatarSystem
 
         public void Initialize() 
         {
-            if (avatarRevealerContainer == null)
-                return;
-
             if (avatarRevealer == null)
                 avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<AvatarReveal>();
 
