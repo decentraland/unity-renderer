@@ -4,7 +4,6 @@ using DCL.SettingsCommon;
 using SocialFeaturesAnalytics;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static DCL.SettingsCommon.GeneralSettings;
 
@@ -28,10 +27,10 @@ public class VoiceChatWindowController : IHUD
     private ISocialAnalytics socialAnalytics;
     private DataStore dataStore;
     private Settings settings;
-    private readonly HashSet<string> trackedUsersHashSet = new HashSet<string>();
-    private readonly List<string> usersToMute = new List<string>();
-    private readonly List<string> usersToUnmute = new List<string>();
-    private bool isOwnPLayerTalking = false;
+    internal HashSet<string> trackedUsersHashSet = new HashSet<string>();
+    internal readonly List<string> usersToMute = new List<string>();
+    internal readonly List<string> usersToUnmute = new List<string>();
+    internal bool isOwnPLayerTalking = false;
     private Coroutine updateMuteStatusRoutine = null;
     internal bool isMuteAll = false;
     private bool isOpenByFirstTime = true;

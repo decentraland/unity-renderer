@@ -1,19 +1,24 @@
 using NUnit.Framework;
+using System.Collections.Generic;
+using UnityEngine;
 using static DCL.SettingsCommon.GeneralSettings;
 
 public class VoiceChatWindowComponentViewShould
 {
     private VoiceChatWindowComponentView voiceChatWindowComponentView;
+    private string[] testPlayersId = { "playerId1", "playerId2", "playerId3" };
 
     [SetUp]
     public void SetUp()
     {
         voiceChatWindowComponentView = BaseComponentView.Create<VoiceChatWindowComponentView>("VoiceChatHUD");
+        voiceChatWindowComponentView.currentPlayers = CreateTestCurrentPlayers();
     }
 
     [TearDown]
     public void TearDown()
     {
+        DestroyTestCurrentPlayers();
         voiceChatWindowComponentView.Dispose();
     }
 
@@ -95,24 +100,14 @@ public class VoiceChatWindowComponentViewShould
         voiceChatWindowComponentView.SetAsJoined(isJoined);
 
         // Assert
+        foreach (string playerId in testPlayersId)
+        {
+            Assert.AreEqual(isJoined, voiceChatWindowComponentView.currentPlayers[playerId].model.isJoined);
+        }
+
         Assert.AreEqual(isJoined, voiceChatWindowComponentView.model.isJoined);
         Assert.AreEqual(!isJoined, voiceChatWindowComponentView.joinButton.gameObject.activeSelf);
         Assert.AreEqual(isJoined, voiceChatWindowComponentView.leaveButton.gameObject.activeSelf);
-    }
-
-    [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void SetMuteAllIsOnCorrectly(bool isOn)
-    {
-        // Arrange
-        voiceChatWindowComponentView.muteAllToggle.isOn = !isOn;
-
-        // Act
-        voiceChatWindowComponentView.SetMuteAllIsOn(isOn);
-
-        // Assert
-        Assert.AreEqual(isOn, voiceChatWindowComponentView.muteAllToggle.isOn);
     }
 
     [Test]
@@ -129,6 +124,129 @@ public class VoiceChatWindowComponentViewShould
 
         // Assert
         Assert.IsTrue(voiceChatWindowComponentView.allowUsersDropdown.GetOption(optionIndex).isOn);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetPlayerMutedCorrectly(bool isMuted)
+    {
+        // Act
+        voiceChatWindowComponentView.SetPlayerMuted(testPlayersId[1], isMuted);
+
+        // Assert
+        Assert.AreEqual(isMuted, voiceChatWindowComponentView.currentPlayers[testPlayersId[1]].model.isMuted);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetPlayerRecordingCorrectly(bool isRecording)
+    {
+        foreach (string playerId in testPlayersId)
+        {
+            // Act
+            voiceChatWindowComponentView.SetPlayerRecording(playerId, isRecording);
+
+            // Assert
+            Assert.AreEqual(isRecording, voiceChatWindowComponentView.currentPlayers[playerId].model.isTalking);
+        }
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetPlayerBlockedCorrectly(bool isBlocked)
+    {
+        foreach (string playerId in testPlayersId)
+        {
+            // Act
+            voiceChatWindowComponentView.SetPlayerBlocked(playerId, isBlocked);
+
+            // Assert
+            Assert.AreEqual(isBlocked, voiceChatWindowComponentView.currentPlayers[playerId].model.isBlocked);
+        }
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetPlayerAsFriendCorrectly(bool isFriend)
+    {
+        foreach (string playerId in testPlayersId)
+        {
+            // Act
+            voiceChatWindowComponentView.SetPlayerAsFriend(playerId, isFriend);
+
+            // Assert
+            Assert.AreEqual(isFriend, voiceChatWindowComponentView.currentPlayers[playerId].model.isFriend);
+        }
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetPlayerAsJoinedCorrectly(bool isJoined)
+    {
+        foreach (string playerId in testPlayersId)
+        {
+            // Act
+            voiceChatWindowComponentView.SetPlayerAsJoined(playerId, isJoined);
+
+            // Assert
+            Assert.AreEqual(isJoined, voiceChatWindowComponentView.currentPlayers[playerId].model.isJoined);
+        }
+    }
+
+    [Test]
+    public void AddOrUpdatePlayerCorrectly()
+    {
+        // Arrange
+        string testPlayerId = "playerId4";
+        string testPlayerName = "Test Player";
+
+        UserProfile testUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+        testUserProfile.UpdateData(new UserProfileModel
+        {
+            userId = testPlayerId,
+            name = testPlayerName
+        });
+
+        UserProfileController.userProfilesCatalog.Add(testPlayerId, testUserProfile);
+
+        // Act
+        voiceChatWindowComponentView.AddOrUpdatePlayer(testUserProfile);
+
+        // Assert
+        Assert.IsTrue(voiceChatWindowComponentView.currentPlayers.ContainsKey(testPlayerId));
+        Assert.AreEqual(testPlayerId, voiceChatWindowComponentView.currentPlayers[testPlayerId].model.userId);
+        Assert.AreEqual(testPlayerName, voiceChatWindowComponentView.currentPlayers[testPlayerId].model.userName);
+        Assert.IsTrue(voiceChatWindowComponentView.currentPlayers[testPlayerId].gameObject.activeSelf);
+    }
+
+    [Test]
+    public void RemoveUserCorrectly()
+    {
+        // Act
+        voiceChatWindowComponentView.RemoveUser(testPlayersId[0]);
+
+        // Assert
+        Assert.IsFalse(voiceChatWindowComponentView.currentPlayers.ContainsKey(testPlayersId[0]));
+    }
+
+    [Test]
+    public void GetUserTalkingByIndexCorrectly()
+    {
+        // Arrange
+        string resultPlayer = "";
+        voiceChatWindowComponentView.usersTalking.Add(testPlayersId[0]);
+        voiceChatWindowComponentView.usersTalking.Add(testPlayersId[1]);
+
+        // Act
+        resultPlayer = voiceChatWindowComponentView.GetUserTalkingByIndex(1);
+
+        // Assert
+        Assert.AreEqual(testPlayersId[1], resultPlayer);
     }
 
     [Test]
@@ -174,5 +292,48 @@ public class VoiceChatWindowComponentViewShould
 
         // Assert
         Assert.AreEqual(isOn, resultIsOn);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void MuteUserCorrectly(bool isMute)
+    {
+        // Arrange
+        string resultUserId = "";
+        bool resultIsMute = false;
+        voiceChatWindowComponentView.OnMuteUser += (userId, isMute) =>
+        {
+            resultUserId = userId;
+            resultIsMute = isMute;
+        };
+
+        // Act
+        voiceChatWindowComponentView.MuteUser(testPlayersId[1], isMute);
+
+        // Assert
+        Assert.AreEqual(testPlayersId[1], resultUserId);
+        Assert.AreEqual(isMute, resultIsMute);
+    }
+
+    private Dictionary<string, VoiceChatPlayerComponentView> CreateTestCurrentPlayers()
+    {
+        Dictionary<string, VoiceChatPlayerComponentView> result = new Dictionary<string, VoiceChatPlayerComponentView>();
+        foreach (string playerId in testPlayersId)
+        {
+            result.Add(playerId, VoiceChatPlayerComponentView.Create() as VoiceChatPlayerComponentView);
+        }
+
+        return result;
+    }
+
+    private void DestroyTestCurrentPlayers()
+    {
+        foreach (var player in voiceChatWindowComponentView.currentPlayers)
+        {
+            GameObject.Destroy(player.Value.gameObject);
+        }
+
+        voiceChatWindowComponentView.currentPlayers.Clear();
     }
 }

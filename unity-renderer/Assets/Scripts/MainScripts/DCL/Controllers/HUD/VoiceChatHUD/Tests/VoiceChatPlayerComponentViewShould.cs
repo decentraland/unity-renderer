@@ -15,7 +15,7 @@ public class VoiceChatPlayerComponentViewShould
         voiceChatPlayerComponent = BaseComponentView.Create<VoiceChatPlayerComponentView>("VoiceChatPlayer");
         voiceChatPlayerComponent.avatarPreview.imageObserver = Substitute.For<ILazyTextureObserver>();
         voiceChatWindowComponentView = BaseComponentView.Create<VoiceChatWindowComponentView>("VoiceChatHUD");
-        testUserContextMenu = voiceChatWindowComponentView.ContextMenuPanel;
+        testUserContextMenu = voiceChatWindowComponentView.contextMenuPanel;
     }
 
     [TearDown]

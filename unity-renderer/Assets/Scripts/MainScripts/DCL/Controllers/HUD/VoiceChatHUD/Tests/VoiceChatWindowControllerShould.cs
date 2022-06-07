@@ -17,19 +17,18 @@ public class VoiceChatWindowControllerShould
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
     private DataStore dataStore;
-    private string[] testPlayersId = { "playerId1", "playerId2", "playerId3" };
 
     [SetUp]
     public void SetUp()
     {
         voiceChatWindowComponentView = Substitute.For<IVoiceChatWindowComponentView>();
-        voiceChatWindowComponentView.Configure().CreateNewPlayerInstance().Returns(info => voiceChatWindowController.CreateVoiceChatPlayerView());
         voiceChatBarComponentView = Substitute.For<IVoiceChatBarComponentView>();
         voiceChatWindowController = Substitute.ForPartsOf<VoiceChatWindowController>();
         voiceChatWindowController.Configure().CreateVoiceChatWindowView().Returns(info => voiceChatWindowComponentView);
         voiceChatWindowController.Configure().CreateVoiceChatBatView().Returns(info => voiceChatBarComponentView);
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         userProfileBridge.Configure().GetOwn().Returns(info => ScriptableObject.CreateInstance<UserProfile>());
+        userProfileBridge.Configure().Get(Arg.Any<string>()).Returns(info => ScriptableObject.CreateInstance<UserProfile>());
         friendsController = Substitute.For<IFriendsController>();
         friendsController.Configure().GetFriends().Returns(info => new Dictionary<string, FriendsController.UserStatus>());
         socialAnalytics = Substitute.For<ISocialAnalytics>();
@@ -37,14 +36,11 @@ public class VoiceChatWindowControllerShould
 
         Settings.CreateSharedInstance(new DefaultSettingsFactory());
         voiceChatWindowController.Initialize(userProfileBridge, friendsController, socialAnalytics, dataStore, Settings.i);
-        voiceChatWindowController.currentPlayers = CreateTestCurrentPlayers();
     }
 
     [TearDown]
     public void TearDown()
     {
-        DestroyTestCurrentPlayers();
-        GameObject.Destroy(voiceChatWindowComponentView.ContextMenuPanel);
         voiceChatWindowController.Dispose();
     }
 
@@ -76,13 +72,17 @@ public class VoiceChatWindowControllerShould
     [TestCase(false)]
     public void SetUsersMutedCorrectly(bool isMuted)
     {
+        // Arange
+        string[] testPlayersId = { "playerId1", "playerId2", "playerId3" };
+
         // Act
         voiceChatWindowController.SetUsersMuted(testPlayersId, isMuted);
 
         // Assert
-        Assert.AreEqual(isMuted, voiceChatWindowController.currentPlayers[testPlayersId[0]].model.isMuted);
-        Assert.AreEqual(isMuted, voiceChatWindowController.currentPlayers[testPlayersId[1]].model.isMuted);
-        Assert.AreEqual(isMuted, voiceChatWindowController.currentPlayers[testPlayersId[2]].model.isMuted);
+        foreach (var playerId in testPlayersId)
+        {
+            voiceChatWindowComponentView.Received(1).SetPlayerMuted(playerId, isMuted);
+        }
     }
 
     [Test]
@@ -90,14 +90,14 @@ public class VoiceChatWindowControllerShould
     [TestCase(false)]
     public void SetUserRecordingCorrectly(bool isRecording)
     {
-        foreach (string playerId in testPlayersId)
-        {
-            // Act
-            voiceChatWindowController.SetUserRecording(playerId, isRecording);
+        // Arrange
+        string testUserId = "TestUserId";
 
-            // Assert
-            Assert.AreEqual(isRecording, voiceChatWindowController.currentPlayers[playerId].model.isTalking);
-        }
+        // Act
+        voiceChatWindowController.SetUserRecording(testUserId, isRecording);
+
+        // Assert
+        voiceChatWindowComponentView.Received(1).SetPlayerRecording(testUserId, isRecording);
     }
 
     [Test]
@@ -147,16 +147,12 @@ public class VoiceChatWindowControllerShould
         dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true), false);
         voiceChatWindowController.isOwnPLayerTalking = true;
         voiceChatWindowController.isJoined = !isJoined;
+        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
 
         // Act
         voiceChatWindowController.JoinVoiceChat(isJoined);
 
         // Assert
-        foreach (string playerId in testPlayersId)
-        {
-            Assert.AreEqual(isJoined, voiceChatWindowController.currentPlayers[playerId].model.isJoined);
-        }
-
         voiceChatWindowComponentView.Received(1).SetAsJoined(isJoined);
 
         if (isJoined)
@@ -176,7 +172,7 @@ public class VoiceChatWindowControllerShould
         if (!isJoined)
             socialAnalytics.Received(1).SendVoiceChannelDisconnection();
         else
-            socialAnalytics.Received(1).SendVoiceChannelConnection(testPlayersId.Length);
+            socialAnalytics.Received(1).SendVoiceChannelConnection(1);
     }
 
     [Test]
@@ -191,35 +187,28 @@ public class VoiceChatWindowControllerShould
             name = testPlayerName
         };
 
-        UserProfile testUserProfile = ScriptableObject.CreateInstance<UserProfile>();
-        testUserProfile.UpdateData(new UserProfileModel
-        {
-            userId = testPlayerId,
-            name = testPlayerName
-        });
-
-        UserProfileController.userProfilesCatalog.Add(testPlayerId, testUserProfile);
-
         // Act
         voiceChatWindowController.OnOtherPlayersStatusAdded(testPlayerId, testPlayer);
 
         // Assert
-        Assert.IsTrue(voiceChatWindowController.currentPlayers.ContainsKey(testPlayerId));
-        Assert.AreEqual(testPlayerId, voiceChatWindowController.currentPlayers[testPlayerId].model.userId);
-        Assert.AreEqual(testPlayerName, voiceChatWindowController.currentPlayers[testPlayerId].model.userName);
-        Assert.IsTrue(voiceChatWindowController.currentPlayers[testPlayerId].gameObject.activeSelf);
-        voiceChatWindowComponentView.Received(1).SetNumberOfPlayers(testPlayersId.Length + 1);
+        voiceChatWindowComponentView.Received(1).AddOrUpdatePlayer(Arg.Any<UserProfile>());
+        voiceChatWindowComponentView.Received(1).SetPlayerMuted(testPlayerId, Arg.Any<bool>());
+        voiceChatWindowComponentView.Received(1).SetPlayerBlocked(testPlayerId, Arg.Any<bool>());
+        voiceChatWindowComponentView.Received(1).SetPlayerAsFriend(testPlayerId, Arg.Any<bool>());
+        voiceChatWindowComponentView.Received(1).SetPlayerAsJoined(testPlayerId, Arg.Any<bool>());
     }
 
     [Test]
     public void RaiseOnOtherPlayerStatusRemovedCorrectly()
     {
+        // Arrange
+        string testPlayerId = "TestPlayerId";
+
         // Act
-        voiceChatWindowController.OnOtherPlayerStatusRemoved(testPlayersId[0], null);
+        voiceChatWindowController.OnOtherPlayerStatusRemoved(testPlayerId, null);
 
         // Assert
-        Assert.IsFalse(voiceChatWindowController.currentPlayers.ContainsKey(testPlayersId[0]));
-        voiceChatWindowComponentView.Received(1).SetNumberOfPlayers(testPlayersId.Length - 1);
+        voiceChatWindowComponentView.Received(1).RemoveUser(testPlayerId);
     }
 
     [Test]
@@ -265,22 +254,23 @@ public class VoiceChatWindowControllerShould
     public void MuteUserCorrectly(bool isMuted)
     {
         // Arrange
+        string testPlayerId = "TestPlayerId";
         voiceChatWindowController.usersToUnmute.Clear();
         voiceChatWindowController.usersToMute.Clear();
 
         // Act
-        voiceChatWindowController.MuteUser(testPlayersId[1], isMuted);
+        voiceChatWindowController.MuteUser(testPlayerId, isMuted);
 
         // Assert
         if (isMuted)
         {
-            Assert.IsTrue(voiceChatWindowController.usersToMute.Contains(testPlayersId[1]));
-            socialAnalytics.Received(1).SendPlayerMuted(testPlayersId[1]);
+            Assert.IsTrue(voiceChatWindowController.usersToMute.Contains(testPlayerId));
+            socialAnalytics.Received(1).SendPlayerMuted(testPlayerId);
         }
         else
         {
-            Assert.IsTrue(voiceChatWindowController.usersToUnmute.Contains(testPlayersId[1]));
-            socialAnalytics.Received(1).SendPlayerUnmuted(testPlayersId[1]);
+            Assert.IsTrue(voiceChatWindowController.usersToUnmute.Contains(testPlayerId));
+            socialAnalytics.Received(1).SendPlayerUnmuted(testPlayerId);
         }
     }
 
@@ -300,6 +290,35 @@ public class VoiceChatWindowControllerShould
             Assert.AreEqual(VoiceChatAllow.VERIFIED_ONLY, Settings.i.generalSettings.Data.voiceChatAllow);
         else if (optionId == VoiceChatAllow.FRIENDS_ONLY)
             Assert.AreEqual(VoiceChatAllow.FRIENDS_ONLY, Settings.i.generalSettings.Data.voiceChatAllow);
+    }
+
+    [Test]
+    public void RaiseOnUserProfileUpdatedCorrectly()
+    {
+        // Arrange
+        string testUserId = "UserId1";
+        voiceChatWindowController.trackedUsersHashSet.Add(testUserId);
+
+        // Act
+        voiceChatWindowController.OnUserProfileUpdated(userProfileBridge.Get("test"));
+
+        // Assert
+        voiceChatWindowComponentView.Received(1).SetPlayerBlocked(testUserId, Arg.Any<bool>());
+    }
+
+    [Test]
+    [TestCase(FriendshipAction.APPROVED)]
+    [TestCase(FriendshipAction.REJECTED)]
+    public void RaiseOnUpdateFriendshipCorrectly(FriendshipAction action)
+    {
+        // Arrange
+        string testUserId = "UserId";
+
+        // Act
+        voiceChatWindowController.OnUpdateFriendship(testUserId, action);
+
+        // Assert
+        voiceChatWindowComponentView.Received(1).SetPlayerAsFriend(testUserId, action == FriendshipAction.APPROVED);
     }
 
     [Test]
@@ -350,7 +369,7 @@ public class VoiceChatWindowControllerShould
     {
         // Arrange
         voiceChatWindowController.isOwnPLayerTalking = false;
-        DestroyTestCurrentPlayers();
+        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 0);
 
         // Act
         voiceChatWindowController.SetWhichPlayerIsTalking();
@@ -364,7 +383,8 @@ public class VoiceChatWindowControllerShould
     {
         // Arrange
         voiceChatWindowController.isOwnPLayerTalking = false;
-        voiceChatWindowController.usersTalking.Clear();
+        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
+        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayersTalking.Returns(info => 0);
 
         // Act
         voiceChatWindowController.SetWhichPlayerIsTalking();
@@ -378,13 +398,16 @@ public class VoiceChatWindowControllerShould
     {
         // Arrange
         voiceChatWindowController.isOwnPLayerTalking = false;
-        voiceChatWindowController.usersTalking.Add(testPlayersId[0]);
+        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
+        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayersTalking.Returns(info => 1);
+        voiceChatWindowController.VoiceChatWindowView.Configure().GetUserTalkingByIndex(Arg.Any<int>()).Returns(info => "test");
+        userProfileBridge.Configure().Get(Arg.Any<string>()).Returns(info => null);
 
         // Act
         voiceChatWindowController.SetWhichPlayerIsTalking();
 
         // Assert
-        voiceChatBarComponentView.Received(1).SetTalkingMessage(true, testPlayersId[0]);
+        voiceChatBarComponentView.Received(1).SetTalkingMessage(true, "test");
     }
 
     [Test]
@@ -392,33 +415,13 @@ public class VoiceChatWindowControllerShould
     {
         // Arrange
         voiceChatWindowController.isOwnPLayerTalking = false;
-        voiceChatWindowController.usersTalking.Add(testPlayersId[0]);
-        voiceChatWindowController.usersTalking.Add(testPlayersId[1]);
+        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
+        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayersTalking.Returns(info => 2);
 
         // Act
         voiceChatWindowController.SetWhichPlayerIsTalking();
 
         // Assert
         voiceChatBarComponentView.Received(1).SetTalkingMessage(true, VoiceChatWindowController.TALKING_MESSAGE_SEVERAL_PEOPLE_TALKING);
-    }
-
-    private Dictionary<string, VoiceChatPlayerComponentView> CreateTestCurrentPlayers()
-    {
-        Dictionary<string, VoiceChatPlayerComponentView> result = new Dictionary<string, VoiceChatPlayerComponentView>();
-        foreach (string playerId in testPlayersId)
-        {
-            result.Add(playerId, voiceChatWindowController.CreateVoiceChatPlayerView() as VoiceChatPlayerComponentView);
-        }
-
-        return result;
-    }
-
-    private void DestroyTestCurrentPlayers()
-    {
-        foreach (var player in voiceChatWindowController.currentPlayers)
-        {
-            GameObject.Destroy(player.Value.gameObject);
-        }
-        voiceChatWindowController.currentPlayers.Clear();
     }
 }

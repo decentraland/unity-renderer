@@ -39,8 +39,8 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
     public int numberOfPlayersTalking => usersTalking.Count;
 
     private readonly Queue<VoiceChatPlayerComponentView> playersPool = new Queue<VoiceChatPlayerComponentView>();
-    private readonly Dictionary<string, VoiceChatPlayerComponentView> currentPlayers = new Dictionary<string, VoiceChatPlayerComponentView>();
-    private readonly List<string> usersTalking = new List<string>();
+    internal Dictionary<string, VoiceChatPlayerComponentView> currentPlayers = new Dictionary<string, VoiceChatPlayerComponentView>();
+    internal List<string> usersTalking = new List<string>();
 
     public override void Awake()
     {
