@@ -48,7 +48,6 @@ public class WorldChatWindowController : IHUD
         view.OnClose += HandleViewCloseRequest;
         view.OnOpenPrivateChat += OpenPrivateChat;
         view.OnOpenPublicChannel += OpenPublicChannel;
-        view.OnUnfriend += HandleUnfriend;
         view.OnSearchChannelRequested += SearchChannels;
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
         
@@ -80,7 +79,6 @@ public class WorldChatWindowController : IHUD
         view.OnClose -= HandleViewCloseRequest;
         view.OnOpenPrivateChat -= OpenPrivateChat;
         view.OnOpenPublicChannel -= OpenPublicChannel;
-        view.OnUnfriend -= HandleUnfriend;
         view.OnSearchChannelRequested -= SearchChannels;
         view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
         view.Dispose();
@@ -101,10 +99,6 @@ public class WorldChatWindowController : IHUD
         }
         else
             view.Hide();
-    }
-
-    private void HandleUnfriend(string friendId)
-    {
     }
 
     private void HandleFriendsControllerInitialization()

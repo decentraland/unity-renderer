@@ -60,7 +60,6 @@ public class FriendsHUDController : IHUD
         view.OnRejectConfirmation += HandleRequestRejected;
         view.OnFriendRequestSent += HandleRequestSent;
         view.OnWhisper += HandleOpenWhisperChat;
-        view.OnDeleteConfirmation += HandleUnfriend;
         view.OnClose += HandleViewClosed;
         view.OnRequireMoreFriends += DisplayMoreFriends;
         view.OnRequireMoreFriendRequests += DisplayMoreFriendRequests;
@@ -313,10 +312,6 @@ public class FriendsHUDController : IHUD
         OnPressWhisper?.Invoke(entry.Model.userId);
     }
 
-    private void HandleUnfriend(string userId)
-    {
-    }
-
     private void HandleRequestRejected(FriendRequestEntry entry)
     {
         WebInterface.UpdateFriendshipStatus(
@@ -462,7 +457,6 @@ public class FriendsHUDController : IHUD
             View.OnRejectConfirmation -= HandleRequestRejected;
             View.OnFriendRequestSent -= HandleRequestSent;
             View.OnWhisper -= HandleOpenWhisperChat;
-            View.OnDeleteConfirmation -= HandleUnfriend;
             View.OnClose -= HandleViewClosed;
             View.OnRequireMoreFriends -= DisplayMoreFriends;
             View.OnRequireMoreFriendRequests -= DisplayMoreFriendRequests;

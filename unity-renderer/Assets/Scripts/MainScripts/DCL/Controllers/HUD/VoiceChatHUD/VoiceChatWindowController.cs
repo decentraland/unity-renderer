@@ -216,7 +216,7 @@ public class VoiceChatWindowController : IHUD
     {
         if (!currentPlayers.ContainsKey(player.id))
         {
-            var otherProfile = UserProfileController.userProfilesCatalog.Get(player.id);
+            var otherProfile = userProfileBridge.Get(player.id);
 
             if (otherProfile != null)
             {
@@ -238,7 +238,7 @@ public class VoiceChatWindowController : IHUD
                     isMuted = false,
                     isTalking = false,
                     isBlocked = false,
-                    isFriend = friendsController.GetFriends().ContainsKey(userId),
+                    isFriend = friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND),
                     isJoined = dataStore.voiceChat.isJoinedToVoiceChat.Get(),
                     isBackgroundHover = false
                 });
