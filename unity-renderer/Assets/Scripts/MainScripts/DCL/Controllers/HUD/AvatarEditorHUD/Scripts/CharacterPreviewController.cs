@@ -58,7 +58,6 @@ public class CharacterPreviewController : MonoBehaviour
         };
         IAnimator animator = avatarContainer.gameObject.GetComponentInChildren<IAnimator>();
         BaseAvatarDummy baseAvatar = new BaseAvatarDummy(avatarRevealContainer, armatureContainer);
-        Debug.Log($"avatar reveal cont {avatarRevealContainer.name} armature container {armatureContainer}");
         avatar = new AvatarSystem.Avatar(
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),

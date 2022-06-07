@@ -26,7 +26,7 @@ namespace AvatarSystem
             return meshRenderer;
         }
 
-        public void Initialize(bool resetLoading)
+        public void Initialize()
         {
             if (avatarRevealerContainer == null)
                 return;

@@ -65,7 +65,7 @@ namespace AvatarSystem
                 List<WearableItem> wearables = null;
                 List<WearableItem> emotes = null;
 
-                baseAvatar.Initialize(!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth));
+                baseAvatar.Initialize();
                 animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))

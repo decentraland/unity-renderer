@@ -9,7 +9,7 @@ namespace AvatarSystem
 
         SkinnedMeshRenderer meshRenderer { get; }
 
-        void Initialize(bool resetLoading);
+        void Initialize();
         SkinnedMeshRenderer GetMainRenderer();
         GameObject GetArmatureContainer();
         void FadeOut(MeshRenderer targetRenderer);
