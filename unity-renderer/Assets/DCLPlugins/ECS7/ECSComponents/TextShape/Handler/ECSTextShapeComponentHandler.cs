@@ -39,6 +39,11 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         rectTransform = textGameObject.AddComponent<RectTransform>();
         textComponent = textGameObject.AddComponent<TextMeshPro>();
         textGameObject.transform.SetParent(scene.GetSceneTransform());
+        
+        textComponent.text = string.Empty;
+        
+        if (entity.meshRootGameObject == null)
+            entity.meshesInfo.meshRootGameObject = textGameObject;
     }
 
     public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -67,6 +72,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         {
             textComponent.font = assetFont.font;
             ApplyModelChanges(model);
+            entity.OnShapeUpdated?.Invoke(entity);
             RemoveModelFromPending(scene);
         };
         promise.OnFailEvent += ( mesh,  exception) =>
