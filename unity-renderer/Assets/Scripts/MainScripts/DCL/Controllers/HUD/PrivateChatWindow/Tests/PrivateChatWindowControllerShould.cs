@@ -267,6 +267,36 @@ public class PrivateChatWindowControllerShould
         Assert.IsFalse(isPreviewMode);
     }
 
+    [Test]
+    public void DeactivatePreviewModeWhenInputFieldIsSelected()
+    {
+        var isPreviewMode = false;
+        controller.OnPreviewModeChanged += b => isPreviewMode = b;
+        WhenControllerInitializes(FRIEND_ID);
+
+        internalChatView.OnInputFieldSelected += Raise.Event<Action>();
+        
+        view.Received(1).DeactivatePreview();
+        internalChatView.Received(1).DeactivatePreview();
+        Assert.IsFalse(isPreviewMode);
+    }
+
+    [UnityTest]
+    public IEnumerator ActivatePreviewModeAfterSomeTimeWhenInputFieldIsDeselected()
+    {
+        var isPreviewMode = false;
+        controller.OnPreviewModeChanged += b => isPreviewMode = b;
+        view.IsFocused.Returns(false);
+        WhenControllerInitializes(FRIEND_ID);
+
+        internalChatView.OnInputFieldDeselected += Raise.Event<Action>();
+        yield return new WaitForSeconds(4f);
+        
+        view.Received(1).ActivatePreview();
+        internalChatView.Received(1).ActivatePreview();
+        Assert.IsTrue(isPreviewMode);
+    }
+
     private void WhenControllerInitializes(string friendId)
     {
         controller.Initialize(view);
