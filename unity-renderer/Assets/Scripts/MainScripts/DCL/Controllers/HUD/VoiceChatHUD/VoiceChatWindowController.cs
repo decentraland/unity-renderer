@@ -229,7 +229,7 @@ public class VoiceChatWindowController : IHUD
                     isMuted = false,
                     isTalking = false,
                     isBlocked = false,
-                    isFriend = friendsController.GetFriends().ContainsKey(userId),
+                    isFriend = friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND),
                     isJoined = dataStore.voiceChat.isJoinedToVoiceChat.Get(),
                     isBackgroundHover = false
                 });
