@@ -184,7 +184,7 @@ namespace DCL.Protobuf
 
             foreach (FileInfo file in info)
             {
-                // We ensure that only proto files are converted, this shouldn't be necessary but just in case
+                // We ensure that only proto files are converted
                 if (!file.Name.Contains(".proto"))
                     continue;
 
