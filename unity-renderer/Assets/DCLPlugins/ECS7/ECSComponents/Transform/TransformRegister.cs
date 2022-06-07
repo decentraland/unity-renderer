@@ -1,18 +1,19 @@
-﻿using System;
+using System;
 using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
 {
-    public class PlaneShapeRegister : IDisposable
+    public class TransformRegister : IDisposable
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public PlaneShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public TransformRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, PlaneShapeSerializer.Deserialize, () => new ECSPlaneShapeComponentHandler());
-            componentWriter.AddOrReplaceComponentSerializer<PBPlaneShape>(componentId, PlaneShapeSerializer.Serialize);
+            ECSTransformHandler handler = new ECSTransformHandler();
+            factory.AddOrReplaceComponent(componentId, ECSTransformSerialization.Deserialize, () => handler);
+            componentWriter.AddOrReplaceComponentSerializer<ECSTransform>(componentId, ECSTransformSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

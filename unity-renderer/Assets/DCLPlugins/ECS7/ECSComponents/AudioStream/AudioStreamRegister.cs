@@ -3,16 +3,16 @@ using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
 {
-    public class PlaneShapeRegister : IDisposable
+    public class AudioStreamRegister : IDisposable
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public PlaneShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public AudioStreamRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, PlaneShapeSerializer.Deserialize, () => new ECSPlaneShapeComponentHandler());
-            componentWriter.AddOrReplaceComponentSerializer<PBPlaneShape>(componentId, PlaneShapeSerializer.Serialize);
+            factory.AddOrReplaceComponent(componentId, AudioStreamSerializer.Deserialize, () => new ECSAudioStreamComponentHandler());
+            componentWriter.AddOrReplaceComponentSerializer<PBAudioStream>(componentId, AudioStreamSerializer.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

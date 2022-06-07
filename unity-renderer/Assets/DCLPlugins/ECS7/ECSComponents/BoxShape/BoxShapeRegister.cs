@@ -11,8 +11,7 @@ namespace DCL.ECSComponents
 
         public BoxShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            ECSBoxShapeComponentHandler handler = new ECSBoxShapeComponentHandler(DataStore.i.ecs7);
-            factory.AddOrReplaceComponent(componentId, BoxShapeSerializer.Deserialize, () => handler);
+            factory.AddOrReplaceComponent(componentId, BoxShapeSerializer.Deserialize, () => new ECSBoxShapeComponentHandler(DataStore.i.ecs7));
             componentWriter.AddOrReplaceComponentSerializer<PBBoxShape>(componentId, BoxShapeSerializer.Serialize);
 
             this.factory = factory;
