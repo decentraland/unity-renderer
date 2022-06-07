@@ -8,30 +8,25 @@ using DCL.SettingsCommon;
 
 public class ECS7ComponentsPlugin : IDisposable
 {
-
     private readonly ECSTransformComponent transformComponent;
+    private readonly SphereShapeRegister sphereShapeRegister;
+    private readonly BoxShapeRegister boxShapeRegister;
+    
     private readonly ECSComponentsFactory componentsFactory;
 
     public ECS7ComponentsPlugin(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
     {
         this.componentsFactory = componentsFactory;
+        
         transformComponent = new ECSTransformComponent(ComponentID.TRANSFORM, componentsFactory, componentsWriter);
-
-        // Box Shape
-        componentsFactory.AddOrReplaceComponent(ComponentID.BOX_SHAPE,
-            data => PBBoxShape.Parser.ParseFrom((byte[])data),
-            () =>  new ECSBoxShapeComponentHandler(DataStore.i.ecs7));
+        sphereShapeRegister = new SphereShapeRegister(ComponentID.SPHERE_SHAPE, componentsFactory, componentsWriter);
+        boxShapeRegister = new BoxShapeRegister(ComponentID.BOX_SHAPE, componentsFactory, componentsWriter);
 
         // Plane Shape
         componentsFactory.AddOrReplaceComponent(ComponentID.PLANE_SHAPE,
             data => PBPlaneShape.Parser.ParseFrom((byte[])data),
             () =>  new ECSPlaneShapeComponentHandler());
 
-        // Sphere Shape
-        componentsFactory.AddOrReplaceComponent(ComponentID.SPHERE_SHAPE,
-            data => PBSphereShape.Parser.ParseFrom((byte[])data),
-            () =>  new ECSSphereShapeComponentHandler());
-        
         // Cylinder Shape
         componentsFactory.AddOrReplaceComponent(ComponentID.CYLINDER_SHAPE,
             data => PBCylinderShape.Parser.ParseFrom((byte[])data),
@@ -51,10 +46,9 @@ public class ECS7ComponentsPlugin : IDisposable
     public void Dispose()
     {
         transformComponent.Dispose();
-        componentsFactory.RemoveComponent(ComponentID.BOX_SHAPE);
-        componentsFactory.RemoveComponent(ComponentID.BOX_SHAPE);
+        sphereShapeRegister.Dispose();
+        boxShapeRegister.Dispose();
         componentsFactory.RemoveComponent(ComponentID.PLANE_SHAPE);
-        componentsFactory.RemoveComponent(ComponentID.SPHERE_SHAPE);
         componentsFactory.RemoveComponent(ComponentID.CYLINDER_SHAPE);
         componentsFactory.RemoveComponent(ComponentID.AUDIO_SOURCE_SHAPE);
         componentsFactory.RemoveComponent(ComponentID.AUDIO_STREAM_SHAPE);
