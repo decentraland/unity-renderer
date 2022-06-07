@@ -146,13 +146,8 @@ namespace DCL.Controllers
         {
             Stop();
         }
-        
-        public void AddEntityToBeChecked(IDCLEntity entity)
-        {
-            AddEntityToBeChecked(entity, false);
-        }
 
-        public void AddEntityToBeChecked(IDCLEntity entity, bool runPreliminaryEvaluation)
+        public void AddEntityToBeChecked(IDCLEntity entity, bool runPreliminaryEvaluation = false)
         {
             if (!enabled)
                 return;

@@ -18,8 +18,7 @@ namespace DCL.Controllers
         List<Material> GetOriginalMaterials(MeshesInfo meshesInfo);
         void Start();
         void Stop();
-        void AddEntityToBeChecked(IDCLEntity entity);
-        void AddEntityToBeChecked(IDCLEntity entity, bool runPreliminaryEvaluation);
+        void AddEntityToBeChecked(IDCLEntity entity, bool runPreliminaryEvaluation = false);
 
         /// <summary>
         /// Add an entity that will be consistently checked, until manually removed from the list.
