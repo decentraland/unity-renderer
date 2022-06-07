@@ -29,8 +29,10 @@ namespace DCL.ECSComponents.Test
             scene = Substitute.For<IParcelScene>();
             textShapeComponentHandler = new ECSTextShapeComponentHandler(DataStore.i.ecs7, AssetPromiseKeeper_Font.i);
 
+            MeshesInfo meshesInfo = new MeshesInfo();
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
+            entity.meshesInfo.Returns(meshesInfo);
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
             sceneData.id = "1";
             scene.sceneData.Configure().Returns(sceneData);
