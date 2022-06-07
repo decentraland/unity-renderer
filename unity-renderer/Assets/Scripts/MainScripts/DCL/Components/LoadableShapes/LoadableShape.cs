@@ -1,11 +1,9 @@
 using System;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using System.Collections.Generic;
 
 namespace DCL.Components
 {
@@ -111,7 +109,7 @@ namespace DCL.Components
                     AttachShape(entity);
 
                 if (updateVisibility)
-                    ConfigureVisibility(entity, setInitialVisibility: true);
+                    ConfigureVisibility(entity);
 
                 if (updateCollisions)
                     ConfigureColliders(entity);
@@ -177,30 +175,21 @@ namespace DCL.Components
             }
         }
 
-        void ConfigureVisibility(IDCLEntity entity, bool setInitialVisibility = false)
+        void ConfigureVisibility(IDCLEntity entity)
         {
-            if (setInitialVisibility)
-            {
-                var loadable = Environment.i.world.state.GetLoaderForEntity(entity);
+            var loadable = Environment.i.world.state.GetLoaderForEntity(entity);
 
-                if (loadable != null)
-                    loadable.initialVisibility = model.visible;
-            }
+            if (loadable != null)
+                loadable.initialVisibility = model.visible;
 
-            // if (!entity.isInsideBoundaries)
-            //     return;
-                var shapeModel = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
-                ConfigureVisibility(entity.meshRootGameObject, shapeModel.visible, entity.meshesInfo.renderers);
-                
-                if(!scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
-                    entity.meshesInfo.animation.enabled = model.visible;
+            ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
+            
+            if(!scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
+                entity.meshesInfo.animation.enabled = model.visible;
         }
 
         protected virtual void ConfigureColliders(IDCLEntity entity)
         {
-            // if (!entity.isInsideBoundaries)
-            //     return;
-            
             CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model));
         }
 
@@ -250,7 +239,6 @@ namespace DCL.Components
             isLoaded = true;
             OnLoaded?.Invoke(this);
 
-            // entity.meshesInfo.renderers = entity.meshRootGameObject.GetComponentsInChildren<Renderer>();
             entity.meshesInfo.meshRootGameObject = entity.meshRootGameObject;
             
             ConfigureVisibility(entity);
