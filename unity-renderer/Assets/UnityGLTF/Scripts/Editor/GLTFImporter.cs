@@ -131,7 +131,7 @@ namespace UnityGLTF
                 loader.forceSyncCoroutines = true;
 
                 Task task = loader.LoadScene(CancellationToken.None);
-                bool result = task.Wait(TimeSpan.FromSeconds(10));
+                bool result = task.Wait(TimeSpan.FromSeconds(30));
 
                 if (!result)
                     throw new TimeoutException($"Importing {projectFilePath}");

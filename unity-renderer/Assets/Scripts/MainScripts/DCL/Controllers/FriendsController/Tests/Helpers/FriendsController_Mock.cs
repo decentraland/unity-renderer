@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class FriendsController_Mock : IFriendsController
 {
@@ -13,6 +14,9 @@ public class FriendsController_Mock : IFriendsController
     public int friendCount => friends.Count;
 
     public bool isInitialized => true;
+
+    public int ReceivedRequestCount =>
+        friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
 
     public Dictionary<string, FriendsController.UserStatus> GetFriends() { return friends; }
     

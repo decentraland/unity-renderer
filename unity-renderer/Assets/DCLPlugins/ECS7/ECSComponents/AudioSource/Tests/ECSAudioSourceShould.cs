@@ -63,9 +63,9 @@ namespace DCL.ECSComponents.Test
         public IEnumerator UpdatePlayingModelComponentCorrectly()
         {
             // Arrange
-            ECSAudioSource model = CreateAudioSourceModel();
-            model.playing = true;
-            model.loop = false;
+            PBAudioSource model = CreateAudioSourceModel();
+            model.Playing = true;
+            model.Loop = false;
 
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -80,11 +80,11 @@ namespace DCL.ECSComponents.Test
         public void UpdateLoopModelComponentCorrectly()
         {
             // Arrange
-            ECSAudioSource model = CreateAudioSourceModel();
-            model.loop = false;
+            PBAudioSource model = CreateAudioSourceModel();
+            model.Loop = false;
             
-            ECSAudioSource model2 = CreateAudioSourceModel();
-            model2.loop = true;
+            PBAudioSource model2 = CreateAudioSourceModel();
+            model2.Loop = true;
             
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
             
@@ -92,18 +92,18 @@ namespace DCL.ECSComponents.Test
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
 
             // Assert
-            Assert.AreEqual(audioSourceComponentHandler.audioSource.loop, model2.loop);
+            Assert.AreEqual(audioSourceComponentHandler.audioSource.loop, model2.Loop);
         }
 
         [Test]
         public void UpdatePitchModelComponentCorrectly()
         {
             // Arrange
-            ECSAudioSource model = CreateAudioSourceModel();
-            model.pitch = 0f;
+            PBAudioSource model = CreateAudioSourceModel();
+            model.Pitch = 0f;
             
-            ECSAudioSource model2 = CreateAudioSourceModel();
-            model2.pitch = 1f;
+            PBAudioSource model2 = CreateAudioSourceModel();
+            model2.Pitch = 1f;
             
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
             
@@ -111,7 +111,7 @@ namespace DCL.ECSComponents.Test
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
 
             // Assert
-            Assert.AreEqual(audioSourceComponentHandler.audioSource.pitch, model2.pitch);
+            Assert.AreEqual(audioSourceComponentHandler.audioSource.pitch, model2.Pitch);
         }
         
         [Test]
@@ -121,11 +121,11 @@ namespace DCL.ECSComponents.Test
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
             CommonScriptableObjects.sceneID.Set("1");
             
-            ECSAudioSource model = CreateAudioSourceModel();
-            model.volume = 0f;
+            PBAudioSource model = CreateAudioSourceModel();
+            model.Volume = 0f;
             
-            ECSAudioSource model2 = CreateAudioSourceModel();
-            model2.volume = 1f;
+            PBAudioSource model2 = CreateAudioSourceModel();
+            model2.Volume = 1f;
             
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
             
@@ -133,14 +133,14 @@ namespace DCL.ECSComponents.Test
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
 
             // Assert
-            Assert.AreEqual(audioSourceComponentHandler.audioSource.volume, model2.volume);
+            Assert.AreEqual(audioSourceComponentHandler.audioSource.volume, model2.Volume);
         }
 
         [UnityTest]
         public IEnumerator DisposeComponentCorrectly()
         {
             // Arrange
-            ECSAudioSource model = CreateAudioSourceModel();
+            PBAudioSource model = CreateAudioSourceModel();
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Act
@@ -152,10 +152,10 @@ namespace DCL.ECSComponents.Test
             Assert.IsTrue(audioSourceComponentHandler.promiseAudioClip.isForgotten);
         }
 
-        private ECSAudioSource CreateAudioSourceModel()
+        private PBAudioSource CreateAudioSourceModel()
         {
-            ECSAudioSource model = new ECSAudioSource();
-            model.audioClipUrl = TestAssetsUtils.GetPath() + "/Audio/short_effect.ogg";
+            PBAudioSource model = new PBAudioSource();
+            model.AudioClipUrl = TestAssetsUtils.GetPath() + "/Audio/short_effect.ogg";
             return model;
         }
         
