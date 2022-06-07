@@ -29,4 +29,5 @@ public interface IWorldChatWindowView
     void HideMoreChatsToLoadHint();
     void ShowMoreChatsToLoadHint(int count);
     void Filter(Dictionary<string,PrivateChatModel> privateChats, Dictionary<string,PublicChatChannelModel> publicChannels);
+    bool ContainsPrivateChannel(string userId);
 }

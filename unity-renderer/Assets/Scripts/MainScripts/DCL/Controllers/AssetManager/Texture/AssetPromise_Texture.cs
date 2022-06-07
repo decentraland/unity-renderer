@@ -1,5 +1,6 @@
 using System;
 using DCL.Helpers;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -81,10 +82,18 @@ namespace DCL
             {
                 //For Base64 protocols we just take the bytes and create the texture
                 //to avoid Unity's web request issue with large URLs
-                byte[] decodedTexture = Convert.FromBase64String(url.Substring(PLAIN_BASE64_PROTOCOL.Length));
-                asset.texture = new Texture2D(1, 1);
-                asset.texture.LoadImage(decodedTexture);
-                OnSuccess?.Invoke();
+                try {
+                    string substring = url.Substring(PLAIN_BASE64_PROTOCOL.Length);
+                    byte[] decodedTexture = Convert.FromBase64String(substring);
+                    asset.texture = new Texture2D(1, 1);
+                    asset.texture.LoadImage(decodedTexture);
+                    OnSuccess?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    OnFail?.Invoke(e);
+                }
+                
             }
         }
 
@@ -121,6 +130,8 @@ namespace DCL
                 Debug.Log("add to library fail?");
                 return false;
             }
+            
+            PerformanceAnalytics.PromiseTextureTracker.Track();
 
             asset = library.Get(asset.id);
             return true;

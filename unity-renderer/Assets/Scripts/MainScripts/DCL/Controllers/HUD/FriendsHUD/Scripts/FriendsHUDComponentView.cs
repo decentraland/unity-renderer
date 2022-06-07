@@ -134,8 +134,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public bool IsFriendListCreationReady() => friendsTab.DidDeferredCreationCompleted;
 
-    public int GetReceivedFriendRequestCount() => friendRequestsTab.ReceivedRequestsList.Count();
-
     public void Destroy() => Destroy(gameObject);
 
     public void Show()

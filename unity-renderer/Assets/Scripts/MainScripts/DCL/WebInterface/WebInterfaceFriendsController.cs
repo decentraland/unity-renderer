@@ -34,6 +34,7 @@ namespace DCL.Interface
         
         public int friendCount => friendsController.friendCount;
         public bool isInitialized => friendsController.isInitialized;
+        public int ReceivedRequestCount => friendsController.ReceivedRequestCount;
 
         public WebInterfaceFriendsController(IFriendsController friendsController)
         {

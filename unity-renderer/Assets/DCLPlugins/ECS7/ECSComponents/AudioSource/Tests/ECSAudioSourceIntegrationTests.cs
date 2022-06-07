@@ -63,8 +63,8 @@ namespace DCL.ECSComponents.Test
             // Arrange
             CommonScriptableObjects.sceneID.Set("unexistent-scene");
             
-            ECSAudioSource model = CreateAudioSourceModel();
-            model.volume = 1f;
+            PBAudioSource model = CreateAudioSourceModel();
+            model.Volume = 1f;
             
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -79,8 +79,8 @@ namespace DCL.ECSComponents.Test
             // Arrange
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
             
-            ECSAudioSource model = CreateAudioSourceModel();
-            model.volume = 1f;
+            PBAudioSource model = CreateAudioSourceModel();
+            model.Volume = 1f;
             
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -95,8 +95,8 @@ namespace DCL.ECSComponents.Test
             // Arrange
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
             
-            ECSAudioSource model = CreateAudioSourceModel();
-            model.volume = 1f;
+            PBAudioSource model = CreateAudioSourceModel();
+            model.Volume = 1f;
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
             
             // Act
@@ -112,8 +112,8 @@ namespace DCL.ECSComponents.Test
             // Arrange
             CommonScriptableObjects.sceneID.Set("unexistent-scene");
 
-            ECSAudioSource model = CreateAudioSourceModel();
-            model.volume = 1f;
+            PBAudioSource model = CreateAudioSourceModel();
+            model.Volume = 1f;
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Act
@@ -130,8 +130,8 @@ namespace DCL.ECSComponents.Test
             scene.Configure().isPersistent.Returns(true);
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
             
-            ECSAudioSource model = CreateAudioSourceModel();
-            model.volume = 1f;
+            PBAudioSource model = CreateAudioSourceModel();
+            model.Volume = 1f;
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Act
@@ -141,10 +141,10 @@ namespace DCL.ECSComponents.Test
             Assert.AreEqual(1f, audioSourceComponentHandler.audioSource.volume);
         }
         
-        private ECSAudioSource CreateAudioSourceModel()
+        private PBAudioSource CreateAudioSourceModel()
         {
-            ECSAudioSource model = new ECSAudioSource();
-            model.audioClipUrl = TestAssetsUtils.GetPath() + "/Audio/short_effect.ogg";
+            PBAudioSource model = new PBAudioSource();
+            model.AudioClipUrl = TestAssetsUtils.GetPath() + "/Audio/short_effect.ogg";
             return model;
         }
         

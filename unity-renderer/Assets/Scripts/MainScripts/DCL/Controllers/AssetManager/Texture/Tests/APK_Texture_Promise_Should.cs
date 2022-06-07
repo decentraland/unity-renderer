@@ -1,4 +1,5 @@
-﻿using AssetPromiseKeeper_Tests;
+﻿using System;
+using AssetPromiseKeeper_Tests;
 using DCL;
 using DCL.Helpers;
 using System.Collections;
@@ -135,6 +136,24 @@ namespace AssetPromiseKeeper_Texture_Tests
 
             Assert.IsTrue(failed);
             Assert.IsFalse(succeeded);
+        }
+
+        [UnityTest]
+        public IEnumerator FailWithBase64Image()
+        {
+            string url = "data:text/plain;base64,123";
+            AssetPromise_Texture texture = new AssetPromise_Texture(url);
+            bool failed = false;
+            texture.OnFailEvent += (x, error) =>
+            {
+                failed = true;
+            };
+
+            keeper.Keep(texture);
+            
+            yield return texture;
+
+            Assert.IsTrue(failed);
         }
     }
 }
