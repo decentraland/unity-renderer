@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,7 +27,7 @@ namespace DCL.Protobuf
             OnProjectCompile();
         }
 
-        private const bool VERBOSE = false;
+        private const bool VERBOSE = true;
         private const string PATH_TO_GENERATED = "/DCLPlugins/ECS7/ProtocolBuffers/Generated";
         private const string PATH_TO_COMPONENTS_DEFINITIONS = "/DCLPlugins/ECS7/ProtocolBuffers/Generated/Definitions";
         private const string PATH_TO_COMPONENTS = "/DCLPlugins/ECS7/ProtocolBuffers/Generated/Protos";
@@ -67,9 +66,9 @@ namespace DCL.Protobuf
             string libraryJsonString;
             Dictionary<string, object> libraryContent, libraryInfo;
 
-            // Download the data of @dcl/ecs
+            // Download the data of decentraland-/ecs
             client = new WebClient();
-            data = client.OpenRead(@"https://registry.npmjs.org/@dcl/ecs");
+            data = client.OpenRead(@"https://registry.npmjs.org/decentraland-ecs");
             reader = new StreamReader(data);
             libraryJsonString = reader.ReadToEnd();
             data.Close();
@@ -99,11 +98,11 @@ namespace DCL.Protobuf
             Dictionary<string, object> libraryContent, libraryInfo;
             
             if (VERBOSE)
-                UnityEngine.Debug.Log("@dcl/ecs version: " + version);
+                UnityEngine.Debug.Log("decentraland-ecs version: " + version);
             
-            // Download the "package.json" of @dcl/ecs@next
+            // Download the "package.json" of decentraland-ecs
             client = new WebClient();
-            data = client.OpenRead(@"https://registry.npmjs.org/@dcl/ecs/" + version);
+            data = client.OpenRead(@"https://registry.npmjs.org/decentraland-ecs/" + version);
             reader = new StreamReader(data);
             libraryJsonString = reader.ReadToEnd();
             data.Close();
@@ -115,16 +114,16 @@ namespace DCL.Protobuf
 
             string tgzUrl = libraryInfo["tarball"].ToString();
             if (VERBOSE)
-                UnityEngine.Debug.Log("@dcl/ecs@next url: " + tgzUrl);
+                UnityEngine.Debug.Log("decentraland-ecs@next url: " + tgzUrl);
 
             // Download package
-            string packageName = "dcl-ecs-next.tgz";
+            string packageName = "decentraland-ecs-next.tgz";
             client = new WebClient();
             client.DownloadFile(tgzUrl, packageName);
             if (VERBOSE)
                 UnityEngine.Debug.Log("File downloaded dcl-ecs-next.tgz");
 
-            string destPackage = "dcl-ecs-" + version;
+            string destPackage = "decentraland-ecs-" + version;
             if (Directory.Exists(destPackage))
                 Directory.Delete(destPackage, true);
             
@@ -136,7 +135,7 @@ namespace DCL.Protobuf
                 Tar(packageName,destPackage);
 
                 if (VERBOSE)
-                    UnityEngine.Debug.Log("Unzipped dcl-ecs-next.tgz");
+                    UnityEngine.Debug.Log("Unzipped decentraland-ecs-next.tgz");
 
                 string componentDefinitionPath = Application.dataPath + PATH_TO_COMPONENTS_DEFINITIONS;
 
@@ -144,7 +143,7 @@ namespace DCL.Protobuf
                     Directory.Delete(componentDefinitionPath, true);
 
                 // We move the definitions to their correct path
-                Directory.Move(destPackage + "/package/dist/components/definitions", componentDefinitionPath);
+                Directory.Move(destPackage + "/package/dist/ecs7/proto-definitions", componentDefinitionPath);
                 WriteVersion(version, DOWNLOADED_VERSION_FILENAME);
                 
                 if (VERBOSE)
@@ -157,8 +156,8 @@ namespace DCL.Protobuf
             finally // We delete the downloaded package
             {
                 Directory.Delete(destPackage, true);
-                if (File.Exists("dcl-ecs-next.tgz"))
-                    File.Delete("dcl-ecs-next.tgz");
+                if (File.Exists("decentraland-ecs-next.tgz"))
+                    File.Delete("decentraland-ecs-next.tgz");
             }
         }
 
@@ -297,6 +296,9 @@ namespace DCL.Protobuf
         [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
         private static void OnProjectCompile()
         {
+            // TODO: Delete this return line to make the generation of the proto based on your machine 
+            return;
+            
             // The compiled version is a file that lives in the repo, if your local version is distinct it will generated them
             var currentDownloadedVersion = GetDownloadedVersion();
             var currentVersion = GetCompiledVersion();

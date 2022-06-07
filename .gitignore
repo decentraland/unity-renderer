@@ -21,9 +21,9 @@ ehthumbs.db
 Thumbs.db
 
 # ===================================== #
-# Proto generation system            #
+# Proto generation system               #
 # ===================================== #
-Generated/
+#Generated/
 bin/
 
 # ===================================== #
