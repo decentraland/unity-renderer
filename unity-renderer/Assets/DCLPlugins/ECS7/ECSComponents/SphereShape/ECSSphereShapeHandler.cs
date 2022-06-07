@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public class ECSSphereShapeComponentHandler : IECSComponentHandler<ECSSphereShape>
+    public class ECSSphereShapeComponentHandler : IECSComponentHandler<PBSphereShape>
     {
         internal AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
         internal MeshesInfo meshesInfo;
@@ -20,7 +20,7 @@ namespace DCL.ECSComponents
             DisposeMesh(scene);
         }
 
-        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSSphereShape model)
+        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBSphereShape model)
         {
             Mesh generatedMesh = null;
             if (primitiveMeshPromisePrimitive != null)
@@ -37,9 +37,9 @@ namespace DCL.ECSComponents
             AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
         }
 
-        private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, ECSSphereShape model)
+        private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBSphereShape model)
         {
-            meshesInfo = ECSComponentsUtils.GenerateMeshInfo(entity, mesh, entity.gameObject, model.visible, model.withCollisions, model.isPointerBlocker);
+            meshesInfo = ECSComponentsUtils.GenerateMeshInfo(entity, mesh, entity.gameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 #if !WINDOWS_UWP
 using System.Threading;
 #endif
@@ -258,6 +259,7 @@ namespace UnityGLTF
         {
             try
             {
+                PerformanceAnalytics.GLTFTracker.TrackLoading();
                 token.ThrowIfCancellationRequested();
 
                 lock (this)
@@ -342,10 +344,20 @@ namespace UnityGLTF
                             Object.DestroyImmediate(skeleton);
                     }
                 }
+                
+                PerformanceAnalytics.GLTFTracker.TrackLoaded();
             }
-            catch (Exception e) when (!(e is OperationCanceledException))
+            catch (Exception e)
             {
-                throw;
+                if (e is OperationCanceledException)
+                {
+                    PerformanceAnalytics.GLTFTracker.TrackCancelled();
+                }
+                else
+                {
+                    PerformanceAnalytics.GLTFTracker.TrackFailed();
+                    throw; 
+                }
             }
             finally
             {
@@ -353,6 +365,7 @@ namespace UnityGLTF
                 {
                     _isRunning = false;
                     _isCompleted = true;
+
                 }
             }
         }
@@ -379,15 +392,16 @@ namespace UnityGLTF
         /// </summary>
         private void InitializeGltfTopLevelObject()
         {
-            InstantiatedGLTFObject instantiatedGltfObject = CreatedObject.AddComponent<InstantiatedGLTFObject>();
+            instantiatedGLTFObject = CreatedObject.AddComponent<InstantiatedGLTFObject>();
 
-            instantiatedGltfObject.CachedData = new RefCountedCacheData
+            instantiatedGLTFObject.CachedData = new RefCountedCacheData
             {
                 MaterialCache = _assetCache.MaterialCache,
                 TextureCache = _assetCache.TextureCache,
                 MeshCache = _assetCache.MeshCache,
                 animationCache = _assetCache.AnimationCache
             };
+
         }
 
         private async UniTask ConstructBufferData(Node node, CancellationToken token)
@@ -1592,6 +1606,7 @@ namespace UnityGLTF
         }
 
         HashSet<GameObject> skeletonGameObjects = new HashSet<GameObject>();
+        private InstantiatedGLTFObject instantiatedGLTFObject;
 
         private BoneWeight[] CreateBoneWeightArray(Vector4[] joints, Vector4[] weights, int vertCount)
         {

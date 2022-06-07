@@ -82,6 +82,7 @@ MonoBehaviour:
   - {fileID: 1841170242913198830}
   - {fileID: 1465780631268768265}
   - {fileID: 2676580422195266286}
+  previewModeSize: {x: 410, y: 350}
 --- !u!225 &3013135254997361945
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -138,10 +139,10 @@ RectTransform:
   m_Father: {fileID: 1176892910673695435}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 191.21, y: -35.915}
+  m_SizeDelta: {x: 366.42, y: 53.83}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3805798685388041355
 CanvasRenderer:
@@ -824,10 +825,10 @@ RectTransform:
   m_Father: {fileID: 4540070755932127706}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 9.5, y: 564}
-  m_SizeDelta: {x: 382.42, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 9.5, y: -59}
+  m_SizeDelta: {x: 382.42, y: 71.83}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &5822956738923906067
 CanvasRenderer:
@@ -1082,10 +1083,10 @@ RectTransform:
   m_Father: {fileID: 4540070755932127706}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 623}
-  m_SizeDelta: {x: 410, y: 50}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 410, y: 51}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3408665687965099177
 CanvasRenderer:
@@ -1409,7 +1410,7 @@ PrefabInstance:
     - target: {fileID: 7497584698789204027, guid: bac007ac4ef98284c8cf05867a35ee0f,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7497584698789204027, guid: bac007ac4ef98284c8cf05867a35ee0f,
         type: 3}
@@ -1429,7 +1430,7 @@ PrefabInstance:
     - target: {fileID: 7497584698789204027, guid: bac007ac4ef98284c8cf05867a35ee0f,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 573
+      value: -51
       objectReference: {fileID: 0}
     - target: {fileID: 7497584698789204027, guid: bac007ac4ef98284c8cf05867a35ee0f,
         type: 3}

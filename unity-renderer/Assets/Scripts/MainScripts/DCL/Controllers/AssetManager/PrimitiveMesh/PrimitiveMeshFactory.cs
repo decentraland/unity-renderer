@@ -33,6 +33,9 @@ public class PrimitiveMeshFactory : IPrimitiveMeshFactory
                     mesh.uv = Utils.FloatArrayToV2List(meshModelModel.uvs);
                 }
                 break;
+            case PrimitiveMeshModel.Type.Cylinder:
+                mesh = PrimitiveMeshBuilder.BuildCylinder(50, meshModelModel.radiusTop, meshModelModel.radiusBottom, 2f, 0f, true, false);
+                break;
         }
         return mesh;
     }

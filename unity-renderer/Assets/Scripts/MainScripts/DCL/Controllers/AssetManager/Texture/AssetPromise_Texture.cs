@@ -1,5 +1,6 @@
 using System;
 using DCL.Helpers;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -129,6 +130,8 @@ namespace DCL
                 Debug.Log("add to library fail?");
                 return false;
             }
+            
+            PerformanceAnalytics.PromiseTextureTracker.Track();
 
             asset = library.Get(asset.id);
             return true;
