@@ -286,8 +286,8 @@ public class WorldChatWindowControllerShould
         
         view.OnSearchChannelRequested += Raise.Event<Action<string>>("near");
         
-        view.Received(1).Filter(Arg.Is<Dictionary<string, PrivateChatModel>>(d => d.ContainsKey("nearfr")),
-            Arg.Is<Dictionary<string, PublicChatChannelModel>>(d => d.ContainsKey("general")));
+        view.Received(1).Filter(Arg.Is<Dictionary<string, PrivateChatModel>>(d => d.ContainsKey("nearfr") && d.Count == 1),
+            Arg.Is<Dictionary<string, PublicChatChannelModel>>(d => d.ContainsKey("general") && d.Count == 1));
     }
     
     private void GivenFriend(string friendId, PresenceStatus presence)
