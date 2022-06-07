@@ -10,14 +10,14 @@ using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents
 {
-    public class ECSAudioStreamComponentHandler : IECSComponentHandler<ECSAudioStream>, IOutOfSceneBoundariesHandler
+    public class ECSAudioStreamComponentHandler : IECSComponentHandler<PBAudioStream>, IOutOfSceneBoundariesHandler
     {
         private float settingsVolume = 0;
 
         internal float currentVolume = -1;
         internal bool isPlaying = false;
         internal AudioSource audioSource;
-        internal ECSAudioStream model;
+        internal PBAudioStream model;
 
         // Flags to check if we can activate the AudioStream
         internal bool isInsideScene = false;
@@ -41,7 +41,7 @@ namespace DCL.ECSComponents
             Dispose(entity);
         }
                 
-        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSAudioStream model)
+        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAudioStream model)
         {
             // Nothing has change so we do an early return
             if(!StateHasChange(model))
@@ -55,7 +55,7 @@ namespace DCL.ECSComponents
                 return;
             
             // If everything went ok, we update the state
-            SendUpdateAudioStreamEvent(model.playing);
+            SendUpdateAudioStreamEvent(model.Playing);
         }
         
         public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
@@ -81,21 +81,21 @@ namespace DCL.ECSComponents
             }
         }
 
-        private void UpdateModel(ECSAudioStream model)
+        private void UpdateModel(PBAudioStream model)
         {
             this.model = model;
-            currentVolume = model.volume * settingsVolume;
+            currentVolume = model.Volume * settingsVolume;
         }
 
-        private bool StateHasChange(ECSAudioStream model)
+        private bool StateHasChange(PBAudioStream model)
         {
             // First time that the model come so the state has change
             if (this.model == null)
                 return true;
             
-            bool shouldChangeState = isPlaying && !model.playing;
-            bool shouldUpdateVolume = Mathf.Approximately( currentVolume, model.volume);
-            bool shouldUpdateUrl = this.model.url == model.url;
+            bool shouldChangeState = isPlaying && !model.Playing;
+            bool shouldUpdateVolume = Mathf.Approximately( currentVolume, model.Volume);
+            bool shouldUpdateUrl = this.model.Url == model.Url;
                 
             return shouldChangeState || shouldUpdateVolume || shouldUpdateUrl;
         }
@@ -106,7 +106,7 @@ namespace DCL.ECSComponents
             
             if(isPlaying && !canBePlayed)
                 StopStreaming();
-            if(!isPlaying && canBePlayed && model.playing)
+            if(!isPlaying && canBePlayed && model.Playing)
                 StartStreaming();
         }
 
@@ -154,7 +154,7 @@ namespace DCL.ECSComponents
         private void SendUpdateAudioStreamEvent(bool play)
         {
             isPlaying = play;
-            WebInterface.SendAudioStreamEvent(model.url, isPlaying, currentVolume);
+            WebInterface.SendAudioStreamEvent(model.Url, isPlaying, currentVolume);
         }
     }
 }

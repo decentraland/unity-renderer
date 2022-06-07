@@ -5,6 +5,7 @@ using DCL.Helpers;
 using UnityEngine;
 using System.Collections.Generic;
 using DCL.Models;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 
 namespace DCL
 {
@@ -61,6 +62,7 @@ namespace DCL
         {
             if (loadingCoroutine != null)
             {
+                PerformanceAnalytics.ABTracker.TrackCancelled();
                 CoroutineStarter.Stop(loadingCoroutine);
                 loadingCoroutine = null;
             }
@@ -81,6 +83,7 @@ namespace DCL
 
         public IEnumerator LoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
         {
+            PerformanceAnalytics.ABTracker.TrackLoading();
             subPromise = new AssetPromise_AB(contentUrl, hash, asset.container.transform);
             bool success = false;
             Exception loadingException = null;
@@ -105,17 +108,20 @@ namespace DCL
                     success = false;
             }
 
+            loadingCoroutine = null;
+
             if (success)
             {
+                PerformanceAnalytics.ABTracker.TrackLoaded();
                 OnSuccess?.Invoke();
             }
             else
             {
+                PerformanceAnalytics.ABTracker.TrackFailed();
                 loadingException ??= new Exception($"AB sub-promise asset or container is null. Asset: {subPromise.asset}, container: {asset.container}");
                 Debug.LogException(loadingException);
                 OnFail?.Invoke(loadingException);
             }
-
         }
 
         public IEnumerator InstantiateABGameObjects()
@@ -146,7 +152,8 @@ namespace DCL
 
                 asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(assetBundleModelGO);
                 asset.materials = MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers);
-                asset.textures = MeshesInfoUtils.ExtractUniqueTextures(asset.materials);
+                asset.SetTextures(MeshesInfoUtils.ExtractUniqueTextures(asset.materials));
+                
                 UploadMeshesToGPU(MeshesInfoUtils.ExtractUniqueMeshes(asset.renderers));
                 asset.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
 
@@ -163,7 +170,7 @@ namespace DCL
                 }
 
 #if UNITY_EDITOR
-                assetBundleModelGO.name = subPromise.asset.assetBundleAssetName;
+                assetBundleModelGO.name = subPromise.asset.GetName();
 #endif
                 assetBundleModelGO.transform.ResetLocalTRS();
 

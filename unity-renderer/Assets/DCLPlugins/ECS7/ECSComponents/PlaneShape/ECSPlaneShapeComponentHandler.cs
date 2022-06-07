@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public class ECSPlaneShapeComponentHandler : IECSComponentHandler<ECSPlaneShape>
+    public class ECSPlaneShapeComponentHandler : IECSComponentHandler<PBPlaneShape>
     {
         internal AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
         internal MeshesInfo meshesInfo;
@@ -24,14 +24,14 @@ namespace DCL.ECSComponents
             DisposeMesh(scene);
         }
 
-        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSPlaneShape model)
+        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBPlaneShape model)
         {
             Mesh generatedMesh = null;
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
 
             PrimitiveMeshModel primitiveMeshModelModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Plane);
-            primitiveMeshModelModel.uvs = model.uvs;
+            primitiveMeshModelModel.uvs = model.Uvs;
 
             primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
             primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>
@@ -43,9 +43,9 @@ namespace DCL.ECSComponents
             AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
         }
 
-        private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, ECSPlaneShape model)
+        private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBPlaneShape model)
         {
-            meshesInfo = ECSComponentsUtils.GenerateMeshInfo(entity, mesh, entity.gameObject, model.visible, model.withCollisions, model.isPointerBlocker);
+            meshesInfo = ECSComponentsUtils.GenerateMeshInfo(entity, mesh, entity.gameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);

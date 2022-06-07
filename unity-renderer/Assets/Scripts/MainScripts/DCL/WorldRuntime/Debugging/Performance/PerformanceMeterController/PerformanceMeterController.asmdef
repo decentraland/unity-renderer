@@ -1,23 +1,23 @@
 {
-  "name": "PerformanceMeterController",
-  "rootNamespace": "",
-  "references": [
-    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-    "GUID:e945202cffc30cc479229aef4577a74c",
-    "GUID:301149363e31a4bdaa1943465a825c8e",
-    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-    "GUID:15fc0a57446b3144c949da3e2b9737a9",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [
-    ""
-  ],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "PerformanceMeterController",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:e945202cffc30cc479229aef4577a74c",
+        "GUID:301149363e31a4bdaa1943465a825c8e",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        ""
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
