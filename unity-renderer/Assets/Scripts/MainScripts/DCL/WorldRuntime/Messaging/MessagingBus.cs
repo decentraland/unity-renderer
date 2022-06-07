@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using DCL.Interface;
 using DCL.Models;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using UnityEngine.SceneManagement;
 
 namespace DCL
@@ -184,6 +185,8 @@ namespace DCL
 
                 QueuedSceneMessage m = pendingMessagesFirst.Value;
 
+                PerformanceAnalytics.MessagesProcessedTracker.Track();
+                
                 RemoveFirstReliableMessage();
 
                 if (m.isUnreliable)

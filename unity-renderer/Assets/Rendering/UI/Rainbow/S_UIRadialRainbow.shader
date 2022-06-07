@@ -3,7 +3,7 @@ Shader "Unlit/S_UIRadialRainbow"
     Properties
     {
         [NoScaleOffset] _Mask("Mask", 2D) = "white" {}
-        _FrameThickness("FrameThickness", Float) = 2.07
+        _FrameThickness("FrameThickness", Vector) = (1.1, 1.1, 0, 0)
         _InnerColor("InnerColor", Color) = (1, 1, 1, 1)
         [NoScaleOffset]_Ramp("Ramp", 2D) = "white" {}
         _Speed("Speed", Vector) = (0, 0, 0, 0)
@@ -23,6 +23,7 @@ Shader "Unlit/S_UIRadialRainbow"
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
+
         [HideInInspector]_StencilComp("Stencil Comparison", Float) = 8
         [HideInInspector]_Stencil("Stencil ID", Float) = 0
         [HideInInspector]_StencilOp("Stencil Operation", Float) = 0
@@ -55,11 +56,11 @@ Shader "Unlit/S_UIRadialRainbow"
 
         Stencil
         {
-            Ref[_Stencil]
-            Comp[_StencilComp]
-            Pass[_StencilOp]
-            ReadMask[_StencilReadMask]
-            WriteMask[_StencilWriteMask]
+          Ref[_Stencil]
+          Comp[_StencilComp]
+          Pass[_StencilOp]
+          ReadMask[_StencilReadMask]
+          WriteMask[_StencilWriteMask]
         }
         ColorMask[_ColorMask]
 
@@ -219,7 +220,7 @@ Shader "Unlit/S_UIRadialRainbow"
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Mask_TexelSize;
-float _FrameThickness;
+float2 _FrameThickness;
 float4 _InnerColor;
 float4 _Ramp_TexelSize;
 float2 _Speed;
@@ -610,15 +611,26 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Lerp_float4(_SGCustomGradient_cfbd3021c3c542249af6bf8136dee314_New_0, _SampleTexture2D_11b9032f513a4306885ed14965c973e6_RGBA_0, (_Step_a2759376e99046afa588bee996210bcc_Out_2.xxxx), _Lerp_c0403dafde8747ee931186268ba1dc3d_Out_3);
     float4 _Property_aa0f73601f7648859cb2d7c603bae46f_Out_0 = _InnerColor;
     UnityTexture2D _Property_9b9b783269f94e6f8030cd2a50295a79_Out_0 = UnityBuildTexture2DStructNoScale(_Mask);
-    float _Property_ad3d20dcded040de935449a4ea34fb39_Out_0 = _FrameThickness;
+    float2 _Property_7085c65f55ea492888a28fad61369a22_Out_0 = _FrameThickness;
+    float _Split_796152b39d5f4b8c8a5e4b92fb1ecf75_R_1 = _Property_7085c65f55ea492888a28fad61369a22_Out_0[0];
+    float _Split_796152b39d5f4b8c8a5e4b92fb1ecf75_G_2 = _Property_7085c65f55ea492888a28fad61369a22_Out_0[1];
+    float _Split_796152b39d5f4b8c8a5e4b92fb1ecf75_B_3 = 0;
+    float _Split_796152b39d5f4b8c8a5e4b92fb1ecf75_A_4 = 0;
     float _Multiply_1529b3b184234cefaf414ade0331fe28_Out_2;
-    Unity_Multiply_float(_Property_ad3d20dcded040de935449a4ea34fb39_Out_0, -1, _Multiply_1529b3b184234cefaf414ade0331fe28_Out_2);
+    Unity_Multiply_float(_Split_796152b39d5f4b8c8a5e4b92fb1ecf75_R_1, -1, _Multiply_1529b3b184234cefaf414ade0331fe28_Out_2);
     float _Divide_59c865b4a9f540b8b9f681d5bfe52c58_Out_2;
     Unity_Divide_float(_Multiply_1529b3b184234cefaf414ade0331fe28_Out_2, 2, _Divide_59c865b4a9f540b8b9f681d5bfe52c58_Out_2);
     float _Add_3aeab0f33bb74db0bb3d28dce9a1b54c_Out_2;
     Unity_Add_float(_Divide_59c865b4a9f540b8b9f681d5bfe52c58_Out_2, 0.5, _Add_3aeab0f33bb74db0bb3d28dce9a1b54c_Out_2);
+    float _Multiply_fcbb3fe044714a07b58a58e20005f0be_Out_2;
+    Unity_Multiply_float(_Split_796152b39d5f4b8c8a5e4b92fb1ecf75_G_2, -1, _Multiply_fcbb3fe044714a07b58a58e20005f0be_Out_2);
+    float _Divide_4e648c33f8d3465984eff65445c0c781_Out_2;
+    Unity_Divide_float(_Multiply_fcbb3fe044714a07b58a58e20005f0be_Out_2, 2, _Divide_4e648c33f8d3465984eff65445c0c781_Out_2);
+    float _Add_c8db7f8193fd481aa5cc0fdf106594f4_Out_2;
+    Unity_Add_float(_Divide_4e648c33f8d3465984eff65445c0c781_Out_2, 0.5, _Add_c8db7f8193fd481aa5cc0fdf106594f4_Out_2);
+    float2 _Vector2_9164475dd9ae4d46b7fb285d59e06fbb_Out_0 = float2(_Add_3aeab0f33bb74db0bb3d28dce9a1b54c_Out_2, _Add_c8db7f8193fd481aa5cc0fdf106594f4_Out_2);
     float2 _TilingAndOffset_616af8dba9f542008493dceec7d691d4_Out_3;
-    Unity_TilingAndOffset_float(IN.uv0.xy, (_Property_ad3d20dcded040de935449a4ea34fb39_Out_0.xx), (_Add_3aeab0f33bb74db0bb3d28dce9a1b54c_Out_2.xx), _TilingAndOffset_616af8dba9f542008493dceec7d691d4_Out_3);
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Property_7085c65f55ea492888a28fad61369a22_Out_0, _Vector2_9164475dd9ae4d46b7fb285d59e06fbb_Out_0, _TilingAndOffset_616af8dba9f542008493dceec7d691d4_Out_3);
     float4 _SampleTexture2D_1832d5f57cea4aa3b02108ccd69c0ac7_RGBA_0 = SAMPLE_TEXTURE2D(_Property_9b9b783269f94e6f8030cd2a50295a79_Out_0.tex, _Property_9b9b783269f94e6f8030cd2a50295a79_Out_0.samplerstate, _TilingAndOffset_616af8dba9f542008493dceec7d691d4_Out_3);
     float _SampleTexture2D_1832d5f57cea4aa3b02108ccd69c0ac7_R_4 = _SampleTexture2D_1832d5f57cea4aa3b02108ccd69c0ac7_RGBA_0.r;
     float _SampleTexture2D_1832d5f57cea4aa3b02108ccd69c0ac7_G_5 = _SampleTexture2D_1832d5f57cea4aa3b02108ccd69c0ac7_RGBA_0.g;
@@ -863,7 +875,7 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Mask_TexelSize;
-float _FrameThickness;
+float2 _FrameThickness;
 float4 _InnerColor;
 float4 _Ramp_TexelSize;
 float2 _Speed;
@@ -1149,7 +1161,7 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Mask_TexelSize;
-float _FrameThickness;
+float2 _FrameThickness;
 float4 _InnerColor;
 float4 _Ramp_TexelSize;
 float2 _Speed;
@@ -1449,7 +1461,7 @@ VertexDescriptionInputs BuildVertexDescriptionInputs(Attributes input)
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Mask_TexelSize;
-float _FrameThickness;
+float2 _FrameThickness;
 float4 _InnerColor;
 float4 _Ramp_TexelSize;
 float2 _Speed;
@@ -1840,15 +1852,26 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Lerp_float4(_SGCustomGradient_cfbd3021c3c542249af6bf8136dee314_New_0, _SampleTexture2D_11b9032f513a4306885ed14965c973e6_RGBA_0, (_Step_a2759376e99046afa588bee996210bcc_Out_2.xxxx), _Lerp_c0403dafde8747ee931186268ba1dc3d_Out_3);
     float4 _Property_aa0f73601f7648859cb2d7c603bae46f_Out_0 = _InnerColor;
     UnityTexture2D _Property_9b9b783269f94e6f8030cd2a50295a79_Out_0 = UnityBuildTexture2DStructNoScale(_Mask);
-    float _Property_ad3d20dcded040de935449a4ea34fb39_Out_0 = _FrameThickness;
+    float2 _Property_7085c65f55ea492888a28fad61369a22_Out_0 = _FrameThickness;
+    float _Split_796152b39d5f4b8c8a5e4b92fb1ecf75_R_1 = _Property_7085c65f55ea492888a28fad61369a22_Out_0[0];
+    float _Split_796152b39d5f4b8c8a5e4b92fb1ecf75_G_2 = _Property_7085c65f55ea492888a28fad61369a22_Out_0[1];
+    float _Split_796152b39d5f4b8c8a5e4b92fb1ecf75_B_3 = 0;
+    float _Split_796152b39d5f4b8c8a5e4b92fb1ecf75_A_4 = 0;
     float _Multiply_1529b3b184234cefaf414ade0331fe28_Out_2;
-    Unity_Multiply_float(_Property_ad3d20dcded040de935449a4ea34fb39_Out_0, -1, _Multiply_1529b3b184234cefaf414ade0331fe28_Out_2);
+    Unity_Multiply_float(_Split_796152b39d5f4b8c8a5e4b92fb1ecf75_R_1, -1, _Multiply_1529b3b184234cefaf414ade0331fe28_Out_2);
     float _Divide_59c865b4a9f540b8b9f681d5bfe52c58_Out_2;
     Unity_Divide_float(_Multiply_1529b3b184234cefaf414ade0331fe28_Out_2, 2, _Divide_59c865b4a9f540b8b9f681d5bfe52c58_Out_2);
     float _Add_3aeab0f33bb74db0bb3d28dce9a1b54c_Out_2;
     Unity_Add_float(_Divide_59c865b4a9f540b8b9f681d5bfe52c58_Out_2, 0.5, _Add_3aeab0f33bb74db0bb3d28dce9a1b54c_Out_2);
+    float _Multiply_fcbb3fe044714a07b58a58e20005f0be_Out_2;
+    Unity_Multiply_float(_Split_796152b39d5f4b8c8a5e4b92fb1ecf75_G_2, -1, _Multiply_fcbb3fe044714a07b58a58e20005f0be_Out_2);
+    float _Divide_4e648c33f8d3465984eff65445c0c781_Out_2;
+    Unity_Divide_float(_Multiply_fcbb3fe044714a07b58a58e20005f0be_Out_2, 2, _Divide_4e648c33f8d3465984eff65445c0c781_Out_2);
+    float _Add_c8db7f8193fd481aa5cc0fdf106594f4_Out_2;
+    Unity_Add_float(_Divide_4e648c33f8d3465984eff65445c0c781_Out_2, 0.5, _Add_c8db7f8193fd481aa5cc0fdf106594f4_Out_2);
+    float2 _Vector2_9164475dd9ae4d46b7fb285d59e06fbb_Out_0 = float2(_Add_3aeab0f33bb74db0bb3d28dce9a1b54c_Out_2, _Add_c8db7f8193fd481aa5cc0fdf106594f4_Out_2);
     float2 _TilingAndOffset_616af8dba9f542008493dceec7d691d4_Out_3;
-    Unity_TilingAndOffset_float(IN.uv0.xy, (_Property_ad3d20dcded040de935449a4ea34fb39_Out_0.xx), (_Add_3aeab0f33bb74db0bb3d28dce9a1b54c_Out_2.xx), _TilingAndOffset_616af8dba9f542008493dceec7d691d4_Out_3);
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Property_7085c65f55ea492888a28fad61369a22_Out_0, _Vector2_9164475dd9ae4d46b7fb285d59e06fbb_Out_0, _TilingAndOffset_616af8dba9f542008493dceec7d691d4_Out_3);
     float4 _SampleTexture2D_1832d5f57cea4aa3b02108ccd69c0ac7_RGBA_0 = SAMPLE_TEXTURE2D(_Property_9b9b783269f94e6f8030cd2a50295a79_Out_0.tex, _Property_9b9b783269f94e6f8030cd2a50295a79_Out_0.samplerstate, _TilingAndOffset_616af8dba9f542008493dceec7d691d4_Out_3);
     float _SampleTexture2D_1832d5f57cea4aa3b02108ccd69c0ac7_R_4 = _SampleTexture2D_1832d5f57cea4aa3b02108ccd69c0ac7_RGBA_0.r;
     float _SampleTexture2D_1832d5f57cea4aa3b02108ccd69c0ac7_G_5 = _SampleTexture2D_1832d5f57cea4aa3b02108ccd69c0ac7_RGBA_0.g;
@@ -2094,7 +2117,7 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Mask_TexelSize;
-float _FrameThickness;
+float2 _FrameThickness;
 float4 _InnerColor;
 float4 _Ramp_TexelSize;
 float2 _Speed;
@@ -2381,7 +2404,7 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Mask_TexelSize;
-float _FrameThickness;
+float2 _FrameThickness;
 float4 _InnerColor;
 float4 _Ramp_TexelSize;
 float2 _Speed;
