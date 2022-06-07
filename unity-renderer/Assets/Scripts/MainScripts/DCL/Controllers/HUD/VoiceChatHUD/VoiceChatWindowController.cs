@@ -207,7 +207,7 @@ public class VoiceChatWindowController : IHUD
     {
         if (!currentPlayers.ContainsKey(player.id))
         {
-            var otherProfile = UserProfileController.userProfilesCatalog.Get(player.id);
+            var otherProfile = userProfileBridge.Get(player.id);
 
             if (otherProfile != null)
             {
