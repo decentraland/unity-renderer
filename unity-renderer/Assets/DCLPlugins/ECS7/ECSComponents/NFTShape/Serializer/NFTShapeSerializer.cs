@@ -2,17 +2,8 @@
 
 namespace DCL.ECSComponents
 {
-    public static class NFTShapeSerializator
+    public static class NFTShapeSerializer
     {
-        public static byte[] Serialize(PBBoxShape model)
-        {
-            int size = model.CalculateSize();
-            byte[] buffer = new byte[size];
-            CodedOutputStream output = new CodedOutputStream(buffer);
-            model.WriteTo(output);
-            return buffer;
-        }
-        
         public static byte[] Serialize(PBNFTShape model)
         {
             int size = model.CalculateSize();

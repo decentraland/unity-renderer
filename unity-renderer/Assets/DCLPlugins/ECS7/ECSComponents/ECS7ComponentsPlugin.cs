@@ -22,7 +22,6 @@ public class ECS7ComponentsPlugin : IDisposable
         componentsFactory.AddOrReplaceComponent(ComponentID.BOX_SHAPE,
             data => PBBoxShape.Parser.ParseFrom((byte[])data),
             () =>  new ECSBoxShapeComponentHandler(DataStore.i.ecs7));
-        componentsWriter.AddOrReplaceComponentSerializer<PBBoxShape>(ComponentID.BOX_SHAPE, NFTShapeSerializator.Serialize);
 
         // Plane Shape
         componentsFactory.AddOrReplaceComponent(ComponentID.PLANE_SHAPE,

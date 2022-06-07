@@ -10,10 +10,10 @@ using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public class ECSNFTShapeComponentHandler : IECSComponentHandler<PBNFTShape>, IShape
+    public class ECSNFTShapeComponentHandler : IECSComponentHandler<PBNFTShape>
     {
-        private INFTInfoLoadHelper infoLoadHelper;
-        private INFTAssetLoadHelper assetLoadHelper;
+        private readonly INFTInfoLoadHelper infoLoadHelper;
+        private readonly INFTAssetLoadHelper assetLoadHelper;
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
         
@@ -21,6 +21,12 @@ namespace DCL.ECSComponents
         private PBNFTShape currentModel;
         private bool isLoaded = false;
         private IParcelScene scene;
+
+        public ECSNFTShapeComponentHandler(INFTInfoLoadHelper infoLoadHelper, INFTAssetLoadHelper assetLoadHelper)
+        {
+            this.infoLoadHelper = infoLoadHelper;
+            this.assetLoadHelper = assetLoadHelper;
+        }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
@@ -38,7 +44,8 @@ namespace DCL.ECSComponents
             this.scene = scene;
             this.currentModel = model;
             entity.meshesInfo.meshRootGameObject = NFTShapeFactory.InstantiateLoaderController(model.Style);
-            entity.meshesInfo.currentShape = this;
+            
+            entity.meshesInfo.currentShape = new NFTShapeRepresentantion(model);
             
             entity.meshRootGameObject.name = "NFT mesh";
             entity.meshRootGameObject.transform.SetParent(entity.gameObject.transform);
