@@ -227,7 +227,6 @@ namespace DCL.Controllers
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
             
-            // entity.meshesInfo.RecalculateBounds();
             bool isInsideOuterBounds = entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds);
             if (!isInsideOuterBounds)
                 SetMeshesAndComponentsInsideBoundariesState(entity, false);
