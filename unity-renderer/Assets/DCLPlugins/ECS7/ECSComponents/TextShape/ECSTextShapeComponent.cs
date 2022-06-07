@@ -16,8 +16,7 @@ namespace DCL.ECSComponents
 
         public ECSTextShapeComponent(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            ECSTextShapeComponentHandler handler = new ECSTextShapeComponentHandler(DataStore.i.ecs7, AssetPromiseKeeper_Font.i);
-            factory.AddOrReplaceComponent(componentId, TextShapeSerialization.Deserialize, () => handler);
+            factory.AddOrReplaceComponent(componentId, TextShapeSerialization.Deserialize, () => new ECSTextShapeComponentHandler(DataStore.i.ecs7, AssetPromiseKeeper_Font.i));
             componentWriter.AddOrReplaceComponentSerializer<PBTextShape>(componentId, TextShapeSerialization.Serialize);
 
             this.factory = factory;
