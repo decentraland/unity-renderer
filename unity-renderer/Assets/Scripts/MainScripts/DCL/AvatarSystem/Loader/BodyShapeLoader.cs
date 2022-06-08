@@ -55,11 +55,13 @@ namespace AvatarSystem
                 }
 
                 status = IWearableLoader.Status.Idle;
-
+                Debug.Log("Load wearable");
                 await LoadWearable(container, ct);
 
+                Debug.Log("Extract body parts");
                 (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer) = AvatarSystemUtils.ExtractBodyshapeParts(bodyshapeRetriever.rendereable);
-               
+
+                Debug.Log("Await facial load");
                 await (LoadEyes(ct), LoadEyebrows(ct), LoadMouth(ct));
                
                 UpdateColors(avatarSettings);
