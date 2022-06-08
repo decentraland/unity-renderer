@@ -1,9 +1,8 @@
-using AvatarSystem;
 using DCL.Emotes;
-using DCL.EmotesCustomization;
 using DCL.EmotesWheel;
 using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
+using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Tutorial;
 
@@ -40,6 +39,11 @@ namespace DCL
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature(), "explorev2");
             pluginSystem.RegisterWithFlag<SkyboxController>(() => new SkyboxController(), "procedural_skybox");
+            pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
+                FriendsController.i,
+                NotificationScriptableObjects.pendingFriendRequests,
+                NotificationScriptableObjects.newApprovedFriends,
+                DataStore.i));
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

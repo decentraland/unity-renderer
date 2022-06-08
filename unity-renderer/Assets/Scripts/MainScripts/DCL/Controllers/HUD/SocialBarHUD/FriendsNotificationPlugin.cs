@@ -1,6 +1,7 @@
-﻿using DCL.Helpers;
+﻿using DCL;
+using DCL.Helpers;
 
-public class FriendsNotificationService : IFriendsNotificationService
+public class FriendsNotificationPlugin : IPlugin
 {
     private const string PLAYER_PREFS_SEEN_FRIEND_COUNT = "SeenFriendsCount";
     
@@ -8,38 +9,44 @@ public class FriendsNotificationService : IFriendsNotificationService
     private readonly IFriendsController friendsController;
     private readonly FloatVariable memoryPendingFriendRequestsRepository;
     private readonly FloatVariable memoryNewApprovedFriendsRepository;
+    private readonly DataStore dataStore;
 
-    public FriendsNotificationService(IPlayerPrefs playerPrefs,
+    public FriendsNotificationPlugin(IPlayerPrefs playerPrefs,
         IFriendsController friendsController,
         FloatVariable memoryPendingFriendRequestsRepository,
-        FloatVariable memoryNewApprovedFriendsRepository)
+        FloatVariable memoryNewApprovedFriendsRepository,
+        DataStore dataStore)
     {
         this.playerPrefs = playerPrefs;
         this.friendsController = friendsController;
         this.memoryPendingFriendRequestsRepository = memoryPendingFriendRequestsRepository;
         this.memoryNewApprovedFriendsRepository = memoryNewApprovedFriendsRepository;
+        this.dataStore = dataStore;
+
+        dataStore.friendNotifications.seenFriends.OnChange += MarkFriendsAsSeen;
+        dataStore.friendNotifications.seenRequests.OnChange += MarkRequestsAsSeen;
     }
     
     public void Dispose()
     {
+        dataStore.friendNotifications.seenFriends.OnChange -= MarkFriendsAsSeen;
+        dataStore.friendNotifications.seenRequests.OnChange -= MarkRequestsAsSeen;
     }
 
-    public void Initialize()
+    private void MarkFriendsAsSeen(int current, int previous)
     {
-    }
-
-    public void MarkFriendsAsSeen(int count)
-    {
-        playerPrefs.Set(PLAYER_PREFS_SEEN_FRIEND_COUNT, count);
+        playerPrefs.Set(PLAYER_PREFS_SEEN_FRIEND_COUNT, current);
         playerPrefs.Save();
+        UpdateNewApprovedFriends();
     }
 
-    public void MarkRequestsAsSeen(int count)
+    private void MarkRequestsAsSeen(int current, int previous)
     {
-        memoryPendingFriendRequestsRepository.Set(count);
+        memoryPendingFriendRequestsRepository.Set(current);
+        UpdateNewApprovedFriends();
     }
 
-    public void UpdateUnseenFriends()
+    private void UpdateNewApprovedFriends()
     {
         var seenFriendsCount = playerPrefs.GetInt(PLAYER_PREFS_SEEN_FRIEND_COUNT);
         var friendsCount = friendsController.friendCount;

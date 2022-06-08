@@ -18,14 +18,13 @@ public class FriendsHUDControllerShould
     private IFriendsHUDComponentView view;
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
-    private IFriendsNotificationService friendsNotificationService;
     private IUserProfileBridge userProfileBridge;
+    private DataStore dataStore;
 
     [SetUp]
     public void SetUp()
     {
         socialAnalytics = Substitute.For<ISocialAnalytics>();
-        friendsNotificationService = Substitute.For<IFriendsNotificationService>();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         var otherUserProfile = ScriptableObject.CreateInstance<UserProfile>();
         otherUserProfile.UpdateData(new UserProfileModel {userId = OTHER_USER_ID, name = OTHER_USER_NAME});
@@ -36,11 +35,11 @@ public class FriendsHUDControllerShould
         userProfileBridge.GetOwn().Returns(ownProfile);
         friendsController = Substitute.For<IFriendsController>();
         friendsController.friendCount.Returns(FRIENDS_COUNT);
-        controller = new FriendsHUDController(new DataStore(),
+        dataStore = new DataStore();
+        controller = new FriendsHUDController(dataStore,
             friendsController,
             userProfileBridge,
-            socialAnalytics,
-            friendsNotificationService);
+            socialAnalytics);
         view = Substitute.For<IFriendsHUDComponentView>();
         view.FriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         controller.Initialize(view);
@@ -220,9 +219,8 @@ public class FriendsHUDControllerShould
         friendsController.OnUpdateFriendship +=
             Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
 
-        friendsNotificationService.Received(1).MarkFriendsAsSeen(FRIENDS_COUNT);
-        friendsNotificationService.Received(1).MarkRequestsAsSeen(FRIEND_REQUEST_SHOWN);
-        friendsNotificationService.Received(1).UpdateUnseenFriends();
+        Assert.AreEqual(FRIENDS_COUNT, dataStore.friendNotifications.seenFriends.Get());
+        Assert.AreEqual(FRIEND_REQUEST_SHOWN, dataStore.friendNotifications.seenRequests.Get());
     }
 
     [Test]
@@ -233,9 +231,8 @@ public class FriendsHUDControllerShould
 
         controller.SetVisibility(true);
 
-        friendsNotificationService.Received(1).MarkFriendsAsSeen(FRIENDS_COUNT);
-        friendsNotificationService.Received(1).MarkRequestsAsSeen(FRIEND_REQUEST_SHOWN);
-        friendsNotificationService.Received(1).UpdateUnseenFriends();
+        Assert.AreEqual(FRIENDS_COUNT, dataStore.friendNotifications.seenFriends.Get());
+        Assert.AreEqual(FRIEND_REQUEST_SHOWN, dataStore.friendNotifications.seenRequests.Get());
     }
 
     [Test]

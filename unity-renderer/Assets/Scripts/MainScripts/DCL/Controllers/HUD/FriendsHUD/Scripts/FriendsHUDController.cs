@@ -20,7 +20,6 @@ public class FriendsHUDController : IHUD
     private readonly IFriendsController friendsController;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly ISocialAnalytics socialAnalytics;
-    private readonly IFriendsNotificationService friendsNotificationService;
 
     private UserProfile ownUserProfile;
 
@@ -33,14 +32,12 @@ public class FriendsHUDController : IHUD
     public FriendsHUDController(DataStore dataStore,
         IFriendsController friendsController,
         IUserProfileBridge userProfileBridge,
-        ISocialAnalytics socialAnalytics,
-        IFriendsNotificationService friendsNotificationService)
+        ISocialAnalytics socialAnalytics)
     {
         this.dataStore = dataStore;
         this.friendsController = friendsController;
         this.userProfileBridge = userProfileBridge;
         this.socialAnalytics = socialAnalytics;
-        this.friendsNotificationService = friendsNotificationService;
     }
 
     public void Initialize(IFriendsHUDComponentView view = null)
@@ -354,10 +351,9 @@ public class FriendsHUDController : IHUD
     private void UpdateNotificationsCounter()
     {
         if (View.IsActive())
-            friendsNotificationService.MarkFriendsAsSeen(friendsController.friendCount);
-
-        friendsNotificationService.MarkRequestsAsSeen(friendsController.ReceivedRequestCount);
-        friendsNotificationService.UpdateUnseenFriends();
+            dataStore.friendNotifications.seenFriends.Set(friendsController.friendCount);
+        
+        dataStore.friendNotifications.seenRequests.Set(friendsController.ReceivedRequestCount);
     }
 
     private void HandleOpenWhisperChat(FriendEntryModel entry) => OnPressWhisper?.Invoke(entry.userId);
