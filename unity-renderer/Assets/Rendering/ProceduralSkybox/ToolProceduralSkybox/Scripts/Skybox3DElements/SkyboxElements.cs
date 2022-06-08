@@ -31,6 +31,9 @@ namespace DCL.Skybox
 
         internal void AssignCameraInstance(Transform currentTransform)
         {
+            if (currentTransform == null)
+                return;
+            
             domeElements.ResolveCameraDependency(currentTransform);
             satelliteElements.ResolveCameraDependency(currentTransform);
             planarElements.ResolveCameraDependency(currentTransform);
