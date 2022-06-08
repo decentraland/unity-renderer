@@ -45,26 +45,30 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_32cc9d687e404975a933633a89578eca: 1
-    - Vector1_d6b5d20802a0431ea86843707c4780d1: 14
+    - Vector1_32cc9d687e404975a933633a89578eca: 1.27
+    - Vector1_d6b5d20802a0431ea86843707c4780d1: 10
     - _Scale: 7.7
     m_Colors:
-    - Color_43810e24e6b146baacbe452f214f60b2: {r: 0.49549568, g: 1, b: 0, a: 1}
+    - Color_43810e24e6b146baacbe452f214f60b2: {r: 0, g: 0, b: 0, a: 1}
+    - Color_590fd915ee47480cbeec28c1413273ac: {r: 0.058823526, g: 0.800456, b: 0.94509804,
+        a: 0}
     - Color_f462ce7a51e2477abc63679dfa03c84f: {r: 0, g: 0.5019608, b: 0, a: 0}
     - Color_f462ce7a51e2477abc63679dfa03c84f_1: {r: 0.21960786, g: 0, b: 0, a: 0}
     - Color_f462ce7a51e2477abc63679dfa03c84f_2: {r: 0.21960786, g: 0.1254902, b: 0,
         a: 0}
     - Color_f462ce7a51e2477abc63679dfa03c84f_3: {r: 0.21960786, g: 0.2509804, b: 0,
         a: 0}
-    - Color_f462ce7a51e2477abc63679dfa03c84f_4: {r: 0.5568628, g: 0.45677784, b: 0.27058825,
+    - Color_f462ce7a51e2477abc63679dfa03c84f_4: {r: 0.5568628, g: 0.27058825, b: 0.27058825,
         a: 0}
-    - Color_f462ce7a51e2477abc63679dfa03c84f_5: {r: 0.8, g: 0.6627451, b: 0.699399,
+    - Color_f462ce7a51e2477abc63679dfa03c84f_5: {r: 0.8, g: 0.78453165, b: 0.6627451,
         a: 0}
-    - Color_f462ce7a51e2477abc63679dfa03c84f_6: {r: 0.4528302, g: 0.4528302, b: 0.4528302,
+    - Color_f462ce7a51e2477abc63679dfa03c84f_6: {r: 0.5566038, g: 0.5566038, b: 0.5566038,
         a: 0}
-    - Color_f462ce7a51e2477abc63679dfa03c84f_7: {r: 0, g: 0.51985556, b: 0.59607846,
+    - Color_f462ce7a51e2477abc63679dfa03c84f_7: {r: 0.090196066, g: 0.20126918, b: 0.29411766,
         a: 0}
     - Vector2_0632d0582dd2441ba59b7996a7ba77dd: {r: 0, g: 0, b: 0, a: 0}
-    - Vector2_75b8f85ff9324f379c2c6ddf2acb8f4f: {r: 257.6, g: 257.13, b: 0, a: 0}
+    - Vector2_1: {r: 512, g: 512, b: 0, a: 0}
+    - Vector2_34d11db46886403f822da00676024a51: {r: 1920, g: 1080, b: 0, a: 0}
+    - Vector2_75b8f85ff9324f379c2c6ddf2acb8f4f: {r: 1430.2, g: 531.8, b: 0, a: 0}
     - Vector2_ccab16138df344f7925b43c8791c779d: {r: 512, g: 512, b: 0, a: 0}
   m_BuildTextureStacks: []

@@ -29,9 +29,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _MyTime: 0
-    - _TileSizeInPixels: 10
+    - _TileSizeInPixels: 16
     m_Colors:
-    - _Mouse: {r: 189.71, g: 222.9, b: 0, a: 0}
-    - _Resolution: {r: 512, g: 512, b: 0, a: 0}
+    - _Mouse: {r: 960, g: 540, b: 0, a: 0}
+    - _Resolution: {r: 1920, g: 1080, b: 0, a: 0}
     - _SizeOfTheTexture: {r: 512, g: 512, b: 0, a: 0}
   m_BuildTextureStacks: []

@@ -6,6 +6,18 @@ float2 clampToTexture(float2 uv, float2 size)
     return clampUv - pixel * float2(0.5, 0.5);
 }
 
+// this function returns a color for the tiles based on a texture color
+float4 colorFromType(float type)
+{
+    if (type < 33.0)
+        return float4(1, 0, 0, 1);
+
+    if (type < 65.0)
+        return float4(0, 1, 0, 1);
+
+    return float4(0, 0, 1, 1);
+}
+
 // this function detects a change in the pixel-perfect UV mapping of the texture
 // using a screen pixel as delta
 float2 detectEdges(float2 positionInScreen, float2 size, float zoom, float2 u_resolution)
@@ -28,17 +40,6 @@ float2 detectEdges(float2 positionInScreen, float2 size, float zoom, float2 u_re
     return (newUv - uv);
 }
 
-// this function returns a color for the tiles based on a texture color
-float4 colorFromType(float type)
-{
-    if (type < 33.0)
-        return float4(1, 0, 0, 1);
-
-    if (type < 65.0)
-        return float4(0, 1, 0, 1);
-
-    return float4(0, 0, 1, 1);
-}
 
 // given a pixel in screen, texture size and information of the tile, render the tile or the lines
 float detectEdgesFloat(float2 positionInScreen, float2 size, float zoom, float info, float2 u_resolution)
@@ -65,6 +66,7 @@ float detectEdgesFloat(float2 positionInScreen, float2 size, float zoom, float i
         return 1.0;
     }
     else
+    {
         if (hasTopBorder && hasLeftBorder && hasTopLeftPoint) 
         {
             // connected everywhere: it's a square with lines
@@ -77,35 +79,57 @@ float detectEdgesFloat(float2 positionInScreen, float2 size, float zoom, float i
             // connected top: it's a rectangle
             if (hasLeftBorder && !inTopBorder) return 1.0;
         }
+    }
 
     return 0.0;
 }
 
-void Main_float(UnityTexture2D u_input, float2 u_resolution, float2 u_mouse, float tileSizeInPizels, float2 sizeOfTheTexture, float4 position, UnitySamplerState ss, float4 GridColor, out float4 outColor)
+void Main_float(UnityTexture2D u_input, UnitySamplerState ss, float2 u_resolution, float2 u_mouse, float tileSizeInPizels, float2 sizeOfTheTexture, float4 position, float gridThickness, float2 UV, out float4 outColor, out float Pointer, out float Grid)
 {
+    Pointer = 0;
+    Grid = 0;
+
+    if (gridThickness == 0)
+    {
+        gridThickness = 0.001;
+    }
+
     // offset = center of the map in uniform coords
     float2 offset = u_mouse / u_resolution;
     float zoom;
     float2 v_texcoord; // v_texcoord is a ratio-normalized sceen pixel in uniform coords
 
-    float4 tempCol = (0,0,0,0);
+    float4 tempCol = float4(0,0,0,0);
 
-    if (u_resolution.x > u_resolution.y)
+    /*if (u_resolution.x > u_resolution.y)
     {
-        v_texcoord.x = position.x / u_resolution.y - 0.5 - 0.5 * (u_resolution.x - u_resolution.y) / u_resolution.y;
-        v_texcoord.y = position.y / u_resolution.y - 0.5;
+        v_texcoord.x = position.x / u_resolution.y;
+        v_texcoord.y = position.y / u_resolution.y;
         zoom = sizeOfTheTexture.x / u_resolution.y * tileSizeInPizels;
     }
     else
     {
-        v_texcoord.x = position.x / u_resolution.x - 0.5;
-        v_texcoord.y = position.y / u_resolution.x - 0.5 - 0.5 * (u_resolution.y - u_resolution.x) / u_resolution.x;
+        v_texcoord.x = position.x / u_resolution.x;
+        v_texcoord.y = position.y / u_resolution.x;
         zoom = sizeOfTheTexture.y / u_resolution.x * tileSizeInPizels;
     }
 
+    // tileOfInterest, represented as UV coords of the MAP texture
+    float2 tileOfInterest = v_texcoord / zoom + offset;*/
+
+    if (u_resolution.x > u_resolution.y)
+    {
+        UV -= 0.5;
+        zoom = sizeOfTheTexture.x / u_resolution.y * tileSizeInPizels;
+    }
+    else
+    {
+        UV -= 0.5;
+        zoom = sizeOfTheTexture.y / u_resolution.x * tileSizeInPizels;
+    }
 
     // tileOfInterest, represented as UV coords of the MAP texture
-    float2 tileOfInterest = v_texcoord / zoom + offset;
+    float2 tileOfInterest = UV / zoom + offset;
 
     // render black tiles outside of the image map data-range
     if (tileOfInterest.x > 1.0 || tileOfInterest.y > 1.0 || tileOfInterest.y < 0.0 || tileOfInterest.x < 0.0) 
@@ -123,30 +147,46 @@ void Main_float(UnityTexture2D u_input, float2 u_resolution, float2 u_mouse, flo
         // if we are rendering the center of coordinates
         if (length(centerUv - uv) == 0.0)
         {
-            tempCol = float4(1.0, 0.0, 1.0, 1.0);
-            outColor = tempCol;
+            Pointer = 1;
         }
         else
         {
-            float4 data = SAMPLE_TEXTURE2D(u_input, ss, uv);
+            Pointer = 0;
+        }
 
-            if (data.a > 0.0)
+        float4 data = SAMPLE_TEXTURE2D(u_input, ss, uv);
+
+        if (data.a > 0.0)
+        {
+            if (detectEdgesFloat(tileOfInterest, sizeOfTheTexture, zoom/gridThickness, data.r * 256.0, u_resolution) == 0.0)
             {
-                if (detectEdgesFloat(tileOfInterest, sizeOfTheTexture, zoom, data.r * 256.0, u_resolution) == 0.0)
-                    tempCol = float4(0.0, 0.0, 0.0, 1.0);
-                else
-                    tempCol = colorFromType(data.g * 256.0);
+                Grid = 1;
             }
             else
             {
-                if (detectEdgesFloat(tileOfInterest, sizeOfTheTexture, zoom, 0.0, u_resolution) == 0.0)
-                    tempCol = float4(0.0, 0.0, 0.0, 1.0);
-                else
-                    tempCol = float4(0.05, 0.05, 0.05, 1.0);
+
+                Grid = 0;
             }
 
-            outColor = tempCol;
+            tempCol = colorFromType(data.g * 256.0);
         }
+        else
+        {
+            if (detectEdgesFloat(tileOfInterest, sizeOfTheTexture, zoom, data.r * 256.0, u_resolution) == 0.0)
+            {
+                Grid = 1;
+            }
+            else
+            {
+
+                Grid = 0;
+            }
+
+            tempCol = float4(0, 0, 0, 1.0);
+        }
+
+        outColor = tempCol;
+        
     }
 
 
