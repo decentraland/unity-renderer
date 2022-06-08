@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class AvatarReveal : MonoBehaviour
 {
+    [SerializeField] private Animation animation;
     public SkinnedMeshRenderer meshRenderer;
     public bool avatarLoaded;
     public GameObject revealer;
     public Transform finalPosition;
-    public ParticleSystem particles;
-    public ParticleSystem revealParticles;
 
     public float revealSpeed;
 
@@ -19,11 +18,8 @@ public class AvatarReveal : MonoBehaviour
     public List<Renderer> targets = new List<Renderer>();
     List<Material> _materials = new List<Material>();
 
-    private Vector3 revealerStartingPosition;
-
     private void Start()
     {
-        revealerStartingPosition = revealer.transform.position;
         _ghostMaterial = meshRenderer.material;
 
         foreach (Renderer r in targets)
@@ -46,11 +42,6 @@ public class AvatarReveal : MonoBehaviour
     private void Update()
     {
         UpdateMaterials();
-
-        if(avatarLoaded)
-        {
-            RevealAvatar();
-        }
     }
 
     void UpdateMaterials()
@@ -60,7 +51,7 @@ public class AvatarReveal : MonoBehaviour
             Color gColor = _ghostMaterial.GetColor("_Color");
             Color tempColor = new Color(gColor.r, gColor.g, gColor.b, gColor.a + Time.deltaTime * fadeInSpeed);
             _ghostMaterial.SetColor("_Color", tempColor);
-        }        
+        }
 
         _ghostMaterial.SetVector("_RevealPosition", revealer.transform.localPosition);
 
@@ -70,26 +61,17 @@ public class AvatarReveal : MonoBehaviour
         }
     }
 
-    void RevealAvatar()
+    public void StartAvatarRevealAnimation()
     {
-        if (revealer.transform.position.y < finalPosition.position.y)
-        {
-            revealer.transform.position += revealer.transform.up * revealSpeed * Time.deltaTime;
+        animation.Play();
+    }
 
-            if (!particles.isPlaying)
-            {
-                particles.Play();
-                revealParticles.Play();
-            }
-        }
-        else 
-        {
-            if (particles.isPlaying)
-            {
-                particles.Stop();
-                revealParticles.Stop();
-            }
-            meshRenderer.enabled = false;
-        }
+    public void Reset()
+    {
+        avatarLoaded = false;
+        meshRenderer.enabled = true;
+        targets = new List<Renderer>();
+        _materials = new List<Material>();
+        revealer.transform.position = Vector3.zero;
     }
 }

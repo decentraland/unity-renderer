@@ -31,6 +31,8 @@ namespace AvatarSystem
         {
             if (avatarRevealer == null)
                 avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<AvatarReveal>();
+            else
+                avatarRevealer.Reset();
 
             meshRenderer = avatarRevealer.meshRenderer;
         }
@@ -41,7 +43,7 @@ namespace AvatarSystem
                 return;
 
             avatarRevealer.AddTarget(targetRenderer);
-            avatarRevealer.avatarLoaded = true;
+            avatarRevealer.StartAvatarRevealAnimation();
         }
 
     }
