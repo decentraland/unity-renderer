@@ -117,7 +117,12 @@ namespace DCL
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
             Debug.Log("completed combine internal assertions");
             CombineLayerUtils.ENABLE_CULL_OPAQUE_HEURISTIC = useCullOpaqueHeuristic;
-
+            Debug.Log($"enable cull {useCullOpaqueHeuristic}");
+            Debug.Log($"bones bindposes {bonesContainer.sharedMesh.bindposes}");
+            Debug.Log($"bones {bonesContainer.bones}");
+            Debug.Log($"renderers {renderers}");
+            Debug.Log($"material asset {materialAsset}");
+            Debug.Log($"keep pose {keepPose}");
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
                 bonesContainer.sharedMesh.bindposes,
                 bonesContainer.bones,
