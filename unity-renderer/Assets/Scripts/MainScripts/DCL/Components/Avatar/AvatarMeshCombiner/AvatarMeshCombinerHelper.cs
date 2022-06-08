@@ -42,7 +42,7 @@ namespace DCL
         public bool enableCombinedMesh { get; set; } = true;
 
         private AvatarMeshCombiner.Output? lastOutput;
-        private bool keepPose;
+        private bool keepPose = true;
 
         public AvatarMeshCombinerHelper (GameObject container = null, bool keepPose = true) 
         { 
@@ -76,6 +76,9 @@ namespace DCL
         /// <returns>true if succeeded, false if not</returns>
         public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset)
         {
+            Debug.Log($"Start combnine bones container {bonesContainer}");
+            Debug.Log($"renderersTo combine {renderersToCombine.Length}");
+            Debug.Log($"materialAsset {materialAsset}");
             Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
             Assert.IsTrue(renderersToCombine != null, "renderersToCombine should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
@@ -83,11 +86,13 @@ namespace DCL
             SkinnedMeshRenderer[] renderers = renderersToCombine;
 
             // Sanitize renderers list
+            Debug.Log("Sanitize renderers list");
             renderers = renderers.Where( (x) => x != null && x.sharedMesh != null ).ToArray();
 
             if ( renderers.Length == 0 )
                 return false;
 
+            Debug.Log("Combine internal");
             bool success = CombineInternal(
                 bonesContainer,
                 renderers,
@@ -110,7 +115,7 @@ namespace DCL
             Assert.IsTrue(bonesContainer.bones != null, "bonesContainer bones should never be null!");
             Assert.IsTrue(renderers != null, "renderers should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
-
+            Debug.Log("completed combine internal assertions");
             CombineLayerUtils.ENABLE_CULL_OPAQUE_HEURISTIC = useCullOpaqueHeuristic;
 
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(

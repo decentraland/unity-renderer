@@ -83,6 +83,7 @@ namespace DCL
         /// <returns>An Output object with the mesh and materials. Output.isValid will return true if the combining is successful.</returns>
         public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset, bool keepPose = true)
         {
+            Debug.Log("Start combine skinned mesh");
             Output result = new Output();
             (Vector3 pos, Quaternion rot, Vector3 scale)[] bonesTransforms = bones.Select(x => (x.position, x.rotation, x.localScale)).ToArray();
 
@@ -91,6 +92,7 @@ namespace DCL
             // This is a workaround, it had to be done because renderers original matrices don't match the T pose.
             // We need wearables in T pose to properly combine the avatar mesh. 
             //
+            Debug.Log("Reset bones");
             AvatarMeshCombinerUtils.ResetBones(bindPoses, bones);
 
             //
