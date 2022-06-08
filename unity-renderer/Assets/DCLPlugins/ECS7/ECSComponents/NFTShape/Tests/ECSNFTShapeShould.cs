@@ -19,7 +19,7 @@ namespace DCL.ECSComponents.Test
     {
         private IDCLEntity entity;
         private IParcelScene scene;
-        private ECSNFTShapeComponentHandler boxShapeComponentHandler;
+        private ECSNFTShapeComponentHandler componentHandler;
         private GameObject gameObject;
 
         [SetUp]
@@ -28,21 +28,23 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            boxShapeComponentHandler = new ECSNFTShapeComponentHandler();
+            componentHandler = new ECSNFTShapeComponentHandler();
 
+            var meshInfo = new MeshesInfo();
+            entity.meshesInfo.Returns(meshInfo);
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
             sceneData.id = "1";
             scene.sceneData.Configure().Returns(sceneData);
             
-            boxShapeComponentHandler.OnComponentCreated(scene, entity);
+            componentHandler.OnComponentCreated(scene, entity);
         }
 
         [TearDown]
         protected void TearDown()
         {
-            boxShapeComponentHandler.OnComponentRemoved(scene, entity);
+            componentHandler.OnComponentRemoved(scene, entity);
             GameObject.Destroy(gameObject);
         }
 
@@ -50,20 +52,34 @@ namespace DCL.ECSComponents.Test
         public void UpdateComponentCorrectly()
         {
             // Arrange
-            PBBoxShape model = new PBBoxShape();
+            var model = CreateModel();
 
             // Act
-            // boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Assert
+            Assert.IsNotNull(entity.meshesInfo);
+            Assert.IsNotNull(entity.meshesInfo.meshRootGameObject);
         }
         
-        
+        [Test]
+        public void CreateLoaderCorrectly()
+        {
+            // Arrange
+            var model = CreateModel();
+            
+            // Act
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Assert
+            Assert.IsNotNull(entity.meshRootGameObject.GetComponent<NFTShapeLoaderController>());
+        }
+
         [Test]
         public void SerializeCorrectly()
         {
             // Arrange
-            PBBoxShape model = new PBBoxShape();
+            PBNFTShape model = new PBNFTShape();
             byte[] byteArray;
             
             // Act
@@ -83,20 +99,15 @@ namespace DCL.ECSComponents.Test
         public void SerializeAndDeserialzeCorrectly(bool visible, bool withCollision, bool isPointerBlocker)
         {
             // Arrange
-            PBBoxShape model = new PBBoxShape();
+            PBNFTShape model = new PBNFTShape();
             model.Visible = visible;
             model.WithCollisions = withCollision;
             model.IsPointerBlocker = isPointerBlocker;
-            float[] uvs = new float[]
-            {
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1
-            };
-            model.Uvs.Add(uvs.ToList());
+            model.Color = new Color();
+            model.Color.Red = 1;
+            model.Color.Blue = 0;
+            model.Color.Green = 0.5f;
+            model.Src = "ethereum://test";
 
             // Act
             var newModel = SerializaAndDeserialize(model);
@@ -105,19 +116,24 @@ namespace DCL.ECSComponents.Test
             Assert.AreEqual(model.Visible, newModel.Visible);
             Assert.AreEqual(model.WithCollisions, newModel.WithCollisions);
             Assert.AreEqual(model.IsPointerBlocker, newModel.IsPointerBlocker);
-            Assert.AreEqual(model.Uvs, newModel.Uvs);
+            Assert.AreEqual(model.Src, newModel.Src);
+            Assert.AreEqual(model.Color.Red, newModel.Color.Red);
+            Assert.AreEqual(model.Color.Blue, newModel.Color.Blue);
+            Assert.AreEqual(model.Color.Green, newModel.Color.Green);
         }
 
-        private PBBoxShape SerializaAndDeserialize(PBBoxShape pbBox)
+        private PBNFTShape CreateModel()
         {
-            byte[] serialized;
-            using(var memoryStream = new MemoryStream())
-            {
-                pbBox.WriteTo(memoryStream);
-                serialized = memoryStream.ToArray();
-            }
+            var model = new PBNFTShape();
+            model.Src = "ethereum://test";
+            return model;
+        }
+        
+        private PBNFTShape SerializaAndDeserialize(PBNFTShape pb)
+        {
+            var result = NFTShapeSerializer.Serialize(pb);
 
-            return PBBoxShape.Parser.ParseFrom((byte[])serialized);
+            return NFTShapeSerializer.Deserialize(pb);
         }
     }
 }

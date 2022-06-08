@@ -8,6 +8,16 @@ using UnityEngine;
 
 public static class ECSComponentsUtils
 {
+    public static void RemoveMaterialTransition(GameObject go)
+    {
+        MaterialTransitionController[] materialTransitionControllers = go.GetComponentsInChildren<MaterialTransitionController>();
+
+        for (var i = 0; i < materialTransitionControllers.Length; i++)
+        {
+            GameObject.Destroy(materialTransitionControllers[i]);
+        }
+    }
+    
     public static MeshesInfo GenerateMeshInfo(IDCLEntity entity, Mesh mesh, GameObject gameObject,bool visible, bool withCollisions, bool isPointerBlocker)
     {
         MeshesInfo meshesInfo = new MeshesInfo();

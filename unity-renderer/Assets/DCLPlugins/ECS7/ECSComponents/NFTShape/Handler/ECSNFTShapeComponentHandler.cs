@@ -12,37 +12,35 @@ namespace DCL.ECSComponents
 {
     public class ECSNFTShapeComponentHandler : IECSComponentHandler<PBNFTShape>
     {
-        private readonly INFTInfoLoadHelper infoLoadHelper;
-        private readonly INFTAssetLoadHelper assetLoadHelper;
-        internal MeshesInfo meshesInfo;
-        internal Rendereable rendereable;
-        
         private PBNFTShape previousModel;
         private PBNFTShape currentModel;
         private bool isLoaded = false;
         private IParcelScene scene;
 
-        public ECSNFTShapeComponentHandler(INFTInfoLoadHelper infoLoadHelper, INFTAssetLoadHelper assetLoadHelper)
-        {
-            this.infoLoadHelper = infoLoadHelper;
-            this.assetLoadHelper = assetLoadHelper;
-        }
-
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            DisposeMesh(scene);
             LoadWrapper loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
             loadWrapper?.Unload();
             Environment.i.world.state.RemoveLoaderForEntity(entity);
-            entity.meshesInfo.CleanReferences();
+            DisposeMeshInfo(entity);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBNFTShape model)
         {
             this.scene = scene;
             this.currentModel = model;
+
+            CreateMeshInfo(entity, model);
+
+            HandleLoadableShape(entity,model);
+        }
+
+        private void CreateMeshInfo(IDCLEntity entity,PBNFTShape model)
+        {
+            DisposeMeshInfo(entity);
+            
             entity.meshesInfo.meshRootGameObject = NFTShapeFactory.InstantiateLoaderController(model.Style);
             
             entity.meshesInfo.currentShape = new NFTShapeRepresentantion(model);
@@ -50,11 +48,14 @@ namespace DCL.ECSComponents
             entity.meshRootGameObject.name = "NFT mesh";
             entity.meshRootGameObject.transform.SetParent(entity.gameObject.transform);
             entity.meshRootGameObject.transform.ResetLocalTRS();
+        }
 
+        private void HandleLoadableShape(IDCLEntity entity, PBNFTShape model)
+        {
             var loaderController = entity.meshRootGameObject.GetComponent<NFTShapeLoaderController>();
 
             if (loaderController)
-                loaderController.Initialize(infoLoadHelper, assetLoadHelper);    
+                loaderController.Initialize(new NFTInfoLoadHelper(), new NFTAssetLoadHelper());    
             
             var loadableShape = Environment.i.world.state.GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
 
@@ -78,49 +79,35 @@ namespace DCL.ECSComponents
             loadableShape?.loaderController.UpdateBackgroundColor(new UnityEngine.Color(model.Color.Red, model.Color.Green,model.Color.Blue,1));
         }
         
-        internal void DisposeMesh(IParcelScene scene)
+        internal void DisposeMeshInfo(IDCLEntity entity)
         {
-            if(meshesInfo != null)
-                ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
-            if(rendereable != null)
-                ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id,rendereable);
-
-            meshesInfo = null;
-            rendereable = null;
+            if(entity.meshesInfo != null)
+                ECSComponentsUtils.DisposeMeshInfo(entity.meshesInfo);
         }
         
-        protected void OnLoadFailed(LoadWrapper loadWrapper, Exception exception)
+        private void OnLoadFailed(LoadWrapper loadWrapper, Exception exception)
         {
             if (loadWrapper != null)
                 CleanFailedWrapper(loadWrapper);
             
             DataStore.i.ecs7.RemovePendingResource(scene.sceneData.id, currentModel);
         }
-        
-        void CleanFailedWrapper(LoadWrapper loadWrapper)
+
+        private void CleanFailedWrapper(LoadWrapper loadWrapper)
         {
-            if (loadWrapper == null)
-                return;
-            if (loadWrapper.entity == null)
-                return;
-            if (loadWrapper.entity.gameObject == null)
+            if (loadWrapper == null ||
+                loadWrapper.entity == null ||
+                loadWrapper.entity.gameObject == null)
                 return;
 
             GameObject go = loadWrapper.entity.gameObject;
 
             go.name += " - Failed loading";
 
-            MaterialTransitionController[] transitionController =
-                go.GetComponentsInChildren<MaterialTransitionController>(true);
-
-            for (int i = 0; i < transitionController.Length; i++)
-            {
-                MaterialTransitionController material = transitionController[i];
-                GameObject.Destroy(material);
-            }
+            ECSComponentsUtils.RemoveMaterialTransition(go);
         }
-        
-        protected void OnLoadCompleted(LoadWrapper loadWrapper)
+
+        private void OnLoadCompleted(LoadWrapper loadWrapper)
         {
             IDCLEntity entity = loadWrapper.entity;
 
@@ -163,20 +150,13 @@ namespace DCL.ECSComponents
             entity.OnShapeLoaded?.Invoke(entity);
         }
 
-        public static void ConfigureVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
+        private void ConfigureVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
         {
             if (meshGameObject == null)
                 return;
 
             if (!shouldBeVisible)
-            {
-                MaterialTransitionController[] materialTransitionControllers = meshGameObject.GetComponentsInChildren<MaterialTransitionController>();
-
-                for (var i = 0; i < materialTransitionControllers.Length; i++)
-                {
-                    GameObject.Destroy(materialTransitionControllers[i]);
-                }
-            }
+                ECSComponentsUtils.RemoveMaterialTransition(meshGameObject);
 
             if (meshRenderers == null)
                 meshRenderers = meshGameObject.GetComponentsInChildren<Renderer>(true);
@@ -201,8 +181,5 @@ namespace DCL.ECSComponents
         {
             CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, currentModel.WithCollisions, true, entity, ECSComponentsUtils.CalculateNFTCollidersLayer(currentModel.WithCollisions, currentModel.IsPointerBlocker));
         }
-
-        public bool IsVisible() { return currentModel.Visible; }
-        public bool HasCollisions() { return currentModel.WithCollisions; }
     }
 }
