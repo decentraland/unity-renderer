@@ -38,7 +38,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         textGameObject.AddComponent<MeshRenderer>();
         rectTransform = textGameObject.AddComponent<RectTransform>();
         textComponent = textGameObject.AddComponent<TextMeshPro>();
-        textGameObject.transform.SetParent(scene.GetSceneTransform());
+        textGameObject.transform.SetParent(entity.gameObject.transform);
         
         textComponent.text = string.Empty;
         
