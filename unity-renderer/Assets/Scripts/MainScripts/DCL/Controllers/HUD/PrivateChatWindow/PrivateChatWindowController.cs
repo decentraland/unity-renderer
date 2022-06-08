@@ -72,7 +72,6 @@ public class PrivateChatWindowController : IHUD
         chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
         chatHudController.OnInputFieldDeselected += HandleInputFieldDeselected;
         chatHudController.OnSendMessage += HandleSendChatMessage;
-        chatHudController.FocusInputField();
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
