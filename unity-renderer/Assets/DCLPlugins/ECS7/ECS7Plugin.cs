@@ -8,19 +8,19 @@ namespace DCL.ECS7
     {
         private readonly ComponentCrdtWriteSystem crdtWriteSystem;
         private readonly IECSComponentWriter componentWriter;
-        private readonly ECS7ComponentsPlugin componentsPlugin;
+        private readonly ECS7ComponentsComposer componentsComposer;
 
         public ECS7Plugin()
         {
             crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.platform.updateEventHandler, Environment.i.world.state);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
-            componentsPlugin = new ECS7ComponentsPlugin(DataStore.i.ecs7.componentsFactory, componentWriter);
+            componentsComposer = new ECS7ComponentsComposer(DataStore.i.ecs7.componentsFactory, componentWriter);
         }
 
         public void Dispose()
         {
-            componentsPlugin.Dispose();
+            componentsComposer.Dispose();
             crdtWriteSystem.Dispose();
             componentWriter.Dispose();
         }

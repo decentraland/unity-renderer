@@ -8,7 +8,7 @@ using DCL.SettingsCommon;
 
 namespace DCL.ECSComponents
 {
-    public class ECS7ComponentsPlugin : IDisposable
+    public class ECS7ComponentsComposer : IDisposable
     {
         private readonly TransformRegister transformRegister;
         private readonly SphereShapeRegister sphereShapeRegister;
@@ -18,7 +18,7 @@ namespace DCL.ECSComponents
         private readonly AudioStreamRegister audioStreamRegister;
         private readonly AudioSourceRegister audioSourceRegister;
 
-        public ECS7ComponentsPlugin(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
+        public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
             transformRegister = new TransformRegister(ComponentID.TRANSFORM, componentsFactory, componentsWriter);
             sphereShapeRegister = new SphereShapeRegister(ComponentID.SPHERE_SHAPE, componentsFactory, componentsWriter);
