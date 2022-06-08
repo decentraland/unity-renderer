@@ -93,6 +93,7 @@ namespace DCL
                 return false;
 
             Debug.Log("Combine internal");
+            Debug.Log($"2bones container {bonesContainer}");
             bool success = CombineInternal(
                 bonesContainer,
                 renderers,
@@ -118,6 +119,8 @@ namespace DCL
             Debug.Log("completed combine internal assertions");
             CombineLayerUtils.ENABLE_CULL_OPAQUE_HEURISTIC = useCullOpaqueHeuristic;
             Debug.Log($"enable cull {useCullOpaqueHeuristic}");
+            Debug.Log($"bones container {bonesContainer}");
+            Debug.Log($"bones container shared mesh {bonesContainer.sharedMesh}");
             Debug.Log($"bones bindposes {bonesContainer.sharedMesh.bindposes}");
             Debug.Log($"bones {bonesContainer.bones}");
             Debug.Log($"renderers {renderers}");

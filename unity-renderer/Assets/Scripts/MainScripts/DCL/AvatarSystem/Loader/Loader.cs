@@ -201,7 +201,7 @@ namespace AvatarSystem
             var featureFlags = DataStore.i.featureFlags.flags.Get();
             avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
             avatarMeshCombiner.enableCombinedMesh = false;
-            Debug.Log("Combine mesh");
+            Debug.Log($"Combine mesh with container {bonesContainer}");
             bool success = avatarMeshCombiner.Combine(bonesContainer, allRenderers.ToArray());
             if (!success)
             {
