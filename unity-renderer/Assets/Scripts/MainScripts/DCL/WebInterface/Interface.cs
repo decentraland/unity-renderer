@@ -445,7 +445,7 @@ namespace DCL.Interface
             public int processedMessages;
             public int playerCount;
             public int loadRadius;
-            public Dictionary<Vector2Int, long> sceneScores;
+            public Dictionary<string, long> sceneScores;
             public object drawCalls; //int *
             public object memoryReserved; //long, in total bytes *
             public object memoryUsage; //long, in total bytes *

@@ -122,6 +122,7 @@ public class WorldChatWindowController : IHUD
         if (!recipientsFromPrivateChats.ContainsKey(userId)) return;
         if (!lastPrivateMessages.ContainsKey(userId)) return;
         if (pendingPrivateChats.Contains(userId)) return;
+        
         if (status.friendshipStatus == FriendshipStatus.FRIEND)
         {
             var profile = recipientsFromPrivateChats[userId];
