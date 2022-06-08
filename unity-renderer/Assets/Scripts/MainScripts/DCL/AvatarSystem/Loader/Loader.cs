@@ -65,16 +65,26 @@ namespace AvatarSystem
 
                 Debug.Log("Merge avatar");
                 combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, bonesContainer, ct);
-
+                Debug.Log("Merged");
                 facialFeaturesRenderers = new List<Renderer>();
                 if (headVisible)
                 {
+                    Debug.Log("Head visible");
                     if (eyes != null)
+                    {
+                        Debug.Log($"eyes render {bodyshapeLoader.eyesRenderer}");
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyesRenderer);
+                    }
                     if (eyebrows != null)
+                    {
+                        Debug.Log($"eyebrows render {bodyshapeLoader.eyebrowsRenderer}");
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
+                    }
                     if (mouth != null)
+                    {
+                        Debug.Log($"mouth render {bodyshapeLoader.mouthRenderer}");
                         facialFeaturesRenderers.Add(bodyshapeLoader.mouthRenderer);
+                    }
                 }
                 else
                 {
@@ -191,17 +201,18 @@ namespace AvatarSystem
             var featureFlags = DataStore.i.featureFlags.flags.Get();
             avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
             avatarMeshCombiner.enableCombinedMesh = false;
-
+            Debug.Log("Combine mesh");
             bool success = avatarMeshCombiner.Combine(bonesContainer, allRenderers.ToArray());
             if (!success)
             {
                 status = ILoader.Status.Failed_Major;
                 throw new Exception("Couldnt merge avatar");
             }
-
+            Debug.Log("completed combine, set parent");
             avatarMeshCombiner.container.transform.SetParent(container.transform, true);
+            Debug.Log("setting local position");
             avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
-
+            Debug.Log($"Return avatar mesh combiner renderer {avatarMeshCombiner.renderer}");
             return avatarMeshCombiner.renderer;
         }
 
