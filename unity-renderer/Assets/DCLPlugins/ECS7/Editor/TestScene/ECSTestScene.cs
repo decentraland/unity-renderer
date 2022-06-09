@@ -3,6 +3,7 @@ using System.Collections;
 using System.Reflection;
 using DCL;
 using DCL.Camera;
+using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Interface;
