@@ -290,7 +290,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
 
     internal static VoiceChatWindowComponentView Create()
     {
-        VoiceChatWindowComponentView voiceChatWindowComponentView = Instantiate(Resources.Load<GameObject>("VoiceChatHUD")).GetComponent<VoiceChatWindowComponentView>();
+        VoiceChatWindowComponentView voiceChatWindowComponentView = Instantiate(Resources.Load<GameObject>("SocialBarV1/VoiceChatHUD")).GetComponent<VoiceChatWindowComponentView>();
         voiceChatWindowComponentView.name = "_VoiceChatHUD";
 
         return voiceChatWindowComponentView;
