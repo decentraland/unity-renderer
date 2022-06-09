@@ -41,9 +41,7 @@ namespace AvatarSystem
             try
             {
                 status = ILoader.Status.Loading;
-                Debug.Log("Load body shape");
                 await LoadBodyshape(settings, bodyshape, eyes, eyebrows, mouth, toCleanUp, ct);
-                Debug.Log("Load wearables");
                 await LoadWearables(wearables, settings, toCleanUp, ct);
 
                 // Update Status accordingly
@@ -51,40 +49,23 @@ namespace AvatarSystem
                 if (status == ILoader.Status.Failed_Major)
                     throw new Exception($"Couldnt load (nor fallback) wearables with required category: {string.Join(", ", ConstructRequiredFailedWearablesList(loaders.Values))}");
 
-                Debug.Log("Copy bones");
                 AvatarSystemUtils.CopyBones(bonesContainer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
 
                 if (bodyshapeLoader.rendereable != null)
-                {
-                    Debug.Log("Copy bones 2");
                     AvatarSystemUtils.CopyBones(bonesContainer, bodyshapeLoader.rendereable.renderers.OfType<SkinnedMeshRenderer>());
-                }
 
-                Debug.Log("Get active body parts");
                 (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(settings.bodyshapeId, wearables);
 
-                Debug.Log("Merge avatar");
                 combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, bonesContainer, ct);
-                Debug.Log("Merged");
                 facialFeaturesRenderers = new List<Renderer>();
                 if (headVisible)
                 {
-                    Debug.Log("Head visible");
                     if (eyes != null)
-                    {
-                        Debug.Log($"eyes render {bodyshapeLoader.eyesRenderer}");
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyesRenderer);
-                    }
                     if (eyebrows != null)
-                    {
-                        Debug.Log($"eyebrows render {bodyshapeLoader.eyebrowsRenderer}");
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
-                    }
                     if (mouth != null)
-                    {
-                        Debug.Log($"mouth render {bodyshapeLoader.mouthRenderer}");
                         facialFeaturesRenderers.Add(bodyshapeLoader.mouthRenderer);
-                    }
                 }
                 else
                 {
@@ -130,7 +111,6 @@ namespace AvatarSystem
                 bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
             }
 
-            Debug.Log("Await bodyshapeLoader");
             await bodyshapeLoader.Load(container, settings, ct);
 
             if (bodyshapeLoader.status == IWearableLoader.Status.Failed)
@@ -201,18 +181,14 @@ namespace AvatarSystem
             var featureFlags = DataStore.i.featureFlags.flags.Get();
             avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
             avatarMeshCombiner.enableCombinedMesh = false;
-            Debug.Log($"Combine mesh with container {bonesContainer}");
             bool success = avatarMeshCombiner.Combine(bonesContainer, allRenderers.ToArray());
             if (!success)
             {
                 status = ILoader.Status.Failed_Major;
                 throw new Exception("Couldnt merge avatar");
             }
-            Debug.Log("completed combine, set parent");
             avatarMeshCombiner.container.transform.SetParent(container.transform, true);
-            Debug.Log("setting local position");
             avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
-            Debug.Log($"Return avatar mesh combiner renderer {avatarMeshCombiner.renderer}");
             return avatarMeshCombiner.renderer;
         }
 

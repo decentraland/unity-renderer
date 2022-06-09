@@ -47,7 +47,6 @@ namespace AvatarSystem
 
                 try
                 {
-                    Debug.Log("Try load wearable");
                     await LoadWearable(container, wearable, settings.bodyshapeId, ct);
                 }
                 catch (OperationCanceledException)
