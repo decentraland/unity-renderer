@@ -11,7 +11,7 @@ public class VoiceChatWindowComponentViewShould
     [SetUp]
     public void SetUp()
     {
-        voiceChatWindowComponentView = BaseComponentView.Create<VoiceChatWindowComponentView>("VoiceChatHUD");
+        voiceChatWindowComponentView = BaseComponentView.Create<VoiceChatWindowComponentView>("SocialBarV1/VoiceChatHUD");
         voiceChatWindowComponentView.currentPlayers = CreateTestCurrentPlayers();
     }
 

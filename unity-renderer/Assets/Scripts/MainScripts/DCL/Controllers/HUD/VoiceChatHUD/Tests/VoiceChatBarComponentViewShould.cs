@@ -7,7 +7,7 @@ public class VoiceChatBarComponentViewShould
     [SetUp]
     public void SetUp()
     {
-        voiceChatBarComponent = BaseComponentView.Create<VoiceChatBarComponentView>("VoiceChatBar");
+        voiceChatBarComponent = BaseComponentView.Create<VoiceChatBarComponentView>("SocialBarV1/VoiceChatBar");
     }
 
     [TearDown]

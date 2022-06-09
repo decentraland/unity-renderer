@@ -12,9 +12,9 @@ public class VoiceChatPlayerComponentViewShould
     [SetUp]
     public void SetUp()
     {
-        voiceChatPlayerComponent = BaseComponentView.Create<VoiceChatPlayerComponentView>("VoiceChatPlayer");
+        voiceChatPlayerComponent = BaseComponentView.Create<VoiceChatPlayerComponentView>("SocialBarV1/VoiceChatPlayer");
         voiceChatPlayerComponent.avatarPreview.imageObserver = Substitute.For<ILazyTextureObserver>();
-        voiceChatWindowComponentView = BaseComponentView.Create<VoiceChatWindowComponentView>("VoiceChatHUD");
+        voiceChatWindowComponentView = BaseComponentView.Create<VoiceChatWindowComponentView>("SocialBarV1/VoiceChatHUD");
         testUserContextMenu = voiceChatWindowComponentView.contextMenuPanel;
     }
 
