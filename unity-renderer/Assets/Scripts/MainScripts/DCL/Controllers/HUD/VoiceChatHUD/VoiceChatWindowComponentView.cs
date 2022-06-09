@@ -7,7 +7,7 @@ using static DCL.SettingsCommon.GeneralSettings;
 public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowComponentView, IComponentModelConfig
 {
     private const string ALLOW_USERS_TITLE_ALL = "All";
-    private const string ALLOW_USERS_TITLE_REGISTERED = "Registered Users";
+    private const string ALLOW_USERS_TITLE_REGISTERED = "Verified Users";
     private const string ALLOW_USERS_TITLE_FRIENDS = "Friends";
 
     [Header("Prefab References")]
