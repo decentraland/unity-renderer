@@ -1,27 +1,25 @@
 using DCL.Interface;
 using NUnit.Framework;
-using System.Collections;
-using UnityEditor;
 using UnityEngine;
 
-public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
+public class DefaultChatEntryShould
 {
     private DefaultChatEntry entry;
     private Canvas canvas;
     
-    protected override IEnumerator SetUp()
+    [SetUp]
+    public void SetUp()
     {
         var canvasgo = new GameObject("canvas");
         canvas = canvasgo.AddComponent<Canvas>();
         ((RectTransform) canvas.transform).sizeDelta = new Vector2(500, 500);
-        yield break;
     }
 
-    protected override IEnumerator TearDown()
+    [TearDown]
+    public void TearDown()
     {
         Object.Destroy(entry.gameObject);
         Object.Destroy(canvas.gameObject);
-        yield break;
     }
     
     [Test]
