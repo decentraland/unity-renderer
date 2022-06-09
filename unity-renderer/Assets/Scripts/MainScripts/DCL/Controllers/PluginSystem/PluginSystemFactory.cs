@@ -1,6 +1,5 @@
-using AvatarSystem;
+using DCL.ECS7;
 using DCL.Emotes;
-using DCL.EmotesCustomization;
 using DCL.EmotesWheel;
 using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
@@ -34,12 +33,12 @@ namespace DCL
             pluginSystem.Register<UUIDEventsPlugin>(() => new UUIDEventsPlugin());
             pluginSystem.Register<UIComponentsPlugin>(() => new UIComponentsPlugin());
             pluginSystem.Register<CoreComponentsPlugin>(() => new CoreComponentsPlugin());
-            pluginSystem.Register<ECS7Plugin>(() => new ECS7Plugin());
 
             pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature(), "explorev2");
+            pluginSystem.RegisterWithFlag<ECS7Plugin>(() => new ECS7Plugin(), "ecs7");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 
