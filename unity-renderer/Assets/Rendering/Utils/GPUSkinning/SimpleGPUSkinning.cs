@@ -1,5 +1,7 @@
 using System.Linq;
+using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
 
 namespace GPUSkinning
@@ -21,28 +23,59 @@ namespace GPUSkinning
         {
             Mesh sharedMesh = skr.sharedMesh;
             int vertexCount = sharedMesh.vertexCount;
-            Vector4[] bone01data = new Vector4[vertexCount];
-            Vector4[] bone23data = new Vector4[vertexCount];
+            
+            NativeArray<Vector4> bone01data = new NativeArray<Vector4>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            NativeArray<Vector4> bone23data = new NativeArray<Vector4>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
-            BoneWeight[] boneWeights = sharedMesh.boneWeights;
-
+            var bonesPerVertex = sharedMesh.GetBonesPerVertex();
+            var boneWeightsNative = sharedMesh.GetAllBoneWeights();
+            var boneIndex = 0;
             for ( int i = 0; i < vertexCount; i ++ )
             {
-                BoneWeight boneWeight = boneWeights[i];
-                bone01data[i].x = boneWeight.boneIndex0;
-                bone01data[i].y = boneWeight.weight0;
-                bone01data[i].z = boneWeight.boneIndex1;
-                bone01data[i].w = boneWeight.weight1;
+                byte boneCount = bonesPerVertex[i];
+                if (boneCount == 0)
+                {
+                    bone01data[i] = new Vector4(0, 0, 0, 0);
+                    bone23data[i] = new Vector4(0, 0, 0, 0);
+                } 
+                else if (boneCount == 1)
+                {
+                    var bw0 = boneWeightsNative[boneIndex];
+                    bone01data[i] = new Vector4(bw0.boneIndex, bw0.weight, 0, 0);
+                    bone23data[i] = new Vector4(0, 0, 0, 0);
+                } 
+                else if (boneCount == 2)
+                {
+                    var bw0 = boneWeightsNative[boneIndex];
+                    var bw1 = boneWeightsNative[boneIndex+1];
+                    bone01data[i] = new Vector4(bw0.boneIndex, bw0.weight, bw1.boneIndex, bw1.weight);
+                    bone23data[i] = new Vector4(0, 0, 0, 0);
+                } 
+                else if (boneCount == 3)
+                {
+                    var bw0 = boneWeightsNative[boneIndex];
+                    var bw1 = boneWeightsNative[boneIndex+1];
+                    var bw2 = boneWeightsNative[boneIndex+2];
+                    bone01data[i] = new Vector4(bw0.boneIndex, bw0.weight, bw1.boneIndex, bw1.weight);
+                    bone23data[i] = new Vector4(bw2.boneIndex, bw2.weight, 0, 0);
+                } 
+                else if (boneCount >= 4)
+                {
+                    var bw0 = boneWeightsNative[boneIndex];
+                    var bw1 = boneWeightsNative[boneIndex+1];
+                    var bw2 = boneWeightsNative[boneIndex+2];
+                    var bw3 = boneWeightsNative[boneIndex+3];
+                    bone01data[i] = new Vector4(bw0.boneIndex, bw0.weight, bw1.boneIndex, bw1.weight);
+                    bone23data[i] = new Vector4(bw2.boneIndex, bw2.weight, bw3.boneIndex, bw3.weight);
+                }
 
-                bone23data[i].x = boneWeight.boneIndex2;
-                bone23data[i].y = boneWeight.weight2;
-                bone23data[i].z = boneWeight.boneIndex3;
-                bone23data[i].w = boneWeight.weight3;
+                boneIndex += boneCount;
             }
 
-            skr.sharedMesh.tangents = bone01data;
-            skr.sharedMesh.SetUVs(1, bone23data);
+            sharedMesh.SetTangents(bone01data);
+            sharedMesh.SetUVs(1, bone23data);
         }
+        
     }
 
     public class SimpleGPUSkinning : IGPUSkinning
