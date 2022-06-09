@@ -123,7 +123,7 @@ MonoBehaviour:
   blockedGO: {fileID: 8720862433428437312}
   friendLabel: {fileID: 6342663756161018864}
   backgroundHover: {fileID: 4821310409670062188}
-  talkingColor: {r: 0.38431373, g: 1, b: 0.40784314, a: 1}
+  talkingColor: {r: 0.20392157, g: 0.80784315, b: 0.4627451, a: 1}
   nonTalkingColor: {r: 0, g: 0, b: 0, a: 1}
   menuButton: {fileID: 8394638887301643764}
   menuPositionReference: {fileID: 7599157647280303047}
