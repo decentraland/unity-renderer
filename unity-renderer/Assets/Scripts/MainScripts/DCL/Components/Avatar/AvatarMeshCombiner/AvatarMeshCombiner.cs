@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
 using Unity.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -124,8 +121,8 @@ namespace DCL
 
             finalMesh.bindposes = bindPoses;
 
-            var boneWeights = AvatarMeshCombinerUtils.ComputeBoneWeights( layers );
-            finalMesh.boneWeights = boneWeights;
+            (NativeArray<byte> bonesPerVertex, NativeArray<BoneWeight1> weights) = AvatarMeshCombinerUtils.ComputeNativeBoneWeights(layers);
+            finalMesh.SetBoneWeights(bonesPerVertex, weights);
 
             var flattenedMaterialsData = AvatarMeshCombinerUtils.FlattenMaterials( layers, materialAsset );
             finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, flattenedMaterialsData.emissionColors);

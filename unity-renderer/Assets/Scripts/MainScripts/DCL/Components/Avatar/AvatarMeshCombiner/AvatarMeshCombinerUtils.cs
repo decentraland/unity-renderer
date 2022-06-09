@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DCL.Helpers;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Object = UnityEngine.Object;
 
 namespace DCL
 {
@@ -75,6 +74,63 @@ namespace DCL
             }
 
             return result;
+        }
+        
+        public static (NativeArray<byte> bonesPerVertex, NativeArray<BoneWeight1> weights) ComputeNativeBoneWeights( List<CombineLayer> layers )
+        {
+            int layersCount = layers.Count;
+
+            int totalVertexes = 0;
+            int totalBones = 0;
+
+            List<NativeArray<byte>> bonesPerVertexList = new List<NativeArray<byte>>();
+            List<NativeArray<BoneWeight1>> boneWeightArrays = new List<NativeArray<BoneWeight1>>(10);
+
+            for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
+            {
+                CombineLayer layer = layers[layerIndex];
+                var layerRenderers = layer.renderers;
+
+                int layerRenderersCount = layerRenderers.Count;
+
+                for (int i = 0; i < layerRenderersCount; i++)
+                {
+                    var bonesPerVertex = layerRenderers[i].sharedMesh.GetBonesPerVertex();
+                    var boneWeights = layerRenderers[i].sharedMesh.GetAllBoneWeights();
+                    
+                    bonesPerVertexList.Add(bonesPerVertex);
+                    boneWeightArrays.Add(boneWeights);
+
+                    totalVertexes += bonesPerVertex.Length;
+                    totalBones += boneWeights.Length;
+                }
+            }
+
+            NativeArray<byte> finalBpV = new NativeArray<byte>(totalVertexes, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            NativeArray<BoneWeight1> finalBones = new NativeArray<BoneWeight1>(totalBones, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+
+            int indexOffset = 0;
+            int bonesPerVertexListCount = bonesPerVertexList.Count;
+
+            for (int i = 0; i < bonesPerVertexListCount; i++)
+            {
+                var narray = bonesPerVertexList[i];
+                int narrayLength = narray.Length;
+                NativeArray<byte>.Copy(narray, 0, finalBpV, indexOffset, narrayLength);
+                indexOffset += narrayLength;
+            }
+
+            var finalBonesCount = boneWeightArrays.Count;
+            indexOffset = 0;
+            for (int i = 0; i < finalBonesCount; i++)
+            {
+                var narray = boneWeightArrays[i];
+                int narrayLength = narray.Length;
+                NativeArray<BoneWeight1>.Copy(narray, 0, finalBones, indexOffset, narrayLength);
+                indexOffset += narrayLength;
+            }
+            
+            return (finalBpV, finalBones);
         }
 
 
