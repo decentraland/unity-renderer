@@ -20,7 +20,6 @@ public class AvatarReveal : MonoBehaviour
     private void Start()
     {
         _ghostMaterial = meshRenderer.material;
-
         foreach (Renderer r in targets)
         {
             _materials.Add(r.material);
@@ -67,6 +66,9 @@ public class AvatarReveal : MonoBehaviour
 
     public void Reset()
     {
+        Color gColor = _ghostMaterial.GetColor("_Color");
+        Color tempColor = new Color(gColor.r, gColor.g, gColor.b, 0);
+        _ghostMaterial.SetColor("_Color", tempColor);
         avatarLoaded = false;
         meshRenderer.enabled = true;
         targets = new List<Renderer>();
