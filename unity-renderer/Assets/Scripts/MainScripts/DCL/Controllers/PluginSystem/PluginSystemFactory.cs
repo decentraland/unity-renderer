@@ -40,7 +40,6 @@ namespace DCL
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature(), "explorev2");
-            pluginSystem.RegisterWithFlag<SkyboxController>(() => new SkyboxController(), "procedural_skybox");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 
