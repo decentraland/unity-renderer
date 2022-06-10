@@ -154,14 +154,15 @@ public class AvatarMeshCombinerUtilsCan
         var result = AvatarMeshCombinerUtils.ComputeBoneWeights(layers);
 
         // Assert
-        Assert.That(result.Count, Is.EqualTo(96));
+        Assert.That(result.weights, Is.EqualTo(96));
 
         int assertCounter = 0;
 
-        foreach ( var b in result )
+        for (int i = 0; i < result.bonesPerVertex.Length; i++)
         {
-            Assert.That(b.weight0, Is.EqualTo(assertCounter));
-            Assert.That(b.boneIndex1, Is.EqualTo(assertCounter));
+            var boneWeight1 = result.weights[i];
+            Assert.That(boneWeight1.weight, Is.EqualTo(assertCounter));
+            Assert.That(boneWeight1.boneIndex, Is.EqualTo(assertCounter));
             assertCounter++;
         }
 
