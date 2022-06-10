@@ -20,7 +20,7 @@ public class WorldChatWindowComponentViewShould
     [TearDown]
     public void TearDown()
     {
-        Object.Destroy(view.gameObject);
+        view.Dispose();
     }
 
     [Test]

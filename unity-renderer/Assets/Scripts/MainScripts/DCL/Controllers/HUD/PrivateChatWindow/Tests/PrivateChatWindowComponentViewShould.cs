@@ -1,22 +1,34 @@
 ﻿using System.Collections;
 using NUnit.Framework;
+using SocialBar.UserThumbnail;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class PublicChatChannelComponentViewShould
+public class UserThumbnailComponentViewMock : UserThumbnailComponentView
 {
-    private PublicChatChannelComponentView view;
-    
+    public UserThumbnailComponentModel ConfiguredWith { get; private set; }
+
+    public override void Configure(UserThumbnailComponentModel model) => ConfiguredWith = model;
+}
+
+public class PrivateChatWindowComponentViewShould
+{
+    private PrivateChatWindowComponentView view;
+    private UserThumbnailComponentViewMock userThumbnail;
+
     [SetUp]
     public void SetUp()
     {
-        view = PublicChatChannelComponentView.Create();
+        view = PrivateChatWindowComponentView.Create();
+        userThumbnail = new GameObject("userThumbnail").AddComponent<UserThumbnailComponentViewMock>();
+        view.userThumbnail = userThumbnail;
     }
 
     [TearDown]
     public void TearDown()
     {
         view.Dispose();
+        Object.Destroy(userThumbnail.gameObject);
     }
 
     [Test]
@@ -35,13 +47,20 @@ public class PublicChatChannelComponentViewShould
         Assert.IsFalse(view.gameObject.activeSelf);
     }
 
-    [Test]
-    public void Configure()
+    [TestCase(true, true)]
+    [TestCase(false, false)]
+    public void Configure(bool online, bool blocked)
     {
-        view.Configure(new PublicChatChannelModel("nearby", "nearby", "any description"));
+        var profile = ScriptableObject.CreateInstance<UserProfile>();
+        profile.UpdateData(new UserProfileModel{userId = "userId", name = "name", snapshots = new UserProfileModel.Snapshots{face256 = "someurl"}});
         
-        Assert.AreEqual("#nearby", view.nameLabel.text);
-        Assert.AreEqual("any description", view.descriptionLabel.text);
+        view.Setup(profile, online, blocked);
+        
+        Assert.AreEqual("someurl", userThumbnail.ConfiguredWith.faceUrl);
+        Assert.AreEqual(blocked, userThumbnail.ConfiguredWith.isBlocked);
+        Assert.AreEqual(online, userThumbnail.ConfiguredWith.isOnline);
+        Assert.AreEqual("name", view.userNameLabel.text);
+        Assert.AreEqual(online, view.jumpInButtonContainer.activeSelf);
     }
 
     [Test]
@@ -59,7 +78,7 @@ public class PublicChatChannelComponentViewShould
     public void TriggerBack()
     {
         var called = false;
-        view.OnBack += () => called = true;
+        view.OnPressBack += () => called = true;
         
         view.backButton.onClick.Invoke();
         
@@ -108,14 +127,5 @@ public class PublicChatChannelComponentViewShould
 
         foreach (var canvas in view.previewCanvasGroup)
             Assert.AreEqual(1f, canvas.alpha);
-    }
-    
-    [Test]
-    public void ActivatePreviewInstantly()
-    {
-        view.ActivatePreviewInstantly();
-
-        foreach (var canvas in view.previewCanvasGroup)
-            Assert.AreEqual(0f, canvas.alpha);
     }
 }
