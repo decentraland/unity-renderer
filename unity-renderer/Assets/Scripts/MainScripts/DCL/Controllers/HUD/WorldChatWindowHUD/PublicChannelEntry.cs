@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
 {
-    [SerializeField] private Button openChatButton;
-    [SerializeField] private TMP_Text nameLabel;
-    [SerializeField] private PublicChannelEntryModel model;
-    [SerializeField] private UnreadNotificationBadge unreadNotifications;
+    [SerializeField] internal Button openChatButton;
+    [SerializeField] internal TMP_Text nameLabel;
+    [SerializeField] internal PublicChannelEntryModel model;
+    [SerializeField] internal UnreadNotificationBadge unreadNotifications;
     
     private IChatController chatController;
     private ILastReadMessagesService lastReadMessagesService;
