@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers.NFT;
-using MainScripts.DCL.Components.LoadableShapes.NFTShape.NFTAsset;
 using UnityEngine;
 
 public interface INFTInfoRetriever : IDisposable
@@ -15,7 +14,7 @@ public interface INFTInfoRetriever : IDisposable
     UniTask<NFTInfo> FetchNFTInfo(string src);
 }
 
-public class InftInfoRetriever : INFTInfoRetriever
+public class NFTInfoRetriever : INFTInfoRetriever
 {
     internal const string COULD_NOT_FETCH_DAR_URL = "Couldn't fetch DAR url '{0}' for NFTShape.";
     internal const string ACCEPTED_URL_FORMAT = "The accepted format is 'ethereum://ContractAddress/TokenID'.";
@@ -26,7 +25,7 @@ public class InftInfoRetriever : INFTInfoRetriever
     internal Coroutine fetchCoroutine;
     private readonly CancellationTokenSource tokenSource;
 
-    public InftInfoRetriever()
+    public NFTInfoRetriever()
     {
         tokenSource = new CancellationTokenSource();
     }

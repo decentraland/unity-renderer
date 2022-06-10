@@ -87,7 +87,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     string marketUrl = null;
 
     private bool isDestroyed = false;
-    internal INFTAssetRetriever inftAssetRetriever;
+    internal INFTAssetRetriever nftAssetRetriever;
     private INFTAsset nftAsset;
 
     private void Awake()
@@ -113,7 +113,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
             Destroy(gameObject);
         }
 
-        inftAssetRetriever?.Dispose();
+        nftAssetRetriever?.Dispose();
         nftAsset?.Dispose();
     }
 
@@ -121,7 +121,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     {
         content.SetActive(false);
 
-        inftAssetRetriever?.Dispose();
+        nftAssetRetriever?.Dispose();
         nftAsset?.Dispose();
 
         if (fetchNFTImageRoutine != null)
@@ -279,11 +279,11 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         ShowImageErrorFeedback(false);
         ShowImageLoading(true);
 
-        inftAssetRetriever?.Dispose();
+        nftAssetRetriever?.Dispose();
         nftAsset?.Dispose();
         
-        inftAssetRetriever = new InftAssetRetriever();
-        yield return inftAssetRetriever.LoadNFTAsset(
+        nftAssetRetriever = new InftAssetRetriever();
+        yield return nftAssetRetriever.LoadNFTAsset(
             nftInfo.previewImageUrl,
             OnSuccess: nftAsset =>
             {
@@ -402,7 +402,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         ownersTooltip.OnFocus -= OnOwnersTooltipGainFocus;
         ownersPopup.OnClosePopup -= OnOwnersPopupClose;
 
-        inftAssetRetriever?.Dispose();
+        nftAssetRetriever?.Dispose();
         nftAsset?.Dispose();
     }
 

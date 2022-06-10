@@ -3,12 +3,12 @@ using NUnit.Framework.Internal;
 
 public class NFTInfoLoadHelperShould
 {
-    private InftInfoRetriever retriever;
+    private NFTInfoRetriever retriever;
 
     [SetUp]
     protected void SetUp()
     {
-        retriever = new InftInfoRetriever();
+        retriever = new NFTInfoRetriever();
     }
 
     [Test]

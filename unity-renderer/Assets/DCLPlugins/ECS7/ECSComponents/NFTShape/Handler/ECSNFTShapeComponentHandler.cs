@@ -24,7 +24,7 @@ namespace DCL.ECSComponents
             this.factory = factory;
             dataStore = dataStoreEcs7;
             
-            infoRetriever = new InftInfoRetriever();
+            infoRetriever = new NFTInfoRetriever();
             assetRetriever = new InftAssetRetriever();
         }
         

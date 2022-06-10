@@ -17,7 +17,7 @@ public class NFTShapePlugin : IPlugin
 
     NFTShape BuildComponent()
     {
-        return new NFTShape(new InftInfoRetriever(), new InftAssetRetriever());
+        return new NFTShape(new NFTInfoRetriever(), new InftAssetRetriever());
     }
 
     public void Dispose()

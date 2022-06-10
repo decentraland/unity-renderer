@@ -38,8 +38,8 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
     public GameObject errorFeedback;
 
     [HideInInspector] public bool alreadyLoadedAsset = false;
-    private INFTInfoRetriever inftInfoRetriever;
-    private INFTAssetRetriever inftAssetRetriever;
+    private INFTInfoRetriever nftInfoRetriever;
+    private INFTAssetRetriever nftAssetRetriever;
     private NFTShapeHQImageHandler hqTextureHandler = null;
     private Coroutine loadNftAssetCoroutine;
 
@@ -77,32 +77,32 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
         InitializeMaterials();
     }
 
-    public void Initialize(INFTInfoRetriever inftInfoRetriever = null, INFTAssetRetriever inftAssetRetriever = null)
+    public void Initialize(INFTInfoRetriever nftInfoRetriever = null, INFTAssetRetriever nftAssetRetriever = null)
     {
-        if (inftInfoRetriever == null)
-            inftInfoRetriever = new InftInfoRetriever();
+        if (nftInfoRetriever == null)
+            nftInfoRetriever = new NFTInfoRetriever();
 
-        if (inftAssetRetriever == null)
-            inftAssetRetriever = new InftAssetRetriever();
+        if (nftAssetRetriever == null)
+            nftAssetRetriever = new InftAssetRetriever();
 
-        this.inftInfoRetriever = inftInfoRetriever;
-        this.inftAssetRetriever = inftAssetRetriever;
+        this.nftInfoRetriever = nftInfoRetriever;
+        this.nftAssetRetriever = nftAssetRetriever;
 
-        inftInfoRetriever.OnFetchInfoSuccess += FetchInftInfoSuccess;
-        inftInfoRetriever.OnFetchInfoFail += FetchInftInfoFail;
+        nftInfoRetriever.OnFetchInfoSuccess += FetchNftInfoSuccess;
+        nftInfoRetriever.OnFetchInfoFail += FetchNFTInfoFail;
     }
 
     private void OnEnable()
     {
         Initialize();
-        inftInfoRetriever.OnFetchInfoSuccess += FetchInftInfoSuccess;
-        inftInfoRetriever.OnFetchInfoFail += FetchInftInfoFail;
+        nftInfoRetriever.OnFetchInfoSuccess += FetchNftInfoSuccess;
+        nftInfoRetriever.OnFetchInfoFail += FetchNFTInfoFail;
     }
 
     private void OnDisable()
     {
-        inftInfoRetriever.OnFetchInfoSuccess -= FetchInftInfoSuccess;
-        inftInfoRetriever.OnFetchInfoFail -= FetchInftInfoFail;
+        nftInfoRetriever.OnFetchInfoSuccess -= FetchNftInfoSuccess;
+        nftInfoRetriever.OnFetchInfoFail -= FetchNFTInfoFail;
     }
 
     private void Start() { spinner.layer = LayerMask.NameToLayer("ViewportCullingIgnored"); }
@@ -167,15 +167,15 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
     private void FetchNFTContents()
     {
         ShowLoading(true);
-        inftInfoRetriever.FetchNFTInfo(darURLRegistry, darURLAsset);
+        nftInfoRetriever.FetchNFTInfo(darURLRegistry, darURLAsset);
     }
 
-    private void FetchInftInfoSuccess(NFTInfo nftInfo)
+    private void FetchNftInfoSuccess(NFTInfo nftInfo)
     {   
         loadNftAssetCoroutine = StartCoroutine(LoadNFTAssetCoroutine(nftInfo));
     }
 
-    private void FetchInftInfoFail()
+    private void FetchNFTInfoFail()
     {
         ShowErrorFeedback(true);
         FinishLoading(false);
@@ -204,7 +204,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
         yield return new DCL.WaitUntil(() => (CommonScriptableObjects.playerUnityPosition - transform.position).sqrMagnitude < (config.loadingMinDistance * config.loadingMinDistance));
 
         // We download the "preview" 256px image
-        yield return inftAssetRetriever.LoadNFTAsset(
+        yield return nftAssetRetriever.LoadNFTAsset(
             nftInfo.previewImageUrl,
             (result) =>
             {
