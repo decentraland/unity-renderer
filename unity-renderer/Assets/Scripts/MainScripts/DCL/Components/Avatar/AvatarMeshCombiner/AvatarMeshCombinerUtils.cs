@@ -147,12 +147,11 @@ namespace DCL
         /// <returns>A FlattenedMaterialsData object. This object can be used to construct a combined mesh that has uniform data encoded in UV attributes.</returns>
         public static FlattenedMaterialsData FlattenMaterials(List<CombineLayer> layers, Material materialAsset)
         {
-            var result = new FlattenedMaterialsData();
             int layersCount = layers.Count;
 
             int finalVertexCount = 0;
             int currentVertexCount = 0;
-
+            
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
@@ -166,9 +165,7 @@ namespace DCL
                 }
             }
 
-            result.colors = new Vector4[finalVertexCount];
-            result.emissionColors = new Vector4[finalVertexCount];
-            result.texturePointers = new Vector3[finalVertexCount];
+            var result = new FlattenedMaterialsData(finalVertexCount);
 
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
@@ -193,6 +190,7 @@ namespace DCL
 
                 for (int i = 0; i < layerRenderersCount; i++)
                 {
+
                     var renderer = layerRenderers[i];
 
                     // Bone Weights
@@ -221,7 +219,8 @@ namespace DCL
                         }
                         else
                         {
-                            logger.Log(LogType.Error, "FlattenMaterials", $"Base Map ID out of bounds! {baseMapId}");
+                            if (VERBOSE)
+                                logger.Log(LogType.Error, "FlattenMaterials", $"Base Map ID out of bounds! {baseMapId}");
                         }
                     }
 
@@ -234,7 +233,8 @@ namespace DCL
                         }
                         else
                         {
-                            logger.Log(LogType.Error, "FlattenMaterials", $"Emission Map ID out of bounds! {emissionMapId}");
+                            if (VERBOSE)
+                                logger.Log(LogType.Error, "FlattenMaterials", $"Emission Map ID out of bounds! {emissionMapId}");
                         }
                     }
 
@@ -252,10 +252,12 @@ namespace DCL
 
                     if (VERBOSE)
                         logger.Log($"Layer {i} - vertexCount: {vertexCount} - texturePointers: ({baseMapId}, {emissionMapId}, {cutoff}) - emissionColor: {emissionColor} - baseColor: {baseColor}");
+
                 }
 
                 SRPBatchingHelper.OptimizeMaterial(newMaterial);
-            }
+
+            }   
 
             return result;
         }

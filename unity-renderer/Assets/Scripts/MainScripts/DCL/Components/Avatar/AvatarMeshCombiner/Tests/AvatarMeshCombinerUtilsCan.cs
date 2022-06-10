@@ -7,7 +7,7 @@ using DCL;
 using DCL.Helpers;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using UnityEditor;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TestTools;
@@ -184,7 +184,7 @@ public class AvatarMeshCombinerUtilsCan
         FlattenedMaterialsData result = AvatarMeshCombinerUtils.FlattenMaterials(layers, material);
 
         // Assert
-        FlattenedMaterialsData expected = new FlattenedMaterialsData();
+        FlattenedMaterialsData expected = new FlattenedMaterialsData(24);
 
         var colors = new List<Vector4>();
         var texturePointers = new List<Vector3>();
@@ -198,9 +198,9 @@ public class AvatarMeshCombinerUtilsCan
         emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
         texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
 
-        expected.colors = colors.ToArray();
-        expected.emissionColors = emissionColors.ToArray();
-        expected.texturePointers = texturePointers.ToArray();
+        expected.colors = new NativeArray<Vector4>(colors.ToArray(), Allocator.Temp);
+        expected.emissionColors = new NativeArray<Vector4>(emissionColors.ToArray(), Allocator.Temp);
+        expected.texturePointers = new NativeArray<Vector3>(texturePointers.ToArray(), Allocator.Temp);
 
         CollectionAssert.AreEquivalent(expected.colors, result.colors);
         CollectionAssert.AreEquivalent(expected.texturePointers, result.texturePointers);
@@ -225,7 +225,7 @@ public class AvatarMeshCombinerUtilsCan
         FlattenedMaterialsData result = AvatarMeshCombinerUtils.FlattenMaterials(layers, material);
 
         // Assert
-        FlattenedMaterialsData expected = new FlattenedMaterialsData();
+        FlattenedMaterialsData expected = new FlattenedMaterialsData(24);
 
         var colors = new List<Vector4>();
         var texturePointers = new List<Vector3>();
@@ -239,9 +239,9 @@ public class AvatarMeshCombinerUtilsCan
         emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
         texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
 
-        expected.colors = colors.ToArray();
-        expected.emissionColors = emissionColors.ToArray();
-        expected.texturePointers = texturePointers.ToArray();
+        expected.colors = new NativeArray<Vector4>(colors.ToArray(), Allocator.Temp);
+        expected.emissionColors = new NativeArray<Vector4>(emissionColors.ToArray(), Allocator.Temp);
+        expected.texturePointers = new NativeArray<Vector3>(texturePointers.ToArray(), Allocator.Temp);
 
         CollectionAssert.AreEquivalent(expected.colors, result.colors);
         CollectionAssert.AreEquivalent(expected.texturePointers, result.texturePointers);
