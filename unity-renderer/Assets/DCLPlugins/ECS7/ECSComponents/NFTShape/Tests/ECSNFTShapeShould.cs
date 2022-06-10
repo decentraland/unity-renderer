@@ -108,7 +108,7 @@ namespace DCL.ECSComponents.Test
             componentHandler.shapeFrame = Substitute.For<INFTShapeFrame>();
             
             // Act
-            componentHandler.OnComponentModelUpdated(scene, entity, model);
+            componentHandler.ApplyModel(model);
 
             // Assert
             componentHandler.shapeFrame.Received().SetVisibility(true);
