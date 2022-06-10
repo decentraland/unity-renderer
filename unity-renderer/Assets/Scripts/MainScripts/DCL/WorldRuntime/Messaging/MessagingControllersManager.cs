@@ -2,6 +2,7 @@ using DCL.Controllers;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using UnityEngine;
 
 namespace DCL
@@ -243,11 +244,13 @@ namespace DCL
 
         public void Enqueue(bool isUiBus, QueuedSceneMessage_Scene queuedMessage)
         {
+            PerformanceAnalytics.MessagesEnqueuedTracker.Track();
             messagingControllers[queuedMessage.sceneId].Enqueue(isUiBus, queuedMessage, out MessagingBusType busId);
         }
 
         public void ForceEnqueueToGlobal(MessagingBusType busId, QueuedSceneMessage queuedMessage)
         {
+            PerformanceAnalytics.MessagesEnqueuedTracker.Track();
             messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(busId, queuedMessage);
         }
 
@@ -292,7 +295,7 @@ namespace DCL
                     {
                         bus = busesToProcess[i];
                     }
-
+                    
                     if (ProcessBus(bus))
                         break;
                 }
