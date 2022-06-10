@@ -502,7 +502,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -15, y: 0}
-  m_SizeDelta: {x: 12, y: 12}
+  m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &3527442602539992120
 CanvasRenderer:
@@ -1162,7 +1162,7 @@ GameObject:
   - component: {fileID: 8992885240976846846}
   - component: {fileID: 3188484190589710878}
   m_Layer: 5
-  m_Name: Dropdown
+  m_Name: Dropdown_MultiSelect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1273,7 +1273,6 @@ MonoBehaviour:
     type: 3}
   model:
     title: Text
-    showSearchBar: 1
     searchPlaceHolderText: Place holder text...
     searchNotFoundText: No results found.
     isMultiselect: 1

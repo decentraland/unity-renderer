@@ -35,7 +35,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -11, y: 0}
-  m_SizeDelta: {x: 10, y: 10}
+  m_SizeDelta: {x: 10.7, y: 9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7286980017824169629
 CanvasRenderer:
@@ -242,7 +242,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!95 &8926316849923653756
 Animator:
   serializedVersion: 3
@@ -309,7 +309,7 @@ MonoBehaviour:
   textColorOnUnselected: {r: 0, g: 0, b: 0, a: 1}
   textColorOnSelected: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
   model:
-    isOn: 0
+    isOn: 1
     text: Text
     id: 
     isTextActive: 1
@@ -416,8 +416,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4283772415
+  m_fontColor: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
