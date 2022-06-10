@@ -41,42 +41,7 @@ namespace DCL
         /// </summary>
         /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
         /// <returns>A list of BoneWeights that share the same skeleton.</returns>
-        public static BoneWeight[] ComputeBoneWeights( List<CombineLayer> layers )
-        {
-            int layersCount = layers.Count;
-
-            int resultSize = 0;
-
-            List<BoneWeight[]> boneWeightArrays = new List<BoneWeight[]>(10);
-
-            for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
-            {
-                CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
-
-                int layerRenderersCount = layerRenderers.Count;
-
-                for (int i = 0; i < layerRenderersCount; i++)
-                {
-                    var boneWeights = layerRenderers[i].sharedMesh.boneWeights;
-                    boneWeightArrays.Add(boneWeights);
-                    resultSize += boneWeights.Length;
-                }
-            }
-
-            BoneWeight[] result = new BoneWeight[resultSize];
-
-            int copyOffset = 0;
-            for ( int i = 0; i < boneWeightArrays.Count; i++ )
-            {
-                Array.Copy(boneWeightArrays[i], 0, result, copyOffset, boneWeightArrays[i].Length);
-                copyOffset += boneWeightArrays[i].Length;
-            }
-
-            return result;
-        }
-        
-        public static (NativeArray<byte> bonesPerVertex, NativeArray<BoneWeight1> weights) ComputeNativeBoneWeights( List<CombineLayer> layers )
+        public static (NativeArray<byte> bonesPerVertex, NativeArray<BoneWeight1> weights) ComputeBoneWeights( List<CombineLayer> layers )
         {
             int layersCount = layers.Count;
 

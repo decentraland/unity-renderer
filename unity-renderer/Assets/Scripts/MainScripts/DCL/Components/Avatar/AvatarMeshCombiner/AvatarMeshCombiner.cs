@@ -127,7 +127,7 @@ namespace DCL
 
             finalMesh.bindposes = bindPoses;
 
-            (NativeArray<byte> bonesPerVertex, NativeArray<BoneWeight1> weights) = AvatarMeshCombinerUtils.ComputeNativeBoneWeights(layers);
+            (NativeArray<byte> bonesPerVertex, NativeArray<BoneWeight1> weights) = AvatarMeshCombinerUtils.ComputeBoneWeights(layers);
             finalMesh.SetBoneWeights(bonesPerVertex, weights);
 
             var flattenedMaterialsData = AvatarMeshCombinerUtils.FlattenMaterials( layers, materialAsset );
