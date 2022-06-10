@@ -356,7 +356,15 @@ namespace UnityGLTF
                 else
                 {
                     PerformanceAnalytics.GLTFTracker.TrackFailed();
-                    throw; 
+
+                    if (Application.isPlaying)
+                        throw;
+                    else
+                    {
+                        Debug.LogException(e);
+
+                        throw;
+                    }
                 }
             }
             finally
@@ -669,7 +677,15 @@ namespace UnityGLTF
 
                 BufferCacheData bufferContents = _assetCache.BufferCache[bufferView.Buffer.Id];
                 bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
-                await bufferContents.Stream.ReadAsync(data, 0, data.Length, cancellationToken);
+
+                if (forceSyncCoroutines)
+                {
+                    bufferContents.Stream.Read(data, 0, data.Length);
+                }
+                else
+                {
+                    await bufferContents.Stream.ReadAsync(data, 0, data.Length, cancellationToken);
+                }
 
                 ConstructUnityTexture(settings, data, imageCacheIndex);
             }
@@ -1308,7 +1324,7 @@ namespace UnityGLTF
                     meshId: node.Mesh.Id,
                     skin: node.Skin != null ? node.Skin.Value : null, token);
 
-                if ( stopWatch.ElapsedMilliseconds > 5)
+                if ( stopWatch.ElapsedMilliseconds > 5 && !forceSyncCoroutines)
                 {
                     await UniTask.Yield();
                     stopWatch.Restart();
@@ -2267,7 +2283,10 @@ namespace UnityGLTF
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await UniTask.WaitUntil(() => _assetCache.TextureCache[textureIndex] != null, cancellationToken: cancellationToken);
+            if (!forceSyncCoroutines)
+            {
+                await UniTask.WaitUntil(() => _assetCache.TextureCache[textureIndex] != null, cancellationToken: cancellationToken);
+            }
 
             if (_assetCache.TextureCache[textureIndex].CachedTexture != null)
                 return;
