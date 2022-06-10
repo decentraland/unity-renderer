@@ -17,6 +17,12 @@ public class WorldChatWindowComponentViewShould
         view.Initialize(Substitute.For<IChatController>(), Substitute.For<ILastReadMessagesService>());
     }
 
+    [TearDown]
+    public void TearDown()
+    {
+        Object.Destroy(view.gameObject);
+    }
+
     [Test]
     public void Show()
     {
