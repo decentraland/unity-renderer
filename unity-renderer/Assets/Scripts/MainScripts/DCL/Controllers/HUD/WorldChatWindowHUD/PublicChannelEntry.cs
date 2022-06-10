@@ -17,6 +17,11 @@ public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
 
     public event Action<PublicChannelEntry> OnOpenChat;
 
+    public static PublicChannelEntry Create()
+    {
+        return Instantiate(Resources.Load<PublicChannelEntry>("SocialBarV1/PublicChannelElement"));
+    }
+
     public override void Awake()
     {
         base.Awake();
