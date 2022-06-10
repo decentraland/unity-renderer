@@ -5,10 +5,10 @@ namespace DCL
 {
     public class Asset_AB : Asset
     {
-        public AssetBundle ownerAssetBundle;
-        public string assetBundleAssetName;
+        const string METADATA_FILENAME = "metadata.json";
 
-        public Dictionary<string, List<Object>> assetsByExtension = new Dictionary<string, List<Object>>();
+        private AssetBundle assetBundle;
+        private Dictionary<string, List<Object>> assetsByExtension;
 
         public Asset_AB()
         {
@@ -16,20 +16,19 @@ namespace DCL
         }
 
         public override object Clone() => (Asset_AB) MemberwiseClone();
+        public string GetName() => assetBundle.name;
 
-        public void CancelShow()
-        {
-            Cleanup();
-        }
+        public void CancelShow() => Cleanup();
+        public bool IsValid() => assetBundle != null;
 
         public override void Cleanup()
         {
             assetsByExtension = null;
 
-            if (ownerAssetBundle)
+            if (assetBundle)
             {
-                ownerAssetBundle.Unload(true);
-                ownerAssetBundle = null;
+                assetBundle.Unload(true);
+                assetBundle = null;
             }
         }
 
@@ -59,6 +58,35 @@ namespace DCL
             }
 
             return goList;
+        }
+        public void AddAssetByExtension(string ext, Object loadedAsset)
+        {
+            if (assetsByExtension == null)
+            {
+                Debug.LogWarning($"Trying to add asset of type {ext} to unloaded AB");
+
+                return;
+            }
+            
+            if (!assetsByExtension.ContainsKey(ext))
+            {
+                assetsByExtension.Add(ext, new List<Object>());
+            }
+            
+            assetsByExtension[ext].Add(loadedAsset);
+        }
+        public void SetAssetBundle(AssetBundle ab)
+        {
+            assetBundle = ab;
+        }
+
+        public TextAsset GetMetadata()
+        {
+            return assetBundle.LoadAsset<TextAsset>(METADATA_FILENAME);
+        }
+        public AssetBundleRequest LoadAllAssetsAsync()
+        {
+            return assetBundle.LoadAllAssetsAsync();
         }
     }
 }

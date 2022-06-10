@@ -125,13 +125,14 @@ namespace UnityGLTF
                 loader.addMaterialsToPersistentCaching = false;
                 loader.initialVisibility = true;
                 loader.useMaterialTransition = false;
+                loader.maxTextureSize = 512;
                 loader.maximumLod = _maximumLod;
                 loader.forceGPUOnlyMesh = false;
                 loader.forceGPUOnlyTex = false;
                 loader.forceSyncCoroutines = true;
 
                 Task task = loader.LoadScene(CancellationToken.None);
-                bool result = task.Wait(TimeSpan.FromSeconds(10));
+                bool result = task.Wait(TimeSpan.FromSeconds(30));
 
                 if (!result)
                     throw new TimeoutException($"Importing {projectFilePath}");
