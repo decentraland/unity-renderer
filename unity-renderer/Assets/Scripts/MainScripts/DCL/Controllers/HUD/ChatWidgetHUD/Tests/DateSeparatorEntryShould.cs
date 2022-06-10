@@ -25,7 +25,7 @@ public class DateSeparatorEntryShould
         var timestamp = new DateTimeOffset(new DateTime(1989, 1, 19, 10, 30, 0)).ToUnixTimeMilliseconds();
         entry.Populate(new ChatEntryModel{timestamp = (ulong) timestamp});
         
-        Assert.AreEqual("Thursday, January 19, 1989", entry.title.text);
+        Assert.AreEqual("Thursday, 19 January 1989", entry.title.text);
     }
     
     [Test]
