@@ -23,12 +23,7 @@ public class NFTInfoRetriever : INFTInfoRetriever
     public event Action<NFTInfo> OnFetchInfoSuccess;
     public event Action OnFetchInfoFail;
     internal Coroutine fetchCoroutine;
-    private readonly CancellationTokenSource tokenSource;
-
-    public NFTInfoRetriever()
-    {
-        tokenSource = new CancellationTokenSource();
-    }
+    private CancellationTokenSource tokenSource;
 
     public void Dispose()
     {
@@ -37,8 +32,8 @@ public class NFTInfoRetriever : INFTInfoRetriever
             CoroutineStarter.Stop(fetchCoroutine);
 
         fetchCoroutine = null;
-        tokenSource.Cancel();
-        tokenSource.Dispose();
+        tokenSource?.Cancel();
+        tokenSource?.Dispose();
     }
 
     public void FetchNFTInfo(string address, string id)
@@ -51,6 +46,7 @@ public class NFTInfoRetriever : INFTInfoRetriever
 
     public async UniTask<NFTInfo> FetchNFTInfo(string src)
     {
+        tokenSource = new CancellationTokenSource();
         tokenSource.Token.ThrowIfCancellationRequested();
         // Check the src follows the needed format e.g.: 'ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536'
         var regexMatches = Regex.Matches(src, "(?<protocol>[^:]+)://(?<registry>0x([A-Fa-f0-9])+)(?:/(?<asset>.+))?");
