@@ -91,14 +91,18 @@ public static class ECSComponentsUtils
         DataStore.i.sceneWorldObjects.AddRendereable(sceneId, newRendereable);
         return newRendereable;
     }
-
-    public static void DisposeMeshInfo(MeshesInfo mesheshInfo)
+    
+    public static void DisposeMeshInfo(MeshesInfo meshesInfo)
     {
-        foreach (Renderer renderer in mesheshInfo.renderers)
+        if (meshesInfo == null || meshesInfo.meshRootGameObject == null)
+            return;
+        
+        foreach (Renderer renderer in meshesInfo.renderers)
         {
             Utils.CleanMaterials(renderer);
         }
-        mesheshInfo.CleanReferences();
+        GameObject.Destroy(meshesInfo.meshRootGameObject);
+        meshesInfo.CleanReferences();
     }
 
     public static int CalculateNFTCollidersLayer(bool withCollisions, bool isPointerBlocker)

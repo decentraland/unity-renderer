@@ -12,7 +12,7 @@ using UnityEngine.TestTools;
 
 public class NFTAssetLoadHelperShould : IntegrationTestSuite
 {
-    private NFTAssetLoadHelper_Mock loadHelper;
+    private InftAssetRetrieverMock retriever;
 
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
@@ -21,14 +21,14 @@ public class NFTAssetLoadHelperShould : IntegrationTestSuite
 
     protected override IEnumerator SetUp()
     {
-        loadHelper = new NFTAssetLoadHelper_Mock();
+        retriever = new InftAssetRetrieverMock();
         yield return base.SetUp();
     }
 
     [UnityTearDown]
     protected override IEnumerator TearDown()
     {
-        loadHelper.Dispose();
+        retriever.Dispose();
         yield return base.TearDown();
     }
 
@@ -38,10 +38,10 @@ public class NFTAssetLoadHelperShould : IntegrationTestSuite
         bool success = false;
         INFTAsset resultAsset = null;
 
-        loadHelper.contentLengthToReturn = 10;
-        loadHelper.contentTypeToReturn = "image/png";
+        retriever.contentLengthToReturn = 10;
+        retriever.contentTypeToReturn = "image/png";
 
-        yield return loadHelper.LoadNFTAsset("fake_url", (x) =>
+        yield return retriever.LoadNFTAsset("fake_url", (x) =>
         {
             success = true;
             resultAsset = x;
@@ -57,10 +57,10 @@ public class NFTAssetLoadHelperShould : IntegrationTestSuite
         bool success = false;
         INFTAsset resultAsset = null;
 
-        loadHelper.contentLengthToReturn = 10;
-        loadHelper.contentTypeToReturn = "image/gif";
+        retriever.contentLengthToReturn = 10;
+        retriever.contentTypeToReturn = "image/gif";
 
-        yield return loadHelper.LoadNFTAsset("fake_url", (x) =>
+        yield return retriever.LoadNFTAsset("fake_url", (x) =>
         {
             success = true;
             resultAsset = x;
@@ -75,26 +75,26 @@ public class NFTAssetLoadHelperShould : IntegrationTestSuite
     {
         bool success = false;
 
-        loadHelper.contentLengthToReturn = 10;
-        loadHelper.contentTypeToReturn = "image/png";
+        retriever.contentLengthToReturn = 10;
+        retriever.contentTypeToReturn = "image/png";
 
-        yield return loadHelper.LoadNFTAsset("fake_url_1", (x) => success = true, (x) => { });
+        yield return retriever.LoadNFTAsset("fake_url_1", (x) => success = true, (x) => { });
 
         Assert.That(success, Is.True);
 
-        loadHelper.contentLengthToReturn = 1000000;
-        loadHelper.contentTypeToReturn = "image/png";
+        retriever.contentLengthToReturn = 1000000;
+        retriever.contentTypeToReturn = "image/png";
 
         success = false;
-        yield return loadHelper.LoadNFTAsset("fake_url_2", (x) => success = true, (x) => { });
+        yield return retriever.LoadNFTAsset("fake_url_2", (x) => success = true, (x) => { });
 
         Assert.That(success, Is.False);
 
-        loadHelper.contentLengthToReturn = 1000000;
-        loadHelper.contentTypeToReturn = "image/gif";
+        retriever.contentLengthToReturn = 1000000;
+        retriever.contentTypeToReturn = "image/gif";
 
         success = false;
-        yield return loadHelper.LoadNFTAsset("fake_url_3", (x) => success = true, (x) => { });
+        yield return retriever.LoadNFTAsset("fake_url_3", (x) => success = true, (x) => { });
 
         Assert.That(success, Is.True);
     }
@@ -103,13 +103,13 @@ public class NFTAssetLoadHelperShould : IntegrationTestSuite
     public IEnumerator UnloadImagesWhenDisposed()
     {
         bool success = false;
-        yield return loadHelper.LoadNFTAsset("fake_url_1", (x) => success = true, (x) => Debug.Log(x));
+        yield return retriever.LoadNFTAsset("fake_url_1", (x) => success = true, (x) => Debug.Log(x));
 
         Assert.That(success, Is.True);
-        Assert.That(loadHelper.hasLoadedAsset, Is.True);
+        Assert.That(retriever.hasLoadedAsset, Is.True);
 
-        loadHelper.Dispose();
+        retriever.Dispose();
 
-        Assert.That(loadHelper.hasLoadedAsset, Is.False);
+        Assert.That(retriever.hasLoadedAsset, Is.False);
     }
 }

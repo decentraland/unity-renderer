@@ -8,7 +8,7 @@ namespace NFTShape_Internal
     {
         public string name;
         public string imageUrl;
-        public NFTShapeLoaderController controller;
+        public INFTShapeLoaderController controller;
         public INFTAsset asset;
     }
 
@@ -43,7 +43,7 @@ namespace NFTShape_Internal
 
         public void Update()
         {
-            if (hqImageConfig.controller.collider is null)
+            if (hqImageConfig.controller.nftCollider is null)
                 return;
 
             if (!isPlayerNear)
@@ -102,12 +102,12 @@ namespace NFTShape_Internal
         {
             isPlayerNear = false;
 
-            if (hqImageConfig.controller == null || hqImageConfig.controller.collider == null)
+            if (hqImageConfig.controller == null || hqImageConfig.controller.nftCollider == null)
                 return;
 
             var config = DataStore.i.Get<DataStore_NFTShape>();
 
-            isPlayerNear = ((current - hqImageConfig.controller.collider.ClosestPoint(current)).sqrMagnitude
+            isPlayerNear = ((current - hqImageConfig.controller.nftCollider.ClosestPoint(current)).sqrMagnitude
                             <= (config.hqImgMinDistance *
                                 config.hqImgMinDistance));
 

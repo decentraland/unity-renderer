@@ -1,4 +1,5 @@
 ﻿using DCL.ECSRuntime;
+using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -10,7 +11,8 @@ namespace DCL.ECSComponents
         
         public NFTShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, NFTShapeSerializer.Deserialize, () => new ECSNFTShapeComponentHandler());
+            var shapeFrameFactory = Resources.Load<NFTShapeFrameFactory>("NFTShapeFrameFactory");
+            factory.AddOrReplaceComponent(componentId, NFTShapeSerializer.Deserialize, () => new ECSNFTShapeComponentHandler(shapeFrameFactory, DataStore.i.ecs7));
             componentWriter.AddOrReplaceComponentSerializer<PBNFTShape>(componentId, NFTShapeSerializer.Serialize);
 
             this.factory = factory;

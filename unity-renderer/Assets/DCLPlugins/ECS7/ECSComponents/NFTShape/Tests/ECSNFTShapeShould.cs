@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DCL.Controllers;
+using DCL.Helpers.NFT;
 using DCL.Models;
 using Google.Protobuf;
+using NFTShape_Internal;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -15,25 +18,31 @@ using Assert = UnityEngine.Assertions.Assert;
 
 namespace DCL.ECSComponents.Test
 {
-    public class ECSBoxShapeShould
+    public class ECSNFTShapeShould
     {
         private IDCLEntity entity;
         private IParcelScene scene;
         private ECSNFTShapeComponentHandler componentHandler;
         private GameObject gameObject;
+        private DataStore_ECS7 dataStore;
 
         [SetUp]
         protected void SetUp()
         {
             gameObject = new GameObject();
+            dataStore = new DataStore_ECS7();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            componentHandler = new ECSNFTShapeComponentHandler();
+            var shapeFrameFactory = Resources.Load<NFTShapeFrameFactory>("NFTShapeFrameFactory");
+            componentHandler = new ECSNFTShapeComponentHandler(shapeFrameFactory,dataStore);
 
             var meshInfo = new MeshesInfo();
-            entity.meshesInfo.Returns(meshInfo);
-            entity.entityId.Returns(1);
-            entity.gameObject.Returns(gameObject);
+            meshInfo.meshRootGameObject = gameObject;
+            entity.Configure().meshesInfo.Returns(meshInfo);
+            entity.Configure().meshRootGameObject.Returns(meshInfo.meshRootGameObject);
+            entity.Configure().entityId.Returns(1);
+            entity.Configure().gameObject.Returns(gameObject);
+            
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
             sceneData.id = "1";
             scene.sceneData.Configure().Returns(sceneData);
@@ -63,7 +72,7 @@ namespace DCL.ECSComponents.Test
         }
         
         [Test]
-        public void CreateLoaderCorrectly()
+        public void CreateShapeCorrectly()
         {
             // Arrange
             var model = CreateModel();
@@ -72,7 +81,125 @@ namespace DCL.ECSComponents.Test
             componentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Assert
-            Assert.IsNotNull(entity.meshRootGameObject.GetComponent<NFTShapeLoaderController>());
+            Assert.IsNotNull(componentHandler.shapeFrame);
+        }
+        
+        [Test]
+        public void CreateNFTLoadersCorrectly()
+        {
+            // Arrange
+            var model = CreateModel();
+            
+            // Act
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Assert
+            Assert.IsNotNull(componentHandler.infoRetriever);
+            Assert.IsNotNull(componentHandler.assetRetriever);
+        }
+        
+        [Test]
+        public void ApplyModelCorrectly()
+        {
+            // Arrange
+            var model = CreateModel();
+            model.Visible = true;
+            model.WithCollisions = true;
+            componentHandler.shapeFrame = Substitute.For<INFTShapeFrame>();
+            
+            // Act
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Assert
+            componentHandler.shapeFrame.Received().SetVisibility(true);
+            componentHandler.shapeFrame.Received().SetVisibility(true);
+            componentHandler.shapeFrame.Received().UpdateBackgroundColor(Arg.Any<UnityEngine.Color>());
+        }
+        
+        [Test]
+        public void FailWithNullNFTInfoCorrectly()
+        {
+            // Arrange
+            componentHandler.infoRetriever = Substitute.For<INFTInfoRetriever>();
+            componentHandler.infoRetriever.Configure().FetchNFTInfo(Arg.Any<string>()).Returns(new UniTask<NFTInfo>(null));
+            componentHandler.shapeFrame = Substitute.For<INFTShapeFrame>();
+            componentHandler.factory = Substitute.For<INFTShapeFrameFactory>();
+            
+            var model = CreateModel();
+            
+            // Act
+            componentHandler.LoadNFT(scene, model);
+
+            // Assert
+            componentHandler.shapeFrame.Received().FailLoading();
+        }
+        
+        [Test]
+        public void FailWithNullNFTAssetCorrectly()
+        {
+            // Arrange
+            NFTInfo info = new NFTInfo();
+            componentHandler.infoRetriever = Substitute.For<INFTInfoRetriever>();
+            componentHandler.infoRetriever.Configure().FetchNFTInfo(Arg.Any<string>()).Returns(new UniTask<NFTInfo>(info));
+            
+            componentHandler.assetRetriever = Substitute.For<INFTAssetRetriever>();
+            componentHandler.assetRetriever.Configure().LoadNFTAsset(Arg.Any<string>()).Returns(new UniTask<INFTAsset>(null));
+
+            componentHandler.shapeFrame = Substitute.For<INFTShapeFrame>();
+            componentHandler.factory = Substitute.For<INFTShapeFrameFactory>();
+            
+            var model = CreateModel();
+            
+            // Act
+            componentHandler.LoadNFT(scene, model);
+
+            // Assert
+            componentHandler.shapeFrame.Received().FailLoading();
+        }
+        
+        [Test]
+        public void LoadNFTCorrectly()
+        {
+            // Arrange
+            NFTInfo info = new NFTInfo();
+            componentHandler.infoRetriever = Substitute.For<INFTInfoRetriever>();
+            componentHandler.infoRetriever.Configure().FetchNFTInfo(Arg.Any<string>()).Returns(new UniTask<NFTInfo>(info));
+            
+            componentHandler.assetRetriever = Substitute.For<INFTAssetRetriever>();
+            componentHandler.assetRetriever.Configure().LoadNFTAsset(Arg.Any<string>()).Returns(new UniTask<INFTAsset>(new NFTAsset_Image(null)));
+
+            componentHandler.shapeFrame = Substitute.For<INFTShapeFrame>();
+
+            var model = CreateModel();
+            
+            // Act
+            componentHandler.LoadNFT(scene, model);
+
+            // Assert
+            componentHandler.shapeFrame.Received().SetImage(Arg.Any<string>(),Arg.Any<string>(),Arg.Any<INFTAsset>());
+        }
+        
+        [Test]
+        public void LoadResourceCorrectly()
+        {
+            // Arrange
+            NFTInfo info = new NFTInfo();
+            componentHandler.infoRetriever = Substitute.For<INFTInfoRetriever>();
+            componentHandler.infoRetriever.Configure().FetchNFTInfo(Arg.Any<string>()).Returns(new UniTask<NFTInfo>(info));
+            
+            componentHandler.assetRetriever = Substitute.For<INFTAssetRetriever>();
+            componentHandler.assetRetriever.Configure().LoadNFTAsset(Arg.Any<string>()).Returns(new UniTask<INFTAsset>(new NFTAsset_Image(null)));
+
+            componentHandler.shapeFrame = Substitute.For<INFTShapeFrame>();
+
+            var model = CreateModel();
+            
+            // Act
+            componentHandler.LoadNFT(scene, model);
+
+            // Assert
+            var value = dataStore.pendingSceneResources[scene.sceneData.id];
+            Assert.AreEqual(0,  value.GetRefCount(model));
         }
 
         [Test]
@@ -107,7 +234,7 @@ namespace DCL.ECSComponents.Test
             model.Color.Red = 1;
             model.Color.Blue = 0;
             model.Color.Green = 0.5f;
-            model.Src = "ethereum://test";
+            model.Src = "ethereum://test/123";
 
             // Act
             var newModel = SerializaAndDeserialize(model);
@@ -126,6 +253,10 @@ namespace DCL.ECSComponents.Test
         {
             var model = new PBNFTShape();
             model.Src = "ethereum://test";
+            model.Color = new Color();
+            model.Color.Blue = 1f;
+            model.Color.Red = 0f;
+            model.Color.Green = 0f;
             return model;
         }
         
@@ -133,7 +264,7 @@ namespace DCL.ECSComponents.Test
         {
             var result = NFTShapeSerializer.Serialize(pb);
 
-            return NFTShapeSerializer.Deserialize(pb);
+            return NFTShapeSerializer.Deserialize(result);
         }
     }
 }

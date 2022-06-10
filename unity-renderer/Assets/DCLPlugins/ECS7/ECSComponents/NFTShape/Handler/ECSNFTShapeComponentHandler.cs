@@ -1,185 +1,132 @@
-﻿using System;
-using DCL.Components;
-using DCL.Configuration;
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
-using DCL.ECSComponents;
 using DCL.Helpers;
+using DCL.Helpers.NFT;
+using NFTShape_Internal;
 using UnityEngine;
 
 namespace DCL.ECSComponents
 {
     public class ECSNFTShapeComponentHandler : IECSComponentHandler<PBNFTShape>
     {
-        private PBNFTShape previousModel;
-        private PBNFTShape currentModel;
-        private bool isLoaded = false;
-        private IParcelScene scene;
+        internal INFTShapeFrameFactory factory;
+        
+        internal INFTInfoRetriever infoRetriever;
+        internal INFTAssetRetriever assetRetriever;
+        internal INFTShapeFrame shapeFrame;
 
+        private PBNFTShape previousModel;
+        private DataStore_ECS7 dataStore;
+        
+        public ECSNFTShapeComponentHandler(INFTShapeFrameFactory factory, DataStore_ECS7 dataStoreEcs7)
+        {
+            this.factory = factory;
+            dataStore = dataStoreEcs7;
+            
+            infoRetriever = new InftInfoRetriever();
+            assetRetriever = new InftAssetRetriever();
+        }
+        
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            LoadWrapper loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
-            loadWrapper?.Unload();
-            Environment.i.world.state.RemoveLoaderForEntity(entity);
-            DisposeMeshInfo(entity);
+            infoRetriever.Dispose();
+            assetRetriever.Dispose();
+            DisposeShapeFrame(entity);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBNFTShape model)
         {
-            this.scene = scene;
-            this.currentModel = model;
+            // We create the frame gameobject
+            if(shapeFrame == null || previousModel.Style != model.Style)
+                CreateNFTShapeFrame(entity, model);
+            
+            // We apply the model to the frame
+            ApplyModel(model);
 
-            CreateMeshInfo(entity, model);
-
-            HandleLoadableShape(entity,model);
+            // We load the NFT image
+            LoadNFT(scene,model);
         }
 
-        private void CreateMeshInfo(IDCLEntity entity,PBNFTShape model)
+        private void DisposeShapeFrame(IDCLEntity entity)
         {
-            DisposeMeshInfo(entity);
+            if (shapeFrame == null)
+                return;
             
-            entity.meshesInfo.meshRootGameObject = NFTShapeFactory.InstantiateLoaderController(model.Style);
-            
-            entity.meshesInfo.currentShape = new NFTShapeRepresentantion(model);
-            
-            entity.meshRootGameObject.name = "NFT mesh";
-            entity.meshRootGameObject.transform.SetParent(entity.gameObject.transform);
-            entity.meshRootGameObject.transform.ResetLocalTRS();
+            shapeFrame.Dispose();
+            ECSComponentsUtils.DisposeMeshInfo(entity.meshesInfo);
+            GameObject.Destroy(shapeFrame.gameObject);
         }
-
-        private void HandleLoadableShape(IDCLEntity entity, PBNFTShape model)
+        
+        internal async void LoadNFT(IParcelScene scene,PBNFTShape model)
         {
-            var loaderController = entity.meshRootGameObject.GetComponent<NFTShapeLoaderController>();
-
-            if (loaderController)
-                loaderController.Initialize(new NFTInfoLoadHelper(), new NFTAssetLoadHelper());    
+            dataStore.AddPendingResource(scene.sceneData.id, model);
             
-            var loadableShape = Environment.i.world.state.GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
+            NFTInfo info = await infoRetriever.FetchNFTInfo(model.Src);
 
-            loadableShape.entity = entity;
-            loadableShape.initialVisibility = model.Visible;
+            if (info == null)
+            {
+                LoadFail(scene, model);
+                return;
+            }
 
-            loadableShape.withCollisions = model.WithCollisions;
-            loadableShape.backgroundColor = new UnityEngine.Color(model.Color.Red, model.Color.Green,model.Color.Blue,1);
-
-            DataStore.i.ecs7.AddPendingResource(scene.sceneData.id, model);
+            INFTAsset nftAsset = await assetRetriever.LoadNFTAsset(info.previewImageUrl);
             
-            loadableShape.Load(model.Src, OnLoadCompleted, OnLoadFailed);
+            if (nftAsset == null)
+            {
+                LoadFail(scene, model);
+                return;
+            }
+
+            shapeFrame.SetImage(info.name, info.imageUrl, nftAsset);
+            
+            dataStore.RemovePendingResource(scene.sceneData.id, model);
         }
 
-        private void UpdateBackgroundColor(IDCLEntity entity, PBNFTShape model)
+        private void LoadFail(IParcelScene scene, PBNFTShape model)
+        {
+            LoadFailed();
+            dataStore.RemovePendingResource(scene.sceneData.id, model);
+        }
+        
+        private void CreateNFTShapeFrame(IDCLEntity entity,PBNFTShape model)
+        {
+            if (shapeFrame != null)
+                DisposeShapeFrame(entity);
+            
+            shapeFrame = factory.InstantiateLoaderController(model.Style);
+           
+            entity.meshesInfo.meshRootGameObject = shapeFrame.gameObject;
+            entity.meshesInfo.currentShape = shapeFrame.shape;
+            
+            entity.meshesInfo.meshRootGameObject.name = "NFT mesh";
+            entity.meshesInfo.meshRootGameObject.transform.SetParent(entity.gameObject.transform);
+            entity.meshesInfo.meshRootGameObject.transform.ResetLocalTRS();
+        }
+
+        private void LoadFailed()
+        {
+            factory.InstantiateErrorFeedback(shapeFrame.gameObject);
+            shapeFrame.FailLoading();
+        }
+        
+        internal void ApplyModel(PBNFTShape model)
+        {
+            shapeFrame.SetVisibility(model.Visible);
+            shapeFrame.SetHasCollisions(model.WithCollisions);
+            UpdateBackgroundColor(model);
+
+            previousModel = model;
+        }
+
+        internal void UpdateBackgroundColor(PBNFTShape model)
         {
             if (previousModel != null && model.Color.Equals(previousModel.Color))
                 return;
 
-            var loadableShape = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_NFT;
-            loadableShape?.loaderController.UpdateBackgroundColor(new UnityEngine.Color(model.Color.Red, model.Color.Green,model.Color.Blue,1));
-        }
-        
-        internal void DisposeMeshInfo(IDCLEntity entity)
-        {
-            if(entity.meshesInfo != null)
-                ECSComponentsUtils.DisposeMeshInfo(entity.meshesInfo);
-        }
-        
-        private void OnLoadFailed(LoadWrapper loadWrapper, Exception exception)
-        {
-            if (loadWrapper != null)
-                CleanFailedWrapper(loadWrapper);
-            
-            DataStore.i.ecs7.RemovePendingResource(scene.sceneData.id, currentModel);
-        }
-
-        private void CleanFailedWrapper(LoadWrapper loadWrapper)
-        {
-            if (loadWrapper == null ||
-                loadWrapper.entity == null ||
-                loadWrapper.entity.gameObject == null)
-                return;
-
-            GameObject go = loadWrapper.entity.gameObject;
-
-            go.name += " - Failed loading";
-
-            ECSComponentsUtils.RemoveMaterialTransition(go);
-        }
-
-        private void OnLoadCompleted(LoadWrapper loadWrapper)
-        {
-            IDCLEntity entity = loadWrapper.entity;
-
-            if (entity.meshesInfo.currentShape == null)
-            {
-                OnLoadFailed(loadWrapper, new Exception($"Entity {entity.entityId} current shape of mesh information is null"));
-                return;
-            }
-
-            isLoaded = true;
-            
-            entity.meshesInfo.meshRootGameObject = entity.meshRootGameObject;
-
-            ConfigureVisibility(entity.meshRootGameObject, currentModel.Visible, loadWrapper.entity.meshesInfo.renderers);
-            ConfigureColliders(entity);
-            
-            UpdateBackgroundColor(entity,currentModel);
-            
-            RaiseOnShapeUpdated(entity);
-            RaiseOnShapeLoaded(entity);
-            
-            DataStore.i.ecs7.RemovePendingResource(scene.sceneData.id, currentModel);
-            
-            previousModel = currentModel;
-        }
-        
-        private void RaiseOnShapeUpdated(IDCLEntity entity)
-        {
-            if (!isLoaded)
-                return;
-
-            entity.OnShapeUpdated?.Invoke(entity);
-        }
-
-        private void RaiseOnShapeLoaded(IDCLEntity entity)
-        {
-            if (!isLoaded)
-                return;
-
-            entity.OnShapeLoaded?.Invoke(entity);
-        }
-
-        private void ConfigureVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
-        {
-            if (meshGameObject == null)
-                return;
-
-            if (!shouldBeVisible)
-                ECSComponentsUtils.RemoveMaterialTransition(meshGameObject);
-
-            if (meshRenderers == null)
-                meshRenderers = meshGameObject.GetComponentsInChildren<Renderer>(true);
-
-            Collider onPointerEventCollider;
-
-            for (var i = 0; i < meshRenderers.Length; i++)
-            {
-                meshRenderers[i].enabled = shouldBeVisible;
-
-                if (meshRenderers[i].transform.childCount > 0)
-                {
-                    onPointerEventCollider = meshRenderers[i].transform.GetChild(0).GetComponent<Collider>();
-
-                    if (onPointerEventCollider != null && onPointerEventCollider.gameObject.layer == PhysicsLayers.onPointerEventLayer)
-                        onPointerEventCollider.enabled = shouldBeVisible;
-                }
-            }
-        }
-
-        private void ConfigureColliders(IDCLEntity entity)
-        {
-            CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, currentModel.WithCollisions, true, entity, ECSComponentsUtils.CalculateNFTCollidersLayer(currentModel.WithCollisions, currentModel.IsPointerBlocker));
+            shapeFrame.UpdateBackgroundColor( new UnityEngine.Color(model.Color.Red, model.Color.Green,model.Color.Blue,1));
         }
     }
 }

@@ -21,8 +21,8 @@ public class ECSTestScene : MonoBehaviour
 
     private static void SceneScript(string sceneId, IECSComponentWriter componentWriter)
     {
-        componentWriter.PutComponent(sceneId, 0, 1,
-            new ECSTransform() { position = new Vector3(100, 100, 100) });
+        componentWriter.PutComponent(sceneId, 1, 1,
+            new ECSTransform() { position = new Vector3(8, 1, 8) });
         AddNFTComponent(sceneId, componentWriter);
         AddBoxComponent(sceneId, componentWriter);
     }
@@ -31,7 +31,8 @@ public class ECSTestScene : MonoBehaviour
     {
         PBBoxShape model = new PBBoxShape();
         model.Visible = true;
-        componentWriter.PutComponent(sceneId,1,ComponentID.BOX_SHAPE,
+        model.WithCollisions = true;
+        componentWriter.PutComponent(sceneId,2,ComponentID.BOX_SHAPE,
             model );
     }
     
@@ -40,12 +41,13 @@ public class ECSTestScene : MonoBehaviour
         PBNFTShape model = new PBNFTShape();
         model.Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722";
         model.Visible = true;
+        model.WithCollisions = true;
         model.Color = new Color();
         model.Style = 6;
-        model.Color.Red = 0f;
-        model.Color.Green = 0f;
+        model.Color.Red = 0.5f;
+        model.Color.Green = 0.5f;
         model.Color.Blue = 1f;
-        componentWriter.PutComponent(sceneId,2,ComponentID.NFT_SHAPE,
+        componentWriter.PutComponent(sceneId,0,ComponentID.NFT_SHAPE,
             model );
     }
 

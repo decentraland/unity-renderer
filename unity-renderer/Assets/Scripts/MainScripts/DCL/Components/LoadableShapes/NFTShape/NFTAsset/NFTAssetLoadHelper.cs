@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using NFTShape_Internal;
 using UnityEngine;
@@ -8,16 +10,43 @@ using UnityEngine.Networking;
 
 namespace DCL
 {
-    public interface INFTAssetLoadHelper : IDisposable
+    public interface INFTAssetRetriever : IDisposable
     {
         IEnumerator LoadNFTAsset(string url, Action<INFTAsset> OnSuccess, Action<Exception> OnFail);
+        UniTask<INFTAsset> LoadNFTAsset(string url);
     }
 
-    public class NFTAssetLoadHelper : INFTAssetLoadHelper
+    public class InftAssetRetriever : INFTAssetRetriever
     {
+        private const string CONTENT_TYPE = "Content-Type";
+        private const string CONTENT_LENGTH = "Content-Length";
+        private const string CONTENT_TYPE_GIF = "image/gif";
+        private const long PREVIEW_IMAGE_SIZE_LIMIT = 500000;
+        
         protected AssetPromise_Texture imagePromise = null;
         protected AssetPromise_Gif gifPromise = null;
+        private readonly CancellationTokenSource tokenSource;
 
+        public InftAssetRetriever()
+        {
+            tokenSource = new CancellationTokenSource();
+        }
+
+        public async UniTask<INFTAsset> LoadNFTAsset(string url)
+        {
+            tokenSource.Token.ThrowIfCancellationRequested();
+            INFTAsset result = null;
+            await LoadNFTAsset(url, (nftAsset) =>
+            {
+                result = nftAsset;
+            }, (exception) =>
+            {
+                Debug.Log("Fail to load nft " + url + " due to " + exception.Message);
+            }).WithCancellation(tokenSource.Token);
+
+            return result;
+        }
+        
         public IEnumerator LoadNFTAsset(string url, Action<INFTAsset> OnSuccess, Action<Exception> OnFail)
         {
             if (string.IsNullOrEmpty(url))
@@ -25,12 +54,7 @@ namespace DCL
                 OnFail?.Invoke(new Exception($"Image url is null!"));
                 yield break;
             }
-
-            const string CONTENT_TYPE = "Content-Type";
-            const string CONTENT_LENGTH = "Content-Length";
-            const string CONTENT_TYPE_GIF = "image/gif";
-            const long PREVIEW_IMAGE_SIZE_LIMIT = 500000;
-
+            
             HashSet<string> headers = new HashSet<string>() {CONTENT_TYPE, CONTENT_LENGTH};
             Dictionary<string, string> responseHeaders = new Dictionary<string, string>();
             string headerRequestError = string.Empty;
@@ -81,6 +105,8 @@ namespace DCL
         public void Dispose()
         {
             UnloadPromises();
+            tokenSource.Cancel();
+            tokenSource.Dispose();
         }
 
         protected virtual IEnumerator GetHeaders(string url, HashSet<string> headerField,
