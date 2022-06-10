@@ -12,7 +12,7 @@ using UnityEngine.TestTools;
 
 public class NFTAssetLoadHelperShould : IntegrationTestSuite
 {
-    private INFTAssetRetrieverMock retriever;
+    private NftAssetRetrieverMock retriever;
 
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
@@ -21,7 +21,7 @@ public class NFTAssetLoadHelperShould : IntegrationTestSuite
 
     protected override IEnumerator SetUp()
     {
-        retriever = new INFTAssetRetrieverMock();
+        retriever = new NftAssetRetrieverMock();
         yield return base.SetUp();
     }
 

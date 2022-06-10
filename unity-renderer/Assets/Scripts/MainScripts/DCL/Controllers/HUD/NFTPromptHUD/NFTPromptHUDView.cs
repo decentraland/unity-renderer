@@ -282,7 +282,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         nftAssetRetriever?.Dispose();
         nftAsset?.Dispose();
         
-        nftAssetRetriever = new InftAssetRetriever();
+        nftAssetRetriever = new NFTAssetRetriever();
         yield return nftAssetRetriever.LoadNFTAsset(
             nftInfo.previewImageUrl,
             OnSuccess: nftAsset =>

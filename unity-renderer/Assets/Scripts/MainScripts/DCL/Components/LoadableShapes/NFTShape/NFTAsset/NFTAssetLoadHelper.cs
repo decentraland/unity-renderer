@@ -16,7 +16,7 @@ namespace DCL
         UniTask<INFTAsset> LoadNFTAsset(string url);
     }
 
-    public class InftAssetRetriever : INFTAssetRetriever
+    public class NFTAssetRetriever : INFTAssetRetriever
     {
         private const string CONTENT_TYPE = "Content-Type";
         private const string CONTENT_LENGTH = "Content-Length";
@@ -27,7 +27,7 @@ namespace DCL
         protected AssetPromise_Gif gifPromise = null;
         private readonly CancellationTokenSource tokenSource;
 
-        public InftAssetRetriever()
+        public NFTAssetRetriever()
         {
             tokenSource = new CancellationTokenSource();
         }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 
-internal class INFTAssetRetrieverMock : InftAssetRetriever
+internal class NftAssetRetrieverMock : NFTAssetRetriever
 {
     public long contentLengthToReturn = 100;
     public string contentTypeToReturn = "image/png";

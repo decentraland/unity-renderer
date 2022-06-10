@@ -25,7 +25,7 @@ namespace DCL.ECSComponents
             dataStore = dataStoreEcs7;
             
             infoRetriever = new NFTInfoRetriever();
-            assetRetriever = new InftAssetRetriever();
+            assetRetriever = new NFTAssetRetriever();
         }
         
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }

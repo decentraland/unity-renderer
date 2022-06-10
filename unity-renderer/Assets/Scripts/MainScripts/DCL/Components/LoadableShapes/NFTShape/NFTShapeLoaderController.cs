@@ -83,7 +83,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
             nftInfoRetriever = new NFTInfoRetriever();
 
         if (nftAssetRetriever == null)
-            nftAssetRetriever = new InftAssetRetriever();
+            nftAssetRetriever = new NFTAssetRetriever();
 
         this.nftInfoRetriever = nftInfoRetriever;
         this.nftAssetRetriever = nftAssetRetriever;
