@@ -522,7 +522,10 @@ public class TaskbarHUDController : IHUD
         voiceChatHud.VoiceChatWindowView.OnClose += () => view.ToggleOff(TaskbarHUDView.TaskbarButtonType.VoiceChat);
 
         if (controller?.VoiceChatBarView != null)
+        {
             controller.VoiceChatBarView.Transform.SetParent(view.altSectionContainer, false);
+            controller.VoiceChatBarView.Transform.SetAsFirstSibling();
+        }
     }
 
     private void InitializeEmotesSelector(bool current, bool previous) 
