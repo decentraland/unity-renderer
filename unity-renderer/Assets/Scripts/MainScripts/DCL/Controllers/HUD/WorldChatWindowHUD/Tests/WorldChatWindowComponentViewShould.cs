@@ -219,7 +219,7 @@ public class WorldChatWindowComponentViewShould
         const string expectedChannelId = "general";
         var channelId = "";
         view.OnOpenPublicChannel += s => channelId = s;
-        GivenPublicChannel(channelId, "nearby");
+        GivenPublicChannel(expectedChannelId, "nearby");
 
         view.publicChannelList.Get(expectedChannelId).openChatButton.onClick.Invoke();
 
@@ -232,7 +232,7 @@ public class WorldChatWindowComponentViewShould
         const string userId = "userId";
         var channelId = "";
         view.OnOpenPrivateChat += s => channelId = s;
-        GivenPrivateChat(channelId);
+        GivenPrivateChat(userId);
 
         yield return null;
 

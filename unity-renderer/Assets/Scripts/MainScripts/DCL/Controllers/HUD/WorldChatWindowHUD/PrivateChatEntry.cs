@@ -24,6 +24,11 @@ public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
     public PrivateChatEntryModel Model => model;
 
     public event Action<PrivateChatEntry> OnOpenChat;
+    
+    public static PrivateChatEntry Create()
+    {
+        return Instantiate(Resources.Load<PrivateChatEntry>("SocialBarV1/WhisperChannelElement"));
+    }
 
     public override void Awake()
     {
