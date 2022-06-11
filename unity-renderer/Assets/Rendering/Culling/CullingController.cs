@@ -165,12 +165,17 @@ namespace DCL.Rendering
                 float boundsSize = bounds.size.magnitude;
                 float viewportSize = (boundsSize / distance) * Mathf.Rad2Deg;
 
-                bool isEmissive = IsEmissive(r);
-                bool isOpaque = IsOpaque(r);
 
                 float shadowTexelSize = ComputeShadowMapTexelSize(boundsSize, urpAsset.shadowDistance, urpAsset.mainLightShadowmapResolution);
 
-                bool shouldBeVisible = !settings.enableObjectCulling || TestRendererVisibleRule(profile, viewportSize, distance, boundsContainsPlayer, isOpaque, isEmissive);
+                bool shouldBeVisible = !settings.enableObjectCulling || boundsContainsPlayer || distance < profile.visibleDistanceThreshold;
+
+                if (!shouldBeVisible && IsEmissive(r))
+                    shouldBeVisible |= viewportSize > profile.emissiveSizeThreshold;
+
+                if (!shouldBeVisible && IsOpaque(r))
+                    shouldBeVisible |= viewportSize > profile.opaqueSizeThreshold;
+
                 bool shouldHaveShadow = !settings.enableShadowCulling || TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
 
                 if (r is SkinnedMeshRenderer skr)
