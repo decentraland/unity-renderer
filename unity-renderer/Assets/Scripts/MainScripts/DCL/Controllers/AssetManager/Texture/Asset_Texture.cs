@@ -9,6 +9,7 @@ namespace DCL
     public class Asset_Texture : Asset, ITexture
     {
         public Texture2D texture { get; set; }
+        public float resizingFactor = 1;
         public Asset_Texture dependencyAsset; // to store the default tex asset and release it accordingly
         public event System.Action OnCleanup;
 

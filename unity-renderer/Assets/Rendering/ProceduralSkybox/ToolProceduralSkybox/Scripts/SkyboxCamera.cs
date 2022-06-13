@@ -33,6 +33,9 @@ namespace DCL.Skybox
 
         public void AssignTargetCamera(Transform mainCam)
         {
+            if (mainCam == null)
+                return;
+
             Camera mainCamComponent = mainCam.GetComponent<Camera>();
             var mainCameraData = mainCamComponent.GetUniversalAdditionalCameraData();
             mainCameraData.renderType = CameraRenderType.Overlay;

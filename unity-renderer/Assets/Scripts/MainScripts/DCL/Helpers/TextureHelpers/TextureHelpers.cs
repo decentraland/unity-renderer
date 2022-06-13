@@ -3,35 +3,35 @@ using UnityEngine.Rendering;
 
 public static class TextureHelpers
 {
-    public static void EnsureTexture2DMaxSize(ref Texture2D texture, int maxTextureSize)
+    public static Texture2D ClampSize(Texture2D source, int maxTextureSize, bool linear = false, bool useGPUCopy = true)
     {
-        if (texture == null)
-            return;
+        if (source.width <= maxTextureSize && source.height <= maxTextureSize)
+            return source;
 
-        if (texture.width == 0 || texture.height == 0)
-            return;
+        int width = source.width;
+        int height = source.height;
 
-        if (Mathf.Max(texture.height, texture.width) <= maxTextureSize)
-            return;
+        float factor = GetScalingFactor(width, height, maxTextureSize);
 
-        int w, h;
-        if (texture.height > texture.width)
-        {
-            h = maxTextureSize;
-            w = (int) ((texture.width / (float) texture.height) * h);
-        }
+        Texture2D dstTex = Resize(source, (int) (width * factor), (int) (height * factor), linear, useGPUCopy);
+
+        if (Application.isPlaying)
+            Object.Destroy(source);
         else
-        {
-            w = maxTextureSize;
-            h = (int) ((texture.height / (float) texture.width) * w);
-        }
+            Object.DestroyImmediate(source);
 
-        var newTexture = Resize(texture, w, h);
-        var oldTexture = texture;
-        texture = newTexture;
-        Object.Destroy(oldTexture);
+        return dstTex;
     }
-    
+
+    public static float GetScalingFactor(int width, int height, int maxTextureSize)
+    {
+        if (width >= height)
+        {
+            return (float)maxTextureSize / width;
+        }
+        return (float)maxTextureSize / height;
+    }
+
     public static Texture2D Resize(Texture2D source, int newWidth, int newHeight, bool linear = false, bool useGPUCopy = true)
     {
         newWidth = Mathf.Max(1, newWidth);
