@@ -116,7 +116,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         textComponent.text = model.Text;
 
         if (model.TextColor != null)
-            textComponent.color = new UnityEngine.Color(model.TextColor.Red, model.TextColor.Green, model.TextColor.Blue, model.Opacity);
+            textComponent.color = new UnityEngine.Color(model.TextColor.R, model.TextColor.G, model.TextColor.B, model.Opacity);
 
         textComponent.fontSize = model.FontSize;
         textComponent.richText = true;
@@ -162,7 +162,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
                 textComponent.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
                 underlayKeywordEnabled = true;
             }
-            var shadowColor  = new UnityEngine.Color(model.ShadowColor.Red, model.ShadowColor.Green, model.ShadowColor.Blue, model.Opacity);
+            var shadowColor  = new UnityEngine.Color(model.ShadowColor.R, model.ShadowColor.G, model.ShadowColor.B, model.Opacity);
             textComponent.fontSharedMaterial.SetColor("_UnderlayColor", shadowColor);
         }
         
@@ -178,7 +178,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
             textComponent.outlineWidth = model.OutlineWidth;
             if (model.OutlineColor != null)
             {
-                var outlineColor  = new UnityEngine.Color(model.OutlineColor.Red, model.OutlineColor.Green, model.OutlineColor.Blue, 1);
+                var outlineColor  = new UnityEngine.Color(model.OutlineColor.R, model.OutlineColor.G, model.OutlineColor.B, 1);
                 textComponent.outlineColor = outlineColor;
             }
         }
