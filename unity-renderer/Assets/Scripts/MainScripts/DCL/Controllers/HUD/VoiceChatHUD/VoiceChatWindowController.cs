@@ -33,7 +33,6 @@ public class VoiceChatWindowController : IHUD
     internal bool isOwnPLayerTalking = false;
     private Coroutine updateMuteStatusRoutine = null;
     internal bool isMuteAll = false;
-    private bool isOpenByFirstTime = true;
     internal bool isJoined = false;
 
     public VoiceChatWindowController() { }
@@ -81,19 +80,15 @@ public class VoiceChatWindowController : IHUD
         friendsController.OnUpdateFriendship += OnUpdateFriendship;
 
         settings.generalSettings.OnChanged += OnSettingsChanged;
+
+        CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
+        RendererState_OnChange(CommonScriptableObjects.rendererState.Get(), false);
     }
 
     public void SetVisibility(bool visible)
     {
         if (visible)
-        {
             voiceChatWindowView.Show();
-
-            if (isOpenByFirstTime)
-                JoinVoiceChat(true);
-
-            isOpenByFirstTime = false;
-        }
         else
             voiceChatWindowView.Hide();
     }
@@ -140,6 +135,7 @@ public class VoiceChatWindowController : IHUD
         ownProfile.OnUpdate -= OnUserProfileUpdated;
         friendsController.OnUpdateFriendship -= OnUpdateFriendship;
         settings.generalSettings.OnChanged -= OnSettingsChanged;
+        CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
     }
 
     internal void CloseView() { SetVisibility(false); }
@@ -319,6 +315,15 @@ public class VoiceChatWindowController : IHUD
         }
 
         socialAnalytics.SendVoiceChatPreferencesChanged(settings.voiceChatAllow);
+    }
+
+    internal void RendererState_OnChange(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
+        JoinVoiceChat(true);
     }
 
     internal void SetWhichPlayerIsTalking()
