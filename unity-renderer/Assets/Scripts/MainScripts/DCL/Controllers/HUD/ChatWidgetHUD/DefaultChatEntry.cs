@@ -15,18 +15,19 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     [SerializeField] internal float timeToFade = 10f;
     [SerializeField] internal float fadeDuration = 5f;
     [SerializeField] internal TextMeshProUGUI body;
-    [SerializeField] CanvasGroup group;
+    [SerializeField] internal CanvasGroup group;
     [SerializeField] internal float timeToHoverPanel = 1f;
     [SerializeField] internal float timeToHoverGotoPanel = 1f;
-    [SerializeField] private bool showUserName = true;
+    [SerializeField] internal bool showUserName = true;
     [SerializeField] private RectTransform hoverPanelPositionReference;
     [SerializeField] private RectTransform contextMenuPositionReference;
     [NonSerialized] public string messageLocalDateTime;
 
-    [Header("Preview Mode")]
-    [SerializeField] private Image previewBackgroundImage;
-    [SerializeField] private Color previewBackgroundColor;
-    [SerializeField] private Color previewFontColor;
+    [Header("Preview Mode")] [SerializeField]
+    internal Image previewBackgroundImage;
+
+    [SerializeField] internal Color previewBackgroundColor;
+    [SerializeField] internal Color previewFontColor;
 
     private bool fadeEnabled;
     private double fadeoutStartTime;
@@ -58,42 +59,15 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     {
         model = chatEntryModel;
 
-        string userString = GetDefaultSenderString(chatEntryModel.senderName);
-
-        if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
-        {
-            if (chatEntryModel.subType == ChatEntryModel.SubType.RECEIVED)
-            {
-                userString = $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>";
-            }
-            else if (chatEntryModel.subType == ChatEntryModel.SubType.SENT)
-            {
-                userString = $"<b>To {chatEntryModel.recipientName}:</b>";
-            }
-        }
-
         chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
-
+        var userString = GetUserString(chatEntryModel);
+        
         if (!string.IsNullOrEmpty(userString) && showUserName)
-        {
             body.text = $"{userString} {chatEntryModel.bodyText}";
-        }
         else
-        {
             body.text = chatEntryModel.bodyText;
-        }
 
-        if (CoordinateUtils.HasValidTextCoordinates(body.text))
-        {
-            List<string> textCoordinates = CoordinateUtils.GetTextCoordinates(body.text);
-            for (int i = 0; i < textCoordinates.Count; i++)
-            {
-                PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(textCoordinates[i]));
-
-                body.text = body.text.Replace(textCoordinates[i],
-                    $"</noparse><link={textCoordinates[i]}><color=#4886E3><u>{textCoordinates[i]}</u></color></link><noparse>");
-            }
-        }
+        body.text = GetCoordinatesLink(body.text);
 
         messageLocalDateTime = UnixTimeStampToLocalDateTime(chatEntryModel.timestamp).ToString();
 
@@ -102,45 +76,82 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (fadeEnabled)
             group.alpha = 0;
 
-        if (HUDAudioHandler.i != null)
+        PlaySfx(chatEntryModel);
+    }
+
+    private string GetUserString(ChatEntryModel chatEntryModel)
+    {
+        var userString = GetDefaultSenderString(chatEntryModel.senderName);
+        
+        if (chatEntryModel.messageType != ChatMessage.Type.PRIVATE) return userString;
+
+        userString = chatEntryModel.subType switch
         {
-            // Check whether or not this message is new, and chat sounds are enabled in settings
-            if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp &&
-                Settings.i.audioSettings.Data.chatSFXEnabled)
-            {
-                switch (chatEntryModel.messageType)
-                {
-                    case ChatMessage.Type.PUBLIC:
-                        // Check whether or not the message was sent by the local player
-                        if (chatEntryModel.senderId == UserProfile.GetOwnUserProfile().userId)
-                            AudioScriptableObjects.chatSend.Play(true);
-                        else
-                            AudioScriptableObjects.chatReceiveGlobal.Play(true);
-                        break;
-                    case ChatMessage.Type.PRIVATE:
-                        switch (chatEntryModel.subType)
-                        {
-                            case ChatEntryModel.SubType.RECEIVED:
-                                AudioScriptableObjects.chatReceivePrivate.Play(true);
-                                break;
-                            case ChatEntryModel.SubType.SENT:
-                                AudioScriptableObjects.chatSend.Play(true);
-                                break;
-                            default:
-                                break;
-                        }
+            ChatEntryModel.SubType.RECEIVED => $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",
+            ChatEntryModel.SubType.SENT => $"<b>To {chatEntryModel.recipientName}:</b>",
+            _ => userString
+        };
 
-                        break;
-                    case ChatMessage.Type.SYSTEM:
-                        AudioScriptableObjects.chatReceiveGlobal.Play(true);
-                        break;
-                    default:
-                        break;
-                }
-            }
+        return userString;
+    }
 
-            HUDAudioHandler.i.RefreshChatLastCheckedTimestamp();
+    private string GetCoordinatesLink(string body)
+    {
+        if (!CoordinateUtils.HasValidTextCoordinates(body)) return body;
+        var textCoordinates = CoordinateUtils.GetTextCoordinates(body);
+
+        for (var i = 0; i < textCoordinates.Count; i++)
+        {
+            // TODO: the preload should not be here
+            PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(textCoordinates[i]));
+
+            body = body.Replace(textCoordinates[i],
+                $"</noparse><link={textCoordinates[i]}><color=#4886E3><u>{textCoordinates[i]}</u></color></link><noparse>");
         }
+
+        return body;
+    }
+
+    private void PlaySfx(ChatEntryModel chatEntryModel)
+    {
+        if (HUDAudioHandler.i == null) return;
+
+        // Check whether or not this message is new, and chat sounds are enabled in settings
+        if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp &&
+            Settings.i.audioSettings.Data.chatSFXEnabled)
+        {
+            switch (chatEntryModel.messageType)
+            {
+                case ChatMessage.Type.PUBLIC:
+                    // Check whether or not the message was sent by the local player
+                    if (chatEntryModel.senderId == UserProfile.GetOwnUserProfile().userId)
+                        AudioScriptableObjects.chatSend.Play(true);
+                    else
+                        AudioScriptableObjects.chatReceiveGlobal.Play(true);
+                    break;
+                case ChatMessage.Type.PRIVATE:
+                    switch (chatEntryModel.subType)
+                    {
+                        case ChatEntryModel.SubType.RECEIVED:
+                            AudioScriptableObjects.chatReceivePrivate.Play(true);
+                            break;
+                        case ChatEntryModel.SubType.SENT:
+                            AudioScriptableObjects.chatSend.Play(true);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    break;
+                case ChatMessage.Type.SYSTEM:
+                    AudioScriptableObjects.chatReceiveGlobal.Play(true);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        HUDAudioHandler.i.RefreshChatLastCheckedTimestamp();
     }
 
     private void PreloadSceneMetadata(ParcelCoordinates parcelCoordinates)
@@ -233,11 +244,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             body.color = originalFontColor;
             return;
         }
-        
+
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
-        
-        previewInterpolationRoutine = StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+
+        previewInterpolationRoutine =
+            StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
     }
 
     public override void ActivatePreview()
@@ -247,27 +259,28 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             ActivatePreviewInstantly();
             return;
         }
-        
+
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
-        
-        previewInterpolationRoutine = StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
+
+        previewInterpolationRoutine =
+            StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
     }
-    
+
     public override void ActivatePreviewInstantly()
     {
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
-        
+
         previewBackgroundImage.color = previewBackgroundColor;
         body.color = previewFontColor;
     }
-    
+
     public override void DeactivatePreviewInstantly()
     {
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
-        
+
         previewBackgroundImage.color = originalBackgroundColor;
         body.color = originalFontColor;
     }
@@ -380,18 +393,18 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
         return dtDateTime;
     }
-    
+
     private IEnumerator InterpolatePreviewColor(Color backgroundColor, Color fontColor, float duration)
     {
         var t = 0f;
-        
+
         while (t < duration)
         {
             t += Time.deltaTime;
 
             previewBackgroundImage.color = Color.Lerp(previewBackgroundImage.color, backgroundColor, t / duration);
             body.color = Color.Lerp(body.color, fontColor, t / duration);
-            
+
             yield return null;
         }
 

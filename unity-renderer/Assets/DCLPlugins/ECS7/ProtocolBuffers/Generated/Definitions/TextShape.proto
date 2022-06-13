@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+// ComponentDefinition.ComponentID= 1030;
+// This parameter is processed by the tool
+
+package decentraland.ecs;
+option csharp_namespace = "DCL.ECSComponents";
+
+message PBTextShape {  
+  string text = 1;
+  bool visible = 2;
+  string font = 3;
+  float opacity = 4;
+  float fontSize = 5;
+  bool fontAutoSize = 6;
+  string hTextAlign = 7;
+  string vTextAlign = 8;
+  float width = 9;
+  float height = 10;
+  float paddingTop = 11;
+  float paddingRight = 12;
+  float paddingBottom = 13;
+  float paddingLeft = 14;
+  float lineSpacing = 15;
+  int32 lineCount = 16;
+  bool textWrapping = 17;
+  float shadowBlur = 18;
+  float shadowOffsetX = 19;
+  float shadowOffsetY = 20;
+  float outlineWidth = 21;
+  Color shadowColor = 22;
+  Color outlineColor = 23;
+  Color textColor = 24;
+}
+
+message Color {
+  float red = 1;
+  float green = 2;
+  float blue = 3;
+}
