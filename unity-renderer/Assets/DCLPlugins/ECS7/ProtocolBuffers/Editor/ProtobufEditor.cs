@@ -55,7 +55,7 @@ namespace DCL.Protobuf
         {
             if (VERBOSE)
             {
-                UnityEngine.Debug.Log(message);
+                Debug.Log(message);
             }    
         }
         
@@ -472,7 +472,7 @@ namespace DCL.Protobuf
             return nextVersion;
         }
         
-              [MenuItem("Decentraland/Protobuf/Download proto executable")]
+        [MenuItem("Decentraland/Protobuf/Download proto executable")]
         public static void DownloadProtobuffExecutable()
         {
             // Download package
@@ -486,7 +486,6 @@ namespace DCL.Protobuf
 #elif UNITY_EDITOR_LINUX
             machine = "linux-x86_64";
 #endif
-
             // We download the proto executable
             string name = $"protoc-{PROTO_VERSION}-{machine}.zip";
             string url = $"https://github.com/protocolbuffers/protobuf/releases/download/v{PROTO_VERSION}/{name}";
@@ -505,16 +504,23 @@ namespace DCL.Protobuf
                 if (VERBOSE)
                     UnityEngine.Debug.Log("Unzipped protoc");
 
-                string outputPath = Application.dataPath + PATH_TO_PROTO + executableName;
+                string outputPathDir = Application.dataPath + PATH_TO_PROTO ;
+                string outputPath = outputPathDir + executableName;
 
                 if (File.Exists(outputPath))
                     File.Delete(outputPath);
 
+                if (!Directory.Exists(outputPathDir))
+                    Directory.CreateDirectory(outputPathDir);
+                
                 // We move the executable to his correct path
                 Directory.Move(destPackage + "/bin/" + executableName, outputPath);
+                
+#if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
+                ChmodProtoCompiler();
+#endif
+                
                 WriteVersion(PROTO_VERSION, EXECUTABLE_VERSION_FILENAME);
-                if (VERBOSE)
-                    UnityEngine.Debug.Log("Success copying definitions in " + outputPath);
             }
             catch (Exception e)
             {
@@ -563,5 +569,31 @@ namespace DCL.Protobuf
             if (currentVersion != currentDownloadedVersion)
                 UpdateModels(currentVersion);
         }
+        
+        
+        private static bool ChmodProtoCompiler()
+        {
+            string proto_path = Application.dataPath + PATH_TO_PROTO + PROTO_FILENAME;
+            
+            // This is the console to convert the proto
+            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "chmod", Arguments = $"+x {proto_path}" };
+            
+            Process proc = new Process() { StartInfo = startInfo };
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.Start();
+            
+            string error = proc.StandardError.ReadToEnd();
+            proc.WaitForExit();
+
+            if (error != "")
+            {
+                UnityEngine.Debug.LogError("It failed granting permission to protoc  : " + error);
+                return false;
+            }
+            return true;
+        }
+
     }
 }

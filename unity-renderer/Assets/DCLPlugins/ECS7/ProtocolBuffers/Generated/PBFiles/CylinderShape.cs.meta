@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD:unity-renderer/Assets/DCLPlugins/ECS7/ProtocolBuffers/Generated/Protos/AudioStream.gen.cs.meta
 guid: e2a9db677ecd18bdc8b15038217c6d59
-=======
-guid: 56236b813367aa516958424d9182b995
->>>>>>> master:unity-renderer/Assets/DCLPlugins/ECS7/ProtocolBuffers/Generated/PBFiles/CylinderShape.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
