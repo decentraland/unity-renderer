@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -100,7 +101,7 @@ public class DateSeparatorEntry : ChatEntry
         }
         else
         {
-            result = date.ToLongDateString();
+            result = date.ToString("D", DateTimeFormatInfo.InvariantInfo);
         }
 
         return result;
