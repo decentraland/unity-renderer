@@ -145,7 +145,7 @@ namespace DCL
                     debugString = "DEBUG_MODE&";
                     break;
                 case Environment.ZONE:
-                    debugString = "NETWORK=ropsten&";
+                    debugString = "NETWORK=goerli&";
                     break;
                 case Environment.TODAY:
                     debugString = "NETWORK=mainnet&";
