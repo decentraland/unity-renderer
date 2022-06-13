@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Configuration;
+using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -31,6 +33,21 @@ public class AvatarReporterController : IAvatarReporterController
         isInitialReport = true;
         lastSceneId = null;
     }
+    
+    string GetcurrentSceneIdNonAlloc(Vector2Int coords)
+    {
+        foreach (KeyValuePair<string, IParcelScene> parcelScene in worldState.loadedScenes)
+        {
+            var parcels = parcelScene.Value.sceneData.parcels;
+
+            if (parcels != null && parcels.Contains(coords))
+            {
+                return parcelScene.Key;
+            }
+        }
+        
+        return "";
+    }
 
     void IAvatarReporterController.ReportAvatarPosition(Vector3 position)
     {
@@ -48,11 +65,8 @@ public class AvatarReporterController : IAvatarReporterController
         {
             return;
         }
-
-        var scenePair = worldState.loadedScenes
-                                  .FirstOrDefault(pair => pair.Value.sceneData.parcels != null && pair.Value.sceneData.parcels.Contains(coords));
-
-        string currentSceneId = scenePair.Key;
+        
+        string currentSceneId = GetcurrentSceneIdNonAlloc(coords);
 
         if (currentSceneId == lastSceneId && !isInitialReport)
         {
