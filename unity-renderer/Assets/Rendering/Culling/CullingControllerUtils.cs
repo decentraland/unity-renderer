@@ -37,7 +37,7 @@ namespace DCL.Rendering
         /// <returns>True if renderer should be visible, false if otherwise.</returns>
         internal static bool TestRendererVisibleRule(CullingControllerProfile profile, float viewportSize, float distanceToCamera, bool boundsContainsCamera, bool isOpaque, bool isEmissive)
         {
-            bool shouldBeVisible = distanceToCamera < profile.visibleDistanceThreshold || boundsContainsCamera;
+            bool shouldBeVisible = boundsContainsCamera || distanceToCamera < profile.visibleDistanceThreshold;
 
             if (isEmissive)
                 shouldBeVisible |= viewportSize > profile.emissiveSizeThreshold;
