@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
 {
-    [SerializeField] private Button openChatButton;
-    [SerializeField] private TMP_Text nameLabel;
-    [SerializeField] private PublicChannelEntryModel model;
-    [SerializeField] private UnreadNotificationBadge unreadNotifications;
+    [SerializeField] internal Button openChatButton;
+    [SerializeField] internal TMP_Text nameLabel;
+    [SerializeField] internal PublicChannelEntryModel model;
+    [SerializeField] internal UnreadNotificationBadge unreadNotifications;
     
     private IChatController chatController;
     private ILastReadMessagesService lastReadMessagesService;
@@ -16,6 +16,11 @@ public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
     public PublicChannelEntryModel Model => model;
 
     public event Action<PublicChannelEntry> OnOpenChat;
+
+    public static PublicChannelEntry Create()
+    {
+        return Instantiate(Resources.Load<PublicChannelEntry>("SocialBarV1/PublicChannelElement"));
+    }
 
     public override void Awake()
     {
