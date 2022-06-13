@@ -25,7 +25,7 @@ public class PublicChatChannelController : IHUD
     private string channelId;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private bool skipChatInputTrigger;
-    internal string lastPrivateMessageRecipient = string.Empty;
+    private string lastPrivateMessageRecipient = string.Empty;
 
     private UserProfile ownProfile => userProfileBridge.GetOwn();
 
@@ -116,10 +116,10 @@ public class PublicChatChannelController : IHUD
         }
     }
 
-    public void SendChatMessage(ChatMessage message)
+    private void SendChatMessage(ChatMessage message)
     {
-        bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
-        bool isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
+        var isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
+        var isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
 
         if (isPrivateMessage && isValidMessage)
             lastPrivateMessageRecipient = message.recipient;

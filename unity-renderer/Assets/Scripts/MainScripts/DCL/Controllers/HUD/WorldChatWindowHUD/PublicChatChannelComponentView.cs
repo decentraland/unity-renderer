@@ -7,14 +7,14 @@ using UnityEngine.UI;
 
 public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWindowView, IComponentModelConfig, IPointerDownHandler
 {
-    [SerializeField] private Button closeButton;
-    [SerializeField] private Button backButton;
-    [SerializeField] private TMP_Text nameLabel;
-    [SerializeField] private TMP_Text descriptionLabel;
-    [SerializeField] private ChatHUDView chatView;
-    [SerializeField] private PublicChatChannelModel model;
-    [SerializeField] private CanvasGroup[] previewCanvasGroup;
-    [SerializeField] private Vector2 previewModeSize;
+    [SerializeField] internal Button closeButton;
+    [SerializeField] internal Button backButton;
+    [SerializeField] internal TMP_Text nameLabel;
+    [SerializeField] internal TMP_Text descriptionLabel;
+    [SerializeField] internal ChatHUDView chatView;
+    [SerializeField] internal PublicChatChannelModel model;
+    [SerializeField] internal CanvasGroup[] previewCanvasGroup;
+    [SerializeField] internal Vector2 previewModeSize;
     
     private Coroutine alphaRoutine;
     private Vector2 originalSize;

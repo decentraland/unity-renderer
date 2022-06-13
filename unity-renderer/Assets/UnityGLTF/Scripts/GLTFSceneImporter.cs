@@ -716,7 +716,7 @@ namespace UnityGLTF
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
 
             // Resizing must be the last step to avoid breaking the texture when copying with Graphics.CopyTexture()
-            _assetCache.ImageCache[imageCacheIndex] = CheckAndReduceTextureSize(texture, settings.linear);
+            _assetCache.ImageCache[imageCacheIndex] = TextureHelpers.ClampSize(texture, maxTextureSize, settings.linear);
         }
 
         protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex)
@@ -740,35 +740,6 @@ namespace UnityGLTF
                     ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
                 }
             }
-        }
-
-        // Note that if the texture is reduced in size, the source one is destroyed
-        protected Texture2D CheckAndReduceTextureSize(Texture2D source, bool linear = false)
-        {
-            if (source.width <= maxTextureSize && source.height <= maxTextureSize)
-                return source;
-
-            float factor = 1.0f;
-            int width = source.width;
-            int height = source.height;
-
-            if (width >= height)
-            {
-                factor = (float)maxTextureSize / width;
-            }
-            else
-            {
-                factor = (float)maxTextureSize / height;
-            }
-
-            Texture2D dstTex = TextureHelpers.Resize(source, (int) (width * factor), (int) (height * factor), linear);
-
-            if (Application.isPlaying)
-                Object.Destroy(source);
-            else
-                Object.DestroyImmediate(source);
-
-            return dstTex;
         }
 
         protected virtual async UniTask ConstructMeshAttributes(MeshPrimitive primitive, int meshID, int primitiveIndex, CancellationToken token)
