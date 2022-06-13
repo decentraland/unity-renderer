@@ -240,7 +240,7 @@ namespace DCL.Protobuf
                 Directory.Delete(Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS, true);
             }
             
-            CloneDirectory(Application.dataPath + REALPATH_TO_COMPONENTS_DEFINITIONS, Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS);
+            ProtobufEditorHelper.CloneDirectory(Application.dataPath + REALPATH_TO_COMPONENTS_DEFINITIONS, Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS);
         }
         
         private static void GenerateComponentIdEnum(List<ProtoComponent> components)
@@ -250,7 +250,7 @@ namespace DCL.Protobuf
             componentCsFileContent += $"        public const int TRANSFORM = 1;\n";
             foreach (ProtoComponent component in components )
             {
-                string componentUpperCaseName = ToSnakeCase(component.componentName).ToUpper();
+                string componentUpperCaseName = ProtobufEditorHelper.ToSnakeCase(component.componentName).ToUpper();
                 componentCsFileContent += $"        public const int {componentUpperCaseName} = {component.componentId.ToString()};\n";
             }
             componentCsFileContent += "    }\n}\n";
@@ -360,50 +360,6 @@ namespace DCL.Protobuf
                 
                 File.WriteAllLines(file.FullName, outLines.ToArray());
             }
-        }
-
-        /**
-         * Helper functions
-         */
-        
-        private static void CloneDirectory(string root, string dest)
-        {
-            foreach (var directory in Directory.GetDirectories(root))
-            {
-                string dirName = Path.GetFileName(directory);
-                if (!Directory.Exists(Path.Combine(dest, dirName)))
-                {
-                    Directory.CreateDirectory(Path.Combine(dest, dirName));
-                }
-                CloneDirectory(directory, Path.Combine(dest, dirName));
-            }
-
-            foreach (var file in Directory.GetFiles(root))
-            {
-                File.Copy(file, Path.Combine(dest, Path.GetFileName(file)));
-            }
-        }
-        
-        public static string ToSnakeCase(this string text)
-        {
-            if(text == null) {
-                throw new ArgumentNullException(nameof(text));
-            }
-            if(text.Length < 2) {
-                return text;
-            }
-            var sb = new StringBuilder();
-            sb.Append(char.ToLowerInvariant(text[0]));
-            for(int i = 1; i < text.Length; ++i) {
-                char c = text[i];
-                if(char.IsUpper(c)) {
-                    sb.Append('_');
-                    sb.Append(char.ToLowerInvariant(c));
-                } else {
-                    sb.Append(c);
-                }
-            }
-            return sb.ToString();
         }
     }
 }
