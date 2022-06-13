@@ -78,7 +78,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddFriendWindowProperly()
     {
         friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
-            socialAnalytics);
+            socialAnalytics, chatController, Substitute.For<ILastReadMessagesService>());
         friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 
@@ -125,7 +125,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         controller.AddPublicChatChannel(publicChatChannelController);
 
         friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
-            socialAnalytics);
+            socialAnalytics, chatController, Substitute.For<ILastReadMessagesService>());
         friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 

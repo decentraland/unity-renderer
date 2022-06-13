@@ -38,9 +38,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [SerializeField] private Model model;
     
     [Header("Load More Entries")]
-    [SerializeField] private Button loadMoreEntriesButton;
-    [SerializeField] private GameObject loadMoreEntriesContainer;
-    [SerializeField] private TMP_Text loadMoreEntriesLabel;
+    [SerializeField] internal Button loadMoreEntriesButton;
+    [SerializeField] internal GameObject loadMoreEntriesContainer;
+    [SerializeField] internal TMP_Text loadMoreEntriesLabel;
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendRequestEntry> entries = new Dictionary<string, FriendRequestEntry>();
@@ -53,7 +53,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     public Dictionary<string, FriendRequestEntry> Entries => entries;
 
-    public int Count => Entries.Count + creationQueue.Count;
+    public int Count => Entries.Count + creationQueue.Keys.Count(s => !Entries.ContainsKey(s));
 
     public event Action<FriendRequestEntryModel> OnCancelConfirmation;
     public event Action<FriendRequestEntryModel> OnRejectConfirmation;
@@ -136,6 +136,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     public void Remove(string userId)
     {
+        if (creationQueue.ContainsKey(userId))
+            creationQueue.Remove(userId);
+        
         if (!entries.ContainsKey(userId)) return;
 
         if (pooleableEntries.TryGetValue(userId, out var pooleableObject))

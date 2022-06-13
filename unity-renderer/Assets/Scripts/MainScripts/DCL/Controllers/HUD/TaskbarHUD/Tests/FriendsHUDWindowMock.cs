@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
@@ -14,6 +15,11 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public event Action OnRequireMoreFriends;
     public event Action OnRequireMoreFriendRequests;
     public event Action<string> OnSearchFriendsRequested;
+
+    public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService,
+        IFriendsController friendsController, ISocialAnalytics socialAnalytics)
+    {
+    }
 
     public RectTransform Transform => (RectTransform) transform;
     public bool ListByOnlineStatus { get; set; }
@@ -32,11 +38,11 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
         isDestroyed = true;
     }
 
-    public void HideSpinner()
+    public void HideLoadingSpinner()
     {
     }
 
-    public void ShowSpinner()
+    public void ShowLoadingSpinner()
     {
     }
 
@@ -50,7 +56,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
 
     public bool IsFriendListCreationReady() => false;
 
-    public void Destroy()
+    public void Dispose()
     {
         if (isDestroyed) return;
         Destroy(gameObject);

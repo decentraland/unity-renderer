@@ -55,7 +55,9 @@ public class HUDFactory : IHUDFactory
                     new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
+                        new UserProfileWebInterfaceBridge()),
+                    ChatController.i,
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(

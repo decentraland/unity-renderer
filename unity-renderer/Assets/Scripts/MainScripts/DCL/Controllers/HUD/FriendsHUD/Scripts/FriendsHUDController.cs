@@ -20,6 +20,8 @@ public class FriendsHUDController : IHUD
     private readonly IFriendsController friendsController;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly ISocialAnalytics socialAnalytics;
+    private readonly IChatController chatController;
+    private readonly ILastReadMessagesService lastReadMessagesService;
 
     private UserProfile ownUserProfile;
 
@@ -32,12 +34,16 @@ public class FriendsHUDController : IHUD
     public FriendsHUDController(DataStore dataStore,
         IFriendsController friendsController,
         IUserProfileBridge userProfileBridge,
-        ISocialAnalytics socialAnalytics)
+        ISocialAnalytics socialAnalytics,
+        IChatController chatController,
+        ILastReadMessagesService lastReadMessagesService)
     {
         this.dataStore = dataStore;
         this.friendsController = friendsController;
         this.userProfileBridge = userProfileBridge;
         this.socialAnalytics = socialAnalytics;
+        this.chatController = chatController;
+        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Initialize(IFriendsHUDComponentView view = null)
@@ -45,6 +51,7 @@ public class FriendsHUDController : IHUD
         view ??= FriendsHUDComponentView.Create();
         View = view;
 
+        view.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
         view.ListByOnlineStatus = dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_by_online_status");
         view.OnFriendRequestApproved += HandleRequestAccepted;
         view.OnCancelConfirmation += HandleRequestCancelled;
@@ -68,11 +75,11 @@ public class FriendsHUDController : IHUD
             
             if (friendsController.isInitialized)
             {
-                view.HideSpinner();
+                view.HideLoadingSpinner();
             }
             else
             {
-                view.ShowSpinner();
+                view.ShowLoadingSpinner();
                 friendsController.OnInitialized -= HandleFriendsInitialized;
                 friendsController.OnInitialized += HandleFriendsInitialized;
             }
@@ -103,7 +110,7 @@ public class FriendsHUDController : IHUD
             View.OnRequireMoreFriends -= DisplayMoreFriends;
             View.OnRequireMoreFriendRequests -= DisplayMoreFriendRequests;
             View.OnSearchFriendsRequested -= SearchFriends;
-            View.Destroy();
+            View.Dispose();
         }
 
         if (ownUserProfile != null)
@@ -130,7 +137,7 @@ public class FriendsHUDController : IHUD
     private void HandleFriendsInitialized()
     {
         friendsController.OnInitialized -= HandleFriendsInitialized;
-        View.HideSpinner();
+        View.HideLoadingSpinner();
     }
 
     private void HandleProfileUpdated(UserProfile profile) => UpdateBlockStatus(profile).Forget();

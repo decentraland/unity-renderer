@@ -39,7 +39,9 @@ public class FriendsHUDControllerShould
         controller = new FriendsHUDController(dataStore,
             friendsController,
             userProfileBridge,
-            socialAnalytics);
+            socialAnalytics,
+            Substitute.For<IChatController>(),
+            Substitute.For<ILastReadMessagesService>());
         view = Substitute.For<IFriendsHUDComponentView>();
         view.FriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         controller.Initialize(view);

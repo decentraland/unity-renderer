@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,12 +9,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     private const int FRIENDS_LIST_TAB_INDEX = 0;
     private const int FRIENDS_REQUEST_TAB_INDEX = 1;
 
-    [SerializeField] private GameObject loadingSpinner;
-    [SerializeField] private Button closeButton;
-    [SerializeField] private Button friendsTabFocusButton;
-    [SerializeField] private Button friendRequestsTabFocusButton;
-    [SerializeField] private FriendsTabComponentView friendsTab;
-    [SerializeField] private FriendRequestsTabComponentView friendRequestsTab;
+    [SerializeField] internal GameObject loadingSpinner;
+    [SerializeField] internal Button closeButton;
+    [SerializeField] internal Button friendsTabFocusButton;
+    [SerializeField] internal Button friendRequestsTabFocusButton;
+    [SerializeField] internal FriendsTabComponentView friendsTab;
+    [SerializeField] internal FriendRequestsTabComponentView friendRequestsTab;
     [SerializeField] private Model model;
 
     public event Action<FriendRequestEntryModel> OnFriendRequestApproved
@@ -88,6 +89,14 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
             .GetComponent<FriendsHUDComponentView>();
         return view;
     }
+    
+    public void Initialize(IChatController chatController,
+        ILastReadMessagesService lastReadMessagesService,
+        IFriendsController friendsController,
+        ISocialAnalytics socialAnalytics)
+    {
+        friendsTab.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
+    }
 
     public override void Awake()
     {
@@ -105,13 +114,13 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         friendRequestsTab.Expand();
     }
 
-    public void HideSpinner()
+    public void HideLoadingSpinner()
     {
         loadingSpinner.SetActive(false);
         model.isLoadingSpinnerActive = false;
     }
 
-    public void ShowSpinner()
+    public void ShowLoadingSpinner()
     {
         loadingSpinner.SetActive(true);
         model.isLoadingSpinnerActive = true;
@@ -133,8 +142,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     public void DisplayFriendUserNotFound() => friendRequestsTab.ShowUserNotFoundNotification();
 
     public bool IsFriendListCreationReady() => friendsTab.DidDeferredCreationCompleted;
-
-    public void Destroy() => Destroy(gameObject);
 
     public void Show()
     {
@@ -255,9 +262,9 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     public override void RefreshControl()
     {
         if (model.isLoadingSpinnerActive)
-            ShowSpinner();
+            ShowLoadingSpinner();
         else
-            HideSpinner();
+            HideLoadingSpinner();
 
         if (model.visible)
             Show();
@@ -267,7 +274,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         FocusTab(model.focusedTabIndex);
     }
 
-    private void FocusTab(int index)
+    internal void FocusTab(int index)
     {
         model.focusedTabIndex = index;
 
