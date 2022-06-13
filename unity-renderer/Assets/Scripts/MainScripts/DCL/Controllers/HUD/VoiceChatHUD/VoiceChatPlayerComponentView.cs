@@ -19,7 +19,7 @@ public class VoiceChatPlayerComponentView : BaseComponentView, IVoiceChatPlayerC
     [SerializeField] internal Color talkingColor;
     [SerializeField] internal Color nonTalkingColor;
     [SerializeField] internal ButtonComponentView menuButton;
-    [SerializeField] private RectTransform menuPositionReference;
+    [SerializeField] internal RectTransform menuPositionReference;
 
     [Header("Configuration")]
     [SerializeField] internal VoiceChatPlayerComponentModel model;
