@@ -6,7 +6,7 @@ There is a step by step guide that you need to follow. I will list all the steps
 1. Create the proto definition
 2. Generate the new proto c# code in the project
 3. Code the new component
-4. Ensure that the component follows the convenion
+4. Ensure that the component follows the convention
 
 
 ## Create the proto definition
@@ -18,7 +18,7 @@ To create a definition you must go to this repo (implement link to final repo)
 ```sh
     make build
 ```
-3. Implement unit test to serialize/desrialize the component
+3. Implement unit test to serialize/deserialize the component
 4. Create a PR with the news changes
 
 Things to have into account
@@ -59,11 +59,11 @@ This interface has 3 method that are important to implement in order to create a
 
 
 - Serializer
-Each component is responsable to implement his serialization and deserialization of the component. This serializer must be able to serialize/deserialize to byte array 
+Each component is responsible to implement his serialization and deserialization of the component. This serializer must be able to serialize/deserialize to byte array 
 - Register
 This will register the component into the system, connecting it to the system. This register will register the component in the factory and the component writer
 
-The design of the components is to avoid heritance so we encourage to use pure functions as much as possible
+The design of the components is to avoid inheritance so we encourage to use pure functions as much as possible
 
 In order to create them, We must follow the next steps
 
@@ -77,16 +77,16 @@ You need to create a folder and a new assembly that will hold the component
 
 And now you have your component added and working!
 
-## Ensure that the component follows the convenion
+## Ensure that the component follows the convention
 There is some checklist that we need to have into account while developing new components, this part tries to summarize them.
 
 - Unit test
-All the components must include unit test that cover its functionality, dipose and the serialization/deserialization at least to ensure that the component will work
+All the components must include unit test that cover its functionality, dispose and the serialization/deserialization at least to ensure that the component will work
 - Take into account what happens when the component is not inside the scene (Check `SceneBoundariesChecker` class for more info)
 - If the component renders something into the world, It must add the rendereable info to the data store, this way we add the information of the renderer to the scene so it can counts toward the limit
 - If the component renders something into the world, It must add the `MeshesInfo` to the entity
 - It must be as perfomant as possible. This code will be executed lots of time so we need to ensure that everything work as smooth as possible
-- It must work with `Hot reload` in the preview mode. If you has coded the `OnComponentRemoved` correctly, this will work out of the box, but the hot reload it a way to test that everything work fine with the dipose of the component
+- It must work with `Hot reload` in the preview mode. If you has coded the `OnComponentRemoved` correctly, this will work out of the box, but the hot reload it a way to test that everything work fine with the dispose of the component
 - If the component uses a resource, you must implement the resource management with an `AssetPromiseKeeper`. The component should notify the `AssetPromiseKeeper` when the resource is used and when it is not longer used
 
 
