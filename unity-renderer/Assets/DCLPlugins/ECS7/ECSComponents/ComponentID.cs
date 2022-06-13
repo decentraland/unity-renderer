@@ -9,5 +9,6 @@ namespace DCL.ECS7
         public const int CYLINDER_SHAPE = 1016;
         public const int AUDIO_SOURCE = 1020;
         public const int AUDIO_STREAM = 1021;
+        public const int TEXT_SHAPE = 1030;
     }
 }
