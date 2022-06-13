@@ -67,7 +67,7 @@ namespace DCL.Components
                         dclTexture = downloadedTexture;
                         dclTexture.AttachTo(this);
 
-                        ConfigureUVRect(parentRecTransform);
+                        ConfigureUVRect(parentRecTransform, dclTexture?.resizingFactor ?? 1);
                     });
 
                     fetchRoutine = CoroutineStarter.Start(fetchIEnum);
@@ -83,7 +83,7 @@ namespace DCL.Components
             referencesContainer.image.enabled = model.visible;
             referencesContainer.image.color = Color.white;
 
-            ConfigureUVRect(parentRecTransform);
+            ConfigureUVRect(parentRecTransform, dclTexture?.resizingFactor ?? 1);
 
             // Apply padding
             referencesContainer.paddingLayoutGroup.padding.bottom = Mathf.RoundToInt(model.paddingBottom);
@@ -95,20 +95,20 @@ namespace DCL.Components
             return null;
         }
 
-        private void ConfigureUVRect(RectTransform parentRecTransform)
+        private void ConfigureUVRect(RectTransform parentRecTransform, float resizingFactor)
         {
             if (referencesContainer.image.texture == null)
                 return;
 
             // Configure uv rect
             Vector2 normalizedSourceCoordinates = new Vector2(
-                model.sourceLeft / referencesContainer.image.texture.width,
-                -model.sourceTop / referencesContainer.image.texture.height);
+                model.sourceLeft * resizingFactor / referencesContainer.image.texture.width,
+                -model.sourceTop * resizingFactor / referencesContainer.image.texture.height);
 
             Vector2 normalizedSourceSize = new Vector2(
-                model.sourceWidth * (model.sizeInPixels ? 1f : parentRecTransform.rect.width) /
-                referencesContainer.image.texture.width,
-                model.sourceHeight * (model.sizeInPixels ? 1f : parentRecTransform.rect.height) /
+                model.sourceWidth * resizingFactor * (model.sizeInPixels ? 1f : parentRecTransform.rect.width) /
+                referencesContainer.image.texture.width ,
+                model.sourceHeight * resizingFactor * (model.sizeInPixels ? 1f : parentRecTransform.rect.height) /
                 referencesContainer.image.texture.height);
 
             referencesContainer.image.uvRect = new Rect(normalizedSourceCoordinates.x,
