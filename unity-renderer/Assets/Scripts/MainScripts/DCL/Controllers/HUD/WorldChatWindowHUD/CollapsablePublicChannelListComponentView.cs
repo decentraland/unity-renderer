@@ -37,6 +37,7 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         this.releaseEntriesFromPool = releaseEntriesFromPool;
         base.Clear();
         this.releaseEntriesFromPool = true;
+        pooleableEntries.Clear();
     }
 
     public override PublicChannelEntry Remove(string key)
@@ -55,6 +56,7 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
     {
         if (!Contains(entryModel.channelId))
             CreateEntry(channelId);
+            
         var entry = Get(channelId);
         entry.Configure(entryModel);
     }
