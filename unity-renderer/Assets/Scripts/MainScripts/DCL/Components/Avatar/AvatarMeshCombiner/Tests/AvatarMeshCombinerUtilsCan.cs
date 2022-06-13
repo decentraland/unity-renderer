@@ -121,18 +121,18 @@ public class AvatarMeshCombinerUtilsCan
             SkinnedMeshRenderer renderer = DCL.Helpers.SkinnedMeshRenderer.Create(mat);
 
             int vertexCount = renderer.sharedMesh.vertexCount;
-            var boneWeights = new BoneWeight[vertexCount];
 
-            for (int i = 0; i < boneWeights.Length; i++)
+            var nativeBonesPerVertex = new NativeArray<byte>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            var nativeBones = new NativeArray<BoneWeight1>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+
+            for (int i = 0; i < vertexCount; i++)
             {
-                var b = new BoneWeight();
-                b.weight0 = counter;
-                b.boneIndex1 = counter;
-                boneWeights[i] = b;
+                nativeBonesPerVertex[i] = 1;
+                nativeBones[i] = new BoneWeight1() { boneIndex = counter, weight = counter };
                 counter++;
             }
 
-            renderer.sharedMesh.boneWeights = boneWeights;
+            renderer.sharedMesh.SetBoneWeights(nativeBonesPerVertex, nativeBones);
             return renderer;
         }
 
@@ -154,15 +154,17 @@ public class AvatarMeshCombinerUtilsCan
         var result = AvatarMeshCombinerUtils.ComputeBoneWeights(layers);
 
         // Assert
-        Assert.That(result.weights, Is.EqualTo(96));
+        Assert.That(result.weights.Length, Is.EqualTo(96));
 
         int assertCounter = 0;
 
-        for (int i = 0; i < result.bonesPerVertex.Length; i++)
+        int bonesPerVertex = result.bonesPerVertex.Length;
+
+        for (int i = 0; i < bonesPerVertex; i++)
         {
-            var boneWeight1 = result.weights[i];
-            Assert.That(boneWeight1.weight, Is.EqualTo(assertCounter));
-            Assert.That(boneWeight1.boneIndex, Is.EqualTo(assertCounter));
+            var boneWeight1 = result.weights[assertCounter];
+            Assert.That(boneWeight1.weight, Is.EqualTo(1), "Bone Weight");
+            Assert.That(boneWeight1.boneIndex, Is.EqualTo(assertCounter), "Bone index");
             assertCounter++;
         }
 
