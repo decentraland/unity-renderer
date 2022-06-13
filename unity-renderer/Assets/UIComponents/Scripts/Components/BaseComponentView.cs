@@ -93,7 +93,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     internal BaseComponentModel baseModel;
     internal ShowHideAnimator showHideAnimator;
 
-    public bool isVisible { get; private set; }
+    public virtual bool isVisible { get; private set; }
     private bool isDestroyed = false;
 
     public event Action<bool> onFocused;

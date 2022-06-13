@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:unity-renderer/Assets/DCLPlugins/ECS7/ProtocolBuffers/Generated/Protos/AudioSource.gen.cs.meta
+guid: 1f949af57c1ef925b98d81e9771be436
+=======
+guid: ac2ea650616e1220eaecc372e45f89a4
+>>>>>>> master:unity-renderer/Assets/DCLPlugins/ECS7/ProtocolBuffers/Generated/PBFiles/BoxShape.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
