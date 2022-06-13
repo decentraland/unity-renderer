@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 using UniversalRenderPipelineAsset = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
 using static DCL.Rendering.CullingControllerUtils;
@@ -17,6 +18,7 @@ namespace DCL.Rendering
     /// </summary>
     public class CullingController : ICullingController
     {
+        private const bool DRAW_GIZMOS = false;
         internal List<CullingControllerProfile> profiles = null;
 
         private CullingControllerSettings settings;
@@ -33,6 +35,10 @@ namespace DCL.Rendering
         private bool playerPositionDirty;
         private bool objectPositionsDirty;
         private bool running = false;
+
+        // Cache to avoid allocations when getting names
+        private readonly HashSet<Shader> avatarShaders = new HashSet<Shader>();
+        private readonly HashSet<Shader> nonAvatarShaders = new HashSet<Shader>();
 
         public event ICullingController.DataReport OnDataReport;
 
@@ -186,8 +192,25 @@ namespace DCL.Rendering
                     Material mat = skr.sharedMaterial;
                     bool isAvatarRenderer = false;
 
-                    if (mat != null && mat.shader != null)
-                        isAvatarRenderer = mat.shader.name == "DCL/Toon Shader";
+                    Shader matShader = mat.shader;
+
+                    if (mat != null && matShader != null)
+                    {
+                        if (!avatarShaders.Contains(matShader) && !nonAvatarShaders.Contains(matShader))
+                        {
+                            var isAvatar = matShader.name == "DCL/Toon Shader";
+
+                            if (isAvatar)
+                                avatarShaders.Add(matShader);
+                            else
+                                nonAvatarShaders.Add(matShader);
+                        }
+                        
+                        if (avatarShaders.Contains(matShader))
+                        {
+                            isAvatarRenderer = true;
+                        }
+                    }
 
                     if (isAvatarRenderer)
                     {
@@ -208,9 +231,10 @@ namespace DCL.Rendering
 
                 SetCullingForRenderer(r, shouldBeVisible, shouldHaveShadow);
 #if UNITY_EDITOR
-                DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
+                if (DRAW_GIZMOS) DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
 #endif
                 timeBudgetCount += Time.realtimeSinceStartup - startTime;
+
             }
         }
 
