@@ -52,9 +52,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         if (promise != null)
             fontPromiseKeeper.Forget(promise);
         GameObject.Destroy(textGameObject);
-        GameObject.Destroy(rectTransform);
-        GameObject.Destroy(textComponent);
-        
+
         textGameObject = null;
         textComponent = null;
         rectTransform = null;
