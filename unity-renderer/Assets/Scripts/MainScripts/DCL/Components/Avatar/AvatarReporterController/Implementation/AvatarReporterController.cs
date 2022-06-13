@@ -46,7 +46,7 @@ public class AvatarReporterController : IAvatarReporterController
             }
         }
         
-        return "";
+        return null;
     }
 
     void IAvatarReporterController.ReportAvatarPosition(Vector3 position)
