@@ -192,10 +192,11 @@ namespace DCL.Rendering
                     Material mat = skr.sharedMaterial;
                     bool isAvatarRenderer = false;
 
-                    Shader matShader = mat.shader;
 
-                    if (mat != null && matShader != null)
+                    if (mat != null && mat.shader != null)
                     {
+                        Shader matShader = mat.shader;
+
                         if (!avatarShaders.Contains(matShader) && !nonAvatarShaders.Contains(matShader))
                         {
                             var isAvatar = matShader.name == "DCL/Toon Shader";
