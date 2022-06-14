@@ -29,18 +29,18 @@ namespace DCL.Protobuf
             OnProjectCompile();
         }
         
+        private const bool VERBOSE = true;
+
         private const string PATH_TO_GENERATED = "/DCLPlugins/ECS7/ProtocolBuffers/Generated/";
-        
         private const string REALPATH_TO_COMPONENTS_DEFINITIONS = "/DCLPlugins/ECS7/ProtocolBuffers/Definitions";
         private const string PATH_TO_COMPONENTS = "/DCLPlugins/ECS7/ProtocolBuffers/Generated/PBFiles";
         private const string SUBPATH_TO_COMPONENTS_COMMON = "/Common";
         private const string TEMPPATH_TO_COMPONENTS_DEFINITIONS = "/DCLPlugins/ECS7/ProtocolBuffers/DefinitionsTemp";
         private const string PATHNAME_TO_COMPONENTS_DEFINITIONS_COMMON = "common";
         private const string PATH_TO_COMPONENT_IDS = "/DCLPlugins/ECS7/ECSComponents/ComponentID.cs";
-
-        private const bool VERBOSE = true;
         private const string PATH_TO_FOLDER = "/DCLPlugins/ECS7/ProtocolBuffers/Editor/";
         private const string PATH_TO_PROTO = "/DCLPlugins/ECS7/ProtocolBuffers/Editor/bin/";
+        
         private const string PROTO_FILENAME = "protoc";
         private const string DOWNLOADED_VERSION_FILENAME = "downloadedVersion.gen.txt";
         private const string COMPILED_VERSION_FILENAME = "compiledVersion.gen.txt";
@@ -51,6 +51,12 @@ namespace DCL.Protobuf
         private const string NPM_PACKAGE = "decentraland-ecs";
         private const string NPM_PACKAGE_PROTO_DEF = "/package/dist/ecs7/proto-definitions";
 
+        private struct ProtoComponent
+        {
+            public string componentName;
+            public int componentId;
+        }
+        
         private static void VerboseLog(string message)
         {
             if (VERBOSE)
@@ -75,7 +81,6 @@ namespace DCL.Protobuf
             GenerateComponentCode(version);
             CompilationPipeline.RequestScriptCompilation();
         }
-        
         
         [MenuItem("Decentraland/Protobuf/Download latest proto definitions (For debugging)")]
         public static void DownloadLatestProtoDefinitions()
@@ -154,12 +159,6 @@ namespace DCL.Protobuf
             }
         }
 
-        struct ProtoComponent
-        {
-            public string componentName;
-            public int componentId;
-        }
-            
         private static List<ProtoComponent> GetComponents()
         {
             // We get all the files that are proto
@@ -237,9 +236,7 @@ namespace DCL.Protobuf
                 ok &= CompileComponentsCommon(tempOutputPath + SUBPATH_TO_COMPONENTS_COMMON);
 
                 if (ok)
-                {
                     GenerateComponentIdEnum(components);
-                }
             }
             catch (Exception e)
             {
@@ -250,15 +247,15 @@ namespace DCL.Protobuf
             {
                 string outputPath = Application.dataPath + PATH_TO_COMPONENTS;
                 if (Directory.Exists(outputPath))
-                {
                     Directory.Delete(outputPath, true);
-                }
                 
                 Directory.Move(tempOutputPath, outputPath);
                 
                 string path = Application.dataPath + PATH_TO_FOLDER;
                 WriteVersion(versionNameToCompile, COMPILED_VERSION_FILENAME, path);
-            } else if (Directory.Exists(tempOutputPath)) {           
+            } 
+            else if (Directory.Exists(tempOutputPath)) 
+            {           
                 Directory.Delete(tempOutputPath, true);
             }
             
@@ -270,10 +267,8 @@ namespace DCL.Protobuf
         private static void CreateTempDefinitions()
         {
             if (Directory.Exists(Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS))
-            {
                 Directory.Delete(Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS, true);
-            }
-            
+
             ProtobufEditorHelper.CloneDirectory(Application.dataPath + REALPATH_TO_COMPONENTS_DEFINITIONS, Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS);
         }
         
@@ -322,10 +317,8 @@ namespace DCL.Protobuf
             List<string> commonFiles = GetComponentsCommon();
 
             if (commonFiles.Count == 0)
-            {
                 return true;
-            }
-            
+
             // We prepare the paths for the conversion
             string filePath = Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS + "/" + PATHNAME_TO_COMPONENTS_DEFINITIONS_COMMON ;
 
@@ -398,7 +391,6 @@ namespace DCL.Protobuf
             }
         }
         
-        
         private static bool IsProtoVersionValid()
         {
             string path = Application.dataPath + PATH_TO_GENERATED + EXECUTABLE_VERSION_FILENAME;
@@ -417,6 +409,7 @@ namespace DCL.Protobuf
 
             return version;
         }
+        
         private static void WriteVersion(string version, string filename)
         {
             string path = Application.dataPath + PATH_TO_GENERATED + "/";
@@ -430,6 +423,7 @@ namespace DCL.Protobuf
             sr.Write(version);
             sr.Close();
         }
+        
         private static string GetDownloadedVersion()
         {
             string path = Application.dataPath + PATH_TO_GENERATED + "/" + DOWNLOADED_VERSION_FILENAME;
@@ -441,7 +435,6 @@ namespace DCL.Protobuf
             string path = Application.dataPath + PATH_TO_FOLDER + COMPILED_VERSION_FILENAME;
             return GetVersion(path);
         }
-
         
         public static string GetLatestProtoVersion()
         {
@@ -569,31 +562,5 @@ namespace DCL.Protobuf
             if (currentVersion != currentDownloadedVersion)
                 UpdateModels(currentVersion);
         }
-        
-        
-        private static bool ChmodProtoCompiler()
-        {
-            string proto_path = Application.dataPath + PATH_TO_PROTO + PROTO_FILENAME;
-            
-            // This is the console to convert the proto
-            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "chmod", Arguments = $"+x {proto_path}" };
-            
-            Process proc = new Process() { StartInfo = startInfo };
-            proc.StartInfo.UseShellExecute = false;
-            proc.StartInfo.RedirectStandardOutput = true;
-            proc.StartInfo.RedirectStandardError = true;
-            proc.Start();
-            
-            string error = proc.StandardError.ReadToEnd();
-            proc.WaitForExit();
-
-            if (error != "")
-            {
-                UnityEngine.Debug.LogError("It failed granting permission to protoc  : " + error);
-                return false;
-            }
-            return true;
-        }
-
     }
 }
