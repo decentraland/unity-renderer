@@ -4901,6 +4901,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animation: {fileID: 4564562931928070486}
+  particleEffects:
+  - {fileID: 9157638743213904753}
+  - {fileID: 9157638742714293300}
   meshRenderer: {fileID: 5122219957537860564}
   avatarLoaded: 0
   revealer: {fileID: 9157638741447638595}

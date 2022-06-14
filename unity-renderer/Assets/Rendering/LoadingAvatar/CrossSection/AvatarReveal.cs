@@ -1,13 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DCL.Helpers;
+using DCL;
+using AvatarSystem;
 
 public class AvatarReveal : MonoBehaviour
 {
     [SerializeField] private Animation animation;
+    [SerializeField] private List<GameObject> particleEffects;
     public SkinnedMeshRenderer meshRenderer;
     public bool avatarLoaded;
     public GameObject revealer;
+
+    private ILOD lod;
 
     public float revealSpeed;
 
@@ -26,6 +32,11 @@ public class AvatarReveal : MonoBehaviour
         }
     }
 
+    public void InjectLodSystem(ILOD lod)
+    {
+        this.lod = lod;
+    }
+
     public void AddTarget(MeshRenderer newTarget)
     {
         if (newTarget == null)
@@ -39,11 +50,17 @@ public class AvatarReveal : MonoBehaviour
 
     private void Update()
     {
+        if (lod.lodIndex >= 2)
+            SetFullRendered();
+
         UpdateMaterials();
     }
 
     void UpdateMaterials()
     {
+        if (avatarLoaded)
+            return;
+
         if(_ghostMaterial.GetColor("_Color").a < 0.9f)
         {
             Color gColor = _ghostMaterial.GetColor("_Color");
@@ -59,9 +76,24 @@ public class AvatarReveal : MonoBehaviour
         }
     }
 
-    public void StartAvatarRevealAnimation()
+    public void StartAvatarRevealAnimation(bool closeby)
     {
-        animation.Play();
+        if (closeby)
+            animation.Play();
+        else
+            SetFullRendered();
+    }
+
+    public void SetFullRendered()
+    {
+        animation.Stop();
+        foreach (Material m in _materials)
+        {
+            m.SetVector("_RevealPosition", new Vector3(0, -2.5f, 0));
+        }
+        _ghostMaterial.SetVector("_RevealPosition", new Vector3(0, 2.5f, 0));
+        DisableParticleEffects();
+        avatarLoaded = true;
     }
 
     public void Reset()
@@ -74,5 +106,18 @@ public class AvatarReveal : MonoBehaviour
         targets = new List<Renderer>();
         _materials = new List<Material>();
         revealer.transform.position = Vector3.zero;
+    }
+
+    private void DisableParticleEffects()
+    {
+        foreach (GameObject p in particleEffects)
+        {
+            p.SetActive(false);
+        }
+    }
+
+    public void OnDisable()
+    {
+        SetFullRendered();
     }
 }

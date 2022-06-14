@@ -32,7 +32,7 @@ namespace AvatarSystem
                 meshRenderer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatarDummy"), avatarRevealerContainer).GetComponentInChildren<SkinnedMeshRenderer>();
         }
 
-        public void FadeOut(MeshRenderer targetRenderer) { }
+        public void FadeOut(MeshRenderer targetRenderer, bool playParticles) { }
 
     }
 }

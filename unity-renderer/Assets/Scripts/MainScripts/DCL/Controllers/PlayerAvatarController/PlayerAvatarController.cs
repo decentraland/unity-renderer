@@ -48,13 +48,14 @@ public class PlayerAvatarController : MonoBehaviour
             new UserProfileWebInterfaceBridge());
 
         AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-        BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer);
+        AvatarSystem.NoLODs noLod = new NoLODs();
+        BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer, noLod);
         avatar = new AvatarSystem.Avatar(
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
             new Visibility(),
-            new NoLODs(),
+            noLod,
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler(),
             new EmoteAnimationEquipper(animator, DataStore.i.emotes),
