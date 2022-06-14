@@ -156,7 +156,6 @@ namespace DCL.Rendering
                     continue;
                 }
 
-
                 float startTime = Time.realtimeSinceStartup;
 
                 //NOTE(Brian): Need to retrieve positions every frame to take into account
@@ -190,30 +189,8 @@ namespace DCL.Rendering
                 if (r is SkinnedMeshRenderer skr)
                 {
                     Material mat = skr.sharedMaterial;
-                    bool isAvatarRenderer = false;
 
-
-                    if (mat != null && mat.shader != null)
-                    {
-                        Shader matShader = mat.shader;
-
-                        if (!avatarShaders.Contains(matShader) && !nonAvatarShaders.Contains(matShader))
-                        {
-                            var isAvatar = matShader.name == "DCL/Toon Shader";
-
-                            if (isAvatar)
-                                avatarShaders.Add(matShader);
-                            else
-                                nonAvatarShaders.Add(matShader);
-                        }
-                        
-                        if (avatarShaders.Contains(matShader))
-                        {
-                            isAvatarRenderer = true;
-                        }
-                    }
-
-                    if (isAvatarRenderer)
+                    if (IsAvatarRenderer(mat))
                     {
                         shouldHaveShadow &= TestAvatarShadowRule(profile, distance);
                     }
@@ -237,6 +214,36 @@ namespace DCL.Rendering
                 timeBudgetCount += Time.realtimeSinceStartup - startTime;
 
             }
+        }
+        
+        /// <summary>
+        /// Checks if the material is from an Avatar by checking if the shader is DCL/Toon Shader
+        /// This Method avoids the allocation of the name getter by storing the result on a HashSet
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        private bool IsAvatarRenderer(Material mat)
+        {
+            if (mat != null && mat.shader != null)
+            {
+                Shader matShader = mat.shader;
+
+                if (!avatarShaders.Contains(matShader) && !nonAvatarShaders.Contains(matShader))
+                {
+                    // This allocates memory on the GC
+                    bool isAvatar = matShader.name == "DCL/Toon Shader";
+
+                    if (isAvatar)
+                        avatarShaders.Add(matShader);
+                    else
+                        nonAvatarShaders.Add(matShader);
+                }
+
+                return avatarShaders.Contains(matShader);
+                
+            }
+
+            return false;
         }
 
         /// <summary>
