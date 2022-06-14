@@ -985,6 +985,9 @@ public class AvatarEditorHUDController : IHUD
         data.Add("rarity", equippedWearable.rarity);
         data.Add("category", equippedWearable.data.category);
         data.Add("linked_wearable", equippedWearable.IsFromThirdPartyCollection.ToString());
+        data.Add("third_party_collection_id", equippedWearable.ThirdPartyCollectionId);
+        data.Add("is_in_l2", equippedWearable.IsInL2().ToString());
+        data.Add("smart_item", equippedWearable.IsSmart().ToString());
 
         analytics.SendAnalytic(EQUIP_WEARABLE_METRIC, data);
     }
