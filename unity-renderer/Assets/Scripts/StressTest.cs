@@ -13,7 +13,7 @@ public class StressTest : MonoBehaviour
         if (activated)
             return;
 
-        if (Input.GetKey(KeyCode.AltGr) &&  Input.GetKey(KeyCode.T))
+        if (Input.GetKey(KeyCode.U) &&  Input.GetKey(KeyCode.T))
         {
             activated = true;
             Log("Starting");
