@@ -1,11 +1,10 @@
-using AvatarShape_Tests;
+using DCL;
+using DCL.Helpers;
+using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
-using DCL.Controllers;
-using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -17,6 +16,7 @@ namespace AvatarEditorHUD_Tests
         private CatalogController catalogController;
         private AvatarEditorHUDController_Mock controller;
         private BaseDictionary<string, WearableItem> catalog;
+        private IAnalytics analytics;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -51,11 +51,12 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
+            analytics = Substitute.For<IAnalytics>();
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags);
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, catalog);
+            controller.Initialize(userProfile, catalog, analytics);
         }
 
         [Test]

@@ -7,6 +7,7 @@ using System.Linq;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
+using NSubstitute;
 
 namespace AvatarEditorHUD_Tests
 {
@@ -22,6 +23,7 @@ namespace AvatarEditorHUD_Tests
         private ColorList skinColorList;
         private ColorList hairColorList;
         private ColorList eyeColorList;
+        private IAnalytics analytics;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -37,6 +39,7 @@ namespace AvatarEditorHUD_Tests
                 userProfile = ScriptableObject.CreateInstance<UserProfile>();
             }
 
+            analytics = Substitute.For<IAnalytics>();
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags);
@@ -44,7 +47,7 @@ namespace AvatarEditorHUD_Tests
             //       into AvatarEditorHUDController and we would be able to replace the GetThirdPartyCollections() call by a mocked one in this test, allowing us to avoid
             //       the use of 'collectionsAlreadyLoaded = true'.
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, catalog);
+            controller.Initialize(userProfile, catalog, analytics);
             controller.SetVisibility(true);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
 
