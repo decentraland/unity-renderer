@@ -63,3 +63,4 @@ unity-renderer/Assets/TextMesh Pro/Resources/Fonts & Materials/Inter-Heavy SDF.a
 unity-renderer/Assets/TextMesh Pro/Resources/Fonts & Materials/Inter-Bold SDF.asset
 unity-renderer/Assets/Scripts/MainScripts/DCL/KernelConfiguration/KernelConfigTypes.cs
 unity-renderer/Assets/Scripts/MainScripts/DCL/Components/LoadableShapes/NFTShape/Materials/OriginalNFTFrame.mat
+unity-renderer/MemoryCaptures/**

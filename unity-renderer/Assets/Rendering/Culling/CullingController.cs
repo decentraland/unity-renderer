@@ -161,16 +161,24 @@ namespace DCL.Rendering
 
                 Vector3 boundingPoint = bounds.ClosestPoint(playerPosition);
                 float distance = Vector3.Distance(playerPosition, boundingPoint);
-                bool boundsContainsPlayer = bounds.Contains(playerPosition);
                 float boundsSize = bounds.size.magnitude;
                 float viewportSize = (boundsSize / distance) * Mathf.Rad2Deg;
 
-                bool isEmissive = IsEmissive(r);
-                bool isOpaque = IsOpaque(r);
-
                 float shadowTexelSize = ComputeShadowMapTexelSize(boundsSize, urpAsset.shadowDistance, urpAsset.mainLightShadowmapResolution);
 
-                bool shouldBeVisible = !settings.enableObjectCulling || TestRendererVisibleRule(profile, viewportSize, distance, boundsContainsPlayer, isOpaque, isEmissive);
+                bool shouldBeVisible =
+                    // all objects are visible if culling is off
+                    !settings.enableObjectCulling
+                    // or if the player is inside the bounding box of the object
+                    || bounds.Contains(playerPosition)
+                    // or if the player distance is below the threshold
+                    || distance < profile.visibleDistanceThreshold
+                    // at last, we perform the expensive queries of emmisiveness and opaque conditions
+                    // these are the last conditions because IsEmissive and IsOpaque perform expensive lookups
+                    || viewportSize > profile.emissiveSizeThreshold && IsEmissive(r)
+                    || viewportSize > profile.opaqueSizeThreshold && IsOpaque(r)
+                ;
+
                 bool shouldHaveShadow = !settings.enableShadowCulling || TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
 
                 if (r is SkinnedMeshRenderer skr)
