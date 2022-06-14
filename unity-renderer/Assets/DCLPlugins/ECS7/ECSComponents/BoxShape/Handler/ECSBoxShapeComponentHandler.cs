@@ -11,9 +11,7 @@ namespace DCL.ECSComponents
         internal AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
-        internal PBBoxShape model;
-
-        internal GameObject meshHolderGameObject;
+        internal PBBoxShape lastModel;
 
         private readonly DataStore_ECS7 dataStore;
         
@@ -29,53 +27,48 @@ namespace DCL.ECSComponents
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
             DisposeMesh(scene);
-            if(meshHolderGameObject != null)
-                GameObject.Destroy(meshHolderGameObject);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBBoxShape model)
         {
-            this.model = model;
-            
-            Mesh generatedMesh = null;
-            if (primitiveMeshPromisePrimitive != null)
-                AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
-
-            PrimitiveMeshModel primitiveMeshModelModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            primitiveMeshModelModel.uvs = model.Uvs;
-
-            primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
-            primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>
+            if (lastModel != null && lastModel.Uvs.Equals(model.Uvs))
             {
-                DisposeMesh(scene);
-                generatedMesh = shape.mesh;
-                GenerateRenderer(generatedMesh, scene, entity, model);
-            };
-            primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
+                ECSComponentsUtils.UpdateMeshInfo(model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+            }
+            else
             {
-                dataStore.RemovePendingResource(scene.sceneData.id, model);
-            };
+                Mesh generatedMesh = null;
+                if (primitiveMeshPromisePrimitive != null)
+                    AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
+
+                PrimitiveMeshModel primitiveMeshModelModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
+                primitiveMeshModelModel.uvs = model.Uvs;
+        
+                primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
+                primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>
+                {
+                    DisposeMesh(scene);
+                    generatedMesh = shape.mesh;
+                    GenerateRenderer(generatedMesh, scene, entity, model);
+                };
+                primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
+                {
+                    dataStore.RemovePendingResource(scene.sceneData.id, model);
+                };
             
-            dataStore.AddPendingResource(scene.sceneData.id, model);
-            AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
+                dataStore.AddPendingResource(scene.sceneData.id, model);
+                AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
+            }
+
+            lastModel = model;
         }
 
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBBoxShape model)
         {
-            GenerateHolder(entity);
-            meshesInfo = ECSComponentsUtils.GenerateMeshInfo(entity, mesh, meshHolderGameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
+            meshesInfo = ECSComponentsUtils.GenerateMeshInfo(entity, mesh, entity.gameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
-        }
-
-        private void GenerateHolder(IDCLEntity entity)
-        {
-            if(meshHolderGameObject != null)
-                GameObject.Destroy(meshHolderGameObject);
-            
-            meshHolderGameObject = new GameObject();
-            meshHolderGameObject.transform.SetParent(entity.gameObject.transform,false);
         }
 
         internal void DisposeMesh(IParcelScene scene)
@@ -84,12 +77,11 @@ namespace DCL.ECSComponents
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if(rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id,rendereable);
-            if(model != null)
-                dataStore.RemovePendingResource(scene.sceneData.id, model);
+            if(lastModel != null)
+                dataStore.RemovePendingResource(scene.sceneData.id, lastModel);
             
             meshesInfo = null;
             rendereable = null;
-            model = null;
         }
     }
 }
