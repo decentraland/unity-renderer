@@ -53,7 +53,6 @@ public class PlayerName : MonoBehaviour, IPlayerName
     {
         name = await ProfanityFilterSharedInstances.regexFilter.Filter(name);
         nameText.text = name;
-        Show(true);
         background.rectTransform.sizeDelta = new Vector2(nameText.GetPreferredValues().x + BACKGROUND_EXTRA_WIDTH, BACKGROUND_HEIGHT);
     }
 
