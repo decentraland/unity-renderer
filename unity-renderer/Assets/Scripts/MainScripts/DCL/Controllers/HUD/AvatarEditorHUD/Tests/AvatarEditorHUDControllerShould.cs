@@ -42,12 +42,12 @@ namespace AvatarEditorHUD_Tests
             analytics = Substitute.For<IAnalytics>();
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags);
+            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics);
             // TODO: We should convert the WearablesFetchingHelper static class into a non-static one and make it implement an interface. It would allow us to inject it
             //       into AvatarEditorHUDController and we would be able to replace the GetThirdPartyCollections() call by a mocked one in this test, allowing us to avoid
             //       the use of 'collectionsAlreadyLoaded = true'.
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, catalog, analytics);
+            controller.Initialize(userProfile, catalog);
             controller.SetVisibility(true);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
 
@@ -293,6 +293,72 @@ namespace AvatarEditorHUD_Tests
             controller.SaveAvatar(Texture2D.whiteTexture, Texture2D.whiteTexture);
 
             AssertAvatarModelAgainstAvatarEditorHUDModel(userProfile.avatar, controller.myModel);
+        }
+
+        [Test]
+        public void SendNewEquippedWearablesAnalyticsProperly()
+        {
+            // Arrange
+            WearableItem alreadyExistingTestWearable = new WearableItem
+            {
+                id = "testWearableId1",
+                rarity = WearableLiterals.ItemRarity.LEGENDARY,
+                data = new WearableItem.Data
+                {
+                    category = WearableLiterals.Categories.EYES,
+                    tags = new[] { WearableLiterals.Tags.BASE_WEARABLE },
+                    representations = new WearableItem.Representation[] { }
+                },
+                i18n = new i18n[] { new i18n { code = "en", text = "testWearableId1" } }
+            };
+
+            WearableItem newTestWearableequipped1 = new WearableItem
+            {
+                id = "testWearableIdEquipped1",
+                rarity = WearableLiterals.ItemRarity.EPIC,
+                data = new WearableItem.Data
+                {
+                    category = WearableLiterals.Categories.FEET,
+                    tags = new[] { WearableLiterals.Tags.BASE_WEARABLE },
+                    representations = new WearableItem.Representation[] { }
+                },
+                i18n = new i18n[] { new i18n { code = "en", text = "testWearableIdEquipped1" } }
+            };
+
+            WearableItem newTestWearableequipped2 = new WearableItem
+            {
+                id = "testWearableIdEquipped2",
+                rarity = WearableLiterals.ItemRarity.EPIC,
+                data = new WearableItem.Data
+                {
+                    category = WearableLiterals.Categories.FEET,
+                    tags = new[] { WearableLiterals.Tags.BASE_WEARABLE },
+                    representations = new WearableItem.Representation[] { }
+                },
+                i18n = new i18n[] { new i18n { code = "en", text = "testWearableIdEquipped2" } }
+            };
+
+            catalog.Add(alreadyExistingTestWearable.id, alreadyExistingTestWearable);
+            catalog.Add(newTestWearableequipped1.id, newTestWearableequipped1);
+            catalog.Add(newTestWearableequipped2.id, newTestWearableequipped2);
+
+            List<string> oldWearables = new List<string>
+            {
+                alreadyExistingTestWearable.id
+            };
+
+            List<string> newWearables = new List<string>
+            {
+                alreadyExistingTestWearable.id,
+                newTestWearableequipped1.id,
+                newTestWearableequipped2.id
+            };
+
+            // Act
+            controller.SendNewEquippedWearablesAnalytics(oldWearables, newWearables);
+
+            // Assert
+            analytics.Received(2).SendAnalytic(AvatarEditorHUDController.EQUIP_WEARABLE_METRIC, Arg.Any<Dictionary<string, string>>());
         }
 
         private void AssertAvatarModelAgainstAvatarEditorHUDModel(AvatarModel avatarModel, AvatarEditorHUDModel avatarEditorHUDModel)

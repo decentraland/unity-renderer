@@ -24,7 +24,7 @@ public class AvatarEditorHUDController : IHUD
     private const string URL_SELL_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}";
     private const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
     private const string THIRD_PARTY_COLLECTIONS_FEATURE_FLAG = "third_party_collections";
-    private const string EQUIP_WEARABLE_METRIC = "equip_wearable";
+    internal const string EQUIP_WEARABLE_METRIC = "equip_wearable";
     protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
     protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
 
@@ -72,16 +72,16 @@ public class AvatarEditorHUDController : IHUD
     public event Action OnOpen;
     public event Action OnClose;
 
-    public AvatarEditorHUDController(DataStore_FeatureFlag featureFlags)
+    public AvatarEditorHUDController(DataStore_FeatureFlag featureFlags, IAnalytics analytics)
     {
         this.featureFlags = featureFlags;
+        this.analytics = analytics;
     }
 
-    public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog, IAnalytics analytics, bool bypassUpdateAvatarPreview = false)
+    public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog, bool bypassUpdateAvatarPreview = false)
     {
         this.userProfile = userProfile;
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
-        this.analytics = analytics;
 
         view = AvatarEditorHUDView.Create(this);
 
@@ -965,7 +965,7 @@ public class AvatarEditorHUDController : IHUD
 
     private void OnRedirectToEmoteSelling(string emoteId) { SellCollectible(emoteId); }
 
-    private void SendNewEquippedWearablesAnalytics(List<string> oldWearables, List<string> newWearables)
+    internal void SendNewEquippedWearablesAnalytics(List<string> oldWearables, List<string> newWearables)
     {
         for (int i = 0; i < newWearables.Count; i++)
         {

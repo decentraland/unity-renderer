@@ -11,7 +11,7 @@ namespace AvatarEditorHUD_Tests
 {
     public class AvatarEditorHUDController_Mock : AvatarEditorHUDController
     {
-        public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags) : base(featureFlags)
+        public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags, IAnalytics analytics) : base(featureFlags, analytics)
         {
         }
 
@@ -50,9 +50,9 @@ namespace AvatarEditorHUD_Tests
             analytics = Substitute.For<IAnalytics>();
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags);
+            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics);
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, catalog, analytics);
+            controller.Initialize(userProfile, catalog);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
         }
 
