@@ -89,6 +89,7 @@ namespace DCL.ECSComponents
             
             meshesInfo = null;
             rendereable = null;
+            model = null;
         }
     }
 }

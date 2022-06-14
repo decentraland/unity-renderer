@@ -12,7 +12,7 @@ namespace SocialBar.UserThumbnail
         [Header("Configuration")]
         [SerializeField] private UserThumbnailComponentModel model;
 
-        public void Configure(UserThumbnailComponentModel model)
+        public virtual void Configure(UserThumbnailComponentModel model)
         {
             this.model = model;
             RefreshControl();
