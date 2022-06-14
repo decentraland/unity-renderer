@@ -10,6 +10,14 @@ namespace DCL.ECSComponents
         internal AssetPromise_PrimitiveMesh primitiveMeshPromisePrimitive;
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
+        internal PBCylinderShape lastModel;
+        
+        private readonly DataStore_ECS7 dataStore;
+        
+        public ECSCylinderShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
+        {
+            dataStore = dataStoreEcs7;
+        }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
@@ -43,8 +51,16 @@ namespace DCL.ECSComponents
                     generatedMesh = shape.mesh;
                     GenerateRenderer(generatedMesh, scene, entity, model);
                 };
+                primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
+                {
+                    dataStore.RemovePendingResource(scene.sceneData.id, model);
+                };
+            
+                dataStore.AddPendingResource(scene.sceneData.id, model);
+                
                 AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
             }
+            lastModel = model;
         }
 
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBCylinderShape model)
@@ -61,7 +77,9 @@ namespace DCL.ECSComponents
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if (rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id, rendereable);
-
+            if (lastModel != null)
+                dataStore.RemovePendingResource(scene.sceneData.id, lastModel);
+            
             meshesInfo = null;
             rendereable = null;
         }
