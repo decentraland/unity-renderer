@@ -32,7 +32,7 @@ export type RendererOptions = {
   /** Legacy messaging system */
   onMessageLegacy: (type: string, payload: string) => void
   /** scene binary messaging system */
-  onBinaryMessage: (sceneId: string, data: Uint8Array) => void
+  onBinaryMessage: (data: Uint8Array) => void
   /** used to append a ?v={} to the URL. Useful to debug cache issues */
   versionQueryParam?: string
   /** baseUrl where all the assets are deployed */
@@ -117,8 +117,8 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
     },
 
     // This function is called from the unity renderer to send messages back to the scenes
-    BinaryMessageFromEngine(sceneId: string, data: Uint8Array) {
-      onBinaryMessage(sceneId, data)
+    BinaryMessageFromEngine(data: Uint8Array) {
+      onBinaryMessage(data)
     },
   }
 
