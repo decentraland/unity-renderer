@@ -13,9 +13,10 @@ public class StressTest : MonoBehaviour
         if (activated)
             return;
 
-        if (Input.GetKey(KeyCode.RightControl) &&  Input.GetKey(KeyCode.T))
+        if (Input.GetKey(KeyCode.AltGr) &&  Input.GetKey(KeyCode.T))
         {
             activated = true;
+            Log("Starting");
             DownloadImage();
         }
     }
@@ -29,7 +30,17 @@ public class StressTest : MonoBehaviour
             texture.SetPixels(textureSrc.GetPixels());
             texture.Apply(false, true);
             textures.Add(texture);
+            Log($"Loaded: {textures.Count}");
             await UniTask.Delay(250);
         }
+    }
+
+    public void Log(string s)
+    {
+        bool logEnabled = Debug.unityLogger.logEnabled;
+        Debug.unityLogger.logEnabled = true;
+        Debug.Log(s);
+        Debug.unityLogger.logEnabled = logEnabled;
+
     }
 }
