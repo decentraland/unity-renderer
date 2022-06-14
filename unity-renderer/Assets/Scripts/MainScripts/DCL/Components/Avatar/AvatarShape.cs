@@ -28,7 +28,6 @@ namespace DCL
         public GameObject avatarContainer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
-        [SerializeField] private GameObject onloadParticlePrefab;
         [SerializeField] private Transform avatarRevealContainer;
         [SerializeField] private GameObject armatureContainer;
 
@@ -166,9 +165,6 @@ namespace DCL
 
                 // Yielding a UniTask doesn't do anything, we manually wait until the avatar is ready
                 yield return new WaitUntil(() => avatar.status == IAvatar.Status.Loaded);
-
-                if (avatar.lodLevel <= 1)
-                    AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, onloadParticlePrefab);
             }
 
             avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
