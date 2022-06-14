@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 
 public class FriendsController_Mock : IFriendsController
 {
@@ -11,14 +12,14 @@ public class FriendsController_Mock : IFriendsController
 
     private readonly Dictionary<string, FriendsController.UserStatus> friends = new Dictionary<string, FriendsController.UserStatus>();
 
-    public int friendCount => friends.Count;
+    public int FriendCount => friends.Count;
 
-    public bool isInitialized => true;
+    public bool IsInitialized => true;
 
     public int ReceivedRequestCount =>
         friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
 
-    public Dictionary<string, FriendsController.UserStatus> GetFriends() { return friends; }
+    public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() { return friends; }
     
     public void RejectFriendship(string friendUserId)
     {
@@ -33,6 +34,31 @@ public class FriendsController_Mock : IFriendsController
         if (!friends.ContainsKey(friendId)) return;
         friends.Remove(friendId);
         OnUpdateFriendship?.Invoke(friendId, FriendshipAction.DELETED);
+    }
+
+    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(int limit, int skip)
+    {
+        return new Dictionary<string, FriendsController.UserStatus>();
+    }
+
+    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(string usernameOrId)
+    {
+        return new Dictionary<string, FriendsController.UserStatus>();
+    }
+
+    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit, long receivedFromTimestamp)
+    {
+        return new Dictionary<string, FriendsController.UserStatus>();
+    }
+
+    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(int limit, long fromTimestamp)
+    {
+        return new Dictionary<string, FriendsController.UserStatus>();
+    }
+
+    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(string userNameOrId)
+    {
+        return new Dictionary<string, FriendsController.UserStatus>();
     }
 
     public FriendsController.UserStatus GetUserStatus(string userId)

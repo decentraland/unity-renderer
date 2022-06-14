@@ -1,16 +1,8 @@
 using DCL.Interface;
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
-
-public interface IChatController
-{
-    event Action<ChatMessage> OnAddMessage;
-    List<ChatMessage> GetEntries();
-
-    void AddMessageToChatWindow(string jsonMessage);
-    void Send(ChatMessage message);
-}
 
 public class ChatController : MonoBehaviour, IChatController
 {
@@ -37,8 +29,18 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
+    
+    public void MarkMessagesAsSeen(string userId)
+    {
+        throw new NotImplementedException();
+    }
 
-    public List<ChatMessage> GetEntries() { return new List<ChatMessage>(entries); }
+    public UniTask<List<ChatMessage>> GetPrivateMessages(string userId, int limit, long fromTimestamp)
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<ChatMessage> GetAllocatedEntries() { return new List<ChatMessage>(entries); }
     
     [ContextMenu("Fake Public Message")]
     public void FakePublicMessage()

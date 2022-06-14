@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class FriendsController : MonoBehaviour, IFriendsController
@@ -8,12 +9,12 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public static bool VERBOSE = false;
     public static FriendsController i { get; private set; }
 
-    public int friendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
+    public int FriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
 
     void Awake() { i = this; }
 
     private const bool KERNEL_CAN_REMOVE_ENTRIES = false;
-    public bool isInitialized { get; private set; } = false;
+    public bool IsInitialized { get; private set; } = false;
 
     public int ReceivedRequestCount =>
         friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
@@ -41,9 +42,31 @@ public class FriendsController : MonoBehaviour, IFriendsController
     [System.Serializable]
     public class FriendshipInitializationMessage
     {
+        [Serializable]
+        public class UnseenRequests
+        {
+            public int count;
+            public long lastSeenTimestamp;
+        }
+
+        [Serializable]
+        public class UnseenPrivateMessageList
+        {
+        }
+
+        [Serializable]
+        public class UnseenPrivateMessage
+        {
+            public string userId;
+            public int count;
+            public long lastSeenTimestamp;
+        }
+        
         public string[] currentFriends;
         public string[] requestedTo;
         public string[] requestedFrom;
+        public UnseenRequests unseenRequests;
+        public UnseenPrivateMessage[] unseenPrivateMessages;
     }
 
     [System.Serializable]
@@ -72,7 +95,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
 
-    public Dictionary<string, UserStatus> GetFriends() { return new Dictionary<string, UserStatus>(friends); }
+    public Dictionary<string, UserStatus> GetAllocatedFriends() { return new Dictionary<string, UserStatus>(friends); }
 
     public void RejectFriendship(string friendUserId)
     {
@@ -92,6 +115,31 @@ public class FriendsController : MonoBehaviour, IFriendsController
             action = FriendshipAction.DELETED,
             userId = friendId
         });
+    }
+
+    public UniTask<Dictionary<string, UserStatus>> GetFriendsAsync(int limit, int skip)
+    {
+        throw new NotImplementedException();
+    }
+
+    public UniTask<Dictionary<string, UserStatus>> GetFriendsAsync(string usernameOrId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public UniTask<Dictionary<string, UserStatus>> GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit, long receivedFromTimestamp)
+    {
+        throw new NotImplementedException();
+    }
+
+    public UniTask<Dictionary<string, UserStatus>> GetFriendsWithDirectMessages(int limit, long fromTimestamp)
+    {
+        throw new NotImplementedException();
+    }
+
+    public UniTask<Dictionary<string, UserStatus>> GetFriendsWithDirectMessages(string userNameOrId)
+    {
+        throw new NotImplementedException();
     }
 
     public void RequestFriendship(string friendUserId)
@@ -125,7 +173,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public void InitializeFriends(string json)
     {
-        isInitialized = true;
+        IsInitialized = true;
 
         FriendshipInitializationMessage msg = JsonUtility.FromJson<FriendshipInitializationMessage>(json);
         HashSet<string> processedIds = new HashSet<string>();

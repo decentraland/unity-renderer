@@ -162,7 +162,7 @@ public class PrivateChatWindowController : IHUD
         chatHudController.ClearAllEntries();
 
         const int entriesPerFrame = 10;
-        var list = chatController.GetEntries();
+        var list = chatController.GetAllocatedEntries();
         if (list.Count == 0) return;
 
         for (var i = list.Count - 1; i >= 0; i--)

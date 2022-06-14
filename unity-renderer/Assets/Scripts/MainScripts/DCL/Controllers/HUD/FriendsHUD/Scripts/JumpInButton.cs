@@ -68,7 +68,7 @@ public class JumpInButton : MonoBehaviour
 
     private void SearchUserStatus(string userId)
     {
-        if (currentFriendsController.GetFriends().TryGetValue(userId, out currentUserStatus))
+        if (currentFriendsController.GetAllocatedFriends().TryGetValue(userId, out currentUserStatus))
         {
             UpdateInfo(
                 currentUserStatus.position,

@@ -171,7 +171,7 @@ public class PublicChatChannelController : IHUD
 
         const int entriesPerFrame = 10;
         // TODO: filter entries by channelId
-        var list = chatController.GetEntries();
+        var list = chatController.GetAllocatedEntries();
         if (list.Count == 0) return;
 
         for (var i = list.Count - 1; i >= 0; i--)

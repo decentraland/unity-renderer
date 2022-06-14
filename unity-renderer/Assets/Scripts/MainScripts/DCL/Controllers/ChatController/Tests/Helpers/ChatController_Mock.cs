@@ -1,6 +1,7 @@
 using DCL.Interface;
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class ChatController_Mock : IChatController
@@ -11,7 +12,7 @@ public class ChatController_Mock : IChatController
 
     public double initTime => 0;
 
-    public List<ChatMessage> GetEntries() { return entries; }
+    public List<ChatMessage> GetAllocatedEntries() { return entries; }
 
     public void RaiseAddMessage(ChatMessage chatMessage)
     {
@@ -35,5 +36,14 @@ public class ChatController_Mock : IChatController
         if (message == null) return;
         entries.Add(message);
         OnAddMessage?.Invoke(message);
+    }
+
+    public void MarkMessagesAsSeen(string userId)
+    {
+    }
+
+    public async UniTask<List<ChatMessage>> GetPrivateMessages(string userId, int limit, long fromTimestamp)
+    {
+        return new List<ChatMessage>();
     }
 }

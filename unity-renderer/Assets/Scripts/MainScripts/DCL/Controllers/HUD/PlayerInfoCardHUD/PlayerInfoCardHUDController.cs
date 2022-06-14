@@ -287,7 +287,7 @@ public class PlayerInfoCardHUDController : IHUD
 
     private bool CanBeFriends()
     {
-        return friendsController != null && friendsController.isInitialized && currentUserProfile.hasConnectedWeb3;
+        return friendsController != null && friendsController.IsInitialized && currentUserProfile.hasConnectedWeb3;
     }
 
     private void LoadAndShowWearables(UserProfile userProfile)

@@ -73,7 +73,7 @@ public class FriendsHUDController : IHUD
             friendsController.OnUpdateUserStatus += OnUpdateUserStatus;
             friendsController.OnFriendNotFound += OnFriendNotFound;
             
-            if (friendsController.isInitialized)
+            if (friendsController.IsInitialized)
             {
                 view.HideLoadingSpinner();
             }
@@ -358,7 +358,7 @@ public class FriendsHUDController : IHUD
     private void UpdateNotificationsCounter()
     {
         if (View.IsActive())
-            dataStore.friendNotifications.seenFriends.Set(friendsController.friendCount);
+            dataStore.friendNotifications.seenFriends.Set(friendsController.FriendCount);
         
         dataStore.friendNotifications.seenRequests.Set(friendsController.ReceivedRequestCount);
     }

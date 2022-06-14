@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 
 namespace DCL.Interface
 {
@@ -32,8 +33,8 @@ namespace DCL.Interface
             remove => friendsController.OnFriendNotFound -= value;
         }
         
-        public int friendCount => friendsController.friendCount;
-        public bool isInitialized => friendsController.isInitialized;
+        public int FriendCount => friendsController.FriendCount;
+        public bool IsInitialized => friendsController.IsInitialized;
         public int ReceivedRequestCount => friendsController.ReceivedRequestCount;
 
         public WebInterfaceFriendsController(IFriendsController friendsController)
@@ -41,7 +42,7 @@ namespace DCL.Interface
             this.friendsController = friendsController;
         }
 
-        public Dictionary<string, FriendsController.UserStatus> GetFriends() => friendsController.GetFriends();
+        public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() => friendsController.GetAllocatedFriends();
 
         public FriendsController.UserStatus GetUserStatus(string userId) => friendsController.GetUserStatus(userId);
 
@@ -99,5 +100,24 @@ namespace DCL.Interface
                 action = FriendshipAction.DELETED
             });
         }
+
+        public UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(int limit, int skip) =>
+            friendsController.GetFriendsAsync(limit, skip);
+
+        public UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(string usernameOrId) =>
+            friendsController.GetFriendsAsync(usernameOrId);
+
+        public UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendRequestsAsync(
+            int sentLimit, long sentFromTimestamp,
+            int receivedLimit, long receivedFromTimestamp) =>
+            friendsController.GetFriendRequestsAsync(sentLimit, sentFromTimestamp,
+                receivedLimit, receivedFromTimestamp);
+
+        public UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(int limit,
+            long fromTimestamp) =>
+            friendsController.GetFriendsWithDirectMessages(limit, fromTimestamp);
+
+        public UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(string userNameOrId) =>
+            friendsController.GetFriendsWithDirectMessages(userNameOrId);
     }
 }

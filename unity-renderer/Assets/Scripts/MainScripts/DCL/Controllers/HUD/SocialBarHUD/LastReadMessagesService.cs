@@ -91,7 +91,7 @@ public class LastReadMessagesService : ILastReadMessagesService
         {
             var channelId = iterator.Current.Key;
             var timestamp = GetLastReadTimestamp(channelId);
-            channelUnreadCount[channelId] = chatController.GetEntries()
+            channelUnreadCount[channelId] = chatController.GetAllocatedEntries()
                 .Count(message =>
                 {
                     var messageChannelId = GetChannelId(message);

@@ -42,7 +42,7 @@ public class PrivateChatWindowControllerShould
         GivenFriend(BLOCKED_FRIEND_ID, "blockedFriendName", PresenceStatus.OFFLINE);
 
         chatController = Substitute.For<IChatController>();
-        chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>());
+        chatController.GetAllocatedEntries().ReturnsForAnyArgs(new List<ChatMessage>());
 
         lastReadMessagesService = Substitute.For<ILastReadMessagesService>();
 
@@ -343,6 +343,6 @@ public class PrivateChatWindowControllerShould
             messages.Add(new ChatMessage(ChatMessage.Type.PRIVATE, friendId, $"message{i}")
                 {recipient = friendId});
         
-        chatController.GetEntries().ReturnsForAnyArgs(messages);
+        chatController.GetAllocatedEntries().ReturnsForAnyArgs(messages);
     }
 }

@@ -49,7 +49,7 @@ public class FriendsNotificationPlugin : IPlugin
     private void UpdateNewApprovedFriends()
     {
         var seenFriendsCount = playerPrefs.GetInt(PLAYER_PREFS_SEEN_FRIEND_COUNT);
-        var friendsCount = friendsController.friendCount;
+        var friendsCount = friendsController.FriendCount;
         var newFriends = friendsCount - seenFriendsCount;
 
         //NOTE(Brian): If someone deletes you, don't show badge notification

@@ -36,11 +36,11 @@ internal class UsersSearchFriendsHandler : IDisposable
             return friendListPromise;
         }
 
-        if (isFriendlistDirty && friendsController.isInitialized)
+        if (isFriendlistDirty && friendsController.IsInitialized)
         {
             isFriendlistDirty = false;
             waitingFriendsInitialize = false;
-            friendListPromise.Resolve(friendsController.GetFriends());
+            friendListPromise.Resolve(friendsController.GetAllocatedFriends());
         }
 
         if (waitingFriendsInitialize)
@@ -68,12 +68,12 @@ internal class UsersSearchFriendsHandler : IDisposable
     {
         friendsController.OnInitialized -= OnFriendsInitialized;
         isFriendlistDirty = false;
-        friendListPromise?.Resolve(friendsController.GetFriends());
+        friendListPromise?.Resolve(friendsController.GetAllocatedFriends());
     }
 
     private void OnUpdateFriendship(string userId, FriendshipAction friendshipAction)
     {
-        if (!friendsController.isInitialized)
+        if (!friendsController.IsInitialized)
             return;
 
         if (friendshipAction == FriendshipAction.APPROVED)

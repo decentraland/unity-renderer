@@ -34,7 +34,7 @@ public class FriendsHUDControllerShould
         ownProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
         userProfileBridge.GetOwn().Returns(ownProfile);
         friendsController = Substitute.For<IFriendsController>();
-        friendsController.friendCount.Returns(FRIENDS_COUNT);
+        friendsController.FriendCount.Returns(FRIENDS_COUNT);
         dataStore = new DataStore();
         controller = new FriendsHUDController(dataStore,
             friendsController,

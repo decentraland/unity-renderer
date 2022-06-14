@@ -61,10 +61,10 @@ public class WorldChatWindowController : IHUD
             "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.");
         view.SetPublicChannel(publicChannels[GENERAL_CHANNEL_ID]);
         
-        foreach (var value in chatController.GetEntries())
+        foreach (var value in chatController.GetAllocatedEntries())
             HandleMessageAdded(value);
         
-        if (!friendsController.isInitialized)
+        if (!friendsController.IsInitialized)
             if (ownUserProfile?.hasConnectedWeb3 ?? false)
                 view.ShowPrivateChatsLoading();
         
@@ -163,7 +163,7 @@ public class WorldChatWindowController : IHUD
         var profile = ExtractRecipient(message);
         if (profile == null) return;
         
-        if (friendsController.isInitialized)
+        if (friendsController.IsInitialized)
             if (!friendsController.IsFriend(profile.userId))
                 return;
 
@@ -188,7 +188,7 @@ public class WorldChatWindowController : IHUD
 
     private bool ShouldDisplayPrivateChat(string userId)
     {
-        if (!friendsController.isInitialized) return false;
+        if (!friendsController.IsInitialized) return false;
         if (view.PrivateChannelsCount < INITIAL_DISPLAYED_PRIVATE_CHAT_COUNT) return true;
         if (view.ContainsPrivateChannel(userId)) return true;
         return false;

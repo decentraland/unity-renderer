@@ -18,7 +18,7 @@ public class FriendsNotificationPluginShould
     {
         playerPrefs = Substitute.For<IPlayerPrefs>();
         friendsController = Substitute.For<IFriendsController>();
-        friendsController.friendCount.Returns(7);
+        friendsController.FriendCount.Returns(7);
         pendingFriendRequests = ScriptableObject.CreateInstance<FloatVariable>();
         newApprovedFriends = ScriptableObject.CreateInstance<FloatVariable>();
         dataStore = new DataStore();

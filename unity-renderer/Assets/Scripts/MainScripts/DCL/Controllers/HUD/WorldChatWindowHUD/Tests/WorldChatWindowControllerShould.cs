@@ -25,9 +25,9 @@ public class WorldChatWindowControllerShould
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
         userProfileBridge.GetOwn().Returns(ownUserProfile);
         chatController = Substitute.For<IChatController>();
-        chatController.GetEntries().Returns(new List<ChatMessage>());
+        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         friendsController = Substitute.For<IFriendsController>();
-        friendsController.isInitialized.Returns(true);
+        friendsController.IsInitialized.Returns(true);
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,
             chatController,
@@ -48,7 +48,7 @@ public class WorldChatWindowControllerShould
     public void FillPrivateChatsWhenInitialize()
     {
         GivenFriend(FRIEND_ID, PresenceStatus.ONLINE);
-        chatController.GetEntries().Returns(new List<ChatMessage>
+        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>
         {
             new ChatMessage(ChatMessage.Type.PUBLIC, "user2", "hey"),
             new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow"),
@@ -69,7 +69,7 @@ public class WorldChatWindowControllerShould
         const string messageBody = "wow";
         
         GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
-        chatController.GetEntries().Returns(new List<ChatMessage>());
+        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
 
         controller.Initialize(view);
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(
@@ -85,7 +85,7 @@ public class WorldChatWindowControllerShould
     public void UpdatePresenceStatus()
     {
         GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
-        chatController.GetEntries().Returns(new List<ChatMessage>
+        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>
         {
             new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow"),
         });
@@ -111,7 +111,7 @@ public class WorldChatWindowControllerShould
     public void RemovePrivateChatWhenFriendIsRemoved()
     {
         GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
-        chatController.GetEntries().Returns(new List<ChatMessage>
+        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>
         {
             new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow"),
         });
@@ -132,7 +132,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void ShowPrivateChatsLoadingWhenAuthenticatedWithWallet()
     {
-        friendsController.isInitialized.Returns(false);
+        friendsController.IsInitialized.Returns(false);
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
         
         controller.Initialize(view);
@@ -143,7 +143,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void DoNotShowChatsLoadingWhenIsGuestUser()
     {
-        friendsController.isInitialized.Returns(false);
+        friendsController.IsInitialized.Returns(false);
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = false});
         
         controller.Initialize(view);
@@ -154,7 +154,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void HideChatsLoadingWhenUserUpdatesAsGuest()
     {
-        friendsController.isInitialized.Returns(false);
+        friendsController.IsInitialized.Returns(false);
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
         
         controller.Initialize(view);
@@ -166,7 +166,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void HideChatsLoadWhenFriendsIsInitialized()
     {
-        friendsController.isInitialized.Returns(false);
+        friendsController.IsInitialized.Returns(false);
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
         
         controller.Initialize(view);
@@ -274,7 +274,7 @@ public class WorldChatWindowControllerShould
         GivenFriend("fr2", PresenceStatus.OFFLINE);
         GivenFriend("fr3", PresenceStatus.OFFLINE);
         GivenFriend("fr4", PresenceStatus.OFFLINE);
-        chatController.GetEntries().Returns(new List<ChatMessage>
+        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>
         {
             new ChatMessage(ChatMessage.Type.PRIVATE, "nearfr", "wow"),
             new ChatMessage(ChatMessage.Type.PRIVATE, "fr2", "wow"),
