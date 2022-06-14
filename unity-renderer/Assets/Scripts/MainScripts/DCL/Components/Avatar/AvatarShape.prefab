@@ -161,18 +161,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 703a54a14152d5746a40188f469a0c8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maleLocomotions:
-    idle: {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
-    walk: {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
-    run: {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
-    jump: {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
-    fall: {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
   femaleLocomotions:
     idle: {fileID: 7400000, guid: 62d81b2041d701b4381d66d17f7e246e, type: 2}
     walk: {fileID: 7400000, guid: db8c33ed0888f7b44af0b2acde9bd2b5, type: 2}
     run: {fileID: 7400000, guid: 1e3081b9c1f466743bc7602362784e93, type: 2}
     jump: {fileID: 7400000, guid: ec6a6c2a81a2b984f986fd6cbc8279d3, type: 2}
     fall: {fileID: 7400000, guid: 5e5b5c340739da142b767937144ef10b, type: 2}
+  maleLocomotions:
+    idle: {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
+    walk: {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
+    run: {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
+    jump: {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
+    fall: {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
   animation: {fileID: 0}
   blackboard:
     walkSpeedFactor: 0.5
@@ -273,6 +273,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collider: {fileID: 1314168606903342224}
+  hoverCanvas: {fileID: 0}
 --- !u!65 &1314168606903342224
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -378,6 +379,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 23
       objectReference: {fileID: 0}
+    - target: {fileID: 3728983229202958758, guid: 256ca49022c0ba84abc2a941931ee350,
+        type: 3}
+      propertyPath: stickersController
+      value: 
+      objectReference: {fileID: 3298290865927950122}
     - target: {fileID: 3728983229202958758, guid: 256ca49022c0ba84abc2a941931ee350,
         type: 3}
       propertyPath: avatarAnimatorLegacy
