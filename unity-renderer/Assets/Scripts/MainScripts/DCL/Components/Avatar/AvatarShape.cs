@@ -153,7 +153,8 @@ namespace DCL
                 loadingCts?.Cancel();
                 loadingCts?.Dispose();
                 loadingCts = new CancellationTokenSource();
-
+                playerName.SetName(model.name);
+                playerName.Show();
                 avatar.Load(wearableItems, new AvatarSettings
                 {
                     playerName = model.name,
