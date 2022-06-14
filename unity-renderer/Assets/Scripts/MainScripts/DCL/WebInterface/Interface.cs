@@ -22,6 +22,9 @@ namespace DCL.Interface
     public static class WebInterface
     {
         public static bool VERBOSE = false;
+        
+        // TODO: remove
+        public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
         [System.Serializable]
         public class ReportPositionPayload
