@@ -10,16 +10,24 @@ float2 ClampToTexture(float2 uv, float2 size)
 // this function returns a color for the tiles based on a texture color
 float4 ColorFromType(float type)
 {
+    if (type == 0)
+    {
+        return float4(0, 0, 0, 0);
+    }
     if (type < 33.0)
     {
-        return float4(1, 0, 0, 1);
+        return float4(1, 0, 0, 0);
     }
     if (type < 65.0)
     {
-        return float4(0, 1, 0, 1);
+        return float4(0, 1, 0, 0);
+    }
+    if (type < 129.0)
+    {
+        return float4(0, 0, 1, 0);
     }
 
-    return float4(0, 0, 1, 1);
+    return float4(0, 0, 0, 0);
 }
 
 // this function detects a change in the pixel-perfect UV mapping of the texture
@@ -136,6 +144,7 @@ void Main_float(UnityTexture2D Input, float2 Resolution, float TileSizeInPixels,
         float2 uv = ClampToTexture(tileOfInterest, SizeOfTheTexture);
         SamplerState ss = point_clamp_sampler;
 
+
         float4 data = SAMPLE_TEXTURE2D(Input, ss, uv);
 
         if (data.a > 0.0)
@@ -162,7 +171,7 @@ void Main_float(UnityTexture2D Input, float2 Resolution, float TileSizeInPixels,
                 Grid = 0;
             }
 
-            tempCol = float4(0, 0, 0, 1.0);
+            tempCol = float4(0, 0, 0, 1);
         }
 
         outColor = tempCol;

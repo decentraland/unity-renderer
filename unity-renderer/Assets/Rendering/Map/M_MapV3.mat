@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_MapV3
-  m_Shader: {fileID: -6465566751694194690, guid: 9e89fc6c81deee042b4d2be5a9f08328,
-    type: 3}
+  m_Shader: {fileID: 4800000, guid: cf071313c9ca95c4bb9b3ccf08c691ff, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -26,6 +25,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Map:
+        m_Texture: {fileID: 2800000, guid: d32d7bccfd7609a4c923dcbf9c154a0e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_5cd56ce7775649958722c7852acee337_Texture_1:
@@ -45,20 +48,38 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_32cc9d687e404975a933633a89578eca: 0.9
-    - Vector1_d6b5d20802a0431ea86843707c4780d1: 5
+    - Vector1_32cc9d687e404975a933633a89578eca: 0.5
+    - Vector1_d6b5d20802a0431ea86843707c4780d1: 3.75
+    - _ColorMask: 15
+    - _GridThickness: 1
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _Zoom: 10
     m_Colors:
     - Color_43810e24e6b146baacbe452f214f60b2: {r: 0, g: 0, b: 0, a: 0}
     - Color_590fd915ee47480cbeec28c1413273ac: {r: 0, g: 0, b: 0, a: 0}
+    - Color_f462ce7a51e2477abc63679dfa03c84f_1: {r: 0.20948492, g: 0.10980392, b: 0.27450982,
+        a: 0}
     - Color_f462ce7a51e2477abc63679dfa03c84f_4: {r: 0.43921572, g: 0.6745098, b: 0.46274513,
         a: 0}
-    - Color_f462ce7a51e2477abc63679dfa03c84f_5: {r: 0.4431373, g: 0.42352945, b: 0.4784314,
+    - Color_f462ce7a51e2477abc63679dfa03c84f_5: {r: 0.3137255, g: 0.32941177, b: 0.8313726,
         a: 0}
-    - Color_f462ce7a51e2477abc63679dfa03c84f_6: {r: 0.2392157, g: 0.227451, b: 0.27450982,
+    - Color_f462ce7a51e2477abc63679dfa03c84f_6: {r: 0.4431373, g: 0.42352945, b: 0.4784314,
         a: 0}
-    - Color_f462ce7a51e2477abc63679dfa03c84f_7: {r: 0.06666667, g: 0.054901965, b: 0.07450981,
+    - Color_f462ce7a51e2477abc63679dfa03c84f_7: {r: 0.2392157, g: 0.227451, b: 0.27450982,
         a: 0}
     - Vector2_1: {r: 512, g: 512, b: 0, a: 0}
     - Vector2_34d11db46886403f822da00676024a51: {r: 1920, g: 1920, b: 0, a: 0}
     - Vector2_75b8f85ff9324f379c2c6ddf2acb8f4f: {r: 0.04, g: 0.13, b: 0, a: 0}
+    - _Color01: {r: 0.4392157, g: 0.6745098, b: 0.46274507, a: 0}
+    - _Color02: {r: 0.3137255, g: 0.32941177, b: 0.8313726, a: 0}
+    - _Color03: {r: 0.44313726, g: 0.42352942, b: 0.47843134, a: 0}
+    - _Color04: {r: 0.23921567, g: 0.22745097, b: 0.2745098, a: 0}
+    - _Color05: {r: 0.103773594, g: 0.103773594, b: 0.103773594, a: 0}
+    - _GridColor: {r: 0, g: 0, b: 0, a: 0}
+    - _Resolution: {r: 1920, g: 1920, b: 0, a: 0}
+    - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}
   m_BuildTextureStacks: []
