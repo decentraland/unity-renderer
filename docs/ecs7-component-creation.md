@@ -70,11 +70,62 @@ In order to create them, We must follow the next steps
 1. Create the component folder and assembly. We have all the components unders the follow folder `DCLPlugins/ECS7/ECSComponents`.
 You need to create a folder and a new assembly that will hold the component
 2. In the new assembly, you must reference the following one `DCL.ECSComponents.Data`. This will reference the new model of the component that you just updated
-3. You must create the component handler with all the logic 
+3. You must create the component handler with all the logic (Take a look at `ECSBoxShapeComponentHandler.cs` as an example)
 4. You must create the serializer class (probably you can copy it from another class and adapt to your)
 5. You must create the register class
-6. Add the new register to the `ECS7ComponentsPlugin` class with his corresponding ID
+```sh
+   public static class AudioSourceSerializer
+    {
+        public static byte[] Serialize(PBAudioSource model)
+        {
+            int size = model.CalculateSize();
+            byte[] buffer = new byte[size];
+            CodedOutputStream output = new CodedOutputStream(buffer);
+            model.WriteTo(output);
+            return buffer;
+        }
 
+        public static PBAudioSource Deserialize(object data)
+        {
+            return PBAudioSource.Parser.ParseFrom((byte[])data);
+        }
+    }
+```
+6. Add the new register to the `ECS7ComponentsComposer` class with his corresponding ID
+```sh
+   public class ECS7ComponentsComposer : IDisposable
+    {
+        private readonly TransformRegister transformRegister;
+        private readonly SphereShapeRegister sphereShapeRegister;
+        private readonly BoxShapeRegister boxShapeRegister;
+        private readonly PlaneShapeRegister planeShapeRegister;
+        private readonly CylinderShapeRegister cylinderShapeRegister;
+        private readonly AudioStreamRegister audioStreamRegister;
+        private readonly AudioSourceRegister audioSourceRegister;
+
+        public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
+        {
+            transformRegister = new TransformRegister(ComponentID.TRANSFORM, componentsFactory, componentsWriter);
+            sphereShapeRegister = new SphereShapeRegister(ComponentID.SPHERE_SHAPE, componentsFactory, componentsWriter);
+            boxShapeRegister = new BoxShapeRegister(ComponentID.BOX_SHAPE, componentsFactory, componentsWriter);
+            planeShapeRegister = new PlaneShapeRegister(ComponentID.PLANE_SHAPE, componentsFactory, componentsWriter);
+            cylinderShapeRegister = new CylinderShapeRegister(ComponentID.CYLINDER_SHAPE, componentsFactory, componentsWriter);
+            audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentsWriter);
+            audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter);
+        }
+
+        public void Dispose()
+        {
+            transformRegister.Dispose();
+            sphereShapeRegister.Dispose();
+            boxShapeRegister.Dispose();
+            planeShapeRegister.Dispose();
+            cylinderShapeRegister.Dispose();
+            audioStreamRegister.Dispose();
+            audioSourceRegister.Dispose();
+        }
+    }
+```
 And now you have your component added and working!
 
 ## Ensure that the component follows the convention
@@ -88,5 +139,6 @@ All the components must include unit test that cover its functionality, dispose 
 - It must be as perfomant as possible. This code will be executed lots of time so we need to ensure that everything work as smooth as possible
 - It must work with `Hot reload` in the preview mode. If you has coded the `OnComponentRemoved` correctly, this will work out of the box, but the hot reload it a way to test that everything work fine with the dispose of the component
 - If the component uses a resource, you must implement the resource management with an `AssetPromiseKeeper`. The component should notify the `AssetPromiseKeeper` when the resource is used and when it is not longer used
+
 
 
