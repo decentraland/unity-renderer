@@ -8,6 +8,8 @@ using WebSocketSharp.Server;
 
 public class WebSocketCommunication : IKernelCommunication
 {
+    public static event Action<DCLWebSocketService> OnWebSocketServiceAdded;
+
     WebSocketServer ws;
     private Coroutine updateCoroutine;
     private bool requestStop = false;
@@ -56,7 +58,12 @@ public class WebSocketCommunication : IKernelCommunication
                 ws = new WebSocketServer(wssServerUrl);
             }
 
-            ws.AddWebSocketService<DCLWebSocketService>("/" + wssServiceId);
+            ws.AddWebSocketService("/" + wssServiceId, () =>
+            {
+                var service = new DCLWebSocketService();
+                OnWebSocketServiceAdded?.Invoke(service);
+                return service;
+            });
             ws.Start();
         }
         catch (InvalidOperationException e)
