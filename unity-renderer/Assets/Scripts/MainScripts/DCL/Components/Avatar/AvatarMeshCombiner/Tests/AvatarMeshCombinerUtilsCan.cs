@@ -151,18 +151,19 @@ public class AvatarMeshCombinerUtilsCan
         }
 
         // Act
-        var result = AvatarMeshCombinerUtils.ComputeBoneWeights(layers);
+        var weights = AvatarMeshCombinerUtils.CombineBonesWeights(layers);
+        var bonesPerVertex = AvatarMeshCombinerUtils.CombineBonesPerVertex(layers);
 
         // Assert
-        Assert.That(result.weights.Length, Is.EqualTo(96));
+        Assert.That(weights.Length, Is.EqualTo(96));
 
         int assertCounter = 0;
 
-        int bonesPerVertex = result.bonesPerVertex.Length;
+        int count = bonesPerVertex.Length;
 
-        for (int i = 0; i < bonesPerVertex; i++)
+        for (int i = 0; i < count; i++)
         {
-            var boneWeight1 = result.weights[assertCounter];
+            var boneWeight1 = weights[assertCounter];
             Assert.That(boneWeight1.weight, Is.EqualTo(1), "Bone Weight");
             Assert.That(boneWeight1.boneIndex, Is.EqualTo(assertCounter), "Bone index");
             assertCounter++;
@@ -173,6 +174,9 @@ public class AvatarMeshCombinerUtilsCan
         layers.SelectMany( (x) => x.renderers ).ToList().ForEach(
             DCL.Helpers.SkinnedMeshRenderer.DestroyAndUnload
         );
+
+        weights.Dispose();
+        bonesPerVertex.Dispose();
     }
 
     [Test]

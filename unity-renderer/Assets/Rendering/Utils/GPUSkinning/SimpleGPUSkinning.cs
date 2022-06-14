@@ -74,6 +74,9 @@ namespace GPUSkinning
 
             sharedMesh.SetTangents(bone01data);
             sharedMesh.SetUVs(1, bone23data);
+            
+            bone01data.Dispose();
+            bone23data.Dispose();
         }
         
     }

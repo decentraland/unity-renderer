@@ -127,13 +127,21 @@ namespace DCL
 
             finalMesh.bindposes = bindPoses;
 
-            (NativeArray<byte> bonesPerVertex, NativeArray<BoneWeight1> weights) = AvatarMeshCombinerUtils.ComputeBoneWeights(layers);
-            finalMesh.SetBoneWeights(bonesPerVertex, weights);
-
+            var bonesPerVertex = AvatarMeshCombinerUtils.CombineBonesPerVertex(layers);
+            var boneWeights = AvatarMeshCombinerUtils.CombineBonesWeights(layers);
+            finalMesh.SetBoneWeights(bonesPerVertex, boneWeights);
+            
+            bonesPerVertex.Dispose();
+            boneWeights.Dispose();
+            
             var flattenedMaterialsData = AvatarMeshCombinerUtils.FlattenMaterials( layers, materialAsset );
             finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, flattenedMaterialsData.emissionColors);
             finalMesh.SetUVs(TEXTURE_POINTERS_UV_CHANNEL_INDEX, flattenedMaterialsData.texturePointers);
             finalMesh.SetColors(flattenedMaterialsData.colors);
+
+            flattenedMaterialsData.emissionColors.Dispose();
+            flattenedMaterialsData.texturePointers.Dispose();
+            flattenedMaterialsData.colors.Dispose();
 
             // Each layer corresponds with a subMesh. This is to take advantage of the sharedMaterials array.
             //

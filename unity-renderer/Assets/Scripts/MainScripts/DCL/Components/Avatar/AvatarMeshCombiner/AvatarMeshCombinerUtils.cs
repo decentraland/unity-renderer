@@ -30,49 +30,39 @@ namespace DCL
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
 
-
         /// <summary>
         /// This method iterates over all the renderers contained in the given CombineLayer list, and
-        /// outputs an array of all the BoneWeights of the renderers in order.
-        ///
+        /// outputs an array of all the bones per vertexes
+        /// 
         /// This is needed because Mesh.CombineMeshes don't calculate boneWeights correctly.
         /// When using Mesh.CombineMeshes, the boneWeights returned correspond to indexes of skeleton copies,
         /// not the same skeleton.
         /// </summary>
         /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
-        /// <returns>A list of BoneWeights that share the same skeleton.</returns>
-        public static (NativeArray<byte> bonesPerVertex, NativeArray<BoneWeight1> weights) ComputeBoneWeights( List<CombineLayer> layers )
+        /// <returns>A list of Bones per vertex that share the same skeleton.</returns>
+        public static NativeArray<byte> CombineBonesPerVertex(List<CombineLayer> layers)
         {
             int layersCount = layers.Count;
-
             int totalVertexes = 0;
-            int totalBones = 0;
 
             List<NativeArray<byte>> bonesPerVertexList = new List<NativeArray<byte>>();
-            List<NativeArray<BoneWeight1>> boneWeightArrays = new List<NativeArray<BoneWeight1>>(10);
 
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
                 var layerRenderers = layer.renderers;
-
                 int layerRenderersCount = layerRenderers.Count;
 
                 for (int i = 0; i < layerRenderersCount; i++)
                 {
                     var bonesPerVertex = layerRenderers[i].sharedMesh.GetBonesPerVertex();
-                    var boneWeights = layerRenderers[i].sharedMesh.GetAllBoneWeights();
                     
                     bonesPerVertexList.Add(bonesPerVertex);
-                    boneWeightArrays.Add(boneWeights);
-
                     totalVertexes += bonesPerVertex.Length;
-                    totalBones += boneWeights.Length;
                 }
             }
 
             NativeArray<byte> finalBpV = new NativeArray<byte>(totalVertexes, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-            NativeArray<BoneWeight1> finalBones = new NativeArray<BoneWeight1>(totalBones, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
             int indexOffset = 0;
             int bonesPerVertexListCount = bonesPerVertexList.Count;
@@ -83,19 +73,58 @@ namespace DCL
                 int narrayLength = narray.Length;
                 NativeArray<byte>.Copy(narray, 0, finalBpV, indexOffset, narrayLength);
                 indexOffset += narrayLength;
+                narray.Dispose();
             }
 
+            return finalBpV;
+        }
+        
+        /// <summary>
+        /// This method iterates over all the renderers contained in the given CombineLayer list, and
+        /// outputs an array of all the bone weights
+        /// 
+        /// This is needed because Mesh.CombineMeshes don't calculate boneWeights correctly.
+        /// When using Mesh.CombineMeshes, the boneWeights returned correspond to indexes of skeleton copies,
+        /// not the same skeleton.
+        /// </summary>
+        /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
+        /// <returns>A list of bone weights that share the same skeleton.</returns>
+        public static NativeArray<BoneWeight1> CombineBonesWeights(List<CombineLayer> layers)
+        {
+            int layersCount = layers.Count;
+            int totalBones = 0;
+
+            List<NativeArray<BoneWeight1>> boneWeightArrays = new List<NativeArray<BoneWeight1>>(10);
+
+            for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
+            {
+                CombineLayer layer = layers[layerIndex];
+                var layerRenderers = layer.renderers;
+                int layerRenderersCount = layerRenderers.Count;
+
+                for (int i = 0; i < layerRenderersCount; i++)
+                {
+                    var boneWeights = layerRenderers[i].sharedMesh.GetAllBoneWeights();
+                    boneWeightArrays.Add(boneWeights);
+                    totalBones += boneWeights.Length;
+                }
+            }
+
+            NativeArray<BoneWeight1> finalBones = new NativeArray<BoneWeight1>(totalBones, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+
+            int indexOffset = 0;
             var finalBonesCount = boneWeightArrays.Count;
-            indexOffset = 0;
+
             for (int i = 0; i < finalBonesCount; i++)
             {
                 var narray = boneWeightArrays[i];
                 int narrayLength = narray.Length;
                 NativeArray<BoneWeight1>.Copy(narray, 0, finalBones, indexOffset, narrayLength);
                 indexOffset += narrayLength;
+                narray.Dispose();
             }
-            
-            return (finalBpV, finalBones);
+
+            return finalBones;
         }
 
 
