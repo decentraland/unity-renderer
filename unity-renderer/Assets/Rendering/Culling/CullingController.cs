@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 using UniversalRenderPipelineAsset = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
 using static DCL.Rendering.CullingControllerUtils;
@@ -17,6 +18,7 @@ namespace DCL.Rendering
     /// </summary>
     public class CullingController : ICullingController
     {
+        private const bool DRAW_GIZMOS = false;
         internal List<CullingControllerProfile> profiles = null;
 
         private CullingControllerSettings settings;
@@ -33,6 +35,10 @@ namespace DCL.Rendering
         private bool playerPositionDirty;
         private bool objectPositionsDirty;
         private bool running = false;
+
+        // Cache to avoid allocations when getting names
+        private readonly HashSet<Shader> avatarShaders = new HashSet<Shader>();
+        private readonly HashSet<Shader> nonAvatarShaders = new HashSet<Shader>();
 
         public event ICullingController.DataReport OnDataReport;
 
@@ -150,7 +156,6 @@ namespace DCL.Rendering
                     continue;
                 }
 
-
                 float startTime = Time.realtimeSinceStartup;
 
                 //NOTE(Brian): Need to retrieve positions every frame to take into account
@@ -184,12 +189,8 @@ namespace DCL.Rendering
                 if (r is SkinnedMeshRenderer skr)
                 {
                     Material mat = skr.sharedMaterial;
-                    bool isAvatarRenderer = false;
 
-                    if (mat != null && mat.shader != null)
-                        isAvatarRenderer = mat.shader.name == "DCL/Toon Shader";
-
-                    if (isAvatarRenderer)
+                    if (IsAvatarRenderer(mat))
                     {
                         shouldHaveShadow &= TestAvatarShadowRule(profile, distance);
                     }
@@ -208,10 +209,41 @@ namespace DCL.Rendering
 
                 SetCullingForRenderer(r, shouldBeVisible, shouldHaveShadow);
 #if UNITY_EDITOR
-                DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
+                if (DRAW_GIZMOS) DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
 #endif
                 timeBudgetCount += Time.realtimeSinceStartup - startTime;
+
             }
+        }
+        
+        /// <summary>
+        /// Checks if the material is from an Avatar by checking if the shader is DCL/Toon Shader
+        /// This Method avoids the allocation of the name getter by storing the result on a HashSet
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        private bool IsAvatarRenderer(Material mat)
+        {
+            if (mat != null && mat.shader != null)
+            {
+                Shader matShader = mat.shader;
+
+                if (!avatarShaders.Contains(matShader) && !nonAvatarShaders.Contains(matShader))
+                {
+                    // This allocates memory on the GC
+                    bool isAvatar = matShader.name == "DCL/Toon Shader";
+
+                    if (isAvatar)
+                        avatarShaders.Add(matShader);
+                    else
+                        nonAvatarShaders.Add(matShader);
+                }
+
+                return avatarShaders.Contains(matShader);
+                
+            }
+
+            return false;
         }
 
         /// <summary>
