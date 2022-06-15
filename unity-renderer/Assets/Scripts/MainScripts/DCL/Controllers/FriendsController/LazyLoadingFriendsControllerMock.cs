@@ -1,35 +1,17 @@
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using JetBrains.Annotations;
-using UnityEngine;
-using Random = UnityEngine.Random;
 
-public class LazyLoadingFriendsControllerMock : MonoBehaviour, IFriendsController
+public class LazyLoadingFriendsControllerMock : IFriendsController
 {
-    [Serializable]
-    private class AddFriendsPayload
-    {
-        public string[] currentFriends;
-    }
-
-    [Serializable]
-    private class AddFriendRequestsPayload
-    {
-        public string[] requestedTo;
-        public string[] requestedFrom;
-    }
-
-    [Serializable]
-    private class AddFriendsWithDirectMessagesPayload
-    {
-        public string[] currentFriendsWithDirectMessages;
-    }
-
-    [SerializeField] private FriendsController controller;
+    private FriendsController controller;
 
     public event Action OnInitialized;
-    
+
+    public LazyLoadingFriendsControllerMock(FriendsController controller)
+    {
+        this.controller = controller;
+    }
+
     public event Action<string, FriendshipAction> OnUpdateFriendship
     {
         add => controller.OnUpdateFriendship += value;
@@ -52,35 +34,6 @@ public class LazyLoadingFriendsControllerMock : MonoBehaviour, IFriendsControlle
     public bool IsInitialized => controller.IsInitialized;
     public int ReceivedRequestCount => controller.ReceivedRequestCount;
 
-    // called by kernel
-    [UsedImplicitly]
-    public void InitializeFriends(string json)
-    {
-        var msg = JsonUtility.FromJson<FriendsController.FriendshipInitializationMessage>(json);
-        OnInitialized?.Invoke();
-    }
-
-    // called by kernel
-    [UsedImplicitly]
-    public void AddFriends(string json)
-    {
-        var msg = JsonUtility.FromJson<AddFriendsPayload>(json);
-    }
-
-    // called by kernel
-    [UsedImplicitly]
-    public void AddFriendRequests(string json)
-    {
-        var msg = JsonUtility.FromJson<AddFriendRequestsPayload>(json);
-    }
-
-    // called by kernel
-    [UsedImplicitly]
-    public void AddFriendsWithDirectMessages(string json)
-    {
-        var msg = JsonUtility.FromJson<AddFriendsWithDirectMessagesPayload>(json);
-    }
-
     public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() => controller.GetAllocatedFriends();
 
     public FriendsController.UserStatus GetUserStatus(string userId) => controller.GetUserStatus(userId);
@@ -100,40 +53,40 @@ public class LazyLoadingFriendsControllerMock : MonoBehaviour, IFriendsControlle
 
     public void RemoveFriend(string friendId) => controller.RemoveFriend(friendId);
     
-    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(int limit, int skip)
+    public void GetFriendsAsync(int limit, int skip)
     {
-        await UniTask.Delay(Random.Range(100, 700));
+        //await UniTask.Delay(Random.Range(100, 700));
         // TODO: fake users
-        return new Dictionary<string, FriendsController.UserStatus>();
+        //return new Dictionary<string, FriendsController.UserStatus>();
     }
 
-    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(string usernameOrId)
+    public void GetFriendsAsync(string usernameOrId)
     {
-        await UniTask.Delay(Random.Range(100, 700));
+        //await UniTask.Delay(Random.Range(100, 700));
         // TODO: fake users
-        return new Dictionary<string, FriendsController.UserStatus>();
+        //return new Dictionary<string, FriendsController.UserStatus>();
     }
 
-    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendRequestsAsync(
+    public void GetFriendRequestsAsync(
         int sentLimit, long sentFromTimestamp,
         int receivedLimit, long receivedFromTimestamp)
     {
-        await UniTask.Delay(Random.Range(100, 700));
+        //await UniTask.Delay(Random.Range(100, 700));
         // TODO: fake requests
-        return new Dictionary<string, FriendsController.UserStatus>();
+        //return new Dictionary<string, FriendsController.UserStatus>();
     }
 
-    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(int limit, long fromTimestamp)
+    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
     {
-        await UniTask.Delay(Random.Range(100, 700));
+        //await UniTask.Delay(Random.Range(100, 700));
         // TODO: fake users
-        return new Dictionary<string, FriendsController.UserStatus>();
+        //return new Dictionary<string, FriendsController.UserStatus>();
     }
 
-    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(string userNameOrId)
+    public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
     {
-        await UniTask.Delay(Random.Range(100, 700));
+        //await UniTask.Delay(Random.Range(100, 700));
         // TODO: fake users
-        return new Dictionary<string, FriendsController.UserStatus>();
+        //return new Dictionary<string, FriendsController.UserStatus>();
     }
 }

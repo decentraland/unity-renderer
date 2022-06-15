@@ -1,7 +1,6 @@
 using DCL.Interface;
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class ChatController_Mock : IChatController
@@ -42,8 +41,7 @@ public class ChatController_Mock : IChatController
     {
     }
 
-    public async UniTask<List<ChatMessage>> GetPrivateMessages(string userId, int limit, long fromTimestamp)
+    public void GetPrivateMessages(string userId, int limit, long fromTimestamp)
     {
-        return new List<ChatMessage>();
     }
 }

@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using DCL.Interface;
-using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-public class LazyLoadingChatControllerMock : MonoBehaviour, IChatController
+[RequireComponent(typeof(ChatController))]
+public class LazyLoadingChatControllerMock : IChatController
 {
-    [SerializeField] private ChatController controller;
-    
+    private ChatController controller;
+
+    public LazyLoadingChatControllerMock(ChatController controller)
+    {
+        this.controller = controller;
+    }
+
     public event Action<ChatMessage> OnAddMessage
     {
         add => controller.OnAddMessage += value;
@@ -18,18 +21,13 @@ public class LazyLoadingChatControllerMock : MonoBehaviour, IChatController
 
     public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
 
-    // called by kernel
-    [UsedImplicitly]
-    public void AddMessageToChatWindow(string jsonMessage) { controller.AddMessageToChatWindow(jsonMessage); }
-
     public void Send(ChatMessage message) => controller.Send(message);
     
     public void MarkMessagesAsSeen(string userId) { controller.MarkMessagesAsSeen(userId); }
 
-    public async UniTask<List<ChatMessage>> GetPrivateMessages(string userId, int limit, long fromTimestamp)
+    public void GetPrivateMessages(string userId, int limit, long fromTimestamp)
     {
-        await UniTask.Delay(Random.Range(100, 700));
-        // TODO: fake messages
-        return new List<ChatMessage>();
+        // TODO: Delay...
+        // TODO: controller.AddMessageToChatWindow(fake message)
     }
 }

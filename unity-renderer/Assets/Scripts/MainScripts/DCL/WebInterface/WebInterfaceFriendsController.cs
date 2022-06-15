@@ -101,23 +101,21 @@ namespace DCL.Interface
             });
         }
 
-        public UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(int limit, int skip) =>
-            friendsController.GetFriendsAsync(limit, skip);
+        public void GetFriendsAsync(int limit, int skip) => friendsController.GetFriendsAsync(limit, skip);
 
-        public UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(string usernameOrId) =>
-            friendsController.GetFriendsAsync(usernameOrId);
+        public void GetFriendsAsync(string usernameOrId) => friendsController.GetFriendsAsync(usernameOrId);
 
-        public UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendRequestsAsync(
+        public void GetFriendRequestsAsync(
             int sentLimit, long sentFromTimestamp,
             int receivedLimit, long receivedFromTimestamp) =>
             friendsController.GetFriendRequestsAsync(sentLimit, sentFromTimestamp,
                 receivedLimit, receivedFromTimestamp);
 
-        public UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(int limit,
+        public void GetFriendsWithDirectMessages(int limit,
             long fromTimestamp) =>
             friendsController.GetFriendsWithDirectMessages(limit, fromTimestamp);
 
-        public UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(string userNameOrId) =>
-            friendsController.GetFriendsWithDirectMessages(userNameOrId);
+        public void GetFriendsWithDirectMessages(string userNameOrId, int limit) =>
+            friendsController.GetFriendsWithDirectMessages(userNameOrId, limit);
     }
 }

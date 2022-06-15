@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 
 public interface IFriendsController
 {
@@ -22,13 +21,9 @@ public interface IFriendsController
     void RejectFriendship(string friendUserId);
     bool IsFriend(string userId);
     void RemoveFriend(string friendId);
-    UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(int limit, int skip);
-    UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(string usernameOrId);
-
-    UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendRequestsAsync(
-        int sentLimit, long sentFromTimestamp,
-        int receivedLimit, long receivedFromTimestamp);
-
-    UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(int limit, long fromTimestamp);
-    UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(string userNameOrId);
+    void GetFriendsAsync(int limit, int skip);
+    void GetFriendsAsync(string usernameOrId);
+    void GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit, long receivedFromTimestamp);
+    void GetFriendsWithDirectMessages(int limit, long fromTimestamp);
+    void GetFriendsWithDirectMessages(string userNameOrId, int limit);
 }

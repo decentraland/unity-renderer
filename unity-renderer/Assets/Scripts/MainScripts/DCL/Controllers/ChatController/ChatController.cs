@@ -1,7 +1,6 @@
 using DCL.Interface;
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class ChatController : MonoBehaviour, IChatController
@@ -35,7 +34,7 @@ public class ChatController : MonoBehaviour, IChatController
         throw new NotImplementedException();
     }
 
-    public UniTask<List<ChatMessage>> GetPrivateMessages(string userId, int limit, long fromTimestamp)
+    public void GetPrivateMessages(string userId, int limit, long fromTimestamp)
     {
         throw new NotImplementedException();
     }

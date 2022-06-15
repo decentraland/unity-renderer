@@ -1,7 +1,7 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class FriendsController : MonoBehaviour, IFriendsController
@@ -117,27 +117,27 @@ public class FriendsController : MonoBehaviour, IFriendsController
         });
     }
 
-    public UniTask<Dictionary<string, UserStatus>> GetFriendsAsync(int limit, int skip)
+    public void GetFriendsAsync(int limit, int skip)
     {
         throw new NotImplementedException();
     }
 
-    public UniTask<Dictionary<string, UserStatus>> GetFriendsAsync(string usernameOrId)
+    public void GetFriendsAsync(string usernameOrId)
     {
         throw new NotImplementedException();
     }
 
-    public UniTask<Dictionary<string, UserStatus>> GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit, long receivedFromTimestamp)
+    public void GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit, long receivedFromTimestamp)
     {
         throw new NotImplementedException();
     }
 
-    public UniTask<Dictionary<string, UserStatus>> GetFriendsWithDirectMessages(int limit, long fromTimestamp)
+    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
     {
         throw new NotImplementedException();
     }
 
-    public UniTask<Dictionary<string, UserStatus>> GetFriendsWithDirectMessages(string userNameOrId)
+    public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
     {
         throw new NotImplementedException();
     }
@@ -227,6 +227,27 @@ public class FriendsController : MonoBehaviour, IFriendsController
         }
 
         OnInitialized?.Invoke();
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void AddFriends(string json)
+    {
+        var msg = JsonUtility.FromJson<AddFriendsPayload>(json);
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void AddFriendRequests(string json)
+    {
+        var msg = JsonUtility.FromJson<AddFriendRequestsPayload>(json);
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void AddFriendsWithDirectMessages(string json)
+    {
+        var msg = JsonUtility.FromJson<AddFriendsWithDirectMessagesPayload>(json);
     }
 
     public void UpdateUserStatus(UserStatus newUserStatus)
