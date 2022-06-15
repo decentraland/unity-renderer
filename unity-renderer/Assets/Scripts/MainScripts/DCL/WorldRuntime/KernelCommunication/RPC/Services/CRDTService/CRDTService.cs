@@ -5,7 +5,7 @@ using DCL.CRDT;
 using Google.Protobuf;
 using KernelCommunication;
 using Proto;
-using rpc_csharp.server;
+using rpc_csharp;
 
 namespace RPC.Services
 {

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Google.Protobuf;
 using rpc_csharp.protocol;
-using rpc_csharp.server;
+using rpc_csharp;
 
 namespace Proto {
 

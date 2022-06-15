@@ -14,6 +14,13 @@
       "dependencies": {},
       "hash": "50a67d8f419b6cea0398eff6c19cf0bbe11ed609"
     },
+    "com.decentraland.rpc-csharp": {
+      "version": "https://github.com/decentraland/rpc-csharp.git?path=rpc-csharp/src",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "7cf554f235e7e868857e73bd3785b0ebeb5935ae"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
