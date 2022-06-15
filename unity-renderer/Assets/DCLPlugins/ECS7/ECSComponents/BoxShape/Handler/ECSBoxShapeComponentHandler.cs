@@ -27,6 +27,8 @@ namespace DCL.ECSComponents
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
             DisposeMesh(scene);
+            
+            lastModel = null;
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBBoxShape model)
@@ -50,7 +52,7 @@ namespace DCL.ECSComponents
                     DisposeMesh(scene);
                     generatedMesh = shape.mesh;
                     GenerateRenderer(generatedMesh, scene, entity, model);
-                    dataStore.RemovePendingResource(scene.sceneData.id, lastModel);
+                    dataStore.RemovePendingResource(scene.sceneData.id, model);
                 };
                 primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
                 {

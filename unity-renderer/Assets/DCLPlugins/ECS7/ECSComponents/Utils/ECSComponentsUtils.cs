@@ -34,9 +34,7 @@ public static class ECSComponentsUtils
         Renderer[] renderers = new Renderer[] { meshRenderer };
         
         meshFilter.sharedMesh = mesh;
-
-        meshesInfo.renderers = renderers;
-        meshesInfo.meshFilters = new [] { meshFilter };
+        
         // We should remove this relation in the future, the entity shouldn't know about the mesh
         entity.meshesInfo = meshesInfo;
         
