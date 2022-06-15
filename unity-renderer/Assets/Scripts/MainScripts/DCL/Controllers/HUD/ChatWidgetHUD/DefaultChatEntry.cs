@@ -58,10 +58,10 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override void Populate(ChatEntryModel chatEntryModel)
     {
-        PopulateTask(chatEntryModel);
+        PopulateTask(chatEntryModel).Forget();
     }
 
-    public async UniTask PopulateTask(ChatEntryModel chatEntryModel)
+    internal async UniTaskVoid PopulateTask(ChatEntryModel chatEntryModel)
     {
         // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
         // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
