@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
 {
@@ -24,8 +25,8 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
         yield break;
     }
     
-    [Test]
-    public void PopulateSystemChat()
+    [UnityTest]
+    public IEnumerator PopulateSystemChat()
     {
         GivenEntryChat("ChatEntrySystem");
         
@@ -38,13 +39,13 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.RECEIVED
         };
         
-        entry.Populate(message);
+        yield return Populate(message);
         
         Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
     }
 
-    [Test]
-    public void PopulateReceivedPublicChat()
+    [UnityTest]
+    public IEnumerator PopulateReceivedPublicChat()
     {
         GivenEntryChat("PublicChatEntryReceived");
         
@@ -57,13 +58,13 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.RECEIVED
         };
         
-        entry.Populate(message);
+        yield return Populate(message);
         
         Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
     }
     
-    [Test]
-    public void PopulateSentPublicChat()
+    [UnityTest]
+    public IEnumerator PopulateSentPublicChat()
     {
         GivenEntryChat("PublicChatEntrySent");
         
@@ -76,13 +77,13 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.SENT
         };
         
-        entry.Populate(message);
+        yield return Populate(message);
         
         Assert.AreEqual("test message", entry.body.text);
     }
 
-    [Test]
-    public void PopulateReceivedWhisperInPublicChannel()
+    [UnityTest]
+    public IEnumerator PopulateReceivedWhisperInPublicChannel()
     {
         GivenEntryChat("PublicChatEntryReceivedWhisper");
         
@@ -95,13 +96,13 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.RECEIVED
         };
         
-        entry.Populate(message);
+        yield return Populate(message);
         
         Assert.AreEqual("<b><color=#5EBD3D>From user-test:</color></b> test message", entry.body.text);
     }
     
-    [Test]
-    public void PopulateSentWhisperInPublicChannel()
+    [UnityTest]
+    public IEnumerator PopulateSentWhisperInPublicChannel()
     {
         GivenEntryChat("PublicChatEntrySentWhisper");
         
@@ -114,13 +115,13 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.SENT
         };
         
-        entry.Populate(message);
+        yield return Populate(message);
         
         Assert.AreEqual("<b>To receiver-test:</b> test message", entry.body.text);
     }
     
-    [Test]
-    public void PopulateSentWhisperInPrivateChannel()
+    [UnityTest]
+    public IEnumerator PopulateSentWhisperInPrivateChannel()
     {
         GivenEntryChat("PrivateChatEntrySent");
         
@@ -133,13 +134,13 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.SENT
         };
         
-        entry.Populate(message);
+        yield return Populate(message);
         
         Assert.AreEqual("test message", entry.body.text);
     }
     
-    [Test]
-    public void PopulateReceivedWhisperInPrivateChannel()
+    [UnityTest]
+    public IEnumerator PopulateReceivedWhisperInPrivateChannel()
     {
         GivenEntryChat("PrivateChatEntryReceived");
         
@@ -152,9 +153,20 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.RECEIVED
         };
         
-        entry.Populate(message);
+        yield return Populate(message);
         
         Assert.AreEqual("test message", entry.body.text);
+    }
+
+    IEnumerator Populate(ChatEntryModel message)
+    {
+        entry.Populate(message);
+        
+        // To cope with DefaultChatEntry.PopulateTask() inner hack to avoid a client crash due to a TMPro's bug
+        yield return null;
+        yield return null;
+        yield return null;
+        yield return null;
     }
 
     private void GivenEntryChat(string prefabName)
