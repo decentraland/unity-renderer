@@ -47,7 +47,7 @@ namespace DCL.ECSComponents
                     DisposeMesh(scene);
                     generatedMesh = shape.mesh;
                     GenerateRenderer(generatedMesh, scene, entity, model);
-                    dataStore.RemovePendingResource(scene.sceneData.id, lastModel);
+                    dataStore.RemovePendingResource(scene.sceneData.id, model);
                 };
                 primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
                 {
