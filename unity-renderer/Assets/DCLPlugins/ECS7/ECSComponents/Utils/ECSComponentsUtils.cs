@@ -39,7 +39,7 @@ public static class ECSComponentsUtils
         entity.meshesInfo = meshesInfo;
         
         UpdateRenderer(entity, meshFilter, gameObject, renderers, visible, withCollisions, isPointerBlocker);
-        meshesInfo.UpdateRenderersCollection();
+        meshesInfo.UpdateRenderersCollection(renderers,entity.meshesInfo.meshFilters);
         return meshesInfo;
     }
     
