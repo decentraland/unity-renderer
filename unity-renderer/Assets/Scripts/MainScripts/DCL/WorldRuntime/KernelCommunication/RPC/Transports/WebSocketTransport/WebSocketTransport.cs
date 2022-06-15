@@ -1,8 +1,9 @@
 using System;
+using rpc_csharp.transport;
 
 namespace RPC.Transports
 {
-    public class WebSocketTransport
+    public class WebSocketTransport : ITransport
     {
         public event Action OnCloseEvent;
 
@@ -33,7 +34,7 @@ namespace RPC.Transports
                 wsService.OnConnectEvent -= OnConnect;
                 wsService.OnMessageEvent -= OnMessage;
                 wsService.OnErrorEvent -= OnError;
-                wsService.OnCloseEvent -= OnClose;                
+                wsService.OnCloseEvent -= OnClose;
             }
         }
 

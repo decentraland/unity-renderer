@@ -17,20 +17,20 @@ namespace RPC.Services
         // TODO: remove binary reader and use this stream instead
         private static readonly CRDTStream crdtStream = new CRDTStream();
 
-        public static void RegisterService(RpcServerPort<CRDTServiceContext> port)
+        public static void RegisterService(RpcServerPort<RPCContext> port)
         {
-            CRDTService<CRDTServiceContext>.RegisterService(
+            CRDTService<RPCContext>.RegisterService(
                 port,
                 sendCRDT: OnCRDTReceived,
                 cRDTNotificationStream: CRDTNotificationStream
             );
         }
 
-        private static UniTask<CRDTResponse> OnCRDTReceived(CRDTManyMessages messages, CRDTServiceContext context)
+        private static UniTask<CRDTResponse> OnCRDTReceived(CRDTManyMessages messages, RPCContext context)
         {
             messages.Payload.WriteTo(crdtStream);
 
-            var sceneMessagesPool = context.messageQueueHanlder.sceneMessagesPool;
+            var sceneMessagesPool = context.crdtContext.messageQueueHanlder.sceneMessagesPool;
 
             // TODO: delete KernelBinaryMessageDeserializer and move deserialization here
             using (var iterator = KernelBinaryMessageDeserializer.Deserialize(crdtStream))
@@ -49,20 +49,20 @@ namespace RPC.Services
                     queuedMessage.sceneId = messages.SceneId;
                     queuedMessage.payload = crdtMessage;
 
-                    context.messageQueueHanlder.EnqueueSceneMessage(queuedMessage);
+                    context.crdtContext.messageQueueHanlder.EnqueueSceneMessage(queuedMessage);
                 }
             }
 
             return defaultResponse;
         }
 
-        private static IEnumerator<CRDTManyMessages> CRDTNotificationStream(CRDTStreamRequest request, CRDTServiceContext context)
+        private static IEnumerator<CRDTManyMessages> CRDTNotificationStream(CRDTStreamRequest request, RPCContext context)
         {
             while (true)
             {
-                if (context.notifications.Count > 0)
+                if (context.crdtContext.notifications.Count > 0)
                 {
-                    var (sceneId, payload) = context.notifications.Dequeue();
+                    var (sceneId, payload) = context.crdtContext.notifications.Dequeue();
                     reusableCrdtMessage.SceneId = sceneId;
                     reusableCrdtMessage.Payload = ByteString.CopyFrom(payload);
                     yield return reusableCrdtMessage;

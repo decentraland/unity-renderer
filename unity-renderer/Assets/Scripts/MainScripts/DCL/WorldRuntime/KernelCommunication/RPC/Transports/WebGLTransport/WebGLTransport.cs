@@ -1,10 +1,11 @@
 using System;
 using System.Runtime.InteropServices;
 using AOT;
+using rpc_csharp.transport;
 
 namespace RPC.Transports
 {
-    public class WebGLTransport
+    public class WebGLTransport : ITransport
     {
         public event Action OnCloseEvent;
 
