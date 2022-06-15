@@ -9,6 +9,16 @@ public class AvatarReveal : MonoBehaviour
 {
     [SerializeField] private Animation animation;
     [SerializeField] private List<GameObject> particleEffects;
+
+    [ColorUsageAttribute(true, true, 0f, 8f, 0.125f, 3f)]
+    public Color baseColor;
+    [ColorUsageAttribute(true, true, 0f, 8f, 0.125f, 3f)]
+    public Color maxColor;
+
+    private Gradient colorGradient;
+    private GradientColorKey[] colorKey;
+    private GradientAlphaKey[] alphaKey;
+
     public SkinnedMeshRenderer meshRenderer;
     public bool avatarLoaded;
     public GameObject revealer;
@@ -26,10 +36,29 @@ public class AvatarReveal : MonoBehaviour
     private void Start()
     {
         _ghostMaterial = meshRenderer.material;
+        InitializeColorGradient();
+        _ghostMaterial.SetColor("_Color", colorGradient.Evaluate(Random.Range(0, 1f)));
         foreach (Renderer r in targets)
         {
             _materials.Add(r.material);
         }
+    }
+
+    private void InitializeColorGradient()
+    {
+        colorGradient = new Gradient();
+        colorKey = new GradientColorKey[2];
+        colorKey[0].color = baseColor;
+        colorKey[0].time = 0.0f;
+        colorKey[1].color = maxColor;
+        colorKey[1].time = 1.0f;
+
+        alphaKey = new GradientAlphaKey[2];
+        alphaKey[0].alpha = baseColor.a;
+        alphaKey[0].time = 0.0f;
+        alphaKey[1].alpha = baseColor.a;
+        alphaKey[1].time = 1.0f;
+        colorGradient.SetKeys(colorKey, alphaKey);
     }
 
     public void InjectLodSystem(ILOD lod)
