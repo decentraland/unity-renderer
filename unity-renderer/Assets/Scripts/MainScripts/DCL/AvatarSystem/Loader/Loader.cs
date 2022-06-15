@@ -33,7 +33,7 @@ namespace AvatarSystem
             avatarMeshCombiner.uploadMeshToGpu = true;
         }
 
-        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesContainer, CancellationToken ct = default)
+        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesContainer = null, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 

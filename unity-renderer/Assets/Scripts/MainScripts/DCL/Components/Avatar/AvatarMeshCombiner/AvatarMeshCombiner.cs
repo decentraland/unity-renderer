@@ -84,7 +84,10 @@ namespace DCL
         public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset, bool keepPose = true)
         {
             Output result = new Output();
-            (Vector3 pos, Quaternion rot, Vector3 scale)[] bonesTransforms = bones.Select(x => (x.position, x.rotation, x.localScale)).ToArray();
+            (Vector3 pos, Quaternion rot, Vector3 scale)[] bonesTransforms = null;
+
+            if(keepPose)
+                bonesTransforms = bones.Select(x => (x.position, x.rotation, x.localScale)).ToArray();
 
             //
             // Reset bones to put character in T pose. Renderers are going to be baked later.
