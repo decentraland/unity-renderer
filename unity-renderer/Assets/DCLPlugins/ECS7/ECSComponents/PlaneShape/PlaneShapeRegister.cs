@@ -11,7 +11,7 @@ namespace DCL.ECSComponents
 
         public PlaneShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, PlaneShapeSerializer.Deserialize, () => new ECSPlaneShapeComponentHandler());
+            factory.AddOrReplaceComponent(componentId, PlaneShapeSerializer.Deserialize, () => new ECSPlaneShapeComponentHandler(DataStore.i.ecs7));
             componentWriter.AddOrReplaceComponentSerializer<PBPlaneShape>(componentId, PlaneShapeSerializer.Serialize);
 
             this.factory = factory;
