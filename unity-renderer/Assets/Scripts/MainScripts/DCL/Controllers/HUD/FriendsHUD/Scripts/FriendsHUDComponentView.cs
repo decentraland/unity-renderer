@@ -223,7 +223,11 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         }
     }
 
-    public void Populate(string userId, FriendEntryModel model) => friendsTab.Populate(userId, model);
+    public void Populate(string userId, FriendEntryModel model)
+    {
+        friendsTab.Populate(userId, model);
+        friendRequestsTab.Populate(userId, (FriendRequestEntryModel) model);
+    }
 
     public bool IsActive() => gameObject.activeInHierarchy;
 
