@@ -9,12 +9,6 @@ using rpc_csharp.server;
 
 namespace RPC.Services
 {
-    public class CRDTServiceContext
-    {
-        public readonly Queue<(string, byte[])> notifications = new Queue<(string, byte[])>();
-        public IMessageQueueHandler messageQueueHanlder;
-    }
-
     public static class CRDTServiceImpl
     {
         private static readonly UniTask<CRDTResponse> defaultResponse = UniTask.FromResult(new CRDTResponse());
