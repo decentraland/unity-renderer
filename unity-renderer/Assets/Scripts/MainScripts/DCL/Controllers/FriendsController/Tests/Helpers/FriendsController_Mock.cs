@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 
 public class FriendsController_Mock : IFriendsController
 {
@@ -36,29 +35,27 @@ public class FriendsController_Mock : IFriendsController
         OnUpdateFriendship?.Invoke(friendId, FriendshipAction.DELETED);
     }
 
-    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(int limit, int skip)
+    public void GetFriendsAsync(int limit, int skip)
     {
-        return new Dictionary<string, FriendsController.UserStatus>();
     }
 
-    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsAsync(string usernameOrId)
+    public void GetFriendsAsync(string usernameOrId)
     {
-        return new Dictionary<string, FriendsController.UserStatus>();
     }
 
-    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit, long receivedFromTimestamp)
+    public void GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit, long receivedFromTimestamp)
     {
-        return new Dictionary<string, FriendsController.UserStatus>();
+        throw new NotImplementedException();
     }
 
-    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(int limit, long fromTimestamp)
+    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
     {
-        return new Dictionary<string, FriendsController.UserStatus>();
+        throw new NotImplementedException();
     }
 
-    public async UniTask<Dictionary<string, FriendsController.UserStatus>> GetFriendsWithDirectMessages(string userNameOrId)
+    public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
     {
-        return new Dictionary<string, FriendsController.UserStatus>();
+        throw new NotImplementedException();
     }
 
     public FriendsController.UserStatus GetUserStatus(string userId)
