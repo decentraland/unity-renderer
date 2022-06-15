@@ -27,6 +27,7 @@ public class PrivateChatWindowController : IHUD
 
     public event Action OnPressBack;
     public event Action OnClosed;
+    public event Action<bool> OnPreviewModeChanged;
 
     public PrivateChatWindowController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
@@ -71,7 +72,6 @@ public class PrivateChatWindowController : IHUD
         chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
         chatHudController.OnInputFieldDeselected += HandleInputFieldDeselected;
         chatHudController.OnSendMessage += HandleSendChatMessage;
-        chatHudController.FocusInputField();
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
@@ -285,16 +285,18 @@ public class PrivateChatWindowController : IHUD
         ActivatePreviewMode();
     }
     
-    private void DeactivatePreviewMode()
+    public void DeactivatePreviewMode()
     {
         View.DeactivatePreview();
         chatHudController.DeactivatePreview();
+        OnPreviewModeChanged?.Invoke(false);
     }
 
-    private void ActivatePreviewMode()
+    public void ActivatePreviewMode()
     {
         View?.ActivatePreview();
         chatHudController?.ActivatePreview();
+        OnPreviewModeChanged?.Invoke(true);
     }
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)

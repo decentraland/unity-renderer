@@ -8,7 +8,7 @@ using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
+public class ChatHUDControllerShould
 {
     private const string OWN_USER_ID = "ownUserId";
 
@@ -16,7 +16,8 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
     private IChatHUDComponentView view;
     private DataStore dataStore;
 
-    protected override IEnumerator SetUp()
+    [SetUp]
+    public void SetUp()
     {
         var profanityFilter = GivenProfanityFilter();
         dataStore = new DataStore();
@@ -28,14 +29,12 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
         userProfileBridge.GetOwn().Returns(ownUserProfile);
         controller = new ChatHUDController(dataStore, userProfileBridge, true, profanityFilter);
         controller.Initialize(view);
-        Assert.IsTrue(view != null);
-        yield break;
     }
 
-    protected override IEnumerator TearDown()
+    [TearDown]
+    public void TearDown()
     {
         controller.Dispose();
-        yield break;
     }
 
     [Test]
@@ -85,6 +84,34 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
             .AddEntry(Arg.Is<ChatEntryModel>(
                 model => model.messageType == msg.messageType && model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
     });
+
+    [TestCase("/w usr hello", "usr", "hello")]
+    [TestCase("/w usr im goku", "usr", "im goku")]
+    public void SetWhisperPropertiesWhenSendMessage(string text, string recipient, string body)
+    {
+        ChatMessage msg = null;
+        controller.OnSendMessage += m => msg = m;
+        
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.NONE, "", text));
+        
+        Assert.AreEqual(OWN_USER_ID, msg.sender);
+        Assert.AreEqual(ChatMessage.Type.PRIVATE, msg.messageType);
+        Assert.AreEqual(recipient, msg.recipient);
+        Assert.AreEqual(body, msg.body);
+    }
+
+    [Test]
+    public void SetSenderWhenSendingPublicMessage()
+    {
+        const string body = "how are you?";
+        ChatMessage msg = null;
+        controller.OnSendMessage += m => msg = m;
+        
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.NONE, "", body));
+        
+        Assert.AreEqual(OWN_USER_ID, msg.sender);
+        Assert.AreEqual(body, msg.body);
+    }
 
     [UnityTest]
     [TestCase("ShiT hello shithead", "**** hello shithead", ExpectedResult = (IEnumerator) null)]
@@ -194,6 +221,107 @@ public class ChatHUDControllerShould : IntegrationTestSuite_Legacy
         view.Received(1)
             .AddEntry(Arg.Is<ChatEntryModel>(model => model.bodyText == $"<noparse>{msg.bodyText}</noparse>"));
     });
+
+    [Test]
+    public void DisplayNextMessageInHistory()
+    {
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "hey"));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "sup"));
+        view.OnNextChatInHistory += Raise.Event<Action>();
+        view.OnNextChatInHistory += Raise.Event<Action>();
+        
+        Received.InOrder(() =>
+        {
+            view.SetInputFieldText("sup");
+            view.SetInputFieldText("hey");
+        });
+    }
+    
+    [Test]
+    public void DisplayPreviousMessageInHistory()
+    {
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "hey"));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "sup"));
+        view.OnPreviousChatInHistory += Raise.Event<Action>();
+        view.OnPreviousChatInHistory += Raise.Event<Action>();
+        
+        Received.InOrder(() =>
+        {
+            view.SetInputFieldText("hey");
+            view.SetInputFieldText("sup");
+        });
+    }
+    
+    [Test]
+    public void DoNotDuplicateMessagesInHistory()
+    {
+        const string repeatedMessage = "hey";
+        
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", repeatedMessage));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", repeatedMessage));
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "bleh"));
+        view.OnNextChatInHistory += Raise.Event<Action>();
+        view.OnNextChatInHistory += Raise.Event<Action>();
+        view.OnNextChatInHistory += Raise.Event<Action>();
+        
+        Received.InOrder(() =>
+        {
+            view.SetInputFieldText("bleh");
+            view.SetInputFieldText(repeatedMessage);
+            view.SetInputFieldText("bleh");
+        });
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ResetInputField(bool loseFocus)
+    {
+        controller.ResetInputField(loseFocus);
+        
+        view.Received(1).ResetInputField(loseFocus);
+    }
+
+    [Test]
+    public void UnfocusInputField()
+    {
+        controller.UnfocusInputField();
+        
+        view.Received(1).UnfocusInputField();
+    }
+
+    [Test]
+    public void ActivatePreview()
+    {
+        controller.ActivatePreview();
+        
+        view.Received(1).ActivatePreview();
+    }
+
+    [Test]
+    public void DeactivatePreview()
+    {
+        controller.DeactivatePreview();
+        
+        view.Received(1).DeactivatePreview();
+    }
+
+    [TestCase("hehe")]
+    [TestCase("jojo")]
+    [TestCase("lelleolololohohoho")]
+    public void SetInputFieldText(string text)
+    {
+        controller.SetInputFieldText(text);
+        
+        view.Received(1).SetInputFieldText(text);
+    }
+
+    [Test]
+    public void ClearAllEntries()
+    {
+        controller.ClearAllEntries();
+        
+        view.Received(1).ClearAllEntries();
+    }
 
     private RegexProfanityFilter GivenProfanityFilter()
     {

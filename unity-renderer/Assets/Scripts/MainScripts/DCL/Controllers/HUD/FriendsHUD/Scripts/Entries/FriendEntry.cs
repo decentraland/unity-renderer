@@ -2,7 +2,6 @@ using System;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.UI;
-using Environment = DCL.Environment;
 
 public class FriendEntry : FriendEntryBase
 {
@@ -14,6 +13,11 @@ public class FriendEntry : FriendEntryBase
     [SerializeField] internal UnreadNotificationBadge unreadNotificationBadge;
     [SerializeField] private Button rowButton;
 
+    private IChatController chatController;
+    private ILastReadMessagesService lastReadMessagesService;
+    private IFriendsController friendsController;
+    private ISocialAnalytics socialAnalytics;
+
     public override void Awake()
     {
         base.Awake();
@@ -24,14 +28,21 @@ public class FriendEntry : FriendEntryBase
         rowButton.onClick.AddListener(() => OnWhisperClick?.Invoke(this));
     }
 
+    public void Initialize(IChatController chatController,
+        ILastReadMessagesService lastReadMessagesService,
+        IFriendsController friendsController,
+        ISocialAnalytics socialAnalytics)
+    {
+        this.chatController = chatController;
+        this.lastReadMessagesService = lastReadMessagesService;
+        this.friendsController = friendsController;
+        this.socialAnalytics = socialAnalytics;
+    }
+
     private void Start()
     {
-        unreadNotificationBadge?.Initialize(ChatController.i, model.userId, Environment.i.serviceLocator.Get<ILastReadMessagesService>());
-        jumpInButton.Initialize(
-            FriendsController.i, model.userId, 
-            new SocialAnalytics(
-                Environment.i.platform.serviceProviders.analytics,
-                new UserProfileWebInterfaceBridge()));
+        unreadNotificationBadge?.Initialize(chatController, Model.userId, lastReadMessagesService);
+        jumpInButton.Initialize(friendsController, Model.userId, socialAnalytics);
         jumpInButton.OnClick += () => OnJumpInClick?.Invoke(this);
     }
 }

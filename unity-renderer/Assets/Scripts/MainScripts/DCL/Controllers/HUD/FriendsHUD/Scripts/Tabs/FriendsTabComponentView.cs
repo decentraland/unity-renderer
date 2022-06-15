@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
+using SocialFeaturesAnalytics;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FriendsTabComponentView : BaseComponentView
 {
     private const int CREATION_AMOUNT_PER_FRAME = 5;
+    private const int AVATAR_SNAPSHOTS_PER_FRAME = 5;
     private const int PRE_INSTANTIATED_ENTRIES = 25;
     private const string FRIEND_ENTRIES_POOL_NAME_PREFIX = "FriendEntriesPool_";
 
@@ -24,18 +27,35 @@ public class FriendsTabComponentView : BaseComponentView
     [SerializeField] private SearchBarComponentView searchBar;
     [SerializeField] private UserContextMenu contextMenuPanel;
     [SerializeField] private Model model;
+    [SerializeField] private RectTransform viewport;
 
-    private readonly Dictionary<string, FriendEntryBase.Model> creationQueue =
-        new Dictionary<string, FriendEntryBase.Model>();
+    [Header("Load More Entries")] [SerializeField]
+    internal Button loadMoreEntriesButton;
+
+    [SerializeField] internal GameObject loadMoreEntriesContainer;
+    [SerializeField] internal TMP_Text loadMoreEntriesLabel;
+
+    private readonly Dictionary<string, FriendEntryModel> creationQueue =
+        new Dictionary<string, FriendEntryModel>();
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendEntry> entries = new Dictionary<string, FriendEntry>();
     private Pool entryPool;
-    private string lastSearch;
+    private int currentAvatarSnapshotIndex;
+    private bool isLayoutDirty;
+    private Dictionary<string, FriendEntryModel> filteredEntries;
+    private IChatController chatController;
+    private ILastReadMessagesService lastReadMessagesService;
+    private IFriendsController friendsController;
+    private ISocialAnalytics socialAnalytics;
 
     public Dictionary<string, FriendEntry> Entries => entries;
+    public int Count => entries.Count + creationQueue.Keys.Count(s => !entries.ContainsKey(s));
 
     public bool DidDeferredCreationCompleted => creationQueue.Count == 0;
+
+    public event Action<string> OnSearchRequested;
+
     public bool ListByOnlineStatus
     {
         get => model.listByOnlineStatus;
@@ -46,21 +66,34 @@ public class FriendsTabComponentView : BaseComponentView
         }
     }
 
-    public event Action<FriendEntry> OnWhisper;
+    public event Action<FriendEntryModel> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
+    public event Action OnRequireMoreFriends;
+    
+    public void Initialize(IChatController chatController,
+        ILastReadMessagesService lastReadMessagesService,
+        IFriendsController friendsController,
+        ISocialAnalytics socialAnalytics)
+    {
+        this.chatController = chatController;
+        this.lastReadMessagesService = lastReadMessagesService;
+        this.friendsController = friendsController;
+        this.socialAnalytics = socialAnalytics;
+    }
 
     public override void OnEnable()
     {
         base.OnEnable();
 
         searchBar.Configure(new SearchBarComponentModel {placeHolderText = "Search friend"});
-        searchBar.OnSearchText += Filter;
+        searchBar.OnSearchText += HandleSearchInputChanged;
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
         contextMenuPanel.OnUnfriend += HandleUnfriendRequest;
+        loadMoreEntriesButton.onClick.AddListener(RequestMoreFriendEntries);
 
         int SortByAlphabeticalOrder(FriendEntryBase u1, FriendEntryBase u2)
         {
-            return string.Compare(u1.model.userName, u2.model.userName, StringComparison.InvariantCultureIgnoreCase);
+            return string.Compare(u1.Model.userName, u2.Model.userName, StringComparison.InvariantCultureIgnoreCase);
         }
 
         onlineFriendsList.list.SortingMethod = SortByAlphabeticalOrder;
@@ -75,9 +108,10 @@ public class FriendsTabComponentView : BaseComponentView
     {
         base.OnDisable();
 
-        searchBar.OnSearchText -= Filter;
+        searchBar.OnSearchText -= HandleSearchInputChanged;
         contextMenuPanel.OnBlock -= HandleFriendBlockRequest;
         contextMenuPanel.OnUnfriend -= HandleUnfriendRequest;
+        loadMoreEntriesButton.onClick.RemoveListener(RequestMoreFriendEntries);
     }
 
     public void Expand()
@@ -87,7 +121,7 @@ public class FriendsTabComponentView : BaseComponentView
             model.isOfflineFriendsExpanded = true;
             model.isOnlineFriendsExpanded = true;
             onlineFriendsList.list.Expand();
-            offlineFriendsList.list.Expand();    
+            offlineFriendsList.list.Expand();
         }
         else
             allFriendsList.list.Expand();
@@ -113,14 +147,13 @@ public class FriendsTabComponentView : BaseComponentView
     {
         base.Update();
 
-        if (creationQueue.Count == 0) return;
+        if (isLayoutDirty)
+            Utils.ForceRebuildLayoutImmediate((RectTransform) filledStateContainer.transform);
+        isLayoutDirty = false;
 
-        for (var i = 0; i < CREATION_AMOUNT_PER_FRAME && creationQueue.Count != 0; i++)
-        {
-            var pair = creationQueue.FirstOrDefault();
-            creationQueue.Remove(pair.Key);
-            Set(pair.Key, pair.Value);
-        }
+        SortDirtyLists();
+        FetchProfilePicturesForVisibleEntries();
+        SetQueuedEntries();
     }
 
     public void Clear()
@@ -130,11 +163,11 @@ public class FriendsTabComponentView : BaseComponentView
         if (ListByOnlineStatus)
         {
             onlineFriendsList.list.Clear();
-            offlineFriendsList.list.Clear();    
+            offlineFriendsList.list.Clear();
         }
         else
             allFriendsList.list.Clear();
-        
+
         searchResultsFriendList.list.Clear();
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
@@ -142,6 +175,9 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void Remove(string userId)
     {
+        if (creationQueue.ContainsKey(userId))
+            creationQueue.Remove(userId);
+        
         if (!entries.ContainsKey(userId)) return;
 
         if (pooleableEntries.TryGetValue(userId, out var pooleableObject))
@@ -155,11 +191,11 @@ public class FriendsTabComponentView : BaseComponentView
         if (ListByOnlineStatus)
         {
             offlineFriendsList.list.Remove(userId);
-            onlineFriendsList.list.Remove(userId);    
+            onlineFriendsList.list.Remove(userId);
         }
         else
             allFriendsList.list.Remove(userId);
-        
+
         searchResultsFriendList.list.Remove(userId);
 
         UpdateEmptyOrFilledState();
@@ -169,7 +205,7 @@ public class FriendsTabComponentView : BaseComponentView
 
     public FriendEntry Get(string userId) => entries.ContainsKey(userId) ? entries[userId] : null;
 
-    public void Populate(string userId, FriendEntryBase.Model model)
+    public void Populate(string userId, FriendEntryModel model)
     {
         if (!entries.ContainsKey(userId))
         {
@@ -181,27 +217,43 @@ public class FriendsTabComponentView : BaseComponentView
         var entry = entries[userId];
         entry.Populate(model);
 
-        if (ListByOnlineStatus)
+        if (filteredEntries?.ContainsKey(userId) ?? false)
         {
-            if (model.status == PresenceStatus.ONLINE)
+            offlineFriendsList.list.Remove(userId);
+            onlineFriendsList.list.Remove(userId);
+            searchResultsFriendList.list.Add(userId, entry);
+            searchResultsFriendList.FlagAsPendingToSort();
+        }
+        else
+        {
+            if (ListByOnlineStatus)
             {
-                offlineFriendsList.list.Remove(userId);
-                onlineFriendsList.list.Add(userId, entry);
+                if (model.status == PresenceStatus.ONLINE)
+                {
+                    offlineFriendsList.list.Remove(userId);
+                    onlineFriendsList.list.Add(userId, entry);
+                    onlineFriendsList.FlagAsPendingToSort();
+                }
+                else
+                {
+                    onlineFriendsList.list.Remove(userId);
+                    offlineFriendsList.list.Add(userId, entry);
+                    offlineFriendsList.FlagAsPendingToSort();
+                }
             }
             else
             {
-                onlineFriendsList.list.Remove(userId);
-                offlineFriendsList.list.Add(userId, entry);
+                allFriendsList.list.Add(userId, entry);
+                allFriendsList.FlagAsPendingToSort();
             }
         }
-        else
-            allFriendsList.list.Add(userId, entry);
 
+        UpdateLayout();
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
     }
 
-    public void Set(string userId, FriendEntryBase.Model model)
+    public void Set(string userId, FriendEntryModel model)
     {
         if (creationQueue.ContainsKey(userId))
         {
@@ -225,16 +277,16 @@ public class FriendsTabComponentView : BaseComponentView
             onlineFriendsList.Show();
             offlineFriendsList.Show();
             allFriendsList.Hide();
-            
+
             if (model.isOnlineFriendsExpanded)
                 onlineFriendsList.list.Expand();
             else
                 onlineFriendsList.list.Collapse();
-        
+
             if (model.isOfflineFriendsExpanded)
                 offlineFriendsList.list.Expand();
             else
-                offlineFriendsList.list.Collapse();    
+                offlineFriendsList.list.Collapse();
         }
         else
         {
@@ -244,37 +296,52 @@ public class FriendsTabComponentView : BaseComponentView
         }
     }
 
-    public void Filter(string search)
+    public void ClearFilter()
     {
-        if (string.IsNullOrEmpty(search) && !string.IsNullOrEmpty(lastSearch))
-        {
-            searchResultsFriendList.Hide();
+        filteredEntries = null;
 
+        if (searchResultsFriendList.list.gameObject.activeSelf)
+        {
             foreach (var pair in entries)
             {
                 searchResultsFriendList.list.Remove(pair.Key);
-                Populate(pair.Key, pair.Value.model);
+                Populate(pair.Key, pair.Value.Model);
             }
-
-            if (ListByOnlineStatus)
-            {
-                offlineFriendsList.Show();
-                onlineFriendsList.Show();    
-            }
-            else
-                allFriendsList.Show();
         }
+        
+        searchResultsFriendList.Hide();
 
-        if (!string.IsNullOrEmpty(search) && string.IsNullOrEmpty(lastSearch))
+        if (ListByOnlineStatus)
         {
-            if (ListByOnlineStatus)
-            {
-                offlineFriendsList.Hide();
-                onlineFriendsList.Hide();    
-            }
-            else
-                allFriendsList.Hide();
+            offlineFriendsList.Show();
+            onlineFriendsList.Show();
+            offlineFriendsList.Sort();
+            onlineFriendsList.Sort();
+            offlineFriendsList.list.Filter(entry => true);
+            onlineFriendsList.list.Filter(entry => true);
+        }
+        else
+        {
+            allFriendsList.Show();
+            allFriendsList.Sort();
+            allFriendsList.list.Filter(entry => true);
+        }
+    }
 
+    public void Filter(Dictionary<string, FriendEntryModel> search)
+    {
+        filteredEntries = search;
+
+        if (ListByOnlineStatus)
+        {
+            offlineFriendsList.Hide();
+            onlineFriendsList.Hide();
+        }
+        else
+            allFriendsList.Hide();
+
+        if (!searchResultsFriendList.list.gameObject.activeSelf)
+        {
             foreach (var pair in entries)
             {
                 searchResultsFriendList.list.Add(pair.Key, pair.Value);
@@ -282,32 +349,71 @@ public class FriendsTabComponentView : BaseComponentView
                 if (ListByOnlineStatus)
                 {
                     offlineFriendsList.list.Remove(pair.Key);
-                    onlineFriendsList.list.Remove(pair.Key);    
+                    onlineFriendsList.list.Remove(pair.Key);
                 }
                 else
                     allFriendsList.list.Remove(pair.Key);
             }
-
-            searchResultsFriendList.Show();
         }
 
-        searchResultsFriendList.list.Filter(search);
+        searchResultsFriendList.Show();
+        searchResultsFriendList.Sort();
+        searchResultsFriendList.list.Filter(entry => search.ContainsKey(entry.Model.userId));
 
-        if (ListByOnlineStatus)
-        {
-            offlineFriendsList.list.Filter(search);
-            onlineFriendsList.list.Filter(search);    
-        }
-        else
-            allFriendsList.list.Filter(search);
-        
-        lastSearch = search;
         UpdateCounterLabel();
+        HideMoreFriendsToLoadHint();
+        UpdateLayout();
     }
 
-    public void Enqueue(string userId, FriendEntryBase.Model model)
+    public void Enqueue(string userId, FriendEntryModel model) => creationQueue[userId] = model;
+
+    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount)
     {
-        creationQueue[userId] = model;
+        loadMoreEntriesLabel.SetText(
+            $"{pendingFriendsCount} friends hidden. Use the search bar to find them or click below to show more.");
+        ShowMoreFriendsToLoadHint();
+    }
+
+    public void HideMoreFriendsToLoadHint()
+    {
+        loadMoreEntriesContainer.SetActive(false);
+        UpdateLayout();
+    }
+    
+    private void ShowMoreFriendsToLoadHint()
+    {
+        loadMoreEntriesContainer.SetActive(true);
+        UpdateLayout();
+    }
+
+    private void HandleSearchInputChanged(string search) => OnSearchRequested?.Invoke(search);
+
+    private void SetQueuedEntries()
+    {
+        if (creationQueue.Count == 0) return;
+
+        for (var i = 0; i < CREATION_AMOUNT_PER_FRAME && creationQueue.Count != 0; i++)
+        {
+            var pair = creationQueue.FirstOrDefault();
+            creationQueue.Remove(pair.Key);
+            Set(pair.Key, pair.Value);
+        }
+    }
+
+    private void FetchProfilePicturesForVisibleEntries()
+    {
+        foreach (var entry in entries.Values.Skip(currentAvatarSnapshotIndex).Take(AVATAR_SNAPSHOTS_PER_FRAME))
+        {
+            if (entry.IsVisible(viewport))
+                entry.EnableAvatarSnapshotFetching();
+            else
+                entry.DisableAvatarSnapshotFetching();
+        }
+
+        currentAvatarSnapshotIndex += AVATAR_SNAPSHOTS_PER_FRAME;
+
+        if (currentAvatarSnapshotIndex >= entries.Count)
+            currentAvatarSnapshotIndex = 0;
     }
 
     private void UpdateEmptyOrFilledState()
@@ -322,6 +428,7 @@ public class FriendsTabComponentView : BaseComponentView
         var newFriendEntry = entryPool.Get();
         pooleableEntries.Add(userId, newFriendEntry);
         var entry = newFriendEntry.gameObject.GetComponent<FriendEntry>();
+        entry.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
         entries.Add(userId, entry);
 
         entry.OnMenuToggle -= OnEntryMenuToggle;
@@ -330,11 +437,11 @@ public class FriendsTabComponentView : BaseComponentView
         entry.OnWhisperClick += OnEntryWhisperClick;
     }
 
-    private void OnEntryWhisperClick(FriendEntry friendEntry) { OnWhisper?.Invoke(friendEntry); }
+    private void OnEntryWhisperClick(FriendEntry friendEntry) => OnWhisper?.Invoke(friendEntry.Model);
 
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)
     {
-        contextMenuPanel.Show(friendEntry.model.userId);
+        contextMenuPanel.Show(friendEntry.Model.userId);
         friendEntry.Dock(contextMenuPanel);
     }
 
@@ -358,11 +465,11 @@ public class FriendsTabComponentView : BaseComponentView
         if (ListByOnlineStatus)
         {
             onlineFriendsList.countText.SetText("ONLINE ({0})", onlineFriendsList.list.Count());
-            offlineFriendsList.countText.SetText("OFFLINE ({0})", offlineFriendsList.list.Count());    
+            offlineFriendsList.countText.SetText("OFFLINE ({0})", offlineFriendsList.list.Count());
         }
         else
             allFriendsList.countText.SetText("Results ({0})", allFriendsList.list.Count());
-        
+
         searchResultsFriendList.countText.SetText("Results ({0})", searchResultsFriendList.list.Count());
     }
 
@@ -371,8 +478,8 @@ public class FriendsTabComponentView : BaseComponentView
         var friendEntryToBlock = Get(userId);
         if (friendEntryToBlock == null) return;
         // instantly refresh ui
-        friendEntryToBlock.model.blocked = blockUser;
-        Set(userId, friendEntryToBlock.model);
+        friendEntryToBlock.Model.blocked = blockUser;
+        Set(userId, friendEntryToBlock.Model);
     }
 
     private void HandleUnfriendRequest(string userId)
@@ -382,8 +489,26 @@ public class FriendsTabComponentView : BaseComponentView
         Remove(userId);
         OnDeleteConfirmation?.Invoke(userId);
     }
-    
-    private void UpdateLayout() => ((RectTransform) filledStateContainer.transform).ForceUpdateLayout();
+
+    private void UpdateLayout() => isLayoutDirty = true;
+
+    private void SortDirtyLists()
+    {
+        if (ListByOnlineStatus)
+        {
+            if (offlineFriendsList.IsSortingDirty)
+                offlineFriendsList.Sort();
+            if (onlineFriendsList.IsSortingDirty)
+                onlineFriendsList.Sort();
+        }
+        else if (allFriendsList.IsSortingDirty)
+            allFriendsList.Sort();
+        
+        if (searchResultsFriendList.IsSortingDirty)
+            searchResultsFriendList.Sort();
+    }
+
+    private void RequestMoreFriendEntries() => OnRequireMoreFriends?.Invoke();
 
     [Serializable]
     private struct FriendListComponents
@@ -391,6 +516,8 @@ public class FriendsTabComponentView : BaseComponentView
         public CollapsableSortedFriendEntryList list;
         public TMP_Text countText;
         public GameObject headerContainer;
+
+        public bool IsSortingDirty { get; private set; }
 
         public void Show()
         {
@@ -402,6 +529,14 @@ public class FriendsTabComponentView : BaseComponentView
         {
             list.Hide();
             headerContainer.SetActive(false);
+        }
+
+        public void FlagAsPendingToSort() => IsSortingDirty = true;
+
+        public void Sort()
+        {
+            list.Sort();
+            IsSortingDirty = false;
         }
     }
 

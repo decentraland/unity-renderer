@@ -19,16 +19,28 @@ namespace UIComponents.CollapsableSortedList
         [SerializeField] private CollapsableSortedListModel model;
 
         private int filteredCount;
+        private bool isLayoutDirty;
 
         public Dictionary<K, V> Entries => entries;
 
         public Comparison<V> SortingMethod { get; set; } = (model, model1) => 0;
+
+        public override bool isVisible => gameObject.activeInHierarchy;
 
         public override void OnEnable()
         {
             base.OnEnable();
             UpdateEmptyState();
             UpdateLayout();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            
+            if (isLayoutDirty)
+                Utils.ForceRebuildLayoutImmediate((RectTransform) container);
+            isLayoutDirty = false;
         }
 
         public override void RefreshControl()
@@ -76,7 +88,7 @@ namespace UIComponents.CollapsableSortedList
             model.isVisible = false;
         }
 
-        public virtual V Get(K key) => entries[key];
+        public virtual V Get(K key) => entries.TryGetValue(key, out var value) ? value : null;
 
         public virtual void Add(K key, V value)
         {
@@ -86,7 +98,6 @@ namespace UIComponents.CollapsableSortedList
             var entryTransform = value.transform;
             entryTransform.SetParent(container, false);
             entryTransform.localScale = Vector3.one;
-            Sort();
             UpdateEmptyState();
             UpdateLayout();
         }
@@ -113,7 +124,7 @@ namespace UIComponents.CollapsableSortedList
             UpdateLayout();
         }
 
-        public void Filter(Func<V, bool> comparision)
+        public virtual void Filter(Func<V, bool> comparision)
         {
             filteredCount = 0;
 
@@ -168,6 +179,6 @@ namespace UIComponents.CollapsableSortedList
             emptyStateContainer.SetActive(Count() == 0);
         }
 
-        private void UpdateLayout() => ((RectTransform) container).ForceUpdateLayout();
+        private void UpdateLayout() => isLayoutDirty = true;
     }
 }

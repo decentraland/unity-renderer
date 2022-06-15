@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 #if !WINDOWS_UWP
 using System.Threading;
 #endif
@@ -258,6 +259,7 @@ namespace UnityGLTF
         {
             try
             {
+                PerformanceAnalytics.GLTFTracker.TrackLoading();
                 token.ThrowIfCancellationRequested();
 
                 lock (this)
@@ -342,10 +344,28 @@ namespace UnityGLTF
                             Object.DestroyImmediate(skeleton);
                     }
                 }
+                
+                PerformanceAnalytics.GLTFTracker.TrackLoaded();
             }
-            catch (Exception e) when (!(e is OperationCanceledException))
+            catch (Exception e)
             {
-                throw;
+                if (e is OperationCanceledException)
+                {
+                    PerformanceAnalytics.GLTFTracker.TrackCancelled();
+                }
+                else
+                {
+                    PerformanceAnalytics.GLTFTracker.TrackFailed();
+
+                    if (Application.isPlaying)
+                        throw;
+                    else
+                    {
+                        Debug.LogException(e);
+
+                        throw;
+                    }
+                }
             }
             finally
             {
@@ -353,6 +373,7 @@ namespace UnityGLTF
                 {
                     _isRunning = false;
                     _isCompleted = true;
+
                 }
             }
         }
@@ -379,15 +400,16 @@ namespace UnityGLTF
         /// </summary>
         private void InitializeGltfTopLevelObject()
         {
-            InstantiatedGLTFObject instantiatedGltfObject = CreatedObject.AddComponent<InstantiatedGLTFObject>();
+            instantiatedGLTFObject = CreatedObject.AddComponent<InstantiatedGLTFObject>();
 
-            instantiatedGltfObject.CachedData = new RefCountedCacheData
+            instantiatedGLTFObject.CachedData = new RefCountedCacheData
             {
                 MaterialCache = _assetCache.MaterialCache,
                 TextureCache = _assetCache.TextureCache,
                 MeshCache = _assetCache.MeshCache,
                 animationCache = _assetCache.AnimationCache
             };
+
         }
 
         private async UniTask ConstructBufferData(Node node, CancellationToken token)
@@ -655,7 +677,15 @@ namespace UnityGLTF
 
                 BufferCacheData bufferContents = _assetCache.BufferCache[bufferView.Buffer.Id];
                 bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
-                await bufferContents.Stream.ReadAsync(data, 0, data.Length, cancellationToken);
+
+                if (forceSyncCoroutines)
+                {
+                    bufferContents.Stream.Read(data, 0, data.Length);
+                }
+                else
+                {
+                    await bufferContents.Stream.ReadAsync(data, 0, data.Length, cancellationToken);
+                }
 
                 ConstructUnityTexture(settings, data, imageCacheIndex);
             }
@@ -702,7 +732,7 @@ namespace UnityGLTF
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
 
             // Resizing must be the last step to avoid breaking the texture when copying with Graphics.CopyTexture()
-            _assetCache.ImageCache[imageCacheIndex] = CheckAndReduceTextureSize(texture, settings.linear);
+            _assetCache.ImageCache[imageCacheIndex] = TextureHelpers.ClampSize(texture, maxTextureSize, settings.linear);
         }
 
         protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex)
@@ -726,35 +756,6 @@ namespace UnityGLTF
                     ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
                 }
             }
-        }
-
-        // Note that if the texture is reduced in size, the source one is destroyed
-        protected Texture2D CheckAndReduceTextureSize(Texture2D source, bool linear = false)
-        {
-            if (source.width <= maxTextureSize && source.height <= maxTextureSize)
-                return source;
-
-            float factor = 1.0f;
-            int width = source.width;
-            int height = source.height;
-
-            if (width >= height)
-            {
-                factor = (float)maxTextureSize / width;
-            }
-            else
-            {
-                factor = (float)maxTextureSize / height;
-            }
-
-            Texture2D dstTex = TextureHelpers.Resize(source, (int) (width * factor), (int) (height * factor), linear);
-
-            if (Application.isPlaying)
-                Object.Destroy(source);
-            else
-                Object.DestroyImmediate(source);
-
-            return dstTex;
         }
 
         protected virtual async UniTask ConstructMeshAttributes(MeshPrimitive primitive, int meshID, int primitiveIndex, CancellationToken token)
@@ -1323,7 +1324,7 @@ namespace UnityGLTF
                     meshId: node.Mesh.Id,
                     skin: node.Skin != null ? node.Skin.Value : null, token);
 
-                if ( stopWatch.ElapsedMilliseconds > 5)
+                if ( stopWatch.ElapsedMilliseconds > 5 && !forceSyncCoroutines)
                 {
                     await UniTask.Yield();
                     stopWatch.Restart();
@@ -1592,6 +1593,7 @@ namespace UnityGLTF
         }
 
         HashSet<GameObject> skeletonGameObjects = new HashSet<GameObject>();
+        private InstantiatedGLTFObject instantiatedGLTFObject;
 
         private BoneWeight[] CreateBoneWeightArray(Vector4[] joints, Vector4[] weights, int vertCount)
         {
@@ -2281,7 +2283,10 @@ namespace UnityGLTF
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await UniTask.WaitUntil(() => _assetCache.TextureCache[textureIndex] != null, cancellationToken: cancellationToken);
+            if (!forceSyncCoroutines)
+            {
+                await UniTask.WaitUntil(() => _assetCache.TextureCache[textureIndex] != null, cancellationToken: cancellationToken);
+            }
 
             if (_assetCache.TextureCache[textureIndex].CachedTexture != null)
                 return;

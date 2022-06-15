@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -22,8 +23,7 @@ namespace DCL.Skybox
         public static void RenderFloatField(string label, ref float value)
         {
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
-            value = EditorGUILayout.FloatField(value, GUILayout.Width(90));
+            value = EditorGUILayout.FloatField(label, value, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
@@ -34,6 +34,17 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             value = EditorGUILayout.Slider(value, min, max, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
+        internal static void RenderMinMaxSlider(string label, ref float minVal, ref float maxVal, float minLimit, float maxLimit)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(minVal.ToString("f3"), GUILayout.Width(55), GUILayout.ExpandWidth(false));
+            EditorGUILayout.MinMaxSlider(ref minVal, ref maxVal, minLimit, maxLimit, GUILayout.Width(150));
+            EditorGUILayout.LabelField(maxVal.ToString("f3"), GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
 
@@ -73,7 +84,7 @@ namespace DCL.Skybox
             EditorGUILayout.Separator();
         }
 
-        public static void RenderColorGradientField(Gradient color, string label = SkyboxEditorLiterals.color, float startTime = -1, float endTime = -1, bool hdr = false)
+        public static void RenderColorGradientField(Gradient color, string label = SkyboxEditorLiterals.LayerProperties.color, float startTime = -1, float endTime = -1, bool hdr = false)
         {
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
@@ -90,6 +101,34 @@ namespace DCL.Skybox
                 EditorGUILayout.LabelField(endTime + SkyboxEditorLiterals.short_Hour, GUILayout.Width(65), GUILayout.ExpandWidth(false));
             }
             GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
+        public static void RenderPrefabInput(string label, ref GameObject obj)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            obj = (GameObject)EditorGUILayout.ObjectField(obj, typeof(GameObject), false, GUILayout.Width(200));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
+        public static void RenderEnumPopup<T>(string label, ref T enumVar) where T : System.Enum
+        {
+            // Layer Type
+            EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            enumVar = (T)EditorGUILayout.EnumPopup(enumVar, GUILayout.Width(200));
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
+        public static void RenderBoolField(string label, ref bool value)
+        {
+            EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            value = EditorGUILayout.Toggle(value, GUILayout.Width(90));
+            EditorGUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
     }

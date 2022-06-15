@@ -1,49 +1,34 @@
+using System;
+using System.Collections;
 using DCL;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
-using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
+public class PublicChatChannelControllerShould
 {
+    private const string OWN_USER_ID = "my-user-id";
+    private const string TEST_USER_ID = "otherUserId";
+    private const string TEST_USER_NAME = "otherUserName";
+
     private PublicChatChannelController controller;
     private IChannelChatWindowView view;
     private IChatHUDComponentView internalChatView;
     private IChatController chatController;
-    private UserProfileModel ownProfileModel;
-    private UserProfileModel testProfileModel;
     private IUserProfileBridge userProfileBridge;
+    private IMouseCatcher mouseCatcher;
 
-    protected override IEnumerator SetUp()
+    [SetUp]
+    public void SetUp()
     {
-        yield return base.SetUp();
-
-        var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
-        ownProfileModel = new UserProfileModel
-        {
-            userId = "my-user-id",
-            name = "NO_USER"
-        };
-        ownProfile.UpdateData(ownProfileModel);
-
-        var testProfile = ScriptableObject.CreateInstance<UserProfile>();
-        testProfileModel = new UserProfileModel
-        {
-            userId = "my-user-id-2",
-            name = "TEST_USER"
-        };
-        testProfile.UpdateData(testProfileModel);
-        
-        userProfileBridge = Substitute.For<IUserProfileBridge>();
-        userProfileBridge.Get(ownProfileModel.userId).Returns(ownProfile);
-        userProfileBridge.Get(testProfileModel.userId).Returns(testProfile);
-        userProfileBridge.GetOwn().Returns(ownProfile);
+        GivenOwnProfile();
+        GivenUser(TEST_USER_ID, TEST_USER_NAME);
 
         chatController = Substitute.For<IChatController>();
+        mouseCatcher = Substitute.For<IMouseCatcher>();
         controller = new PublicChatChannelController(
             chatController,
             Substitute.For<ILastReadMessagesService>(),
@@ -51,68 +36,114 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             Substitute.For<ISocialAnalytics>(),
-            Substitute.For<IMouseCatcher>(),
+            mouseCatcher,
             ScriptableObject.CreateInstance<InputAction_Trigger>());
 
         view = Substitute.For<IChannelChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();
         view.ChatHUD.Returns(internalChatView);
         controller.Initialize(view);
-
-        Assert.IsTrue(view != null, "World chat hud view is null?");
-        Assert.IsTrue(controller != null, "World chat hud controller is null?");
     }
 
-    protected override IEnumerator TearDown()
+    [TearDown]
+    public void TearDown()
     {
         controller.Dispose();
-        yield return base.TearDown();
     }
 
     [Test]
     public void AddEntryWhenPrivateMessage()
     {
-        var sentPM = new ChatMessage
+        var msg = new ChatMessage
         {
             messageType = ChatMessage.Type.PRIVATE,
             body = "test message",
-            sender = ownProfileModel.userId,
-            recipient = testProfileModel.userId,
+            sender = OWN_USER_ID,
+            recipient = TEST_USER_ID,
             timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };
 
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(sentPM);
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg);
 
         internalChatView.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model =>
-            model.messageType == sentPM.messageType
-            && model.bodyText == $"<noparse>{sentPM.body}</noparse>"
-            && model.senderId == sentPM.sender
-            && model.otherUserId == sentPM.recipient));
+            model.messageType == msg.messageType
+            && model.bodyText == $"<noparse>{msg.body}</noparse>"
+            && model.senderId == msg.sender
+            && model.otherUserId == msg.recipient));
     }
 
     [Test]
     public void AddEntryWhenMessageReceived()
     {
-        var chatMessage = new ChatMessage
+        var msg = new ChatMessage
         {
             messageType = ChatMessage.Type.PUBLIC,
             body = "test message",
-            sender = testProfileModel.userId
+            sender = TEST_USER_ID
         };
 
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(chatMessage);
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg);
 
         internalChatView.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model =>
-            model.messageType == chatMessage.messageType
-            && model.bodyText == $"<noparse>{chatMessage.body}</noparse>"
-            && model.senderId == chatMessage.sender));
+            model.messageType == msg.messageType
+            && model.bodyText == $"<noparse>{msg.body}</noparse>"
+            && model.senderId == msg.sender));
     }
 
     [Test]
-    public void SendChatMessageProperly()
+    public void FilterMessageWhenIsTooOld()
     {
-        controller.SendChatMessage(new ChatMessage {body = "test message"});
-        chatController.Received(1).Send(Arg.Is<ChatMessage>(c => c.body == "test message"));
+        var msg = new ChatMessage
+        {
+            messageType = ChatMessage.Type.PRIVATE,
+            body = "test message",
+            sender = TEST_USER_ID,
+            timestamp = 100
+        };
+
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg);
+
+        internalChatView.DidNotReceiveWithAnyArgs().AddEntry(default);
+    }
+
+    [Test]
+    public void SendPublicMessage()
+    {
+        internalChatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage
+            {body = "test message", messageType = ChatMessage.Type.PUBLIC});
+        chatController.Received(1).Send(Arg.Is<ChatMessage>(c => c.body == "test message"
+                                                                 && c.sender == OWN_USER_ID
+                                                                 && c.messageType == ChatMessage.Type.PUBLIC));
+        internalChatView.Received(1).ResetInputField();
+        internalChatView.Received(1).FocusInputField();
+    }
+    
+    [Test]
+    public void SendPrivateMessage()
+    {
+        internalChatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage
+            {body = "test message", messageType = ChatMessage.Type.PRIVATE, recipient = TEST_USER_ID});
+        chatController.Received(1).Send(Arg.Is<ChatMessage>(c => c.body == $"/w {TEST_USER_ID} test message"
+                                                                 && c.sender == OWN_USER_ID
+                                                                 && c.messageType == ChatMessage.Type.PRIVATE
+                                                                 && c.recipient == TEST_USER_ID));
+        internalChatView.Received(1).ResetInputField();
+        internalChatView.Received(1).FocusInputField();
+    }
+    
+    [Test]
+    public void ResetInputFieldAndActivatePreviewWhenIsInvalidMessage()
+    {
+        var isPreviewMode = false;
+        controller.OnPreviewModeChanged += b => isPreviewMode = b;
+        
+        internalChatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage
+            {body = "", messageType = ChatMessage.Type.PUBLIC, recipient = TEST_USER_ID});
+        
+        internalChatView.Received(1).ResetInputField(true);
+        view.Received(1).ActivatePreview();
+        internalChatView.Received(1).ActivatePreview();
+        Assert.IsTrue(isPreviewMode);
     }
 
     [Test]
@@ -121,16 +152,14 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
         var isViewActive = false;
         view.When(v => v.Show()).Do(info => isViewActive = true);
         view.When(v => v.Hide()).Do(info => isViewActive = false);
-        void HandleControllerClosed() => isViewActive = false;
-        controller.OnClosed += HandleControllerClosed;
+        controller.OnClosed += () => isViewActive = false;
         view.IsActive.Returns(info => isViewActive);
-        
+
         controller.SetVisibility(true);
         Assert.IsTrue(view.IsActive);
-        
+
         controller.View.OnClose += Raise.Event<Action>();
         Assert.IsFalse(view.IsActive);
-        controller.OnClosed -= HandleControllerClosed;
     }
 
     [UnityTest]
@@ -139,8 +168,8 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
         var msg = new ChatMessage
         {
             body = "test message",
-            sender = testProfileModel.userId,
-            recipient = ownProfileModel.userId,
+            sender = TEST_USER_ID,
+            recipient = OWN_USER_ID,
             messageType = ChatMessage.Type.PRIVATE,
             timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };
@@ -151,10 +180,116 @@ public class PublicChatChannelControllerShould : IntegrationTestSuite_Legacy
 
         yield return null;
 
-        Assert.AreEqual(controller.lastPrivateMessageRecipient, testProfileModel.name);
-
         internalChatView.OnMessageUpdated += Raise.Event<Action<string>>("/r ");
 
-        internalChatView.Received(1).SetInputFieldText($"/w {testProfileModel.name} ");
+        internalChatView.Received(1).SetInputFieldText($"/w {TEST_USER_NAME} ");
+    }
+
+    [Test]
+    public void ActivatePreviewModeInstantly()
+    {
+        var isPreviewMode = false;
+        controller.OnPreviewModeChanged += b => isPreviewMode = b;
+        controller.SetVisibility(true);
+        controller.ActivatePreviewModeInstantly();
+
+        view.Received(1).ActivatePreviewInstantly();
+        internalChatView.Received(1).ActivatePreview();
+        Assert.IsTrue(isPreviewMode);
+    }
+
+    [Test]
+    public void ActivatePreviewMode()
+    {
+        var isPreviewMode = false;
+        controller.OnPreviewModeChanged += b => isPreviewMode = b;
+        controller.SetVisibility(true);
+        controller.ActivatePreview();
+
+        view.Received(1).ActivatePreview();
+        internalChatView.Received(1).ActivatePreview();
+        Assert.IsTrue(isPreviewMode);
+    }
+
+    [Test]
+    public void ActivatePreviewModeWhenMouseIsLocked()
+    {
+        var isPreviewMode = false;
+        controller.OnPreviewModeChanged += b => isPreviewMode = b;
+        controller.SetVisibility(true);
+
+        mouseCatcher.OnMouseLock += Raise.Event<Action>();
+
+        view.Received(1).ActivatePreview();
+        internalChatView.Received(1).ActivatePreview();
+        Assert.IsTrue(isPreviewMode);
+    }
+
+    [Test]
+    public void DeactivatePreviewMode()
+    {
+        var isPreviewMode = false;
+        controller.OnPreviewModeChanged += b => isPreviewMode = b;
+        controller.SetVisibility(true);
+        controller.DeactivatePreview();
+
+        view.Received(1).DeactivatePreview();
+        internalChatView.Received(1).DeactivatePreview();
+        Assert.IsFalse(isPreviewMode);
+    }
+
+    [Test]
+    public void DeactivatePreviewModeWhenInputFieldIsSelected()
+    {
+        var isPreviewMode = false;
+        controller.OnPreviewModeChanged += b => isPreviewMode = b;
+
+        internalChatView.OnInputFieldSelected += Raise.Event<Action>();
+
+        view.Received(1).DeactivatePreview();
+        internalChatView.Received(1).DeactivatePreview();
+        Assert.IsFalse(isPreviewMode);
+    }
+
+    [UnityTest]
+    public IEnumerator ActivatePreviewModeAfterSomeTimeWhenInputFieldIsDeselected()
+    {
+        var isPreviewMode = false;
+        controller.OnPreviewModeChanged += b => isPreviewMode = b;
+        view.IsFocused.Returns(false);
+
+        internalChatView.OnInputFieldDeselected += Raise.Event<Action>();
+        yield return new WaitForSeconds(4f);
+
+        view.Received(1).ActivatePreview();
+        internalChatView.Received(1).ActivatePreview();
+        Assert.IsTrue(isPreviewMode);
+    }
+
+    private void GivenOwnProfile()
+    {
+        var ownProfileModel = new UserProfileModel
+        {
+            userId = OWN_USER_ID,
+            name = "NO_USER"
+        };
+
+        var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+        ownUserProfile.UpdateData(ownProfileModel);
+
+        userProfileBridge = Substitute.For<IUserProfileBridge>();
+        userProfileBridge.GetOwn().Returns(ownUserProfile);
+        userProfileBridge.Get(ownProfileModel.userId).Returns(ownUserProfile);
+    }
+
+    private void GivenUser(string userId, string name)
+    {
+        var testUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+        testUserProfile.UpdateData(new UserProfileModel
+        {
+            userId = userId,
+            name = name
+        });
+        userProfileBridge.Get(userId).Returns(testUserProfile);
     }
 }

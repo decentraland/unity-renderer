@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 8900000, guid: b4f78c510a8526547ab9c9946449480e, type: 3}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.10252202, g: 0.24458984, b: 0.36489132, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -230,10 +230,8 @@ MonoBehaviour:
   testWearables: 0
   enableTutorial: 0
   builderInWorld: 0
-  enableProceduralSkybox: 0
   soloScene: 0
   multithreaded: 0
-  disableTextureCompress: 0
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:

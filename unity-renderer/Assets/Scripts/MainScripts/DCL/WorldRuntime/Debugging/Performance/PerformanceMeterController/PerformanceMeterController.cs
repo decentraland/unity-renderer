@@ -4,6 +4,7 @@ using UnityEngine;
 using DCL.FPSDisplay;
 using DCL.SettingsCommon;
 using Newtonsoft.Json;
+using Unity.Profiling;
 
 namespace DCL
 {
@@ -71,11 +72,13 @@ namespace DCL
         private float totalHiccupsTimeInSeconds;
         private int totalFrames;
         private float totalFramesTimeInSeconds;
+        private long lowestAllocation;
+        private long highestAllocation;
+        private long averageAllocation;
+        private long totalAllocation;
+        private ProfilerRecorder gcAllocatedInFrameRecorder;
 
-        public PerformanceMeterController()
-        {
-            metricsData = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
-        }
+        public PerformanceMeterController() { metricsData = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData"); }
 
         private void ResetDataValues()
         {
@@ -95,6 +98,10 @@ namespace DCL
             totalHiccupsTimeInSeconds = 0;
             totalFrames = 0;
             totalFramesTimeInSeconds = 0;
+            lowestAllocation = long.MaxValue;
+            highestAllocation = 0;
+            averageAllocation = 0;
+            totalAllocation = 0;
         }
 
         /// <summary>
@@ -110,6 +117,8 @@ namespace DCL
             targetDurationInSeconds = durationInSeconds;
 
             metricsData.OnChange += OnMetricsChange;
+
+            gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
         }
 
         /// <summary>
@@ -124,6 +133,7 @@ namespace DCL
             if (samples.Count == 0)
             {
                 Log("No samples were gathered, the duration time in seconds set is probably too small");
+
                 return;
             }
 
@@ -146,6 +156,7 @@ namespace DCL
                 if (lastSavedSample.frameNumber == Time.frameCount)
                 {
                     Log("PerformanceMetricsDataVariable changed more than once in the same frame!");
+
                     return;
                 }
 
@@ -159,6 +170,7 @@ namespace DCL
                 millisecondsConsumed = secondsConsumed * 1000,
                 currentTime = Time.timeSinceLevelLoad
             };
+
             newSample.isHiccup = secondsConsumed > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
             samples.Add(newSample);
             lastSavedSample = newSample;
@@ -171,9 +183,25 @@ namespace DCL
 
             fpsSum += newData.fpsCount;
 
+            long lastAllocation = gcAllocatedInFrameRecorder.LastValue;
+
+            if (highestAllocation < lastAllocation)
+            {
+                highestAllocation = lastAllocation;
+            }
+
+            if (lowestAllocation > lastAllocation)
+            {
+                lowestAllocation = lastAllocation;
+            }
+            
+            totalAllocation += lastAllocation;
+            
+
             totalFrames++;
 
             currentDurationInSeconds += Time.deltaTime;
+
             if (currentDurationInSeconds > targetDurationInSeconds)
             {
                 totalFramesTimeInSeconds = currentDurationInSeconds;
@@ -196,6 +224,7 @@ namespace DCL
             lowestFPS = sortedSamples[0].fpsAtThisFrameInTime;
 
             averageFPS = fpsSum / sortedSamples.Count;
+            averageAllocation = totalAllocation / sortedSamples.Count;
 
             percentile50FPS = sortedSamples[Mathf.CeilToInt(samplesCount * 0.5f)].fpsAtThisFrameInTime;
             percentile95FPS = sortedSamples[Mathf.CeilToInt(samplesCount * 0.95f)].fpsAtThisFrameInTime;
@@ -249,6 +278,11 @@ namespace DCL
                 + "\n * total hiccups time (seconds) -> " + totalHiccupsTimeInSeconds
                 + "\n * total frames -> " + totalFrames
                 + "\n * total frames time (seconds) -> " + totalFramesTimeInSeconds
+                + "\n * lowest allocations (kb) -> " + lowestAllocation/1000.0
+                + "\n * highest allocations (kb) -> " + highestAllocation/1000.0
+                + "\n * average allocations (kb) -> " + averageAllocation/1000.0
+                + "\n * total allocations (kb) -> " + totalAllocation/1000.0
+
             );
 
             // Step 3 - report all samples data
@@ -273,8 +307,10 @@ namespace DCL
             float topFPS = Settings.i.qualitySettings.Data.fpsCap ? 30f : 60f;
             float fpsScore = Mathf.Min(averageFPS / topFPS, 1); // from 0 to 1
             float hiccupsScore = 1 - ((float) totalHiccupFrames / samples.Count); // from 0 to 1
+
             float performanceScore =
                 (fpsScore + hiccupsScore) / 2 * 100; // scores sum / amount of scores * 100 to have a 0-100 scale
+
             performanceScore = Mathf.Round(performanceScore * 100f) / 100f; // to save only 2 decimals
 
             return performanceScore;
@@ -284,6 +320,7 @@ namespace DCL
         {
             float percentage = ((float) totalHiccupFrames / totalFrames) * 100;
             percentage = Mathf.Round(percentage * 100f) / 100f; // to have 2 decimals
+
             return percentage;
         }
 

@@ -3,23 +3,26 @@ using System.Collections;
 using SocialBar.UserThumbnail;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatComponentView
+public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatComponentView, IPointerDownHandler
 {
-    [SerializeField] private Button backButton;
-    [SerializeField] private Button closeButton;
-    [SerializeField] private UserThumbnailComponentView userThumbnail;
-    [SerializeField] private TMP_Text userNameLabel;
-    [SerializeField] private PrivateChatHUDView chatView;
-    [SerializeField] private GameObject jumpInButtonContainer;
-    [SerializeField] private UserContextMenu userContextMenu;
-    [SerializeField] private RectTransform userContextMenuReferencePoint;
-    [SerializeField] private Button optionsButton;
+    [SerializeField] internal Button backButton;
+    [SerializeField] internal Button closeButton;
+    [SerializeField] internal UserThumbnailComponentView userThumbnail;
+    [SerializeField] internal TMP_Text userNameLabel;
+    [SerializeField] internal PrivateChatHUDView chatView;
+    [SerializeField] internal GameObject jumpInButtonContainer;
+    [SerializeField] internal UserContextMenu userContextMenu;
+    [SerializeField] internal RectTransform userContextMenuReferencePoint;
+    [SerializeField] internal Button optionsButton;
     [SerializeField] private Model model;
-    [SerializeField] private CanvasGroup[] previewCanvasGroup;
+    [SerializeField] internal CanvasGroup[] previewCanvasGroup;
+    [SerializeField] private Vector2 previewModeSize;
     
     private Coroutine alphaRoutine;
+    private Vector2 originalSize;
 
     public event Action OnPressBack;
     public event Action OnMinimize;
@@ -30,11 +33,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         remove => userContextMenu.OnUnfriend -= value;
     }
 
-    public event Action<bool> OnFocused
-    {
-        add => onFocused += value;
-        remove => onFocused -= value;
-    }
+    public event Action<bool> OnFocused;
 
     public IChatHUDComponentView ChatHUD => chatView;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -49,6 +48,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     public override void Awake()
     {
         base.Awake();
+        originalSize = ((RectTransform) transform).sizeDelta;
         backButton.onClick.AddListener(() => OnPressBack?.Invoke());
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         optionsButton.onClick.AddListener(ShowOptions);
@@ -87,6 +87,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             StopCoroutine(alphaRoutine);
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
+        ((RectTransform) transform).sizeDelta = previewModeSize;
     }
 
     public void DeactivatePreview()
@@ -105,6 +106,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             StopCoroutine(alphaRoutine);
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
+        ((RectTransform) transform).sizeDelta = originalSize;
     }
 
     public override void RefreshControl()
@@ -135,6 +137,14 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     public void Show() => gameObject.SetActive(true);
 
     public void Hide() => gameObject.SetActive(false);
+
+    public override void OnPointerExit(PointerEventData eventData)
+    {
+        base.OnPointerExit(eventData);
+        OnFocused?.Invoke(false);
+    }
+
+    public void OnPointerDown(PointerEventData eventData) => OnFocused?.Invoke(true);
 
     private void ShowOptions()
     {

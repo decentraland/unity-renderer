@@ -18,6 +18,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private FriendsHUDController friendsHudController;
     private WorldChatWindowController worldChatWindowController;
     private ISocialAnalytics socialAnalytics;
+    private IUserProfileBridge userProfileBridge;
 
     protected override List<GameObject> SetUp_LegacySystems()
     {
@@ -29,6 +30,11 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        
+        userProfileBridge = Substitute.For<IUserProfileBridge>();
+        var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
+        ownProfile.UpdateData(new UserProfileModel{name = "myself", userId = "myUserId"});
+        userProfileBridge.GetOwn().Returns(ownProfile);
 
         controller = new TaskbarHUDController();
         controller.Initialize(null);
@@ -71,9 +77,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void AddFriendWindowProperly()
     {
-        friendsHudController = new FriendsHUDController(new DataStore());
-        friendsHudController.Initialize(null, UserProfile.GetOwnUserProfile(), socialAnalytics,
-            new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
+        friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
+            socialAnalytics, chatController, Substitute.For<ILastReadMessagesService>());
+        friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 
         Assert.IsTrue(friendsHudController.View.Transform.parent == view.leftWindowContainer,
@@ -84,10 +90,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void ToggleWindowsProperly()
     {
-        var userProfileBridge = Substitute.For<IUserProfileBridge>();
-        var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
-        ownProfile.UpdateData(new UserProfileModel{name = "myself", userId = "myUserId"});
-        userProfileBridge.GetOwn().Returns(ownProfile);
         var lastReadMessagesService = Substitute.For<ILastReadMessagesService>();
         privateChatController = new PrivateChatWindowController(
             new DataStore(),
@@ -122,8 +124,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         publicChatChannelController.Initialize(new GameObject("PublicChatChannelWindowMock").AddComponent<PublicChatChannelWindowMock>());
         controller.AddPublicChatChannel(publicChatChannelController);
 
-        friendsHudController = new FriendsHUDController(new DataStore());
-        friendsHudController.Initialize(friendsController, UserProfile.GetOwnUserProfile(), socialAnalytics);
+        friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
+            socialAnalytics, chatController, Substitute.For<ILastReadMessagesService>());
+        friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 
         Assert.IsFalse(view.chatButton.toggledOn);
