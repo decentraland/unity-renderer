@@ -20,16 +20,11 @@ public class LazyLoadingChatControllerMock : MonoBehaviour, IChatController
 
     // called by kernel
     [UsedImplicitly]
-    public void AddMessageToChatWindow(string jsonMessage)
-    {
-    }
+    public void AddMessageToChatWindow(string jsonMessage) { controller.AddMessageToChatWindow(jsonMessage); }
 
     public void Send(ChatMessage message) => controller.Send(message);
     
-    public void MarkMessagesAsSeen(string userId)
-    {
-        // TODO: should we do anything?
-    }
+    public void MarkMessagesAsSeen(string userId) { controller.MarkMessagesAsSeen(userId); }
 
     public async UniTask<List<ChatMessage>> GetPrivateMessages(string userId, int limit, long fromTimestamp)
     {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
@@ -19,7 +19,13 @@ public class LazyLoadingFriendsControllerMock : MonoBehaviour, IFriendsControlle
         public string[] requestedTo;
         public string[] requestedFrom;
     }
-    
+
+    [Serializable]
+    private class AddFriendsWithDirectMessagesPayload
+    {
+        public string[] currentFriendsWithDirectMessages;
+    }
+
     [SerializeField] private FriendsController controller;
 
     public event Action OnInitialized;
@@ -66,6 +72,13 @@ public class LazyLoadingFriendsControllerMock : MonoBehaviour, IFriendsControlle
     public void AddFriendRequests(string json)
     {
         var msg = JsonUtility.FromJson<AddFriendRequestsPayload>(json);
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void AddFriendsWithDirectMessages(string json)
+    {
+        var msg = JsonUtility.FromJson<AddFriendsWithDirectMessagesPayload>(json);
     }
 
     public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() => controller.GetAllocatedFriends();
