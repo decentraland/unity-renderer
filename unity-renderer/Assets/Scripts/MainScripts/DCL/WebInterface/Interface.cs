@@ -22,9 +22,6 @@ namespace DCL.Interface
     public static class WebInterface
     {
         public static bool VERBOSE = false;
-        
-        // TODO: remove
-        public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
         [System.Serializable]
         public class ReportPositionPayload
@@ -757,12 +754,7 @@ namespace DCL.Interface
 
         public static string GetGraphicCard() => "In Editor Graphic Card";
 #endif
-
-        public static void SendBinaryMessage(string sceneId, byte[] bytes)
-        {
-            //TODO: REMOVE
-        }        
-
+        
         public static void SendMessage(string type)
         {
             // sending an empty JSON object to be compatible with other messages
