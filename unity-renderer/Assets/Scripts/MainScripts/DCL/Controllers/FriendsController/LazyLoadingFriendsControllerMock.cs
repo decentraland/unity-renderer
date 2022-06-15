@@ -5,11 +5,10 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 {
     private FriendsController controller;
 
-    public event Action OnInitialized;
-
-    public LazyLoadingFriendsControllerMock(FriendsController controller)
+    public event Action OnInitialized
     {
-        this.controller = controller;
+        add => controller.OnInitialized += value;
+        remove => controller.OnInitialized -= value;
     }
 
     public event Action<string, FriendshipAction> OnUpdateFriendship
@@ -34,6 +33,11 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
     public bool IsInitialized => controller.IsInitialized;
     public int ReceivedRequestCount => controller.ReceivedRequestCount;
 
+    public LazyLoadingFriendsControllerMock(FriendsController controller)
+    {
+        this.controller = controller;
+    }
+
     public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() => controller.GetAllocatedFriends();
 
     public FriendsController.UserStatus GetUserStatus(string userId) => controller.GetUserStatus(userId);
@@ -55,38 +59,43 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
     
     public void GetFriendsAsync(int limit, int skip)
     {
-        //await UniTask.Delay(Random.Range(100, 700));
-        // TODO: fake users
-        //return new Dictionary<string, FriendsController.UserStatus>();
+        // TODO:
+        // 1. Prepare a set of fake data
+        // 2. Delay
+        // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
     }
 
     public void GetFriendsAsync(string usernameOrId)
     {
-        //await UniTask.Delay(Random.Range(100, 700));
-        // TODO: fake users
-        //return new Dictionary<string, FriendsController.UserStatus>();
+        // TODO:
+        // 1. Prepare a set of fake data
+        // 2. Delay
+        // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
     }
 
     public void GetFriendRequestsAsync(
         int sentLimit, long sentFromTimestamp,
         int receivedLimit, long receivedFromTimestamp)
     {
-        //await UniTask.Delay(Random.Range(100, 700));
-        // TODO: fake requests
-        //return new Dictionary<string, FriendsController.UserStatus>();
+        // TODO:
+        // 1. Prepare a set of fake data
+        // 2. Delay
+        // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
     }
 
     public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
     {
-        //await UniTask.Delay(Random.Range(100, 700));
-        // TODO: fake users
-        //return new Dictionary<string, FriendsController.UserStatus>();
+        // TODO:
+        // 1. Prepare a set of fake data
+        // 2. Delay
+        // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
     }
 
     public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
     {
-        //await UniTask.Delay(Random.Range(100, 700));
-        // TODO: fake users
-        //return new Dictionary<string, FriendsController.UserStatus>();
+        // TODO:
+        // 1. Prepare a set of fake data
+        // 2. Delay
+        // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
     }
 }

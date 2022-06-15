@@ -27,7 +27,9 @@ public class LazyLoadingChatControllerMock : IChatController
 
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp)
     {
-        // TODO: Delay...
-        // TODO: controller.AddMessageToChatWindow(fake message)
+        // TODO:
+        // 1. Prepare a set of fake data
+        // 2. Delay
+        // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
     }
 }
