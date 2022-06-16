@@ -16,16 +16,16 @@ namespace DCL.ECSComponents
         internal INFTAssetRetriever assetRetriever;
         internal INFTShapeFrame shapeFrame;
 
-        private PBNFTShape previousModel;
+        private PBNFTShape model;
         private DataStore_ECS7 dataStore;
         
-        public ECSNFTShapeComponentHandler(INFTShapeFrameFactory factory, DataStore_ECS7 dataStoreEcs7)
+        public ECSNFTShapeComponentHandler(INFTShapeFrameFactory factory, DataStore_ECS7 dataStoreEcs7, INFTInfoRetriever infoRetriever, INFTAssetRetriever assetRetriever)
         {
             this.factory = factory;
             dataStore = dataStoreEcs7;
-            
-            infoRetriever = new NFTInfoRetriever();
-            assetRetriever = new NFTAssetRetriever();
+
+            this.infoRetriever = infoRetriever;
+            this.assetRetriever = assetRetriever;
         }
         
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -40,7 +40,7 @@ namespace DCL.ECSComponents
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBNFTShape model)
         {
             // We create the frame gameobject
-            if(shapeFrame == null || previousModel.Style != model.Style)
+            if(shapeFrame == null || this.model.Style != model.Style)
                 CreateNFTShapeFrame(entity, model);
             
             // We apply the model to the frame
@@ -118,12 +118,12 @@ namespace DCL.ECSComponents
             shapeFrame.SetHasCollisions(model.WithCollisions);
             UpdateBackgroundColor(model);
 
-            previousModel = model;
+            this.model = model;
         }
 
         internal void UpdateBackgroundColor(PBNFTShape model)
         {
-            if (previousModel != null && model.Color.Equals(previousModel.Color))
+            if (this.model != null && model.Color.Equals(this.model.Color))
                 return;
 
             shapeFrame.UpdateBackgroundColor( new UnityEngine.Color(model.Color.Red, model.Color.Green,model.Color.Blue,1));

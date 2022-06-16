@@ -34,7 +34,7 @@ namespace DCL.ECSComponents.Test
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
             var shapeFrameFactory = Resources.Load<NFTShapeFrameFactory>("NFTShapeFrameFactory");
-            componentHandler = new ECSNFTShapeComponentHandler(shapeFrameFactory,dataStore);
+            componentHandler = new ECSNFTShapeComponentHandler(shapeFrameFactory,dataStore, new NFTInfoRetriever(), new NFTAssetRetriever());
 
             var meshInfo = new MeshesInfo();
             meshInfo.meshRootGameObject = gameObject;
