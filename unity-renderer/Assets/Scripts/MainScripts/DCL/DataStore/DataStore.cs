@@ -62,5 +62,6 @@ namespace DCL
         public DataStore_SceneBoundariesChecker sceneBoundariesChecker => i.Get<DataStore_SceneBoundariesChecker>();
         public DataStore_ECS7 ecs7 => i.Get<DataStore_ECS7>();
         public DataStore_TextureSize textureSize => i.Get<DataStore_TextureSize>();
+        public DataStore_FriendNotifications friendNotifications => i.Get<DataStore_FriendNotifications>();
     }
 }

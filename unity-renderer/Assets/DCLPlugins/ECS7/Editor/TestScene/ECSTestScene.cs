@@ -50,7 +50,7 @@ public class ECSTestScene : MonoBehaviour
         {
             basePosition = new Vector2Int(0, 0),
             parcels = new Vector2Int[] { new Vector2Int(0, 0) },
-            id = "temptation",
+            id = "temptation"
         };
 
         bool started = false;
@@ -79,7 +79,7 @@ public class ECSTestScene : MonoBehaviour
         IECSComponentWriter componentWriter = typeof(ECS7Plugin)
                                               .GetField("componentWriter", BindingFlags.NonPublic | BindingFlags.Instance)
                                               .GetValue(ecs7Plugin) as IECSComponentWriter;
-        
+
         sceneScript.Invoke(scene.id, componentWriter);
 
         mainGO.SendMessage("ActivateRendering");

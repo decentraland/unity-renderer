@@ -11,7 +11,7 @@ namespace DCL.ECSComponents
 
         public SphereShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, SphereShapeSerializer.Deserialize, () => new ECSSphereShapeComponentHandler());
+            factory.AddOrReplaceComponent(componentId, SphereShapeSerializer.Deserialize, () => new ECSSphereShapeComponentHandler(DataStore.i.ecs7));
             componentWriter.AddOrReplaceComponentSerializer<PBSphereShape>(componentId, SphereShapeSerializer.Serialize);
 
             this.factory = factory;

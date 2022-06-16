@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a3029ea2c28bbd43a016e861948fef9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioContainer: {fileID: 4147273633503303949}
   avatarAnimatorLegacy: {fileID: 0}
 --- !u!114 &4147273633503303949
 MonoBehaviour:

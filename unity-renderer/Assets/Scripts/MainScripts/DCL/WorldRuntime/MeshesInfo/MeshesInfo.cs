@@ -57,6 +57,20 @@ namespace DCL.Models
             }
             set { mergedBoundsValue = value; }
         }
+        
+        public void UpdateRenderersCollection(Renderer[] renderers, MeshFilter[] meshFilters, Animation animation = null)
+        {
+            if (meshRootGameObjectValue != null)
+            {
+                this.renderers = renderers;
+                this.meshFilters = meshFilters;
+                this.animation = animation;
+
+                RecalculateBounds();
+                OnAnyUpdated?.Invoke();
+                OnUpdated?.Invoke();
+            }
+        }
 
         public void UpdateRenderersCollection()
         {

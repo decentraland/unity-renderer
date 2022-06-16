@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DCL.Helpers;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Object = UnityEngine.Object;
 
 namespace DCL
 {
@@ -31,50 +30,101 @@ namespace DCL
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
 
-
         /// <summary>
         /// This method iterates over all the renderers contained in the given CombineLayer list, and
-        /// outputs an array of all the BoneWeights of the renderers in order.
-        ///
+        /// outputs an array of all the bones per vertexes
+        /// 
         /// This is needed because Mesh.CombineMeshes don't calculate boneWeights correctly.
         /// When using Mesh.CombineMeshes, the boneWeights returned correspond to indexes of skeleton copies,
         /// not the same skeleton.
         /// </summary>
         /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
-        /// <returns>A list of BoneWeights that share the same skeleton.</returns>
-        public static BoneWeight[] ComputeBoneWeights( List<CombineLayer> layers )
+        /// <returns>A list of Bones per vertex that share the same skeleton.</returns>
+        public static NativeArray<byte> CombineBonesPerVertex(List<CombineLayer> layers)
         {
             int layersCount = layers.Count;
+            int totalVertexes = 0;
 
-            int resultSize = 0;
-
-            List<BoneWeight[]> boneWeightArrays = new List<BoneWeight[]>(10);
+            List<NativeArray<byte>> bonesPerVertexList = new List<NativeArray<byte>>();
 
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
                 var layerRenderers = layer.renderers;
-
                 int layerRenderersCount = layerRenderers.Count;
 
                 for (int i = 0; i < layerRenderersCount; i++)
                 {
-                    var boneWeights = layerRenderers[i].sharedMesh.boneWeights;
-                    boneWeightArrays.Add(boneWeights);
-                    resultSize += boneWeights.Length;
+                    var bonesPerVertex = layerRenderers[i].sharedMesh.GetBonesPerVertex();
+                    
+                    bonesPerVertexList.Add(bonesPerVertex);
+                    totalVertexes += bonesPerVertex.Length;
                 }
             }
 
-            BoneWeight[] result = new BoneWeight[resultSize];
+            NativeArray<byte> finalBpV = new NativeArray<byte>(totalVertexes, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
-            int copyOffset = 0;
-            for ( int i = 0; i < boneWeightArrays.Count; i++ )
+            int indexOffset = 0;
+            int bonesPerVertexListCount = bonesPerVertexList.Count;
+
+            for (int i = 0; i < bonesPerVertexListCount; i++)
             {
-                Array.Copy(boneWeightArrays[i], 0, result, copyOffset, boneWeightArrays[i].Length);
-                copyOffset += boneWeightArrays[i].Length;
+                var narray = bonesPerVertexList[i];
+                int narrayLength = narray.Length;
+                NativeArray<byte>.Copy(narray, 0, finalBpV, indexOffset, narrayLength);
+                indexOffset += narrayLength;
+                narray.Dispose();
             }
 
-            return result;
+            return finalBpV;
+        }
+        
+        /// <summary>
+        /// This method iterates over all the renderers contained in the given CombineLayer list, and
+        /// outputs an array of all the bone weights
+        /// 
+        /// This is needed because Mesh.CombineMeshes don't calculate boneWeights correctly.
+        /// When using Mesh.CombineMeshes, the boneWeights returned correspond to indexes of skeleton copies,
+        /// not the same skeleton.
+        /// </summary>
+        /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
+        /// <returns>A list of bone weights that share the same skeleton.</returns>
+        public static NativeArray<BoneWeight1> CombineBonesWeights(List<CombineLayer> layers)
+        {
+            int layersCount = layers.Count;
+            int totalBones = 0;
+
+            List<NativeArray<BoneWeight1>> boneWeightArrays = new List<NativeArray<BoneWeight1>>(10);
+
+            for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
+            {
+                CombineLayer layer = layers[layerIndex];
+                var layerRenderers = layer.renderers;
+                int layerRenderersCount = layerRenderers.Count;
+
+                for (int i = 0; i < layerRenderersCount; i++)
+                {
+                    var boneWeights = layerRenderers[i].sharedMesh.GetAllBoneWeights();
+                    boneWeightArrays.Add(boneWeights);
+                    totalBones += boneWeights.Length;
+                }
+            }
+
+            NativeArray<BoneWeight1> finalBones = new NativeArray<BoneWeight1>(totalBones, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+
+            int indexOffset = 0;
+            var finalBonesCount = boneWeightArrays.Count;
+
+            for (int i = 0; i < finalBonesCount; i++)
+            {
+                var narray = boneWeightArrays[i];
+                int narrayLength = narray.Length;
+                NativeArray<BoneWeight1>.Copy(narray, 0, finalBones, indexOffset, narrayLength);
+                indexOffset += narrayLength;
+                narray.Dispose();
+            }
+
+            return finalBones;
         }
 
 
@@ -91,12 +141,11 @@ namespace DCL
         /// <returns>A FlattenedMaterialsData object. This object can be used to construct a combined mesh that has uniform data encoded in UV attributes.</returns>
         public static FlattenedMaterialsData FlattenMaterials(List<CombineLayer> layers, Material materialAsset)
         {
-            var result = new FlattenedMaterialsData();
             int layersCount = layers.Count;
 
             int finalVertexCount = 0;
             int currentVertexCount = 0;
-
+            
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
@@ -110,9 +159,7 @@ namespace DCL
                 }
             }
 
-            result.colors = new Vector4[finalVertexCount];
-            result.emissionColors = new Vector4[finalVertexCount];
-            result.texturePointers = new Vector3[finalVertexCount];
+            var result = new FlattenedMaterialsData(finalVertexCount);
 
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
@@ -137,6 +184,7 @@ namespace DCL
 
                 for (int i = 0; i < layerRenderersCount; i++)
                 {
+
                     var renderer = layerRenderers[i];
 
                     // Bone Weights
@@ -165,7 +213,8 @@ namespace DCL
                         }
                         else
                         {
-                            logger.Log(LogType.Error, "FlattenMaterials", $"Base Map ID out of bounds! {baseMapId}");
+                            if (VERBOSE)
+                                logger.Log(LogType.Error, "FlattenMaterials", $"Base Map ID out of bounds! {baseMapId}");
                         }
                     }
 
@@ -178,7 +227,8 @@ namespace DCL
                         }
                         else
                         {
-                            logger.Log(LogType.Error, "FlattenMaterials", $"Emission Map ID out of bounds! {emissionMapId}");
+                            if (VERBOSE)
+                                logger.Log(LogType.Error, "FlattenMaterials", $"Emission Map ID out of bounds! {emissionMapId}");
                         }
                     }
 
@@ -196,10 +246,12 @@ namespace DCL
 
                     if (VERBOSE)
                         logger.Log($"Layer {i} - vertexCount: {vertexCount} - texturePointers: ({baseMapId}, {emissionMapId}, {cutoff}) - emissionColor: {emissionColor} - baseColor: {baseColor}");
+
                 }
 
                 SRPBatchingHelper.OptimizeMaterial(newMaterial);
-            }
+
+            }   
 
             return result;
         }
