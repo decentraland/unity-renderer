@@ -46,6 +46,10 @@ public class LazyLoadingChatControllerMock : IChatController
             {
                 userId = $"fakeuser{i + 1}",
                 name = $"Fake User {i + 1}",
+                snapshots = new UserProfileModel.Snapshots
+                {
+                    face256 = $"https://picsum.photos/seed/{i + 1}/256"
+                }
             };
 
             UserProfileController.i.AddUserProfileToCatalog(model);
