@@ -1,9 +1,9 @@
-using AvatarShape_Tests;
 using DCL;
+using DCL.Helpers;
+using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -11,7 +11,7 @@ namespace AvatarEditorHUD_Tests
 {
     public class AvatarEditorHUDController_Mock : AvatarEditorHUDController
     {
-        public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags) : base(featureFlags)
+        public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags, IAnalytics analytics) : base(featureFlags, analytics)
         {
         }
 
@@ -27,6 +27,7 @@ namespace AvatarEditorHUD_Tests
         private UserProfile userProfile;
         private AvatarEditorHUDController_Mock controller;
         private BaseDictionary<string, WearableItem> catalog;
+        private IAnalytics analytics;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -46,9 +47,10 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
+            analytics = Substitute.For<IAnalytics>();
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags);
+            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics);
             controller.collectionsAlreadyLoaded = true;
             controller.Initialize(userProfile, catalog);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);

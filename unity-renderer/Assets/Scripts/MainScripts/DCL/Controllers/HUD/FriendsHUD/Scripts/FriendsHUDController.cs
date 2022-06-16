@@ -65,6 +65,7 @@ public class FriendsHUDController : IHUD
         view.OnSearchFriendsRequested += SearchFriends;
 
         ownUserProfile = userProfileBridge.GetOwn();
+        ownUserProfile.OnUpdate -= HandleProfileUpdated;
         ownUserProfile.OnUpdate += HandleProfileUpdated;
 
         if (friendsController != null)
@@ -115,6 +116,16 @@ public class FriendsHUDController : IHUD
 
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= HandleProfileUpdated;
+
+        if (userProfileBridge != null)
+        {
+            foreach (var friendId in friends.Keys)
+            {
+                var profile = userProfileBridge.Get(friendId);
+                if (profile == null) continue;
+                profile.OnUpdate -= HandleFriendProfileUpdated;
+            }
+        }
     }
 
     public void SetVisibility(bool visible)
@@ -220,12 +231,13 @@ public class FriendsHUDController : IHUD
             return;
         }
 
+        userProfile.OnUpdate -= HandleFriendProfileUpdated;
+        userProfile.OnUpdate += HandleFriendProfileUpdated;
+        
         var shouldDisplay = ShouldBeDisplayed(userId, friendshipAction);
         var model = GetOrCreateModel(userId, friendshipAction);
         model.CopyFrom(userProfile);
-
-        if (ownUserProfile != null && ownUserProfile.blocked != null)
-            model.blocked = ownUserProfile.blocked.Contains(userId);
+        model.blocked = IsUserBlocked(userId);
 
         if (shouldDisplay)
         {
@@ -234,6 +246,25 @@ public class FriendsHUDController : IHUD
         }
         else
             EnqueueOnPendingToLoad(userId, friendshipAction);
+    }
+
+    private void HandleFriendProfileUpdated(UserProfile profile)
+    {
+        var userId = profile.userId;
+        if (!friends.ContainsKey(userId)) return;
+        
+        var model = friends[userId];
+        model.CopyFrom(profile);
+        model.blocked = IsUserBlocked(userId);
+        
+        View.Populate(userId, model);
+    }
+
+    private bool IsUserBlocked(string userId)
+    {
+        if (ownUserProfile != null && ownUserProfile.blocked != null)
+            return ownUserProfile.blocked.Contains(userId);
+        return false;
     }
 
     private FriendEntryModel GetOrCreateModel(string userId, FriendshipAction friendshipAction)

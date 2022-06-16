@@ -15,7 +15,7 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
 {
     private const string MOCK_MODIFIER_KEY = "MockModifier";
     private AvatarModifierArea avatarModifierArea;
-    private AvatarModifier mockAvatarModifier;
+    private IAvatarModifier mockAvatarModifier;
     public ParcelScene scene;
     public CoreComponentsPlugin coreComponentsPlugin;
 
@@ -35,7 +35,7 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
         yield return avatarModifierArea.routine;
 
         model.modifiers = new[] { MOCK_MODIFIER_KEY };
-        mockAvatarModifier = Substitute.For<AvatarModifier>();
+        mockAvatarModifier = Substitute.For<IAvatarModifier>();
         avatarModifierArea.modifiers.Add(MOCK_MODIFIER_KEY, mockAvatarModifier);
 
         //now that the modifier has been added we trigger the Update again so it gets taken into account
