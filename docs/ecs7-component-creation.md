@@ -31,7 +31,7 @@ More information at (link to the complete guide when the PR is merged)
 ## Generate the new proto c# code in the project
 
 After the proto definition has been merged, we need to generate the code in the renderer to use the model.
-For that we have an auto-generator of the code that automatically will get the last version and generate all the code.
+For that we have an auto-generator of the code that automatically will get the last version and generate all the code, however, in order to update the code we must call this function manually from the unity renderer.
 
 To generate the code you must open the unity-renderer project, then in the top of unity ( with the File, Edit, Assets...etc) you will find another one that is called `Decentraland`. Then you must click on `Decentraland > Protobuf > UpdateModels`
 
@@ -53,10 +53,11 @@ This is the model of the component. This is the data that we will use to handle 
 The component handler will manage all the functionality of the component. In this class you must implement the `IECSComponentHandler<ModelClass>` (ModelClass is the model. It is a generated class from the proto, the name will be PB + name of the file .proto).
 This interface has 3 method that are important to implement in order to create a component 
 
+```
         void OnComponentCreated(IParcelScene scene, IDCLEntity entity);
         void OnComponentRemoved(IParcelScene scene, IDCLEntity entity);
         void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ModelType model);
-
+```
 
 - Serializer
 Each component is responsible to implement his serialization and deserialization of the component. This serializer must be able to serialize/deserialize to byte array 
