@@ -28,8 +28,9 @@ namespace AvatarSystem
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
 
-        public Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper, IBaseAvatar baseAvatar)
+        public Avatar(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
         {
+            this.baseAvatar = baseAvatar;
             this.avatarCurator = avatarCurator;
             this.loader = loader;
             this.animator = animator;
@@ -38,7 +39,6 @@ namespace AvatarSystem
             this.gpuSkinning = gpuSkinning;
             this.gpuSkinningThrottler = gpuSkinningThrottler;
             this.emoteAnimationEquipper = emoteAnimationEquipper;
-            this.baseAvatar = baseAvatar;
         }
 
         /// <summary>

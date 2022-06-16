@@ -58,6 +58,7 @@ public class CharacterPreviewController : MonoBehaviour
         IAnimator animator = avatarContainer.gameObject.GetComponentInChildren<IAnimator>();
         BaseAvatarDummy baseAvatar = new BaseAvatarDummy(avatarRevealContainer, avatarContainer);
         avatar = new AvatarSystem.Avatar(
+            baseAvatar,
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
@@ -65,8 +66,7 @@ public class CharacterPreviewController : MonoBehaviour
             new NoLODs(),
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler(),
-            new EmoteAnimationEquipper(animator, DataStore.i.emotes),
-            baseAvatar
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes)
         ) ;
     }
 

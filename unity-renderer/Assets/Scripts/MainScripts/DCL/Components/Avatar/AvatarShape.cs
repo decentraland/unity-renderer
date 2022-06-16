@@ -62,6 +62,7 @@ namespace DCL
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
             BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
             avatar = new Avatar(
+                baseAvatar,
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                 animator,
@@ -69,8 +70,7 @@ namespace DCL
                 avatarLOD,
                 new SimpleGPUSkinning(),
                 new GPUSkinningThrottler(),
-                new EmoteAnimationEquipper(animator, DataStore.i.emotes),
-                baseAvatar);
+                new EmoteAnimationEquipper(animator, DataStore.i.emotes));
 
             if (avatarReporterController == null)
             {

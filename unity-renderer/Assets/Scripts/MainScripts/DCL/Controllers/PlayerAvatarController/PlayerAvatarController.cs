@@ -51,6 +51,7 @@ public class PlayerAvatarController : MonoBehaviour
         AvatarSystem.NoLODs noLod = new NoLODs();
         BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer, noLod);
         avatar = new AvatarSystem.Avatar(
+            baseAvatar,
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
@@ -58,8 +59,7 @@ public class PlayerAvatarController : MonoBehaviour
             noLod,
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler(),
-            new EmoteAnimationEquipper(animator, DataStore.i.emotes),
-            baseAvatar);
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes));
 
         if ( UserProfileController.i != null )
         {
