@@ -15,10 +15,6 @@ public class AvatarReveal : MonoBehaviour
     [ColorUsageAttribute(true, true, 0f, 8f, 0.125f, 3f)]
     public Color maxColor;
 
-    private Gradient colorGradient;
-    private GradientColorKey[] colorKey;
-    private GradientAlphaKey[] alphaKey;
-
     public SkinnedMeshRenderer meshRenderer;
     public bool avatarLoaded;
     public GameObject revealer;
@@ -29,7 +25,9 @@ public class AvatarReveal : MonoBehaviour
 
     public float fadeInSpeed;
     Material _ghostMaterial;
-    
+
+    float startH, startS, startV, endH, endS, endV;
+
     public List<Renderer> targets = new List<Renderer>();
     List<Material> _materials = new List<Material>();
 
@@ -37,7 +35,6 @@ public class AvatarReveal : MonoBehaviour
     {
         _ghostMaterial = meshRenderer.material;
         InitializeColorGradient();
-        _ghostMaterial.SetColor("_Color", colorGradient.Evaluate(Random.Range(0, 1f)));
         foreach (Renderer r in targets)
         {
             _materials.Add(r.material);
@@ -46,19 +43,10 @@ public class AvatarReveal : MonoBehaviour
 
     private void InitializeColorGradient()
     {
-        colorGradient = new Gradient();
-        colorKey = new GradientColorKey[2];
-        colorKey[0].color = baseColor;
-        colorKey[0].time = 0.0f;
-        colorKey[1].color = maxColor;
-        colorKey[1].time = 1.0f;
-
-        alphaKey = new GradientAlphaKey[2];
-        alphaKey[0].alpha = baseColor.a;
-        alphaKey[0].time = 0.0f;
-        alphaKey[1].alpha = baseColor.a;
-        alphaKey[1].time = 1.0f;
-        colorGradient.SetKeys(colorKey, alphaKey);
+        Color.RGBToHSV(baseColor, out startH, out startS, out startV);
+        Color.RGBToHSV(maxColor, out endH, out endS, out endV);
+        Color newColor = Color.HSVToRGB(Random.Range(startH, endH), startS, startV);
+        _ghostMaterial.SetColor("_Color", new Color(newColor.r, newColor.g, newColor.b, 0));
     }
 
     public void InjectLodSystem(ILOD lod)

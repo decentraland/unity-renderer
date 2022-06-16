@@ -4904,37 +4904,8 @@ MonoBehaviour:
   particleEffects:
   - {fileID: 9157638743213904753}
   - {fileID: 9157638742714293300}
-  baseColor: {r: 0, g: 2.0571344, b: 3.9999995, a: 0}
-  maxColor: {r: 0, g: 5.1727743, b: 0, a: 0}
-  colorGradient:
-    serializedVersion: 2
-    key0: {r: 0, g: 0.51428366, b: 1, a: 1}
-    key1: {r: 0, g: 1, b: 0, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 1}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65535
-    ctime2: 0
-    ctime3: 0
-    ctime4: 0
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 65535
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_NumColorKeys: 2
-    m_NumAlphaKeys: 2
+  baseColor: {r: 0.24313726, g: 0.7372549, b: 1.4980392, a: 0.24705882}
+  maxColor: {r: 0.24313726, g: 1.4980392, b: 0.7607843, a: 0}
   meshRenderer: {fileID: 5122219957537860564}
   avatarLoaded: 0
   revealer: {fileID: 9157638741447638595}
@@ -19700,6 +19671,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 23
       objectReference: {fileID: 0}
+    - target: {fileID: 6289878622223278267, guid: e8e8fffefc610469fb67cb03d5097a38,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 837a583d37c902a4d8f5d3acdf6117a4, type: 2}
     - target: {fileID: 6599067173490022589, guid: e8e8fffefc610469fb67cb03d5097a38,
         type: 3}
       propertyPath: m_Layer
