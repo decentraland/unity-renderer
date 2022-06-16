@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections;
+using System.Globalization;
 using NSubstitute;
 using UnityEngine.TestTools;
 
@@ -109,9 +110,12 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
     public void SetManaBalanceCorrectly()
     {
         string balance = "123456.123456";
-
+        double.TryParse(balance, NumberStyles.Number, CultureInfo.InvariantCulture, out double manaBalance);
+        string formattedManaBalance = (manaBalance / 1000D).ToString("0.#K");
+        
         controller.SetManaBalance(balance);
-        Assert.AreEqual("123,5K", controller.view.manaCounterView.balanceText.text);
+        
+        Assert.AreEqual(formattedManaBalance, controller.view.manaCounterView.balanceText.text);
     }
 
     [Test]
