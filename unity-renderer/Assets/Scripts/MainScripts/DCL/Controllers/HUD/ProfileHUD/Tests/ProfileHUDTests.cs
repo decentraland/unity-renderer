@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using System;
 using System.Collections;
 using NSubstitute;
 using UnityEngine.TestTools;
@@ -109,10 +108,10 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
     [Test]
     public void SetManaBalanceCorrectly()
     {
-        string balance = "5";
+        string balance = "123456.123456";
 
         controller.SetManaBalance(balance);
-        Assert.AreEqual(Convert.ToDouble(balance), Convert.ToDouble(controller.view.manaCounterView.balanceText.text));
+        Assert.AreEqual("123,5K", controller.view.manaCounterView.balanceText.text);
     }
 
     [Test]
@@ -217,4 +216,6 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
 
         Assert.AreEqual(controller.view.descriptionContainer.activeSelf, isWalletConnected);
     }
+
+    
 }
