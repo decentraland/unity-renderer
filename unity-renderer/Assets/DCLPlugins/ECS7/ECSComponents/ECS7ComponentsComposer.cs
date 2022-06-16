@@ -18,7 +18,7 @@ namespace DCL.ECSComponents
         private readonly AudioStreamRegister audioStreamRegister;
         private readonly AudioSourceRegister audioSourceRegister;
         private readonly GLTFShapeRegister gltfRegister;
-        
+        private readonly AnimatorRegister animatorRegister;
         private readonly ECSTextShapeRegister textShapeRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
@@ -32,6 +32,7 @@ namespace DCL.ECSComponents
             audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter);
             textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
             gltfRegister = new GLTFShapeRegister(ComponentID.GLTF_SHAPE, componentsFactory, componentsWriter);
+            animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -45,6 +46,7 @@ namespace DCL.ECSComponents
             audioSourceRegister.Dispose();
             textShapeRegister.Dispose();
             gltfRegister.Dispose();
+            animatorRegister.Dispose();
         }
     }
 }
