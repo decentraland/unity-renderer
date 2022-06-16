@@ -20,8 +20,24 @@ public class ECSTestScene : MonoBehaviour
 
     private static void SceneScript(string sceneId, IECSComponentWriter componentWriter)
     {
-        componentWriter.PutComponent(sceneId, 0, 1,
-            new ECSTransform() { position = new Vector3(100, 100, 100) });
+        componentWriter.PutComponent(sceneId, 2, 1,
+            new ECSTransform() { position = new Vector3(8, 2, 8) });
+
+        AddBoxComponent(sceneId, componentWriter);
+        Environment.i.world.state.scenesSortedByDistance[0].contentProvider.baseUrl = "https://peer-lb.decentraland.org/content/contents/";
+        Environment.i.world.state.scenesSortedByDistance[0].contentProvider.fileToHash.Add("models/SCENE.glb".ToLower(), "QmQgQtuAg9qsdrmLwnFiLRAYZ6Du4Dp7Yh7bw7ELn7AqkD");
+            
+        componentWriter.PutComponent(sceneId, 1, 1050,
+            new PBGLTFShape() { Src = "models/SCENE.glb", Visible = true});
+    }
+    
+    private static void AddBoxComponent(string sceneId, IECSComponentWriter componentWriter)
+    {
+        PBBoxShape model = new PBBoxShape();
+        model.Visible = true;
+        model.WithCollisions = true;
+        componentWriter.PutComponent(sceneId,2,ComponentID.BOX_SHAPE,
+            model );
     }
 
     private static IEnumerator LoadScene(Action<string, IECSComponentWriter> sceneScript)
@@ -30,7 +46,7 @@ public class ECSTestScene : MonoBehaviour
         {
             basePosition = new Vector2Int(0, 0),
             parcels = new Vector2Int[] { new Vector2Int(0, 0) },
-            id = "temptation"
+            id = "temptation",
         };
 
         bool started = false;
@@ -59,7 +75,7 @@ public class ECSTestScene : MonoBehaviour
         IECSComponentWriter componentWriter = typeof(ECS7Plugin)
                                               .GetField("componentWriter", BindingFlags.NonPublic | BindingFlags.Instance)
                                               .GetValue(ecs7Plugin) as IECSComponentWriter;
-
+        
         sceneScript.Invoke(scene.id, componentWriter);
 
         mainGO.SendMessage("ActivateRendering");

@@ -4,7 +4,7 @@ namespace DCL.ECSComponents
 {
     public static class GLTFShapeSerializer
     {
-        public static byte[] Serialize(PBBoxShape model)
+        public static byte[] Serialize(PBGLTFShape model)
         {
             int size = model.CalculateSize();
             byte[] buffer = new byte[size];
@@ -13,9 +13,9 @@ namespace DCL.ECSComponents
             return buffer;
         }
 
-        public static PBBoxShape Deserialize(object data)
+        public static PBGLTFShape Deserialize(object data)
         {
-            return PBBoxShape.Parser.ParseFrom((byte[])data);
+            return PBGLTFShape.Parser.ParseFrom((byte[])data);
         }
     }
 }
