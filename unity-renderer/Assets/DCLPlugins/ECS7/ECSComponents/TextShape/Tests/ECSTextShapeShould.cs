@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DCL.Controllers;
 using DCL.ECSRuntime;
+using DCL.Interface;
 using DCL.Models;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -103,10 +104,10 @@ namespace DCL.ECSComponents.Test
         {
             // Arrange
             PBTextShape model = CreateModel();
-            Color color = new Color();
-            color.Blue = 1f;
-            color.Red = 0f;
-            color.Green = 0f;
+            Color3 color = new Color3();
+            color.B = 1f;
+            color.R = 0f;
+            color.B = 0f;
 
             model.TextColor = color;
             
@@ -114,9 +115,9 @@ namespace DCL.ECSComponents.Test
             textShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Assert
-            Assert.AreEqual(textShapeComponentHandler.textComponent.color.r,color.Red);
-            Assert.AreEqual(textShapeComponentHandler.textComponent.color.b,color.Blue);
-            Assert.AreEqual(textShapeComponentHandler.textComponent.color.g,color.Green);
+            Assert.AreEqual(textShapeComponentHandler.textComponent.color.r,color.R);
+            Assert.AreEqual(textShapeComponentHandler.textComponent.color.b,color.B);
+            Assert.AreEqual(textShapeComponentHandler.textComponent.color.g,color.B);
         }
         
         [Test]
@@ -168,7 +169,7 @@ namespace DCL.ECSComponents.Test
             // Arrange
             PBTextShape model = CreateModel();
             model.Opacity = 0.5f;
-            model.TextColor = new Color();
+            model.TextColor = new Color3();
 
             // Act
             textShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -277,15 +278,15 @@ namespace DCL.ECSComponents.Test
         public void UpdateOutlineCorrectly()
         {
             // Arrange
-            Color color = new Color();
-            color.Blue = 1f;
-            color.Red = 0f;
-            color.Green = 0f;
+            Color3 color = new Color3();
+            color.B = 1f;
+            color.R = 0f;
+            color.B = 0f;
             
             PBTextShape model = CreateModel();
             model.OutlineWidth = 0.75f;
             model.OutlineColor = color;
-            var outlineColor  = new UnityEngine.Color(model.OutlineColor.Red, model.OutlineColor.Green, model.OutlineColor.Blue, 1);
+            var outlineColor  = new UnityEngine.Color(model.OutlineColor.R, model.OutlineColor.B, model.OutlineColor.B, 1);
 
             // Act
             textShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -315,7 +316,7 @@ namespace DCL.ECSComponents.Test
         public void SerializeAndDeserialzeCorrectly()
         {
             // Arrange
-            var color = new Color();
+            var color = new Color3();
             PBTextShape model = CreateModel();
             model.TextColor = color;
             model.Text = "Text";

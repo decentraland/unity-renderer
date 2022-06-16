@@ -5,6 +5,9 @@ using DCL;
 
 public class AvatarAudioHandlerRemote : MonoBehaviour
 {
+    [SerializeField] private AudioContainer audioContainer;
+    [SerializeField] private StickersController stickersController;
+    
     const float WALK_INTERVAL_SEC = 0.37f, RUN_INTERVAL_SEC = 0.25f;
     float nextFootstepTime = 0f;
 
@@ -24,24 +27,22 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
     bool globalRendererIsReady;
 
     private Camera mainCamera;
-    private StickersController stickersController;
 
     Transform footL;
     Transform footR;
 
     private void Start()
     {
-        AudioContainer ac = GetComponent<AudioContainer>();
-        footstepJump = ac.GetEvent("FootstepJump");
-        footstepLand = ac.GetEvent("FootstepLand");
-        footstepWalk = ac.GetEvent("FootstepWalk");
-        footstepRun = ac.GetEvent("FootstepRun");
-        clothesRustleShort = ac.GetEvent("ClothesRustleShort");
+        footstepJump = audioContainer.GetEvent("FootstepJump");
+        footstepLand = audioContainer.GetEvent("FootstepLand");
+        footstepWalk = audioContainer.GetEvent("FootstepWalk");
+        footstepRun = audioContainer.GetEvent("FootstepRun");
+        clothesRustleShort = audioContainer.GetEvent("ClothesRustleShort");
 
         // Lower volume of jump/land/clothes
-        footstepJump.source.volume = footstepJump.source.volume * 0.5f;
-        footstepLand.source.volume = footstepLand.source.volume * 0.5f;
-        clothesRustleShort.source.volume = clothesRustleShort.source.volume * 0.5f;
+        footstepJump.source.volume *= 0.5f;
+        footstepLand.source.volume *= 0.5f;
+        clothesRustleShort.source.volume *= 0.5f;
 
         if (avatarAnimatorLegacy != null)
         {
@@ -57,7 +58,6 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
     public void Init(GameObject rendererContainer)
     {
         this.rendererContainer = rendererContainer;
-        stickersController = rendererContainer.GetComponentInParent<StickersController>();
 
         // Get references to body parts
         Transform[] children = rendererContainer.GetComponentsInChildren<Transform>();
@@ -104,7 +104,7 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
             if (rendererContainer != null)
             {
                 //NOTE(Mordi): The renderer takes a while to get ready, so we need to check it continually until it can be fetched
-                renderer = rendererContainer.GetComponent<Renderer>();
+                renderer = rendererContainer.GetComponentInChildren<Renderer>();
             }
         }
 

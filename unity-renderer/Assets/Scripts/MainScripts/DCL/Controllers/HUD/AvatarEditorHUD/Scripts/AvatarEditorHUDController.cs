@@ -24,6 +24,7 @@ public class AvatarEditorHUDController : IHUD
     private const string URL_SELL_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}";
     private const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
     private const string THIRD_PARTY_COLLECTIONS_FEATURE_FLAG = "third_party_collections";
+    internal const string EQUIP_WEARABLE_METRIC = "equip_wearable";
     protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
     protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
 
@@ -31,6 +32,7 @@ public class AvatarEditorHUDController : IHUD
     public bool bypassUpdateAvatarPreview = false;
 
     internal UserProfile userProfile;
+    internal IAnalytics analytics;
     private BaseDictionary<string, WearableItem> catalog;
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
     bool isPlayerRendererLoaded => DataStore.i.common.isPlayerRendererLoaded.Get();
@@ -70,9 +72,10 @@ public class AvatarEditorHUDController : IHUD
     public event Action OnOpen;
     public event Action OnClose;
 
-    public AvatarEditorHUDController(DataStore_FeatureFlag featureFlags)
+    public AvatarEditorHUDController(DataStore_FeatureFlag featureFlags, IAnalytics analytics)
     {
         this.featureFlags = featureFlags;
+        this.analytics = analytics;
     }
 
     public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog, bool bypassUpdateAvatarPreview = false)
@@ -738,6 +741,8 @@ public class AvatarEditorHUDController : IHUD
     {
         var avatarModel = model.ToAvatarModel();
 
+        SendNewEquippedWearablesAnalytics(userProfile.avatar.wearables, avatarModel.wearables);
+
         WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
         if (DataStore.i.common.isSignUpFlow.Get())
@@ -959,6 +964,33 @@ public class AvatarEditorHUDController : IHUD
     }
 
     private void OnRedirectToEmoteSelling(string emoteId) { SellCollectible(emoteId); }
+
+    internal void SendNewEquippedWearablesAnalytics(List<string> oldWearables, List<string> newWearables)
+    {
+        for (int i = 0; i < newWearables.Count; i++)
+        {
+            if (oldWearables.Contains(newWearables[i]))
+                continue;
+
+            catalog.TryGetValue(newWearables[i], out WearableItem newEquippedEmote);
+            if (newEquippedEmote != null && !newEquippedEmote.IsEmote())
+                SendEquipWearableAnalytic(newEquippedEmote);
+        }
+    }
+
+    private void SendEquipWearableAnalytic(WearableItem equippedWearable)
+    {
+        Dictionary<string, string> data = new Dictionary<string, string>();
+        data.Add("name", equippedWearable.GetName());
+        data.Add("rarity", equippedWearable.rarity);
+        data.Add("category", equippedWearable.data.category);
+        data.Add("linked_wearable", equippedWearable.IsFromThirdPartyCollection.ToString());
+        data.Add("third_party_collection_id", equippedWearable.ThirdPartyCollectionId);
+        data.Add("is_in_l2", equippedWearable.IsInL2().ToString());
+        data.Add("smart_item", equippedWearable.IsSmart().ToString());
+
+        analytics.SendAnalytic(EQUIP_WEARABLE_METRIC, data);
+    }
 
     internal virtual IEmotesCustomizationComponentController CreateEmotesController() => new EmotesCustomizationComponentController();
 }
