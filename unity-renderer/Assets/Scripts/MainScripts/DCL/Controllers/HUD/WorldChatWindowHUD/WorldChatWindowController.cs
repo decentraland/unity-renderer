@@ -103,7 +103,7 @@ public class WorldChatWindowController : IHUD
             OnOpen?.Invoke();
 
             if (friendsController.IsInitialized && !friendsDirectMessagesAlreadyRequested)
-                RequestFriendsDirectMessages();
+                RequestFriendsWithDirectMessages();
         }
         else
             view.Hide();
@@ -117,7 +117,7 @@ public class WorldChatWindowController : IHUD
     private void HandleFriendsControllerInitialization()
     {
         if (view.IsActive && !friendsDirectMessagesAlreadyRequested)
-            RequestFriendsDirectMessages();
+            RequestFriendsWithDirectMessages();
         else
             view.HidePrivateChatsLoading();
 
@@ -297,7 +297,7 @@ public class WorldChatWindowController : IHUD
             View.ShowMoreChatsToLoadHint(pendingPrivateChats.Count);
     }
 
-    private void RequestFriendsDirectMessages()
+    private void RequestFriendsWithDirectMessages()
     {
         view.ShowPrivateChatsLoading();
         friendsController.GetFriendsWithDirectMessages(50, (long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds);
