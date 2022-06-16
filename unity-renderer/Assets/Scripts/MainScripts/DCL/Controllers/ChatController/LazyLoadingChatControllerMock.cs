@@ -37,6 +37,9 @@ public class LazyLoadingChatControllerMock : IChatController
 
     private void CreateFakeUsersInCatalog()
     {
+        if (UserProfileController.i == null)
+            return;
+
         for (int i = 0; i < 10; i++)
         {
             var model = new UserProfileModel()
