@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 
@@ -27,6 +28,12 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
     {
         add => controller.OnFriendNotFound += value;
         remove => controller.OnFriendNotFound -= value;
+    }
+
+    public event Action<List<string>> OnAddFriendsWithDirectMessages
+    {
+        add => controller.OnAddFriendsWithDirectMessages += value;
+        remove => controller.OnAddFriendsWithDirectMessages -= value;
     }
 
     public int FriendCount => controller.FriendCount;
@@ -85,10 +92,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
     public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
     {
-        // TODO:
-        // 1. Prepare a set of fake data
-        // 2. Delay
-        // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
+        SimulateDelayedResponseFor_GetFriendsWithDirectMessages();
     }
 
     public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
@@ -97,5 +101,24 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         // 1. Prepare a set of fake data
         // 2. Delay
         // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
+    }
+
+    private async UniTask SimulateDelayedResponseFor_GetFriendsWithDirectMessages()
+    {
+        await UniTask.Delay(3000);
+        controller.AddFriendsWithDirectMessages(
+            CreateMockedDataFor_AddFriendsWithDirectMessagesPayload());
+    }
+
+    private string CreateMockedDataFor_AddFriendsWithDirectMessagesPayload()
+    {
+        string mockedJson = "{ \"currentFriendsWithDirectMessages\": [";
+
+        for (int i = 0; i < 10; i++)
+            mockedJson += $"\"fakeuser{i + 1}\",";
+
+        mockedJson = mockedJson.Remove(mockedJson.Length - 1) + "]}";
+
+        return mockedJson;
     }
 }

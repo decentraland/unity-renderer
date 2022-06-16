@@ -680,6 +680,14 @@ namespace DCL.Interface
             public float time;
         }
 
+        [System.Serializable]
+        public class GetFriendsWithDirectMessagesPayload
+        {
+            public string userNameOrId;
+            public int limit;
+            public long from;
+        }
+
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -834,6 +842,7 @@ namespace DCL.Interface
         private static UUIDEvent<EmptyPayload> onPointerHoverEnterEvent = new UUIDEvent<EmptyPayload>();
         private static UUIDEvent<EmptyPayload> onPointerHoverExitEvent = new UUIDEvent<EmptyPayload>();
         private static TimeReportPayload timeReportPayload = new TimeReportPayload();
+        private static GetFriendsWithDirectMessagesPayload getFriendsWithDirectMessagesPayload = new GetFriendsWithDirectMessagesPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -1558,6 +1567,14 @@ namespace DCL.Interface
             timeReportPayload.timeNormalizationFactor = timeNormalizationFactor;
             timeReportPayload.cycleTime = cycleTime;
             SendMessage("ReportDecentralandTime", timeReportPayload);
+        }
+
+        public static void GetFriendsWithDirectMessages(string userNameOrId, int limit, long from)
+        {
+            getFriendsWithDirectMessagesPayload.userNameOrId = userNameOrId;
+            getFriendsWithDirectMessagesPayload.limit = limit;
+            getFriendsWithDirectMessagesPayload.from = from;
+            SendMessage("GetFriendsWithDirectMessages", timeReportPayload);
         }
     }
 }

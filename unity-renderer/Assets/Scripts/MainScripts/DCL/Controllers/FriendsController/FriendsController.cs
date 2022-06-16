@@ -94,6 +94,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public event Action<string, FriendshipAction> OnUpdateFriendship;
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
+    public event Action<List<string>> OnAddFriendsWithDirectMessages;
 
     public Dictionary<string, UserStatus> GetAllocatedFriends() { return new Dictionary<string, UserStatus>(friends); }
 
@@ -132,15 +133,9 @@ public class FriendsController : MonoBehaviour, IFriendsController
         throw new NotImplementedException();
     }
 
-    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
-    {
-        throw new NotImplementedException();
-    }
+    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp) { }
 
-    public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
-    {
-        throw new NotImplementedException();
-    }
+    public void GetFriendsWithDirectMessages(string userNameOrId, int limit) { }
 
     public void RequestFriendship(string friendUserId)
     {
@@ -247,7 +242,8 @@ public class FriendsController : MonoBehaviour, IFriendsController
     [UsedImplicitly]
     public void AddFriendsWithDirectMessages(string json)
     {
-        var msg = JsonUtility.FromJson<AddFriendsWithDirectMessagesPayload>(json);
+        var friendsWithDMs = JsonUtility.FromJson<AddFriendsWithDirectMessagesPayload>(json);
+        OnAddFriendsWithDirectMessages?.Invoke(friendsWithDMs.currentFriendsWithDirectMessages.ToList());
     }
 
     public void UpdateUserStatus(UserStatus newUserStatus)

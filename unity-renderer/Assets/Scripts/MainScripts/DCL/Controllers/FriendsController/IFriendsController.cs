@@ -7,6 +7,7 @@ public interface IFriendsController
     event Action<string, FriendshipAction> OnUpdateFriendship;
     event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
     event Action<string> OnFriendNotFound;
+    event Action<List<string>> OnAddFriendsWithDirectMessages;
 
     int FriendCount { get; }
     bool IsInitialized { get; }

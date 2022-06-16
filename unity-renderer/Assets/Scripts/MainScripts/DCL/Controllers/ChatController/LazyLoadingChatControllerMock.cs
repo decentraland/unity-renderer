@@ -11,6 +11,8 @@ public class LazyLoadingChatControllerMock : IChatController
     public LazyLoadingChatControllerMock(ChatController controller)
     {
         this.controller = controller;
+
+        CreateFakeUsersInCatalog();
     }
 
     public event Action<ChatMessage> OnAddMessage
@@ -31,5 +33,19 @@ public class LazyLoadingChatControllerMock : IChatController
         // 1. Prepare a set of fake data
         // 2. Delay
         // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
+    }
+
+    private void CreateFakeUsersInCatalog()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            var model = new UserProfileModel()
+            {
+                userId = $"fakeuser{i + 1}",
+                name = $"Fake User {i + 1}",
+            };
+
+            UserProfileController.i.AddUserProfileToCatalog(model);
+        }
     }
 }

@@ -19,6 +19,7 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, PublicChatChannelModel> publicChannels = new Dictionary<string, PublicChatChannelModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
+    private bool friendsDirectMessagesAlreadyRequested = false;
     
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
@@ -69,6 +70,7 @@ public class WorldChatWindowController : IHUD
                 view.ShowPrivateChatsLoading();
         
         chatController.OnAddMessage += HandleMessageAdded;
+        friendsController.OnAddFriendsWithDirectMessages += HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
 
@@ -85,6 +87,7 @@ public class WorldChatWindowController : IHUD
         view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
         view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
+        friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
 
@@ -98,6 +101,9 @@ public class WorldChatWindowController : IHUD
         {
             view.Show();
             OnOpen?.Invoke();
+
+            if (friendsController.IsInitialized && !friendsDirectMessagesAlreadyRequested)
+                RequestFriendsDirectMessages();
         }
         else
             view.Hide();
@@ -110,10 +116,13 @@ public class WorldChatWindowController : IHUD
 
     private void HandleFriendsControllerInitialization()
     {
-        view.HidePrivateChatsLoading();
-        
+        if (view.IsActive && !friendsDirectMessagesAlreadyRequested)
+            RequestFriendsDirectMessages();
+        else
+            view.HidePrivateChatsLoading();
+
         // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
-        foreach(var userId in recipientsFromPrivateChats.Keys)
+        foreach (var userId in recipientsFromPrivateChats.Keys)
             if (!friendsController.IsFriend(userId))
                 view.RemovePrivateChat(userId);
     }
@@ -186,6 +195,23 @@ public class WorldChatWindowController : IHUD
         }
     }
 
+    private void HandleFriendsWithDirectMessagesAdded(List<string> usersWithDM)
+    {
+        for (int i = 0; i < usersWithDM.Count; i++)
+        {
+            var profile = userProfileBridge.Get(usersWithDM[i]);
+            if (profile == null) continue;
+
+            ChatMessage emptyMessage = new ChatMessage(ChatMessage.Type.PRIVATE, profile.userId, string.Empty);
+            lastPrivateMessages[profile.userId] = emptyMessage;
+
+            recipientsFromPrivateChats[profile.userId] = profile;
+            view.SetPrivateChat(CreatePrivateChatModel(emptyMessage, profile));
+        }
+
+        view.HidePrivateChatsLoading();
+    }
+
     private bool ShouldDisplayPrivateChat(string userId)
     {
         if (!friendsController.IsInitialized) return false;
@@ -215,21 +241,13 @@ public class WorldChatWindowController : IHUD
         if (!profile.hasConnectedWeb3)
             view.HidePrivateChatsLoading();
     }
-
-    private void ShowOrHideMoreFriendsToLoadHint()
-    {
-        if (pendingPrivateChats.Count == 0)
-            View.HideMoreChatsToLoadHint();
-        else
-            View.ShowMoreChatsToLoadHint(pendingPrivateChats.Count);
-    }
     
     private void SearchChannels(string search)
     {
         if (string.IsNullOrEmpty(search))
         {
             View.ClearFilter();
-            ShowOrHideMoreFriendsToLoadHint();
+            UpdateMoreChannelsToLoadHint();
             return;
         }
 
@@ -277,5 +295,12 @@ public class WorldChatWindowController : IHUD
             View.HideMoreChatsToLoadHint();
         else
             View.ShowMoreChatsToLoadHint(pendingPrivateChats.Count);
+    }
+
+    private void RequestFriendsDirectMessages()
+    {
+        view.ShowPrivateChatsLoading();
+        friendsController.GetFriendsWithDirectMessages(50, (long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds);
+        friendsDirectMessagesAlreadyRequested = true;
     }
 }
