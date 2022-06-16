@@ -1,7 +1,9 @@
+using System.Collections;
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class EventCardComponentViewTests
 {
@@ -342,8 +344,8 @@ public class EventCardComponentViewTests
         Assert.IsFalse(eventCardModalComponent.isVisible);
     }
 
-    [Test]
-    public void RaiseOnCloseActionTriggeredCorrectly()
+    [UnityTest]
+    public IEnumerator RaiseOnCloseActionTriggeredCorrectly()
     {
         // Arrange
         eventCardModalComponent.Show();
@@ -351,6 +353,10 @@ public class EventCardComponentViewTests
         // Act
         eventCardModalComponent.OnCloseActionTriggered(new DCLAction_Trigger());
 
+        yield return null;
+        yield return null;
+        yield return null;
+        
         // Assert
         Assert.IsFalse(eventCardModalComponent.isVisible);
     }
