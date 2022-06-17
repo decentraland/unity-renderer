@@ -28,7 +28,18 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAnimator model)
         {
-            UpdateAnimationState(entity, model);
+            if (dataStore.animatorShapesReady.ContainsKey(entity.entityId))
+            {
+                UpdateAnimationState(entity, model);
+            }
+            else
+            {
+                dataStore.animatorShapesReady.OnAdded += ( entityId,  gameObject) =>
+                {
+                    if (entityId == entity.entityId)
+                        UpdateAnimationState(entity, model);
+                };
+            }
         }
         
         private void Initialize(IDCLEntity entity)

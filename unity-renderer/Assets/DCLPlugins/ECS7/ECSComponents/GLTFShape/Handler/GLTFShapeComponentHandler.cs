@@ -79,7 +79,7 @@ namespace DCL.ECSComponents
                     // Apply the model for visibility, collision and event pointer
                     ApplyModel(model);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
-                    dataStore.readyShapeComponents.Add(entity.entityId,meshesInfo.meshRootGameObject);
+                    dataStore.animatorShapesReady.Add(entity.entityId,meshesInfo.meshRootGameObject);
                     
                 }, (wrapper, exception) =>
                 {
