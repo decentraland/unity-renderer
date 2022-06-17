@@ -9,6 +9,7 @@ using WebSocketSharp.Server;
 public class WebSocketCommunication : IKernelCommunication
 {
     public static event Action<DCLWebSocketService> OnWebSocketServiceAdded;
+    public static DCLWebSocketService service;
 
     WebSocketServer ws;
     private Coroutine updateCoroutine;
@@ -60,7 +61,7 @@ public class WebSocketCommunication : IKernelCommunication
 
             ws.AddWebSocketService("/" + wssServiceId, () =>
             {
-                var service = new DCLWebSocketService();
+                service = new DCLWebSocketService();
                 OnWebSocketServiceAdded?.Invoke(service);
                 return service;
             });
