@@ -11,5 +11,6 @@ namespace DCL.ECS7
         public const int PLANE_SHAPE = 1014;
         public const int SPHERE_SHAPE = 1015;
         public const int TEXT_SHAPE = 1030;
+        public const int NFT_SHAPE = 1040;
     }
 }
