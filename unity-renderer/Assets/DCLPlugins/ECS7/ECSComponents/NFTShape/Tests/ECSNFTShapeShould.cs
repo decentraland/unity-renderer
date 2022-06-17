@@ -228,10 +228,10 @@ namespace DCL.ECSComponents.Test
             model.Visible = visible;
             model.WithCollisions = withCollision;
             model.IsPointerBlocker = isPointerBlocker;
-            model.Color = new Color();
-            model.Color.Red = 1;
-            model.Color.Blue = 0;
-            model.Color.Green = 0.5f;
+            model.Color = new Color3();
+            model.Color.R = 1;
+            model.Color.B = 0;
+            model.Color.G = 0.5f;
             model.Src = "ethereum://test/123";
 
             // Act
@@ -242,19 +242,19 @@ namespace DCL.ECSComponents.Test
             Assert.AreEqual(model.WithCollisions, newModel.WithCollisions);
             Assert.AreEqual(model.IsPointerBlocker, newModel.IsPointerBlocker);
             Assert.AreEqual(model.Src, newModel.Src);
-            Assert.AreEqual(model.Color.Red, newModel.Color.Red);
-            Assert.AreEqual(model.Color.Blue, newModel.Color.Blue);
-            Assert.AreEqual(model.Color.Green, newModel.Color.Green);
+            Assert.AreEqual(model.Color.R, newModel.Color.R);
+            Assert.AreEqual(model.Color.B, newModel.Color.B);
+            Assert.AreEqual(model.Color.G, newModel.Color.G);
         }
 
         private PBNFTShape CreateModel()
         {
             var model = new PBNFTShape();
             model.Src = "ethereum://test";
-            model.Color = new Color();
-            model.Color.Blue = 1f;
-            model.Color.Red = 0f;
-            model.Color.Green = 0f;
+            model.Color = new Color3();
+            model.Color.B = 1f;
+            model.Color.R = 0f;
+            model.Color.G = 0f;
             return model;
         }
         

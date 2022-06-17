@@ -9,7 +9,6 @@ using DCL.ECSRuntime;
 using DCL.Interface;
 using DCL.Models;
 using UnityEngine;
-using Color = DCL.ECSComponents.Color;
 using Environment = DCL.Environment;
 
 public class ECSTestScene : MonoBehaviour
@@ -42,11 +41,11 @@ public class ECSTestScene : MonoBehaviour
         model.Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722";
         model.Visible = true;
         model.WithCollisions = true;
-        model.Color = new Color();
+        model.Color = new Color3();
         model.Style = 6;
-        model.Color.Red = 0.5f;
-        model.Color.Green = 0.5f;
-        model.Color.Blue = 1f;
+        model.Color.R = 0.5f;
+        model.Color.G = 0.5f;
+        model.Color.B = 1f;
         componentWriter.PutComponent(sceneId,0,ComponentID.NFT_SHAPE,
             model );
     }

@@ -110,25 +110,25 @@ public static class ECSComponentsUtils
     public static void DisposeMeshInfo(MeshesInfo meshesInfo)
     {
         // Dispose renderer
-        foreach (Renderer renderer in mesheshInfo.renderers)
+        foreach (Renderer renderer in meshesInfo.renderers)
         {
             Utils.CleanMaterials(renderer);
             GameObject.Destroy(renderer);
         }
         
         // Dispose Mesh filter
-        foreach (MeshFilter meshFilter in mesheshInfo.meshFilters)
+        foreach (MeshFilter meshFilter in meshesInfo.meshFilters)
         {
             GameObject.Destroy(meshFilter);
         }
         
         // Dispose collider
-        foreach (Collider collider in mesheshInfo.colliders)
+        foreach (Collider collider in meshesInfo.colliders)
         {
             GameObject.Destroy(collider);
         }
         
-        mesheshInfo.CleanReferences();
+        meshesInfo.CleanReferences();
     }
     
     public static int CalculateNFTCollidersLayer(bool withCollisions, bool isPointerBlocker)

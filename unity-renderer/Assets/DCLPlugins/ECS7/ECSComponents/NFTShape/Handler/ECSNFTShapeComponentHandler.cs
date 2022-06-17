@@ -114,7 +114,7 @@ namespace DCL.ECSComponents
             if (this.model != null && model.Color.Equals(this.model.Color))
                 return;
 
-            shapeFrame.UpdateBackgroundColor( new UnityEngine.Color(model.Color.Red, model.Color.Green,model.Color.Blue,1));
+            shapeFrame.UpdateBackgroundColor( new UnityEngine.Color(model.Color.R, model.Color.G,model.Color.B,1));
         }
     }
 }
