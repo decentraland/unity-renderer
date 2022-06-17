@@ -11,6 +11,7 @@ namespace DCL
         public readonly BaseVariable<bool> isAvatarEditorInitialized = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> avatarEditorVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> emotesVisible = new BaseVariable<bool>(false);
+        public readonly BaseVariable<bool> emoteJustTriggeredFromShortcut = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> isNavMapInitialized = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> navmapVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> chatInputVisible = new BaseVariable<bool>(false);
