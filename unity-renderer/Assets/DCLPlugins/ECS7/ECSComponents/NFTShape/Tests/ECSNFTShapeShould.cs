@@ -10,6 +10,7 @@ using Google.Protobuf;
 using NFTShape_Internal;
 using NSubstitute;
 using NSubstitute.Extensions;
+using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using Tests;
 using UnityEngine;
@@ -24,17 +25,15 @@ namespace DCL.ECSComponents.Test
         private IParcelScene scene;
         private ECSNFTShapeComponentHandler componentHandler;
         private GameObject gameObject;
-        private DataStore_ECS7 dataStore;
 
         [SetUp]
         protected void SetUp()
         {
             gameObject = new GameObject();
-            dataStore = new DataStore_ECS7();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
             var shapeFrameFactory = Resources.Load<NFTShapeFrameFactory>("NFTShapeFrameFactory");
-            componentHandler = new ECSNFTShapeComponentHandler(shapeFrameFactory,dataStore, new NFTInfoRetriever(), new NFTAssetRetriever());
+            componentHandler = new ECSNFTShapeComponentHandler(shapeFrameFactory, new NFTInfoRetriever(), new NFTAssetRetriever());
 
             var meshInfo = new MeshesInfo();
             meshInfo.meshRootGameObject = gameObject;
@@ -198,8 +197,7 @@ namespace DCL.ECSComponents.Test
             componentHandler.LoadNFT(scene, model);
 
             // Assert
-            var value = dataStore.pendingSceneResources[scene.sceneData.id];
-            Assert.AreEqual(0,  value.GetRefCount(model));
+            componentHandler.shapeFrame.Received().SetImage(Arg.Any<string>(),Arg.Any<string>(), Arg.Any<INFTAsset>());
         }
 
         [Test]

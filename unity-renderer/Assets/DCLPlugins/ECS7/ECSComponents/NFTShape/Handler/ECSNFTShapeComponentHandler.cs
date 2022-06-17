@@ -17,12 +17,10 @@ namespace DCL.ECSComponents
         internal INFTShapeFrame shapeFrame;
 
         private PBNFTShape model;
-        private DataStore_ECS7 dataStore;
         
-        public ECSNFTShapeComponentHandler(INFTShapeFrameFactory factory, DataStore_ECS7 dataStoreEcs7, INFTInfoRetriever infoRetriever, INFTAssetRetriever assetRetriever)
+        public ECSNFTShapeComponentHandler(INFTShapeFrameFactory factory, INFTInfoRetriever infoRetriever, INFTAssetRetriever assetRetriever)
         {
             this.factory = factory;
-            dataStore = dataStoreEcs7;
 
             this.infoRetriever = infoRetriever;
             this.assetRetriever = assetRetriever;
@@ -62,13 +60,11 @@ namespace DCL.ECSComponents
         
         internal async void LoadNFT(IParcelScene scene,PBNFTShape model)
         {
-            dataStore.AddPendingResource(scene.sceneData.id, model);
-            
             NFTInfo info = await infoRetriever.FetchNFTInfo(model.Src);
 
             if (info == null)
             {
-                LoadFail(scene, model);
+                LoadFailed();
                 return;
             }
 
@@ -76,19 +72,11 @@ namespace DCL.ECSComponents
             
             if (nftAsset == null)
             {
-                LoadFail(scene, model);
+                LoadFailed();
                 return;
             }
 
             shapeFrame.SetImage(info.name, info.imageUrl, nftAsset);
-            
-            dataStore.RemovePendingResource(scene.sceneData.id, model);
-        }
-
-        private void LoadFail(IParcelScene scene, PBNFTShape model)
-        {
-            LoadFailed();
-            dataStore.RemovePendingResource(scene.sceneData.id, model);
         }
         
         private void CreateNFTShapeFrame(IDCLEntity entity,PBNFTShape model)
