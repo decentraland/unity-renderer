@@ -8,17 +8,17 @@ using UnityEngine.UI;
 
 public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatComponentView, IPointerDownHandler
 {
-    [SerializeField] private Button backButton;
-    [SerializeField] private Button closeButton;
-    [SerializeField] private UserThumbnailComponentView userThumbnail;
-    [SerializeField] private TMP_Text userNameLabel;
-    [SerializeField] private PrivateChatHUDView chatView;
-    [SerializeField] private GameObject jumpInButtonContainer;
-    [SerializeField] private UserContextMenu userContextMenu;
-    [SerializeField] private RectTransform userContextMenuReferencePoint;
-    [SerializeField] private Button optionsButton;
+    [SerializeField] internal Button backButton;
+    [SerializeField] internal Button closeButton;
+    [SerializeField] internal UserThumbnailComponentView userThumbnail;
+    [SerializeField] internal TMP_Text userNameLabel;
+    [SerializeField] internal PrivateChatHUDView chatView;
+    [SerializeField] internal GameObject jumpInButtonContainer;
+    [SerializeField] internal UserContextMenu userContextMenu;
+    [SerializeField] internal RectTransform userContextMenuReferencePoint;
+    [SerializeField] internal Button optionsButton;
     [SerializeField] private Model model;
-    [SerializeField] private CanvasGroup[] previewCanvasGroup;
+    [SerializeField] internal CanvasGroup[] previewCanvasGroup;
     [SerializeField] private Vector2 previewModeSize;
     
     private Coroutine alphaRoutine;
