@@ -20,14 +20,34 @@ public class ECSTestScene : MonoBehaviour
 
     private static void SceneScript(string sceneId, IECSComponentWriter componentWriter)
     {
-        componentWriter.PutComponent(sceneId, 0, 1,
-            new ECSTransform() { position = new Vector3(8, 2, 8) });
-        
-        componentWriter.PutComponent(sceneId, 0, 1013,
-            new PBBoxShape() { Visible = true, WithCollisions = true});    
-        
-        componentWriter.PutComponent(sceneId, 0, 1013,
-            new PBBoxShape() { Visible = true, WithCollisions = false});
+        componentWriter.PutComponent(sceneId, 1, 1,
+            new ECSTransform() { position = new Vector3(8, 1, 8) });
+        AddNFTComponent(sceneId, componentWriter);
+        AddBoxComponent(sceneId, componentWriter);
+    }
+
+    private static void AddBoxComponent(string sceneId, IECSComponentWriter componentWriter)
+    {
+        PBBoxShape model = new PBBoxShape();
+        model.Visible = true;
+        model.WithCollisions = true;
+        componentWriter.PutComponent(sceneId,2,ComponentID.BOX_SHAPE,
+            model );
+    }
+    
+    private static void AddNFTComponent(string sceneId, IECSComponentWriter componentWriter)
+    {
+        PBNFTShape model = new PBNFTShape();
+        model.Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722";
+        model.Visible = true;
+        model.WithCollisions = true;
+        model.Color = new Color3();
+        model.Style = 6;
+        model.Color.R = 0.5f;
+        model.Color.G = 0.5f;
+        model.Color.B = 1f;
+        componentWriter.PutComponent(sceneId,0,ComponentID.NFT_SHAPE,
+            model );
     }
 
     private static IEnumerator LoadScene(Action<string, IECSComponentWriter> sceneScript)
