@@ -38,7 +38,7 @@ namespace RPC.Transports
             OnMessageEvent?.Invoke(data);
         }
 
-        delegate void JS_Delegate_VIIS(int a, int b, string c);
+        delegate void JS_Delegate_VII(int a, int b);
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")] public static extern void BinaryMessageFromEngine(byte[] bytes, int size);
@@ -49,10 +49,10 @@ namespace RPC.Transports
         private static event Action<byte[]> OnWebGLMessage;
 
         [DllImport("__Internal")]
-        private static extern void SetCallback_BinaryMessage(JS_Delegate_VIIS callback);
+        private static extern void SetCallback_BinaryMessage(JS_Delegate_VII callback);
 
-        [MonoPInvokeCallback(typeof(JS_Delegate_VIIS))]
-        internal static void BinaryMessage(int intPtr, int length, string sceneId)
+        [MonoPInvokeCallback(typeof(JS_Delegate_VII))]
+        internal static void BinaryMessage(int intPtr, int length)
         {
             byte[] data = new byte[length];
             Marshal.Copy(new IntPtr(intPtr), data, 0, length);
