@@ -10,7 +10,6 @@ namespace DCL.EquippedEmotes
     /// </summary>
     public class EquippedEmotesInitializerPlugin : IPlugin
     {
-        internal const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
         internal const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedNFTEmotes";
 
         internal DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
@@ -20,8 +19,7 @@ namespace DCL.EquippedEmotes
         {
             LoadDefaultEquippedEmotes();
 
-            featureFlagsDataStore.flags.OnChange += OnFeatureFlagsChanged;
-            OnFeatureFlagsChanged(featureFlagsDataStore.flags.Get(), null);
+            LoadEquippedEmotesFromLocalStorage();
 
             emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
             emotesCustomizationDataStore.equippedEmotes.OnAdded += OnEquippedEmoteAddedOrRemoved;
@@ -43,15 +41,6 @@ namespace DCL.EquippedEmotes
                 "headexplode",
                 "shrug"
             };
-        }
-
-        internal void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous)
-        {
-            if (!current.IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG))
-                return;
-
-            featureFlagsDataStore.flags.OnChange -= OnFeatureFlagsChanged;
-            LoadEquippedEmotesFromLocalStorage();
         }
 
         internal void LoadDefaultEquippedEmotes() { SetEquippedEmotes(GetDefaultEmotes()); }
@@ -105,7 +94,6 @@ namespace DCL.EquippedEmotes
 
         public void Dispose()
         {
-            featureFlagsDataStore.flags.OnChange -= OnFeatureFlagsChanged;
             emotesCustomizationDataStore.equippedEmotes.OnSet -= OnEquippedEmotesSet;
             emotesCustomizationDataStore.equippedEmotes.OnAdded -= OnEquippedEmoteAddedOrRemoved;
             emotesCustomizationDataStore.equippedEmotes.OnRemoved -= OnEquippedEmoteAddedOrRemoved;
