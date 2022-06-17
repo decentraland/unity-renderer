@@ -12,20 +12,20 @@ public static class TestUtils_NFT
 {
     public static void RegisterMockedNFTShape(IRuntimeComponentFactory factory)
     {
-        INFTInfoLoadHelper infoLoadHelper = Substitute.For<INFTInfoLoadHelper>();
-        INFTAssetLoadHelper assetLoadHelper = Substitute.For<INFTAssetLoadHelper>();
+        INFTInfoRetriever infoRetriever = Substitute.For<INFTInfoRetriever>();
+        INFTAssetRetriever assetRetriever = Substitute.For<INFTAssetRetriever>();
         NFTInfo mockedNftInfo = NFTInfo.defaultNFTInfo;
 
         INFTAsset mockedNftAsset = Substitute.For<INFTAsset>();
 
-        infoLoadHelper
+        infoRetriever
             .When((x) => { x.FetchNFTInfo(Arg.Any<string>(), Arg.Any<string>()); })
             .Do((x) =>
             {
-                infoLoadHelper.OnFetchInfoSuccess += Raise.Event<Action<NFTInfo>>(mockedNftInfo);
+                infoRetriever.OnFetchInfoSuccess += Raise.Event<Action<NFTInfo>>(mockedNftInfo);
             });
 
-        assetLoadHelper.LoadNFTAsset(Arg.Any<string>(),
+        assetRetriever.LoadNFTAsset(Arg.Any<string>(),
             Arg.Any<Action<INFTAsset>>(),
             Arg.Any<Action<Exception>>()).Returns(x =>
         {
@@ -35,7 +35,7 @@ public static class TestUtils_NFT
 
         factory.RegisterBuilder((int) CLASS_ID.NFT_SHAPE, () =>
         {
-            return new NFTShape(infoLoadHelper, assetLoadHelper);
+            return new NFTShape(infoRetriever, assetRetriever);
         });
     }
 }
