@@ -6,7 +6,7 @@ namespace AvatarSystem
 {
     public class BaseAvatar : IBaseAvatar
     {
-        private AvatarReveal avatarRevealer;
+        public IBaseAvatarRevealer avatarRevealer { get; set; }
         private ILOD lod;
         private Transform avatarRevealerContainer;
         public GameObject armatureContainer;
@@ -26,14 +26,14 @@ namespace AvatarSystem
 
         public SkinnedMeshRenderer GetMainRenderer()
         {
-            return avatarRevealer.meshRenderer;
+            return avatarRevealer.GetMainRenderer();
         }
 
         public void Initialize() 
         {
             if (avatarRevealer == null)
             {
-                avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<AvatarReveal>();
+                avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<BaseAvatarReveal>();
                 avatarRevealer.InjectLodSystem(lod);
             }
             else
@@ -41,7 +41,7 @@ namespace AvatarSystem
                 avatarRevealer.Reset();
             }
 
-            meshRenderer = avatarRevealer.meshRenderer;
+            meshRenderer = avatarRevealer.GetMainRenderer();
         }
 
         public void FadeOut(MeshRenderer targetRenderer, bool playParticles) 

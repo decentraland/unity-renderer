@@ -7,6 +7,7 @@ namespace AvatarSystem
     public interface IBaseAvatar
     {
         SkinnedMeshRenderer meshRenderer { get; }
+        IBaseAvatarRevealer avatarRevealer { get; set; }
 
         void Initialize();
         SkinnedMeshRenderer GetMainRenderer();

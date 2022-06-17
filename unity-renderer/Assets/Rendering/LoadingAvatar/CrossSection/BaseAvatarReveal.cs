@@ -5,7 +5,7 @@ using DCL.Helpers;
 using DCL;
 using AvatarSystem;
 
-public class AvatarReveal : MonoBehaviour
+public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
 {
     [SerializeField] private Animation animation;
     [SerializeField] private List<GameObject> particleEffects;
@@ -39,6 +39,11 @@ public class AvatarReveal : MonoBehaviour
         {
             _materials.Add(r.material);
         }
+    }
+
+    public SkinnedMeshRenderer GetMainRenderer()
+    {
+        return meshRenderer;
     }
 
     private void InitializeColorGradient()
@@ -101,7 +106,7 @@ public class AvatarReveal : MonoBehaviour
             SetFullRendered();
     }
 
-    public void SetFullRendered()
+    private void SetFullRendered()
     {
         animation.Stop();
         foreach (Material m in _materials)

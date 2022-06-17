@@ -6,6 +6,7 @@ namespace AvatarSystem
 {
     public class BaseAvatarDummy : IBaseAvatar
     {
+        public IBaseAvatarRevealer avatarRevealer { get; set; }
         private Transform avatarRevealerContainer;
         public GameObject armatureContainer;
         public SkinnedMeshRenderer meshRenderer { get; private set; }
