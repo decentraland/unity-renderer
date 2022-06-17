@@ -25,6 +25,15 @@ public class ECSTestScene : MonoBehaviour
         AddNFTComponent(sceneId, componentWriter);
         AddBoxComponent(sceneId, componentWriter);
     }
+    
+    private static void AddGLTFShapeComponent(string sceneId, IECSComponentWriter componentWriter)
+    {
+        Environment.i.world.state.scenesSortedByDistance[0].contentProvider.baseUrl = "https://peer-lb.decentraland.org/content/contents/";
+        Environment.i.world.state.scenesSortedByDistance[0].contentProvider.fileToHash.Add("models/SCENE.glb".ToLower(), "QmQgQtuAg9qsdrmLwnFiLRAYZ6Du4Dp7Yh7bw7ELn7AqkD");
+            
+        componentWriter.PutComponent(sceneId, 1, 1050,
+            new PBGLTFShape() { Src = "models/SCENE.glb", Visible = true});
+    }
 
     private static void AddBoxComponent(string sceneId, IECSComponentWriter componentWriter)
     {
