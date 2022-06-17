@@ -17,6 +17,7 @@ namespace DCL.ECSComponents
         private readonly CylinderShapeRegister cylinderShapeRegister;
         private readonly AudioStreamRegister audioStreamRegister;
         private readonly AudioSourceRegister audioSourceRegister;
+        private readonly ECSTextShapeComponent textShapeComponent;
         private readonly NFTShapeRegister nftRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
@@ -29,6 +30,7 @@ namespace DCL.ECSComponents
             audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentsWriter);
             audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter);
             nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter);
+            textShapeComponent = new ECSTextShapeComponent(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -40,6 +42,7 @@ namespace DCL.ECSComponents
             cylinderShapeRegister.Dispose();
             audioStreamRegister.Dispose();
             audioSourceRegister.Dispose();
+            textShapeComponent.Dispose();
             nftRegister.Dispose();
         }
     }

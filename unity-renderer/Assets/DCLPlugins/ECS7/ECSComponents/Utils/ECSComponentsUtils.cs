@@ -18,6 +18,21 @@ public static class ECSComponentsUtils
         }
     }
     
+    public static void UpdateMeshInfo(bool isVisible, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
+    {
+        foreach (Renderer renderer in meshesInfo.renderers)
+        {
+            renderer.enabled = isVisible;
+        }
+            
+        foreach (Collider collider in meshesInfo.colliders)
+        {
+            collider.enabled = withCollisions;
+        }
+            
+        //TODO: Implement isPointerBlocker when it is defined
+    }
+
     public static MeshesInfo GenerateMeshInfo(IDCLEntity entity, Mesh mesh, GameObject gameObject,bool visible, bool withCollisions, bool isPointerBlocker)
     {
         MeshesInfo meshesInfo = new MeshesInfo();
@@ -29,12 +44,12 @@ public static class ECSComponentsUtils
         Renderer[] renderers = new Renderer[] { meshRenderer };
         
         meshFilter.sharedMesh = mesh;
-
+        
         // We should remove this relation in the future, the entity shouldn't know about the mesh
         entity.meshesInfo = meshesInfo;
         
         UpdateRenderer(entity, meshFilter, gameObject, renderers, visible, withCollisions, isPointerBlocker);
-        meshesInfo.UpdateRenderersCollection();
+        meshesInfo.UpdateRenderersCollection(renderers,entity.meshesInfo.meshFilters);
         return meshesInfo;
     }
     
@@ -94,17 +109,28 @@ public static class ECSComponentsUtils
     
     public static void DisposeMeshInfo(MeshesInfo meshesInfo)
     {
-        if (meshesInfo == null || meshesInfo.meshRootGameObject == null)
-            return;
-        
-        foreach (Renderer renderer in meshesInfo.renderers)
+        // Dispose renderer
+        foreach (Renderer renderer in mesheshInfo.renderers)
         {
             Utils.CleanMaterials(renderer);
+            GameObject.Destroy(renderer);
         }
-        GameObject.Destroy(meshesInfo.meshRootGameObject);
-        meshesInfo.CleanReferences();
+        
+        // Dispose Mesh filter
+        foreach (MeshFilter meshFilter in mesheshInfo.meshFilters)
+        {
+            GameObject.Destroy(meshFilter);
+        }
+        
+        // Dispose collider
+        foreach (Collider collider in mesheshInfo.colliders)
+        {
+            GameObject.Destroy(collider);
+        }
+        
+        mesheshInfo.CleanReferences();
     }
-
+    
     public static int CalculateNFTCollidersLayer(bool withCollisions, bool isPointerBlocker)
     {
         // We can't enable this layer changer logic until we redeploy all the builder and street scenes with the corrected 'withCollision' default in true...

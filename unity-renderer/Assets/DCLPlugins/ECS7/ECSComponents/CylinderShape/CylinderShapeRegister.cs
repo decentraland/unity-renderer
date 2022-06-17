@@ -12,7 +12,7 @@ namespace DCL.ECSComponents
 
         public CylinderShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, CylinderShapeSerializer.Deserialize, () => new ECSCylinderShapeComponentHandler());
+            factory.AddOrReplaceComponent(componentId, CylinderShapeSerializer.Deserialize, () => new ECSCylinderShapeComponentHandler(DataStore.i.ecs7));
             componentWriter.AddOrReplaceComponentSerializer<PBCylinderShape>(componentId, CylinderShapeSerializer.Serialize);
 
             this.factory = factory;

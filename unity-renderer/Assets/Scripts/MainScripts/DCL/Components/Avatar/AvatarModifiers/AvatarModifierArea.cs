@@ -29,7 +29,7 @@ public class AvatarModifierArea : BaseComponent
     private HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
     private event Action<GameObject> OnAvatarEnter;
     private event Action<GameObject> OnAvatarExit;
-    internal readonly Dictionary<string, AvatarModifier> modifiers;
+    internal readonly Dictionary<string, IAvatarModifier> modifiers;
 
     private HashSet<Collider> excludedColliders;
 
@@ -38,7 +38,7 @@ public class AvatarModifierArea : BaseComponent
     public AvatarModifierArea()
     {
         // Configure all available modifiers
-        this.modifiers = new Dictionary<string, AvatarModifier>()
+        this.modifiers = new Dictionary<string, IAvatarModifier>()
         {
             { "HIDE_AVATARS", new HideAvatarsModifier() },
             { "DISABLE_PASSPORTS", new DisablePassportModifier() }
@@ -170,7 +170,7 @@ public class AvatarModifierArea : BaseComponent
             // Add all listeners
             foreach (string modifierKey in cachedModel.modifiers)
             {
-                if (!modifiers.TryGetValue(modifierKey, out AvatarModifier modifier))
+                if (!modifiers.TryGetValue(modifierKey, out IAvatarModifier modifier))
                     continue;
 
                 OnAvatarEnter += modifier.ApplyModifier;
