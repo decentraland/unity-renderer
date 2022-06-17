@@ -22,7 +22,7 @@ namespace DCL.EmotesWheel
         }
 
         private const string PATH = "EmotesWheelHUD";
-        private const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
+      
 
         public event Action<string> onEmoteClicked;
         public event Action OnClose;
@@ -37,7 +37,6 @@ namespace DCL.EmotesWheel
         [SerializeField] internal GameObject customizeTitle;
         [SerializeField] internal List<GameObject> gameObjectsToHideWhenCustomizeFFIsDeactivated;
 
-        private bool isEmotesCustomizationFFEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG);
 
         public static EmotesWheelView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesWheelView>(); }
 
@@ -50,9 +49,6 @@ namespace DCL.EmotesWheel
 
             openCustomizeButton.onClick.AddListener(() =>
             {
-                if (!isEmotesCustomizationFFEnabled)
-                    return;
-
                 OnCustomizeClicked?.Invoke();
             });
 
@@ -69,7 +65,7 @@ namespace DCL.EmotesWheel
             {
                 foreach (GameObject go in gameObjectsToHideWhenCustomizeFFIsDeactivated)
                 {
-                    go.SetActive(isEmotesCustomizationFFEnabled);
+                    go.SetActive(true);
                 }
 
                 AudioScriptableObjects.dialogOpen.Play(true);
