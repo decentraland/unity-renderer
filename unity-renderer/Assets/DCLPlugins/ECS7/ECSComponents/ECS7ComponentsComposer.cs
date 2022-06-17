@@ -18,8 +18,9 @@ namespace DCL.ECSComponents
         private readonly AudioStreamRegister audioStreamRegister;
         private readonly AudioSourceRegister audioSourceRegister;
         private readonly GLTFShapeRegister gltfRegister;
-        private readonly AnimatorRegister animatorRegister;
         private readonly ECSTextShapeRegister textShapeRegister;
+        private readonly NFTShapeRegister nftRegister;
+        private readonly AnimatorRegister animatorRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
@@ -30,8 +31,9 @@ namespace DCL.ECSComponents
             cylinderShapeRegister = new CylinderShapeRegister(ComponentID.CYLINDER_SHAPE, componentsFactory, componentsWriter);
             audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentsWriter);
             audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter);
+            nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter);
             textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
-            gltfRegister = new GLTFShapeRegister(ComponentID.G_L_T_F_SHAPE, componentsFactory, componentsWriter);
+            gltfRegister = new GLTFShapeRegister(ComponentID.GLTF_SHAPE, componentsFactory, componentsWriter);
             animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
         }
 
@@ -45,6 +47,7 @@ namespace DCL.ECSComponents
             audioStreamRegister.Dispose();
             audioSourceRegister.Dispose();
             textShapeRegister.Dispose();
+            nftRegister.Dispose();
             gltfRegister.Dispose();
             animatorRegister.Dispose();
         }

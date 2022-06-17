@@ -125,6 +125,7 @@ If the local WebGL build always fails with the error `System.ComponentModel.Win3
 - [How to profile a local Unity build remotely](docs/how-to-profile-a-local-unity-build-remotely.md)
 - [How to connect the Editor with play.decentraland.org](docs/how-to-connect-with-play-decentraland-org.md)
 For more advanced topics, don't forget to check out our [Architecture Decisions Records](https://github.com/decentraland/adr) (ADR) repository.
+- [How to create new components for ECS7] (docs/ecs7-component-creation.md)
 
 ## Setup CircleCI
 

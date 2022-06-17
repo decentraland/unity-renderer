@@ -20,12 +20,12 @@ public class ECSTestScene : MonoBehaviour
 
     private static void SceneScript(string sceneId, IECSComponentWriter componentWriter)
     {
-        componentWriter.PutComponent(sceneId, 2, 1,
-            new ECSTransform() { position = new Vector3(8, 2, 8) });
-
+        componentWriter.PutComponent(sceneId, 1, 1,
+            new ECSTransform() { position = new Vector3(8, 1, 8) });
+        AddNFTComponent(sceneId, componentWriter);
         AddBoxComponent(sceneId, componentWriter);
     }
-
+    
     private static void AddGLTFShapeComponent(string sceneId, IECSComponentWriter componentWriter)
     {
         Environment.i.world.state.scenesSortedByDistance[0].contentProvider.baseUrl = "https://peer-lb.decentraland.org/content/contents/";
@@ -40,7 +40,22 @@ public class ECSTestScene : MonoBehaviour
         PBBoxShape model = new PBBoxShape();
         model.Visible = true;
         model.WithCollisions = true;
-        componentWriter.PutComponent(sceneId,0,ComponentID.BOX_SHAPE,
+        componentWriter.PutComponent(sceneId,2,ComponentID.BOX_SHAPE,
+            model );
+    }
+    
+    private static void AddNFTComponent(string sceneId, IECSComponentWriter componentWriter)
+    {
+        PBNFTShape model = new PBNFTShape();
+        model.Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722";
+        model.Visible = true;
+        model.WithCollisions = true;
+        model.Color = new Color3();
+        model.Style = 6;
+        model.Color.R = 0.5f;
+        model.Color.G = 0.5f;
+        model.Color.B = 1f;
+        componentWriter.PutComponent(sceneId,0,ComponentID.NFT_SHAPE,
             model );
     }
 

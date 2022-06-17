@@ -8,6 +8,16 @@ using UnityEngine;
 
 public static class ECSComponentsUtils
 {
+    public static void RemoveMaterialTransition(GameObject go)
+    {
+        MaterialTransitionController[] materialTransitionControllers = go.GetComponentsInChildren<MaterialTransitionController>();
+
+        for (var i = 0; i < materialTransitionControllers.Length; i++)
+        {
+            GameObject.Destroy(materialTransitionControllers[i]);
+        }
+    }
+    
     public static void UpdateMeshInfo(bool isVisible, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
         foreach (Renderer renderer in meshesInfo.renderers)
@@ -47,7 +57,7 @@ public static class ECSComponentsUtils
     {
         ConfigurePrimitiveShapeVisibility(meshGameObject, visible,renderers);
         
-        // TODO: For better perfomance we should create the correct collider to each primitive shape instead of creating a meshCollider
+        // TODO: For better perfomance we should create the correct collider to each component shape instead of creating a meshCollider
         CollidersManager.i.ConfigureColliders(entity.meshRootGameObject,false, withCollisions, entity,CalculateCollidersLayer(withCollisions,isPointerBlocker));
     }
     
@@ -96,31 +106,43 @@ public static class ECSComponentsUtils
         DataStore.i.sceneWorldObjects.AddRendereable(sceneId, newRendereable);
         return newRendereable;
     }
-
-    public static void DisposeMeshInfo(MeshesInfo mesheshInfo)
+    
+    public static void DisposeMeshInfo(MeshesInfo meshesInfo)
     {
         // Dispose renderer
-        foreach (Renderer renderer in mesheshInfo.renderers)
+        foreach (Renderer renderer in meshesInfo.renderers)
         {
             Utils.CleanMaterials(renderer);
             GameObject.Destroy(renderer);
         }
         
         // Dispose Mesh filter
-        foreach (MeshFilter meshFilter in mesheshInfo.meshFilters)
+        foreach (MeshFilter meshFilter in meshesInfo.meshFilters)
         {
             GameObject.Destroy(meshFilter);
         }
         
         // Dispose collider
-        foreach (Collider collider in mesheshInfo.colliders)
+        foreach (Collider collider in meshesInfo.colliders)
         {
             GameObject.Destroy(collider);
         }
         
-        mesheshInfo.CleanReferences();
+        meshesInfo.CleanReferences();
     }
+    
+    public static int CalculateNFTCollidersLayer(bool withCollisions, bool isPointerBlocker)
+    {
+        // We can't enable this layer changer logic until we redeploy all the builder and street scenes with the corrected 'withCollision' default in true...
+        /* if (!model.withCollisions && model.isPointerBlocker)
+            return PhysicsLayers.onPointerEventLayer;
+        else */
+        if (withCollisions && !isPointerBlocker)
+            return PhysicsLayers.characterOnlyLayer;
 
+        return PhysicsLayers.defaultLayer;
+    }
+    
     private static int CalculateCollidersLayer(bool withCollisions, bool isPointerBlocker)
     {
         if (!withCollisions && isPointerBlocker)

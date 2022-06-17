@@ -34,6 +34,7 @@ public class TaskbarHUDController : IHUD
 
     internal BaseVariable<bool> isEmotesWheelInitialized => DataStore.i.emotesCustomization.isWheelInitialized;
     internal BaseVariable<bool> isEmotesVisible => DataStore.i.HUDs.emotesVisible;
+    internal BaseVariable<bool> emoteJustTriggeredFromShortcut => DataStore.i.HUDs.emoteJustTriggeredFromShortcut;
     internal BaseVariable<Transform> isExperiencesViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
@@ -106,6 +107,12 @@ public class TaskbarHUDController : IHUD
 
     private void HandleEmotesToggle(bool show)
     {
+        if (show && emoteJustTriggeredFromShortcut.Get())
+        {
+            emoteJustTriggeredFromShortcut.Set(false);
+            return;
+        }
+
         if (show)
         {
             OpenPublicChannelOnPreviewMode();
