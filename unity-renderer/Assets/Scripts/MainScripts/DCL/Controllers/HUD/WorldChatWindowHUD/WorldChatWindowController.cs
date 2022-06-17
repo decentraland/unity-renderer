@@ -20,6 +20,7 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private bool friendsDirectMessagesAlreadyRequested = false;
+    private List<string> privateMessagesAlreadyRequested = new List<string>();
     
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
@@ -103,7 +104,11 @@ public class WorldChatWindowController : IHUD
             OnOpen?.Invoke();
 
             if (friendsController.IsInitialized && !friendsDirectMessagesAlreadyRequested)
-                RequestFriendsWithDirectMessages();
+            {
+                RequestFriendsWithDirectMessages(
+                    INITIAL_DISPLAYED_PRIVATE_CHAT_COUNT,
+                    DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+            }
         }
         else
             view.Hide();
@@ -117,7 +122,11 @@ public class WorldChatWindowController : IHUD
     private void HandleFriendsControllerInitialization()
     {
         if (view.IsActive && !friendsDirectMessagesAlreadyRequested)
-            RequestFriendsWithDirectMessages();
+        {
+            RequestFriendsWithDirectMessages(
+                INITIAL_DISPLAYED_PRIVATE_CHAT_COUNT,
+                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        }
         else
             view.HidePrivateChatsLoading();
 
@@ -127,7 +136,18 @@ public class WorldChatWindowController : IHUD
                 view.RemovePrivateChat(userId);
     }
 
-    private void OpenPrivateChat(string userId) => OnOpenPrivateChat?.Invoke(userId);
+    private void OpenPrivateChat(string userId)
+    {
+        if (!privateMessagesAlreadyRequested.Contains(userId))
+        {
+            RequestPrivateMessages(
+                userId,
+                LOAD_PRIVATE_CHATS_ON_DEMAND_COUNT,
+                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        }
+
+        OnOpenPrivateChat?.Invoke(userId);
+    }
 
     private void OpenPublicChannel(string channelId) => OnOpenPublicChannel?.Invoke(channelId);
 
@@ -297,10 +317,16 @@ public class WorldChatWindowController : IHUD
             View.ShowMoreChatsToLoadHint(pendingPrivateChats.Count);
     }
 
-    private void RequestFriendsWithDirectMessages()
+    private void RequestFriendsWithDirectMessages(int limit, long fromTimestamp)
     {
         view.ShowPrivateChatsLoading();
-        friendsController.GetFriendsWithDirectMessages(INITIAL_DISPLAYED_PRIVATE_CHAT_COUNT, (long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds);
+        friendsController.GetFriendsWithDirectMessages(limit, fromTimestamp);
         friendsDirectMessagesAlreadyRequested = true;
+    }
+
+    private void RequestPrivateMessages(string userId, int limit, long fromTimestamp)
+    {
+        chatController.GetPrivateMessages(userId, limit, fromTimestamp);
+        privateMessagesAlreadyRequested.Add(userId);
     }
 }

@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using System;
 using System.Collections.Generic;
@@ -27,12 +28,40 @@ public class LazyLoadingChatControllerMock : IChatController
     
     public void MarkMessagesAsSeen(string userId) { controller.MarkMessagesAsSeen(userId); }
 
-    public void GetPrivateMessages(string userId, int limit, long fromTimestamp)
+    public void GetPrivateMessages(string userId, int limit, long fromTimestamp) { SimulateDelayedResponseFor_GetPrivateMessages(userId, limit, fromTimestamp); }
+
+    private async UniTask SimulateDelayedResponseFor_GetPrivateMessages(string userId, int limit, long fromTimestamp)
     {
-        // TODO:
-        // 1. Prepare a set of fake data
-        // 2. Delay
-        // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
+        await UniTask.Delay(UnityEngine.Random.Range(1000, 3000));
+
+        long fromTimestampToApply = fromTimestamp;
+
+        for (int i = 0; i < limit; i++)
+        {
+            await UniTask.DelayFrame(1);
+
+            controller.AddMessageToChatWindow(
+                CreateMockedDataFor_AddMessageToChatWindowPayload(
+                    userId, 
+                    $"fake message {i + 1} from user {userId}",
+                    fromTimestampToApply));
+
+            fromTimestampToApply -= (86400000 / 4);
+        }
+    }
+
+    private string CreateMockedDataFor_AddMessageToChatWindowPayload(string userId, string messageBody, long fromTimestamp)
+    {
+        var fakeMessage = new ChatMessage()
+        {
+            body = messageBody,
+            sender = userId,
+            recipient = UserProfile.GetOwnUserProfile().userId,
+            messageType = ChatMessage.Type.PRIVATE,
+            timestamp = (ulong)fromTimestamp
+        };
+
+        return JsonUtility.ToJson(fakeMessage);
     }
 
     private void CreateFakeUsersInCatalog()

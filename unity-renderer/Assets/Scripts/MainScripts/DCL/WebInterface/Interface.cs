@@ -688,6 +688,20 @@ namespace DCL.Interface
             public long from;
         }
 
+        [System.Serializable]
+        public class MarkMessagesAsSeenPayload
+        {
+            public string userId;
+        }
+
+        [System.Serializable]
+        public class GetPrivateMessagesPayload
+        {
+            public string userId;
+            public int limit;
+            public long from;
+        }
+
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -843,6 +857,8 @@ namespace DCL.Interface
         private static UUIDEvent<EmptyPayload> onPointerHoverExitEvent = new UUIDEvent<EmptyPayload>();
         private static TimeReportPayload timeReportPayload = new TimeReportPayload();
         private static GetFriendsWithDirectMessagesPayload getFriendsWithDirectMessagesPayload = new GetFriendsWithDirectMessagesPayload();
+        private static MarkMessagesAsSeenPayload markMessagesAsSeenPayload = new MarkMessagesAsSeenPayload();
+        private static GetPrivateMessagesPayload getPrivateMessagesPayload = new GetPrivateMessagesPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -1575,6 +1591,20 @@ namespace DCL.Interface
             getFriendsWithDirectMessagesPayload.limit = limit;
             getFriendsWithDirectMessagesPayload.from = from;
             SendMessage("GetFriendsWithDirectMessages", getFriendsWithDirectMessagesPayload);
+        }
+
+        public static void MarkMessagesAsSeen(string userId)
+        {
+            markMessagesAsSeenPayload.userId = userId;
+            SendMessage("MarkMessagesAsSeen", markMessagesAsSeenPayload);
+        }
+
+        public static void GetPrivateMessages(string userId, int limit, long from)
+        {
+            getPrivateMessagesPayload.userId = userId;
+            getPrivateMessagesPayload.limit = limit;
+            getPrivateMessagesPayload.from = from;
+            SendMessage("GetPrivateMessages", getPrivateMessagesPayload);
         }
     }
 }

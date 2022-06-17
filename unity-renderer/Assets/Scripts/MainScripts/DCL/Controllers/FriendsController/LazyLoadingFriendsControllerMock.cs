@@ -90,10 +90,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
     }
 
-    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
-    {
-        SimulateDelayedResponseFor_GetFriendsWithDirectMessages();
-    }
+    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp) { SimulateDelayedResponseFor_GetFriendsWithDirectMessages(limit); }
 
     public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
     {
@@ -103,18 +100,19 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
     }
 
-    private async UniTask SimulateDelayedResponseFor_GetFriendsWithDirectMessages()
+    private async UniTask SimulateDelayedResponseFor_GetFriendsWithDirectMessages(int limit)
     {
-        await UniTask.Delay(3000);
+        await UniTask.Delay(UnityEngine.Random.Range(1000, 3000));
+
         controller.AddFriendsWithDirectMessages(
-            CreateMockedDataFor_AddFriendsWithDirectMessagesPayload());
+            CreateMockedDataFor_AddFriendsWithDirectMessagesPayload(limit));
     }
 
-    private string CreateMockedDataFor_AddFriendsWithDirectMessagesPayload()
+    private string CreateMockedDataFor_AddFriendsWithDirectMessagesPayload(int numberOfUsers)
     {
         string mockedJson = "{ \"currentFriendsWithDirectMessages\": [";
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < numberOfUsers; i++)
             mockedJson += $"\"fakeuser{i + 1}\",";
 
         mockedJson = mockedJson.Remove(mockedJson.Length - 1) + "]}";

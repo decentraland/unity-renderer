@@ -29,15 +29,9 @@ public class ChatController : MonoBehaviour, IChatController
 
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
     
-    public void MarkMessagesAsSeen(string userId)
-    {
-        throw new NotImplementedException();
-    }
+    public void MarkMessagesAsSeen(string userId) { WebInterface.MarkMessagesAsSeen(userId); }
 
-    public void GetPrivateMessages(string userId, int limit, long fromTimestamp)
-    {
-        throw new NotImplementedException();
-    }
+    public void GetPrivateMessages(string userId, int limit, long fromTimestamp) { WebInterface.GetPrivateMessages(userId, limit, fromTimestamp); }
 
     public List<ChatMessage> GetAllocatedEntries() { return new List<ChatMessage>(entries); }
     
