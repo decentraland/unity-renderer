@@ -41,7 +41,6 @@ public class AvatarEditorHUDController : IHUD
     BaseVariable<bool> exploreV2IsOpen => DataStore.i.exploreV2.isOpen;
     DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
     DataStore_FeatureFlag featureFlagsDataStore => DataStore.i.featureFlags;
-    private bool isSkinsFeatureEnabled => true;
     
     private readonly DataStore_FeatureFlag featureFlags;
 
@@ -85,7 +84,7 @@ public class AvatarEditorHUDController : IHUD
 
         view = AvatarEditorHUDView.Create(this);
 
-        view.skinsFeatureContainer.SetActive(isSkinsFeatureEnabled);
+        view.skinsFeatureContainer.SetActive(true);
         avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
         OnAvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
 
