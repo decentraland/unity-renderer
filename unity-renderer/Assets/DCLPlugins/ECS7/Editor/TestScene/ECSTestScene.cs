@@ -20,8 +20,43 @@ public class ECSTestScene : MonoBehaviour
 
     private static void SceneScript(string sceneId, IECSComponentWriter componentWriter)
     {
-        componentWriter.PutComponent(sceneId, 0, 1,
-            new ECSTransform() { position = new Vector3(100, 100, 100) });
+        componentWriter.PutComponent(sceneId, 1, 1,
+            new ECSTransform() { position = new Vector3(8, 1, 8) });
+        AddNFTComponent(sceneId, componentWriter);
+        AddBoxComponent(sceneId, componentWriter);
+    }
+    
+    private static void AddGLTFShapeComponent(string sceneId, IECSComponentWriter componentWriter)
+    {
+        Environment.i.world.state.scenesSortedByDistance[0].contentProvider.baseUrl = "https://peer-lb.decentraland.org/content/contents/";
+        Environment.i.world.state.scenesSortedByDistance[0].contentProvider.fileToHash.Add("models/SCENE.glb".ToLower(), "QmQgQtuAg9qsdrmLwnFiLRAYZ6Du4Dp7Yh7bw7ELn7AqkD");
+            
+        componentWriter.PutComponent(sceneId, 1, 1050,
+            new PBGLTFShape() { Src = "models/SCENE.glb", Visible = true});
+    }
+
+    private static void AddBoxComponent(string sceneId, IECSComponentWriter componentWriter)
+    {
+        PBBoxShape model = new PBBoxShape();
+        model.Visible = true;
+        model.WithCollisions = true;
+        componentWriter.PutComponent(sceneId,2,ComponentID.BOX_SHAPE,
+            model );
+    }
+    
+    private static void AddNFTComponent(string sceneId, IECSComponentWriter componentWriter)
+    {
+        PBNFTShape model = new PBNFTShape();
+        model.Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722";
+        model.Visible = true;
+        model.WithCollisions = true;
+        model.Color = new Color3();
+        model.Style = 6;
+        model.Color.R = 0.5f;
+        model.Color.G = 0.5f;
+        model.Color.B = 1f;
+        componentWriter.PutComponent(sceneId,0,ComponentID.NFT_SHAPE,
+            model );
     }
 
     private static IEnumerator LoadScene(Action<string, IECSComponentWriter> sceneScript)

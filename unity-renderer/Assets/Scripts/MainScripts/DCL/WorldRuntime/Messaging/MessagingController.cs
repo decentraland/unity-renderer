@@ -120,7 +120,7 @@ namespace DCL
             if (queuedMessage.payload is Protocol.EntityComponentCreateOrUpdate)
             {
                 // We need to extract the entityId and the classId from the tag.
-                // The tag format is "entityId_classId", i.e: "E1_2". 
+                // The tag format is "entityId_classId", i.e: "E1_2".
                 GetEntityIdAndClassIdFromTag(queuedMessage.tag, out int classId);
 
                 // If it is a transform update, the queue mode is Lossy
