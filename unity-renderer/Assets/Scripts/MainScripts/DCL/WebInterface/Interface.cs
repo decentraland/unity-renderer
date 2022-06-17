@@ -1574,7 +1574,7 @@ namespace DCL.Interface
             getFriendsWithDirectMessagesPayload.userNameOrId = userNameOrId;
             getFriendsWithDirectMessagesPayload.limit = limit;
             getFriendsWithDirectMessagesPayload.from = from;
-            SendMessage("GetFriendsWithDirectMessages", timeReportPayload);
+            SendMessage("GetFriendsWithDirectMessages", getFriendsWithDirectMessagesPayload);
         }
     }
 }

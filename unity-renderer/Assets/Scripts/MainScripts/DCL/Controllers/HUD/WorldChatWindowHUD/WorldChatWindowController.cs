@@ -300,7 +300,7 @@ public class WorldChatWindowController : IHUD
     private void RequestFriendsWithDirectMessages()
     {
         view.ShowPrivateChatsLoading();
-        friendsController.GetFriendsWithDirectMessages(50, (long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds);
+        friendsController.GetFriendsWithDirectMessages(INITIAL_DISPLAYED_PRIVATE_CHAT_COUNT, (long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds);
         friendsDirectMessagesAlreadyRequested = true;
     }
 }
