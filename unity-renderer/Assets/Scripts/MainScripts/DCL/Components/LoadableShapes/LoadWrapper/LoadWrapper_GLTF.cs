@@ -84,6 +84,9 @@ namespace DCL.Components
 
         public override void Unload()
         {
+            if (loadHelper == null)
+                return;
+            
             if ( loadHelper.loadedAsset != null )
             {
                 DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.id, loadHelper.loadedAsset);

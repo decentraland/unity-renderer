@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.coffee.ui-particle": "https://github.com/mob-sakai/ParticleEffectForUGUI.git",
+    "com.coffee.ui-particle": "https://github.com/mob-sakai/ParticleEffectForUGUI.git#3.3.0",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.decentraland.rpc-csharp": "https://github.com/decentraland/rpc-csharp.git?path=rpc-csharp/src",
     "com.unity.2d.sprite": "1.0.0",

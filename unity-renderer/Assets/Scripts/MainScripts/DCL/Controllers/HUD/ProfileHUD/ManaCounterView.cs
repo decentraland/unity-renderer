@@ -1,3 +1,4 @@
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +19,8 @@ internal class ManaCounterView : MonoBehaviour
     public void SetBalance(string balance)
     {
         double manaBalance = 0;
-        if (double.TryParse(balance, out manaBalance))
+        
+        if (double.TryParse(balance, NumberStyles.Number, CultureInfo.InvariantCulture, out manaBalance))
             SetBalance(manaBalance);
     }
 
