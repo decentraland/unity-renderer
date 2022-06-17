@@ -13,11 +13,15 @@ namespace DCL.ECSComponents
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
         internal PBGLTFShape model;
-        internal LoadWrapper_GLTF loadWrapper;
+        internal readonly LoadWrapper_GLTF loadWrapper;
 
         private readonly DataStore_ECS7 dataStore;
 
-        public GLTFShapeComponentHandler(DataStore_ECS7 dataStoreEcs7) { dataStore = dataStoreEcs7; }
+        public GLTFShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
+        {
+            dataStore = dataStoreEcs7;
+            loadWrapper = new LoadWrapper_GLTF();
+        }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
@@ -30,7 +34,7 @@ namespace DCL.ECSComponents
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBGLTFShape model)
         {
             // If we didn't create the shape, or if the shape is different from the last time, we load the shape, if not we update model
-            if(meshesInfo == null || (this.model != null && this.model.Src != model.Src))
+            if(ShouldLoadShape(model))
                 LoadShape(scene,entity,model);
             else
                 ApplyModel(model);
@@ -41,6 +45,12 @@ namespace DCL.ECSComponents
         public bool IsVisible() {  return model.Visible; }
         
         public bool HasCollisions() {  return model.WithCollisions; }
+
+        private bool ShouldLoadShape(PBGLTFShape model)
+        {
+            // If we didn't create the shape, or if the shape is different from the last time, we load the shape, if not we update model
+            return meshesInfo == null || (this.model != null && this.model.Src != model.Src);
+        }
 
         private void LoadShape(IParcelScene scene, IDCLEntity entity, PBGLTFShape model)
         {
@@ -54,8 +64,8 @@ namespace DCL.ECSComponents
                     loadWrapper.Unload();
                     DisposeMesh(scene);
                 }
-                // We prepare a load wrapper to load the GLTF
-                loadWrapper = new LoadWrapper_GLTF();
+                
+                // We prepare the load wrapper to load the GLTF
                 loadWrapper.customContentProvider = provider;
     
                 entity.meshesInfo.currentShape = this;
@@ -105,7 +115,7 @@ namespace DCL.ECSComponents
                 collider.enabled = model.WithCollisions;
             }
             
-            //TODO: Implement events here
+            //TODO: Implement events related to click entities here
         }
 
         internal void DisposeMesh(IParcelScene scene)
