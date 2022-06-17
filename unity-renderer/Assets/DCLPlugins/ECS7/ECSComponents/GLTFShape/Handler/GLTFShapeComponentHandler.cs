@@ -27,7 +27,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            loadWrapper?.Unload();
+            loadWrapper.Unload();
             DisposeMesh(scene);
         }
 
