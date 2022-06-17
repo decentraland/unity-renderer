@@ -21,7 +21,13 @@ public class ECSTestScene : MonoBehaviour
     private static void SceneScript(string sceneId, IECSComponentWriter componentWriter)
     {
         componentWriter.PutComponent(sceneId, 0, 1,
-            new ECSTransform() { position = new Vector3(100, 100, 100) });
+            new ECSTransform() { position = new Vector3(8, 2, 8) });
+        
+        componentWriter.PutComponent(sceneId, 0, 1013,
+            new PBBoxShape() { Visible = true, WithCollisions = true});    
+        
+        componentWriter.PutComponent(sceneId, 0, 1013,
+            new PBBoxShape() { Visible = true, WithCollisions = false});
     }
 
     private static IEnumerator LoadScene(Action<string, IECSComponentWriter> sceneScript)
