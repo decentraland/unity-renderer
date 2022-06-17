@@ -129,7 +129,6 @@ namespace UnityGLTF
 
         public int maxTextureSize = 512;
         private const float SAME_KEYFRAME_TIME_DELTA = 0.0001f;
-        private const string TEXTURE_COMPRESSION_FLAG_NAME = "tex_compression";
 
         protected struct GLBStream
         {
@@ -156,13 +155,6 @@ namespace UnityGLTF
         private bool _isCompleted = false;
         public bool IsRunning => _isRunning;
         public bool IsCompleted => _isCompleted;
-        
-// We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
-#if UNITY_STANDALONE && !UNITY_EDITOR
-        bool compressTexture = false
-#else
-        bool compressTexture = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME);
-#endif
 
         public string id;
 
@@ -264,9 +256,7 @@ namespace UnityGLTF
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
         public async Task LoadScene(CancellationToken token, int sceneIndex = -1, bool showSceneObj = true)
-        {
-            Debug.Log("GLTFSceneImporter.LoadScene() - compress? " + compressTexture);
-            
+        {   
             try
             {
                 PerformanceAnalytics.GLTFTracker.TrackLoading();
@@ -728,10 +718,16 @@ namespace UnityGLTF
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
             
-            if ( Application.isPlaying && compressTexture)
+            if (Application.isPlaying)
             {
+                
+                // We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
+#if UNITY_EDITOR
+                TextureHelpers.Compress(texture, false, true);
+#else
                 //NOTE(Brian): This breaks importing in editor mode
-                texture.Compress(false);
+                TextureHelpers.Compress(texture, false, false);
+#endif
             }
 
             texture.wrapMode = settings.wrapMode;

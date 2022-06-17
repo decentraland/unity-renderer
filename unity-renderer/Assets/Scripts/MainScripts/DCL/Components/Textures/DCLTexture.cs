@@ -12,8 +12,6 @@ namespace DCL
 {
     public class DCLTexture : BaseDisposable
     {
-        private const string TEXTURE_COMPRESSION_FLAG_NAME = "tex_compression";
-        
         [System.Serializable]
         public class Model : BaseModel
         {
@@ -37,12 +35,6 @@ namespace DCL
         private Dictionary<ISharedComponent, HashSet<long>> attachedEntitiesByComponent =
             new Dictionary<ISharedComponent, HashSet<long>>();
 
-#if UNITY_STANDALONE
-        bool compressTexture = false
-#else
-        bool compressTexture = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME);
-#endif
-
         public TextureWrapMode unityWrap;
         public FilterMode unitySamplingMode;
         public Texture2D texture;
@@ -55,8 +47,6 @@ namespace DCL
         public DCLTexture()
         {
             model = new Model(); 
-            
-            Debug.Log("DCLTexture() - compress? " + compressTexture);
         }
 
         public static IEnumerator FetchFromComponent(IParcelScene scene, string componentId,
@@ -137,8 +127,7 @@ namespace DCL
                         texture.wrapMode = unityWrap;
                         texture.filterMode = unitySamplingMode;
                         
-                        if(compressTexture)
-                            texture.Compress(false);
+                        TextureHelpers.Compress(texture, false);
                         
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
                         texture = TextureHelpers.ClampSize(texture, DataStore.i.textureSize.generalMaxSize.Get());

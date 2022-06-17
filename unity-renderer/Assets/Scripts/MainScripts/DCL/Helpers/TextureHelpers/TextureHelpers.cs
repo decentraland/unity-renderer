@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DCL;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 public static class TextureHelpers
@@ -75,5 +76,18 @@ public static class TextureHelpers
         Graphics.CopyTexture(sourceTexture, texture);
         
         return texture;
+    }
+
+    private const string TEXTURE_COMPRESSION_FLAG_NAME = "tex_compression";
+#if UNITY_STANDALONE
+        bool compressTextures = false
+#else
+    private static bool compressTextures = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME);
+#endif
+
+    public static void Compress(Texture2D tex, bool highQuality, bool forceCompression = false)
+    {
+        if(forceCompression || compressTextures)
+            tex.Compress(highQuality);
     }
 }
