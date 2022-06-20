@@ -1,8 +1,5 @@
 syntax = "proto3";
 
-package Proto;
-
-
 message CRDTManyMessages {
   string sceneId = 1;
   bytes	payload = 2;
@@ -15,4 +12,10 @@ message CRDTStreamRequest {}
 service CRDTService {
   rpc SendCRDT(CRDTManyMessages) returns (CRDTResponse){}
   rpc CRDTNotificationStream(CRDTStreamRequest) returns (stream CRDTManyMessages) {}
+}
+
+message PingRequest {}
+message PongResponse {}
+service PingPongService {
+  rpc Ping(PingRequest) returns (PongResponse) {}
 }
