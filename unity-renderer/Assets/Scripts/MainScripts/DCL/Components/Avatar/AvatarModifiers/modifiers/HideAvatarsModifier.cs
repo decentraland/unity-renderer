@@ -1,25 +1,19 @@
 using DCL;
 using UnityEngine;
 
-public class HideAvatarsModifier : AvatarModifier
+public class HideAvatarsModifier : IAvatarModifier
 {
-    private const string HIDE_AVATARS_MODIFIER = "HIDE_AVATARS_MODIFIER";
-
-    public override void ApplyModifier(GameObject avatar)
+    public void ApplyModifier(GameObject avatar)
     {
-        AvatarVisibility avatarVisibility = avatar.GetComponent<AvatarVisibility>();
-        if (avatarVisibility != null)
-        {
-            avatarVisibility.SetVisibility(HIDE_AVATARS_MODIFIER, false);
-        }
+        if (!avatar.TryGetComponent(out IHideAvatarAreaHandler handler))
+            return;
+        handler.ApplyHideModifier();
     }
 
-    public override void RemoveModifier(GameObject avatar)
+    public void RemoveModifier(GameObject avatar)
     {
-        AvatarVisibility avatarVisibility = avatar.GetComponent<AvatarVisibility>();
-        if (avatarVisibility != null)
-        {
-            avatarVisibility.SetVisibility(HIDE_AVATARS_MODIFIER, true);
-        }
+        if (!avatar.TryGetComponent(out IHideAvatarAreaHandler handler))
+            return;
+        handler.RemoveHideModifier();
     }
 }

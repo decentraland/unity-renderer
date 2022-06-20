@@ -296,7 +296,6 @@ GameObject:
   - component: {fileID: 110551818}
   - component: {fileID: 113901082}
   - component: {fileID: 8548425888172674288}
-  - component: {fileID: 8920001334808305060}
   - component: {fileID: 8266689621276731347}
   m_Layer: 16
   m_Name: CharacterController
@@ -387,24 +386,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   avatarContainer: {fileID: 8138691981628023791}
   avatarCollider: {fileID: 7115442889188564318}
-  avatarVisibility: {fileID: 8920001334808305060}
+  avatarVisibility: {fileID: 0}
   loadingParticlesPrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
     type: 3}
   cameraDistanceToDeactivate: 1
---- !u!114 &8920001334808305060
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6922703132412175462}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b406a70a47bd49728656d3954da3b476, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameObjectsToToggle:
-  - {fileID: 8138691981628023791}
 --- !u!114 &8266689621276731347
 MonoBehaviour:
   m_ObjectHideFlags: 0
