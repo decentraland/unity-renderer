@@ -156,13 +156,6 @@ namespace UnityGLTF
         private bool _isCompleted = false;
         public bool IsRunning => _isRunning;
         public bool IsCompleted => _isCompleted;
-        
-// We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
-#if UNITY_STANDALONE && !UNITY_EDITOR
-        bool compressTexture = false
-#else
-        bool compressTexture = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME);
-#endif
 
         public string id;
 
@@ -265,8 +258,6 @@ namespace UnityGLTF
         /// <returns></returns>
         public async Task LoadScene(CancellationToken token, int sceneIndex = -1, bool showSceneObj = true)
         {
-            Debug.Log("GLTFSceneImporter.LoadScene() - compress? " + compressTexture);
-            
             try
             {
                 PerformanceAnalytics.GLTFTracker.TrackLoading();
@@ -728,11 +719,14 @@ namespace UnityGLTF
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
             
-            if ( Application.isPlaying && compressTexture)
+// We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
+#if !UNITY_STANDALONE || UNITY_EDITOR      
+            if (Application.isPlaying && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME))
             {
                 //NOTE(Brian): This breaks importing in editor mode
                 texture.Compress(false);
             }
+#endif
 
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;

@@ -12,25 +12,19 @@ namespace DCL
         public float resizingFactor = 1;
         public Asset_Texture dependencyAsset; // to store the default tex asset and release it accordingly
         public event System.Action OnCleanup;
-
-#if UNITY_STANDALONE
-        bool compressTexture = false
-#else
-        bool compressTexture = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME);
-#endif
         
         public void ConfigureTexture(TextureWrapMode textureWrapMode, FilterMode textureFilterMode, bool makeNoLongerReadable = true)
         {
             if (texture == null)
                 return;
-            
-            Debug.Log("Asset_Texture.ConfigureTexture() - compress? " + compressTexture);
 
             texture.wrapMode = textureWrapMode;
             texture.filterMode = textureFilterMode;
             
-            if(compressTexture)
+#if !UNITY_STANDALONE
+            if(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME))
                 texture.Compress(false);
+#endif
             
             texture.Apply(textureFilterMode != FilterMode.Point, makeNoLongerReadable);
         }
