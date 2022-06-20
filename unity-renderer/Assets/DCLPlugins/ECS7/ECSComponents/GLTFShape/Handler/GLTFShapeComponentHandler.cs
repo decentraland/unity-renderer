@@ -14,6 +14,7 @@ namespace DCL.ECSComponents
         internal Rendereable rendereable;
         internal PBGLTFShape model;
         internal readonly LoadWrapper_GLTF loadWrapper;
+        internal IDCLEntity entity;
 
         private readonly DataStore_ECS7 dataStore;
 
@@ -33,6 +34,8 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBGLTFShape model)
         {
+            this.entity = entity;
+            
             // If we didn't create the shape, or if the shape is different from the last time, we load the shape, if not we update model
             if(ShouldLoadShape(model))
                 LoadShape(scene,entity,model);
@@ -89,7 +92,7 @@ namespace DCL.ECSComponents
                     // Apply the model for visibility, collision and event pointer
                     ApplyModel(model);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
-                    dataStore.animatorShapesReady.Add(entity.entityId,meshesInfo.meshRootGameObject);
+                    dataStore.AddReadyAnimatorShape(entity.entityId,meshesInfo.meshRootGameObject);
                     
                 }, (wrapper, exception) =>
                 {
@@ -121,6 +124,7 @@ namespace DCL.ECSComponents
 
         internal void DisposeMesh(IParcelScene scene)
         {
+            dataStore.RemoveReadyAnimatorShape(entity.entityId);
             if (meshesInfo != null)
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if (rendereable != null)

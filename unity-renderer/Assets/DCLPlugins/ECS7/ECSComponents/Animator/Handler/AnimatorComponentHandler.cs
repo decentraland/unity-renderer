@@ -12,10 +12,12 @@ namespace DCL.ECSComponents
     public class AnimatorComponentHandler : IECSComponentHandler<PBAnimator>
     {
         private readonly DataStore_ECS7 dataStore;
-        private Animation animComponent;
+        internal Animation animComponent;
+        private IDCLEntity entity;
+        private PBAnimator model;
+        internal bool isShapeLoaded = false;
         
         private Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
-        private Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
         
         public AnimatorComponentHandler(DataStore_ECS7 dataStoreEcs7) { dataStore = dataStoreEcs7; }
 
@@ -23,28 +25,52 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-           
+            dataStore.animatorShapesReady.OnAdded -= AnimatorShapeReadyAdded;
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAnimator model)
         {
-            if (dataStore.animatorShapesReady.ContainsKey(entity.entityId))
+            // If the entity has change, we force to check for an animatorShapeReady
+            if (this.entity != null && this.entity != entity)
+                isShapeLoaded = false;
+            
+            this.entity = entity;
+            this.model = model;
+            
+            if (isShapeLoaded)
             {
-                UpdateAnimationState(entity, model);
+                UpdateAnimationState(model);
             }
             else
             {
-                dataStore.animatorShapesReady.OnAdded += ( entityId,  gameObject) =>
+                if (dataStore.animatorShapesReady.TryGetValue(entity.entityId, out GameObject gameObject))
                 {
-                    if (entityId == entity.entityId)
-                        UpdateAnimationState(entity, model);
-                };
+                    AnimatorShapeReadyAdded(entity.entityId, gameObject);
+                }
+                else
+                {
+                    dataStore.animatorShapesReady.OnAdded -= AnimatorShapeReadyAdded;
+                    dataStore.animatorShapesReady.OnAdded += AnimatorShapeReadyAdded;
+                }
             }
         }
-        
-        private void Initialize(IDCLEntity entity)
+
+        private void AnimatorShapeReadyAdded(long entityId, GameObject gameObject)
         {
-            if (entity == null || animComponent != null)
+            if (entityId != entity.entityId)
+                return;
+          
+            dataStore.animatorShapesReady.OnAdded -= AnimatorShapeReadyAdded;
+            
+            Initialize(entity);
+            isShapeLoaded = true;
+
+            UpdateAnimationState(model);
+        }
+
+        internal void Initialize(IDCLEntity entity)
+        {
+            if (entity == null)
                 return;
 
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
@@ -54,7 +80,6 @@ namespace DCL.ECSComponents
                 return;
 
             clipNameToClip.Clear();
-            clipToState.Clear();
             int layerIndex = 0;
 
             animComponent.playAutomatically = true;
@@ -74,19 +99,19 @@ namespace DCL.ECSComponents
             }
         }
         
-        private void UpdateAnimationState(IDCLEntity entity,PBAnimator model)
+        private void UpdateAnimationState(PBAnimator model)
         {
-            Initialize(entity);
-            
             if (clipNameToClip.Count == 0 || animComponent == null)
                 return;
 
             if (model.States.Count == 0)
                 return;
 
+            DCLAnimationState state;
+            
             for (int i = 0; i < model.States.Count; i++)
             {
-                DCLAnimationState state = new DCLAnimationState(model.States[i]);
+                state = new DCLAnimationState(model.States[i]);
 
                 if (clipNameToClip.ContainsKey(state.clip))
                 {
@@ -95,24 +120,20 @@ namespace DCL.ECSComponents
                     unityState.wrapMode = state.loop ? WrapMode.Loop : WrapMode.Default;
                     unityState.clip.wrapMode = unityState.wrapMode;
                     unityState.speed = state.speed;
-
-                    state.clipReference = unityState.clip;
-
                     unityState.enabled = state.playing;
+                    
+                    state.clipReference = unityState.clip;
 
                     if (state.shouldReset)
                         ResetAnimation(state);
 
-                    
                     if (state.playing && !animComponent.IsPlaying(state.clip))
-                    {
                         animComponent.Play(state.clip);
-                    }
                 }
             }
         }
         
-        public void ResetAnimation(DCLAnimationState state)
+        private void ResetAnimation(DCLAnimationState state)
         {
             if (state == null || state.clipReference == null)
             {
@@ -124,19 +145,6 @@ namespace DCL.ECSComponents
 
             //Manually sample the animation. If the reset is not played again the frame 0 wont be applied
             state.clipReference.SampleAnimation(animComponent.gameObject, 0);
-        }
-
-        internal PBAnimationState GetStateByString(PBAnimator model, string stateName)
-        {
-            for (var i = 0; i < model.States.Count; i++)
-            {
-                if (model.States[i].Name == stateName)
-                {
-                    return model.States[i];
-                }
-            }
-
-            return null;
         }
     }
 

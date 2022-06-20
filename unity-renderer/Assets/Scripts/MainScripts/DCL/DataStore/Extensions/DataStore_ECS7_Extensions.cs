@@ -24,40 +24,17 @@ namespace DCL
             {
                 pendingResoruces.DecreaseRefCount(model);
             }
-            else
-            {
-                BaseRefCountedCollection<object>  newCountedCollection = new BaseRefCountedCollection<object>();
-                newCountedCollection.IncreaseRefCount(model);
-                self.pendingSceneResources.Add(sceneId,newCountedCollection);
-            }
         }
         
-        public static void AddPendingResource( this DataStore_ECS7 self, string sceneId, object model )
+        public static void AddReadyAnimatorShape( this DataStore_ECS7 self, long entityId, GameObject gameObject )
         {
-            if (self.pendingSceneResources.TryGetValue(sceneId, out BaseRefCountedCollection<object> pendingResoruces))
-            {
-                pendingResoruces.IncreaseRefCount(model);
-            }
-            else
-            {
-                BaseRefCountedCollection<object>  newCountedCollection = new BaseRefCountedCollection<object>();
-                newCountedCollection.IncreaseRefCount(model);
-                self.pendingSceneResources.Add(sceneId,newCountedCollection);
-            }
+            self.animatorShapesReady.AddOrSet(entityId,gameObject);
         }
 
-        public static void AddAnimator( this DataStore_ECS7 self, string sceneId, object model  )
+        public static void RemoveReadyAnimatorShape( this DataStore_ECS7 self, long entityId)
         {
-            if (self.pendingSceneResources.TryGetValue(sceneId, out BaseRefCountedCollection<object> pendingResoruces))
-            {
-                pendingResoruces.DecreaseRefCount(model);
-            }
-            else
-            {
-                BaseRefCountedCollection<object>  newCountedCollection = new BaseRefCountedCollection<object>();
-                newCountedCollection.IncreaseRefCount(model);
-                self.pendingSceneResources.Add(sceneId,newCountedCollection);
-            }
+            if(self.animatorShapesReady.ContainsKey(entityId))
+                self.animatorShapesReady.Remove(entityId);
         }
     }
 }
