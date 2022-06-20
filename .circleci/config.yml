@@ -20,11 +20,14 @@ references:
 
   .cached_paths: &CACHED_PATHS
     - ./unity-renderer/test-results
+    - ./unity-renderer/benchmark-results
     - ./unity-renderer/editmode-logs.txt
     - ./unity-renderer/playmode-logs.txt
+    - ./unity-renderer/benchmark-logs.txt
     - ./unity-renderer/build-logs.txt
     - ./unity-renderer/ab-logs.txt
     - ./unity-renderer/playmode-results.xml
+    - ./unity-renderer/benchmark-results.xml
     - ./unity-renderer/CodeCoverage
     - ./unity-renderer/TestResources/VisualTests
     - ./unity-renderer/Builds/
@@ -193,6 +196,51 @@ jobs:
       - save_cache:
           name: Store test cache
           key: unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
+          paths: *CACHED_PATHS
+      - store_artifacts: *STORE_VISUAL_TESTS
+
+  benchmark:
+    <<: *working_directory_root
+    resource_class: xlarge
+    docker: *unity_image
+    steps:
+      - <<: *attach_root
+      - run: *HASH_UNITY_FILES
+      - restore_cache:
+          name: Restore hashed files if they exist
+          keys:
+            - unity-benchmark-2020-3-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_LIBRARY_CACHE
+      - run:
+          name: Run benchmarks
+          command: |
+            if [[ -e ./unity-renderer/benchmark-logs.txt ]]; then
+                echo "Skipping benchmarks"
+                exit 0
+            else
+                bash ci-benchmark.sh
+                exit $?
+            fi;
+          no_output_timeout: 30m
+      - run:
+          name: nunit-to-junit
+          when: always
+          command: |
+            apt-get update
+            apt-get install -y xsltproc
+            xsltproc --output unity-renderer/benchmark-results/benchmark-results-junit.xml nunit-to-junit.xsl unity-renderer/benchmark-results.xml
+      - run: apt-get -y -qq install awscli      
+      - store_test_results:
+          path: ./unity-renderer/benchmark-results
+      - store_artifacts:
+          name: Store benchmark logs
+          path: ./unity-renderer/benchmark-logs.txt
+      - store_artifacts:
+          name: Store benchmark results
+          path: ./unity-renderer/benchmark-results.xml
+      - save_cache:
+          name: Store benchmark cache
+          key: unity-benchmark-2020-3-{{ checksum "../.unitysources-checksum" }}
           paths: *CACHED_PATHS
       - store_artifacts: *STORE_VISUAL_TESTS
 
@@ -366,6 +414,10 @@ workflows:
           <<: *all_branches_and_tags
 
       - playmode-tests:
+          <<: *all_branches_and_tags
+          requires:
+            - checkout
+      - benchmark:
           <<: *all_branches_and_tags
           requires:
             - checkout
