@@ -94,7 +94,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public event Action<string, FriendshipAction> OnUpdateFriendship;
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
-    public event Action<List<string>> OnAddFriendsWithDirectMessages;
+    public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
 
     public Dictionary<string, UserStatus> GetAllocatedFriends() { return new Dictionary<string, UserStatus>(friends); }
 

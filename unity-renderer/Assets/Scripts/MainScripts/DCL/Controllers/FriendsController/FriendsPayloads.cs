@@ -16,5 +16,13 @@ public class AddFriendRequestsPayload
 [Serializable]
 public class AddFriendsWithDirectMessagesPayload
 {
-    public string[] currentFriendsWithDirectMessages;
+    public FriendWithDirectMessages[] currentFriendsWithDirectMessages;
+}
+
+[Serializable]
+public class FriendWithDirectMessages
+{
+    public string userId;
+    public string lastMessageBody;
+    public long lastMessageTimestamp;
 }

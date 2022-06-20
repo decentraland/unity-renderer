@@ -215,18 +215,22 @@ public class WorldChatWindowController : IHUD
         }
     }
 
-    private void HandleFriendsWithDirectMessagesAdded(List<string> usersWithDM)
+    private void HandleFriendsWithDirectMessagesAdded(List<FriendWithDirectMessages> usersWithDM)
     {
         for (int i = 0; i < usersWithDM.Count; i++)
         {
-            var profile = userProfileBridge.Get(usersWithDM[i]);
+            var profile = userProfileBridge.Get(usersWithDM[i].userId);
             if (profile == null) continue;
 
-            ChatMessage emptyMessage = new ChatMessage(ChatMessage.Type.PRIVATE, profile.userId, string.Empty);
-            lastPrivateMessages[profile.userId] = emptyMessage;
+            ChatMessage lastMessage = new ChatMessage();
+            lastMessage.messageType = ChatMessage.Type.PRIVATE;
+            lastMessage.body = usersWithDM[i].lastMessageBody;
+            lastMessage.timestamp = (ulong)usersWithDM[i].lastMessageTimestamp;
+
+            lastPrivateMessages[profile.userId] = lastMessage;
 
             recipientsFromPrivateChats[profile.userId] = profile;
-            view.SetPrivateChat(CreatePrivateChatModel(emptyMessage, profile));
+            view.SetPrivateChat(CreatePrivateChatModel(lastMessage, profile));
         }
 
         view.HidePrivateChatsLoading();

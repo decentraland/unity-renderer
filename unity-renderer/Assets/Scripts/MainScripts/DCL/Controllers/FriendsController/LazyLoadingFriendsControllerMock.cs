@@ -31,7 +31,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         remove => controller.OnFriendNotFound -= value;
     }
 
-    public event Action<List<string>> OnAddFriendsWithDirectMessages
+    public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages
     {
         add => controller.OnAddFriendsWithDirectMessages += value;
         remove => controller.OnAddFriendsWithDirectMessages -= value;
@@ -117,18 +117,27 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
     private string CreateMockedDataFor_AddFriendsWithDirectMessagesPayload(int numberOfUsers)
     {
-        string mockedJson = "{ \"currentFriendsWithDirectMessages\": [";
+        AddFriendsWithDirectMessagesPayload mockedPayload = new AddFriendsWithDirectMessagesPayload();
+        List<FriendWithDirectMessages> mockedFriendWithDirectMessages = new List<FriendWithDirectMessages>();
 
         for (int i = 0; i < numberOfUsers; i++)
         {
             string fakeUserId = $"fakeuser{i + 1}";
-            mockedJson += $"\"{fakeUserId}\",";
+
+            mockedFriendWithDirectMessages.Add(
+                new FriendWithDirectMessages
+                {
+                    userId = fakeUserId,
+                    lastMessageBody = $"This is the last message sent for {fakeUserId}",
+                    lastMessageTimestamp = DateTimeOffset.UtcNow.AddDays(UnityEngine.Random.Range(-10, 0)).ToUnixTimeMilliseconds()
+                });
+
             CreateFakeFriend(fakeUserId);
         }
 
-        mockedJson = mockedJson.Remove(mockedJson.Length - 1) + "]}";
-
-        return mockedJson;
+        mockedPayload.currentFriendsWithDirectMessages = mockedFriendWithDirectMessages.ToArray();
+        
+        return JsonUtility.ToJson(mockedPayload);
     }
 
     private void CreateFakeFriend(string userId)

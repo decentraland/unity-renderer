@@ -33,7 +33,7 @@ namespace DCL.Interface
             remove => friendsController.OnFriendNotFound -= value;
         }
         
-        public event Action<List<string>> OnAddFriendsWithDirectMessages
+        public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages
         {
             add => friendsController.OnAddFriendsWithDirectMessages += value;
             remove => friendsController.OnAddFriendsWithDirectMessages -= value;
