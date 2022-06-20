@@ -15,6 +15,8 @@ public interface IFriendsHUDComponentView
     event Action OnRequireMoreFriends;
     event Action OnRequireMoreFriendRequests;
     event Action<string> OnSearchFriendsRequested;
+    event Action OnFriendListDisplayed;
+    event Action OnRequestListDisplayed;
 
     void Initialize(IChatController chatController,
         ILastReadMessagesService lastReadMessagesService,
@@ -24,6 +26,8 @@ public interface IFriendsHUDComponentView
     bool ListByOnlineStatus { set; }
     int FriendCount { get; }
     int FriendRequestCount { get; }
+    bool IsFriendListActive { get; }
+    bool IsRequestListActive { get; }
 
     void HideLoadingSpinner();
     void ShowLoadingSpinner();
