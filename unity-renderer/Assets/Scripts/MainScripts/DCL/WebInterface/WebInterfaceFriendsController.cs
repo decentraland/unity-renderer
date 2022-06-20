@@ -32,7 +32,13 @@ namespace DCL.Interface
             add => friendsController.OnFriendNotFound += value;
             remove => friendsController.OnFriendNotFound -= value;
         }
-        
+
+        public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages
+        {
+            add => friendsController.OnAddFriendsWithDirectMessages += value;
+            remove => friendsController.OnAddFriendsWithDirectMessages -= value;
+        }
+
         public int FriendCount => friendsController.FriendCount;
         public bool IsInitialized => friendsController.IsInitialized;
         public int ReceivedRequestCount => friendsController.ReceivedRequestCount;

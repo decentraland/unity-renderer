@@ -8,6 +8,7 @@ public class FriendsController_Mock : IFriendsController
     public event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
+    public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
 
     private readonly Dictionary<string, FriendsController.UserStatus> friends = new Dictionary<string, FriendsController.UserStatus>();
 
