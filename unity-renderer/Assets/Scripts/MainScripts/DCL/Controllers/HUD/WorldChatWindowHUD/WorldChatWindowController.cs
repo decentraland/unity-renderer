@@ -227,9 +227,16 @@ public class WorldChatWindowController : IHUD
             lastMessage.body = usersWithDM[i].lastMessageBody;
             lastMessage.timestamp = (ulong)usersWithDM[i].lastMessageTimestamp;
 
-            lastPrivateMessages[profile.userId] = lastMessage;
+            if (lastPrivateMessages.ContainsKey(profile.userId))
+            {
+                if (lastMessage.timestamp > lastPrivateMessages[profile.userId].timestamp)
+                    lastPrivateMessages[profile.userId] = lastMessage;
+            }
+            else
+                lastPrivateMessages[profile.userId] = lastMessage;
 
             recipientsFromPrivateChats[profile.userId] = profile;
+
             view.SetPrivateChat(CreatePrivateChatModel(lastMessage, profile));
         }
 
