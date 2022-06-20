@@ -718,7 +718,7 @@ namespace UnityGLTF
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
             
-            // Has to be in playmode otherwise it messes up the importing process
+            //NOTE(Brian): This tex compression breaks importing in editor mode
             if (Application.isPlaying && DataStore.i.textureConfig.runCompression.Get())
                 texture.Compress(false);
 
