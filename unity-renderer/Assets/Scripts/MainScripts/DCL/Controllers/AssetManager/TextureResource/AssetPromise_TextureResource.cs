@@ -5,8 +5,6 @@ namespace DCL
 {
     public class AssetPromise_TextureResource : AssetPromise<Asset_TextureResource>
     {
-        private const string TEXTURE_COMPRESSION_FLAG_NAME = "tex_compression";
-        
         private TextureModel model;
         private AssetPromise_Texture texturePromise;
         
@@ -69,10 +67,8 @@ namespace DCL
                         texture.wrapMode = unityWrap;
                         texture.filterMode = unitySamplingMode;
                         
-#if !UNITY_STANDALONE
-                        if(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME))
+                        if (DataStore.i.textureConfig.runCompression.Get())
                             texture.Compress(false);
-#endif
                         
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
                         asset.texture2D = texture;

@@ -6,8 +6,6 @@ namespace DCL
 {
     public class Asset_Texture : Asset, ITexture
     {
-        private const string TEXTURE_COMPRESSION_FLAG_NAME = "tex_compression";
-        
         public Texture2D texture { get; set; }
         public float resizingFactor = 1;
         public Asset_Texture dependencyAsset; // to store the default tex asset and release it accordingly
@@ -21,10 +19,8 @@ namespace DCL
             texture.wrapMode = textureWrapMode;
             texture.filterMode = textureFilterMode;
             
-#if !UNITY_STANDALONE
-            if(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME))
+            if (DataStore.i.textureConfig.runCompression.Get())
                 texture.Compress(false);
-#endif
             
             texture.Apply(textureFilterMode != FilterMode.Point, makeNoLongerReadable);
         }

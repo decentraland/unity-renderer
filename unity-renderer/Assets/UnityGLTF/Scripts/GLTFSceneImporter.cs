@@ -129,7 +129,6 @@ namespace UnityGLTF
 
         public int maxTextureSize = 512;
         private const float SAME_KEYFRAME_TIME_DELTA = 0.0001f;
-        private const string TEXTURE_COMPRESSION_FLAG_NAME = "tex_compression";
 
         protected struct GLBStream
         {
@@ -719,14 +718,9 @@ namespace UnityGLTF
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
             
-// We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
-#if !UNITY_STANDALONE || UNITY_EDITOR      
-            if (Application.isPlaying && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME))
-            {
-                //NOTE(Brian): This breaks importing in editor mode
+            // Has to be in playmode otherwise it messes up the importing process
+            if (Application.isPlaying && DataStore.i.textureConfig.runCompression.Get())
                 texture.Compress(false);
-            }
-#endif
 
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;

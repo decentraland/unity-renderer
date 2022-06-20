@@ -12,8 +12,6 @@ namespace DCL
 {
     public class DCLTexture : BaseDisposable
     {
-        private const string TEXTURE_COMPRESSION_FLAG_NAME = "tex_compression";
-        
         [System.Serializable]
         public class Model : BaseModel
         {
@@ -126,13 +124,11 @@ namespace DCL
                         texture.wrapMode = unityWrap;
                         texture.filterMode = unitySamplingMode;
                         
-#if !UNITY_STANDALONE
-                        if(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME))
+                        if (DataStore.i.textureConfig.runCompression.Get())
                             texture.Compress(false);
-#endif
                         
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
-                        texture = TextureHelpers.ClampSize(texture, DataStore.i.textureSize.generalMaxSize.Get());
+                        texture = TextureHelpers.ClampSize(texture, DataStore.i.textureConfig.generalMaxSize.Get());
                     }
                 }
                 else
