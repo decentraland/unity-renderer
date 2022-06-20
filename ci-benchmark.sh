@@ -10,8 +10,8 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
   -logFile "$PROJECT_PATH/benchmark-logs.txt" \
   -runTests \
   -testPlatform PlayMode \
-  -testResults "$PROJECT_PATH/benchmark-results.xml" \  
-  -testCategory Benchmark
+  -testCategory Benchmark \
+  -testResults "$PROJECT_PATH/benchmark-results.xml"  
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
