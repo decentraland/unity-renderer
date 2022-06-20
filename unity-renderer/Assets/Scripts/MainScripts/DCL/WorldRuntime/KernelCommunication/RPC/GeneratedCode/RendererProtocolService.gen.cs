@@ -10,36 +10,43 @@ using rpc_csharp;
 
 public abstract class CRDTService<Context>
 {
-  public const string ServiceName = "CRDTService";
+    public const string ServiceName = "CRDTService";
 
-  public delegate UniTask<CRDTResponse> SendCRDT(CRDTManyMessages request, Context context);
+    public delegate UniTask<CRDTResponse> SendCRDT(CRDTManyMessages request, Context context);
 
-  public delegate IEnumerator<CRDTManyMessages> CRDTNotificationStream(CRDTStreamRequest request, Context context);
+    public delegate IEnumerator<CRDTManyMessages> CRDTNotificationStream(CRDTStreamRequest request, Context context);
 
-  public static void RegisterService(RpcServerPort<Context> port, SendCRDT sendCRDT, CRDTNotificationStream cRDTNotificationStream)
-  {
-    var result = new ServerModuleDefinition<Context>();
-      
-    result.definition.Add("SendCRDT", async (payload, context) => { var res = await sendCRDT(CRDTManyMessages.Parser.ParseFrom(payload), context); return res?.ToByteString(); });
-    result.streamDefinition.Add("CRDTNotificationStream", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator(cRDTNotificationStream(CRDTStreamRequest.Parser.ParseFrom(payload), context)); });
+    public static void RegisterService(RpcServerPort<Context> port, SendCRDT sendCRDT, CRDTNotificationStream cRDTNotificationStream)
+    {
+        var result = new ServerModuleDefinition<Context>();
 
-    port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
-  }
-    
+        result.definition.Add("SendCRDT", async (payload, context) =>
+        {
+            var res = await sendCRDT(CRDTManyMessages.Parser.ParseFrom(payload), context);
+            return res?.ToByteString();
+        });
+        result.streamDefinition.Add("CRDTNotificationStream", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator(cRDTNotificationStream(CRDTStreamRequest.Parser.ParseFrom(payload), context)); });
+
+        port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
+    }
+}
 
 public abstract class PingPongService<Context>
 {
-  public const string ServiceName = "PingPongService";
+    public const string ServiceName = "PingPongService";
 
-  public delegate UniTask<PongResponse> Ping(PingRequest request, Context context);
+    public delegate UniTask<PongResponse> Ping(PingRequest request, Context context);
 
-  public static void RegisterService(RpcServerPort<Context> port, Ping ping)
-  {
-    var result = new ServerModuleDefinition<Context>();
-      
-    result.definition.Add("Ping", async (payload, context) => { var res = await ping(PingRequest.Parser.ParseFrom(payload), context); return res?.ToByteString(); });
+    public static void RegisterService(RpcServerPort<Context> port, Ping ping)
+    {
+        var result = new ServerModuleDefinition<Context>();
 
-    port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
-  }
-    
+        result.definition.Add("Ping", async (payload, context) =>
+        {
+            var res = await ping(PingRequest.Parser.ParseFrom(payload), context);
+            return res?.ToByteString();
+        });
+
+        port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
+    }
 }
