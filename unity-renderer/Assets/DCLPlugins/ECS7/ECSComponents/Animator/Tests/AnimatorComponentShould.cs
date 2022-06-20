@@ -85,6 +85,19 @@ namespace DCL.ECSComponents.Test
             // Assert
             Assert.IsNotNull(componentHandler.animComponent);
         }
+        
+        [Test]
+        public void InitializateCorrectly()
+        {
+            // Arrange
+            entity.gameObject.AddComponent<Animation>();
+            
+            // Act
+            componentHandler.Initialize(entity);
+
+            // Assert
+            Assert.IsNotNull(componentHandler.animComponent);
+        }
 
         [Test]
         public void SerializeCorrectly()
