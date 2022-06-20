@@ -5,12 +5,22 @@ namespace DCL
 {
     public class AssetPromise_TextureResource : AssetPromise<Asset_TextureResource>
     {
+        private const string TEXTURE_COMPRESSION_FLAG_NAME = "tex_compression";
+        
         private TextureModel model;
         private AssetPromise_Texture texturePromise;
+        
+#if UNITY_STANDALONE
+        bool compressTexture = false
+#else
+        bool compressTexture = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(TEXTURE_COMPRESSION_FLAG_NAME);
+#endif
         
         public AssetPromise_TextureResource(TextureModel model)
         {
             this.model = model;
+            
+            Debug.Log("AssetPromise_TextureResource() - compress? " + compressTexture);
         }
         
         protected override void OnAfterLoadOrReuse() { }
@@ -67,7 +77,8 @@ namespace DCL
                         texture.wrapMode = unityWrap;
                         texture.filterMode = unitySamplingMode;
                         
-                        TextureHelpers.Compress(texture, false);
+                        if(compressTexture)
+                            texture.Compress(false);
                         
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
                         asset.texture2D = texture;
