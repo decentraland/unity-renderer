@@ -145,7 +145,12 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         controller.friends.Add(userId, new FriendsController.UserStatus
         {
             userId = userId,
-            position = Vector2.zero,
+            position = new Vector2(UnityEngine.Random.Range(-100, 101), UnityEngine.Random.Range(-100, 101)),
+            realm = new FriendsController.UserStatus.Realm
+            {
+                serverName = "dg",
+                layer = ""
+            },
             presence = UnityEngine.Random.Range(0, 2) == 0 ? PresenceStatus.OFFLINE : PresenceStatus.ONLINE,
             friendshipStatus = FriendshipStatus.FRIEND,
             friendshipStartedTime = DateTime.UtcNow

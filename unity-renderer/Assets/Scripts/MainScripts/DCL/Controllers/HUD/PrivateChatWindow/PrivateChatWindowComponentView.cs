@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections;
 using SocialBar.UserThumbnail;
+using SocialFeaturesAnalytics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -14,13 +15,16 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] internal TMP_Text userNameLabel;
     [SerializeField] internal PrivateChatHUDView chatView;
     [SerializeField] internal GameObject jumpInButtonContainer;
+    [SerializeField] internal JumpInButton jumpInButton;
     [SerializeField] internal UserContextMenu userContextMenu;
     [SerializeField] internal RectTransform userContextMenuReferencePoint;
     [SerializeField] internal Button optionsButton;
     [SerializeField] private Model model;
     [SerializeField] internal CanvasGroup[] previewCanvasGroup;
     [SerializeField] private Vector2 previewModeSize;
-    
+
+    private IFriendsController friendsController;
+    private ISocialAnalytics socialAnalytics;
     private Coroutine alphaRoutine;
     private Vector2 originalSize;
 
@@ -53,6 +57,12 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         optionsButton.onClick.AddListener(ShowOptions);
         userContextMenu.OnBlock += HandleBlockFromContextMenu;
+    }
+
+    public void Initialize(IFriendsController friendsController, ISocialAnalytics socialAnalytics)
+    {
+        this.friendsController = friendsController;
+        this.socialAnalytics = socialAnalytics;
     }
 
     public override void Dispose()
@@ -132,6 +142,8 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             isUserBlocked = isBlocked
         };
         RefreshControl();
+        
+        jumpInButton.Initialize(friendsController, profile.userId, socialAnalytics);
     }
 
     public void Show() => gameObject.SetActive(true);

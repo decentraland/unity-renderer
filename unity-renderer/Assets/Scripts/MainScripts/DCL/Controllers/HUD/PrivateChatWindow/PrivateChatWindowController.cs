@@ -54,6 +54,7 @@ public class PrivateChatWindowController : IHUD
     {
         view ??= PrivateChatWindowComponentView.Create();
         View = view;
+        View.Initialize(friendsController, socialAnalytics);
         view.OnPressBack -= HandlePressBack;
         view.OnPressBack += HandlePressBack;
         view.OnClose -= Hide;
