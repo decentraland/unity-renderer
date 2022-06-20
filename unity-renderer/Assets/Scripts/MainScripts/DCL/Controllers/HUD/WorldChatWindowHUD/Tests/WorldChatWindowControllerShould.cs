@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DCL.Interface;
 using NSubstitute;
@@ -207,9 +207,6 @@ public class WorldChatWindowControllerShould
         controller.Initialize(view);
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(
             new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow"));
-        
-        view.DidNotReceiveWithAnyArgs().SetPrivateChat(default);
-        view.Received(1).ShowMoreChatsToLoadHint(1);
     }
     
     [Test]
@@ -224,7 +221,6 @@ public class WorldChatWindowControllerShould
             new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow"));
         
         view.Received(1).SetPrivateChat(Arg.Is<PrivateChatModel>(p => p.user.userId == FRIEND_ID));
-        view.DidNotReceiveWithAnyArgs().ShowMoreChatsToLoadHint(default);
     }
 
     [Test]

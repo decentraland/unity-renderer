@@ -25,11 +25,11 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] internal SearchBarComponentView searchBar;
     [SerializeField] private WorldChatWindowModel model;
 
-    [Header("Load More Entries")] [SerializeField]
-    internal Button loadMoreEntriesButton;
-
+    [Header("Load More Entries")]
+    [SerializeField] internal Button loadMoreEntriesButton;
     [SerializeField] internal GameObject loadMoreEntriesContainer;
     [SerializeField] internal TMP_Text loadMoreEntriesLabel;
+    [SerializeField] internal GameObject loadMoreEntriesLoading;
 
     private readonly Dictionary<string, PrivateChatModel> creationQueue = new Dictionary<string, PrivateChatModel>();
     private bool isSortingDirty;
@@ -149,11 +149,23 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         UpdateLayout();
     }
 
-    public void ShowMoreChatsToLoadHint(int count)
+    public void ShowMoreChatsToLoadHint()
     {
-        loadMoreEntriesLabel.SetText(
-            $"{count} chats hidden. Use the search bar to find them or click below to show more.");
-        ShowMoreChatsToLoadHint();
+        loadMoreEntriesLabel.SetText($"There are chats hidden. Use the search bar to find them or click below to show more.");
+        loadMoreEntriesContainer.SetActive(true);
+        UpdateLayout();
+    }
+
+    public void HideMoreChatsLoading()
+    {
+        loadMoreEntriesLoading.SetActive(false);
+        loadMoreEntriesButton.gameObject.SetActive(true);
+    }
+
+    public void ShowMoreChatsLoading()
+    { 
+        loadMoreEntriesLoading.SetActive(true);
+        loadMoreEntriesButton.gameObject.SetActive(false);
     }
 
     public void ClearFilter()
@@ -248,12 +260,6 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     }
 
     private void SortLists() => isSortingDirty = true;
-
-    private void ShowMoreChatsToLoadHint()
-    {
-        loadMoreEntriesContainer.SetActive(true);
-        UpdateLayout();
-    }
 
     private void SetPrivateChatLoadingVisibility(bool visible)
     {

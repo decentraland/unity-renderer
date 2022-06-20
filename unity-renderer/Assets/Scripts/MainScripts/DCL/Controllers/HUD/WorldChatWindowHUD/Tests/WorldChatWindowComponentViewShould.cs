@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Interface;
 using NSubstitute;
@@ -284,9 +284,9 @@ public class WorldChatWindowComponentViewShould
     [Test]
     public void ShowMoreChatsToLoadHint()
     {
-        view.ShowMoreChatsToLoadHint(5);
+        view.ShowMoreChatsToLoadHint();
 
-        Assert.AreEqual("5 chats hidden. Use the search bar to find them or click below to show more.",
+        Assert.AreEqual("There are chats hidden. Use the search bar to find them or click below to show more.",
             view.loadMoreEntriesLabel.text);
         Assert.IsTrue(view.loadMoreEntriesContainer.activeSelf);
     }

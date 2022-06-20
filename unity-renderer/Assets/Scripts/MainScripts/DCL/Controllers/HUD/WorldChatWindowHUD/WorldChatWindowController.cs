@@ -15,13 +15,15 @@ public class WorldChatWindowController : IHUD
     private readonly IFriendsController friendsController;
     private readonly IChatController chatController;
     private readonly ILastReadMessagesService lastReadMessagesService;
-    private readonly Queue<string> pendingPrivateChats = new Queue<string>();
     private readonly Dictionary<string, PublicChatChannelModel> publicChannels = new Dictionary<string, PublicChatChannelModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private bool friendsDirectMessagesAlreadyRequested = false;
     private List<string> privateMessagesAlreadyRequested = new List<string>();
-    
+    private bool pendingDirectMessagesToRequest = true;
+    private int lastAmountOfFriendsWithDirectMessagesRequested = 0;
+    private long olderTimestampRequested = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
 
@@ -74,8 +76,6 @@ public class WorldChatWindowController : IHUD
         friendsController.OnAddFriendsWithDirectMessages += HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
-
-        UpdateMoreChannelsToLoadHint();
     }
 
     public void Dispose()
@@ -157,7 +157,6 @@ public class WorldChatWindowController : IHUD
     {
         if (!recipientsFromPrivateChats.ContainsKey(userId)) return;
         if (!lastPrivateMessages.ContainsKey(userId)) return;
-        if (pendingPrivateChats.Contains(userId)) return;
         
         if (status.friendshipStatus == FriendshipStatus.FRIEND)
         {
@@ -172,11 +171,6 @@ public class WorldChatWindowController : IHUD
                     isBlocked = ownUserProfile.IsBlocked(userId),
                     isOnline = status.presence == PresenceStatus.ONLINE
                 });
-            }
-            else if (!pendingPrivateChats.Contains(profile.userId))
-            {
-                pendingPrivateChats.Enqueue(profile.userId);
-                UpdateMoreChannelsToLoadHint();
             }
         }
         else if (status.friendshipStatus == FriendshipStatus.NOT_FRIEND)
@@ -206,17 +200,13 @@ public class WorldChatWindowController : IHUD
         
         recipientsFromPrivateChats[profile.userId] = profile;
 
-        if (ShouldDisplayPrivateChat(profile.userId))
-            view.SetPrivateChat(CreatePrivateChatModel(message, profile));
-        else if (!pendingPrivateChats.Contains(profile.userId))
-        {
-            pendingPrivateChats.Enqueue(profile.userId);
-            UpdateMoreChannelsToLoadHint();
-        }
+        view.SetPrivateChat(CreatePrivateChatModel(message, profile));
     }
 
     private void HandleFriendsWithDirectMessagesAdded(List<FriendWithDirectMessages> usersWithDM)
     {
+        pendingDirectMessagesToRequest = usersWithDM.Count() >= lastAmountOfFriendsWithDirectMessagesRequested;
+
         for (int i = 0; i < usersWithDM.Count; i++)
         {
             var profile = userProfileBridge.Get(usersWithDM[i].userId);
@@ -226,6 +216,9 @@ public class WorldChatWindowController : IHUD
             lastMessage.messageType = ChatMessage.Type.PRIVATE;
             lastMessage.body = usersWithDM[i].lastMessageBody;
             lastMessage.timestamp = (ulong)usersWithDM[i].lastMessageTimestamp;
+
+            if (usersWithDM[i].lastMessageTimestamp < olderTimestampRequested)
+                olderTimestampRequested = usersWithDM[i].lastMessageTimestamp;
 
             if (lastPrivateMessages.ContainsKey(profile.userId))
             {
@@ -240,7 +233,9 @@ public class WorldChatWindowController : IHUD
             view.SetPrivateChat(CreatePrivateChatModel(lastMessage, profile));
         }
 
+        UpdateMoreChannelsToLoadHint();
         view.HidePrivateChatsLoading();
+        view.HideMoreChatsLoading();
     }
 
     private bool ShouldDisplayPrivateChat(string userId)
@@ -307,32 +302,34 @@ public class WorldChatWindowController : IHUD
     
     private void ShowMorePrivateChats()
     {
-        for (var i = 0; i < LOAD_PRIVATE_CHATS_ON_DEMAND_COUNT && pendingPrivateChats.Count > 0; i++)
-        {
-            var userId = pendingPrivateChats.Dequeue();
-            if (!lastPrivateMessages.ContainsKey(userId)) continue;
-            if (!recipientsFromPrivateChats.ContainsKey(userId)) continue;
-            var recentMessage = lastPrivateMessages[userId];
-            var profile = recipientsFromPrivateChats[userId];
-            View.SetPrivateChat(CreatePrivateChatModel(recentMessage, profile));
-        }
-
-        UpdateMoreChannelsToLoadHint();
+        RequestFriendsWithDirectMessages(
+            LOAD_PRIVATE_CHATS_ON_DEMAND_COUNT,
+            olderTimestampRequested);
     }
     
     private void UpdateMoreChannelsToLoadHint()
     {
-        if (pendingPrivateChats.Count == 0)
+        if (!pendingDirectMessagesToRequest)
             View.HideMoreChatsToLoadHint();
         else
-            View.ShowMoreChatsToLoadHint(pendingPrivateChats.Count);
+            View.ShowMoreChatsToLoadHint();
     }
 
     private void RequestFriendsWithDirectMessages(int limit, long fromTimestamp)
     {
-        view.ShowPrivateChatsLoading();
+        if (!friendsDirectMessagesAlreadyRequested)
+        {
+            view.ShowPrivateChatsLoading();
+            view.HideMoreChatsToLoadHint();
+        }
+        else
+        {
+            view.ShowMoreChatsLoading();
+        }
+
         friendsController.GetFriendsWithDirectMessages(limit, fromTimestamp);
         friendsDirectMessagesAlreadyRequested = true;
+        lastAmountOfFriendsWithDirectMessagesRequested = limit;
     }
 
     private void RequestPrivateMessages(string userId, int limit, long fromTimestamp)
