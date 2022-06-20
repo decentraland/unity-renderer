@@ -38,7 +38,7 @@ public class LazyLoadingChatControllerMock : IChatController
 
         for (int i = 0; i < limit; i++)
         {
-            await UniTask.DelayFrame(1);
+            await UniTask.NextFrame();
 
             controller.AddMessageToChatWindow(
                 CreateMockedDataFor_AddMessageToChatWindowPayload(
