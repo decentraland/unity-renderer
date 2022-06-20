@@ -18,13 +18,13 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         add => controller.OnUpdateFriendship += value;
         remove => controller.OnUpdateFriendship -= value;
     }
-    
+
     public event Action<string, FriendsController.UserStatus> OnUpdateUserStatus
     {
         add => controller.OnUpdateUserStatus += value;
         remove => controller.OnUpdateUserStatus -= value;
     }
-    
+
     public event Action<string> OnFriendNotFound
     {
         add => controller.OnFriendNotFound += value;
@@ -63,7 +63,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
     public bool IsFriend(string userId) => controller.IsFriend(userId);
 
     public void RemoveFriend(string friendId) => controller.RemoveFriend(friendId);
-    
+
     public void GetFriendsAsync(int limit, int skip)
     {
         // TODO:

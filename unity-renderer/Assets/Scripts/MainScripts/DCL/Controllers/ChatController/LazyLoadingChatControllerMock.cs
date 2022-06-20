@@ -27,7 +27,7 @@ public class LazyLoadingChatControllerMock : IChatController
     public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
 
     public void Send(ChatMessage message) => controller.Send(message);
-    
+
     public void MarkMessagesAsSeen(string userId) => controller.MarkMessagesAsSeen(userId);
 
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp) => SimulateDelayedResponseFor_GetPrivateMessages(userId, limit, fromTimestamp);
@@ -42,7 +42,7 @@ public class LazyLoadingChatControllerMock : IChatController
 
             controller.AddMessageToChatWindow(
                 CreateMockedDataFor_AddMessageToChatWindowPayload(
-                    userId, 
+                    userId,
                     $"fake message {i + 1} from user {userId}",
                     DateTimeOffset.FromUnixTimeMilliseconds(fromTimestamp).AddDays(UnityEngine.Random.Range(-10, 0)).ToUnixTimeMilliseconds(),
                     UnityEngine.Random.Range(0, 2) == 0 ? false : true));
