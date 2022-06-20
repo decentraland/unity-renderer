@@ -72,7 +72,7 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
-    public void ShowMoreChatsToLoadHint(int count)
+    public void ShowMoreChatsToLoadHint()
     {
     }
 
