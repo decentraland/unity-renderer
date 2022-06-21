@@ -233,7 +233,7 @@ jobs:
       - run:
           name: upload benchmark report
           command: |
-            aws s3 sync /tmp/workspace/unity-renderer/benchmark-results.xml "s3://${S3_BUCKET}/branch-benchmark/${CIRCLE_BRANCH}/benchmark-results.xml" --acl public-read
+            aws s3 sync /tmp/workspace/unity-renderer/unity-renderer/benchmark-results.xml "s3://${S3_BUCKET}/branch-benchmark/${CIRCLE_BRANCH}/benchmark-results.xml" --acl public-read
       - store_test_results:
           path: ./unity-renderer/benchmark-results
       - store_artifacts:
