@@ -128,7 +128,8 @@ namespace DCL.ECSComponents
 
         internal void DisposeMesh(IParcelScene scene)
         {
-            dataStore.RemoveReadyAnimatorShape(entity.entityId);
+            if (entity != null)
+                dataStore.RemoveReadyAnimatorShape(entity.entityId);
             if (meshesInfo != null)
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if (rendereable != null)
