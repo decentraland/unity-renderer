@@ -39,9 +39,11 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         remove => controller.OnAddFriendsWithDirectMessages -= value;
     }
 
-    public int FriendCount => controller.FriendCount;
+    public int AllocatedFriendCount => controller.AllocatedFriendCount;
     public bool IsInitialized => controller.IsInitialized;
     public int ReceivedRequestCount => controller.ReceivedRequestCount;
+    public int TotalFriendCount => 45;
+    public int TotalFriendRequestCount => 38;
 
     public LazyLoadingFriendsControllerMock(FriendsController controller,
         UserProfileController userProfileController)
@@ -139,13 +141,12 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         
         await UniTask.Delay(Random.Range(20, 500));
         
-        // fake no more friends to load case
-        if (skip > 0 && Random.Range(0, 3) == 0) return;
-        
         var characters = new[]
             {'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+        var max = Mathf.Min(skip + Random.Range(1, limit), TotalFriendCount);
         
-        for (var i = skip; i < skip + Random.Range(1, limit); i++)
+        for (var i = skip; i < max; i++)
         {
             var userId = "";
             for (var x = 0; x < 8; x++)
@@ -178,9 +179,6 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
             {'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
         
         await UniTask.Delay(Random.Range(20, 500));
-        
-        // fake no more requests to load case
-        if (timestamp > 0 && Random.Range(0, 3) == 0) return;
         
         var fromUserIds = new List<string>();
         

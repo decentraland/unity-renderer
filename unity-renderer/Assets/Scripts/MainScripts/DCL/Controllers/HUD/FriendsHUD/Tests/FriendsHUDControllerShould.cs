@@ -40,7 +40,7 @@ public class FriendsHUDControllerShould
         ownProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
         userProfileBridge.GetOwn().Returns(ownProfile);
         friendsController = Substitute.For<IFriendsController>();
-        friendsController.FriendCount.Returns(FRIENDS_COUNT);
+        friendsController.AllocatedFriendCount.Returns(FRIENDS_COUNT);
         dataStore = new DataStore();
         controller = new FriendsHUDController(dataStore,
             friendsController,
@@ -259,7 +259,7 @@ public class FriendsHUDControllerShould
             Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
 
         view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipAction) default, default);
-        view.Received(1).ShowMoreFriendsToLoadHint(2);
+        view.Received(1).ShowMoreFriendsToLoadHint();
     }
 
     [Test]
@@ -273,7 +273,7 @@ public class FriendsHUDControllerShould
             Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_FROM);
 
         view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipAction) default, default);
-        view.Received(1).ShowMoreRequestsToLoadHint(2);
+        view.Received(1).ShowMoreRequestsToLoadHint();
     }
 
     [Test]
@@ -343,7 +343,7 @@ public class FriendsHUDControllerShould
             Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
 
         view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipStatus) default, default);
-        view.Received(1).ShowMoreFriendsToLoadHint(1);
+        view.Received(1).ShowMoreFriendsToLoadHint();
     }
 
     [Test]
@@ -365,7 +365,7 @@ public class FriendsHUDControllerShould
             Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
 
         view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipStatus) default, default);
-        view.Received(1).ShowMoreRequestsToLoadHint(1);
+        view.Received(1).ShowMoreRequestsToLoadHint();
     }
 
     [Test]

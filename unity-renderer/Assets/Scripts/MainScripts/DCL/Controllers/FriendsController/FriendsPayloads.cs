@@ -4,6 +4,7 @@ using System;
 public class AddFriendsPayload
 {
     public string[] currentFriends;
+    public int totalFriends;
 }
 
 [Serializable]
@@ -11,6 +12,7 @@ public class AddFriendRequestsPayload
 {
     public string[] requestedTo;
     public string[] requestedFrom;
+    public int totalFriendRequests;
 }
 
 [Serializable]

@@ -33,7 +33,6 @@ public class FriendsTabComponentView : BaseComponentView
     internal Button loadMoreEntriesButton;
 
     [SerializeField] internal GameObject loadMoreEntriesContainer;
-    [SerializeField] internal TMP_Text loadMoreEntriesLabel;
 
     private readonly Dictionary<string, FriendEntryModel> creationQueue =
         new Dictionary<string, FriendEntryModel>();
@@ -367,20 +366,13 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void Enqueue(string userId, FriendEntryModel model) => creationQueue[userId] = model;
 
-    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount)
-    {
-        loadMoreEntriesLabel.SetText(
-            $"{pendingFriendsCount} friends hidden. Use the search bar to find them or click below to show more.");
-        ShowMoreFriendsToLoadHint();
-    }
-
     public void HideMoreFriendsToLoadHint()
     {
         loadMoreEntriesContainer.SetActive(false);
         UpdateLayout();
     }
     
-    private void ShowMoreFriendsToLoadHint()
+    public void ShowMoreFriendsToLoadHint()
     {
         loadMoreEntriesContainer.SetActive(true);
         UpdateLayout();

@@ -9,9 +9,11 @@ public interface IFriendsController
     event Action<string> OnFriendNotFound;
     event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
 
-    int FriendCount { get; }
+    int AllocatedFriendCount { get; }
     bool IsInitialized { get; }
     int ReceivedRequestCount { get; }
+    int TotalFriendCount { get; }
+    int TotalFriendRequestCount { get; }
     Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends();
     FriendsController.UserStatus GetUserStatus(string userId);
 

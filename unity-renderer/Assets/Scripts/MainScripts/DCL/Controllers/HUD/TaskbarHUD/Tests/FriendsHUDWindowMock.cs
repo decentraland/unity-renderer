@@ -92,7 +92,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     {
     }
 
-    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount)
+    public void ShowMoreFriendsToLoadHint()
     {
     }
 
@@ -100,7 +100,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     {
     }
 
-    public void ShowMoreRequestsToLoadHint(int pendingRequestsCount)
+    public void ShowMoreRequestsToLoadHint()
     {
     }
 

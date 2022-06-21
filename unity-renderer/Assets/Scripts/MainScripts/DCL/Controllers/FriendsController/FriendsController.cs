@@ -9,7 +9,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public static bool VERBOSE = false;
     public static FriendsController i { get; private set; }
 
-    public int FriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
+    public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
 
     void Awake()
     {
@@ -22,7 +22,10 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public int ReceivedRequestCount =>
         friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
 
-    public Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
+    public int TotalFriendCount => throw new NotImplementedException();
+    public int TotalFriendRequestCount => throw new NotImplementedException();
+
+    public readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
     [System.Serializable]
     public class UserStatus

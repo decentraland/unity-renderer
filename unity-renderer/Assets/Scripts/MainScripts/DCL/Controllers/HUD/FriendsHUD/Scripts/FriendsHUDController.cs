@@ -21,9 +21,6 @@ public class FriendsHUDController : IHUD
     private readonly ILastReadMessagesService lastReadMessagesService;
 
     private UserProfile ownUserProfile;
-    private int friendSkipCount;
-    private int fetchedFriendCount;
-    private int fetchedRequestCount;
     private bool searchingFriends;
     private DateTimeOffset oldestReceivedRequest;
     private DateTimeOffset oldestSentRequest;
@@ -269,15 +266,11 @@ public class FriendsHUDController : IHUD
     {
         switch (status.friendshipStatus)
         {
-            case FriendshipStatus.FRIEND:
-                fetchedFriendCount++;
-                break;
             case FriendshipStatus.REQUESTED_TO:
             {
                 var timestamp = friendsController.GetUserStatus(userId).friendshipStartedTime;
                 if (timestamp < oldestSentRequest)
                     oldestSentRequest = timestamp;
-                fetchedRequestCount++;
                 break;
             }
             case FriendshipStatus.REQUESTED_FROM:
@@ -285,7 +278,6 @@ public class FriendsHUDController : IHUD
                 var timestamp = friendsController.GetUserStatus(userId).friendshipStartedTime;
                 if (timestamp < oldestReceivedRequest)
                     oldestReceivedRequest = timestamp;
-                fetchedRequestCount++;
                 break;
             }
         }
@@ -295,15 +287,11 @@ public class FriendsHUDController : IHUD
     {
         switch (friendshipAction)
         {
-            case FriendshipAction.APPROVED:
-                fetchedFriendCount++;
-                break;
             case FriendshipAction.REQUESTED_TO:
             {
                 var timestamp = friendsController.GetUserStatus(userId).friendshipStartedTime;
                 if (timestamp < oldestSentRequest)
                     oldestSentRequest = timestamp;
-                fetchedRequestCount++;
                 break;
             }
             case FriendshipAction.REQUESTED_FROM:
@@ -311,7 +299,6 @@ public class FriendsHUDController : IHUD
                 var timestamp = friendsController.GetUserStatus(userId).friendshipStartedTime;
                 if (timestamp < oldestReceivedRequest)
                     oldestReceivedRequest = timestamp;
-                fetchedRequestCount++;
                 break;
             }
         }
@@ -406,7 +393,7 @@ public class FriendsHUDController : IHUD
     private void UpdateNotificationsCounter()
     {
         if (View.IsActive())
-            dataStore.friendNotifications.seenFriends.Set(friendsController.FriendCount);
+            dataStore.friendNotifications.seenFriends.Set(friendsController.AllocatedFriendCount);
         
         dataStore.friendNotifications.seenRequests.Set(friendsController.ReceivedRequestCount);
     }
@@ -447,16 +434,13 @@ public class FriendsHUDController : IHUD
     private void DisplayMoreFriends()
     {
         if (!friendsController.IsInitialized) return;
-        fetchedFriendCount = 0;
         ShowOrHideMoreFriendsToLoadHint();
-        friendsController.GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, friendSkipCount);
-        friendSkipCount += LOAD_FRIENDS_ON_DEMAND_COUNT;
+        friendsController.GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, friends.Count);
     }
     
     private void DisplayMoreFriendRequests()
     {
         if (!friendsController.IsInitialized) return;
-        fetchedRequestCount = 0;
         ShowOrHideMoreFriendRequestsToLoadHint();
         friendsController.GetFriendRequestsAsync(
             LOAD_FRIENDS_ON_DEMAND_COUNT, oldestSentRequest.ToUnixTimeMilliseconds(),
@@ -465,20 +449,19 @@ public class FriendsHUDController : IHUD
 
     private void ShowOrHideMoreFriendRequestsToLoadHint()
     {
-        if (fetchedRequestCount == 0)
+        if (View.FriendRequestCount >= friendsController.TotalFriendRequestCount)
             View.HideMoreRequestsToLoadHint();
         else
             // TODO: solve hidden request count
-            View.ShowMoreRequestsToLoadHint(0);
+            View.ShowMoreRequestsToLoadHint();
     }
 
     private void ShowOrHideMoreFriendsToLoadHint()
     {
-        if (fetchedFriendCount == 0 || searchingFriends)
+        if (View.FriendCount >= friendsController.TotalFriendCount || searchingFriends)
             View.HideMoreFriendsToLoadHint();
         else
-            // TODO: solve hidden friend count
-            View.ShowMoreFriendsToLoadHint(0);
+            View.ShowMoreFriendsToLoadHint();
     }
 
     private void SearchFriends(string search)
@@ -491,7 +474,6 @@ public class FriendsHUDController : IHUD
             return;
         }
 
-        fetchedFriendCount = 0;
         friendsController.GetFriendsAsync(search, MAX_SEARCHED_FRIENDS);
 
         Dictionary<string, FriendEntryModel> FilterFriendsByUserNameAndUserId(string search)
