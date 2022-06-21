@@ -8,9 +8,11 @@ public class WorldChatWindowController : IHUD
 {
     private const string GENERAL_CHANNEL_ID = "general";
     private const int MAX_SEARCHED_CHANNELS = 100;
-    private const int LOAD_PRIVATE_CHATS_ON_DEMAND_COUNT = 30;
-    private const int LOAD_PRIVATE_CHATS_ON_SEARCH_COUNT = 10;
-    private const int INITIAL_DISPLAYED_PRIVATE_CHAT_COUNT = 50;
+    private const int USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD = 50;
+    private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SHOW_MORE = 20;
+    private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH = 20;
+    private const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD = 30;
+    private const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE = 10;
 
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
@@ -108,7 +110,7 @@ public class WorldChatWindowController : IHUD
             if (friendsController.IsInitialized && !areDMsRequestedByFirstTime)
             {
                 RequestFriendsWithDirectMessages(
-                    INITIAL_DISPLAYED_PRIVATE_CHAT_COUNT,
+                    USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                     DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
             }
         }
@@ -126,7 +128,7 @@ public class WorldChatWindowController : IHUD
         if (view.IsActive && !areDMsRequestedByFirstTime)
         {
             RequestFriendsWithDirectMessages(
-                INITIAL_DISPLAYED_PRIVATE_CHAT_COUNT,
+                USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         }
         else
@@ -144,7 +146,7 @@ public class WorldChatWindowController : IHUD
         {
             RequestPrivateMessages(
                 userId,
-                LOAD_PRIVATE_CHATS_ON_DEMAND_COUNT,
+                USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD,
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         }
 
@@ -251,7 +253,7 @@ public class WorldChatWindowController : IHUD
     private bool ShouldDisplayPrivateChat(string userId)
     {
         if (!friendsController.IsInitialized) return false;
-        if (view.PrivateChannelsCount < INITIAL_DISPLAYED_PRIVATE_CHAT_COUNT) return true;
+        if (view.PrivateChannelsCount < USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD) return true;
         if (view.ContainsPrivateChannel(userId)) return true;
         return false;
     }
@@ -290,7 +292,7 @@ public class WorldChatWindowController : IHUD
         }
 
         UpdateMoreChannelsToLoadHint();
-        RequestFriendsWithDirectMessagesFromSearch(search, LOAD_PRIVATE_CHATS_ON_SEARCH_COUNT);
+        RequestFriendsWithDirectMessagesFromSearch(search, USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH);
         SearchChannelsLocally(search);
     }
 
@@ -322,7 +324,7 @@ public class WorldChatWindowController : IHUD
     private void ShowMorePrivateChats()
     {
         RequestFriendsWithDirectMessages(
-            LOAD_PRIVATE_CHATS_ON_DEMAND_COUNT,
+            USER_DM_ENTRIES_TO_REQUEST_FOR_SHOW_MORE,
             olderDMTimestampRequested);
     }
     
