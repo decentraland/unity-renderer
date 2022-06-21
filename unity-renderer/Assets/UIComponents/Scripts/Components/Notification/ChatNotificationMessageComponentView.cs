@@ -37,7 +37,7 @@ public interface IChatNotificationMessageComponentView
     /// Set the notification player icon if isPrivate is true.
     /// </summary>
     /// <param name="newIcon">New Icon. Null for hide the icon.</param>
-    void SetIcon(Sprite newIcon);
+    void SetImage(Sprite newIcon);
 
     /// <summary>
     /// Set the notification maximum content characters.
@@ -65,7 +65,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] internal TMP_Text notificationMessage;
     [SerializeField] internal TMP_Text notificationHeader;
     [SerializeField] internal TMP_Text notificationTimestamp;
-    [SerializeField] internal Image icon;
+    [SerializeField] internal ImageComponentView image;
     [SerializeField] internal bool isPrivate;
 
     [Header("Configuration")]
@@ -92,7 +92,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         SetTimestamp(model.time);
         SetNotificationHeader(model.messageHeader);
         SetIsPrivate(model.isPrivate);
-        SetIcon(model.profileIcon);
+        SetImage(model.profileIcon);
     }
 
     public void SetMessage(string message) 
@@ -123,16 +123,16 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     {
         model.isPrivate = isPrivate;
         this.isPrivate = isPrivate;
-        icon.gameObject.SetActive(isPrivate);
+        image.gameObject.SetActive(isPrivate);
     }
 
-    public void SetIcon(Sprite newIcon)
+    public void SetImage(Sprite newImage)
     {
         if (!isPrivate)
             return;
 
-        model.profileIcon = newIcon;
-        icon.sprite = newIcon;
+        model.profileIcon = newImage;
+        image.SetImage(newImage);
     }
 
     public void SetMaxContentCharacters(int maxContentCharacters)

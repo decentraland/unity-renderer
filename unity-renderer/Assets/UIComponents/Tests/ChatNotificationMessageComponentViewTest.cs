@@ -57,7 +57,7 @@ public class ChatNotificationMessageComponentViewTest
 
         // Assert
         Assert.AreEqual(testModel, chatNotificationComponent.model, "The model does not match after configuring the notification.");
-        Assert.False(chatNotificationComponent.icon.gameObject.activeInHierarchy);
+        Assert.False(chatNotificationComponent.image.gameObject.activeInHierarchy);
     }
 
     [Test]
@@ -79,7 +79,7 @@ public class ChatNotificationMessageComponentViewTest
 
         // Assert
         Assert.AreEqual(testModel, chatNotificationComponent.model, "The model does not match after configuring the notification.");
-        Assert.True(chatNotificationComponent.icon.gameObject.activeInHierarchy);
+        Assert.True(chatNotificationComponent.image.gameObject.activeInHierarchy);
     }
 
     [Test]
@@ -169,6 +169,6 @@ public class ChatNotificationMessageComponentViewTest
         //Assert
         Assert.AreEqual(isPrivate, chatNotificationComponent.model.isPrivate, "The private status does not match in the model");
         Assert.AreEqual(isPrivate, chatNotificationComponent.isPrivate, "The private status does not match");
-        Assert.AreEqual(isPrivate, chatNotificationComponent.icon.gameObject.activeInHierarchy, "The icon active status does not reflect the isPrivate status");
+        Assert.AreEqual(isPrivate, chatNotificationComponent.image.gameObject.activeInHierarchy, "The icon active status does not reflect the isPrivate status");
     }
 }
