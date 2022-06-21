@@ -35,8 +35,6 @@ namespace DCL.EmotesWheel
         [SerializeField] internal TMP_Text selectedEmoteName;
         [SerializeField] internal List<RarityColor> rarityColors;
         [SerializeField] internal GameObject customizeTitle;
-        [SerializeField] internal List<GameObject> gameObjectsToHideWhenCustomizeFFIsDeactivated;
-
 
         public static EmotesWheelView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesWheelView>(); }
 
@@ -63,11 +61,6 @@ namespace DCL.EmotesWheel
             gameObject.SetActive(visible);
             if (visible)
             {
-                foreach (GameObject go in gameObjectsToHideWhenCustomizeFFIsDeactivated)
-                {
-                    go.SetActive(true);
-                }
-
                 AudioScriptableObjects.dialogOpen.Play(true);
             }
             else
