@@ -73,9 +73,9 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         GetFakeFriendsAsync(limit, skip, "ff").Forget();
     }
 
-    public void GetFriendsAsync(string usernameOrId)
+    public void GetFriendsAsync(string usernameOrId, int limit)
     {
-        GetFakeFriendsAsync(30, 0, usernameOrId).Forget();
+        GetFakeFriendsAsync(limit, 0, usernameOrId).Forget();
     }
 
     public void GetFriendRequestsAsync(

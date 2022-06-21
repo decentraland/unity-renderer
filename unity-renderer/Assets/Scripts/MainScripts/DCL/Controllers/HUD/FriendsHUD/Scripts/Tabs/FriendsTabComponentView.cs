@@ -43,11 +43,11 @@ public class FriendsTabComponentView : BaseComponentView
     private Pool entryPool;
     private int currentAvatarSnapshotIndex;
     private bool isLayoutDirty;
-    private Dictionary<string, FriendEntryModel> filteredEntries;
     private IChatController chatController;
     private ILastReadMessagesService lastReadMessagesService;
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
+    private bool isSearchMode;
 
     public Dictionary<string, FriendEntry> Entries => entries;
     public int Count => entries.Count + creationQueue.Keys.Count(s => !entries.ContainsKey(s));
@@ -217,7 +217,7 @@ public class FriendsTabComponentView : BaseComponentView
         var entry = entries[userId];
         entry.Populate(model);
 
-        if (filteredEntries?.ContainsKey(userId) ?? false)
+        if (isSearchMode)
         {
             offlineFriendsList.list.Remove(userId);
             onlineFriendsList.list.Remove(userId);
@@ -298,8 +298,8 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void ClearFilter()
     {
-        filteredEntries = null;
-
+        isSearchMode = false;
+        
         if (searchResultsFriendList.list.gameObject.activeSelf)
         {
             foreach (var pair in entries)
@@ -330,8 +330,8 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void Filter(Dictionary<string, FriendEntryModel> search)
     {
-        filteredEntries = search;
-
+        isSearchMode = true;
+        
         if (ListByOnlineStatus)
         {
             offlineFriendsList.Hide();

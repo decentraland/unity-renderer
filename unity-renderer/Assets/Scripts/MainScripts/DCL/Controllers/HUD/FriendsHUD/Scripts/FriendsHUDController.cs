@@ -24,8 +24,9 @@ public class FriendsHUDController : IHUD
     private int friendSkipCount;
     private int fetchedFriendCount;
     private int fetchedRequestCount;
-    private DateTime oldestReceivedRequest;
-    private DateTime oldestSentRequest;
+    private bool searchingFriends;
+    private DateTimeOffset oldestReceivedRequest;
+    private DateTimeOffset oldestSentRequest;
 
     public IFriendsHUDComponentView View { get; private set; }
 
@@ -457,8 +458,9 @@ public class FriendsHUDController : IHUD
         if (!friendsController.IsInitialized) return;
         fetchedRequestCount = 0;
         ShowOrHideMoreFriendRequestsToLoadHint();
-        friendsController.GetFriendRequestsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, 0,
-            LOAD_FRIENDS_ON_DEMAND_COUNT, 0);
+        friendsController.GetFriendRequestsAsync(
+            LOAD_FRIENDS_ON_DEMAND_COUNT, oldestSentRequest.ToUnixTimeMilliseconds(),
+            LOAD_FRIENDS_ON_DEMAND_COUNT, oldestReceivedRequest.ToUnixTimeMilliseconds());
     }
 
     private void ShowOrHideMoreFriendRequestsToLoadHint()
@@ -472,7 +474,7 @@ public class FriendsHUDController : IHUD
 
     private void ShowOrHideMoreFriendsToLoadHint()
     {
-        if (fetchedFriendCount == 0)
+        if (fetchedFriendCount == 0 || searchingFriends)
             View.HideMoreFriendsToLoadHint();
         else
             // TODO: solve hidden friend count
@@ -484,9 +486,13 @@ public class FriendsHUDController : IHUD
         if (string.IsNullOrEmpty(search))
         {
             View.ClearFriendFilter();
+            searchingFriends = false;
             ShowOrHideMoreFriendsToLoadHint();
             return;
         }
+
+        fetchedFriendCount = 0;
+        friendsController.GetFriendsAsync(search, MAX_SEARCHED_FRIENDS);
 
         Dictionary<string, FriendEntryModel> FilterFriendsByUserNameAndUserId(string search)
         {
@@ -502,19 +508,8 @@ public class FriendsHUDController : IHUD
             }).Take(MAX_SEARCHED_FRIENDS).ToDictionary(model => model.userId, model => model);
         }
 
-        void DisplayMissingFriends(IEnumerable<FriendEntryModel> filteredFriends)
-        {
-            foreach (var model in filteredFriends)
-            {
-                if (View.ContainsFriend(model.userId)) return;
-                var status = friendsController.GetUserStatus(model.userId);
-                if (status == null) continue;
-                View.Set(model.userId, FriendshipStatus.FRIEND, model);
-            }
-        }
-
-        var filteredFriends = FilterFriendsByUserNameAndUserId(search);
-        DisplayMissingFriends(filteredFriends.Values);
-        View.FilterFriends(filteredFriends);
+        View.FilterFriends(FilterFriendsByUserNameAndUserId(search));
+        View.HideMoreFriendsToLoadHint();
+        searchingFriends = true;
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 
 namespace DCL.Interface
 {
@@ -109,7 +108,8 @@ namespace DCL.Interface
 
         public void GetFriendsAsync(int limit, int skip) => friendsController.GetFriendsAsync(limit, skip);
 
-        public void GetFriendsAsync(string usernameOrId) => friendsController.GetFriendsAsync(usernameOrId);
+        public void GetFriendsAsync(string usernameOrId, int limit) =>
+            friendsController.GetFriendsAsync(usernameOrId, limit);
 
         public void GetFriendRequestsAsync(
             int sentLimit, long sentFromTimestamp,

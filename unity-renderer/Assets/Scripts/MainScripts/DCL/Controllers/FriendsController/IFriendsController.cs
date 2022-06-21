@@ -23,7 +23,7 @@ public interface IFriendsController
     bool IsFriend(string userId);
     void RemoveFriend(string friendId);
     void GetFriendsAsync(int limit, int skip);
-    void GetFriendsAsync(string usernameOrId);
+    void GetFriendsAsync(string usernameOrId, int limit);
     void GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit, long receivedFromTimestamp);
     void GetFriendsWithDirectMessages(int limit, long fromTimestamp);
     void GetFriendsWithDirectMessages(string userNameOrId, int limit);

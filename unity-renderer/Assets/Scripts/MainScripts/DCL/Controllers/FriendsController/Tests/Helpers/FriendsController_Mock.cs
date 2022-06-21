@@ -40,6 +40,10 @@ public class FriendsController_Mock : IFriendsController
     {
     }
 
+    public void GetFriendsAsync(string usernameOrId, int limit)
+    {
+    }
+
     public void GetFriendsAsync(string usernameOrId)
     {
     }

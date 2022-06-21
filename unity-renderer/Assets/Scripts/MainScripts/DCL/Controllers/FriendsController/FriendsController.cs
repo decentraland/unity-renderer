@@ -129,7 +129,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         throw new NotImplementedException();
     }
 
-    public void GetFriendsAsync(string usernameOrId)
+    public void GetFriendsAsync(string usernameOrId, int limit)
     {
         throw new NotImplementedException();
     }
