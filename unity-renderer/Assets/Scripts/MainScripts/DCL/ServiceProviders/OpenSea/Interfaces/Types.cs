@@ -19,7 +19,7 @@ namespace DCL.Helpers.NFT
         }
     }
 
-    public struct NFTInfo
+    public class NFTInfo
     {
         public string name;
         public string tokenId;
