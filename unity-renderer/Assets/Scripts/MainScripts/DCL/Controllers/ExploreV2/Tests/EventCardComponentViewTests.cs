@@ -353,6 +353,8 @@ public class EventCardComponentViewTests
         // Act
         eventCardModalComponent.OnCloseActionTriggered(new DCLAction_Trigger());
 
+        // TODO: until we remove the PopulateTask.PopulateTask() 3-frame wait we should keep this 3-frame wait hack,
+        // otherwise this test always fails in the desktop client CI.
         yield return null;
         yield return null;
         yield return null;
