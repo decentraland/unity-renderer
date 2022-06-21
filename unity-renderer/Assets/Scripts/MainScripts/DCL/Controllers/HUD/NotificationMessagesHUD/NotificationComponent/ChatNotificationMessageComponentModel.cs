@@ -11,6 +11,6 @@ public class ChatNotificationMessageComponentModel : BaseComponentModel
     public string time;
     public string messageHeader;
     public bool isPrivate;
-    public Sprite profileIcon;
+    public string imageUri;
     public string notificationTargetId;
 }

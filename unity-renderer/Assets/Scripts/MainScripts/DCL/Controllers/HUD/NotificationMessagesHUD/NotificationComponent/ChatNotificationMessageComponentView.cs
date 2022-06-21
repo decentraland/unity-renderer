@@ -1,62 +1,9 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
-public interface IChatNotificationMessageComponentView
-{
-    /// <summary>
-    /// Event that will be triggered when the notification is clicked.
-    /// </summary>
-    Button.ButtonClickedEvent onClick { get; }
-
-    /// <summary>
-    /// Set the notification text.
-    /// </summary>
-    /// <param name="message">New message.</param>
-    void SetMessage(string message);
-
-    /// <summary>
-    /// Set the notification time.
-    /// </summary>
-    /// <param name="timestamp">New timestamp.</param>
-    void SetTimestamp(string timestamp);
-
-    /// <summary>
-    /// Set the notification header, can be a channel name or a user name.
-    /// </summary>
-    /// <param name="header">New header.</param>
-    void SetNotificationHeader(string header);
-
-    /// <summary>
-    /// Set the notification type, can be a private or not.
-    /// </summary>
-    /// <param name="isPrivate">If the notification is private or not.</param>
-    void SetIsPrivate(bool isPrivate);
-
-    /// <summary>
-    /// Set the notification player icon if isPrivate is true.
-    /// </summary>
-    /// <param name="newIcon">New Icon. Null for hide the icon.</param>
-    void SetImage(Sprite newIcon);
-
-    /// <summary>
-    /// Set the notification maximum content characters.
-    /// </summary>
-    /// <param name="maxContentCharacters">Max content characters</param>
-    void SetMaxContentCharacters(int maxContentCharacters);
-
-    /// <summary>
-    /// Set the notification maximum header characters.
-    /// </summary>
-    /// <param name="maxHeaderCharacters">Max header characters</param>
-    void SetMaxHeaderCharacters(int maxHeaderCharacters);
-
-    /// <summary>
-    /// Set the notification target id (either a channel or a user id)
-    /// </summary>
-    /// <param name="notificationTargetId">New target id.</param>
-    void SetNotificationTargetId(string notificationTargetId);
-}
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 public class ChatNotificationMessageComponentView : BaseComponentView, IChatNotificationMessageComponentView, IComponentModelConfig
 {
@@ -71,7 +18,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [Header("Configuration")]
     [SerializeField] internal ChatNotificationMessageComponentModel model;
 
-    public Button.ButtonClickedEvent onClick => button?.onClick;
+    public event Action<string> OnClickedNotification;
     public string notificationTargetId;
     private int maxContentCharacters, maxHeaderCharacters;
 
@@ -79,6 +26,13 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     {
         model = (ChatNotificationMessageComponentModel)newModel;
         RefreshControl();
+    }
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        button?.onClick.AddListener(()=>OnClickedNotification.Invoke(notificationTargetId));
     }
 
     public override void RefreshControl()
@@ -92,7 +46,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         SetTimestamp(model.time);
         SetNotificationHeader(model.messageHeader);
         SetIsPrivate(model.isPrivate);
-        SetImage(model.profileIcon);
+        SetImage(model.imageUri);
     }
 
     public void SetMessage(string message) 
@@ -126,13 +80,13 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         image.gameObject.SetActive(isPrivate);
     }
 
-    public void SetImage(Sprite newImage)
+    public void SetImage(string uri)
     {
         if (!isPrivate)
             return;
 
-        model.profileIcon = newImage;
-        image.SetImage(newImage);
+        model.imageUri = uri;
+        image.SetImage(uri);
     }
 
     public void SetMaxContentCharacters(int maxContentCharacters)

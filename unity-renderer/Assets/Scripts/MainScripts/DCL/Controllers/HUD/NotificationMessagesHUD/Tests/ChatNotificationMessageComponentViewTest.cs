@@ -4,15 +4,13 @@ using UnityEngine;
 public class ChatNotificationMessageComponentViewTest
 {
     private ChatNotificationMessageComponentView chatNotificationComponent;
-    private Texture2D testTexture;
-    private Sprite testSprite;
+    private string testSpriteUri;
 
     [SetUp]
     public void SetUp()
     {
         chatNotificationComponent = BaseComponentView.Create<ChatNotificationMessageComponentView>("ChatNotificationMessage");
-        testTexture = new Texture2D(20, 20);
-        testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
+        testSpriteUri = "testuri";
     }
 
     [TearDown]
@@ -20,8 +18,6 @@ public class ChatNotificationMessageComponentViewTest
     {
         chatNotificationComponent.Dispose();
         GameObject.Destroy(chatNotificationComponent.gameObject);
-        GameObject.Destroy(testTexture);
-        GameObject.Destroy(testSprite);
     }
 
     [Test]
@@ -29,7 +25,7 @@ public class ChatNotificationMessageComponentViewTest
     {
         // Arrange
         bool isClicked = false;
-        chatNotificationComponent.onClick.AddListener(() => isClicked = true);
+        chatNotificationComponent.OnClickedNotification += (_) => isClicked = true;
 
         // Act
         chatNotificationComponent.button.onClick.Invoke();
@@ -48,7 +44,7 @@ public class ChatNotificationMessageComponentViewTest
             time = "12:44",
             messageHeader = "#general",
             isPrivate = false,
-            profileIcon = null,
+            imageUri = null,
             notificationTargetId = "testId"
         };
 
@@ -70,7 +66,7 @@ public class ChatNotificationMessageComponentViewTest
             time = "12:44",
             messageHeader = "SpottyGoat",
             isPrivate = true,
-            profileIcon = testSprite,
+            imageUri = null,
             notificationTargetId = "testId"
         };
 
