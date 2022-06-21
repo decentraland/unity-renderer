@@ -17,7 +17,6 @@ public class ChatNotificationMessageComponentViewTest
     public void TearDown()
     {
         chatNotificationComponent.Dispose();
-        GameObject.Destroy(chatNotificationComponent.gameObject);
     }
 
     [Test]
