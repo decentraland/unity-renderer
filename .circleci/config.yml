@@ -230,6 +230,10 @@ jobs:
             apt-get install -y xsltproc
             xsltproc --output unity-renderer/benchmark-results/benchmark-results-junit.xml nunit-to-junit.xsl unity-renderer/benchmark-results.xml
       - run: apt-get -y -qq install awscli      
+      - run:
+          name: upload benchmark report
+          command: |
+            aws s3 sync /tmp/workspace/unity-renderer/unity-renderer/benchmark-results.xml "s3://${S3_BUCKET}/branch-benchmark/${CIRCLE_BRANCH}/benchmark-results.xml" --acl public-read
       - store_test_results:
           path: ./unity-renderer/benchmark-results
       - store_artifacts:
