@@ -3,39 +3,39 @@ using NUnit.Framework.Internal;
 
 public class NFTInfoLoadHelperShould
 {
-    private NFTInfoLoadHelper loadHelper;
+    private NFTInfoRetriever retriever;
 
     [SetUp]
     protected void SetUp()
     {
-        loadHelper = new NFTInfoLoadHelper();
+        retriever = new NFTInfoRetriever();
     }
 
     [Test]
     public void CallFailWhenFetchFails()
     {
         //Act - Assert
-        loadHelper.OnFetchInfoSuccess += info => Assert.Fail();
-        loadHelper.OnFetchInfoFail += Assert.Pass;
-        loadHelper.FetchNFTInfo("testAddress", "testId");
+        retriever.OnFetchInfoSuccess += info => Assert.Fail();
+        retriever.OnFetchInfoFail += Assert.Pass;
+        retriever.FetchNFTInfo("testAddress", "testId");
     }
 
     [Test]
     public void DisposeCorrectly()
     {
         //Arrange
-        loadHelper.FetchNFTInfo("testAddress", "testId");
+        retriever.FetchNFTInfo("testAddress", "testId");
 
         //Act
-        loadHelper.Dispose();
+        retriever.Dispose();
 
         //Assert
-        Assert.IsNull(loadHelper.fetchCoroutine);
+        Assert.IsNull(retriever.fetchCoroutine);
     }
 
     [TearDown]
     protected void TearDown()
     {
-        loadHelper.Dispose();
+        retriever.Dispose();
     }
 }

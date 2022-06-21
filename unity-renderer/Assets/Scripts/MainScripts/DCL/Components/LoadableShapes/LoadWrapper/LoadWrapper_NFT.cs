@@ -20,11 +20,15 @@ namespace DCL.Components
         public override void Unload()
         {
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
-            loaderController.OnLoadingAssetSuccess -= OnLoadingAssetSuccess;
+            if (loaderController != null)
+            {
+                loaderController.OnLoadingAssetSuccess -= OnLoadingAssetSuccess;
+                Object.Destroy(loaderController);
+            }
 
-            Object.Destroy(loaderController);
-
-            Utils.SafeDestroy(entity.meshRootGameObject);
+            if(entity.meshRootGameObject != null)
+                Utils.SafeDestroy(entity.meshRootGameObject);
+            
             entity.meshesInfo.CleanReferences();
 
             DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.id, rendereable);

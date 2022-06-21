@@ -8,13 +8,13 @@ using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public class ECSTextShapeComponent : IDisposable
+    public class ECSTextShapeRegister : IDisposable
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public ECSTextShapeComponent(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public ECSTextShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
             factory.AddOrReplaceComponent(componentId, TextShapeSerialization.Deserialize, () => new ECSTextShapeComponentHandler(DataStore.i.ecs7, AssetPromiseKeeper_Font.i));
             componentWriter.AddOrReplaceComponentSerializer<PBTextShape>(componentId, TextShapeSerialization.Serialize);
