@@ -33,24 +33,6 @@ mergeInto(LibraryManager.library, {
   },
   ToggleFPSCap: function(useFPSCap) {
     window.capFPS = useFPSCap;
-  },
-  CheckURLParam: function(targetParam) {    
-    return window.DCL.queryString.has(Pointer_stringify(targetParam))
-  },
-  GetURLParam: function(targetParam) {
-    const stringifiedTargetParam = Pointer_stringify(targetParam)
-    
-    if(window.DCL.queryString.has(stringifiedTargetParam)) {
-        const urlParamValue = window.DCL.queryString.get(stringifiedTargetParam);
-      
-        // How to return strings: https://docs.unity3d.com/Manual/webgl-interactingwithbrowserscripting.html
-        var bufferSize = lengthBytesUTF8(urlParamValue) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(urlParamValue, buffer, bufferSize);
-        return buffer;
-    }
-    
-    return '';
   }
 });
 
