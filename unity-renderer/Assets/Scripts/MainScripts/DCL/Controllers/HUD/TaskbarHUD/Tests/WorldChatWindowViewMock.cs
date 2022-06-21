@@ -84,6 +84,14 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
+    public void ShowSearchLoading()
+    {
+    }
+
+    public void HideSearchLoading()
+    {
+    }
+
     public void Filter(Dictionary<string, PrivateChatModel> privateChats, Dictionary<string, PublicChatChannelModel> publicChannels)
     {
     }

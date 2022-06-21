@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static FriendsController;
 
@@ -107,12 +108,11 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         SimulateDelayedResponseFor_GetFriendsWithDirectMessages(limit);
     }
 
-    public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
+    public void GetFriendsWithDirectMessages(
+        string userNameOrId,
+        int limit)
     {
-        // TODO:
-        // 1. Prepare a set of fake data
-        // 2. Delay
-        // 3. Simulate the kernel response (call to the corresponding controller method that manage the response)
+        SimulateDelayedResponseFor_GetFriendsWithDirectMessages(userNameOrId, limit);
     }
 
     private async UniTask SimulateDelayedResponseFor_GetFriendsWithDirectMessages(int limit)
@@ -142,7 +142,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
                 {
                     userId = fakeUserId,
                     lastMessageBody = $"This is the last message sent for {fakeUserId}",
-                    lastMessageTimestamp = DateTimeOffset.UtcNow.AddDays(UnityEngine.Random.Range(-10, 0)).ToUnixTimeMilliseconds()
+                    lastMessageTimestamp = DateTimeOffset.UtcNow.AddMinutes(-(i + 1)).ToUnixTimeMilliseconds()
                 });
 
             amountOfFriendsWithDirectMessagesRequested++;
@@ -153,6 +153,48 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
         mockedPayload.currentFriendsWithDirectMessages = mockedFriendWithDirectMessages.ToArray();
         
+        return JsonUtility.ToJson(mockedPayload);
+    }
+
+    private async UniTask SimulateDelayedResponseFor_GetFriendsWithDirectMessages(string userNameOrId, int limit)
+    {
+        await UniTask.Delay(UnityEngine.Random.Range(1000, 3000));
+
+        controller.AddFriendsWithDirectMessages(
+            CreateMockedDataFor_AddFriendsWithDirectMessagesPayload(userNameOrId, limit));
+    }
+
+    private string CreateMockedDataFor_AddFriendsWithDirectMessagesPayload(string userNameOrId, int numberOfUsers)
+    {
+        List<string> allFriendsWithDMsInServer = new List<string>();
+        for (int i = 0; i < MAX_AMOUNT_OF_FAKE_FRIENDS; i++)
+        {
+            allFriendsWithDMsInServer.Add($"fakeuser{i + 1}");
+        }
+
+        List<string> resultsFound = allFriendsWithDMsInServer.Where(x => x.ToLower().Contains(userNameOrId.ToLower())).ToList();
+
+        AddFriendsWithDirectMessagesPayload mockedPayload = new AddFriendsWithDirectMessagesPayload();
+        List<FriendWithDirectMessages> mockedFriendWithDirectMessages = new List<FriendWithDirectMessages>();
+
+        for (int i = 0; i < resultsFound.Count(); i++)
+        {
+            if (i >= numberOfUsers)
+                break;
+
+            mockedFriendWithDirectMessages.Add(
+                new FriendWithDirectMessages
+                {
+                    userId = resultsFound[i],
+                    lastMessageBody = $"This is the last message sent for {resultsFound[i]}",
+                    lastMessageTimestamp = DateTimeOffset.UtcNow.AddMinutes(-(i + 1)).ToUnixTimeMilliseconds()
+                });
+
+            CreateFakeFriend(resultsFound[i]);
+        }
+
+        mockedPayload.currentFriendsWithDirectMessages = mockedFriendWithDirectMessages.ToArray();
+
         return JsonUtility.ToJson(mockedPayload);
     }
 

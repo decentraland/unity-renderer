@@ -168,6 +168,9 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public void InitializeFriends(string json)
     {
+        if (IsInitialized)
+            return;
+
         IsInitialized = true;
 
         FriendshipInitializationMessage msg = JsonUtility.FromJson<FriendshipInitializationMessage>(json);

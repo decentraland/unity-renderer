@@ -14,6 +14,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] internal CollapsablePublicChannelListComponentView publicChannelList;
     [SerializeField] internal CollapsableDirectChatListComponentView directChatList;
     [SerializeField] internal CollapsableChatSearchListComponentView searchResultsList;
+    [SerializeField] internal GameObject searchLoading;
     [SerializeField] internal Button closeButton;
     [SerializeField] internal GameObject directChatsLoadingContainer;
     [SerializeField] internal GameObject directChatsContainer;
@@ -168,6 +169,17 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         loadMoreEntriesButton.gameObject.SetActive(false);
     }
 
+    public void HideSearchLoading()
+    {
+        searchLoading.SetActive(false);
+    }
+
+    public void ShowSearchLoading()
+    {
+        searchLoading.SetActive(true);
+        searchLoading.transform.SetAsLastSibling();
+    }
+
     public void ClearFilter()
     {
         filteredPrivateChats = null;
@@ -196,14 +208,6 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         filteredPrivateChats = privateChats;
 
-        foreach (var chat in privateChats)
-            if (!directChatList.Contains(chat.Key))
-                SetPrivateChat(chat.Value);
-
-        foreach (var channel in publicChannels)
-            if (!publicChannelList.Contains(channel.Key))
-                SetPublicChannel(channel.Value);
-
         searchResultsList.Import(publicChannelList, directChatList);
         searchResultsList.Show();
         searchResultsList.Sort();
@@ -216,6 +220,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             entry => publicChannels.ContainsKey(entry.Model.channelId));
 
         UpdateHeaders();
+        searchLoading.transform.SetAsLastSibling();
     }
 
     public bool ContainsPrivateChannel(string userId) => creationQueue.ContainsKey(userId)
