@@ -38,6 +38,7 @@ namespace DCL
             SetSamples(samples);
         }
 
+        // Note (Kinerius): This code is lazy and performs poorly, please optimize if used outside our debugging tools
         public void SetSamples(double[] samples)
         {
             this.samples = samples;
