@@ -233,8 +233,11 @@ public class FriendsHUDController : IHUD
     {
         var model = GetOrCreateModel(userId, newStatus);
         model.CopyFrom(newStatus);
+        
         View.Set(userId, newStatus.friendshipStatus, model);
+        
         UpdatePaginationState(userId, newStatus);
+        UpdateNotificationsCounter();
         ShowOrHideMoreFriendsToLoadHint();
         ShowOrHideMoreFriendRequestsToLoadHint();
     }
