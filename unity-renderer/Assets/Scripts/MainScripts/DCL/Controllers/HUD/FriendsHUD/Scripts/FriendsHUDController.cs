@@ -63,8 +63,8 @@ public class FriendsHUDController : IHUD
         view.OnRequireMoreFriends += DisplayMoreFriends;
         view.OnRequireMoreFriendRequests += DisplayMoreFriendRequests;
         view.OnSearchFriendsRequested += SearchFriends;
-        view.OnFriendListDisplayed += DisplayMoreFriends;
-        view.OnRequestListDisplayed += DisplayMoreFriendRequests;
+        view.OnFriendListDisplayed += DisplayFriendsIfAnyIsLoaded;
+        view.OnRequestListDisplayed += DisplayFriendRequestsIfAnyIsLoaded;
 
         ownUserProfile = userProfileBridge.GetOwn();
         ownUserProfile.OnUpdate -= HandleProfileUpdated;
@@ -91,7 +91,7 @@ public class FriendsHUDController : IHUD
         ShowOrHideMoreFriendsToLoadHint();
         ShowOrHideMoreFriendRequestsToLoadHint();
     }
-    
+
     public void Dispose()
     {
         if (friendsController != null)
@@ -113,8 +113,8 @@ public class FriendsHUDController : IHUD
             View.OnRequireMoreFriends -= DisplayMoreFriends;
             View.OnRequireMoreFriendRequests -= DisplayMoreFriendRequests;
             View.OnSearchFriendsRequested -= SearchFriends;
-            View.OnFriendListDisplayed -= DisplayMoreFriends;
-            View.OnRequestListDisplayed -= DisplayMoreFriendRequests;
+            View.OnFriendListDisplayed -= DisplayFriendsIfAnyIsLoaded;
+            View.OnRequestListDisplayed -= DisplayFriendRequestsIfAnyIsLoaded;
             View.Dispose();
         }
 
@@ -398,7 +398,7 @@ public class FriendsHUDController : IHUD
     private void UpdateNotificationsCounter()
     {
         if (View.IsActive())
-            dataStore.friendNotifications.seenFriends.Set(friendsController.AllocatedFriendCount);
+            dataStore.friendNotifications.seenFriends.Set(View.FriendCount);
         
         dataStore.friendNotifications.pendingFriendRequestCount.Set(friendsController.TotalFriendRequestCount);
     }
@@ -435,12 +435,18 @@ public class FriendsHUDController : IHUD
             socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.userId,
                 PlayerActionSource.FriendsHUD);
     }
+    
+    private void DisplayFriendsIfAnyIsLoaded()
+    {
+        if (View.FriendCount > 0) return;
+        DisplayMoreFriends();
+    }
 
     private void DisplayMoreFriends()
     {
         if (!friendsController.IsInitialized) return;
         ShowOrHideMoreFriendsToLoadHint();
-        friendsController.GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, friends.Count);
+        friendsController.GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendCount);
     }
     
     private void DisplayMoreFriendRequests()
@@ -450,6 +456,12 @@ public class FriendsHUDController : IHUD
         friendsController.GetFriendRequestsAsync(
             LOAD_FRIENDS_ON_DEMAND_COUNT, oldestSentRequest.ToUnixTimeMilliseconds(),
             LOAD_FRIENDS_ON_DEMAND_COUNT, oldestReceivedRequest.ToUnixTimeMilliseconds());
+    }
+    
+    private void DisplayFriendRequestsIfAnyIsLoaded()
+    {
+        if (View.FriendRequestCount > 0) return;
+        DisplayMoreFriendRequests();
     }
 
     private void ShowOrHideMoreFriendRequestsToLoadHint()

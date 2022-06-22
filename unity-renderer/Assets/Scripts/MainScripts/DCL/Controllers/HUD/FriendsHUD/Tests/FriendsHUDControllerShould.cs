@@ -223,7 +223,8 @@ public class FriendsHUDControllerShould
     [Test]
     public void NotificationsAreUpdatedWhenFriendshipActionUpdates()
     {
-        friendsController.ReceivedRequestCount.Returns(FRIEND_REQUEST_SHOWN);
+        friendsController.TotalFriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
+        view.FriendCount.Returns(FRIENDS_COUNT);
         view.IsActive().Returns(true);
 
         friendsController.OnUpdateFriendship +=
@@ -236,8 +237,9 @@ public class FriendsHUDControllerShould
     [Test]
     public void NotificationsAreUpdatedWhenIsVisible()
     {
-        friendsController.ReceivedRequestCount.Returns(FRIEND_REQUEST_SHOWN);
+        friendsController.TotalFriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         view.IsActive().Returns(true);
+        view.FriendCount.Returns(FRIENDS_COUNT);
 
         controller.SetVisibility(true);
 
@@ -336,14 +338,22 @@ public class FriendsHUDControllerShould
     public void GetFriendsWhenBecomesVisible(int friendCount)
     {
         view.IsFriendListActive.Returns(true);
+        view.FriendCount.Returns(friendCount);
         friendsController.IsInitialized.Returns(true);
-
-        for (var i = 0; i < friendCount; i++)
-            GivenFriend(i.ToString(), FriendshipAction.APPROVED);
         
         controller.SetVisibility(true);
         
         friendsController.Received(1).GetFriendsAsync(30, friendCount);
+    }
+    
+    [Test]
+    public void GetFriendsWhenSwitchesTabs()
+    {
+        friendsController.IsInitialized.Returns(true);
+
+        view.OnFriendListDisplayed += Raise.Event<Action>();
+        
+        friendsController.Received(1).GetFriendsAsync(30, 0);
     }
     
     [Test]
@@ -353,6 +363,17 @@ public class FriendsHUDControllerShould
         friendsController.IsInitialized.Returns(true);
         
         controller.SetVisibility(true);
+        
+        friendsController.Received(1).GetFriendRequestsAsync(30, Arg.Any<long>(), 30, Arg.Any<long>());
+    }
+    
+    [Test]
+    public void GetFriendRequestsWhenSwitchesTabs()
+    {
+        friendsController.IsInitialized.Returns(true);
+        view.FriendRequestCount.Returns(0);
+
+        view.OnRequestListDisplayed += Raise.Event<Action>();
         
         friendsController.Received(1).GetFriendRequestsAsync(30, Arg.Any<long>(), 30, Arg.Any<long>());
     }
@@ -427,9 +448,7 @@ public class FriendsHUDControllerShould
     public void GetMoreFriendsWhenViewRequests(int friendCount)
     {
         friendsController.IsInitialized.Returns(true);
-
-        for (var i = 0; i < friendCount; i++)
-            GivenFriend(i.ToString(), FriendshipAction.APPROVED);
+        view.FriendCount.Returns(friendCount);
         
         view.OnRequireMoreFriends += Raise.Event<Action>();
         
