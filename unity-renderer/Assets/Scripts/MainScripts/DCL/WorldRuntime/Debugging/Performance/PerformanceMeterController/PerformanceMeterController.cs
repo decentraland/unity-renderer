@@ -282,7 +282,7 @@ namespace DCL
             );
 
             // Step 2 - report processed data
-            string format = "F3";
+            string format = "F1";
 
             Log($"Data report step 2 - Processed values:" +
                 $"\n * PERFORMANCE SCORE (0-100) -> {CalculatePerformanceScore()}" +
