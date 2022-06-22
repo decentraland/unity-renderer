@@ -13,16 +13,20 @@ namespace DCL.Emotes
 
         public EmoteAnimationLoader(IWearableRetriever retriever) { this.retriever = retriever; }
 
+        internal readonly string MISSING_CONTAINER_ERROR = "Container cannot be null";
+        internal readonly string MISSING_EMOTE_ERROR = "Emote cannot be null";
+        internal readonly string MISSING_BODYSHAPE_ERROR = "bodyShapeId cannot be null or empty";
+
         public async UniTask LoadEmote(GameObject container, WearableItem emote, string bodyShapeId, CancellationToken ct = default)
         {
             if (container == null)
-                throw new NullReferenceException("Container cannot be null");
+                throw new NullReferenceException(MISSING_CONTAINER_ERROR);
 
             if (emote == null)
-                throw new NullReferenceException("Emote cannot be null");
+                throw new NullReferenceException(MISSING_EMOTE_ERROR);
 
             if (string.IsNullOrEmpty(bodyShapeId))
-                throw new NullReferenceException("bodyShapeId cannot be null or empty");
+                throw new NullReferenceException(MISSING_BODYSHAPE_ERROR);
 
             ct.ThrowIfCancellationRequested();
 
