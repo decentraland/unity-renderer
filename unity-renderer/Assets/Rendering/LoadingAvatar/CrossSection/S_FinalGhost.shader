@@ -430,6 +430,10 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Multiply_float(_FresnelEffect_7290b970d0d64478ac423e59562b3643_Out_3, _Voronoi_1b29ba50777341649006361a20f59bec_Out_3, _Multiply_d8545755016841e68a8d8d1bad287796_Out_2);
     float3 _Lerp_f041a20c158d4893a0585e2c147f534b_Out_3;
     Unity_Lerp_float3(_SceneColor_503dc65774c8493883e3c43314fe2a60_Out_1, (_Property_527c4de35cfa4edfaf31179d87ae0770_Out_0.xyz), (_Multiply_d8545755016841e68a8d8d1bad287796_Out_2.xxx), _Lerp_f041a20c158d4893a0585e2c147f534b_Out_3);
+    float _Split_c4fcfdf55667442c9a2583548295eecd_R_1 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[0];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_G_2 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[1];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_B_3 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[2];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_A_4 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[3];
     float3 _Property_ed030226fd3a4d06bcf8672cfaebbbaf_Out_0 = _RevealPosition;
     float _Float_d12b6b5f63aa45f482f2107a7c15c444_Out_0 = 1;
     float3 _Subtract_205c09e04c674a5e9eaeecb8795c4aad_Out_2;
@@ -447,9 +451,11 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_DotProduct_float3(_Subtract_a74db8075edd4f5fa81366b2814a5e97_Out_2, _Multiply_0d3bda4433b444feabef0b0a335b0dc8_Out_2, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2);
     float _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
     Unity_Step_float(0, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2);
+    float _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    Unity_Multiply_float(_Split_c4fcfdf55667442c9a2583548295eecd_A_4, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2, _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2);
     surface.BaseColor = _Lerp_f041a20c158d4893a0585e2c147f534b_Out_3;
-    surface.Alpha = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
-    surface.AlphaClipThreshold = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
+    surface.Alpha = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    surface.AlphaClipThreshold = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
     return surface;
 }
 
@@ -695,6 +701,11 @@ void Unity_Step_float(float Edge, float In, out float Out)
     Out = step(Edge, In);
 }
 
+void Unity_Multiply_float(float A, float B, out float Out)
+{
+    Out = A * B;
+}
+
 // Graph Vertex
 struct VertexDescription
 {
@@ -722,6 +733,11 @@ struct SurfaceDescription
 SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
 {
     SurfaceDescription surface = (SurfaceDescription)0;
+    float4 _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0 = IsGammaSpace() ? LinearToSRGB(_Color) : _Color;
+    float _Split_c4fcfdf55667442c9a2583548295eecd_R_1 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[0];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_G_2 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[1];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_B_3 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[2];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_A_4 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[3];
     float3 _Property_ed030226fd3a4d06bcf8672cfaebbbaf_Out_0 = _RevealPosition;
     float _Float_d12b6b5f63aa45f482f2107a7c15c444_Out_0 = 1;
     float3 _Subtract_205c09e04c674a5e9eaeecb8795c4aad_Out_2;
@@ -739,8 +755,10 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_DotProduct_float3(_Subtract_a74db8075edd4f5fa81366b2814a5e97_Out_2, _Multiply_0d3bda4433b444feabef0b0a335b0dc8_Out_2, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2);
     float _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
     Unity_Step_float(0, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2);
-    surface.Alpha = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
-    surface.AlphaClipThreshold = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
+    float _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    Unity_Multiply_float(_Split_c4fcfdf55667442c9a2583548295eecd_A_4, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2, _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2);
+    surface.Alpha = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    surface.AlphaClipThreshold = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
     return surface;
 }
 
@@ -978,6 +996,11 @@ void Unity_Step_float(float Edge, float In, out float Out)
     Out = step(Edge, In);
 }
 
+void Unity_Multiply_float(float A, float B, out float Out)
+{
+    Out = A * B;
+}
+
 // Graph Vertex
 struct VertexDescription
 {
@@ -1005,6 +1028,11 @@ struct SurfaceDescription
 SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
 {
     SurfaceDescription surface = (SurfaceDescription)0;
+    float4 _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0 = IsGammaSpace() ? LinearToSRGB(_Color) : _Color;
+    float _Split_c4fcfdf55667442c9a2583548295eecd_R_1 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[0];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_G_2 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[1];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_B_3 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[2];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_A_4 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[3];
     float3 _Property_ed030226fd3a4d06bcf8672cfaebbbaf_Out_0 = _RevealPosition;
     float _Float_d12b6b5f63aa45f482f2107a7c15c444_Out_0 = 1;
     float3 _Subtract_205c09e04c674a5e9eaeecb8795c4aad_Out_2;
@@ -1022,8 +1050,10 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_DotProduct_float3(_Subtract_a74db8075edd4f5fa81366b2814a5e97_Out_2, _Multiply_0d3bda4433b444feabef0b0a335b0dc8_Out_2, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2);
     float _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
     Unity_Step_float(0, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2);
-    surface.Alpha = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
-    surface.AlphaClipThreshold = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
+    float _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    Unity_Multiply_float(_Split_c4fcfdf55667442c9a2583548295eecd_A_4, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2, _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2);
+    surface.Alpha = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    surface.AlphaClipThreshold = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
     return surface;
 }
 
@@ -1488,6 +1518,10 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Multiply_float(_FresnelEffect_7290b970d0d64478ac423e59562b3643_Out_3, _Voronoi_1b29ba50777341649006361a20f59bec_Out_3, _Multiply_d8545755016841e68a8d8d1bad287796_Out_2);
     float3 _Lerp_f041a20c158d4893a0585e2c147f534b_Out_3;
     Unity_Lerp_float3(_SceneColor_503dc65774c8493883e3c43314fe2a60_Out_1, (_Property_527c4de35cfa4edfaf31179d87ae0770_Out_0.xyz), (_Multiply_d8545755016841e68a8d8d1bad287796_Out_2.xxx), _Lerp_f041a20c158d4893a0585e2c147f534b_Out_3);
+    float _Split_c4fcfdf55667442c9a2583548295eecd_R_1 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[0];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_G_2 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[1];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_B_3 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[2];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_A_4 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[3];
     float3 _Property_ed030226fd3a4d06bcf8672cfaebbbaf_Out_0 = _RevealPosition;
     float _Float_d12b6b5f63aa45f482f2107a7c15c444_Out_0 = 1;
     float3 _Subtract_205c09e04c674a5e9eaeecb8795c4aad_Out_2;
@@ -1505,9 +1539,11 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_DotProduct_float3(_Subtract_a74db8075edd4f5fa81366b2814a5e97_Out_2, _Multiply_0d3bda4433b444feabef0b0a335b0dc8_Out_2, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2);
     float _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
     Unity_Step_float(0, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2);
+    float _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    Unity_Multiply_float(_Split_c4fcfdf55667442c9a2583548295eecd_A_4, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2, _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2);
     surface.BaseColor = _Lerp_f041a20c158d4893a0585e2c147f534b_Out_3;
-    surface.Alpha = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
-    surface.AlphaClipThreshold = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
+    surface.Alpha = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    surface.AlphaClipThreshold = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
     return surface;
 }
 
@@ -1754,6 +1790,11 @@ void Unity_Step_float(float Edge, float In, out float Out)
     Out = step(Edge, In);
 }
 
+void Unity_Multiply_float(float A, float B, out float Out)
+{
+    Out = A * B;
+}
+
 // Graph Vertex
 struct VertexDescription
 {
@@ -1781,6 +1822,11 @@ struct SurfaceDescription
 SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
 {
     SurfaceDescription surface = (SurfaceDescription)0;
+    float4 _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0 = IsGammaSpace() ? LinearToSRGB(_Color) : _Color;
+    float _Split_c4fcfdf55667442c9a2583548295eecd_R_1 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[0];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_G_2 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[1];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_B_3 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[2];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_A_4 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[3];
     float3 _Property_ed030226fd3a4d06bcf8672cfaebbbaf_Out_0 = _RevealPosition;
     float _Float_d12b6b5f63aa45f482f2107a7c15c444_Out_0 = 1;
     float3 _Subtract_205c09e04c674a5e9eaeecb8795c4aad_Out_2;
@@ -1798,8 +1844,10 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_DotProduct_float3(_Subtract_a74db8075edd4f5fa81366b2814a5e97_Out_2, _Multiply_0d3bda4433b444feabef0b0a335b0dc8_Out_2, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2);
     float _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
     Unity_Step_float(0, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2);
-    surface.Alpha = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
-    surface.AlphaClipThreshold = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
+    float _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    Unity_Multiply_float(_Split_c4fcfdf55667442c9a2583548295eecd_A_4, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2, _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2);
+    surface.Alpha = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    surface.AlphaClipThreshold = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
     return surface;
 }
 
@@ -2038,6 +2086,11 @@ void Unity_Step_float(float Edge, float In, out float Out)
     Out = step(Edge, In);
 }
 
+void Unity_Multiply_float(float A, float B, out float Out)
+{
+    Out = A * B;
+}
+
 // Graph Vertex
 struct VertexDescription
 {
@@ -2065,6 +2118,11 @@ struct SurfaceDescription
 SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
 {
     SurfaceDescription surface = (SurfaceDescription)0;
+    float4 _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0 = IsGammaSpace() ? LinearToSRGB(_Color) : _Color;
+    float _Split_c4fcfdf55667442c9a2583548295eecd_R_1 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[0];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_G_2 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[1];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_B_3 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[2];
+    float _Split_c4fcfdf55667442c9a2583548295eecd_A_4 = _Property_527c4de35cfa4edfaf31179d87ae0770_Out_0[3];
     float3 _Property_ed030226fd3a4d06bcf8672cfaebbbaf_Out_0 = _RevealPosition;
     float _Float_d12b6b5f63aa45f482f2107a7c15c444_Out_0 = 1;
     float3 _Subtract_205c09e04c674a5e9eaeecb8795c4aad_Out_2;
@@ -2082,8 +2140,10 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_DotProduct_float3(_Subtract_a74db8075edd4f5fa81366b2814a5e97_Out_2, _Multiply_0d3bda4433b444feabef0b0a335b0dc8_Out_2, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2);
     float _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
     Unity_Step_float(0, _DotProduct_f3e1a8420c3d497ab88d8b286a70d934_Out_2, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2);
-    surface.Alpha = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
-    surface.AlphaClipThreshold = _Step_8d80aca51b4a48799d67582f0796e12c_Out_2;
+    float _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    Unity_Multiply_float(_Split_c4fcfdf55667442c9a2583548295eecd_A_4, _Step_8d80aca51b4a48799d67582f0796e12c_Out_2, _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2);
+    surface.Alpha = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
+    surface.AlphaClipThreshold = _Multiply_a37f214c4deb42bf8ad00406f942a112_Out_2;
     return surface;
 }
 
