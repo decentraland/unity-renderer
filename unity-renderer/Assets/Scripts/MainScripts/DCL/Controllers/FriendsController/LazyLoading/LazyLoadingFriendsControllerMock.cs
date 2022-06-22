@@ -6,8 +6,13 @@ using Random = UnityEngine.Random;
 
 public class LazyLoadingFriendsControllerMock : IFriendsController
 {
+    private const int MAX_AMOUNT_OF_FAKE_FRIENDS = 130;
+    
     private readonly FriendsController controller;
     private readonly UserProfileController userProfileController;
+    
+    private int amountOfFriendsWithDirectMessagesRequested;
+    private int lastFriendWithDirectMessageIndex = -1;
 
     public event Action OnInitialized
     {
@@ -50,6 +55,9 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
     {
         this.controller = controller;
         this.userProfileController = userProfileController;
+        
+        // TODO: Use it when the friends service is down
+        //SimulateDelayedResponseFor_InitializeFriends();
     }
 
     public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() => controller.GetAllocatedFriends();
@@ -86,7 +94,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         int receivedLimit,
         long receivedFromTimestamp)
     {
-        GetFakeRequestsAsync(sentLimit, sentFromTimestamp).Forget();
+        GetFakeRequestsAsync(sentLimit).Forget();
     }
 
     public void GetFriendsWithDirectMessages(
@@ -114,8 +122,13 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         AddFriendsWithDirectMessagesPayload mockedPayload = new AddFriendsWithDirectMessagesPayload();
         List<FriendWithDirectMessages> mockedFriendWithDirectMessages = new List<FriendWithDirectMessages>();
 
-        for (int i = 0; i < numberOfUsers; i++)
+        int indexToStart = lastFriendWithDirectMessageIndex + 1;
+
+        for (int i = indexToStart; i < indexToStart + numberOfUsers; i++)
         {
+            if (amountOfFriendsWithDirectMessagesRequested >= MAX_AMOUNT_OF_FAKE_FRIENDS)
+                break;
+
             string fakeUserId = $"fakeuser-{name}-{i + 1}";
 
             mockedFriendWithDirectMessages.Add(
@@ -123,9 +136,11 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
                 {
                     userId = fakeUserId,
                     lastMessageBody = $"This is the last message sent for {fakeUserId}",
-                    lastMessageTimestamp = DateTimeOffset.UtcNow.AddDays(Random.Range(-10, 0))
-                        .ToUnixTimeMilliseconds()
+                    lastMessageTimestamp = DateTimeOffset.UtcNow.AddDays(Random.Range(-10, 0)).ToUnixTimeMilliseconds()
                 });
+
+            amountOfFriendsWithDirectMessagesRequested++;
+            lastFriendWithDirectMessageIndex = i;
 
             CreateFakeFriend(fakeUserId);
         }
@@ -173,7 +188,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         controller.AddFriends(JsonUtility.ToJson(payload));
     }
     
-    private async UniTask GetFakeRequestsAsync(int limit, long timestamp)
+    private async UniTask GetFakeRequestsAsync(int limit)
     {
         var characters = new[]
             {'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
@@ -231,6 +246,8 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
     private void CreateFakeFriend(string userId)
     {
+        if (controller.IsFriend(userId)) return;
+        
         controller.friends.Add(userId, new FriendsController.UserStatus
         {
             userId = userId,
@@ -245,4 +262,15 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
             friendshipStartedTime = DateTime.UtcNow
         });
     }
+    
+    private async UniTask SimulateDelayedResponseFor_InitializeFriends()
+    {
+        await UniTask.Delay(Random.Range(1000, 3000));
+
+        controller.InitializeFriends(
+            CreateFakeFriendsInitialization());
+    }
+
+    private string CreateFakeFriendsInitialization() =>
+        JsonUtility.ToJson(new FriendsController.FriendshipInitializationMessage());
 }
