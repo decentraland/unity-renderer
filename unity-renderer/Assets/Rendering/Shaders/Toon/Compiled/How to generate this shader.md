@@ -38,14 +38,35 @@ custom pass in this project should be used instead.
 
 To achieve this, you must replace all the includes of this file for just:
 
-    #include "PBRForwardPass.hlsl"
+Search & Replace
+```
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/PBRForwardPass.hlsl"
+
+        #include "PBRForwardPass.hlsl"
+```
+        
 
 For the GPU skinning we need to do the same for the following passes:
-```    
-#include "DepthOnlyPass.hlsl"
-#include "DepthNormalsOnlyPass.hlsl"
-#include "ShadowCasterPass.hlsl"
+
+Search & Replace
 ```
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/DepthOnlyPass.hlsl"
+        
+        #include "DepthOnlyPass.hlsl"
+```
+
+```
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/DepthNormalsOnlyPass.hlsl"
+
+        #include "DepthNormalsOnlyPass.hlsl"
+```
+
+```
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShadowCasterPass.hlsl"
+
+        #include "ShadowCasterPass.hlsl"
+```
+
 > NOTE: If this is not done, avatars aren't going to look toon.
 ---
 ### Replace the absolutes paths to relative paths
