@@ -338,7 +338,7 @@ namespace DCL.Protobuf
         
         private static bool ExecProtoCompilerCommand(string finalArguments)
         {
-            string proto_path = Application.dataPath + PATH_TO_PROTO + PROTO_FILENAME;
+            string proto_path = GetPathToProto();
             
             // This is the console to convert the proto
             ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = proto_path, Arguments = finalArguments };
@@ -510,7 +510,7 @@ namespace DCL.Protobuf
                 Directory.Move(destPackage + "/bin/" + executableName, outputPath);
                 
 #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
-                ChmodProtoCompiler();
+                AddExecutablePermisson(GetPathToProto());
 #endif
                 
                 WriteVersion(PROTO_VERSION, EXECUTABLE_VERSION_FILENAME);
@@ -526,6 +526,35 @@ namespace DCL.Protobuf
                 if (Directory.Exists(destPackage))
                     Directory.Delete(destPackage, true);
             }
+        }
+
+        private static string GetPathToProto()
+        {
+            return Application.dataPath + PATH_TO_PROTO + PROTO_FILENAME;
+        }
+        
+        private static bool AddExecutablePermisson(string path)
+        {
+#if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
+            // This is the console to convert the proto
+            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "chmod", Arguments = $"+x \"${path}\"" };
+            
+            Process proc = new Process() { StartInfo = startInfo };
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.Start();
+            
+            string error = proc.StandardError.ReadToEnd();
+            proc.WaitForExit();
+
+            if (error != "")
+            {
+                UnityEngine.Debug.LogError("`chmod +x protoc` failed : " + error);
+                return false;
+            }
+            return true;
+#endif
         }
         
         private static void Untar(string name, string path)
