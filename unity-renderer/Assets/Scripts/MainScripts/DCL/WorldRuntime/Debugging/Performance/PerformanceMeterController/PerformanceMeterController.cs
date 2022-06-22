@@ -321,7 +321,7 @@ namespace DCL
         }
 
         /// <summary>
-        /// Calculates a performance score from 0 to 100 based on the average FPS (compared to the max possible FPS) and the amount of hiccup frames (compared to the total amount of frames).
+        /// Calculates a performance score from 0 to 100 based on the average frame time (compared to the closest frame time to target 60 fps) and the amount of hiccup frames (compared to the total amount of frames).
         /// </summary>
         private int CalculatePerformanceScore()
         {
