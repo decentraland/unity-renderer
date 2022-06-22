@@ -472,15 +472,30 @@ public class FriendsHUDControllerShould
 
         Assert.AreEqual(87, dataStore.friendNotifications.pendingFriendRequestCount.Get());
     }
-    
-    private void GivenFriend(string userId, FriendshipAction action)
+
+    [TestCase("bleh", 0)]
+    [TestCase(OTHER_USER_NAME, 1)]
+    public void SearchFriends(string searchText, int expectedCount)
     {
-        var profile = ScriptableObject.CreateInstance<UserProfile>();
-        profile.UpdateData(new UserProfileModel {userId = userId, name = userId});
-        userProfileBridge.Get(userId).Returns(profile);
-        userProfileBridge.GetByName(userId).Returns(profile);
-        
+        friendsController.GetUserStatus(OTHER_USER_ID).Returns(new FriendsController.UserStatus
+        {
+            friendshipStatus = FriendshipStatus.FRIEND,
+            userId = OTHER_USER_ID
+        });
         friendsController.OnUpdateFriendship +=
-            Raise.Event<Action<string, FriendshipAction>>(userId, action);
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
+        
+        view.OnSearchFriendsRequested += Raise.Event<Action<string>>(searchText);
+        
+        friendsController.Received(1).GetFriendsAsync(searchText, 100);
+        view.Received(1).FilterFriends(Arg.Is<Dictionary<string, FriendEntryModel>>(d => d.Count == expectedCount));
+    }
+
+    [Test]
+    public void ClearFriendFilterWhenSearchForAnEmptyString()
+    {
+        view.OnSearchFriendsRequested += Raise.Event<Action<string>>("");
+        
+        view.Received(1).ClearFriendFilter();
     }
 }
