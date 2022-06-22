@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source ci-setup.sh
+
 echo "Uploading Benchmark Report for $PROJECT_PATH"
 
 wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
