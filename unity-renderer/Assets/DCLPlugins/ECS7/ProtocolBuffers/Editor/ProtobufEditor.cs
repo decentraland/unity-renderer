@@ -533,9 +533,9 @@ namespace DCL.Protobuf
             return Application.dataPath + PATH_TO_PROTO + PROTO_FILENAME;
         }
         
+#if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
         private static bool AddExecutablePermisson(string path)
         {
-#if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
             // This is the console to convert the proto
             ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "chmod", Arguments = $"+x \"${path}\"" };
             
@@ -554,8 +554,9 @@ namespace DCL.Protobuf
                 return false;
             }
             return true;
-#endif
         }
+#endif
+
         
         private static void Untar(string name, string path)
         {
