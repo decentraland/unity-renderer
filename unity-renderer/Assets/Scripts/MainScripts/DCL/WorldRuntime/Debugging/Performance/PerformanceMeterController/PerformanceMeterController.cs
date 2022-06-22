@@ -80,6 +80,8 @@ namespace DCL
         private long averageAllocation;
         private long totalAllocation;
         private ProfilerRecorder gcAllocatedInFrameRecorder;
+        
+        private bool justStarted = false;
 
         public PerformanceMeterController() { metricsData = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData"); }
 
@@ -117,10 +119,9 @@ namespace DCL
             ResetDataValues();
 
             targetDurationInSeconds = durationInSeconds;
-
-            metricsData.OnChange += OnMetricsChange;
-
+            justStarted = true;
             gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
+            metricsData.OnChange += OnMetricsChange;
         }
 
         /// <summary>
@@ -151,6 +152,13 @@ namespace DCL
         /// /// <param name="oldData">OLD version of the PerformanceMetricsDataVariable ScriptableObject</param>
         private void OnMetricsChange(PerformanceMetricsData newData, PerformanceMetricsData oldData)
         {
+            // we avoid the first frame as when we are in editor, the context menu pauses everything and the next frame is chaotic
+            if (justStarted)
+            {
+                justStarted = false;
+                return;
+            }
+            
             float secondsConsumed = 0;
 
             if (lastSavedSample != null)
@@ -166,11 +174,6 @@ namespace DCL
             }
 
             float frameTimeMs = Time.deltaTime * 1000f;
-
-            if (frameTimeMs > 98f)
-            {
-                Debug.Log(frameTimeMs);
-            }
 
             SampleData newSample = new SampleData
             {
@@ -236,11 +239,11 @@ namespace DCL
             highestFrameTime = benchmark.max;
             lowestFrameTime = benchmark.min;
             averageFrameTime = benchmark.mean;
-            marginOfError = benchmark.moe;
+            marginOfError = benchmark.rme;
             
-            percentile1FrameTime = sortedSamples[Mathf.CeilToInt(samplesCount * 0.01f)].frameTimeMs;
-            percentile50FrameTime = sortedSamples[Mathf.CeilToInt(samplesCount * 0.5f)].frameTimeMs;
-            percentile99FrameTime = sortedSamples[Mathf.CeilToInt(samplesCount * 0.99f)].frameTimeMs;
+            percentile1FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.01f), sortedSamples.Count-1)].frameTimeMs;
+            percentile50FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.5f), sortedSamples.Count-1)].frameTimeMs;
+            percentile99FrameTime = sortedSamples[Mathf.Min(Mathf.CeilToInt(samplesCount * 0.99f), sortedSamples.Count-1)].frameTimeMs;
             
             averageAllocation = totalAllocation / sortedSamples.Count;
         }
@@ -286,13 +289,13 @@ namespace DCL
 
             Log($"Data report step 2 - Processed values:" +
                 $"\n * PERFORMANCE SCORE (0-100) -> {CalculatePerformanceScore()}" +
+                $"\n * lowest frame time -> {lowestFrameTime.ToString(format)}ms" +
                 $"\n * average frame time -> {averageFrameTime.ToString(format)}ms" +
                 $"\n * highest frame time -> {highestFrameTime.ToString(format)}ms" +
-                $"\n * lowest frame time -> {lowestFrameTime.ToString(format)}ms" +
-                $"\n * error percentage -> ±{marginOfError.ToString(format)}%" +
                 $"\n * 1 percentile frame time -> {percentile1FrameTime.ToString(format)}ms" +
                 $"\n * 50 percentile frame time -> {percentile50FrameTime.ToString(format)}ms" +
                 $"\n * 99 percentile frame time -> {percentile99FrameTime.ToString(format)}ms" +
+                $"\n * error percentage -> ±{marginOfError.ToString(format)}%" +
                 $"\n * total hiccups (>{FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS}ms frames) -> {totalHiccupFrames} ({CalculateHiccupsPercentage()}% of frames were hiccups)" +
                 $"\n * total hiccups time (seconds) -> {totalHiccupsTimeInSeconds}" +
                 $"\n * total frames -> {totalFrames}" +
