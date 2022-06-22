@@ -167,6 +167,8 @@ public class FriendsHUDController : IHUD
             else if (View.IsRequestListActive)
                 DisplayMoreFriendRequests();    
         }
+        
+        UpdateNotificationsCounter();
     }
 
     private void HandleProfileUpdated(UserProfile profile) => UpdateBlockStatus(profile).Forget();
@@ -395,7 +397,7 @@ public class FriendsHUDController : IHUD
         if (View.IsActive())
             dataStore.friendNotifications.seenFriends.Set(friendsController.AllocatedFriendCount);
         
-        dataStore.friendNotifications.seenRequests.Set(friendsController.ReceivedRequestCount);
+        dataStore.friendNotifications.pendingFriendRequestCount.Set(friendsController.TotalFriendRequestCount);
     }
 
     private void HandleOpenWhisperChat(FriendEntryModel entry) => OnPressWhisper?.Invoke(entry.userId);

@@ -53,7 +53,7 @@ public class FriendsNotificationPluginShould
         const int seenRequestsCount = 3;
         playerPrefs.GetInt(seenFriendsPrefsKey, Arg.Any<int>()).Returns(6);
         
-        dataStore.friendNotifications.seenRequests.Set(seenRequestsCount);
+        dataStore.friendNotifications.pendingFriendRequestCount.Set(seenRequestsCount);
 
         Assert.AreEqual(seenRequestsCount, pendingFriendRequests.Get());
         Assert.AreEqual(1, newApprovedFriends.Get());

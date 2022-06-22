@@ -230,7 +230,7 @@ public class FriendsHUDControllerShould
             Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
 
         Assert.AreEqual(FRIENDS_COUNT, dataStore.friendNotifications.seenFriends.Get());
-        Assert.AreEqual(FRIEND_REQUEST_SHOWN, dataStore.friendNotifications.seenRequests.Get());
+        Assert.AreEqual(FRIEND_REQUEST_SHOWN, dataStore.friendNotifications.pendingFriendRequestCount.Get());
     }
 
     [Test]
@@ -242,7 +242,7 @@ public class FriendsHUDControllerShould
         controller.SetVisibility(true);
 
         Assert.AreEqual(FRIENDS_COUNT, dataStore.friendNotifications.seenFriends.Get());
-        Assert.AreEqual(FRIEND_REQUEST_SHOWN, dataStore.friendNotifications.seenRequests.Get());
+        Assert.AreEqual(FRIEND_REQUEST_SHOWN, dataStore.friendNotifications.pendingFriendRequestCount.Get());
     }
 
     [Test]
@@ -443,6 +443,15 @@ public class FriendsHUDControllerShould
         view.OnRequireMoreFriendRequests += Raise.Event<Action>();
         
         friendsController.GetFriendRequestsAsync(30, 0, 30, 0);
+    }
+
+    [Test]
+    public void UpdatePendingRequestCountToDatastoreWhenFriendsInitializes()
+    {
+        friendsController.TotalFriendRequestCount.Returns(87);
+        friendsController.OnInitialized += Raise.Event<Action>();
+
+        Assert.AreEqual(87, dataStore.friendNotifications.pendingFriendRequestCount.Get());
     }
     
     private void GivenFriend(string userId, FriendshipAction action)

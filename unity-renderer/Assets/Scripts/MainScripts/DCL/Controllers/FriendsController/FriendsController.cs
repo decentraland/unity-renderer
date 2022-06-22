@@ -22,8 +22,8 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public int ReceivedRequestCount =>
         friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
 
-    public int TotalFriendCount => throw new NotImplementedException();
-    public int TotalFriendRequestCount => throw new NotImplementedException();
+    public int TotalFriendCount { get; private set; }
+    public int TotalFriendRequestCount { get; private set; }
 
     public readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
@@ -49,10 +49,16 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public class FriendshipInitializationMessage
     {
         [Serializable]
-        public class UnseenRequests
+        public class PendingRequests
         {
-            public int count;
+            public int total;
             public long lastSeenTimestamp;
+        }
+
+        [Serializable]
+        public class Friends
+        {
+            public int total;
         }
 
         [Serializable]
@@ -71,7 +77,8 @@ public class FriendsController : MonoBehaviour, IFriendsController
         public string[] currentFriends;
         public string[] requestedTo;
         public string[] requestedFrom;
-        public UnseenRequests unseenRequests;
+        public PendingRequests requests;
+        public Friends friends;
         public UnseenPrivateMessage[] unseenPrivateMessages;
     }
 
@@ -189,7 +196,11 @@ public class FriendsController : MonoBehaviour, IFriendsController
     {
         IsInitialized = true;
 
-        // FriendshipInitializationMessage msg = JsonUtility.FromJson<FriendshipInitializationMessage>(json);
+        var msg = JsonUtility.FromJson<FriendshipInitializationMessage>(json);
+        
+        TotalFriendRequestCount = msg.requests.total;
+        TotalFriendCount = msg.friends.total;
+        
         // HashSet<string> processedIds = new HashSet<string>();
         //
         // foreach (var userId in msg.currentFriends)
