@@ -12,7 +12,6 @@ public class WorldChatWindowController : IHUD
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SHOW_MORE = 20;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH = 20;
     private const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD = 30;
-    private const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE = 10;
 
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;

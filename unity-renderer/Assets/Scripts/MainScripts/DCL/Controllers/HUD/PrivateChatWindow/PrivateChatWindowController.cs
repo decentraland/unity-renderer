@@ -1,12 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
+using System.Linq;
+using UnityEngine;
 
 public class PrivateChatWindowController : IHUD
 {
+    private const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE = 10;
+
     public IPrivateChatComponentView View { get; private set; }
 
     private readonly DataStore dataStore;
@@ -22,6 +27,7 @@ public class PrivateChatWindowController : IHUD
     private UserProfile conversationProfile;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private bool skipChatInputTrigger;
+    private Dictionary<string, long> lastTimestampRequestedByUser = new Dictionary<string, long>();
 
     private string ConversationUserId { get; set; } = string.Empty;
 
@@ -62,6 +68,7 @@ public class PrivateChatWindowController : IHUD
         view.OnMinimize += MinimizeView;
         view.OnUnfriend += Unfriend;
         view.OnFocused += HandleViewFocused;
+        view.OnRequestOldConversations += RequestOldConversations;
         
         closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
         closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
@@ -154,6 +161,7 @@ public class PrivateChatWindowController : IHUD
             View.OnMinimize -= MinimizeView;
             View.OnUnfriend -= Unfriend;
             View.OnFocused -= HandleViewFocused;
+            View.OnRequestOldConversations -= RequestOldConversations;
             View.Dispose();
         }
     }
@@ -171,7 +179,7 @@ public class PrivateChatWindowController : IHUD
             var message = list[i];
             if (i != 0 && i % entriesPerFrame == 0) await UniTask.NextFrame();
             if (!IsMessageFomCurrentConversation(message)) continue;
-            chatHudController.AddChatMessage(message, spamFiltering: false);
+            chatHudController.AddChatMessage(message, spamFiltering: false, limitMaxEntries: false);
         }
     }
 
@@ -216,7 +224,7 @@ public class PrivateChatWindowController : IHUD
     {
         if (!IsMessageFomCurrentConversation(message)) return;
 
-        chatHudController.AddChatMessage(message, View.IsActive);
+        chatHudController.AddChatMessage(message, limitMaxEntries: false);
 
         if (View.IsActive)
         {
@@ -311,5 +319,31 @@ public class PrivateChatWindowController : IHUD
         }
         if (!View.IsActive) return;
         chatHudController.FocusInputField();
+    }
+
+    private void RequestOldConversations()
+    {
+        if (!lastTimestampRequestedByUser.ContainsKey(ConversationUserId))
+            lastTimestampRequestedByUser.Add(ConversationUserId, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+
+        List<ChatMessage> currentPrivateMessages = chatController.GetAllocatedEntries()
+            .Where(x => (x.sender == ConversationUserId || x.recipient == ConversationUserId) && x.messageType == ChatMessage.Type.PRIVATE)
+            .ToList();
+
+        if (currentPrivateMessages.Count > 0)
+        {
+            long minTimestamp = (long)currentPrivateMessages.Min(x => x.timestamp);
+            ChatMessage aaa = currentPrivateMessages.FirstOrDefault(x => x.timestamp == (ulong)minTimestamp);
+
+            if (minTimestamp < lastTimestampRequestedByUser[ConversationUserId])
+            {
+                chatController.GetPrivateMessages(
+                    ConversationUserId,
+                    USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE,
+                    minTimestamp);
+
+                lastTimestampRequestedByUser[ConversationUserId] = minTimestamp;
+            }
+        }
     }
 }

@@ -19,6 +19,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] internal UserContextMenu userContextMenu;
     [SerializeField] internal RectTransform userContextMenuReferencePoint;
     [SerializeField] internal Button optionsButton;
+    [SerializeField] private Button requestOldConversationsButton;
     [SerializeField] private Model model;
     [SerializeField] internal CanvasGroup[] previewCanvasGroup;
     [SerializeField] private Vector2 previewModeSize;
@@ -38,6 +39,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     }
 
     public event Action<bool> OnFocused;
+    public event Action OnRequestOldConversations;
 
     public IChatHUDComponentView ChatHUD => chatView;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -57,6 +59,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         optionsButton.onClick.AddListener(ShowOptions);
         userContextMenu.OnBlock += HandleBlockFromContextMenu;
+        requestOldConversationsButton.onClick.AddListener(() => OnRequestOldConversations?.Invoke());
     }
 
     public void Initialize(IFriendsController friendsController, ISocialAnalytics socialAnalytics)
@@ -74,7 +77,9 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         {
             userContextMenu.OnBlock -= HandleBlockFromContextMenu;
         }
-            
+
+        requestOldConversationsButton.onClick.RemoveAllListeners();
+
         base.Dispose();
     }
 
@@ -172,7 +177,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         model.isUserBlocked = isBlocked;
         RefreshControl();
     }
-    
+
     private IEnumerator SetAlpha(float target, float duration)
     {
         var t = 0f;
