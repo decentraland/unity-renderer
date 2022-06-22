@@ -17,6 +17,6 @@ jobs:
 
             - This branch can be previewed at https://play.decentraland.zone/?renderer-branch=${{ github.head_ref }}
             - Code coverage report: [https://renderer-artifacts.decentraland.org/branch-coverage/${{ github.head_ref }}](https://renderer-artifacts.decentraland.org/branch-coverage/${{ github.head_ref }})
-            - Benchmark report: [https://renderer-artifacts.decentraland.org/branch-benchmark/${{ github.head_ref }}/benchmark-results.xml](https://renderer-artifacts.decentraland.org/branch-benchmark/${{ github.head_ref }}/benchmark-results.xml)
+            - Benchmark report: [https://renderer-artifacts.decentraland.org/branch-benchmark/${{ github.head_ref }}/index.html](https://renderer-artifacts.decentraland.org/branch-benchmark/${{ github.head_ref }}/index.html)
 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
