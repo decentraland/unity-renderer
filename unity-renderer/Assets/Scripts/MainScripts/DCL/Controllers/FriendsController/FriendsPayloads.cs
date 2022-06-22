@@ -17,6 +17,7 @@ public class AddFriendRequestsPayload
 public class AddFriendsWithDirectMessagesPayload
 {
     public FriendWithDirectMessages[] currentFriendsWithDirectMessages;
+    public int totalFriendsWithDirectMessages;
 }
 
 [Serializable]

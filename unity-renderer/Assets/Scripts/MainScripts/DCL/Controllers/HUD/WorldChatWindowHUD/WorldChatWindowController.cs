@@ -22,7 +22,6 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private bool areDMsRequestedByFirstTime = false;
     private List<string> directMessagesAlreadyRequested = new List<string>();
-    private bool isPendingToRequestMoreDMs = true;
     private int lastAmountOfFriendsWithDMsRequested = 0;
     private long olderDMTimestampRequested = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     private string currentSearch = "";
@@ -208,9 +207,6 @@ public class WorldChatWindowController : IHUD
 
     private void HandleFriendsWithDirectMessagesAdded(List<FriendWithDirectMessages> usersWithDM)
     {
-        if (string.IsNullOrEmpty(currentSearch))
-            isPendingToRequestMoreDMs = usersWithDM.Count() >= lastAmountOfFriendsWithDMsRequested;
-
         for (int i = 0; i < usersWithDM.Count; i++)
         {
             if (recipientsFromPrivateChats.ContainsKey(usersWithDM[i].userId))
@@ -329,10 +325,12 @@ public class WorldChatWindowController : IHUD
     
     private void UpdateMoreChannelsToLoadHint()
     {
-        if (!isPendingToRequestMoreDMs || !string.IsNullOrEmpty(currentSearch))
+        int hiddenDMs = friendsController.TotalFriendRequestCount - view.PrivateChannelsCount;
+
+        if (hiddenDMs == 0 || !string.IsNullOrEmpty(currentSearch))
             View.HideMoreChatsToLoadHint();
         else
-            View.ShowMoreChatsToLoadHint();
+            View.ShowMoreChatsToLoadHint(hiddenDMs);
     }
 
     private void RequestFriendsWithDirectMessages(int limit, long fromTimestamp)

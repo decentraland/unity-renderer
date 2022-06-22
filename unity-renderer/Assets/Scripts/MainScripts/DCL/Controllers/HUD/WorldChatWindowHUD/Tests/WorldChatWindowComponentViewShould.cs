@@ -284,9 +284,9 @@ public class WorldChatWindowComponentViewShould
     [Test]
     public void ShowMoreChatsToLoadHint()
     {
-        view.ShowMoreChatsToLoadHint();
+        view.ShowMoreChatsToLoadHint(5);
 
-        Assert.AreEqual("There are chats hidden. Use the search bar to find them or click below to show more.",
+        Assert.AreEqual("5 chats hidden. Use the search bar to find them or click below to show more.",
             view.loadMoreEntriesLabel.text);
         Assert.IsTrue(view.loadMoreEntriesContainer.activeSelf);
     }

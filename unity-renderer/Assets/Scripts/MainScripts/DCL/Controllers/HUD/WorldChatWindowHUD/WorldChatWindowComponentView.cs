@@ -150,9 +150,9 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         UpdateLayout();
     }
 
-    public void ShowMoreChatsToLoadHint()
+    public void ShowMoreChatsToLoadHint(int count)
     {
-        loadMoreEntriesLabel.SetText($"There are chats hidden. Use the search bar to find them or click below to show more.");
+        loadMoreEntriesLabel.SetText($"{count} chats hidden. Use the search bar to find them or click below to show more.");
         loadMoreEntriesContainer.SetActive(true);
         UpdateLayout();
     }

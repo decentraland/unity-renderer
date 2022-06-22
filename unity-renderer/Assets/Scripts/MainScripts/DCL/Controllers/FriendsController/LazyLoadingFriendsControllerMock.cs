@@ -46,6 +46,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
     public int FriendCount => controller.FriendCount;
     public bool IsInitialized => controller.IsInitialized;
     public int ReceivedRequestCount => controller.ReceivedRequestCount;
+    public int TotalFriendRequestCount => controller.TotalFriendRequestCount;
 
     public LazyLoadingFriendsControllerMock(FriendsController controller)
     {
@@ -152,7 +153,9 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         }
 
         mockedPayload.currentFriendsWithDirectMessages = mockedFriendWithDirectMessages.ToArray();
-        
+        mockedPayload.totalFriendsWithDirectMessages = MAX_AMOUNT_OF_FAKE_FRIENDS;
+
+
         return JsonUtility.ToJson(mockedPayload);
     }
 
@@ -194,6 +197,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         }
 
         mockedPayload.currentFriendsWithDirectMessages = mockedFriendWithDirectMessages.ToArray();
+        mockedPayload.totalFriendsWithDirectMessages = MAX_AMOUNT_OF_FAKE_FRIENDS;
 
         return JsonUtility.ToJson(mockedPayload);
     }

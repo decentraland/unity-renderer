@@ -27,7 +27,7 @@ public interface IWorldChatWindowView
     void Dispose();
     void ClearFilter();
     void HideMoreChatsToLoadHint();
-    void ShowMoreChatsToLoadHint();
+    void ShowMoreChatsToLoadHint(int count);
     void ShowMoreChatsLoading();
     void HideMoreChatsLoading();
     void ShowSearchLoading();
