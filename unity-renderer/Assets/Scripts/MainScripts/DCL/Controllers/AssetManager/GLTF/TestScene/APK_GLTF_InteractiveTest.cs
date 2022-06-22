@@ -1,8 +1,10 @@
 ﻿using DCL;
 using DCL.Helpers;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityGLTF;
+using GLTFast;
 
 public class APK_GLTF_InteractiveTest : MonoBehaviour
 {
@@ -21,7 +23,8 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         "/GLB/TrunkSeparatedTextures/Trunk.glb",
         "/GLB/Lantern/Lantern.glb",
         "/GLB/DamagedHelmet/DamagedHelmet.glb",
-        "/GLB/Trevor/Trevor.glb"
+        "/GLB/Trevor/Trevor.glb",
+        "/GLB/vertex-anim.glb"
     };
 
     void Start()
@@ -41,8 +44,40 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         pos.z = Random.Range(-10, 10);
         promise.settings.initialLocalPosition = pos;
 
+        Vector3 pos2 = pos + Vector3.forward * 2;
+
         keeper.Keep(promise);
         promiseList.Add(promise);
+
+        UniTask.Run(() => GenerateWithglTFast(url, pos2));
+    }
+
+    private async UniTaskVoid GenerateWithglTFast(string url, Vector3 position)
+    {
+        await UniTask.SwitchToMainThread();
+        var gltf = new GltfImport();
+
+        // Create a settings object and configure it accordingly
+        var settings = new ImportSettings
+        {
+            generateMipMaps = false,
+            anisotropicFilterLevel = 3,
+            nodeNameMethod = ImportSettings.NameImportMethod.OriginalUnique
+        };
+
+        // Load the glTF and pass along the settings
+        var success = await gltf.Load(url, settings);
+
+        if (success)
+        {
+            GameObject o = new GameObject("glTF");
+            gltf.InstantiateMainScene(o.transform);
+            o.transform.position = position;
+        }
+        else
+        {
+            Debug.LogError("Loading glTF failed!");
+        }
     }
 
     void Update()
