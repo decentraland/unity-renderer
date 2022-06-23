@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
@@ -28,6 +29,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [SerializeField] private TMP_Text sentRequestsCountText;
     [SerializeField] private UserContextMenu contextMenuPanel;
     [SerializeField] private RectTransform viewport;
+    [SerializeField] internal ScrollRect scroll;
 
     [Header("Notifications")] [SerializeField]
     private Notification requestSentNotification;
@@ -38,7 +40,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [SerializeField] private Model model;
     
     [Header("Load More Entries")]
-    [SerializeField] internal Button loadMoreEntriesButton;
     [SerializeField] internal GameObject loadMoreEntriesContainer;
     [SerializeField] internal TMP_Text loadMoreEntriesLabel;
 
@@ -50,6 +51,8 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private string lastRequestSentUserName;
     private int currentAvatarSnapshotIndex;
     private bool isLayoutDirty;
+    private Vector2 lastScrollPosition = Vector2.one;
+    private Coroutine requireMoreEntriesRoutine;
 
     public Dictionary<string, FriendRequestEntry> Entries => entries;
 
@@ -68,7 +71,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         searchBar.OnSubmit += SendFriendRequest;
         searchBar.OnSearchText += OnSearchInputValueChanged;
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
-        loadMoreEntriesButton.onClick.AddListener(RequestMoreEntries);
+        scroll.onValueChanged.AddListener(RequestMoreEntries);
         UpdateLayout();
     }
 
@@ -78,7 +81,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         searchBar.OnSubmit -= SendFriendRequest;
         searchBar.OnSearchText -= OnSearchInputValueChanged;
         contextMenuPanel.OnBlock -= HandleFriendBlockRequest;
-        loadMoreEntriesButton.onClick.RemoveListener(RequestMoreEntries);
+        scroll.onValueChanged.RemoveListener(RequestMoreEntries);
         NotificationsController.i?.DismissAllNotifications(NOTIFICATIONS_ID);
     }
 
@@ -380,8 +383,27 @@ public class FriendRequestsTabComponentView : BaseComponentView
             Set(pair.Key, pair.Value);
         }
     }
-    
-    private void RequestMoreEntries() => OnRequireMoreEntries?.Invoke();
+
+    private void RequestMoreEntries(Vector2 position)
+    {
+        if (!loadMoreEntriesContainer.activeInHierarchy) return;
+        
+        if (position.y < 0.005f && lastScrollPosition.y >= 0.005f)
+        {
+            if (requireMoreEntriesRoutine != null)
+                StopCoroutine(requireMoreEntriesRoutine);
+            
+            requireMoreEntriesRoutine = StartCoroutine(WaitThenRequireMoreEntries());
+        }
+
+        lastScrollPosition = position;
+    }
+
+    private IEnumerator WaitThenRequireMoreEntries()
+    {
+        yield return new WaitForSeconds(1f);
+        OnRequireMoreEntries?.Invoke();
+    }
 
     [Serializable]
     private class Model

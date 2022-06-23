@@ -326,8 +326,8 @@ public class FriendsHUDComponentViewShould
         var called = false;
         view.OnRequireMoreFriends += () => called = true;
         GivenFriendListTabFocused();
-        
-        view.friendsTab.loadMoreEntriesButton.onClick.Invoke();
+
+        view.friendsTab.scroll.normalizedPosition = Vector2.zero;
         
         Assert.IsTrue(called);
     }
@@ -339,7 +339,7 @@ public class FriendsHUDComponentViewShould
         view.OnRequireMoreFriendRequests += () => called = true;
         GivenRequestTabFocused();
         
-        view.friendRequestsTab.loadMoreEntriesButton.onClick.Invoke();
+        view.friendRequestsTab.scroll.normalizedPosition = Vector2.zero;
         
         Assert.IsTrue(called);
     }

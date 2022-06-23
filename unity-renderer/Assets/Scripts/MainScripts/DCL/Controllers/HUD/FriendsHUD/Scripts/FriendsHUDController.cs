@@ -492,7 +492,7 @@ public class FriendsHUDController : IHUD
 
         friendsController.GetFriendsAsync(search, MAX_SEARCHED_FRIENDS);
 
-        Dictionary<string, FriendEntryModel> FilterFriendsByUserNameAndUserId(string search)
+        Dictionary<string, FriendEntryModel> FilterFriendsByNameOrId(string search)
         {
             var regex = new Regex(search, RegexOptions.IgnoreCase);
 
@@ -506,7 +506,7 @@ public class FriendsHUDController : IHUD
             }).Take(MAX_SEARCHED_FRIENDS).ToDictionary(model => model.userId, model => model);
         }
 
-        View.FilterFriends(FilterFriendsByUserNameAndUserId(search));
+        View.FilterFriends(FilterFriendsByNameOrId(search));
         View.HideMoreFriendsToLoadHint();
         searchingFriends = true;
     }

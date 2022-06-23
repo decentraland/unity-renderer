@@ -55,8 +55,8 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     
     public event Action OnRequireMoreFriends
     {
-        add => friendsTab.OnRequireMoreFriends += value;
-        remove => friendsTab.OnRequireMoreFriends -= value;
+        add => friendsTab.OnRequireMoreEntries += value;
+        remove => friendsTab.OnRequireMoreEntries -= value;
     }
 
     public event Action OnRequireMoreFriendRequests
