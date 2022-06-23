@@ -320,26 +320,46 @@ public class FriendsHUDComponentViewShould
         Assert.AreEqual("7 requests hidden. Scroll down to show more.", view.friendRequestsTab.loadMoreEntriesLabel.text);
     }
 
-    [Test]
-    public void RequireMoreFriendEntries()
+    [UnityTest]
+    public IEnumerator RequireMoreFriendEntries()
     {
         var called = false;
         view.OnRequireMoreFriends += () => called = true;
         GivenFriendListTabFocused();
+        GivenApprovedFriend("bleh");
+        view.ShowMoreFriendsToLoadHint(6);
 
-        view.friendsTab.scroll.normalizedPosition = Vector2.zero;
+        // wait until queued entry is created
+        yield return null;
+
+        view.friendsTab.scroll.onValueChanged.Invoke(Vector2.zero);
+        
+        Assert.IsFalse(called);
+        
+        // wait for the internal delay
+        yield return new WaitForSeconds(1.5f);
         
         Assert.IsTrue(called);
     }
     
-    [Test]
-    public void RequireMoreRequestEntries()
+    [UnityTest]
+    public IEnumerator RequireMoreRequestEntries()
     {
         var called = false;
         view.OnRequireMoreFriendRequests += () => called = true;
         GivenRequestTabFocused();
+        GivenFriendRequestReceived("bleh");
+        view.ShowMoreRequestsToLoadHint(5);
         
-        view.friendRequestsTab.scroll.normalizedPosition = Vector2.zero;
+        // wait until queued entry is created
+        yield return null;
+        
+        view.friendRequestsTab.scroll.onValueChanged.Invoke(Vector2.zero);
+        
+        Assert.IsFalse(called);
+        
+        // wait for the internal delay
+        yield return new WaitForSeconds(1.5f);
         
         Assert.IsTrue(called);
     }
