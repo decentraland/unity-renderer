@@ -46,6 +46,7 @@ namespace DCL.Components
         ContentProvider contentProvider;
 
         AssetPromise_GLTF gltfPromise;
+        AssetPromise_GLTFast gltfastPromise;
         AssetPromise_AB_GameObject abPromise;
 
 #if UNITY_EDITOR
@@ -104,8 +105,22 @@ namespace DCL.Components
                     break;
                 case LoadingType.DEFAULT:
                 case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
-                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent));
+                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => ProxyLoadGltf(targetUrl));
                     break;
+            }
+        }
+        private void ProxyLoadGltf(string targetUrl)
+        {
+            // TODO: Replace with feature flag
+            bool shouldUseGLTFast = true;
+
+            if (shouldUseGLTFast)
+            {
+                LoadGLTFast(targetUrl, OnSuccessEvent, exception => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent));
+            }
+            else
+            {
+                LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent);
             }
         }
 
@@ -128,6 +143,14 @@ namespace DCL.Components
             if ( gltfPromise != null )
             {
                 AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
+            }
+        }
+        
+        void UnloadGLTFast()
+        {
+            if ( gltfastPromise != null )
+            {
+                AssetPromiseKeeper_GLTFast.i.Forget(gltfastPromise);
             }
         }
 
@@ -240,6 +263,53 @@ namespace DCL.Components
             gltfPromise.OnFailEvent += (asset, exception) => OnFailWrapper(OnFail, exception);
 
             AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
+        }
+        private void LoadGLTFast(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail)
+        {
+            Debug.Log($"[GLTFast] loading {targetUrl}");
+            if (gltfastPromise != null)
+            {
+                UnloadGLTFast();
+
+                if (VERBOSE)
+                    Debug.Log("Forgetting not null promise... " + targetUrl);
+            }
+
+            if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
+            {
+                OnFailWrapper(OnFail, new Exception($"Content provider does not contains url {targetUrl}"));
+                return;
+            }
+
+            gltfastPromise = new AssetPromise_GLTFast(contentProvider, targetUrl, hash)
+            {
+                settings = settings
+            };
+
+            gltfastPromise.OnSuccessEvent += (Asset_GLTFast x) =>
+            {
+#if UNITY_EDITOR
+                x.container.name = GLTF_GO_NAME_PREFIX + x.container.name;
+#endif
+                var r = new Rendereable
+                {
+                    container = x.container,
+                    totalTriangleCount = 0,
+                    meshes = null,
+                    renderers = null,
+                    materials = null,
+                    textures = null,
+                    meshToTriangleCount = null,
+                    animationClipSize = 0,
+                    meshDataSize = 0,
+                    animationClips = null
+                };
+
+                OnSuccessWrapper(r, OnSuccess);
+            };
+            gltfastPromise.OnFailEvent += (asset, exception) => OnFailWrapper(OnFail, exception);
+
+            AssetPromiseKeeper_GLTFast.i.Keep(gltfastPromise);
         }
 
         private void OnFailWrapper(Action<Exception> OnFail, Exception exception)

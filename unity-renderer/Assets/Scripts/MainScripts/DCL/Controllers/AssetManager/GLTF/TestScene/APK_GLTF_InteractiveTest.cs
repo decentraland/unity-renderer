@@ -11,6 +11,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
     AssetPromiseKeeper_GLTF keeper;
     private WebRequestController webRequestController;
     List<AssetPromise_GLTF> promiseList = new List<AssetPromise_GLTF>();
+    List<AssetPromise_GLTFast> promiseList2 = new List<AssetPromise_GLTFast>();
 
     private int counter = 0;
     private bool automatedMode = false;
@@ -26,12 +27,14 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         "/GLB/Trevor/Trevor.glb",
         "/GLB/vertex-anim.glb"
     };
+    private AssetPromiseKeeper_GLTFast keeper2;
 
     void Start()
     {
         CommonScriptableObjects.rendererState.Set(true);
         webRequestController = WebRequestController.Create();
         keeper = new AssetPromiseKeeper_GLTF();
+        keeper2 = new AssetPromiseKeeper_GLTFast();
         keeper.throttlingCounter.enabled = false;
     }
 
@@ -44,44 +47,28 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         pos.z = Random.Range(-10, 10);
         promise.settings.initialLocalPosition = pos;
 
-        Vector3 pos2 = pos + Vector3.forward * 2;
-
         keeper.Keep(promise);
         promiseList.Add(promise);
-
-        UniTask.Run(() => GenerateWithglTFast(url, pos2));
     }
 
-    private async UniTaskVoid GenerateWithglTFast(string url, Vector3 position)
+    void GenerateGLTFast(string url)
     {
-        await UniTask.SwitchToMainThread();
-        var gltf = new GltfImport();
-
-        // Create a settings object and configure it accordingly
-        var settings = new ImportSettings
-        {
-            generateMipMaps = false,
-            anisotropicFilterLevel = 3,
-            nodeNameMethod = ImportSettings.NameImportMethod.OriginalUnique
-        };
-
-        // Load the glTF and pass along the settings
-        var success = await gltf.Load(url, settings);
-
-        if (success)
-        {
-            GameObject o = new GameObject("glTF");
-            gltf.InstantiateMainScene(o.transform);
-            o.transform.position = position;
-        }
-        else
-        {
-            Debug.LogError("Loading glTF failed!");
-        }
+        AssetPromise_GLTFast promise2 = new AssetPromise_GLTFast(url, webRequestController);
+        Vector3 pos = Vector3.zero;
+        pos.x = Random.Range(-10, 10);
+        pos.z = Random.Range(-10, 10);
+        promise2.settings.initialLocalPosition = pos;
+        keeper2.Keep(promise2);
+        promiseList2.Add(promise2);
     }
+
 
     void Update()
     {
+        if (Input.GetKeyUp(KeyCode.A))
+        {
+            Create2();
+        }
         if (Input.GetKeyUp(KeyCode.Z))
         {
             Create();
@@ -120,6 +107,14 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
             promiseList.Remove(promiseToRemove);
             PoolManager.i.Cleanup(true);
         }
+        if (promiseList2.Count > 0)
+        {
+            var promiseToRemove = promiseList2[Random.Range(0, promiseList2.Count)];
+            keeper2.Forget(promiseToRemove);
+            promiseList2.Remove(promiseToRemove);
+            PoolManager.i.Cleanup(true);
+        }
+        
     }
     private void Create()
     {
@@ -127,5 +122,11 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         counter %= urls.Length;
         string finalUrl = TestAssetsUtils.GetPath() + urls[counter];
         Generate(finalUrl);
+    }
+    
+    private void Create2()
+    {
+        string finalUrl = TestAssetsUtils.GetPath() + urls[1];
+        GenerateGLTFast(finalUrl);
     }
 }
