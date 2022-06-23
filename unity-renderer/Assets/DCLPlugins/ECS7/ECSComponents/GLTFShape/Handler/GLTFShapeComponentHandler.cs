@@ -8,17 +8,20 @@ using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public class GLTFShapeComponentHandler : IECSComponentHandler<PBGLTFShape>, IShape
+    public class GLTFShapeComponentHandler : IECSComponentHandler<PBGLTFShape>
     {
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
         internal PBGLTFShape model;
         internal readonly LoadWrapper_GLTF loadWrapper;
+        internal IDCLEntity entity;
 
+        private readonly ShapeRepresentation shapeRepresentation;
         private readonly DataStore_ECS7 dataStore;
 
         public GLTFShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
         {
+            shapeRepresentation = new ShapeRepresentation();
             dataStore = dataStoreEcs7;
             loadWrapper = new LoadWrapper_GLTF();
         }
@@ -27,12 +30,14 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            loadWrapper.Unload();
+            loadWrapper?.Unload();
             DisposeMesh(scene);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBGLTFShape model)
         {
+            this.entity = entity;
+
             // If we didn't create the shape, or if the shape is different from the last time, we load the shape, if not we update model
             if(ShouldLoadShape(model))
                 LoadShape(scene,entity,model);
@@ -67,8 +72,8 @@ namespace DCL.ECSComponents
                 
                 // We prepare the load wrapper to load the GLTF
                 loadWrapper.customContentProvider = provider;
-    
-                entity.meshesInfo.currentShape = this;
+                
+                entity.meshesInfo.currentShape = shapeRepresentation;
 
                 loadWrapper.entity = entity;
                 loadWrapper.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
@@ -89,6 +94,7 @@ namespace DCL.ECSComponents
                     // Apply the model for visibility, collision and event pointer
                     ApplyModel(model);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
+                    dataStore.AddReadyAnimatorShape(entity.entityId,meshesInfo.meshRootGameObject);
                     
                 }, (wrapper, exception) =>
                 {
@@ -106,6 +112,8 @@ namespace DCL.ECSComponents
         
         internal void ApplyModel(PBGLTFShape model)
         {
+            shapeRepresentation.UpdateModel(model);
+            
             // Set visibility
             meshesInfo.meshRootGameObject.SetActive(model.Visible);
             
@@ -115,11 +123,13 @@ namespace DCL.ECSComponents
                 collider.enabled = model.WithCollisions;
             }
             
-            //TODO: Implement events related to click entities here
+            //TODO: Implement events here
         }
 
         internal void DisposeMesh(IParcelScene scene)
         {
+            if (entity != null)
+                dataStore.RemoveReadyAnimatorShape(entity.entityId);
             if (meshesInfo != null)
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if (rendereable != null)
