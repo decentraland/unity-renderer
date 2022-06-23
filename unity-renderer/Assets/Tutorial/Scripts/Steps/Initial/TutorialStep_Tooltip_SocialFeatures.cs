@@ -32,8 +32,8 @@ namespace DCL.Tutorial
 
                 if (tutorialController.hudController.friendsHud != null)
                 {
-                    tutorialController.hudController.friendsHud.OnFriendsOpened += FriendsHud_OnFriendsOpened;
-                    tutorialController.hudController.friendsHud.OnFriendsClosed += FriendsHud_OnFriendsClosed;
+                    tutorialController.hudController.friendsHud.OnOpened += FriendsHud_OnFriendsOpened;
+                    tutorialController.hudController.friendsHud.OnClosed += FriendsHud_OnFriendsClosed;
                 }
 
                 if (voiceChatAction != null)
@@ -60,8 +60,8 @@ namespace DCL.Tutorial
 
                 if (tutorialController.hudController.friendsHud != null)
                 {
-                    tutorialController.hudController.friendsHud.OnFriendsOpened -= FriendsHud_OnFriendsOpened;
-                    tutorialController.hudController.friendsHud.OnFriendsClosed -= FriendsHud_OnFriendsClosed;
+                    tutorialController.hudController.friendsHud.OnOpened -= FriendsHud_OnFriendsOpened;
+                    tutorialController.hudController.friendsHud.OnClosed -= FriendsHud_OnFriendsClosed;
                 }
 
                 if (voiceChatAction != null)

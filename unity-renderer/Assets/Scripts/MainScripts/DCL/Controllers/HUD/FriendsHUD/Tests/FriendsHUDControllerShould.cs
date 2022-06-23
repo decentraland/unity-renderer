@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using NSubstitute;
 using NUnit.Framework;
@@ -7,8 +6,6 @@ using SocialFeaturesAnalytics;
 using DCL;
 using DCL.Helpers;
 using UnityEngine;
-using UnityEngine.TestTools;
-using Object = System.Object;
 
 public class FriendsHUDControllerShould
 {
@@ -40,7 +37,7 @@ public class FriendsHUDControllerShould
         ownProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
         userProfileBridge.GetOwn().Returns(ownProfile);
         friendsController = Substitute.For<IFriendsController>();
-        friendsController.FriendCount.Returns(FRIENDS_COUNT);
+        friendsController.AllocatedFriendCount.Returns(FRIENDS_COUNT);
         dataStore = new DataStore();
         controller = new FriendsHUDController(dataStore,
             friendsController,
@@ -226,54 +223,28 @@ public class FriendsHUDControllerShould
     [Test]
     public void NotificationsAreUpdatedWhenFriendshipActionUpdates()
     {
-        friendsController.ReceivedRequestCount.Returns(FRIEND_REQUEST_SHOWN);
+        friendsController.TotalFriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
+        view.FriendCount.Returns(FRIENDS_COUNT);
         view.IsActive().Returns(true);
 
         friendsController.OnUpdateFriendship +=
             Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
 
         Assert.AreEqual(FRIENDS_COUNT, dataStore.friendNotifications.seenFriends.Get());
-        Assert.AreEqual(FRIEND_REQUEST_SHOWN, dataStore.friendNotifications.seenRequests.Get());
+        Assert.AreEqual(FRIEND_REQUEST_SHOWN, dataStore.friendNotifications.pendingFriendRequestCount.Get());
     }
 
     [Test]
     public void NotificationsAreUpdatedWhenIsVisible()
     {
-        friendsController.ReceivedRequestCount.Returns(FRIEND_REQUEST_SHOWN);
+        friendsController.TotalFriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         view.IsActive().Returns(true);
+        view.FriendCount.Returns(FRIENDS_COUNT);
 
         controller.SetVisibility(true);
 
         Assert.AreEqual(FRIENDS_COUNT, dataStore.friendNotifications.seenFriends.Get());
-        Assert.AreEqual(FRIEND_REQUEST_SHOWN, dataStore.friendNotifications.seenRequests.Get());
-    }
-
-    [Test]
-    public void EnqueueFriendWhenTooManyEntriesDisplayed()
-    {
-        view.FriendCount.Returns(10000);
-
-        friendsController.OnUpdateFriendship +=
-            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
-        friendsController.OnUpdateFriendship +=
-            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
-
-        view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipAction) default, default);
-        view.Received(1).ShowMoreFriendsToLoadHint(2);
-    }
-
-    [Test]
-    public void EnqueueFriendRequestWhenTooManyEntriesDisplayed()
-    {
-        view.FriendRequestCount.Returns(10000);
-
-        friendsController.OnUpdateFriendship +=
-            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_FROM);
-        friendsController.OnUpdateFriendship +=
-            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_FROM);
-
-        view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipAction) default, default);
-        view.Received(1).ShowMoreRequestsToLoadHint(2);
+        Assert.AreEqual(FRIEND_REQUEST_SHOWN, dataStore.friendNotifications.pendingFriendRequestCount.Get());
     }
 
     [Test]
@@ -325,50 +296,6 @@ public class FriendsHUDControllerShould
     }
 
     [Test]
-    public void EnqueueUserStatusWhenTooManyEntries()
-    {
-        view.FriendCount.Returns(10000);
-
-        var status = new FriendsController.UserStatus
-        {
-            position = Vector2.zero,
-            presence = PresenceStatus.OFFLINE,
-            friendshipStatus = FriendshipStatus.FRIEND,
-            realm = null,
-            userId = OTHER_USER_ID,
-            friendshipStartedTime = DateTime.UtcNow
-        };
-
-        friendsController.OnUpdateUserStatus +=
-            Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
-
-        view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipStatus) default, default);
-        view.Received(1).ShowMoreFriendsToLoadHint(1);
-    }
-
-    [Test]
-    public void EnqueueUserStatusAsRequestWhenTooManyEntries()
-    {
-        view.FriendRequestCount.Returns(10000);
-
-        var status = new FriendsController.UserStatus
-        {
-            position = Vector2.zero,
-            presence = PresenceStatus.OFFLINE,
-            friendshipStatus = FriendshipStatus.REQUESTED_FROM,
-            realm = null,
-            userId = OTHER_USER_ID,
-            friendshipStartedTime = DateTime.UtcNow
-        };
-
-        friendsController.OnUpdateUserStatus +=
-            Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
-
-        view.DidNotReceiveWithAnyArgs().Set(default, (FriendshipStatus) default, default);
-        view.Received(1).ShowMoreRequestsToLoadHint(1);
-    }
-
-    [Test]
     public void UpdateBlockStatus()
     {
         friendsController.OnUpdateFriendship +=
@@ -404,5 +331,171 @@ public class FriendsHUDControllerShould
         });
         
         view.Received(1).Populate(OTHER_USER_ID, Arg.Is<FriendEntryModel>(f => f.userName == "hehe"));
+    }
+
+    [TestCase(0)]
+    [TestCase(7)]
+    public void GetFriendsWhenBecomesVisible(int friendCount)
+    {
+        view.IsFriendListActive.Returns(true);
+        view.FriendCount.Returns(friendCount);
+        friendsController.IsInitialized.Returns(true);
+        
+        controller.SetVisibility(true);
+        
+        friendsController.Received(1).GetFriendsAsync(30, friendCount);
+    }
+    
+    [Test]
+    public void GetFriendsWhenSwitchesTabs()
+    {
+        friendsController.IsInitialized.Returns(true);
+
+        view.OnFriendListDisplayed += Raise.Event<Action>();
+        
+        friendsController.Received(1).GetFriendsAsync(30, 0);
+    }
+    
+    [Test]
+    public void GetFriendRequestsWhenBecomesVisible()
+    {
+        view.IsRequestListActive.Returns(true);
+        friendsController.IsInitialized.Returns(true);
+        
+        controller.SetVisibility(true);
+        
+        friendsController.Received(1).GetFriendRequestsAsync(30, Arg.Any<long>(), 30, Arg.Any<long>());
+    }
+    
+    [Test]
+    public void GetFriendRequestsWhenSwitchesTabs()
+    {
+        friendsController.IsInitialized.Returns(true);
+        view.FriendRequestCount.Returns(0);
+
+        view.OnRequestListDisplayed += Raise.Event<Action>();
+        
+        friendsController.Received(1).GetFriendRequestsAsync(30, Arg.Any<long>(), 30, Arg.Any<long>());
+    }
+
+    [Test]
+    public void HideMoreFriendsToLoadWhenReachedTotalFriends()
+    {
+        friendsController.TotalFriendCount.Returns(7);
+        view.FriendCount.Returns(7);
+        view.IsFriendListActive.Returns(true);
+        friendsController.IsInitialized.Returns(true);
+        view.ClearReceivedCalls();
+        
+        controller.SetVisibility(true);
+        
+        view.Received(1).HideMoreFriendsToLoadHint();
+    }
+    
+    [Test]
+    public void ShowMoreFriendsToLoadWhenMissingFriends()
+    {
+        friendsController.TotalFriendCount.Returns(7);
+        view.FriendCount.Returns(3);
+        view.IsFriendListActive.Returns(true);
+        friendsController.IsInitialized.Returns(true);
+        view.ClearReceivedCalls();
+        
+        controller.SetVisibility(true);
+        
+        view.Received(1).ShowMoreFriendsToLoadHint();
+    }
+    
+    [Test]
+    public void HideMoreFriendRequestsToLoadWhenReachedTotalFriends()
+    {
+        friendsController.TotalFriendRequestCount.Returns(16);
+        view.FriendRequestCount.Returns(16);
+        view.IsRequestListActive.Returns(true);
+        view.ClearReceivedCalls();
+        friendsController.IsInitialized.Returns(true);
+        
+        controller.SetVisibility(true);
+        
+        view.Received(1).HideMoreRequestsToLoadHint();
+    }
+    
+    [Test]
+    public void ShowMoreFriendRequestsToLoadWhenMissingRequests()
+    {
+        friendsController.TotalFriendRequestCount.Returns(16);
+        view.FriendRequestCount.Returns(8);
+        view.IsRequestListActive.Returns(true);
+        view.ClearReceivedCalls();
+        friendsController.IsInitialized.Returns(true);
+        
+        controller.SetVisibility(true);
+        
+        view.Received(1).ShowMoreRequestsToLoadHint();
+    }
+
+    [Test]
+    public void GetMoreFriends()
+    {
+        friendsController.IsInitialized.Returns(true);
+        view.OnRequireMoreFriends += Raise.Event<Action>();
+        
+        friendsController.GetFriendsAsync(30, 0);
+    }
+    
+    [TestCase(3)]
+    [TestCase(11)]
+    public void GetMoreFriendsWhenViewRequests(int friendCount)
+    {
+        friendsController.IsInitialized.Returns(true);
+        view.FriendCount.Returns(friendCount);
+        
+        view.OnRequireMoreFriends += Raise.Event<Action>();
+        
+        friendsController.Received(1).GetFriendsAsync(30, friendCount);
+    }
+    
+    [Test]
+    public void GetMoreFriendRequests()
+    {
+        friendsController.IsInitialized.Returns(true);
+        view.OnRequireMoreFriendRequests += Raise.Event<Action>();
+        
+        friendsController.GetFriendRequestsAsync(30, 0, 30, 0);
+    }
+
+    [Test]
+    public void UpdatePendingRequestCountToDatastoreWhenFriendsInitializes()
+    {
+        friendsController.TotalFriendRequestCount.Returns(87);
+        friendsController.OnInitialized += Raise.Event<Action>();
+
+        Assert.AreEqual(87, dataStore.friendNotifications.pendingFriendRequestCount.Get());
+    }
+
+    [TestCase("bleh", 0)]
+    [TestCase(OTHER_USER_NAME, 1)]
+    public void SearchFriends(string searchText, int expectedCount)
+    {
+        friendsController.GetUserStatus(OTHER_USER_ID).Returns(new FriendsController.UserStatus
+        {
+            friendshipStatus = FriendshipStatus.FRIEND,
+            userId = OTHER_USER_ID
+        });
+        friendsController.OnUpdateFriendship +=
+            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
+        
+        view.OnSearchFriendsRequested += Raise.Event<Action<string>>(searchText);
+        
+        friendsController.Received(1).GetFriendsAsync(searchText, 100);
+        view.Received(1).FilterFriends(Arg.Is<Dictionary<string, FriendEntryModel>>(d => d.Count == expectedCount));
+    }
+
+    [Test]
+    public void ClearFriendFilterWhenSearchForAnEmptyString()
+    {
+        view.OnSearchFriendsRequested += Raise.Event<Action<string>>("");
+        
+        view.Received(1).ClearFriendFilter();
     }
 }

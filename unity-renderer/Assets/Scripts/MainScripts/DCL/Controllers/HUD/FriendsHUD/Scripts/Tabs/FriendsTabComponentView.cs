@@ -33,7 +33,6 @@ public class FriendsTabComponentView : BaseComponentView
     internal Button loadMoreEntriesButton;
 
     [SerializeField] internal GameObject loadMoreEntriesContainer;
-    [SerializeField] internal TMP_Text loadMoreEntriesLabel;
 
     private readonly Dictionary<string, FriendEntryModel> creationQueue =
         new Dictionary<string, FriendEntryModel>();
@@ -43,11 +42,11 @@ public class FriendsTabComponentView : BaseComponentView
     private Pool entryPool;
     private int currentAvatarSnapshotIndex;
     private bool isLayoutDirty;
-    private Dictionary<string, FriendEntryModel> filteredEntries;
     private IChatController chatController;
     private ILastReadMessagesService lastReadMessagesService;
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
+    private bool isSearchMode;
 
     public Dictionary<string, FriendEntry> Entries => entries;
     public int Count => entries.Count + creationQueue.Keys.Count(s => !entries.ContainsKey(s));
@@ -217,7 +216,7 @@ public class FriendsTabComponentView : BaseComponentView
         var entry = entries[userId];
         entry.Populate(model);
 
-        if (filteredEntries?.ContainsKey(userId) ?? false)
+        if (isSearchMode)
         {
             offlineFriendsList.list.Remove(userId);
             onlineFriendsList.list.Remove(userId);
@@ -298,8 +297,8 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void ClearFilter()
     {
-        filteredEntries = null;
-
+        isSearchMode = false;
+        
         if (searchResultsFriendList.list.gameObject.activeSelf)
         {
             foreach (var pair in entries)
@@ -330,8 +329,8 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void Filter(Dictionary<string, FriendEntryModel> search)
     {
-        filteredEntries = search;
-
+        isSearchMode = true;
+        
         if (ListByOnlineStatus)
         {
             offlineFriendsList.Hide();
@@ -367,20 +366,13 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void Enqueue(string userId, FriendEntryModel model) => creationQueue[userId] = model;
 
-    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount)
-    {
-        loadMoreEntriesLabel.SetText(
-            $"{pendingFriendsCount} friends hidden. Use the search bar to find them or click below to show more.");
-        ShowMoreFriendsToLoadHint();
-    }
-
     public void HideMoreFriendsToLoadHint()
     {
         loadMoreEntriesContainer.SetActive(false);
         UpdateLayout();
     }
     
-    private void ShowMoreFriendsToLoadHint()
+    public void ShowMoreFriendsToLoadHint()
     {
         loadMoreEntriesContainer.SetActive(true);
         UpdateLayout();

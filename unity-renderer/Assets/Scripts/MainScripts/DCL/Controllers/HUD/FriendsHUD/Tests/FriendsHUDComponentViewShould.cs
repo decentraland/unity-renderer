@@ -24,7 +24,7 @@ public class FriendsHUDComponentViewShould
     [TearDown]
     public void TearDown()
     {
-        ((BaseComponentView) view).Dispose();
+        view.Dispose();
     }
 
     [Test]
@@ -305,19 +305,17 @@ public class FriendsHUDComponentViewShould
     [Test]
     public void ShowMoreFriendsToLoadHint()
     {
-        view.ShowMoreFriendsToLoadHint(5);
+        view.ShowMoreFriendsToLoadHint();
         
         Assert.IsTrue(view.friendsTab.loadMoreEntriesContainer.activeSelf);
-        Assert.AreEqual("5 friends hidden. Use the search bar to find them or click below to show more.", view.friendsTab.loadMoreEntriesLabel.text);
     }
 
     [Test]
     public void ShowMoreRequestsToLoadHint()
     {
-        view.ShowMoreRequestsToLoadHint(3);
+        view.ShowMoreRequestsToLoadHint();
         
         Assert.IsTrue(view.friendRequestsTab.loadMoreEntriesContainer.activeSelf);
-        Assert.AreEqual("3 request hidden. Click below to show more.", view.friendRequestsTab.loadMoreEntriesLabel.text);
     }
 
     [Test]
