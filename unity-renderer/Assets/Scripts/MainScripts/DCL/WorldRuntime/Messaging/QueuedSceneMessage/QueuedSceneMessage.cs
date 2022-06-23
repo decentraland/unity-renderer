@@ -33,6 +33,5 @@
         public string sceneId;
         public string message;
         public bool isUnreliable;
-        public string unreliableMessageKey;
     }
 }

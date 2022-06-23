@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eede481391d404bba0faa9c2a1d1455, type: 3}
+  m_Name: NFTShapeFrameFactory
+  m_EditorClassIdentifier: 
+  loaderControllersPrefabs:
+  - {fileID: -9107339233135331006, guid: 90c1561a809c6704ba739cabc0ba8bfa, type: 3}
+  - {fileID: -2844661556362200834, guid: 950fd5be1b84f7e45acf91a54d54fece, type: 3}
+  - {fileID: 2278145534023258040, guid: 1446a69a99fde4540a5315527383368a, type: 3}
+  - {fileID: 4683086294507270332, guid: 10026a3a6f1ec0946a64f03651e7c386, type: 3}
+  - {fileID: 364846537329013028, guid: ddafd4383d4f4214dabe07580f138208, type: 3}
+  - {fileID: 3444306955247775507, guid: 4dbe29221be281a47b98540cf0d96d93, type: 3}
+  - {fileID: 4403927791442690741, guid: 37f2de7179c617a48a209ab10ebada34, type: 3}
+  - {fileID: 456029337239678633, guid: 29d76d2bdc1ef1746a28cede4d30a3fb, type: 3}
+  - {fileID: -5940289520635013351, guid: 32d112fbf3cfbf74093b701c8d809026, type: 3}
+  - {fileID: 3631080018643059183, guid: 3e4ede0e7c5e46b4abfcab161cfa293f, type: 3}
+  - {fileID: 5306729000614307136, guid: efa16eff5e2f8594fad0282241b9a18e, type: 3}
+  - {fileID: 7768175446190555961, guid: 2a953b2b303f1e14eb36173eb99ecc0b, type: 3}
+  - {fileID: 604081448002355666, guid: da4f346085ba9094e9c40d36d92d1bc8, type: 3}
+  - {fileID: 7791430344610144076, guid: 24279a017067cbf47894eaf3759ee23d, type: 3}
+  - {fileID: 5061465794196809881, guid: 97d85279ec8aad34da5995fd37e18b18, type: 3}
+  - {fileID: 379963442748186825, guid: 60e4d146489de1041b4f29c29a3dc530, type: 3}
+  - {fileID: 2683004184190067113, guid: a3e1df17172b20f4fbf7b861995ede4b, type: 3}
+  - {fileID: 3796504636728257646, guid: 392451aa5904bdb4a840923f3f96b7ed, type: 3}
+  - {fileID: 1106340975133285255, guid: f35b98a40b46ad44f9eda801238e4fa5, type: 3}
+  - {fileID: 3203840118869519161, guid: 542b48276095cc94a834b2d14ca754ad, type: 3}
+  - {fileID: 6378219194000186653, guid: 38a0698a9d62b25419cac90a42e41f82, type: 3}
+  - {fileID: 1024583538478622517, guid: aa609f939bd21604ab0dcdeacb400415, type: 3}
+  - {fileID: 1920184813960204977, guid: b6f5c88b77cc0db469ca85829457e9bb, type: 3}
+  defaultFramePrefabs: {fileID: -9107339233135331006, guid: 90c1561a809c6704ba739cabc0ba8bfa,
+    type: 3}
+  errorFeedback: {fileID: 890551353188853588, guid: 84936a56c0811d64a86faf11e87f5f72,
+    type: 3}

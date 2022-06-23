@@ -3,6 +3,7 @@ using DCL.Emotes;
 using DCL.EmotesWheel;
 using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
+using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Tutorial;
 
@@ -33,12 +34,17 @@ namespace DCL
             pluginSystem.Register<UUIDEventsPlugin>(() => new UUIDEventsPlugin());
             pluginSystem.Register<UIComponentsPlugin>(() => new UIComponentsPlugin());
             pluginSystem.Register<CoreComponentsPlugin>(() => new CoreComponentsPlugin());
+            pluginSystem.Register<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature());
 
             pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
-            pluginSystem.RegisterWithFlag<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature(), "explorev2");
             pluginSystem.RegisterWithFlag<ECS7Plugin>(() => new ECS7Plugin(), "ecs7");
+            pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
+                FriendsController.i,
+                NotificationScriptableObjects.pendingFriendRequests,
+                NotificationScriptableObjects.newApprovedFriends,
+                DataStore.i));
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

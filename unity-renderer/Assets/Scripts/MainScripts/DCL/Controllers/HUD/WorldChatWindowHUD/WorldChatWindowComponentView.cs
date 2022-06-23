@@ -11,25 +11,25 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     private const int CREATION_AMOUNT_PER_FRAME = 5;
     private const int AVATAR_SNAPSHOTS_PER_FRAME = 5;
 
-    [SerializeField] private CollapsablePublicChannelListComponentView publicChannelList;
-    [SerializeField] private CollapsableDirectChatListComponentView directChatList;
-    [SerializeField] private CollapsableChatSearchListComponentView searchResultsList;
-    [SerializeField] private Button closeButton;
-    [SerializeField] private GameObject directChatsLoadingContainer;
-    [SerializeField] private GameObject directChatsContainer;
-    [SerializeField] private GameObject directChannelHeader;
-    [SerializeField] private GameObject searchResultsHeader;
-    [SerializeField] private TMP_Text directChatsHeaderLabel;
-    [SerializeField] private TMP_Text searchResultsHeaderLabel;
-    [SerializeField] private ScrollRect scroll;
-    [SerializeField] private SearchBarComponentView searchBar;
+    [SerializeField] internal CollapsablePublicChannelListComponentView publicChannelList;
+    [SerializeField] internal CollapsableDirectChatListComponentView directChatList;
+    [SerializeField] internal CollapsableChatSearchListComponentView searchResultsList;
+    [SerializeField] internal Button closeButton;
+    [SerializeField] internal GameObject directChatsLoadingContainer;
+    [SerializeField] internal GameObject directChatsContainer;
+    [SerializeField] internal GameObject directChannelHeader;
+    [SerializeField] internal GameObject searchResultsHeader;
+    [SerializeField] internal TMP_Text directChatsHeaderLabel;
+    [SerializeField] internal TMP_Text searchResultsHeaderLabel;
+    [SerializeField] internal ScrollRect scroll;
+    [SerializeField] internal SearchBarComponentView searchBar;
     [SerializeField] private WorldChatWindowModel model;
 
     [Header("Load More Entries")] [SerializeField]
-    private Button loadMoreEntriesButton;
+    internal Button loadMoreEntriesButton;
 
-    [SerializeField] private GameObject loadMoreEntriesContainer;
-    [SerializeField] private TMP_Text loadMoreEntriesLabel;
+    [SerializeField] internal GameObject loadMoreEntriesContainer;
+    [SerializeField] internal TMP_Text loadMoreEntriesLabel;
 
     private readonly Dictionary<string, PrivateChatModel> creationQueue = new Dictionary<string, PrivateChatModel>();
     private bool isSortingDirty;
@@ -53,7 +53,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeInHierarchy;
-    public int PrivateChannelsCount => directChatList.Count() + creationQueue.Count;
+    public int PrivateChannelsCount => directChatList.Count() + creationQueue.Keys.Count(s => !directChatList.Contains(s));
 
     public static WorldChatWindowComponentView Create()
     {

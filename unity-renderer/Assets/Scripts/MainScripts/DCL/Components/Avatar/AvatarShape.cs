@@ -17,11 +17,12 @@ using LOD = AvatarSystem.LOD;
 
 namespace DCL
 {
-    public class AvatarShape : BaseComponent
+    public class AvatarShape : BaseComponent, IHideAvatarAreaHandler
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
         private const float AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD = 0.9f;
+        private const string IN_HIDE_AREA = "IN_HIDE_AREA";
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
@@ -32,6 +33,7 @@ namespace DCL
         [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
+        [SerializeField] internal GameObject playerNameContainer;
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
@@ -129,7 +131,7 @@ namespace DCL
                 OnEntityTransformChanged(entity.gameObject.transform.localPosition,
                     entity.gameObject.transform.localRotation, true);
             }
-            
+
             // NOTE: we subscribe here to transform changes since we might "lose" the message
             // if we subscribe after a any yield
             entity.OnTransformChange -= OnEntityTransformChanged;
@@ -178,7 +180,7 @@ namespace DCL
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
 
             UpdatePlayerStatus(model);
-            
+
             onPointerDown.Initialize(
                 new OnPointerDown.Model()
                 {
@@ -187,7 +189,7 @@ namespace DCL
                     hoverText = "view profile"
                 },
                 entity, player
-            );            
+            );
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -301,7 +303,7 @@ namespace DCL
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
             OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation, !initializedPosition);
         }
-        
+
         private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
         {
             if (isGlobalSceneAvatar)
@@ -324,6 +326,21 @@ namespace DCL
             initializedPosition = false;
             model = new AvatarModel();
             player = null;
+        }
+
+        public void ApplyHideModifier()
+        {
+            avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+            onPointerDown.gameObject.SetActive(false);
+            playerNameContainer.SetActive(false);
+
+        }
+
+        public void RemoveHideModifier()
+        {
+            avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+            onPointerDown.gameObject.SetActive(true);
+            playerNameContainer.SetActive(true);
         }
 
         public override void Cleanup()

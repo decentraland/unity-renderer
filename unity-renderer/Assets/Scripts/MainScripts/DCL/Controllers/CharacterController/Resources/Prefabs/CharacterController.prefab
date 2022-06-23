@@ -82,36 +82,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &2209460978543269410
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2268160095759924669}
-  m_Layer: 16
-  m_Name: LoadingAvatarContainer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2268160095759924669
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2209460978543269410}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.755, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 6758273427026275198}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3711435650905816617
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,7 +111,6 @@ Transform:
   m_LocalPosition: {x: 0, y: -1.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 2268160095759924669}
   - {fileID: 8397923773477180334}
   - {fileID: 471560576698433846}
   m_Father: {fileID: 6922703132412175459}
@@ -184,7 +153,6 @@ MonoBehaviour:
   target: {fileID: 6758273427026275198}
   runMinSpeed: 6
   walkMinSpeed: 0.1
-  container: {fileID: 0}
 --- !u!114 &2374946182991755626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -328,7 +296,6 @@ GameObject:
   - component: {fileID: 110551818}
   - component: {fileID: 113901082}
   - component: {fileID: 8548425888172674288}
-  - component: {fileID: 8920001334808305060}
   - component: {fileID: 8266689621276731347}
   m_Layer: 16
   m_Name: CharacterController
@@ -418,27 +385,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   avatarContainer: {fileID: 8138691981628023791}
-  armatureContainer: {fileID: 3711435650905816617}
-  loadingAvatarContainer: {fileID: 2268160095759924669}
   avatarCollider: {fileID: 7115442889188564318}
-  avatarVisibility: {fileID: 8920001334808305060}
+  avatarVisibility: {fileID: 0}
   loadingParticlesPrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
     type: 3}
   cameraDistanceToDeactivate: 1
---- !u!114 &8920001334808305060
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6922703132412175462}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b406a70a47bd49728656d3954da3b476, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameObjectsToToggle:
-  - {fileID: 8138691981628023791}
 --- !u!114 &8266689621276731347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -580,7 +531,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6758273427026275198}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &3426163915781268444
 PrefabInstance:
@@ -597,7 +548,7 @@ PrefabInstance:
     - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
         type: 3}

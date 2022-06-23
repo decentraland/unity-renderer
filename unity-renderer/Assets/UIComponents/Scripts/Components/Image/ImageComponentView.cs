@@ -72,7 +72,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
             SetFitParent(model.fitParent);
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public virtual void Configure(BaseComponentModel newModel)
     {
         model = (ImageComponentModel)newModel;
         RefreshControl();
@@ -136,7 +136,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         SetFitParent(model.fitParent);
     }
 
-    public void SetImage(string uri)
+    public virtual void SetImage(string uri)
     {
         if (model.lastUriCached && uri == lastLoadedUri)
             return;

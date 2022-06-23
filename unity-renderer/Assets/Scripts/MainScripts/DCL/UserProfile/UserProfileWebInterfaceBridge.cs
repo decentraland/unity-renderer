@@ -1,4 +1,5 @@
-﻿using DCL.Interface;
+﻿using System.Linq;
+using DCL.Interface;
 
 public class UserProfileWebInterfaceBridge : IUserProfileBridge
 {
@@ -16,5 +17,10 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
     public UserProfile Get(string userId)
     {
         return UserProfileController.userProfilesCatalog.Get(userId);
+    }
+
+    public UserProfile GetByName(string userNameOrId)
+    {
+        return UserProfileController.userProfilesCatalog.GetValues().FirstOrDefault(p => p.userName == userNameOrId);
     }
 }
