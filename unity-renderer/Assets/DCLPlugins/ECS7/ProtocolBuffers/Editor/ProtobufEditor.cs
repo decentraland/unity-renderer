@@ -1,6 +1,4 @@
-
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,53 +12,96 @@ using Debug = UnityEngine.Debug;
 
 using Newtonsoft.Json;
 
+using System.IO.Compression;
+using UnityEditor.Compilation;
+using ICSharpCode.SharpZipLib.GZip;
+using ICSharpCode.SharpZipLib.Tar;
+using ICSharpCode.SharpZipLib.Zip;
+
 namespace DCL.Protobuf
 {
+    [InitializeOnLoad]
     public static class ProtobufEditor
     {
+        static ProtobufEditor()
+        {
+            CompilationPipeline.compilationStarted += OnProjectCompile;
+            OnProjectCompile();
+        }
+        
+        private const bool VERBOSE = true;
+
+        private const string PATH_TO_GENERATED = "/DCLPlugins/ECS7/ProtocolBuffers/Generated/";
         private const string REALPATH_TO_COMPONENTS_DEFINITIONS = "/DCLPlugins/ECS7/ProtocolBuffers/Definitions";
         private const string PATH_TO_COMPONENTS = "/DCLPlugins/ECS7/ProtocolBuffers/Generated/PBFiles";
         private const string SUBPATH_TO_COMPONENTS_COMMON = "/Common";
         private const string TEMPPATH_TO_COMPONENTS_DEFINITIONS = "/DCLPlugins/ECS7/ProtocolBuffers/DefinitionsTemp";
-        private const string SUBPATH_TO_COMPONENTS_DEFINITIONS_COMMON = "/common";
-        private const string PATH_TO_PROTO = "/DCLPlugins/ECS7/ProtocolBuffers/Editor/";
+        private const string PATHNAME_TO_COMPONENTS_DEFINITIONS_COMMON = "common";
         private const string PATH_TO_COMPONENT_IDS = "/DCLPlugins/ECS7/ECSComponents/ComponentID/ComponentID.cs";
-        private const string PROTO_COMMAND = "protoc";
+        private const string PATH_TO_FOLDER = "/DCLPlugins/ECS7/ProtocolBuffers/Editor/";
+        private const string PATH_TO_PROTO = "/DCLPlugins/ECS7/ProtocolBuffers/Editor/bin/";
+        
+        private const string PROTO_FILENAME = "protoc";
+        private const string DOWNLOADED_VERSION_FILENAME = "downloadedVersion.gen.txt";
+        private const string COMPILED_VERSION_FILENAME = "compiledVersion.gen.txt";
+        private const string EXECUTABLE_VERSION_FILENAME = "executableVersion.gen.txt";
 
-        [MenuItem("Decentraland/Protobuf/UpdateModels")]
+        private const string PROTO_VERSION = "3.12.3";
+
+        private const string NPM_PACKAGE = "decentraland-ecs";
+        private const string NPM_PACKAGE_PROTO_DEF = "/package/dist/ecs7/proto-definitions";
+
+        private struct ProtoComponent
+        {
+            public string componentName;
+            public int componentId;
+        }
+        
+        private static void VerboseLog(string message)
+        {
+            if (VERBOSE)
+            {
+                Debug.Log(message);
+            }    
+        }
+        
+        [MenuItem("Decentraland/Protobuf/UpdateModels with the latest version")]
         public static void UpdateModels()
         {
-            DownloadProtoDefinitions();
-            GenerateComponentCode();
+            var lastVersion = GetLatestProtoVersion();
+            UpdateModels(lastVersion);
+        }
+        
+        public static void UpdateModels(string version)
+        {
+            if (!IsProtoVersionValid())
+                DownloadProtobuffExecutable();
+
+            DownloadProtoDefinitions(version);
+            GenerateComponentCode(version);
+            CompilationPipeline.RequestScriptCompilation();
+        }
+        
+        [MenuItem("Decentraland/Protobuf/Download latest proto definitions (For debugging)")]
+        public static void DownloadLatestProtoDefinitions()
+        {
+            var nextVersion = GetLatestProtoVersion();
+            DownloadProtoDefinitions(nextVersion);
         }
 
-        [MenuItem("Decentraland/Protobuf/Download proto definitions (For debugging)")]
-        public static void DownloadProtoDefinitions()
+        public static void DownloadProtoDefinitions(string version)
         {
-            WebClient client = new WebClient();
+            WebClient client;
             Stream data;
             StreamReader reader;
             string libraryJsonString;
             Dictionary<string, object> libraryContent, libraryInfo;
 
-            // Download the data of decentraland-ecs
+            VerboseLog("Downloading " + NPM_PACKAGE + " version: " + version);
+
+            // Download the "package.json" of {NPM_PACKAGE}@version
             client = new WebClient();
-            data = client.OpenRead(@"https://registry.npmjs.org/decentraland-ecs");
-            reader = new StreamReader(data);
-            libraryJsonString = reader.ReadToEnd();
-            data.Close();
-            reader.Close();
-            
-            // Process the response
-			libraryContent = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryJsonString);
-            libraryInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryContent["dist-tags"].ToString());
-            
-            string nextVersion = libraryInfo["next"].ToString();
-            UnityEngine.Debug.Log("decentraland-ecs next version: " + nextVersion);
-            
-            // Download the "package.json" of decentraland-ecs@next
-            client = new WebClient();
-            data = client.OpenRead(@"https://registry.npmjs.org/decentraland-ecs/" + nextVersion);
+            data = client.OpenRead(@"https://registry.npmjs.org/" + NPM_PACKAGE + "/" + version);
             reader = new StreamReader(data);
             libraryJsonString = reader.ReadToEnd();
             data.Close();
@@ -71,43 +112,39 @@ namespace DCL.Protobuf
             libraryInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryContent["dist"].ToString());
 
             string tgzUrl = libraryInfo["tarball"].ToString();
-            UnityEngine.Debug.Log("decentraland-ecs@next url: " + tgzUrl);
-            
-            // Download package
-            client = new WebClient();
-            client.DownloadFile(tgzUrl, "decentraland-ecs-next.tgz");
-            UnityEngine.Debug.Log("File downloaded decentraland-ecs-next.tgz");
+            VerboseLog(NPM_PACKAGE + "@" + version + "url: " + tgzUrl);
 
-            string destPackage = "decentraland-ecs" + nextVersion;
+            // Download package
+            string packageName = NPM_PACKAGE + "-" + version + ".tgz";
+            client = new WebClient();
+            client.DownloadFile(tgzUrl, packageName);
+            VerboseLog("File downloaded " + packageName);
+
+            string destPackage = NPM_PACKAGE + "-" + version;
             if (Directory.Exists(destPackage))
                 Directory.Delete(destPackage, true);
-            
+
             try
             {
                 Directory.CreateDirectory(destPackage);
 
-                // We unzip the library
-                ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "tar", Arguments = "-xvzf decentraland-ecs-next.tgz -C " + destPackage, CreateNoWindow = true};
-                Process proc = new Process() { StartInfo = startInfo };
-                proc.Start();
+                Untar(packageName,destPackage);
+                VerboseLog("Untar " + packageName);
 
-                proc.WaitForExit(5 * 1000);
-
-                UnityEngine.Debug.Log("Unzipped decentraland-ecs-next.tgz");
-
-                if (File.Exists(destPackage + "/package/dist/ecs7/proto-definitions/common/id.proto"))
+                if (File.Exists(destPackage + NPM_PACKAGE_PROTO_DEF + "/" + PATHNAME_TO_COMPONENTS_DEFINITIONS_COMMON + "/id.proto"))
                 {
-                    File.Delete(destPackage + "/package/dist/ecs7/proto-definitions/common/id.proto");
+                    File.Delete(destPackage + NPM_PACKAGE_PROTO_DEF + "/" + PATHNAME_TO_COMPONENTS_DEFINITIONS_COMMON + "/id.proto");
                 }
-                    
+
                 string componentDefinitionPath = Application.dataPath + REALPATH_TO_COMPONENTS_DEFINITIONS;
 
                 if (Directory.Exists(componentDefinitionPath))
                     Directory.Delete(componentDefinitionPath, true);
 
                 // We move the definitions to their correct path
-                Directory.Move(destPackage + "/package/dist/ecs7/proto-definitions", componentDefinitionPath);
-                UnityEngine.Debug.Log("Success copying definitions in " + componentDefinitionPath);
+                Directory.Move(destPackage + NPM_PACKAGE_PROTO_DEF, componentDefinitionPath);
+
+                VerboseLog("Success copying definitions in " + componentDefinitionPath);
 
             }
             catch (Exception e)
@@ -117,18 +154,11 @@ namespace DCL.Protobuf
             finally // We delete the downloaded package
             {
                 Directory.Delete(destPackage, true);
-                if (File.Exists("decentraland-ecs-next.tgz"))
-                    File.Delete("decentraland-ecs-next.tgz");
+                if (File.Exists(packageName))
+                    File.Delete(packageName);
             }
         }
-        
-        
-        struct ProtoComponent
-        {
-            public string componentName;
-            public int componentId;
-        }
-            
+
         private static List<ProtoComponent> GetComponents()
         {
             // We get all the files that are proto
@@ -165,7 +195,7 @@ namespace DCL.Protobuf
         private static List<string> GetComponentsCommon()
         {
             // We get all the files that are proto
-            DirectoryInfo dir = new DirectoryInfo(Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS + SUBPATH_TO_COMPONENTS_DEFINITIONS_COMMON);
+            DirectoryInfo dir = new DirectoryInfo(Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS + "/" + PATHNAME_TO_COMPONENTS_DEFINITIONS_COMMON);
             FileInfo[] info = dir.GetFiles("*.proto");
             List<string> components = new List<string>();
             
@@ -182,7 +212,7 @@ namespace DCL.Protobuf
         }
 
         [MenuItem("Decentraland/Protobuf/Regenerate models (For debugging)")]
-        public static void GenerateComponentCode()
+        public static void GenerateComponentCode(string versionNameToCompile)
         {
             Debug.Log("Starting regenerate ");
             bool ok = false;
@@ -206,9 +236,7 @@ namespace DCL.Protobuf
                 ok &= CompileComponentsCommon(tempOutputPath + SUBPATH_TO_COMPONENTS_COMMON);
 
                 if (ok)
-                {
                     GenerateComponentIdEnum(components);
-                }
             }
             catch (Exception e)
             {
@@ -219,12 +247,15 @@ namespace DCL.Protobuf
             {
                 string outputPath = Application.dataPath + PATH_TO_COMPONENTS;
                 if (Directory.Exists(outputPath))
-                {
                     Directory.Delete(outputPath, true);
-                }
                 
                 Directory.Move(tempOutputPath, outputPath);
-            } else if (Directory.Exists(tempOutputPath)) {           
+                
+                string path = Application.dataPath + PATH_TO_FOLDER;
+                WriteVersion(versionNameToCompile, COMPILED_VERSION_FILENAME, path);
+            } 
+            else if (Directory.Exists(tempOutputPath)) 
+            {           
                 Directory.Delete(tempOutputPath, true);
             }
             
@@ -236,10 +267,8 @@ namespace DCL.Protobuf
         private static void CreateTempDefinitions()
         {
             if (Directory.Exists(Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS))
-            {
                 Directory.Delete(Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS, true);
-            }
-            
+
             ProtobufEditorHelper.CloneDirectory(Application.dataPath + REALPATH_TO_COMPONENTS_DEFINITIONS, Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS);
         }
         
@@ -288,12 +317,10 @@ namespace DCL.Protobuf
             List<string> commonFiles = GetComponentsCommon();
 
             if (commonFiles.Count == 0)
-            {
                 return true;
-            }
-            
+
             // We prepare the paths for the conversion
-            string filePath = Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS + SUBPATH_TO_COMPONENTS_DEFINITIONS_COMMON ;
+            string filePath = Application.dataPath + TEMPPATH_TO_COMPONENTS_DEFINITIONS + "/" + PATHNAME_TO_COMPONENTS_DEFINITIONS_COMMON ;
 
             List<string> paramsArray = new List<string>
             {
@@ -311,8 +338,10 @@ namespace DCL.Protobuf
         
         private static bool ExecProtoCompilerCommand(string finalArguments)
         {
+            string proto_path = GetPathToProto();
+            
             // This is the console to convert the proto
-            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = PROTO_COMMAND, Arguments = finalArguments };
+            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = proto_path, Arguments = finalArguments };
             
             Process proc = new Process() { StartInfo = startInfo };
             proc.StartInfo.UseShellExecute = false;
@@ -349,7 +378,7 @@ namespace DCL.Protobuf
                 
                 foreach ( string line in lines )
                 {
-                    if (line.IndexOf("common/id.proto") == -1 && line.IndexOf("(ecs_component_id)") == -1)
+                    if (line.IndexOf(PATHNAME_TO_COMPONENTS_DEFINITIONS_COMMON + "/id.proto") == -1 && line.IndexOf("(ecs_component_id)") == -1)
                     {
                         outLines.Add(line);
                     }
@@ -360,6 +389,208 @@ namespace DCL.Protobuf
                 
                 File.WriteAllLines(file.FullName, outLines.ToArray());
             }
+        }
+        
+        private static bool IsProtoVersionValid()
+        {
+            string path = Application.dataPath + PATH_TO_GENERATED + EXECUTABLE_VERSION_FILENAME;
+            string version = GetVersion(path);
+            return version == PROTO_VERSION;
+        }
+        
+        private static string GetVersion(string path)
+        {
+            if (!File.Exists(path))
+                return "";
+
+            StreamReader reader = new StreamReader(path);
+            string version = reader.ReadToEnd();
+            reader.Close();
+
+            return version;
+        }
+        
+        private static void WriteVersion(string version, string filename)
+        {
+            string path = Application.dataPath + PATH_TO_GENERATED + "/";
+            WriteVersion(version, filename, path);
+        }
+
+        private static void WriteVersion(string version, string filename, string path)
+        {
+            string filePath = path + filename;
+            var sr = File.CreateText(filePath);
+            sr.Write(version);
+            sr.Close();
+        }
+        
+        private static string GetDownloadedVersion()
+        {
+            string path = Application.dataPath + PATH_TO_GENERATED + "/" + DOWNLOADED_VERSION_FILENAME;
+            return GetVersion(path);
+        }
+
+        private static string GetCompiledVersion()
+        {
+            string path = Application.dataPath + PATH_TO_FOLDER + COMPILED_VERSION_FILENAME;
+            return GetVersion(path);
+        }
+        
+        public static string GetLatestProtoVersion()
+        {
+            WebClient client;
+            Stream data;
+            StreamReader reader;
+            string libraryJsonString;
+            Dictionary<string, object> libraryContent, libraryInfo;
+
+            // Download the data of decentraland-/ecs
+            client = new WebClient();
+            data = client.OpenRead(@"https://registry.npmjs.org/" + NPM_PACKAGE);
+            if (data == null)
+            {
+                return "";
+            }
+            
+            reader = new StreamReader(data);
+            libraryJsonString = reader.ReadToEnd();
+            data.Close();
+            reader.Close();
+            
+            // Process the response
+            libraryContent = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryJsonString);
+            libraryInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryContent["dist-tags"].ToString());
+
+            string nextVersion = libraryInfo["next"].ToString();
+            return nextVersion;
+        }
+        
+        [MenuItem("Decentraland/Protobuf/Download proto executable")]
+        public static void DownloadProtobuffExecutable()
+        {
+            // Download package
+            string machine  = null;
+            string executableName = "protoc";
+#if UNITY_EDITOR_WIN
+            machine = "win64";
+            executableName = "protoc.exe";
+#elif UNITY_EDITOR_OSX
+            machine = "osx-x86_64";
+#elif UNITY_EDITOR_LINUX
+            machine = "linux-x86_64";
+#endif
+            // We download the proto executable
+            string name = $"protoc-{PROTO_VERSION}-{machine}.zip";
+            string url = $"https://github.com/protocolbuffers/protobuf/releases/download/v{PROTO_VERSION}/{name}";
+            string zipProtoFileName = "protoc";
+            WebClient client = new WebClient();
+            client.DownloadFile(url, zipProtoFileName);
+            string destPackage = "protobuf";
+
+            try
+            {
+                Directory.CreateDirectory(destPackage);
+
+                // We unzip the proto executable
+                Unzip(zipProtoFileName,destPackage);
+
+                if (VERBOSE)
+                    UnityEngine.Debug.Log("Unzipped protoc");
+
+                string outputPathDir = Application.dataPath + PATH_TO_PROTO ;
+                string outputPath = outputPathDir + executableName;
+
+                if (File.Exists(outputPath))
+                    File.Delete(outputPath);
+
+                if (!Directory.Exists(outputPathDir))
+                    Directory.CreateDirectory(outputPathDir);
+                
+                // We move the executable to his correct path
+                Directory.Move(destPackage + "/bin/" + executableName, outputPath);
+                
+#if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
+                AddExecutablePermisson(GetPathToProto());
+#endif
+                
+                WriteVersion(PROTO_VERSION, EXECUTABLE_VERSION_FILENAME);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("The download of the executable has failed " + e.Message);
+            }
+            finally
+            {
+                // We removed everything has has been created and it is not usefull anymore
+                File.Delete(zipProtoFileName);
+                if (Directory.Exists(destPackage))
+                    Directory.Delete(destPackage, true);
+            }
+        }
+
+        private static string GetPathToProto()
+        {
+            return Application.dataPath + PATH_TO_PROTO + PROTO_FILENAME;
+        }
+        
+#if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
+        private static bool AddExecutablePermisson(string path)
+        {
+            // This is the console to convert the proto
+            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "chmod", Arguments = $"+x \"${path}\"" };
+            
+            Process proc = new Process() { StartInfo = startInfo };
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.Start();
+            
+            string error = proc.StandardError.ReadToEnd();
+            proc.WaitForExit();
+
+            if (error != "")
+            {
+                UnityEngine.Debug.LogError("`chmod +x protoc` failed : " + error);
+                return false;
+            }
+            return true;
+        }
+#endif
+
+        
+        private static void Untar(string name, string path)
+        {
+            using (Stream inStream = File.OpenRead (name))
+            using (Stream gzipStream = new GZipInputStream (inStream)) {
+                TarArchive tarArchive = TarArchive.CreateInputTarArchive(gzipStream, Encoding.ASCII);
+                tarArchive.ExtractContents (path);
+            }
+        }
+
+        private static void Unzip(string name, string path)        
+        {
+            FastZip fastZip = new FastZip();
+            string fileFilter = null;
+
+            fastZip.ExtractZip(name, path, fileFilter);
+        }
+        
+        private static void OnProjectCompile(object test)
+        {
+            OnProjectCompile();
+        }            
+
+        [MenuItem("Decentraland/Protobuf/Test project compile (For debugging)")]
+        private static void OnProjectCompile()
+        {
+            // TODO: Delete this return line to make the generation of the proto based on your machine 
+            return;
+
+            // The compiled version is a file that lives in the repo, if your local version is distinct it will generated them
+            var currentDownloadedVersion = GetDownloadedVersion();
+            var currentVersion = GetCompiledVersion();
+            if (currentVersion != currentDownloadedVersion)
+                UpdateModels(currentVersion);
         }
     }
 }

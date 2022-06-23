@@ -22,16 +22,16 @@ public class ECSTestScene : MonoBehaviour
     {
         componentWriter.PutComponent(sceneId, 1, 1,
             new ECSTransform() { position = new UnityEngine.Vector3(8, 1, 8) });
-        AddNFTComponent(sceneId, componentWriter);
+        AddGLTFShapeComponent(sceneId, componentWriter);
         AddBoxComponent(sceneId, componentWriter);
     }
-    
+
     private static void AddGLTFShapeComponent(string sceneId, IECSComponentWriter componentWriter)
     {
         Environment.i.world.state.scenesSortedByDistance[0].contentProvider.baseUrl = "https://peer-lb.decentraland.org/content/contents/";
         Environment.i.world.state.scenesSortedByDistance[0].contentProvider.fileToHash.Add("models/SCENE.glb".ToLower(), "QmQgQtuAg9qsdrmLwnFiLRAYZ6Du4Dp7Yh7bw7ELn7AqkD");
             
-        componentWriter.PutComponent(sceneId, 1, ComponentID.G_L_T_F_SHAPE,
+        componentWriter.PutComponent(sceneId, 2, ComponentID.G_L_T_F_SHAPE,
             new PBGLTFShape() { Src = "models/SCENE.glb", Visible = true});
     }
 

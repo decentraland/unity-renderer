@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
@@ -39,6 +41,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     private Coroutine previewInterpolationRoutine;
     private Color originalBackgroundColor;
     private Color originalFontColor;
+    internal CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
 
     public override ChatEntryModel Model => model;
 
@@ -57,10 +60,22 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override void Populate(ChatEntryModel chatEntryModel)
     {
+        PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget();
+    }
+
+    internal async UniTask PopulateTask(ChatEntryModel chatEntryModel, CancellationToken cancellationToken)
+    {
         model = chatEntryModel;
 
         chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
         var userString = GetUserString(chatEntryModel);
+        
+        // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
+        // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
+        // TODO: Remove hack in a newer Unity/TMPro version 
+        await UniTask.NextFrame();
+        await UniTask.NextFrame();
+        await UniTask.NextFrame();
         
         if (!string.IsNullOrEmpty(userString) && showUserName)
             body.text = $"{userString} {chatEntryModel.bodyText}";
@@ -72,7 +87,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         messageLocalDateTime = UnixTimeStampToLocalDateTime(chatEntryModel.timestamp).ToString();
 
         Utils.ForceUpdateLayout(transform as RectTransform);
-
+        
         if (fadeEnabled)
             group.alpha = 0;
 
@@ -217,6 +232,11 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     private void OnDisable()
     {
         OnPointerExit(null);
+    }
+
+    private void OnDestroy()
+    {
+        populationTaskCancellationTokenSource.Cancel();
     }
 
     public override void SetFadeout(bool enabled)
@@ -370,7 +390,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     }
 
     private string RemoveTabs(string text)
-    {
+    {   
         if (string.IsNullOrEmpty(text))
             return "";
 

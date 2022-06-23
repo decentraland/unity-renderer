@@ -19,6 +19,7 @@ namespace DCL.ECSComponents
         private readonly NFTShapeRegister nftRegister;
         private readonly OnPointerDownRegister pointerDownRegister;
         private readonly OnPointerUpRegister pointerUpRegister;
+        private readonly AnimatorRegister animatorRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
@@ -34,6 +35,7 @@ namespace DCL.ECSComponents
             gltfRegister = new GLTFShapeRegister(ComponentID.G_L_T_F_SHAPE, componentsFactory, componentsWriter);
             pointerDownRegister = new OnPointerDownRegister(ComponentID.ON_POINTER_DOWN, componentsFactory, componentsWriter);
             pointerUpRegister = new OnPointerUpRegister(ComponentID.ON_POINTER_UP, componentsFactory, componentsWriter);
+            animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -46,8 +48,9 @@ namespace DCL.ECSComponents
             audioStreamRegister.Dispose();
             audioSourceRegister.Dispose();
             textShapeRegister.Dispose();
-            gltfRegister.Dispose();
             nftRegister.Dispose();
+            gltfRegister.Dispose();
+            animatorRegister.Dispose();
             pointerDownRegister.Dispose();
             pointerUpRegister.Dispose();
         }

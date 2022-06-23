@@ -64,18 +64,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeToFade: 10
   fadeDuration: 5
-  username: {fileID: 0}
   body: {fileID: 150487733643597186}
-  worldMessageColor: {r: 0, g: 0, b: 0, a: 1}
-  privateToMessageColor: {r: 0, g: 0, b: 0, a: 1}
-  privateFromMessageColor: {r: 0, g: 0, b: 0, a: 1}
-  systemColor: {r: 0.4669811, g: 1, b: 0.9846577, a: 1}
-  playerNameColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  nonPlayerNameColor: {r: 1, g: 1, b: 1, a: 1}
   group: {fileID: 150487731994969879}
   timeToHoverPanel: 1
+  timeToHoverGotoPanel: 1
+  showUserName: 1
   hoverPanelPositionReference: {fileID: 2464393378482792029}
   contextMenuPositionReference: {fileID: 0}
+  previewBackgroundImage: {fileID: 0}
+  previewBackgroundColor: {r: 0, g: 0, b: 0, a: 0}
+  previewFontColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!225 &150487731994969879
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -193,7 +191,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Test 1 2 3 4 5 6 7 8
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
@@ -236,7 +234,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -245,6 +243,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0

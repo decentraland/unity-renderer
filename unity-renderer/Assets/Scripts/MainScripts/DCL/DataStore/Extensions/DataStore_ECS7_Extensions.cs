@@ -52,12 +52,17 @@ namespace DCL
             {
                 pendingResoruces.DecreaseRefCount(model);
             }
-            else
-            {
-                BaseRefCountedCollection<object>  newCountedCollection = new BaseRefCountedCollection<object>();
-                newCountedCollection.IncreaseRefCount(model);
-                self.pendingSceneResources.Add(sceneId,newCountedCollection);
-            }
+        }
+        
+        public static void AddReadyAnimatorShape( this DataStore_ECS7 self, long entityId, GameObject gameObject )
+        {
+            self.animatorShapesReady.AddOrSet(entityId,gameObject);
+        }
+
+        public static void RemoveReadyAnimatorShape( this DataStore_ECS7 self, long entityId)
+        {
+            if(self.animatorShapesReady.ContainsKey(entityId))
+                self.animatorShapesReady.Remove(entityId);
         }
     }
 }
