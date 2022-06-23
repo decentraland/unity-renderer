@@ -27,7 +27,6 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] private WorldChatWindowModel model;
 
     [Header("Load More Entries")]
-    [SerializeField] internal Button loadMoreEntriesButton;
     [SerializeField] internal GameObject loadMoreEntriesContainer;
     [SerializeField] internal TMP_Text loadMoreEntriesLabel;
     [SerializeField] internal GameObject loadMoreEntriesLoading;
@@ -50,7 +49,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     }
 
     public event Action<string> OnSearchChannelRequested;
-    public event Action OnRequireMorePrivateChats;
+    public event Action OnScrollDownToTheBottom;
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -69,7 +68,11 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         directChatList.OnOpenChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
         publicChannelList.OnOpenChat += entry => OnOpenPublicChannel?.Invoke(entry.Model.channelId);
         searchBar.OnSearchText += text => OnSearchChannelRequested?.Invoke(text);
-        loadMoreEntriesButton.onClick.AddListener(() => OnRequireMorePrivateChats?.Invoke());
+        scroll.onValueChanged.AddListener((scrollPos) =>
+        {
+            if (scrollPos.y < 0.005f)
+                OnScrollDownToTheBottom?.Invoke();
+        });
         UpdateHeaders();
     }
 
@@ -160,13 +163,11 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public void HideMoreChatsLoading()
     {
         loadMoreEntriesLoading.SetActive(false);
-        loadMoreEntriesButton.gameObject.SetActive(true);
     }
 
     public void ShowMoreChatsLoading()
     { 
         loadMoreEntriesLoading.SetActive(true);
-        loadMoreEntriesButton.gameObject.SetActive(false);
     }
 
     public void HideSearchLoading()

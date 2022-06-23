@@ -9,8 +9,8 @@ public interface IWorldChatWindowView
     event Action<string> OnOpenPublicChannel;
     event Action<string> OnUnfriend;
     event Action<string> OnSearchChannelRequested;
-    event Action OnRequireMorePrivateChats;
-    
+    event Action OnScrollDownToTheBottom;
+
     RectTransform Transform { get; }
     bool IsActive { get; }
     int PrivateChannelsCount { get; }

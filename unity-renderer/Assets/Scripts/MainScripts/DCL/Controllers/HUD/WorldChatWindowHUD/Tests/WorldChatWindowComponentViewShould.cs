@@ -264,17 +264,6 @@ public class WorldChatWindowComponentViewShould
     }
 
     [Test]
-    public void TriggerRequestMorePrivateChats()
-    {
-        var called = false;
-        view.OnRequireMorePrivateChats += () => called = true;
-
-        view.loadMoreEntriesButton.onClick.Invoke();
-
-        Assert.IsTrue(called);
-    }
-
-    [Test]
     public void UpdateHeadersOnStart()
     {
         Assert.AreEqual("Direct Messages (0)", view.directChatsHeaderLabel.text);
