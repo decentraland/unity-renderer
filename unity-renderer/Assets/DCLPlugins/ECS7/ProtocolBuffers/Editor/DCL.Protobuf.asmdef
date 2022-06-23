@@ -10,7 +10,8 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "Google.Protobuf.dll",
-        "Newtonsoft.Json.dll"
+        "Newtonsoft.Json.dll",
+        "ICSharpCode.SharpZipLib.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
