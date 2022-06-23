@@ -30,6 +30,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     private ISocialAnalytics socialAnalytics;
     private Coroutine alphaRoutine;
     private Vector2 originalSize;
+    private bool isPreviewActivated = false;
 
     public event Action OnPressBack;
     public event Action OnMinimize;
@@ -63,6 +64,9 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         userContextMenu.OnBlock += HandleBlockFromContextMenu;
         scroll.onValueChanged.AddListener((scrollPos) =>
         {
+            if (isPreviewActivated)
+                return;
+
             if (scrollPos.y > 0.995f)
                 OnScrollUpToTheTop?.Invoke();
         });
@@ -91,7 +95,11 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     {
         if (!this) return;
         if (!gameObject) return;
-        
+
+        isPreviewActivated = true;
+        SetLoadingMessagesActive(false);
+        SetOldMessagesLoadingActive(false);
+
         const float alphaTarget = 0f;
         
         if (!gameObject.activeInHierarchy)
@@ -111,6 +119,8 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
 
     public void DeactivatePreview()
     {
+        isPreviewActivated = false;
+
         const float alphaTarget = 1f;
         
         if (!gameObject.activeInHierarchy)

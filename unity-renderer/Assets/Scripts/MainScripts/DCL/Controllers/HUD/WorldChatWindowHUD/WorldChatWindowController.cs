@@ -324,7 +324,9 @@ public class WorldChatWindowController : IHUD
     
     private void ShowMorePrivateChats()
     {
-        if (isRequestingFriendsWithDMs || hiddenDMs == 0)
+        if (isRequestingFriendsWithDMs || 
+            hiddenDMs == 0 || 
+            !string.IsNullOrEmpty(currentSearch))
             return;
 
         RequestFriendsWithDirectMessages(
