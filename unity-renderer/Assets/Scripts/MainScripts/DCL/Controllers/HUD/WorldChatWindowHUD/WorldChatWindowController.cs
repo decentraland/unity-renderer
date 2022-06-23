@@ -34,6 +34,7 @@ public class WorldChatWindowController : IHUD
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChannel;
     public event Action OnOpen;
+    public event Action<bool> OnRequesPrivateMessages;
 
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -203,6 +204,8 @@ public class WorldChatWindowController : IHUD
         recipientsFromPrivateChats[profile.userId] = profile;
 
         view.SetPrivateChat(CreatePrivateChatModel(message, profile));
+
+        OnRequesPrivateMessages?.Invoke(false);
     }
 
     private void HandleFriendsWithDirectMessagesAdded(List<FriendWithDirectMessages> usersWithDM)
@@ -356,6 +359,7 @@ public class WorldChatWindowController : IHUD
 
     private void RequestPrivateMessages(string userId, int limit, long fromTimestamp)
     {
+        OnRequesPrivateMessages?.Invoke(true);
         chatController.GetPrivateMessages(userId, limit, fromTimestamp);
         directMessagesAlreadyRequested.Add(userId);
     }

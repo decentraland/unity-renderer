@@ -319,6 +319,8 @@ public class TaskbarHUDController : IHUD
         chatToggleTargetWindow = privateChatWindow;
         chatInputTargetWindow = privateChatWindow;
     }
+
+    public void ShowPrivateChatLoading(bool isActive) { privateChatWindow.SetLoadingMessagesActive(isActive); }
     
     private IHUD OpenLastActiveChatWindow(IHUD lastActiveWindow)
     {

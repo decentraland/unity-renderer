@@ -308,6 +308,8 @@ public class PrivateChatWindowController : IHUD
         OnPreviewModeChanged?.Invoke(true);
     }
 
+    public void SetLoadingMessagesActive(bool isActive) { View?.SetLoadingMessagesActive(isActive); }
+
     private void HandleChatInputTriggered(DCLAction_Trigger action)
     {
         // race condition patch caused by unfocusing input field from invalid message on SendChatMessage

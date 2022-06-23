@@ -221,6 +221,8 @@ public class HUDController : IHUDController
                         worldChatWindowHud.OnOpenPrivateChat += OpenPrivateChatWindow;
                         worldChatWindowHud.OnOpenPublicChannel -= OpenPublicChannelWindow;
                         worldChatWindowHud.OnOpenPublicChannel += OpenPublicChannelWindow;
+                        worldChatWindowHud.OnRequesPrivateMessages -= RequestPrivateMessages;
+                        worldChatWindowHud.OnRequesPrivateMessages += RequestPrivateMessages;
 
                         taskbarHud?.AddWorldChatWindow(worldChatWindowHud);
                     }
@@ -397,6 +399,11 @@ public class HUDController : IHUDController
     private void OpenPrivateChatWindow(string targetUserId)
     {
         taskbarHud?.OpenPrivateChat(targetUserId);
+    }
+
+    private void RequestPrivateMessages(bool isRequesting)
+    {
+        taskbarHud?.ShowPrivateChatLoading(isRequesting);
     }
 
     private void PrivateChatWindowHud_OnPressBack()

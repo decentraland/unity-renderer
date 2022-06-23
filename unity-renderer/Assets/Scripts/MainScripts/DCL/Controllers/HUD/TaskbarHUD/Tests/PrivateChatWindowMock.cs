@@ -56,4 +56,8 @@ public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
     public void DeactivatePreview()
     {
     }
+
+    public void SetLoadingMessagesActive(bool isActive)
+    {
+    }
 }

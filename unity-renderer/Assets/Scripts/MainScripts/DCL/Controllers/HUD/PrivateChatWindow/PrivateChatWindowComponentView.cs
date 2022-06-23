@@ -20,6 +20,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] internal RectTransform userContextMenuReferencePoint;
     [SerializeField] internal Button optionsButton;
     [SerializeField] private Button requestOldConversationsButton;
+    [SerializeField] private GameObject messagesLoading;
     [SerializeField] private Model model;
     [SerializeField] internal CanvasGroup[] previewCanvasGroup;
     [SerializeField] private Vector2 previewModeSize;
@@ -122,6 +123,14 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = originalSize;
+    }
+
+    public void SetLoadingMessagesActive(bool isActive)
+    {
+        if (messagesLoading == null)
+            return;
+
+        messagesLoading.SetActive(isActive);
     }
 
     public override void RefreshControl()

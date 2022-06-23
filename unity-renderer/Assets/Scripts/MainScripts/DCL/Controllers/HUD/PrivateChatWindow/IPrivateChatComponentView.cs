@@ -23,4 +23,5 @@ public interface IPrivateChatComponentView
     void Dispose();
     void ActivatePreview();
     void DeactivatePreview();
+    void SetLoadingMessagesActive(bool isActive);
 }
