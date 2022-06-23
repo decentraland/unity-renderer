@@ -469,8 +469,7 @@ public class FriendsHUDController : IHUD
         if (View.FriendRequestCount >= friendsController.TotalFriendRequestCount)
             View.HideMoreRequestsToLoadHint();
         else
-            // TODO: solve hidden request count
-            View.ShowMoreRequestsToLoadHint();
+            View.ShowMoreRequestsToLoadHint(friendsController.TotalFriendRequestCount - View.FriendRequestCount);
     }
 
     private void ShowOrHideMoreFriendsToLoadHint()
@@ -478,7 +477,7 @@ public class FriendsHUDController : IHUD
         if (View.FriendCount >= friendsController.TotalFriendCount || searchingFriends)
             View.HideMoreFriendsToLoadHint();
         else
-            View.ShowMoreFriendsToLoadHint();
+            View.ShowMoreFriendsToLoadHint(friendsController.TotalFriendCount - View.FriendCount);
     }
 
     private void SearchFriends(string search)

@@ -44,9 +44,9 @@ public interface IFriendsHUDComponentView
     bool IsActive();
     void ShowRequestSendError(FriendRequestError error);
     void ShowRequestSendSuccess();
-    void ShowMoreFriendsToLoadHint();
+    void ShowMoreFriendsToLoadHint(int hiddenCount);
     void HideMoreFriendsToLoadHint();
-    void ShowMoreRequestsToLoadHint();
+    void ShowMoreRequestsToLoadHint(int hiddenCount);
     void HideMoreRequestsToLoadHint();
     bool ContainsFriend(string userId);
     bool ContainsFriendRequest(string userId);

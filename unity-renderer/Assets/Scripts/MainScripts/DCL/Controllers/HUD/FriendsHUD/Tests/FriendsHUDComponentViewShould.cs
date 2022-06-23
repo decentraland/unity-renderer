@@ -305,17 +305,19 @@ public class FriendsHUDComponentViewShould
     [Test]
     public void ShowMoreFriendsToLoadHint()
     {
-        view.ShowMoreFriendsToLoadHint();
+        view.ShowMoreFriendsToLoadHint(3);
         
         Assert.IsTrue(view.friendsTab.loadMoreEntriesContainer.activeSelf);
+        Assert.AreEqual("3 friends hidden. Use the search bar to find them or scroll down to show more.", view.friendsTab.loadMoreEntriesLabel.text);
     }
 
     [Test]
     public void ShowMoreRequestsToLoadHint()
     {
-        view.ShowMoreRequestsToLoadHint();
+        view.ShowMoreRequestsToLoadHint(7);
         
         Assert.IsTrue(view.friendRequestsTab.loadMoreEntriesContainer.activeSelf);
+        Assert.AreEqual("7 requests hidden. Scroll down to show more.", view.friendRequestsTab.loadMoreEntriesLabel.text);
     }
 
     [Test]

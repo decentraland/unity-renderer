@@ -403,7 +403,7 @@ public class FriendsHUDControllerShould
         
         controller.SetVisibility(true);
         
-        view.Received(1).ShowMoreFriendsToLoadHint();
+        view.Received(1).ShowMoreFriendsToLoadHint(4);
     }
     
     [Test]
@@ -423,7 +423,7 @@ public class FriendsHUDControllerShould
     [Test]
     public void ShowMoreFriendRequestsToLoadWhenMissingRequests()
     {
-        friendsController.TotalFriendRequestCount.Returns(16);
+        friendsController.TotalFriendRequestCount.Returns(17);
         view.FriendRequestCount.Returns(8);
         view.IsRequestListActive.Returns(true);
         view.ClearReceivedCalls();
@@ -431,7 +431,7 @@ public class FriendsHUDControllerShould
         
         controller.SetVisibility(true);
         
-        view.Received(1).ShowMoreRequestsToLoadHint();
+        view.Received(1).ShowMoreRequestsToLoadHint(9);
     }
 
     [Test]

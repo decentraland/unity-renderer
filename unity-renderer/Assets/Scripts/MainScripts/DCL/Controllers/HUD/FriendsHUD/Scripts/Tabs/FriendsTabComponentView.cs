@@ -29,10 +29,10 @@ public class FriendsTabComponentView : BaseComponentView
     [SerializeField] private Model model;
     [SerializeField] private RectTransform viewport;
 
-    [Header("Load More Entries")] [SerializeField]
-    internal Button loadMoreEntriesButton;
-
+    [Header("Load More Entries")]
+    [SerializeField] internal Button loadMoreEntriesButton;
     [SerializeField] internal GameObject loadMoreEntriesContainer;
+    [SerializeField] internal TMP_Text loadMoreEntriesLabel;
 
     private readonly Dictionary<string, FriendEntryModel> creationQueue =
         new Dictionary<string, FriendEntryModel>();
@@ -372,8 +372,10 @@ public class FriendsTabComponentView : BaseComponentView
         UpdateLayout();
     }
     
-    public void ShowMoreFriendsToLoadHint()
+    public void ShowMoreFriendsToLoadHint(int hiddenCount)
     {
+        loadMoreEntriesLabel.text =
+            $"{hiddenCount} friends hidden. Use the search bar to find them or scroll down to show more.";
         loadMoreEntriesContainer.SetActive(true);
         UpdateLayout();
     }

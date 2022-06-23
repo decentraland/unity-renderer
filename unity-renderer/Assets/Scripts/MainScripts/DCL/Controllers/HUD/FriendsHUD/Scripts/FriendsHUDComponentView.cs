@@ -251,12 +251,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         friendRequestsTab.ShowRequestSuccessfullySentNotification();
     }
 
-    public void ShowMoreFriendsToLoadHint() => friendsTab.ShowMoreFriendsToLoadHint();
+    public void ShowMoreFriendsToLoadHint(int hiddenCount) => friendsTab.ShowMoreFriendsToLoadHint(hiddenCount);
 
     public void HideMoreFriendsToLoadHint() => friendsTab.HideMoreFriendsToLoadHint();
 
-    public void ShowMoreRequestsToLoadHint() =>
-        friendRequestsTab.ShowMoreFriendsToLoadHint();
+    public void ShowMoreRequestsToLoadHint(int hiddenCount) =>
+        friendRequestsTab.ShowMoreEntriesToLoadHint(hiddenCount);
 
     public void HideMoreRequestsToLoadHint() => friendRequestsTab.HideMoreFriendsToLoadHint();
 

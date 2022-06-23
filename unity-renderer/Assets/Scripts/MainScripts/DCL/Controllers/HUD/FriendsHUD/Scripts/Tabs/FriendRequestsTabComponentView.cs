@@ -40,6 +40,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [Header("Load More Entries")]
     [SerializeField] internal Button loadMoreEntriesButton;
     [SerializeField] internal GameObject loadMoreEntriesContainer;
+    [SerializeField] internal TMP_Text loadMoreEntriesLabel;
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendRequestEntry> entries = new Dictionary<string, FriendRequestEntry>();
@@ -278,8 +279,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
         UpdateLayout();
     }
     
-    public void ShowMoreFriendsToLoadHint()
+    public void ShowMoreEntriesToLoadHint(int hiddenCount)
     {
+        loadMoreEntriesLabel.text = $"{hiddenCount} requests hidden. Scroll down to show more.";
         loadMoreEntriesContainer.SetActive(true);
         UpdateLayout();
     }
