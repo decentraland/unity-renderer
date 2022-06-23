@@ -1,0 +1,12 @@
+﻿syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1060;
+
+message PBOnPointerDown {
+  string identifier = 2;
+  string button = 3;
+  string hover_text = 4;
+  float distance = 5;
+  bool show_feedback = 6;
+}

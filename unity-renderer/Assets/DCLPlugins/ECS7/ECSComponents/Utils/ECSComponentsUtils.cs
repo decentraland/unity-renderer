@@ -24,13 +24,14 @@ public static class ECSComponentsUtils
         {
             renderer.enabled = isVisible;
         }
-            
+          
+        int colliderLayer = isPointerBlocker ? PhysicsLayers.onPointerEventLayer : PhysicsLayers.defaultLayer;
+        
         foreach (Collider collider in meshesInfo.colliders)
         {
             collider.enabled = withCollisions;
+            collider.gameObject.layer = colliderLayer;
         }
-            
-        //TODO: Implement isPointerBlocker when it is defined
     }
 
     public static MeshesInfo GenerateMeshInfo(IDCLEntity entity, Mesh mesh, GameObject gameObject,bool visible, bool withCollisions, bool isPointerBlocker)

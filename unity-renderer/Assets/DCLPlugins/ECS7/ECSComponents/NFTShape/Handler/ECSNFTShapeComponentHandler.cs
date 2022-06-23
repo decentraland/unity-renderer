@@ -104,6 +104,7 @@ namespace DCL.ECSComponents
         {
             shapeFrame.SetVisibility(model.Visible);
             shapeFrame.SetHasCollisions(model.WithCollisions);
+            shapeFrame.SetPointerBlocker(model.IsPointerBlocker);
             UpdateBackgroundColor(model);
 
             this.model = model;

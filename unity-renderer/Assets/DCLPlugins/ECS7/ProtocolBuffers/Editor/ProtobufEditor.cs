@@ -24,7 +24,7 @@ namespace DCL.Protobuf
         private const string TEMPPATH_TO_COMPONENTS_DEFINITIONS = "/DCLPlugins/ECS7/ProtocolBuffers/DefinitionsTemp";
         private const string SUBPATH_TO_COMPONENTS_DEFINITIONS_COMMON = "/common";
         private const string PATH_TO_PROTO = "/DCLPlugins/ECS7/ProtocolBuffers/Editor/";
-        private const string PATH_TO_COMPONENT_IDS = "/DCLPlugins/ECS7/ECSComponents/ComponentID.cs";
+        private const string PATH_TO_COMPONENT_IDS = "/DCLPlugins/ECS7/ECSComponents/ComponentID/ComponentID.cs";
         private const string PROTO_COMMAND = "protoc";
 
         [MenuItem("Decentraland/Protobuf/UpdateModels")]

@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Models;
+using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using Ray = UnityEngine.Ray;
 
 namespace DCL
@@ -121,9 +122,17 @@ namespace DCL
             }
 
             if (CollidersManager.i.GetColliderInfo(hitInfo.collider, out ColliderInfo info))
-                newHoveredInputEvent = info.entity.gameObject.GetComponentInChildren<IPointerEvent>();
+            {
+                // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
+                if (DataStore.i.ecs7.entityEvents.TryGetValue(info.entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+                    newHoveredInputEvent  =  pointerInputEvent.First();
+                else
+                    newHoveredInputEvent = info.entity.gameObject.GetComponentInChildren<IPointerEvent>();
+            }
             else
+            {
                 newHoveredInputEvent = hitInfo.collider.GetComponentInChildren<IPointerEvent>();
+            }
 
             clickHandler = null;
 
@@ -420,7 +429,13 @@ namespace DCL
                 else
                     hitGameObject = collider.gameObject;
 
-                var events = hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
+                IPointerInputEvent[] events;
+                
+                // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
+                if (DataStore.i.ecs7.entityEvents.TryGetValue(info.entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+                    events  = pointerInputEvent.ToArray();
+                else
+                    events = hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
 
                 for (var i = 0; i < events.Length; i++)
                 {

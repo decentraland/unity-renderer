@@ -5,6 +5,7 @@ using DCL;
 using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.SettingsCommon;
+using DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown;
 
 namespace DCL.ECSComponents
 {
@@ -20,6 +21,7 @@ namespace DCL.ECSComponents
         private readonly GLTFShapeRegister gltfRegister;
         private readonly ECSTextShapeRegister textShapeRegister;
         private readonly NFTShapeRegister nftRegister;
+        private readonly OnPointerDownRegister pointerDownRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
@@ -30,9 +32,10 @@ namespace DCL.ECSComponents
             cylinderShapeRegister = new CylinderShapeRegister(ComponentID.CYLINDER_SHAPE, componentsFactory, componentsWriter);
             audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentsWriter);
             audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter);
-            nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter);
+            nftRegister = new NFTShapeRegister(ComponentID.N_F_T_SHAPE, componentsFactory, componentsWriter);
             textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
-            gltfRegister = new GLTFShapeRegister(ComponentID.GLTF_SHAPE, componentsFactory, componentsWriter);
+            gltfRegister = new GLTFShapeRegister(ComponentID.G_L_T_F_SHAPE, componentsFactory, componentsWriter);
+            pointerDownRegister = new OnPointerDownRegister(ComponentID.ON_POINTER_DOWN, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -47,6 +50,7 @@ namespace DCL.ECSComponents
             textShapeRegister.Dispose();
             gltfRegister.Dispose();
             nftRegister.Dispose();
+            pointerDownRegister.Dispose();
         }
     }
 }
