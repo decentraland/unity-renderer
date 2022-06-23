@@ -25,7 +25,9 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         "/GLB/Lantern/Lantern.glb",
         "/GLB/DamagedHelmet/DamagedHelmet.glb",
         "/GLB/Trevor/Trevor.glb",
-        "/GLB/vertex-anim.glb"
+        "/GLB/vertex-anim.glb",
+        "/GLB/draco-compressor.glb",
+        "/GLB/cube_vertexcolor.glb",
     };
     private AssetPromiseKeeper_GLTFast_GameObject keeper2;
 
@@ -53,7 +55,8 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
 
     void GenerateGLTFast(string url)
     {
-        AssetPromise_GLTFast_GameObject promise2 = new AssetPromise_GLTFast_GameObject(url, "");
+        Debug.Log(url);
+        AssetPromise_GLTFast_GameObject promise2 = new AssetPromise_GLTFast_GameObject(url, url);
         Vector3 pos = Vector3.zero;
         pos.x = Random.Range(-10, 10);
         pos.z = Random.Range(-10, 10);
@@ -126,7 +129,10 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
     
     private void Create2()
     {
-        string finalUrl = TestAssetsUtils.GetPath() + urls[1];
+        counter++;
+        counter %= urls.Length;
+        string finalUrl = TestAssetsUtils.GetPath() + urls[counter];
+        
         GenerateGLTFast(finalUrl);
     }
 }

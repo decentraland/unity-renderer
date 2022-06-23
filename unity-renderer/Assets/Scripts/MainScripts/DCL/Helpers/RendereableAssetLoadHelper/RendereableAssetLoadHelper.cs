@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -101,7 +102,7 @@ namespace DCL.Components
                     LoadAssetBundle(targetUrl, OnSuccessEvent, OnFailEvent);
                     break;
                 case LoadingType.GLTF_ONLY:
-                    LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent);
+                    ProxyLoadGltf(targetUrl);
                     break;
                 case LoadingType.DEFAULT:
                 case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
@@ -114,9 +115,13 @@ namespace DCL.Components
             // TODO: Replace with feature flag
             bool shouldUseGLTFast = true;
 
+            
             if (shouldUseGLTFast)
             {
-                LoadGLTFast(targetUrl, OnSuccessEvent, exception => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent));
+                LoadGLTFast(targetUrl, OnSuccessEvent, exception =>
+                {
+                    LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent);
+                });
             }
             else
             {
@@ -281,7 +286,7 @@ namespace DCL.Components
                 return;
             }
 
-            gltfastPromise = new AssetPromise_GLTFast_GameObject(targetUrl, hash)
+            gltfastPromise = new AssetPromise_GLTFast_GameObject(targetUrl, hash, contentProvider)
             {
                 settings = settings
             };
@@ -291,23 +296,28 @@ namespace DCL.Components
 #if UNITY_EDITOR
                 x.container.name = GLTF_GO_NAME_PREFIX + x.container.name;
 #endif
+                // TODO: FILL ME!!
                 var r = new Rendereable
                 {
                     container = x.container,
                     totalTriangleCount = 0,
-                    meshes = null,
-                    renderers = null,
-                    materials = null,
-                    textures = null,
-                    meshToTriangleCount = null,
+                    meshes = new HashSet<Mesh>(),
+                    renderers = new HashSet<Renderer>(),
+                    materials = new HashSet<Material>(),
+                    textures = new HashSet<Texture>(),
+                    meshToTriangleCount = new Dictionary<Mesh, int>(),
                     animationClipSize = 0,
                     meshDataSize = 0,
-                    animationClips = null
+                    animationClips = new HashSet<AnimationClip>()
                 };
 
                 OnSuccessWrapper(r, OnSuccess);
             };
-            gltfastPromise.OnFailEvent += (asset, exception) => OnFailWrapper(OnFail, exception);
+            gltfastPromise.OnFailEvent += (asset, exception) =>
+            {
+                Debug.LogException(exception);
+                OnFailWrapper(OnFail, exception);
+            };
 
             AssetPromiseKeeper_GLTFast_GameObject.i.Keep(gltfastPromise);
         }

@@ -2,7 +2,6 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using GLTFast;
-using GLTFast.Logging;
 using UnityEngine;
 
 namespace DCL
@@ -15,12 +14,19 @@ namespace DCL
         
         bool requestRegistered = false;
         private Transform containerTransform;
+        private readonly ContentProvider contentProvider;
         private CancellationTokenSource cancellationSource;
+        private readonly string fileName;
+        private readonly string assetDirectoryPath;
+        private IWebRequestController webRequestController => Environment.i.platform.webRequest;
         public AssetPromise_GLTFast(string contentUrl, string hash,
-            Transform containerTransform = null) : base(contentUrl,
+            Transform containerTransform = null, ContentProvider contentProvider = null) : base(contentUrl,
             hash)
         {
             this.containerTransform = containerTransform;
+            this.contentProvider = contentProvider;
+            this.fileName = contentUrl.Substring(contentUrl.LastIndexOf('/') + 1);
+            assetDirectoryPath = URIHelper.GetDirectoryName(contentUrl);
         }
 
         protected override void OnBeforeLoadOrReuse(){}
@@ -53,6 +59,8 @@ namespace DCL
             UniTask.Run(() => ImportGLTF(OnSuccess, OnFail, cancellationSource.Token), true, cancellationSource.Token);
         }
 
+        public delegate bool AssetIdConverter(string uri, out string id);
+        bool FileToUrl(string fileName, out string hash) { return contentProvider.TryGetContentsUrl(assetDirectoryPath + fileName, out hash); }
         private async UniTaskVoid ImportGLTF( Action OnSuccess, Action<Exception> OnFail, CancellationToken cancellationSourceToken)
         {
             try
@@ -60,7 +68,7 @@ namespace DCL
                 await UniTask.SwitchToMainThread();
                 
                 // TODO: wrap our providers here
-                var gltfImport = new GltfImport(null, null, null, new GLTFImportLogger());
+                var gltfImport = new GltfImport(new GLTFastDownloadProvider(webRequestController, contentProvider, FileToUrl), null, null, new GLTFImportLogger());
 
                 var gltfastSettings = new ImportSettings
                 {
@@ -69,10 +77,8 @@ namespace DCL
                     nodeNameMethod = ImportSettings.NameImportMethod.OriginalUnique
                 };
 
-                string providerBaseUrl = contentUrl;
-                
                 // TODO: Implement a cancellation token for the GLTFImport when its supported https://github.com/atteneder/glTFast/issues/177
-                var success = await gltfImport.Load(providerBaseUrl, gltfastSettings);
+                var success = await gltfImport.Load(contentProvider.baseUrl + hash, gltfastSettings);
 
                 if (cancellationSourceToken.IsCancellationRequested)
                 {
@@ -98,13 +104,4 @@ namespace DCL
         
     }
 
-    internal class GLTFImportLogger : ICodeLogger
-    {
-        public void Error(LogCode code, params string[] messages) { Debug.LogError(string.Join("\n", messages)); }
-        public void Warning(LogCode code, params string[] messages) {  Debug.LogWarning(string.Join("\n", messages)); }
-        public void Info(LogCode code, params string[] messages) { Debug.Log(string.Join("\n", messages)); }
-        public void Error(string message) { Debug.LogError(message); }
-        public void Warning(string message) { Debug.LogWarning(message); }
-        public void Info(string message) { Debug.Log(message); }
-    }
 }

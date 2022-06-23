@@ -7,11 +7,15 @@ namespace DCL
 {
     public class AssetPromise_GLTFast_GameObject : AssetPromise_WithUrl<Asset_GLTFast_GameObject>
     {
+        private readonly ContentProvider contentProvider;
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
         AssetPromise_GLTFast subPromise;
         Coroutine loadingCoroutine;
 
-        public AssetPromise_GLTFast_GameObject(string contentUrl, string hash) : base(contentUrl, hash) { }
+        public AssetPromise_GLTFast_GameObject( string contentUrl, string hash, ContentProvider contentProvider = null) : base(contentUrl, hash)
+        {
+            this.contentProvider = contentProvider ?? new ContentProvider_Dummy();
+        }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail) { loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail)); }
 
@@ -77,7 +81,7 @@ namespace DCL
         public IEnumerator LoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
         {
             PerformanceAnalytics.ABTracker.TrackLoading();
-            subPromise = new AssetPromise_GLTFast(contentUrl, hash, asset.container.transform);
+            subPromise = new AssetPromise_GLTFast(contentUrl, hash, asset.container.transform, contentProvider);
             bool success = false;
             Exception loadingException = null;
             subPromise.OnSuccessEvent += (x) => success = true;
