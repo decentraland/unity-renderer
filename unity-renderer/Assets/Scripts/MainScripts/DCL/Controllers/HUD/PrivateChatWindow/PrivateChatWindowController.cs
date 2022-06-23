@@ -9,7 +9,7 @@ using System.Threading;
 
 public class PrivateChatWindowController : IHUD
 {
-    private const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE = 10;
+    internal const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE = 10;
 
     public IPrivateChatComponentView View { get; private set; }
 
@@ -26,10 +26,10 @@ public class PrivateChatWindowController : IHUD
     private UserProfile conversationProfile;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private bool skipChatInputTrigger;
-    private Dictionary<string, long> lastTimestampRequestedByUser = new Dictionary<string, long>();
-    private bool isRequestingOldMessages = false;
+    internal Dictionary<string, long> lastTimestampRequestedByUser = new Dictionary<string, long>();
+    internal bool isRequestingOldMessages = false;
 
-    private string ConversationUserId { get; set; } = string.Empty;
+    internal string ConversationUserId { get; set; } = string.Empty;
 
     public event Action OnPressBack;
     public event Action OnClosed;
@@ -326,7 +326,7 @@ public class PrivateChatWindowController : IHUD
         chatHudController.FocusInputField();
     }
 
-    private void RequestOldConversations()
+    internal void RequestOldConversations()
     {
         if (isRequestingOldMessages)
             return;

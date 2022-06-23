@@ -19,7 +19,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] internal UserContextMenu userContextMenu;
     [SerializeField] internal RectTransform userContextMenuReferencePoint;
     [SerializeField] internal Button optionsButton;
-    [SerializeField] private GameObject messagesLoading;
+    [SerializeField] internal GameObject messagesLoading;
     [SerializeField] internal ScrollRect scroll;
     [SerializeField] internal GameObject oldMessagesLoadingContainer;
     [SerializeField] private Model model;
@@ -30,7 +30,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     private ISocialAnalytics socialAnalytics;
     private Coroutine alphaRoutine;
     private Vector2 originalSize;
-    private bool isPreviewActivated = false;
+    internal bool isPreviewActivated = false;
 
     public event Action OnPressBack;
     public event Action OnMinimize;

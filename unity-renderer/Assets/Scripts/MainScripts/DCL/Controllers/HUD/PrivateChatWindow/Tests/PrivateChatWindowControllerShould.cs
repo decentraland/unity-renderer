@@ -297,6 +297,37 @@ public class PrivateChatWindowControllerShould
         Assert.IsTrue(isPreviewMode);
     }
 
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetLoadingMessagesActiveCorrectly(bool isActive)
+    {
+        WhenControllerInitializes(FRIEND_ID);
+
+        controller.SetLoadingMessagesActive(isActive);
+
+        view.Received(1).SetLoadingMessagesActive(isActive);
+    }
+
+    [Test]
+    public void RequestOldConversationsCorrectly()
+    {
+        WhenControllerInitializes(FRIEND_ID);
+        controller.lastTimestampRequestedByUser = new Dictionary<string, long>();
+        controller.lastTimestampRequestedByUser.Add(FRIEND_ID, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        controller.ConversationUserId = FRIEND_ID;
+        GivenPrivateMessages(FRIEND_ID, 3);
+        controller.isRequestingOldMessages = false;
+
+        controller.RequestOldConversations();
+
+        view.Received(1).SetOldMessagesLoadingActive(true);
+        chatController.Received(1).GetPrivateMessages(
+            FRIEND_ID,
+            PrivateChatWindowController.USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE,
+            Arg.Any<long>());
+    }
+
     private void WhenControllerInitializes(string friendId)
     {
         controller.Initialize(view);

@@ -196,21 +196,6 @@ public class WorldChatWindowControllerShould
         
         view.Received(1).Hide();
     }
-
-    [Test]
-    public void EnqueuePrivateChatWhenTooManyEntries()
-    {
-        GivenFriend(FRIEND_ID, PresenceStatus.ONLINE);
-        view.PrivateChannelsCount.Returns(999999);
-        view.ContainsPrivateChannel(FRIEND_ID).Returns(false);
-        
-        controller.Initialize(view);
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(
-            new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow"));
-
-        //view.DidNotReceiveWithAnyArgs().SetPrivateChat(default);
-        //view.Received(1).ShowMoreChatsToLoadHint(1);
-    }
     
     [Test]
     public void UpdatePrivateChatWhenTooManyEntries()
@@ -289,7 +274,84 @@ public class WorldChatWindowControllerShould
         view.Received(1).Filter(Arg.Is<Dictionary<string, PrivateChatModel>>(d => d.ContainsKey("nearfr") && d.Count == 1),
             Arg.Is<Dictionary<string, PublicChatChannelModel>>(d => d.ContainsKey("general") && d.Count == 1));
     }
-    
+
+    [Test]
+    [TestCase(10)]
+    [TestCase(5)]
+    public void UpdateMoreChannelsToLoadHintCorrectly(int currentPrivateChannelsCount)
+    {
+        controller.Initialize(view);
+        int totalFriends = 10;
+        friendsController.TotalFriendsWithDirectMessagesCount.Returns(totalFriends);
+        view.PrivateChannelsCount.Returns(currentPrivateChannelsCount);
+
+        controller.UpdateMoreChannelsToLoadHint();
+
+        if (totalFriends - currentPrivateChannelsCount == 0)
+            view.Received(1).HideMoreChatsToLoadHint();
+        else
+            view.Received(1).ShowMoreChatsToLoadHint(totalFriends - currentPrivateChannelsCount);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RequestFriendsWithDirectMessagesCorrectly(bool requestedByFirstTime)
+    {
+        controller.Initialize(view);
+        int limit = 30;
+        long timestamp = 500;
+        controller.isRequestingFriendsWithDMs = false;
+        controller.areDMsRequestedByFirstTime = requestedByFirstTime;
+
+        controller.RequestFriendsWithDirectMessages(limit, timestamp);
+
+        Assert.IsTrue(controller.isRequestingFriendsWithDMs);
+
+        if (!requestedByFirstTime)
+        {
+            view.Received(1).ShowPrivateChatsLoading();
+            view.Received(1).HideMoreChatsToLoadHint();
+        }
+        else
+            view.Received(1).ShowMoreChatsLoading();
+
+        friendsController.Received(1).GetFriendsWithDirectMessages(limit, timestamp);
+        Assert.IsTrue(controller.areDMsRequestedByFirstTime);
+    }
+
+    [Test]
+    public void RequestFriendsWithDirectMessagesFromSearchCorrectly()
+    {
+        controller.Initialize(view);
+        string userName = "test";
+        int limit = 30;
+
+        controller.RequestFriendsWithDirectMessagesFromSearch(userName, limit);
+
+        view.Received(1).ShowSearchLoading();
+        friendsController.Received(1).GetFriendsWithDirectMessages(userName, limit);
+    }
+
+    [Test]
+    public void RequestPrivateMessagesCorrectly()
+    {
+        controller.Initialize(view);
+        string userId = "testId";
+        int limit = 30;
+        long timestamp = 500;
+        controller.directMessagesAlreadyRequested.Clear();
+
+        bool called = false;
+        controller.OnRequesPrivateMessages += (isRequested) => called = isRequested;
+
+        controller.RequestPrivateMessages(userId, limit, timestamp);
+
+        Assert.IsTrue(called);
+        chatController.Received(1).GetPrivateMessages(userId, limit, timestamp);
+        Assert.IsTrue(controller.directMessagesAlreadyRequested.Contains(userId));
+    }
+
     private void GivenFriend(string friendId, PresenceStatus presence)
     {
         var friendProfile = ScriptableObject.CreateInstance<UserProfile>();
