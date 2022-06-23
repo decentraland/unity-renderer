@@ -113,7 +113,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
     private async UniTask SimulateDelayedResponseFor_GetFriendsWithDirectMessages(int limit)
     {
-        await UniTask.Delay(UnityEngine.Random.Range(1000, 3000));
+        await UniTask.Delay(Random.Range(1000, 3000));
 
         controller.AddFriendsWithDirectMessages(
             CreateMockedDataFor_AddFriendsWithDirectMessagesPayload(limit));
@@ -156,7 +156,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
     private async UniTask SimulateDelayedResponseFor_GetFriendsWithDirectMessages(string userNameOrId, int limit)
     {
-        await UniTask.Delay(UnityEngine.Random.Range(1000, 3000));
+        await UniTask.Delay(Random.Range(1000, 3000));
 
         controller.AddFriendsWithDirectMessages(
             CreateMockedDataFor_AddFriendsWithDirectMessagesPayload(userNameOrId, limit));
@@ -299,13 +299,13 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         controller.friends.Add(userId, new FriendsController.UserStatus
         {
             userId = userId,
-            position = new Vector2(UnityEngine.Random.Range(-100, 101), UnityEngine.Random.Range(-100, 101)),
+            position = new Vector2(Random.Range(-100, 101), Random.Range(-100, 101)),
             realm = new FriendsController.UserStatus.Realm
             {
                 serverName = "dg",
                 layer = ""
             },
-            presence = UnityEngine.Random.Range(0, 2) == 0 ? PresenceStatus.OFFLINE : PresenceStatus.ONLINE,
+            presence = Random.Range(0, 2) == 0 ? PresenceStatus.OFFLINE : PresenceStatus.ONLINE,
             friendshipStatus = FriendshipStatus.FRIEND,
             friendshipStartedTime = DateTime.UtcNow
         });
@@ -313,7 +313,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
     private async UniTask SimulateDelayedResponseFor_InitializeFriends()
     {
-        await UniTask.Delay(UnityEngine.Random.Range(1000, 3000));
+        await UniTask.Delay(Random.Range(1000, 3000));
 
         controller.InitializeFriends(
             CreateFakeFriendsInitialization());
