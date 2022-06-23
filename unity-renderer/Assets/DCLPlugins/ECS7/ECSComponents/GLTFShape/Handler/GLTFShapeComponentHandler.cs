@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL.Components;
+using DCL.Configuration;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -109,13 +110,14 @@ namespace DCL.ECSComponents
             // Set visibility
             meshesInfo.meshRootGameObject.SetActive(model.Visible);
             
-            // Set collisions
-            foreach (var collider in meshesInfo.colliders)
+            // Set collisions and pointer blocker
+            int colliderLayer = model.IsPointerBlocker ? PhysicsLayers.onPointerEventLayer : PhysicsLayers.defaultLayer;
+        
+            foreach (Collider collider in meshesInfo.colliders)
             {
                 collider.enabled = model.WithCollisions;
+                collider.gameObject.layer = colliderLayer;
             }
-            
-            //TODO: Implement events related to click entities here
         }
 
         internal void DisposeMesh(IParcelScene scene)
