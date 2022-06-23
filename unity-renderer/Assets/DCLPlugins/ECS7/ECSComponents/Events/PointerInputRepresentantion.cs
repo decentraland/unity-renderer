@@ -11,17 +11,23 @@ using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
 
-namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown
+namespace DCLPlugins.ECSComponents
 {
     public class PointerInputRepresentantion : IPointerInputEvent
     {
         private IDCLEntity eventEntity;
         private IParcelScene scene;
-        private PBOnPointerDown model;
         private readonly OnPointerEventHandler pointerEventHandler;
         private readonly PointerInputEventType type;
         private readonly IECSComponentWriter componentWriter;
-        
+
+        // This represents the model component, since we have several components model, we just use their data
+        private bool showFeedback = false;
+        private string button;
+        private string hoverText;
+        private float distance;
+        private string identifier;
+
         public PointerInputRepresentantion(PointerInputEventType type, IECSComponentWriter componentWriter)
         {
             this.type = type;
@@ -29,12 +35,17 @@ namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown
             pointerEventHandler = new OnPointerEventHandler();
         }
 
-        public void SetData(IParcelScene scene, IDCLEntity entity, PBOnPointerDown onPointerDown)
+        public void SetData(IParcelScene scene, IDCLEntity entity, bool showFeedback, string button, float distance, string identifier, string hoverText)
         {
             this.scene = scene;
             eventEntity = entity;
-            model = onPointerDown;
             pointerEventHandler.SetColliders(entity);
+
+            this.showFeedback = showFeedback;
+            this.button = button;
+            this.distance = distance;
+            this.identifier = identifier;
+            this.hoverText = hoverText;
         }
 
         public void Dispose()
@@ -48,10 +59,10 @@ namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown
         
         public void SetHoverState(bool hoverState)
         {
-            pointerEventHandler.SetFeedbackState(model.ShowFeedback, hoverState, model.Button, model.HoverText);
+            pointerEventHandler.SetFeedbackState(showFeedback, hoverState, button, hoverText);
         }
         
-        public bool IsAtHoverDistance(float distance) => distance <= model.Distance;
+        public bool IsAtHoverDistance(float distance) => distance <= this.distance;
         
         public bool IsVisible()
         {
@@ -80,7 +91,7 @@ namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown
                 string meshName = pointerEventHandler.GetMeshName(hit.collider);
                 long entityId = entity.entityId;
 
-                PBOnPointerResult result = CommonUtils.GetPointerResultModel(buttonId.ToString(), model.Identifier, entityId, meshName, ray, hit);
+                PBOnPointerResult result = CommonUtils.GetPointerResultModel(buttonId.ToString(), identifier, entityId, meshName, ray, hit);
                 componentWriter.PutComponent(scene.sceneData.id, entityId, ComponentID.ON_POINTER_RESULT,
                     result);
             }
@@ -90,7 +101,7 @@ namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown
         
         public WebInterface.ACTION_BUTTON GetActionButton()
         {
-            switch (model.Button)
+            switch (button)
             {
                 case "PRIMARY":
                     return WebInterface.ACTION_BUTTON.PRIMARY;
@@ -103,13 +114,13 @@ namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown
             }
         }
 
-        public bool ShouldShowHoverFeedback()  => model.ShowFeedback;
+        public bool ShouldShowHoverFeedback()  => showFeedback;
         
         private bool ShouldReportEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
         {
             return IsVisible() &&
                    IsAtHoverDistance(hit.distance) &&
-                   (model.Button == "ANY" || buttonId.ToString() == model.Button);
+                   (button == "ANY" || buttonId.ToString() == button);
         }
     }
 }

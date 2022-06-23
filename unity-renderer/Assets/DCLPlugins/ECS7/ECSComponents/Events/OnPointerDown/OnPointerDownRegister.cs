@@ -1,9 +1,10 @@
-﻿using DCL.ECSComponents;
+﻿using DCL;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown.Handler;
 using DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown.Serializer;
+using DCLPlugins.ECSComponents.OnPointerDown;
 
-namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown
+namespace DCLPlugins.ECSComponents
 {
     public class OnPointerDownRegister
     {
@@ -13,7 +14,7 @@ namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown
         
         public OnPointerDownRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, OnPointerDownSerializer.Deserialize, () => new OnPointerDownComponentHandler(componentWriter));
+            factory.AddOrReplaceComponent(componentId, OnPointerDownSerializer.Deserialize, () => new OnPointerDownComponentHandler(componentWriter, DataStore.i.ecs7));
             componentWriter.AddOrReplaceComponentSerializer<PBOnPointerDown>(componentId, OnPointerDownSerializer.Serialize);
 
             this.factory = factory;
