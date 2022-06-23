@@ -51,14 +51,6 @@ namespace DCLPlugins.ECSComponents
             this.hoverText = hoverText;
         }
 
-        public void Initializate(IDCLEntity entity)
-        {
-            if(dataStore.shapesReady.ContainsKey(entity.entityId))
-                pointerEventHandler.SetColliders(entity);
-
-            dataStore.shapesReady.OnAdded += ConfigureColliders;
-        }
-
         public void Dispose()
         {
             dataStore.shapesReady.OnAdded -= ConfigureColliders;
@@ -138,6 +130,14 @@ namespace DCLPlugins.ECSComponents
         private void ConfigureColliders(long entityId, GameObject shapeGameObject)
         {
             pointerEventHandler.SetColliders(entity);
+        }
+        
+        private void Initializate(IDCLEntity entity)
+        {
+            if(dataStore.shapesReady.ContainsKey(entity.entityId))
+                pointerEventHandler.SetColliders(entity);
+
+            dataStore.shapesReady.OnAdded += ConfigureColliders;
         }
     }
 }
