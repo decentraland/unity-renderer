@@ -192,8 +192,7 @@ namespace DCL.Camera
             var yValue = Mathf.InverseLerp(-90, 90, eulerDir.x);
             defaultVirtualCameraAsFreeLook.m_YAxis.Value = yValue;
             
-            var xzPlaneForward = Vector3.Scale(verticalAxisLookAt, new Vector3(1, 0, 1));
-            characterForward.Set(xzPlaneForward); 
+            characterForward.Set(verticalAxisLookAt); 
         }
 
         public override void OnBlock(bool blocked)
