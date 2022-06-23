@@ -76,7 +76,7 @@ namespace DCL.ECSComponents.Test
             componentHandler.meshesInfo = null;
 
             // Act
-            componentHandler.DisposeMesh(scene);
+            componentHandler.DisposeMesh(entity, scene);
 
             // Assert
             Assert.IsNull(componentHandler.meshesInfo);

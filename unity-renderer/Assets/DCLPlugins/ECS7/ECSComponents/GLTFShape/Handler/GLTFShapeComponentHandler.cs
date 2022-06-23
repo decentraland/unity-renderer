@@ -95,7 +95,7 @@ namespace DCL.ECSComponents
                     // Apply the model for visibility, collision and event pointer
                     ApplyModel(model);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
-                    dataStore.AddReadyAnimatorShape(entity.entityId,meshesInfo.meshRootGameObject);
+                    dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
                     
                 }, (wrapper, exception) =>
                 {
@@ -131,7 +131,7 @@ namespace DCL.ECSComponents
         internal void DisposeMesh(IParcelScene scene)
         {
             if (entity != null)
-                dataStore.RemoveReadyAnimatorShape(entity.entityId);
+                dataStore.RemoveShapeReady(entity.entityId);
             if (meshesInfo != null)
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if (rendereable != null)

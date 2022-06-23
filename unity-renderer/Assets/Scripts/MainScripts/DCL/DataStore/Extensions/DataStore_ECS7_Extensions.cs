@@ -54,12 +54,12 @@ namespace DCL
             }
         }
         
-        public static void AddReadyAnimatorShape( this DataStore_ECS7 self, long entityId, GameObject gameObject )
+        public static void AddShapeReady( this DataStore_ECS7 self, long entityId, GameObject gameObject )
         {
             self.shapesReady.AddOrSet(entityId,gameObject);
         }
 
-        public static void RemoveReadyAnimatorShape( this DataStore_ECS7 self, long entityId)
+        public static void RemoveShapeReady( this DataStore_ECS7 self, long entityId)
         {
             if(self.shapesReady.ContainsKey(entityId))
                 self.shapesReady.Remove(entityId);
