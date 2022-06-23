@@ -27,7 +27,7 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            componentHandler = new GLTFShapeComponentHandler(DataStore.i.ecs7);
+            componentHandler = new GLTFShapeComponentHandler(new DataStore_ECS7());
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
