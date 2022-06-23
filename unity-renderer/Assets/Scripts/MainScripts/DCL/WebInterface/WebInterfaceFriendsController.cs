@@ -41,7 +41,7 @@ namespace DCL.Interface
         public int FriendCount => friendsController.FriendCount;
         public bool IsInitialized => friendsController.IsInitialized;
         public int ReceivedRequestCount => friendsController.ReceivedRequestCount;
-        public int TotalFriendRequestCount => friendsController.TotalFriendRequestCount;
+        public int TotalFriendsWithDirectMessagesCount => friendsController.TotalFriendsWithDirectMessagesCount;
 
         public WebInterfaceFriendsController(IFriendsController friendsController)
         {

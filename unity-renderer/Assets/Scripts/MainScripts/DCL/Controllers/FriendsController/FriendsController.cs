@@ -19,7 +19,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public int ReceivedRequestCount =>
         friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
 
-    public int TotalFriendRequestCount { get; private set; } = 0;
+    public int TotalFriendsWithDirectMessagesCount { get; private set; } = 0;
 
     public Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
@@ -248,7 +248,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public void AddFriendsWithDirectMessages(string json)
     {
         var friendsWithDMs = JsonUtility.FromJson<AddFriendsWithDirectMessagesPayload>(json);
-        TotalFriendRequestCount = friendsWithDMs.totalFriendsWithDirectMessages;
+        TotalFriendsWithDirectMessagesCount = friendsWithDMs.totalFriendsWithDirectMessages;
         OnAddFriendsWithDirectMessages?.Invoke(friendsWithDMs.currentFriendsWithDirectMessages.ToList());
     }
 

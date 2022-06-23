@@ -336,7 +336,7 @@ public class WorldChatWindowController : IHUD
 
     private void UpdateMoreChannelsToLoadHint()
     {
-        hiddenDMs = friendsController.TotalFriendRequestCount - view.PrivateChannelsCount;
+        hiddenDMs = friendsController.TotalFriendsWithDirectMessagesCount - view.PrivateChannelsCount;
 
         if (hiddenDMs == 0 || !string.IsNullOrEmpty(currentSearch))
             View.HideMoreChatsToLoadHint();

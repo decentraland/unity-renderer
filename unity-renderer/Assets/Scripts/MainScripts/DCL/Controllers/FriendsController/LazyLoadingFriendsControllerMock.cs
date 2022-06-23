@@ -46,7 +46,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
     public int FriendCount => controller.FriendCount;
     public bool IsInitialized => controller.IsInitialized;
     public int ReceivedRequestCount => controller.ReceivedRequestCount;
-    public int TotalFriendRequestCount => controller.TotalFriendRequestCount;
+    public int TotalFriendsWithDirectMessagesCount => controller.TotalFriendsWithDirectMessagesCount;
 
     public LazyLoadingFriendsControllerMock(FriendsController controller)
     {
