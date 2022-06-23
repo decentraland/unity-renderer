@@ -24,7 +24,7 @@ namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown.OnPointerUp.Handler
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            representantion = new PointerInputRepresentantion(PointerInputEventType.DOWN, componentWriter);
+            representantion = new PointerInputRepresentantion(entity, dataStore, PointerInputEventType.UP, componentWriter);
             isAdded = false;
         }
 

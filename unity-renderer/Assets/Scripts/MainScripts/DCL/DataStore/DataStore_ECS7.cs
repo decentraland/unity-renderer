@@ -12,6 +12,6 @@ namespace DCL
         public readonly BaseDictionary<string, BaseRefCountedCollection<object>> pendingSceneResources = new BaseDictionary<string, BaseRefCountedCollection<object>>();
         public ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
         public readonly BaseDictionary<long, List<IPointerInputEvent>> entityEvents = new BaseDictionary<long, List<IPointerInputEvent>>();
-        public readonly BaseDictionary<long, GameObject> animatorShapesReady = new BaseDictionary<long, GameObject>();
+        public readonly BaseDictionary<long, GameObject> shapesReady = new BaseDictionary<long, GameObject>();
     }
 }

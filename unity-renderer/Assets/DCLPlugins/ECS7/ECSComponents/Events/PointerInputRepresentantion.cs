@@ -20,6 +20,7 @@ namespace DCLPlugins.ECSComponents
         private readonly OnPointerEventHandler pointerEventHandler;
         private readonly PointerInputEventType type;
         private readonly IECSComponentWriter componentWriter;
+        private readonly DataStore_ECS7 dataStore;
 
         // This represents the model component, since we have several components model, we just use their data
         private bool showFeedback = false;
@@ -28,18 +29,20 @@ namespace DCLPlugins.ECSComponents
         private float distance;
         private string identifier;
 
-        public PointerInputRepresentantion(PointerInputEventType type, IECSComponentWriter componentWriter)
+        public PointerInputRepresentantion(IDCLEntity entity,DataStore_ECS7 dataStore,PointerInputEventType type, IECSComponentWriter componentWriter)
         {
+            this.dataStore = dataStore;
             this.type = type;
             this.componentWriter = componentWriter;
             pointerEventHandler = new OnPointerEventHandler();
+            
+            Initializate(entity);
         }
 
         public void SetData(IParcelScene scene, IDCLEntity entity, bool showFeedback, string button, float distance, string identifier, string hoverText)
         {
             this.scene = scene;
             eventEntity = entity;
-            pointerEventHandler.SetColliders(entity);
 
             this.showFeedback = showFeedback;
             this.button = button;
@@ -48,8 +51,17 @@ namespace DCLPlugins.ECSComponents
             this.hoverText = hoverText;
         }
 
+        public void Initializate(IDCLEntity entity)
+        {
+            if(dataStore.shapesReady.ContainsKey(entity.entityId))
+                pointerEventHandler.SetColliders(entity);
+
+            dataStore.shapesReady.OnAdded += ConfigureColliders;
+        }
+
         public void Dispose()
         {
+            dataStore.shapesReady.OnAdded -= ConfigureColliders;
             pointerEventHandler.Dispose();
         }
 
@@ -121,6 +133,11 @@ namespace DCLPlugins.ECSComponents
             return IsVisible() &&
                    IsAtHoverDistance(hit.distance) &&
                    (button == "ANY" || buttonId.ToString() == button);
+        }
+        
+        private void ConfigureColliders(long entityId, GameObject shapeGameObject)
+        {
+            pointerEventHandler.SetColliders(entity);
         }
     }
 }
