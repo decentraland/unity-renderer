@@ -157,6 +157,7 @@ namespace DCL
             gameObject.AddComponent<CatalogController>();
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<ChatController>();
+            gameObject.AddComponent<ChatNotificationsController>();
             gameObject.AddComponent<FriendsController>();
             gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();
