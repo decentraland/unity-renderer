@@ -30,10 +30,6 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAnimator model)
         {
-            // If the entity has change, we force to check for an animatorShapeReady
-            if (this.entity != null && this.entity != entity)
-                isShapeLoaded = false;
-            
             this.entity = entity;
             this.model = model;
             
@@ -61,9 +57,7 @@ namespace DCL.ECSComponents
         {
             if (entityId != entity.entityId)
                 return;
-          
-            dataStore.animatorShapesReady.OnAdded -= AnimatorShapeReadyAdded;
-            
+
             Initialize(entity);
             isShapeLoaded = true;
 
