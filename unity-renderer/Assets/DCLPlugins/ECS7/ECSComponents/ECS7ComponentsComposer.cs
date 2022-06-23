@@ -1,10 +1,6 @@
 using System;
-using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using DCL;
 using DCL.ECS7;
-using DCL.ECSComponents;
-using DCL.SettingsCommon;
 
 namespace DCL.ECSComponents
 {
