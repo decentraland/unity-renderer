@@ -6,10 +6,5 @@
         public static AssetPromiseKeeper_GLTFast i { get { return instance ??= new AssetPromiseKeeper_GLTFast(); } }
         
         public AssetPromiseKeeper_GLTFast() : base(new AssetLibrary_GLTFast()) { }
-
-        protected override void OnSilentForget(AssetPromise_GLTFast promise)
-        {
-            promise.OnSilentForget();
-        }
     }
 }

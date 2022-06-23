@@ -11,7 +11,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
     AssetPromiseKeeper_GLTF keeper;
     private WebRequestController webRequestController;
     List<AssetPromise_GLTF> promiseList = new List<AssetPromise_GLTF>();
-    List<AssetPromise_GLTFast> promiseList2 = new List<AssetPromise_GLTFast>();
+    List<AssetPromise_GLTFast_GameObject> promiseList2 = new List<AssetPromise_GLTFast_GameObject>();
 
     private int counter = 0;
     private bool automatedMode = false;
@@ -27,14 +27,14 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         "/GLB/Trevor/Trevor.glb",
         "/GLB/vertex-anim.glb"
     };
-    private AssetPromiseKeeper_GLTFast keeper2;
+    private AssetPromiseKeeper_GLTFast_GameObject keeper2;
 
     void Start()
     {
         CommonScriptableObjects.rendererState.Set(true);
         webRequestController = WebRequestController.Create();
         keeper = new AssetPromiseKeeper_GLTF();
-        keeper2 = new AssetPromiseKeeper_GLTFast();
+        keeper2 = new AssetPromiseKeeper_GLTFast_GameObject();
         keeper.throttlingCounter.enabled = false;
     }
 
@@ -53,7 +53,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
 
     void GenerateGLTFast(string url)
     {
-        AssetPromise_GLTFast promise2 = new AssetPromise_GLTFast(url, webRequestController);
+        AssetPromise_GLTFast_GameObject promise2 = new AssetPromise_GLTFast_GameObject(url, "");
         Vector3 pos = Vector3.zero;
         pos.x = Random.Range(-10, 10);
         pos.z = Random.Range(-10, 10);
