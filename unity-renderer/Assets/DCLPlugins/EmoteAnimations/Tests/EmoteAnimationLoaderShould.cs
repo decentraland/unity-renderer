@@ -31,74 +31,19 @@ namespace DCL.Emotes
         public void TearDown() { Object.Destroy(container); }
 
         [UnityTest]
-        public IEnumerator ThrowIfNullContainer() => UniTask.ToCoroutine(async () =>
-        {
-            try
-            {
-                await TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(null, new WearableItem(), "female"));
-            }
-            catch (Exception e)
-            {
-                // We don't 'throw' the exception because it makes the test fail
-                Assert.IsTrue(e.Message.Contains(loader.MISSING_CONTAINER_ERROR));
-            }
-        });
+        public IEnumerator ThrowIfNullContainer() => UniTask.ToCoroutine(async () => await TestUtils.ThrowsAsync<NullReferenceException>(loader.LoadEmote(null, new WearableItem(), "female")));
 
         [UnityTest]
-        public IEnumerator ThrowIfNullEmote() => UniTask.ToCoroutine(async () =>
-        {
-            try 
-            {
-                await TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(container, null, "female"));
-            }
-            catch (Exception e)
-            {
-                // We don't 'throw' the exception because it makes the test fail
-                Assert.IsTrue(e.Message.Contains(loader.MISSING_EMOTE_ERROR));
-            }
-        });
+        public IEnumerator ThrowIfNullEmote() => UniTask.ToCoroutine(async () => await TestUtils.ThrowsAsync<NullReferenceException>(loader.LoadEmote(container, null, "female")));
 
         [UnityTest]
-        public IEnumerator ThrowIfNullBodyShape() => UniTask.ToCoroutine(async () =>
-        {
-            try
-            {
-                await TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(container, new WearableItem(), null));
-            }
-            catch (Exception e)
-            {
-                // We don't 'throw' the exception because it makes the test fail
-                Assert.IsTrue(e.Message.Contains(loader.MISSING_BODYSHAPE_ERROR));
-            }
-        });
+        public IEnumerator ThrowIfNullBodyShape() => UniTask.ToCoroutine(async () => await TestUtils.ThrowsAsync<NullReferenceException>(loader.LoadEmote(container, new WearableItem(), null)));
 
         [UnityTest]
-        public IEnumerator ThrowIfEmptyBodyShape() => UniTask.ToCoroutine(async () =>
-        {
-            try
-            {
-                await TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(container, new WearableItem(), ""));
-            }
-            catch (Exception e)
-            {
-                // We don't 'throw' the exception because it makes the test fail
-                Assert.IsTrue(e.Message.Contains(loader.MISSING_BODYSHAPE_ERROR));
-            }
-        });
+        public IEnumerator ThrowIfEmptyBodyShape() => UniTask.ToCoroutine(async () => await TestUtils.ThrowsAsync<NullReferenceException>(loader.LoadEmote(container, new WearableItem(), "")));
 
         [UnityTest]
-        public IEnumerator ThrowIfNoRepresentationForBodyShape() => UniTask.ToCoroutine(async () =>
-        {
-            try
-            {
-                await TestUtils.ThrowsAsync<Exception>(loader.LoadEmote(container, new WearableItem { id = "emote0" }, "female"), $"No representation for female of emote: emote0");
-            }
-            catch (Exception e)
-            {
-                // We don't 'throw' the exception because it makes the test fail
-                Assert.IsTrue(e.Message.Contains("No representation"));
-            }
-        });
+        public IEnumerator ThrowIfNoRepresentationForBodyShape() => UniTask.ToCoroutine(async () => await TestUtils.ThrowsAsync<Exception>(loader.LoadEmote(container, new WearableItem { id = "emote0" }, "female"), $"No representation for female of emote: emote0"));
 
         [UnityTest]
         public IEnumerator ThrowIfCancelledTokenProvided() => UniTask.ToCoroutine(async () =>
@@ -106,14 +51,7 @@ namespace DCL.Emotes
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
 
-            try
-            {
-                await TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(container, new WearableItem(), "female", cts.Token));
-            }
-            catch (Exception e)
-            {
-                // We don't 'throw' the exception because it makes the test fail
-            }
+            await TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(container, new WearableItem(), "female", cts.Token));
         });
 
         [UnityTest]
