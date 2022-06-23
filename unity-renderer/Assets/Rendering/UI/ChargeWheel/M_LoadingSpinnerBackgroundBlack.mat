@@ -56,5 +56,5 @@ Material:
     - Color_989feb42c0074e3caa405393ba881f21: {r: 0.9529411, g: 0, b: 0.03656221,
         a: 1}
     - _BackgroundColor: {r: 1, g: 1, b: 1, a: 1}
-    - _color01: {r: 0, g: 0, b: 0, a: 1}
+    - _color01: {r: 0, g: 0, b: 0, a: 0.5019608}
   m_BuildTextureStacks: []
