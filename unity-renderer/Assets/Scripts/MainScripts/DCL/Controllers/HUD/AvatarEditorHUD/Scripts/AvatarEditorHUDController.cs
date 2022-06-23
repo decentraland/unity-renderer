@@ -22,7 +22,6 @@ public class AvatarEditorHUDController : IHUD
     private const string URL_GET_A_WALLET = "https://docs.decentraland.org/get-a-wallet";
     private const string URL_SELL_COLLECTIBLE_GENERIC = "https://market.decentraland.org/account";
     private const string URL_SELL_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}";
-    private const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
     private const string THIRD_PARTY_COLLECTIONS_FEATURE_FLAG = "third_party_collections";
     internal const string EQUIP_WEARABLE_METRIC = "equip_wearable";
     protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
@@ -104,18 +103,25 @@ public class AvatarEditorHUDController : IHUD
         this.userProfile.OnUpdate += LoadUserProfile;
 
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, false);
-        featureFlagsDataStore.flags.OnChange += OnFeatureFlagsChanged;
-        OnFeatureFlagsChanged(featureFlagsDataStore.flags.Get(), null);
+
+        emotesCustomizationComponentController = CreateEmotesController();
+        IEmotesCustomizationComponentView emotesSectionView = emotesCustomizationComponentController.Initialize(
+            DataStore.i.emotesCustomization,
+            DataStore.i.emotes,
+            DataStore.i.exploreV2,
+            DataStore.i.HUDs,
+            userProfile, 
+            catalog);
+        emotesSectionView.viewTransform.SetParent(view.emotesSection.transform, false);
+        view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
+        
         emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange += HandleEmotesCostumizationSelection;
         emotesCustomizationDataStore.currentLoadedEmotes.OnAdded += OnNewEmoteAdded;
 
-        if (featureFlagsDataStore.flags.Get().IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG))
-        {
-            emotesCustomizationComponentController.onEmotePreviewed += OnPreviewEmote;
-            emotesCustomizationComponentController.onEmoteEquipped += OnEmoteEquipped;
-            emotesCustomizationComponentController.onEmoteUnequipped += OnEmoteUnequipped;
-            emotesCustomizationComponentController.onEmoteSell += OnRedirectToEmoteSelling;
-        }
+        emotesCustomizationComponentController.onEmotePreviewed += OnPreviewEmote;
+        emotesCustomizationComponentController.onEmoteEquipped += OnEmoteEquipped;
+        emotesCustomizationComponentController.onEmoteUnequipped += OnEmoteUnequipped;
+        emotesCustomizationComponentController.onEmoteSell += OnRedirectToEmoteSelling;
 
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
 
@@ -706,17 +712,13 @@ public class AvatarEditorHUDController : IHUD
         configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
         exploreV2IsOpen.OnChange -= ExploreV2IsOpenChanged;
-        featureFlagsDataStore.flags.OnChange -= OnFeatureFlagsChanged;
         emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange -= HandleEmotesCostumizationSelection;
         emotesCustomizationDataStore.currentLoadedEmotes.OnAdded -= OnNewEmoteAdded;
 
-        if (featureFlagsDataStore.flags.Get().IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG))
-        {
-            emotesCustomizationComponentController.onEmotePreviewed -= OnPreviewEmote;
-            emotesCustomizationComponentController.onEmoteEquipped -= OnEmoteEquipped;
-            emotesCustomizationComponentController.onEmoteUnequipped -= OnEmoteUnequipped;
-            emotesCustomizationComponentController.onEmoteSell -= OnRedirectToEmoteSelling;
-        }
+        emotesCustomizationComponentController.onEmotePreviewed -= OnPreviewEmote;
+        emotesCustomizationComponentController.onEmoteEquipped -= OnEmoteEquipped;
+        emotesCustomizationComponentController.onEmoteUnequipped -= OnEmoteUnequipped;
+        emotesCustomizationComponentController.onEmoteSell -= OnRedirectToEmoteSelling;
 
         CleanUp();
     }
@@ -782,8 +784,7 @@ public class AvatarEditorHUDController : IHUD
         {
             LoadUserProfile(userProfile, true);
 
-            if (featureFlagsDataStore.flags.Get().IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG))
-                emotesCustomizationComponentController.RestoreEmoteSlots();
+            emotesCustomizationComponentController.RestoreEmoteSlots();
 
             avatarIsDirty = false;
         }
@@ -909,24 +910,6 @@ public class AvatarEditorHUDController : IHUD
         return true;
     }
 
-    private void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous)
-    {
-        if (!current.IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG))
-            return;
-
-        featureFlagsDataStore.flags.OnChange -= OnFeatureFlagsChanged;
-        emotesCustomizationComponentController = CreateEmotesController();
-        IEmotesCustomizationComponentView emotesSectionView = emotesCustomizationComponentController.Initialize(
-            DataStore.i.emotesCustomization,
-            DataStore.i.emotes,
-            DataStore.i.exploreV2,
-            DataStore.i.HUDs,
-            userProfile, 
-            catalog);
-        emotesSectionView.viewTransform.SetParent(view.emotesSection.transform, false);
-
-        view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
-    }
 
     private void HandleEmotesCostumizationSelection(bool current, bool previous)
     {

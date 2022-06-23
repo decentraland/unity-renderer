@@ -71,6 +71,9 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         remove => friendsTab.OnSearchRequested -= value;
     }
 
+    public event Action OnFriendListDisplayed;
+    public event Action OnRequestListDisplayed;
+
     public event Action OnClose;
 
     public RectTransform Transform => transform as RectTransform;
@@ -82,6 +85,8 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public int FriendCount => friendsTab.Count;
     public int FriendRequestCount => friendRequestsTab.Count;
+    public bool IsFriendListActive => friendsTab.gameObject.activeInHierarchy;
+    public bool IsRequestListActive => friendRequestsTab.gameObject.activeInHierarchy;
 
     public static FriendsHUDComponentView Create()
     {
@@ -246,12 +251,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         friendRequestsTab.ShowRequestSuccessfullySentNotification();
     }
 
-    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount) => friendsTab.ShowMoreFriendsToLoadHint(pendingFriendsCount);
+    public void ShowMoreFriendsToLoadHint() => friendsTab.ShowMoreFriendsToLoadHint();
 
     public void HideMoreFriendsToLoadHint() => friendsTab.HideMoreFriendsToLoadHint();
 
-    public void ShowMoreRequestsToLoadHint(int pendingRequestsCount) =>
-        friendRequestsTab.ShowMoreFriendsToLoadHint(pendingRequestsCount);
+    public void ShowMoreRequestsToLoadHint() =>
+        friendRequestsTab.ShowMoreFriendsToLoadHint();
 
     public void HideMoreRequestsToLoadHint() => friendRequestsTab.HideMoreFriendsToLoadHint();
 
@@ -286,11 +291,13 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         {
             friendsTab.Show();
             friendRequestsTab.Hide();
+            OnFriendListDisplayed?.Invoke();
         }
         else if (index == FRIENDS_REQUEST_TAB_INDEX)
         {
             friendsTab.Hide();
             friendRequestsTab.Show();
+            OnRequestListDisplayed?.Invoke();
         }
         else
             throw new IndexOutOfRangeException();

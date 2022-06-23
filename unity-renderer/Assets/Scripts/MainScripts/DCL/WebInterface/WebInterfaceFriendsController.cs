@@ -38,9 +38,11 @@ namespace DCL.Interface
             remove => friendsController.OnAddFriendsWithDirectMessages -= value;
         }
 
-        public int FriendCount => friendsController.FriendCount;
+        public int AllocatedFriendCount => friendsController.AllocatedFriendCount;
         public bool IsInitialized => friendsController.IsInitialized;
         public int ReceivedRequestCount => friendsController.ReceivedRequestCount;
+        public int TotalFriendCount => friendsController.TotalFriendCount;
+        public int TotalFriendRequestCount => friendsController.TotalFriendRequestCount;
         public int TotalFriendsWithDirectMessagesCount => friendsController.TotalFriendsWithDirectMessagesCount;
 
         public WebInterfaceFriendsController(IFriendsController friendsController)
@@ -109,7 +111,8 @@ namespace DCL.Interface
 
         public void GetFriendsAsync(int limit, int skip) => friendsController.GetFriendsAsync(limit, skip);
 
-        public void GetFriendsAsync(string usernameOrId) => friendsController.GetFriendsAsync(usernameOrId);
+        public void GetFriendsAsync(string usernameOrId, int limit) =>
+            friendsController.GetFriendsAsync(usernameOrId, limit);
 
         public void GetFriendRequestsAsync(
             int sentLimit, long sentFromTimestamp,

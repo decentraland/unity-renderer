@@ -12,13 +12,15 @@ public class FriendsController_Mock : IFriendsController
 
     private readonly Dictionary<string, FriendsController.UserStatus> friends = new Dictionary<string, FriendsController.UserStatus>();
 
-    public int FriendCount => friends.Count;
+    public int AllocatedFriendCount => friends.Count;
 
     public bool IsInitialized => true;
 
     public int ReceivedRequestCount =>
         friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
 
+    public int TotalFriendCount { get; }
+    public int TotalFriendRequestCount { get; }
     public int TotalFriendsWithDirectMessagesCount => friends.Count;
 
     public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() { return friends; }
@@ -39,6 +41,10 @@ public class FriendsController_Mock : IFriendsController
     }
 
     public void GetFriendsAsync(int limit, int skip)
+    {
+    }
+
+    public void GetFriendsAsync(string usernameOrId, int limit)
     {
     }
 
