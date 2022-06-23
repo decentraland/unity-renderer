@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using System.Threading;
 
 public class PrivateChatWindowController : IHUD
 {
@@ -28,6 +27,7 @@ public class PrivateChatWindowController : IHUD
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private bool skipChatInputTrigger;
     private Dictionary<string, long> lastTimestampRequestedByUser = new Dictionary<string, long>();
+    private bool isRequestingOldMessages = false;
 
     private string ConversationUserId { get; set; } = string.Empty;
 
@@ -68,7 +68,7 @@ public class PrivateChatWindowController : IHUD
         view.OnMinimize += MinimizeView;
         view.OnUnfriend += Unfriend;
         view.OnFocused += HandleViewFocused;
-        view.OnRequestOldConversations += RequestOldConversations;
+        view.OnScrollUpToTheTop += RequestOldConversations;
         
         closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
         closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
@@ -161,7 +161,7 @@ public class PrivateChatWindowController : IHUD
             View.OnMinimize -= MinimizeView;
             View.OnUnfriend -= Unfriend;
             View.OnFocused -= HandleViewFocused;
-            View.OnRequestOldConversations -= RequestOldConversations;
+            View.OnScrollUpToTheTop -= RequestOldConversations;
             View.Dispose();
         }
     }
@@ -231,6 +231,9 @@ public class PrivateChatWindowController : IHUD
             // The messages from 'conversationUserId' are marked as read if his private chat window is currently open
             MarkUserChatMessagesAsRead();
         }
+
+        isRequestingOldMessages = false;
+        View?.SetOldMessagesLoadingActive(false);
     }
 
     private void Hide()
@@ -325,6 +328,12 @@ public class PrivateChatWindowController : IHUD
 
     private void RequestOldConversations()
     {
+        if (isRequestingOldMessages)
+            return;
+
+        isRequestingOldMessages = true;
+        View?.SetOldMessagesLoadingActive(true);
+
         if (!lastTimestampRequestedByUser.ContainsKey(ConversationUserId))
             lastTimestampRequestedByUser.Add(ConversationUserId, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 

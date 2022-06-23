@@ -9,7 +9,7 @@ public interface IPrivateChatComponentView
     event Action OnClose;
     event Action<string> OnUnfriend;
     event Action<bool> OnFocused;
-    event Action OnRequestOldConversations;
+    event Action OnScrollUpToTheTop;
 
     IChatHUDComponentView ChatHUD { get; }
     bool IsActive { get; }
@@ -24,4 +24,5 @@ public interface IPrivateChatComponentView
     void ActivatePreview();
     void DeactivatePreview();
     void SetLoadingMessagesActive(bool isActive);
+    void SetOldMessagesLoadingActive(bool isActive);
 }
