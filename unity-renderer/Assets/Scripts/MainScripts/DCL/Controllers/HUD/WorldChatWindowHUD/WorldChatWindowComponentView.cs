@@ -49,7 +49,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     }
 
     public event Action<string> OnSearchChannelRequested;
-    public event Action OnScrollDownToTheBottom;
+    public event Action OnRequireMorePrivateChats;
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -71,7 +71,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         scroll.onValueChanged.AddListener((scrollPos) =>
         {
             if (scrollPos.y < 0.005f)
-                OnScrollDownToTheBottom?.Invoke();
+                OnRequireMorePrivateChats?.Invoke();
         });
         UpdateHeaders();
     }

@@ -267,7 +267,7 @@ public class WorldChatWindowComponentViewShould
     public void TriggerRequestMorePrivateChats()
     {
         var called = false;
-        view.OnScrollDownToTheBottom += () => called = true;
+        view.OnRequireMorePrivateChats += () => called = true;
 
         view.scroll.onValueChanged.Invoke(Vector2.zero);
 

@@ -9,7 +9,7 @@ public interface IWorldChatWindowView
     event Action<string> OnOpenPublicChannel;
     event Action<string> OnUnfriend;
     event Action<string> OnSearchChannelRequested;
-    event Action OnScrollDownToTheBottom;
+    event Action OnRequireMorePrivateChats;
 
     RectTransform Transform { get; }
     bool IsActive { get; }

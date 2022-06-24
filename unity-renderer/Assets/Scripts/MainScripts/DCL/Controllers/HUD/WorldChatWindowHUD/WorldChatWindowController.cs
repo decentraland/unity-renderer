@@ -58,7 +58,7 @@ public class WorldChatWindowController : IHUD
         view.OnOpenPublicChannel += OpenPublicChannel;
         view.OnUnfriend += HandleUnfriend;
         view.OnSearchChannelRequested += SearchChannels;
-        view.OnScrollDownToTheBottom += ShowMorePrivateChats;
+        view.OnRequireMorePrivateChats += ShowMorePrivateChats;
         
         ownUserProfile = userProfileBridge.GetOwn();
         if (ownUserProfile != null)
@@ -89,7 +89,7 @@ public class WorldChatWindowController : IHUD
         view.OnOpenPublicChannel -= OpenPublicChannel;
         view.OnUnfriend -= HandleUnfriend;
         view.OnSearchChannelRequested -= SearchChannels;
-        view.OnScrollDownToTheBottom -= ShowMorePrivateChats;
+        view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
         view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
         friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
