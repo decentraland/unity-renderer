@@ -77,9 +77,9 @@ namespace DCL.Protobuf
             if (!IsProtoVersionValid())
                 DownloadProtobuffExecutable();
 
-            DownloadProtoDefinitions(version);
-            GenerateComponentCode(version);
-            CompilationPipeline.RequestScriptCompilation();
+             DownloadProtoDefinitions(version);
+             GenerateComponentCode(version);
+             CompilationPipeline.RequestScriptCompilation();
         }
         
         [MenuItem("Decentraland/Protobuf/Download latest proto definitions (For debugging)")]
@@ -212,6 +212,11 @@ namespace DCL.Protobuf
         }
 
         [MenuItem("Decentraland/Protobuf/Regenerate models (For debugging)")]
+        public static void GenerateComponentCode()
+        {
+            GenerateComponentCode("LocalMachine");
+        }
+        
         public static void GenerateComponentCode(string versionNameToCompile)
         {
             Debug.Log("Starting regenerate ");
@@ -395,7 +400,13 @@ namespace DCL.Protobuf
         {
             string path = Application.dataPath + PATH_TO_GENERATED + EXECUTABLE_VERSION_FILENAME;
             string version = GetVersion(path);
-            return version == PROTO_VERSION;
+            string protoPath = GetPathToProto();
+            
+            // If we are in windows, we add the extension of the file
+#if UNITY_EDITOR_WIN
+            protoPath += ".exe";
+#endif
+            return version == PROTO_VERSION && File.Exists(protoPath);
         }
         
         private static string GetVersion(string path)

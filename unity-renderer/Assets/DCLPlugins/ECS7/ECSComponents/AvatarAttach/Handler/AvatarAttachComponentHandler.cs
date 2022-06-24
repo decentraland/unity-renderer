@@ -1,76 +1,83 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
-using DCL.Helpers;
+using DCL.ECSRuntime;
 using DCL.Models;
+using DCL.ECSComponents;
+using DCL.Helpers;
 using UnityEngine;
 
-namespace DCL.Components
+namespace DCL.ECSComponents
 {
-    public class AvatarAttachHandler : IDisposable
+    public class AvatarAttachComponentHandler : IECSComponentHandler<PBAvatarAttach>
     {
         private const float BOUNDARIES_CHECK_INTERVAL = 5;
-
-        public AvatarAttachComponent.Model model { internal set; get; } = new AvatarAttachComponent.Model();
-        public IParcelScene scene { private set; get; }
-        public IDCLEntity entity { private set; get; }
-
-        private AvatarAttachComponent.Model prevModel = null;
+        
+        internal PBAvatarAttach prevModel = null;
 
         private IAvatarAnchorPoints anchorPoints;
         private AvatarAnchorPointIds anchorPointId;
+        private IDCLEntity entity;
+        private IParcelScene scene;
 
         private Action componentUpdate = null;
 
-        private readonly GetAnchorPointsHandler getAnchorPointsHandler = new GetAnchorPointsHandler();
-        private ISceneBoundsChecker sceneBoundsChecker => Environment.i?.world?.sceneBoundsChecker;
-        private IUpdateEventHandler updateEventHandler;
-
+        private readonly GetAnchorPointsHandler getAnchorPointsHandler;
+        private readonly IUpdateEventHandler updateEventHandler;
+        internal ISceneBoundsChecker sceneBoundsChecker;
+        
         private Vector2Int? currentCoords = null;
         private bool isInsideScene = true;
         private float lastBoundariesCheckTime = 0;
-
-        public void Initialize(IParcelScene scene, IDCLEntity entity, IUpdateEventHandler updateEventHandler)
+        
+        public AvatarAttachComponentHandler(IUpdateEventHandler updateEventHandler, ISceneBoundsChecker sceneBoundsChecker)
         {
-            this.scene = scene;
-            this.entity = entity;
             this.updateEventHandler = updateEventHandler;
+            this.sceneBoundsChecker = sceneBoundsChecker;
+            getAnchorPointsHandler = new GetAnchorPointsHandler();
             getAnchorPointsHandler.OnAvatarRemoved += Detach;
         }
 
-        public void OnModelUpdated(string json)
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            OnModelUpdated(model.GetDataFromJSON(json) as AvatarAttachComponent.Model);
+            this.scene = scene;
+            this.entity = entity;
         }
 
-        public void OnModelUpdated(AvatarAttachComponent.Model newModel)
+        public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            prevModel = model;
-            model = newModel;
+            Dispose();
+        }
 
+        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAvatarAttach model)
+        {
             if (model == null)
             {
                 return;
             }
 
-            if (prevModel.avatarId != model.avatarId)
+            if (prevModel == null || prevModel.AvatarId != model.AvatarId)
             {
                 Detach();
 
-                if (!string.IsNullOrEmpty(model.avatarId))
+                if (!string.IsNullOrEmpty(model.AvatarId))
                 {
-                    Attach(model.avatarId, (AvatarAnchorPointIds)model.anchorPointId);
+                    Attach(model.AvatarId, (AvatarAnchorPointIds)model.AnchorPointId);
                 }
             }
+            
+            prevModel = model;
         }
-
+        
         public void Dispose()
         {
             Detach();
             getAnchorPointsHandler.OnAvatarRemoved -= Detach;
             getAnchorPointsHandler.Dispose();
         }
-
+        
         internal virtual void Detach()
         {
             StopComponentUpdate();
@@ -144,7 +151,7 @@ namespace DCL.Components
             lastBoundariesCheckTime = Time.unscaledTime;
         }
 
-        private void StartComponentUpdate()
+        protected virtual void StartComponentUpdate()
         {
             if (componentUpdate != null)
                 return;
@@ -154,7 +161,7 @@ namespace DCL.Components
             updateEventHandler?.AddListener(IUpdateEventHandler.EventType.LateUpdate, componentUpdate);
         }
 
-        private void StopComponentUpdate()
+        protected virtual void StopComponentUpdate()
         {
             if (componentUpdate == null)
                 return;
