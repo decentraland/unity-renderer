@@ -9,6 +9,7 @@ using System.Threading;
 
 public class PrivateChatWindowController : IHUD
 {
+    internal const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD = 30;
     internal const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE = 10;
 
     public IPrivateChatComponentView View { get; private set; }
@@ -28,6 +29,7 @@ public class PrivateChatWindowController : IHUD
     private bool skipChatInputTrigger;
     internal Dictionary<string, long> lastTimestampRequestedByUser = new Dictionary<string, long>();
     internal bool isRequestingOldMessages = false;
+    internal List<string> directMessagesAlreadyRequested = new List<string>();
 
     internal string ConversationUserId { get; set; } = string.Empty;
 
@@ -120,6 +122,14 @@ public class PrivateChatWindowController : IHUD
                 View.Setup(conversationProfile,
                     userStatus.presence == PresenceStatus.ONLINE,
                     userProfileBridge.GetOwn().IsBlocked(ConversationUserId));
+
+                if (!directMessagesAlreadyRequested.Contains(ConversationUserId))
+                {
+                    RequestPrivateMessages(
+                        ConversationUserId,
+                        USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD,
+                        DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                }
             }
 
             View.Show();
@@ -234,6 +244,7 @@ public class PrivateChatWindowController : IHUD
 
         isRequestingOldMessages = false;
         View?.SetOldMessagesLoadingActive(false);
+        View?.SetLoadingMessagesActive(false);
     }
 
     private void Hide()
@@ -311,8 +322,6 @@ public class PrivateChatWindowController : IHUD
         OnPreviewModeChanged?.Invoke(true);
     }
 
-    public void SetLoadingMessagesActive(bool isActive) { View?.SetLoadingMessagesActive(isActive); }
-
     private void HandleChatInputTriggered(DCLAction_Trigger action)
     {
         // race condition patch caused by unfocusing input field from invalid message on SendChatMessage
@@ -324,6 +333,13 @@ public class PrivateChatWindowController : IHUD
         }
         if (!View.IsActive) return;
         chatHudController.FocusInputField();
+    }
+
+    internal void RequestPrivateMessages(string userId, int limit, long fromTimestamp)
+    {
+        View?.SetLoadingMessagesActive(true);
+        chatController.GetPrivateMessages(userId, limit, fromTimestamp);
+        directMessagesAlreadyRequested.Add(userId);
     }
 
     internal void RequestOldConversations()

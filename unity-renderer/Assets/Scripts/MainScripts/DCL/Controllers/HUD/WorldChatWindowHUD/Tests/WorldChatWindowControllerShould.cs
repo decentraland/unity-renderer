@@ -333,25 +333,6 @@ public class WorldChatWindowControllerShould
         friendsController.Received(1).GetFriendsWithDirectMessages(userName, limit);
     }
 
-    [Test]
-    public void RequestPrivateMessagesCorrectly()
-    {
-        controller.Initialize(view);
-        string userId = "testId";
-        int limit = 30;
-        long timestamp = 500;
-        controller.directMessagesAlreadyRequested.Clear();
-
-        bool called = false;
-        controller.OnRequesPrivateMessages += (isRequested) => called = isRequested;
-
-        controller.RequestPrivateMessages(userId, limit, timestamp);
-
-        Assert.IsTrue(called);
-        chatController.Received(1).GetPrivateMessages(userId, limit, timestamp);
-        Assert.IsTrue(controller.directMessagesAlreadyRequested.Contains(userId));
-    }
-
     private void GivenFriend(string friendId, PresenceStatus presence)
     {
         var friendProfile = ScriptableObject.CreateInstance<UserProfile>();

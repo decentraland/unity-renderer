@@ -11,7 +11,6 @@ public class WorldChatWindowController : IHUD
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD = 50;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SHOW_MORE = 20;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH = 20;
-    private const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD = 30;
 
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
@@ -21,7 +20,6 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     internal bool areDMsRequestedByFirstTime = false;
-    internal List<string> directMessagesAlreadyRequested = new List<string>();
     private long olderDMTimestampRequested = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     private string currentSearch = "";
     internal bool isRequestingFriendsWithDMs = false;
@@ -35,7 +33,6 @@ public class WorldChatWindowController : IHUD
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChannel;
     public event Action OnOpen;
-    public event Action<bool> OnRequesPrivateMessages;
 
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -140,18 +137,7 @@ public class WorldChatWindowController : IHUD
                 view.RemovePrivateChat(userId);
     }
 
-    private void OpenPrivateChat(string userId)
-    {
-        if (!directMessagesAlreadyRequested.Contains(userId))
-        {
-            RequestPrivateMessages(
-                userId,
-                USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD,
-                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-        }
-
-        OnOpenPrivateChat?.Invoke(userId);
-    }
+    private void OpenPrivateChat(string userId) { OnOpenPrivateChat?.Invoke(userId); }
 
     private void OpenPublicChannel(string channelId) => OnOpenPublicChannel?.Invoke(channelId);
 
@@ -205,8 +191,6 @@ public class WorldChatWindowController : IHUD
         recipientsFromPrivateChats[profile.userId] = profile;
 
         view.SetPrivateChat(CreatePrivateChatModel(message, profile));
-
-        OnRequesPrivateMessages?.Invoke(false);
     }
 
     private void HandleFriendsWithDirectMessagesAdded(List<FriendWithDirectMessages> usersWithDM)
@@ -364,12 +348,5 @@ public class WorldChatWindowController : IHUD
     {
         view.ShowSearchLoading();
         friendsController.GetFriendsWithDirectMessages(userNameOrId, limit);
-    }
-
-    internal void RequestPrivateMessages(string userId, int limit, long fromTimestamp)
-    {
-        OnRequesPrivateMessages?.Invoke(true);
-        chatController.GetPrivateMessages(userId, limit, fromTimestamp);
-        directMessagesAlreadyRequested.Add(userId);
     }
 }

@@ -299,15 +299,19 @@ public class PrivateChatWindowControllerShould
     }
 
     [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void SetLoadingMessagesActiveCorrectly(bool isActive)
+    public void RequestPrivateMessagesCorrectly()
     {
-        WhenControllerInitializes(FRIEND_ID);
+        controller.Initialize(view);
+        string userId = "testId";
+        int limit = 30;
+        long timestamp = 500;
+        controller.directMessagesAlreadyRequested.Clear();
 
-        controller.SetLoadingMessagesActive(isActive);
+        controller.RequestPrivateMessages(userId, limit, timestamp);
 
-        view.Received(1).SetLoadingMessagesActive(isActive);
+        view.Received(1).SetLoadingMessagesActive(true);
+        chatController.Received(1).GetPrivateMessages(userId, limit, timestamp);
+        Assert.IsTrue(controller.directMessagesAlreadyRequested.Contains(userId));
     }
 
     [Test]
