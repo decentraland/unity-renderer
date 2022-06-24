@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Interface;
 using NSubstitute;
@@ -269,7 +269,7 @@ public class WorldChatWindowComponentViewShould
         var called = false;
         view.OnRequireMorePrivateChats += () => called = true;
 
-        view.loadMoreEntriesButton.onClick.Invoke();
+        view.scroll.onValueChanged.Invoke(Vector2.zero);
 
         Assert.IsTrue(called);
     }
@@ -380,6 +380,46 @@ public class WorldChatWindowComponentViewShould
         yield return ClearFilter();
         yield return Filter();
         yield return ClearFilter();
+    }
+
+    [Test]
+    public void HideMoreChatsLoadingCorrectly()
+    {
+        view.loadMoreEntriesLoading.SetActive(true);
+
+        view.HideMoreChatsLoading();
+
+        Assert.IsFalse(view.loadMoreEntriesLoading.activeSelf);
+    }
+
+    [Test]
+    public void ShowMoreChatsLoadingCorrectly()
+    {
+        view.loadMoreEntriesLoading.SetActive(false);
+
+        view.ShowMoreChatsLoading();
+
+        Assert.IsTrue(view.loadMoreEntriesLoading.activeSelf);
+    }
+
+    [Test]
+    public void HideSearchLoadingCorrectly()
+    {
+        view.searchLoading.SetActive(true);
+
+        view.HideSearchLoading();
+
+        Assert.IsFalse(view.searchLoading.activeSelf);
+    }
+
+    [Test]
+    public void ShowSearchLoadingCorrectly()
+    {
+        view.searchLoading.SetActive(false);
+
+        view.ShowSearchLoading();
+
+        Assert.IsTrue(view.searchLoading.activeSelf);
     }
 
     private void GivenPrivateChat(string userId)

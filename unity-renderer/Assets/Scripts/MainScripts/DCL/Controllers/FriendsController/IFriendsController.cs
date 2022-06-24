@@ -14,6 +14,7 @@ public interface IFriendsController
     int ReceivedRequestCount { get; }
     int TotalFriendCount { get; }
     int TotalFriendRequestCount { get; }
+    int TotalFriendsWithDirectMessagesCount { get; }
     Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends();
     FriendsController.UserStatus GetUserStatus(string userId);
 

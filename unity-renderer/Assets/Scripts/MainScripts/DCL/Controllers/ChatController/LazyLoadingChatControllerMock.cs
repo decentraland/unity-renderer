@@ -32,19 +32,19 @@ public class LazyLoadingChatControllerMock : IChatController
 
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp) => SimulateDelayedResponseFor_GetPrivateMessages(userId, limit, fromTimestamp);
 
+    public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) => controller.GetPrivateAllocatedEntriesByUser(userId);
+
     private async UniTask SimulateDelayedResponseFor_GetPrivateMessages(string userId, int limit, long fromTimestamp)
     {
         await UniTask.Delay(UnityEngine.Random.Range(1000, 3000));
 
-        for (int i = 0; i < limit; i++)
+        for (int i = limit - 1; i >= 0; i--)
         {
-            await UniTask.NextFrame();
-
             controller.AddMessageToChatWindow(
                 CreateMockedDataFor_AddMessageToChatWindowPayload(
                     userId,
                     $"fake message {i + 1} from user {userId}",
-                    DateTimeOffset.FromUnixTimeMilliseconds(fromTimestamp).AddDays(UnityEngine.Random.Range(-10, 0)).ToUnixTimeMilliseconds(),
+                    DateTimeOffset.FromUnixTimeMilliseconds(fromTimestamp).AddMinutes(-10 * (i + 1)).ToUnixTimeMilliseconds(),
                     UnityEngine.Random.Range(0, 2) == 0 ? false : true));
         }
     }

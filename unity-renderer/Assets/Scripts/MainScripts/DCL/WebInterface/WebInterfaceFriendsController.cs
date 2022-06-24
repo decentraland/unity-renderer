@@ -31,7 +31,7 @@ namespace DCL.Interface
             add => friendsController.OnFriendNotFound += value;
             remove => friendsController.OnFriendNotFound -= value;
         }
-
+        
         public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages
         {
             add => friendsController.OnAddFriendsWithDirectMessages += value;
@@ -43,6 +43,7 @@ namespace DCL.Interface
         public int ReceivedRequestCount => friendsController.ReceivedRequestCount;
         public int TotalFriendCount => friendsController.TotalFriendCount;
         public int TotalFriendRequestCount => friendsController.TotalFriendRequestCount;
+        public int TotalFriendsWithDirectMessagesCount => friendsController.TotalFriendsWithDirectMessagesCount;
 
         public WebInterfaceFriendsController(IFriendsController friendsController)
         {
@@ -119,11 +120,16 @@ namespace DCL.Interface
             friendsController.GetFriendRequestsAsync(sentLimit, sentFromTimestamp,
                 receivedLimit, receivedFromTimestamp);
 
-        public void GetFriendsWithDirectMessages(int limit,
-            long fromTimestamp) =>
+        public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
+        {
+            WebInterface.GetFriendsWithDirectMessages(string.Empty, limit, fromTimestamp);
             friendsController.GetFriendsWithDirectMessages(limit, fromTimestamp);
+        }
 
-        public void GetFriendsWithDirectMessages(string userNameOrId, int limit) =>
+        public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
+        {
+            WebInterface.GetFriendsWithDirectMessages(userNameOrId, limit, (long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds);
             friendsController.GetFriendsWithDirectMessages(userNameOrId, limit);
+        }
     }
 }

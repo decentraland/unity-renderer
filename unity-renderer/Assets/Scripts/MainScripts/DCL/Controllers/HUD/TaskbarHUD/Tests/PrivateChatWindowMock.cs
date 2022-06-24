@@ -1,5 +1,6 @@
 using System;
 using NSubstitute;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
@@ -9,6 +10,7 @@ public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
     public event Action OnClose;
     public event Action<string> OnUnfriend;
     public event Action<bool> OnFocused;
+    public event Action OnRequireMoreMessages;
 
     public IChatHUDComponentView ChatHUD => Substitute.For<IChatHUDComponentView>();
     public bool IsActive => gameObject.activeSelf;
@@ -26,6 +28,10 @@ public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
     private void OnDestroy()
     {
         isDestroyed = true;
+    }
+
+    public void Initialize(IFriendsController friendsController, ISocialAnalytics socialAnalytics)
+    {
     }
 
     public void Setup(UserProfile profile, bool isOnline, bool isBlocked)
@@ -48,6 +54,14 @@ public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
     }
 
     public void DeactivatePreview()
+    {
+    }
+
+    public void SetLoadingMessagesActive(bool isActive)
+    {
+    }
+
+    public void SetOldMessagesLoadingActive(bool isActive)
     {
     }
 }

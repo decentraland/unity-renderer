@@ -10,7 +10,7 @@ public interface IWorldChatWindowView
     event Action<string> OnUnfriend;
     event Action<string> OnSearchChannelRequested;
     event Action OnRequireMorePrivateChats;
-    
+
     RectTransform Transform { get; }
     bool IsActive { get; }
     int PrivateChannelsCount { get; }
@@ -28,6 +28,10 @@ public interface IWorldChatWindowView
     void ClearFilter();
     void HideMoreChatsToLoadHint();
     void ShowMoreChatsToLoadHint(int count);
+    void ShowMoreChatsLoading();
+    void HideMoreChatsLoading();
+    void ShowSearchLoading();
+    void HideSearchLoading();
     void Filter(Dictionary<string,PrivateChatModel> privateChats, Dictionary<string,PublicChatChannelModel> publicChannels);
     bool ContainsPrivateChannel(string userId);
 }

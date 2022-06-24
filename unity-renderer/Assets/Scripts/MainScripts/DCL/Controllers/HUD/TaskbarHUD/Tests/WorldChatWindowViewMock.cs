@@ -10,6 +10,7 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     public event Action<string> OnUnfriend;
     public event Action<string> OnSearchChannelRequested;
     public event Action OnRequireMorePrivateChats;
+
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeSelf;
     public int PrivateChannelsCount { get; }
@@ -73,6 +74,22 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     }
 
     public void ShowMoreChatsToLoadHint(int count)
+    {
+    }
+
+    public void ShowMoreChatsLoading()
+    {
+    }
+
+    public void HideMoreChatsLoading()
+    {
+    }
+
+    public void ShowSearchLoading()
+    {
+    }
+
+    public void HideSearchLoading()
     {
     }
 

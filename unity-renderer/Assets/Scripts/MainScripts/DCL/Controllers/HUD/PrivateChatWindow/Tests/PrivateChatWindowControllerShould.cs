@@ -43,6 +43,7 @@ public class PrivateChatWindowControllerShould
 
         chatController = Substitute.For<IChatController>();
         chatController.GetAllocatedEntries().ReturnsForAnyArgs(new List<ChatMessage>());
+        chatController.GetPrivateAllocatedEntriesByUser(Arg.Any<string>()).ReturnsForAnyArgs(new List<ChatMessage>());
 
         lastReadMessagesService = Substitute.For<ILastReadMessagesService>();
 
@@ -297,6 +298,41 @@ public class PrivateChatWindowControllerShould
         Assert.IsTrue(isPreviewMode);
     }
 
+    [Test]
+    public void RequestPrivateMessagesCorrectly()
+    {
+        controller.Initialize(view);
+        string userId = "testId";
+        int limit = 30;
+        long timestamp = 500;
+        controller.directMessagesAlreadyRequested.Clear();
+
+        controller.RequestPrivateMessages(userId, limit, timestamp);
+
+        view.Received(1).SetLoadingMessagesActive(true);
+        chatController.Received(1).GetPrivateMessages(userId, limit, timestamp);
+        Assert.IsTrue(controller.directMessagesAlreadyRequested.Contains(userId));
+    }
+
+    [Test]
+    public void RequestOldConversationsCorrectly()
+    {
+        WhenControllerInitializes(FRIEND_ID);
+        controller.lastTimestampRequestedByUser = new Dictionary<string, long>();
+        controller.lastTimestampRequestedByUser.Add(FRIEND_ID, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        controller.ConversationUserId = FRIEND_ID;
+        GivenPrivateMessages(FRIEND_ID, 3);
+        controller.isRequestingOldMessages = false;
+
+        controller.RequestOldConversations();
+
+        view.Received(1).SetOldMessagesLoadingActive(true);
+        chatController.Received(1).GetPrivateMessages(
+            FRIEND_ID,
+            PrivateChatWindowController.USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE,
+            Arg.Any<long>());
+    }
+
     private void WhenControllerInitializes(string friendId)
     {
         controller.Initialize(view);
@@ -344,5 +380,6 @@ public class PrivateChatWindowControllerShould
                 {recipient = friendId});
         
         chatController.GetAllocatedEntries().ReturnsForAnyArgs(messages);
+        chatController.GetPrivateAllocatedEntriesByUser(friendId).ReturnsForAnyArgs(messages);
     }
 }

@@ -21,6 +21,7 @@ public class FriendsController_Mock : IFriendsController
 
     public int TotalFriendCount { get; }
     public int TotalFriendRequestCount { get; }
+    public int TotalFriendsWithDirectMessagesCount => friends.Count;
 
     public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() { return friends; }
     

@@ -13,6 +13,11 @@ public class ChatController_Mock : IChatController
 
     public List<ChatMessage> GetAllocatedEntries() { return entries; }
 
+    public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
+    {
+        return new List<ChatMessage>();
+    }
+
     public void RaiseAddMessage(ChatMessage chatMessage)
     {
         entries.Add(chatMessage);

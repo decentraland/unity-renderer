@@ -24,6 +24,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public int TotalFriendCount { get; private set; }
     public int TotalFriendRequestCount { get; private set; }
+    public int TotalFriendsWithDirectMessagesCount { get; private set; }
 
     public readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
@@ -150,15 +151,9 @@ public class FriendsController : MonoBehaviour, IFriendsController
         throw new NotImplementedException();
     }
 
-    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
-    {
-        throw new NotImplementedException();
-    }
+    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp) { }
 
-    public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
-    {
-        throw new NotImplementedException();
-    }
+    public void GetFriendsWithDirectMessages(string userNameOrId, int limit) { }
 
     public void RequestFriendship(string friendUserId)
     {
@@ -194,6 +189,9 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public void InitializeFriends(string json)
     {
+        if (IsInitialized)
+            return;
+
         IsInitialized = true;
 
         var msg = JsonUtility.FromJson<FriendshipInitializationMessage>(json);
@@ -291,6 +289,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public void AddFriendsWithDirectMessages(string json)
     {
         var friendsWithDMs = JsonUtility.FromJson<AddFriendsWithDirectMessagesPayload>(json);
+        TotalFriendsWithDirectMessagesCount = friendsWithDMs.totalFriendsWithDirectMessages;
         OnAddFriendsWithDirectMessages?.Invoke(friendsWithDMs.currentFriendsWithDirectMessages.ToList());
     }
 
