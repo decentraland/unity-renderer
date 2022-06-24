@@ -24,7 +24,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public int TotalFriendCount { get; private set; }
     public int TotalFriendRequestCount { get; private set; }
-    public int TotalFriendsWithDirectMessagesCount { get; private set; };
+    public int TotalFriendsWithDirectMessagesCount { get; private set; }
 
     public readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
