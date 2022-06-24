@@ -68,7 +68,7 @@ public class PrivateChatWindowController : IHUD
         view.OnMinimize += MinimizeView;
         view.OnUnfriend += Unfriend;
         view.OnFocused += HandleViewFocused;
-        view.OnScrollUpToTheTop += RequestOldConversations;
+        view.OnRequireMoreMessages += RequestOldConversations;
         
         closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
         closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
@@ -161,7 +161,7 @@ public class PrivateChatWindowController : IHUD
             View.OnMinimize -= MinimizeView;
             View.OnUnfriend -= Unfriend;
             View.OnFocused -= HandleViewFocused;
-            View.OnScrollUpToTheTop -= RequestOldConversations;
+            View.OnRequireMoreMessages -= RequestOldConversations;
             View.Dispose();
         }
     }

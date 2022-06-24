@@ -42,7 +42,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     }
 
     public event Action<bool> OnFocused;
-    public event Action OnScrollUpToTheTop;
+    public event Action OnRequireMoreMessages;
 
     public IChatHUDComponentView ChatHUD => chatView;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -68,7 +68,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
                 return;
 
             if (scrollPos.y > 0.995f)
-                OnScrollUpToTheTop?.Invoke();
+                OnRequireMoreMessages?.Invoke();
         });
     }
 
