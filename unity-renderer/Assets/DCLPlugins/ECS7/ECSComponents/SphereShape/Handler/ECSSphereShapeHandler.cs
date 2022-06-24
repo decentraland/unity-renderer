@@ -74,7 +74,7 @@ namespace DCL.ECSComponents
         {
             if (meshesInfo != null)
             {
-                dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
+                dataStore.RemoveShapeReady(entity.entityId);
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             }
             if(rendereable != null)
