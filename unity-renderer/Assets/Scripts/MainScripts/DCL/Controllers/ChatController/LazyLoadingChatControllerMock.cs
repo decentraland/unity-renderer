@@ -32,6 +32,8 @@ public class LazyLoadingChatControllerMock : IChatController
 
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp) => SimulateDelayedResponseFor_GetPrivateMessages(userId, limit, fromTimestamp);
 
+    public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) => controller.GetPrivateAllocatedEntriesByUser(userId);
+
     private async UniTask SimulateDelayedResponseFor_GetPrivateMessages(string userId, int limit, long fromTimestamp)
     {
         await UniTask.Delay(UnityEngine.Random.Range(1000, 3000));

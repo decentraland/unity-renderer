@@ -1,6 +1,7 @@
 using DCL.Interface;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ChatController : MonoBehaviour, IChatController
@@ -34,7 +35,14 @@ public class ChatController : MonoBehaviour, IChatController
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp) { WebInterface.GetPrivateMessages(userId, limit, fromTimestamp); }
 
     public List<ChatMessage> GetAllocatedEntries() { return new List<ChatMessage>(entries); }
-    
+
+    public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
+    {
+        return entries
+            .Where(x => (x.sender == userId || x.recipient == userId) && x.messageType == ChatMessage.Type.PRIVATE)
+            .ToList();
+    }
+
     [ContextMenu("Fake Public Message")]
     public void FakePublicMessage()
     {

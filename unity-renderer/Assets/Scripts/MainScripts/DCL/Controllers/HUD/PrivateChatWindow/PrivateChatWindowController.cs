@@ -337,9 +337,7 @@ public class PrivateChatWindowController : IHUD
         if (!lastTimestampRequestedByUser.ContainsKey(ConversationUserId))
             lastTimestampRequestedByUser.Add(ConversationUserId, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 
-        List<ChatMessage> currentPrivateMessages = chatController.GetAllocatedEntries()
-            .Where(x => (x.sender == ConversationUserId || x.recipient == ConversationUserId) && x.messageType == ChatMessage.Type.PRIVATE)
-            .ToList();
+        List<ChatMessage> currentPrivateMessages = chatController.GetPrivateAllocatedEntriesByUser(ConversationUserId);
 
         if (currentPrivateMessages.Count > 0)
         {
