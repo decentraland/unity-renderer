@@ -344,7 +344,6 @@ public class PrivateChatWindowController : IHUD
         if (currentPrivateMessages.Count > 0)
         {
             long minTimestamp = (long)currentPrivateMessages.Min(x => x.timestamp);
-            ChatMessage aaa = currentPrivateMessages.FirstOrDefault(x => x.timestamp == (ulong)minTimestamp);
 
             if (minTimestamp < lastTimestampRequestedByUser[ConversationUserId])
             {
