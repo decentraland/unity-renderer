@@ -43,6 +43,7 @@ public class PrivateChatWindowControllerShould
 
         chatController = Substitute.For<IChatController>();
         chatController.GetAllocatedEntries().ReturnsForAnyArgs(new List<ChatMessage>());
+        chatController.GetPrivateAllocatedEntriesByUser(Arg.Any<string>()).ReturnsForAnyArgs(new List<ChatMessage>());
 
         lastReadMessagesService = Substitute.For<ILastReadMessagesService>();
 
@@ -375,5 +376,6 @@ public class PrivateChatWindowControllerShould
                 {recipient = friendId});
         
         chatController.GetAllocatedEntries().ReturnsForAnyArgs(messages);
+        chatController.GetPrivateAllocatedEntriesByUser(friendId).ReturnsForAnyArgs(messages);
     }
 }
