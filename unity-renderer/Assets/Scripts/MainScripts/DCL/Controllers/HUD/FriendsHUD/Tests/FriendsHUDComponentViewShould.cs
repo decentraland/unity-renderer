@@ -305,39 +305,61 @@ public class FriendsHUDComponentViewShould
     [Test]
     public void ShowMoreFriendsToLoadHint()
     {
-        view.ShowMoreFriendsToLoadHint();
+        view.ShowMoreFriendsToLoadHint(3);
         
         Assert.IsTrue(view.friendsTab.loadMoreEntriesContainer.activeSelf);
+        Assert.AreEqual("3 friends hidden. Use the search bar to find them or scroll down to show more.", view.friendsTab.loadMoreEntriesLabel.text);
     }
 
     [Test]
     public void ShowMoreRequestsToLoadHint()
     {
-        view.ShowMoreRequestsToLoadHint();
+        view.ShowMoreRequestsToLoadHint(7);
         
         Assert.IsTrue(view.friendRequestsTab.loadMoreEntriesContainer.activeSelf);
+        Assert.AreEqual("7 requests hidden. Scroll down to show more.", view.friendRequestsTab.loadMoreEntriesLabel.text);
     }
 
-    [Test]
-    public void RequireMoreFriendEntries()
+    [UnityTest]
+    public IEnumerator RequireMoreFriendEntries()
     {
         var called = false;
         view.OnRequireMoreFriends += () => called = true;
         GivenFriendListTabFocused();
+        GivenApprovedFriend("bleh");
+        view.ShowMoreFriendsToLoadHint(6);
+
+        // wait until queued entry is created
+        yield return null;
+
+        view.friendsTab.scroll.onValueChanged.Invoke(Vector2.zero);
         
-        view.friendsTab.loadMoreEntriesButton.onClick.Invoke();
+        Assert.IsFalse(called);
+        
+        // wait for the internal delay
+        yield return new WaitForSeconds(1.5f);
         
         Assert.IsTrue(called);
     }
     
-    [Test]
-    public void RequireMoreRequestEntries()
+    [UnityTest]
+    public IEnumerator RequireMoreRequestEntries()
     {
         var called = false;
         view.OnRequireMoreFriendRequests += () => called = true;
         GivenRequestTabFocused();
+        GivenFriendRequestReceived("bleh");
+        view.ShowMoreRequestsToLoadHint(5);
         
-        view.friendRequestsTab.loadMoreEntriesButton.onClick.Invoke();
+        // wait until queued entry is created
+        yield return null;
+        
+        view.friendRequestsTab.scroll.onValueChanged.Invoke(Vector2.zero);
+        
+        Assert.IsFalse(called);
+        
+        // wait for the internal delay
+        yield return new WaitForSeconds(1.5f);
         
         Assert.IsTrue(called);
     }
