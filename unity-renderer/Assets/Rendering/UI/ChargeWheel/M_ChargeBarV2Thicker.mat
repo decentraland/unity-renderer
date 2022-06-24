@@ -48,13 +48,13 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _fillHead: 0.9301209
-    - _fillTail: 0
+    - _fillHead: 1
+    - _fillTail: 0.85890853
     - _fillTails: 0.5
     m_Colors:
     - Color_80b3604e6ba44946a43c678e0e7394af: {r: 1, g: 0, b: 0.26052088, a: 1}
     - Color_989feb42c0074e3caa405393ba881f21: {r: 0.9529411, g: 0, b: 0.03656221,
         a: 1}
     - _BackgroundColor: {r: 1, g: 1, b: 1, a: 1}
-    - _color01: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
+    - _color01: {r: 0.4117647, g: 0.12156863, b: 0.6627451, a: 1}
   m_BuildTextureStacks: []
