@@ -11,6 +11,7 @@ Shader "S_LoadingSpinner"
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
         [KeywordEnum(Sharp, Rounded)]ENUM_173FCA8E617C4725B6502C6FBE756CEC("RoundedCorners", Float) = 1
+
         [HideInInspector]_StencilComp("Stencil Comparison", Float) = 8
         [HideInInspector]_Stencil("Stencil ID", Float) = 0
         [HideInInspector]_StencilOp("Stencil Operation", Float) = 0
@@ -42,13 +43,14 @@ Shader "S_LoadingSpinner"
             ZWrite Off
             Stencil
             {
-            Ref[_Stencil]
-            Comp[_StencilComp]
-            Pass[_StencilOp]
-            ReadMask[_StencilReadMask]
-            WriteMask[_StencilWriteMask]
+                Ref[_Stencil]
+                Comp[_StencilComp]
+                Pass[_StencilOp]
+                ReadMask[_StencilReadMask]
+                WriteMask[_StencilWriteMask]
             }
             ColorMask[_ColorMask]
+
             // Debug
             // <None>
 
@@ -58,10 +60,11 @@ Shader "S_LoadingSpinner"
             HLSLPROGRAM
 
             // Pragmas
-            #pragma target 2.0
-        #pragma only_renderers gles gles3 glcore d3d11
+            #pragma target 4.5
+        #pragma exclude_renderers gles gles3 glcore
         #pragma multi_compile_instancing
         #pragma multi_compile_fog
+        #pragma multi_compile _ DOTS_INSTANCING_ON
         #pragma vertex vert
         #pragma fragment frag
 
@@ -396,6 +399,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0 = _color01;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_R_1 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[0];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_G_2 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[1];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_B_3 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[2];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_A_4 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[3];
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float2 _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4;
     Unity_PolarCoordinates_float(IN.uv0.xy, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4);
     #endif
@@ -720,8 +729,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2;
     Unity_Multiply_float((_Saturate_737696eb34c241d6b897441762787779_Out_1.xxxx), _SampleTexture2D_db4059a956484545adfbe855ead6e884_RGBA_0, _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2);
     #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float4 _Multiply_095c15108eac4b039bd50b69d7042144_Out_2;
+    Unity_Multiply_float((_Split_59fe34c75d414e64ad726de1e5f63fe1_A_4.xxxx), _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2, _Multiply_095c15108eac4b039bd50b69d7042144_Out_2);
+    #endif
     surface.BaseColor = (_Property_59090694f6954a52b5e6153e0ee8c1be_Out_0.xyz);
-    surface.Alpha = (_Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2).x;
+    surface.Alpha = (_Multiply_095c15108eac4b039bd50b69d7042144_Out_2).x;
     surface.AlphaClipThreshold = 0;
     return surface;
 }
@@ -805,9 +818,10 @@ Pass
         HLSLPROGRAM
 
         // Pragmas
-        #pragma target 2.0
-    #pragma only_renderers gles gles3 glcore d3d11
+        #pragma target 4.5
+    #pragma exclude_renderers gles gles3 glcore
     #pragma multi_compile_instancing
+    #pragma multi_compile _ DOTS_INSTANCING_ON
     #pragma vertex vert
     #pragma fragment frag
 
@@ -1136,6 +1150,15 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
 {
     SurfaceDescription surface = (SurfaceDescription)0;
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float4 _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0 = _color01;
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_R_1 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[0];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_G_2 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[1];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_B_3 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[2];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_A_4 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[3];
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float2 _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4;
     Unity_PolarCoordinates_float(IN.uv0.xy, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4);
     #endif
@@ -1460,7 +1483,11 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2;
     Unity_Multiply_float((_Saturate_737696eb34c241d6b897441762787779_Out_1.xxxx), _SampleTexture2D_db4059a956484545adfbe855ead6e884_RGBA_0, _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2);
     #endif
-    surface.Alpha = (_Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2).x;
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float4 _Multiply_095c15108eac4b039bd50b69d7042144_Out_2;
+    Unity_Multiply_float((_Split_59fe34c75d414e64ad726de1e5f63fe1_A_4.xxxx), _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2, _Multiply_095c15108eac4b039bd50b69d7042144_Out_2);
+    #endif
+    surface.Alpha = (_Multiply_095c15108eac4b039bd50b69d7042144_Out_2).x;
     surface.AlphaClipThreshold = 0;
     return surface;
 }
@@ -1544,9 +1571,10 @@ Pass
         HLSLPROGRAM
 
         // Pragmas
-        #pragma target 2.0
-    #pragma only_renderers gles gles3 glcore d3d11
+        #pragma target 4.5
+    #pragma exclude_renderers gles gles3 glcore
     #pragma multi_compile_instancing
+    #pragma multi_compile _ DOTS_INSTANCING_ON
     #pragma vertex vert
     #pragma fragment frag
 
@@ -1875,6 +1903,15 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
 {
     SurfaceDescription surface = (SurfaceDescription)0;
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float4 _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0 = _color01;
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_R_1 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[0];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_G_2 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[1];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_B_3 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[2];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_A_4 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[3];
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float2 _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4;
     Unity_PolarCoordinates_float(IN.uv0.xy, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4);
     #endif
@@ -2199,7 +2236,11 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2;
     Unity_Multiply_float((_Saturate_737696eb34c241d6b897441762787779_Out_1.xxxx), _SampleTexture2D_db4059a956484545adfbe855ead6e884_RGBA_0, _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2);
     #endif
-    surface.Alpha = (_Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2).x;
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float4 _Multiply_095c15108eac4b039bd50b69d7042144_Out_2;
+    Unity_Multiply_float((_Split_59fe34c75d414e64ad726de1e5f63fe1_A_4.xxxx), _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2, _Multiply_095c15108eac4b039bd50b69d7042144_Out_2);
+    #endif
+    surface.Alpha = (_Multiply_095c15108eac4b039bd50b69d7042144_Out_2).x;
     surface.AlphaClipThreshold = 0;
     return surface;
 }
@@ -2292,11 +2333,10 @@ output.uv0 = input.texCoord0;
         HLSLPROGRAM
 
         // Pragmas
-        #pragma target 4.5
-    #pragma exclude_renderers gles gles3 glcore
+        #pragma target 2.0
+    #pragma only_renderers gles gles3 glcore d3d11
     #pragma multi_compile_instancing
     #pragma multi_compile_fog
-    #pragma multi_compile _ DOTS_INSTANCING_ON
     #pragma vertex vert
     #pragma fragment frag
 
@@ -2631,6 +2671,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0 = _color01;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_R_1 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[0];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_G_2 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[1];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_B_3 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[2];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_A_4 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[3];
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float2 _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4;
     Unity_PolarCoordinates_float(IN.uv0.xy, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4);
     #endif
@@ -2955,8 +3001,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2;
     Unity_Multiply_float((_Saturate_737696eb34c241d6b897441762787779_Out_1.xxxx), _SampleTexture2D_db4059a956484545adfbe855ead6e884_RGBA_0, _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2);
     #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float4 _Multiply_095c15108eac4b039bd50b69d7042144_Out_2;
+    Unity_Multiply_float((_Split_59fe34c75d414e64ad726de1e5f63fe1_A_4.xxxx), _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2, _Multiply_095c15108eac4b039bd50b69d7042144_Out_2);
+    #endif
     surface.BaseColor = (_Property_59090694f6954a52b5e6153e0ee8c1be_Out_0.xyz);
-    surface.Alpha = (_Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2).x;
+    surface.Alpha = (_Multiply_095c15108eac4b039bd50b69d7042144_Out_2).x;
     surface.AlphaClipThreshold = 0;
     return surface;
 }
@@ -3040,10 +3090,9 @@ Pass
         HLSLPROGRAM
 
         // Pragmas
-        #pragma target 4.5
-    #pragma exclude_renderers gles gles3 glcore
+        #pragma target 2.0
+    #pragma only_renderers gles gles3 glcore d3d11
     #pragma multi_compile_instancing
-    #pragma multi_compile _ DOTS_INSTANCING_ON
     #pragma vertex vert
     #pragma fragment frag
 
@@ -3372,6 +3421,15 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
 {
     SurfaceDescription surface = (SurfaceDescription)0;
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float4 _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0 = _color01;
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_R_1 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[0];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_G_2 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[1];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_B_3 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[2];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_A_4 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[3];
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float2 _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4;
     Unity_PolarCoordinates_float(IN.uv0.xy, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4);
     #endif
@@ -3696,7 +3754,11 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2;
     Unity_Multiply_float((_Saturate_737696eb34c241d6b897441762787779_Out_1.xxxx), _SampleTexture2D_db4059a956484545adfbe855ead6e884_RGBA_0, _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2);
     #endif
-    surface.Alpha = (_Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2).x;
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float4 _Multiply_095c15108eac4b039bd50b69d7042144_Out_2;
+    Unity_Multiply_float((_Split_59fe34c75d414e64ad726de1e5f63fe1_A_4.xxxx), _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2, _Multiply_095c15108eac4b039bd50b69d7042144_Out_2);
+    #endif
+    surface.Alpha = (_Multiply_095c15108eac4b039bd50b69d7042144_Out_2).x;
     surface.AlphaClipThreshold = 0;
     return surface;
 }
@@ -3780,10 +3842,9 @@ Pass
         HLSLPROGRAM
 
         // Pragmas
-        #pragma target 4.5
-    #pragma exclude_renderers gles gles3 glcore
+        #pragma target 2.0
+    #pragma only_renderers gles gles3 glcore d3d11
     #pragma multi_compile_instancing
-    #pragma multi_compile _ DOTS_INSTANCING_ON
     #pragma vertex vert
     #pragma fragment frag
 
@@ -4112,6 +4173,15 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
 {
     SurfaceDescription surface = (SurfaceDescription)0;
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float4 _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0 = _color01;
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_R_1 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[0];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_G_2 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[1];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_B_3 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[2];
+    float _Split_59fe34c75d414e64ad726de1e5f63fe1_A_4 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[3];
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float2 _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4;
     Unity_PolarCoordinates_float(IN.uv0.xy, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4);
     #endif
@@ -4436,7 +4506,11 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2;
     Unity_Multiply_float((_Saturate_737696eb34c241d6b897441762787779_Out_1.xxxx), _SampleTexture2D_db4059a956484545adfbe855ead6e884_RGBA_0, _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2);
     #endif
-    surface.Alpha = (_Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2).x;
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float4 _Multiply_095c15108eac4b039bd50b69d7042144_Out_2;
+    Unity_Multiply_float((_Split_59fe34c75d414e64ad726de1e5f63fe1_A_4.xxxx), _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2, _Multiply_095c15108eac4b039bd50b69d7042144_Out_2);
+    #endif
+    surface.Alpha = (_Multiply_095c15108eac4b039bd50b69d7042144_Out_2).x;
     surface.AlphaClipThreshold = 0;
     return surface;
 }

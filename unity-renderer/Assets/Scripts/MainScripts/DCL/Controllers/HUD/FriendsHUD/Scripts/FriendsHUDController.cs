@@ -469,8 +469,7 @@ public class FriendsHUDController : IHUD
         if (View.FriendRequestCount >= friendsController.TotalFriendRequestCount)
             View.HideMoreRequestsToLoadHint();
         else
-            // TODO: solve hidden request count
-            View.ShowMoreRequestsToLoadHint();
+            View.ShowMoreRequestsToLoadHint(friendsController.TotalFriendRequestCount - View.FriendRequestCount);
     }
 
     private void ShowOrHideMoreFriendsToLoadHint()
@@ -478,7 +477,7 @@ public class FriendsHUDController : IHUD
         if (View.FriendCount >= friendsController.TotalFriendCount || searchingFriends)
             View.HideMoreFriendsToLoadHint();
         else
-            View.ShowMoreFriendsToLoadHint();
+            View.ShowMoreFriendsToLoadHint(friendsController.TotalFriendCount - View.FriendCount);
     }
 
     private void SearchFriends(string search)
@@ -493,7 +492,7 @@ public class FriendsHUDController : IHUD
 
         friendsController.GetFriendsAsync(search, MAX_SEARCHED_FRIENDS);
 
-        Dictionary<string, FriendEntryModel> FilterFriendsByUserNameAndUserId(string search)
+        Dictionary<string, FriendEntryModel> FilterFriendsByNameOrId(string search)
         {
             var regex = new Regex(search, RegexOptions.IgnoreCase);
 
@@ -507,7 +506,7 @@ public class FriendsHUDController : IHUD
             }).Take(MAX_SEARCHED_FRIENDS).ToDictionary(model => model.userId, model => model);
         }
 
-        View.FilterFriends(FilterFriendsByUserNameAndUserId(search));
+        View.FilterFriends(FilterFriendsByNameOrId(search));
         View.HideMoreFriendsToLoadHint();
         searchingFriends = true;
     }

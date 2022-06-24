@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
@@ -28,11 +29,11 @@ public class FriendsTabComponentView : BaseComponentView
     [SerializeField] private UserContextMenu contextMenuPanel;
     [SerializeField] private Model model;
     [SerializeField] private RectTransform viewport;
+    [SerializeField] internal ScrollRect scroll;
 
-    [Header("Load More Entries")] [SerializeField]
-    internal Button loadMoreEntriesButton;
-
+    [Header("Load More Entries")]
     [SerializeField] internal GameObject loadMoreEntriesContainer;
+    [SerializeField] internal TMP_Text loadMoreEntriesLabel;
 
     private readonly Dictionary<string, FriendEntryModel> creationQueue =
         new Dictionary<string, FriendEntryModel>();
@@ -47,6 +48,8 @@ public class FriendsTabComponentView : BaseComponentView
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
     private bool isSearchMode;
+    private Vector2 lastScrollPosition = Vector2.one;
+    private Coroutine requireMoreEntriesRoutine;
 
     public Dictionary<string, FriendEntry> Entries => entries;
     public int Count => entries.Count + creationQueue.Keys.Count(s => !entries.ContainsKey(s));
@@ -67,7 +70,7 @@ public class FriendsTabComponentView : BaseComponentView
 
     public event Action<FriendEntryModel> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
-    public event Action OnRequireMoreFriends;
+    public event Action OnRequireMoreEntries;
     
     public void Initialize(IChatController chatController,
         ILastReadMessagesService lastReadMessagesService,
@@ -88,7 +91,7 @@ public class FriendsTabComponentView : BaseComponentView
         searchBar.OnSearchText += HandleSearchInputChanged;
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
         contextMenuPanel.OnUnfriend += HandleUnfriendRequest;
-        loadMoreEntriesButton.onClick.AddListener(RequestMoreFriendEntries);
+        scroll.onValueChanged.AddListener(RequestMoreEntries);
 
         int SortByAlphabeticalOrder(FriendEntryBase u1, FriendEntryBase u2)
         {
@@ -110,7 +113,7 @@ public class FriendsTabComponentView : BaseComponentView
         searchBar.OnSearchText -= HandleSearchInputChanged;
         contextMenuPanel.OnBlock -= HandleFriendBlockRequest;
         contextMenuPanel.OnUnfriend -= HandleUnfriendRequest;
-        loadMoreEntriesButton.onClick.RemoveListener(RequestMoreFriendEntries);
+        scroll.onValueChanged.RemoveListener(RequestMoreEntries);
     }
 
     public void Expand()
@@ -372,8 +375,10 @@ public class FriendsTabComponentView : BaseComponentView
         UpdateLayout();
     }
     
-    public void ShowMoreFriendsToLoadHint()
+    public void ShowMoreFriendsToLoadHint(int hiddenCount)
     {
+        loadMoreEntriesLabel.text =
+            $"{hiddenCount} friends hidden. Use the search bar to find them or scroll down to show more.";
         loadMoreEntriesContainer.SetActive(true);
         UpdateLayout();
     }
@@ -500,7 +505,26 @@ public class FriendsTabComponentView : BaseComponentView
             searchResultsFriendList.Sort();
     }
 
-    private void RequestMoreFriendEntries() => OnRequireMoreFriends?.Invoke();
+    private void RequestMoreEntries(Vector2 position)
+    {
+        if (!loadMoreEntriesContainer.activeInHierarchy) return;
+        
+        if (position.y < 0.005f && lastScrollPosition.y >= 0.005f)
+        {
+            if (requireMoreEntriesRoutine != null)
+                StopCoroutine(requireMoreEntriesRoutine);
+            
+            requireMoreEntriesRoutine = StartCoroutine(WaitThenRequireMoreEntries());
+        }
+
+        lastScrollPosition = position;
+    }
+
+    private IEnumerator WaitThenRequireMoreEntries()
+    {
+        yield return new WaitForSeconds(1f);
+        OnRequireMoreEntries?.Invoke();
+    }
 
     [Serializable]
     private struct FriendListComponents
