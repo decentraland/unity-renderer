@@ -6,11 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using UnityEngine;
 
 public class PrivateChatWindowController : IHUD
 {
     internal const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD = 30;
     internal const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE = 10;
+    internal const float REQUEST_PRIVATE_MESSAGES_TIME_OUT = 5;
 
     public IPrivateChatComponentView View { get; private set; }
 
@@ -30,6 +32,7 @@ public class PrivateChatWindowController : IHUD
     internal Dictionary<string, long> lastTimestampRequestedByUser = new Dictionary<string, long>();
     internal bool isRequestingOldMessages = false;
     internal List<string> directMessagesAlreadyRequested = new List<string>();
+    internal float lastRequestTime = 0;
 
     internal string ConversationUserId { get; set; } = string.Empty;
 
@@ -116,6 +119,9 @@ public class PrivateChatWindowController : IHUD
 
         if (visible)
         {
+            View?.SetLoadingMessagesActive(false);
+            View?.SetOldMessagesLoadingActive(false);
+
             if (conversationProfile != null)
             {
                 var userStatus = friendsController.GetUserStatus(ConversationUserId);
@@ -243,8 +249,8 @@ public class PrivateChatWindowController : IHUD
         }
 
         isRequestingOldMessages = false;
-        View?.SetOldMessagesLoadingActive(false);
         View?.SetLoadingMessagesActive(false);
+        View?.SetOldMessagesLoadingActive(false);
     }
 
     private void Hide()
@@ -340,6 +346,7 @@ public class PrivateChatWindowController : IHUD
         View?.SetLoadingMessagesActive(true);
         chatController.GetPrivateMessages(userId, limit, fromTimestamp);
         directMessagesAlreadyRequested.Add(userId);
+        WaitForRequestTimeOutThenHideLoadingFeedback().Forget();
     }
 
     internal void RequestOldConversations()
@@ -367,7 +374,18 @@ public class PrivateChatWindowController : IHUD
                     minTimestamp);
 
                 lastTimestampRequestedByUser[ConversationUserId] = minTimestamp;
+                WaitForRequestTimeOutThenHideLoadingFeedback().Forget();
             }
         }
+    }
+
+    private async UniTaskVoid WaitForRequestTimeOutThenHideLoadingFeedback()
+    {
+        lastRequestTime = Time.realtimeSinceStartup;
+        
+        await UniTask.WaitUntil(() => (Time.realtimeSinceStartup - lastRequestTime) > REQUEST_PRIVATE_MESSAGES_TIME_OUT);
+
+        View?.SetLoadingMessagesActive(false);
+        View?.SetOldMessagesLoadingActive(false);
     }
 }
