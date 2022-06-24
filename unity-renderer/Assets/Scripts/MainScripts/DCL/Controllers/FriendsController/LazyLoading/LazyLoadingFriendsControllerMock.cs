@@ -13,7 +13,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
     private readonly FriendsController controller;
     private readonly UserProfileController userProfileController;
     
-    private int amountOfFriendsWithDirectMessagesRequested = 0;
+    private int amountOfFriendsWithDirectMessagesRequested;
     private int lastFriendWithDirectMessageIndex = -1;
 
     public event Action OnInitialized
