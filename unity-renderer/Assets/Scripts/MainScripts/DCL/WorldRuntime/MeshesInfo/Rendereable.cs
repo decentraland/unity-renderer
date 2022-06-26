@@ -26,6 +26,7 @@ namespace DCL
         public int totalTriangleCount = 0;
         public long animationClipSize = 0;
         public long meshDataSize = 0;
+        public bool isGLTFast = false;
 
         public bool Equals(Rendereable other)
         {

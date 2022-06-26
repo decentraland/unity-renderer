@@ -10,8 +10,10 @@ namespace DCL.Components
         public enum LoadingType
         {
             ASSET_BUNDLE_WITH_GLTF_FALLBACK,
+            ASSET_BUNDLE_WITH_OLD_GLTF_FALLBACK,
             ASSET_BUNDLE_ONLY,
             GLTF_ONLY,
+            OLD_GLTF,
             DEFAULT
         }
         
@@ -104,9 +106,15 @@ namespace DCL.Components
                 case LoadingType.GLTF_ONLY:
                     ProxyLoadGltf(targetUrl);
                     break;
+                case LoadingType.OLD_GLTF:
+                    LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent);
+                    break;
                 case LoadingType.DEFAULT:
                 case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
                     LoadAssetBundle(targetUrl, OnSuccessEvent, exception => ProxyLoadGltf(targetUrl));
+                    break;                
+                case LoadingType.ASSET_BUNDLE_WITH_OLD_GLTF_FALLBACK:
+                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent));
                     break;
             }
         }
@@ -133,6 +141,7 @@ namespace DCL.Components
         {
             UnloadAB();
             UnloadGLTF();
+            UnloadGLTFast();
         }
 
         void UnloadAB()
@@ -271,7 +280,6 @@ namespace DCL.Components
         }
         private void LoadGLTFast(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail)
         {
-            Debug.Log($"[GLTFast] loading {targetUrl}");
             if (gltfastPromise != null)
             {
                 UnloadGLTFast();
@@ -296,20 +304,7 @@ namespace DCL.Components
 #if UNITY_EDITOR
                 x.container.name = GLTF_GO_NAME_PREFIX + x.container.name;
 #endif
-                // TODO: FILL ME!!
-                var r = new Rendereable
-                {
-                    container = x.container,
-                    totalTriangleCount = 0,
-                    meshes = new HashSet<Mesh>(),
-                    renderers = new HashSet<Renderer>(),
-                    materials = new HashSet<Material>(),
-                    textures = new HashSet<Texture>(),
-                    meshToTriangleCount = new Dictionary<Mesh, int>(),
-                    animationClipSize = 0,
-                    meshDataSize = 0,
-                    animationClips = new HashSet<AnimationClip>()
-                };
+                Rendereable r = x.ToRendereable();
 
                 OnSuccessWrapper(r, OnSuccess);
             };

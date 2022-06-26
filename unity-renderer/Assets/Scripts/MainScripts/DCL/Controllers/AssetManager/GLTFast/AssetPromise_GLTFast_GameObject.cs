@@ -81,7 +81,7 @@ namespace DCL
         public IEnumerator LoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
         {
             PerformanceAnalytics.ABTracker.TrackLoading();
-            subPromise = new AssetPromise_GLTFast(contentUrl, hash, asset.container.transform, contentProvider);
+            subPromise = new AssetPromise_GLTFast(contentUrl, hash, contentProvider);
             bool success = false;
             Exception loadingException = null;
             subPromise.OnSuccessEvent += (x) => success = true;
@@ -98,7 +98,14 @@ namespace DCL
             
             if (success)
             {
-                subPromise.asset.Instantiate(asset.container.transform);
+                if (asset.container == null)
+                {
+                    Debug.LogError("this should not happen");
+                }
+                else
+                {
+                    subPromise.asset.Instantiate(asset.container.transform);
+                }
             }
 
             loadingCoroutine = null;

@@ -87,7 +87,7 @@ namespace DCL.Components
             for (int i = 0; i < colliders.Length; i++)
             {
                 if (colliders[i].sharedMaterial == null)
-                    colliders[i].sharedMesh = rendererList[i].GetComponent<MeshFilter>().sharedMesh;
+                    colliders[i].sharedMesh = TryGetSharedMesh(rendererList[i]);
             }
         }
 
@@ -99,7 +99,7 @@ namespace DCL.Components
             go.layer = PhysicsLayers.onPointerEventLayer; // to avoid character collisions with onclick collider
 
             var meshCollider = go.AddComponent<MeshCollider>();
-            meshCollider.sharedMesh = renderer.GetComponent<MeshFilter>().sharedMesh;
+            meshCollider.sharedMesh = TryGetSharedMesh(renderer);
             meshCollider.enabled = renderer.enabled;
 
             if (renderer.transform.parent != null)
@@ -114,6 +114,22 @@ namespace DCL.Components
             t.ResetLocalTRS();
 
             return meshCollider;
+        }
+        private static Mesh TryGetSharedMesh(Renderer renderer)
+        {
+            MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+
+            if (meshFilter == null)
+            {
+                SkinnedMeshRenderer skinnedMeshRenderer = renderer.GetComponent<SkinnedMeshRenderer>();
+
+                if (skinnedMeshRenderer != null)
+                {
+                    return skinnedMeshRenderer.sharedMesh;
+                }
+            }
+
+            return meshFilter.sharedMesh;
         }
 
         private bool AreCollidersCreated(Renderer[] rendererList)

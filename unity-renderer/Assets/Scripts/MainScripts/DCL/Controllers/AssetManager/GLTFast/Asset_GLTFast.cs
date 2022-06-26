@@ -5,7 +5,7 @@ namespace DCL
 {
     public class Asset_GLTFast : Asset
     {
-        private GltfImport gltfImport;
+        public GltfImport gltfImport;
         public void Setup(GltfImport importer)
         {
             gltfImport = importer;

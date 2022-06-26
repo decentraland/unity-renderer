@@ -137,22 +137,34 @@ namespace AvatarSystem
                 if (!(r is SkinnedMeshRenderer renderer))
                     continue;
 
-                string parentName = renderer.transform.parent.name.ToLower();
+                string name = "";
 
-                if (parentName.Contains("head"))
+                // Note (Kinerius) Since GLTFast builds the GLTF differently, we use the renderer name instead
+                if (rendereable.isGLTFast)
+                {
+                    name = renderer.name.ToLower();
+                }
+                else
+                {
+                    name = renderer.transform.parent.name.ToLower();
+                }
+
+                if (name.Contains("head"))
                     head = renderer;
-                else if (parentName.Contains("ubody"))
+                else if (name.Contains("ubody"))
                     upperBody = renderer;
-                else if (parentName.Contains("lbody"))
+                else if (name.Contains("lbody"))
                     lowerBody = renderer;
-                else if (parentName.Contains("feet"))
+                else if (name.Contains("feet"))
                     feet = renderer;
-                else if (parentName.Contains("eyes"))
+                else if (name.Contains("eyes"))
                     eyes = renderer;
-                else if (parentName.Contains("eyebrows"))
+                else if (name.Contains("eyebrows"))
                     eyebrows = renderer;
-                else if (parentName.Contains("mouth"))
+                else if (name.Contains("mouth"))
                     mouth = renderer;
+                else 
+                    Debug.LogWarning($"{r.name} is not a body part?", r);
             }
 
             return (head, upperBody, lowerBody, feet, eyes, eyebrows, mouth);

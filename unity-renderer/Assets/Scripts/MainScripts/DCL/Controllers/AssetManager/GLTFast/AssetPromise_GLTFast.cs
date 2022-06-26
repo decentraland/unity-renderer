@@ -13,19 +13,16 @@ namespace DCL
         public static int concurrentRequests = 0;
         
         bool requestRegistered = false;
-        private Transform containerTransform;
         private readonly ContentProvider contentProvider;
         private CancellationTokenSource cancellationSource;
         private readonly string fileName;
         private readonly string assetDirectoryPath;
         private IWebRequestController webRequestController => Environment.i.platform.webRequest;
-        public AssetPromise_GLTFast(string contentUrl, string hash,
-            Transform containerTransform = null, ContentProvider contentProvider = null) : base(contentUrl,
-            hash)
+        public AssetPromise_GLTFast(string contentUrl, string hash, ContentProvider contentProvider = null) 
+            : base(contentUrl, hash)
         {
-            this.containerTransform = containerTransform;
             this.contentProvider = contentProvider;
-            this.fileName = contentUrl.Substring(contentUrl.LastIndexOf('/') + 1);
+            fileName = contentUrl.Substring(contentUrl.LastIndexOf('/') + 1);
             assetDirectoryPath = URIHelper.GetDirectoryName(contentUrl);
         }
 
@@ -59,7 +56,6 @@ namespace DCL
             UniTask.Run(() => ImportGLTF(OnSuccess, OnFail, cancellationSource.Token), true, cancellationSource.Token);
         }
 
-        public delegate bool AssetIdConverter(string uri, out string id);
         bool FileToUrl(string fileName, out string hash) { return contentProvider.TryGetContentsUrl(assetDirectoryPath + fileName, out hash); }
         private async UniTaskVoid ImportGLTF( Action OnSuccess, Action<Exception> OnFail, CancellationToken cancellationSourceToken)
         {

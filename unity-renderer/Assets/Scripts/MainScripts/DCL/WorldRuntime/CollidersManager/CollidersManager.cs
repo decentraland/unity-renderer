@@ -133,7 +133,7 @@ namespace DCL
 
                 if (filterByColliderName)
                 {
-                    if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider"))
+                    if (!IsCollider(meshFilters[i].transform))
                         continue;
 
                     // we remove the Renderer of the '_collider' object, as its true renderer is in another castle
@@ -167,6 +167,13 @@ namespace DCL
                         entity.meshesInfo.colliders.Add(collider);
                 }
             }
+        }
+        private static bool IsCollider(Transform transform)
+        {
+            bool transformName = transform.name.ToLower().Contains("_collider");
+            bool parentName = transform.parent.name.ToLower().Contains("_collider");
+
+            return parentName || transformName;
         }
     }
 }
