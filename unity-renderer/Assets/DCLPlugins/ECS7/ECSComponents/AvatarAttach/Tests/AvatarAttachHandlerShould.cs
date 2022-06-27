@@ -24,14 +24,13 @@ namespace DCL.ECSComponents.Test
             handler = Substitute.ForPartsOf<AvatarAttachComponentHandler>(Substitute.For<IUpdateEventHandler>(), Substitute.For<ISceneBoundsChecker>());
 
             scene = Substitute.For<IParcelScene>();
-            scene.Configure().IsInsideSceneBoundaries(Arg.Any<Vector2Int>(), Arg.Any<float>()).Returns(true);
 
             entityGo = new GameObject("AvatarAttachHandlerShould");
             entityGo.transform.position = Vector3.zero;
             entityGo.transform.rotation = Quaternion.identity;
 
             entity = Substitute.For<IDCLEntity>();
-            entity.gameObject.Returns(entityGo);
+            entity.Configure().gameObject.Returns(entityGo);
         }
         
         [TearDown]
@@ -79,14 +78,14 @@ namespace DCL.ECSComponents.Test
 
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId });
             var newModel = new PBAvatarAttach() { AvatarId = userId };
-           
-            handler.OnComponentCreated(scene, entity);
-            
-            handler.OnComponentModelUpdated(scene,entity, newModel);
-            handler.Received(1).Detach();
+            handler.IsInsideScene(Arg.Any<Vector3>()).Returns(true);
 
+            handler.OnComponentCreated(scene, entity);
+
+            handler.OnComponentModelUpdated(scene, entity, newModel);
+            
             DataStore.i.player.otherPlayers.Remove(userId);
-            handler.Received(1).Detach();
+            handler.Received(2).Detach();
         }
 
         [Test]
@@ -95,11 +94,10 @@ namespace DCL.ECSComponents.Test
             const string userId = "Temptation";
 
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId });
-            var parcelScene = Substitute.For<IParcelScene>();
-          
-            handler.OnComponentCreated(parcelScene, entity);
-            handler.OnComponentModelUpdated(parcelScene,entity, new PBAvatarAttach() { AvatarId = userId });
-            handler.Received(1).Attach(Arg.Any<string>(), Arg.Any<AvatarAnchorPointIds>());
+
+            handler.OnComponentCreated(scene, entity);
+            handler.OnComponentModelUpdated(scene, entity, new PBAvatarAttach() { AvatarId = userId });
+            handler.Received(1).Attach(userId, Arg.Any<AvatarAnchorPointIds>());
             handler.Received(1).Attach(Arg.Any<IAvatarAnchorPoints>(), Arg.Any<AvatarAnchorPointIds>());
         }
 
@@ -113,6 +111,7 @@ namespace DCL.ECSComponents.Test
             IAvatarAnchorPoints anchorPoints = Substitute.For<IAvatarAnchorPoints>();
             anchorPoints.GetTransform(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, Vector3.one));
 
+            handler.IsInsideScene(Arg.Any<Vector3>()).Returns(true);
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId, anchorPoints = anchorPoints });
             handler.OnComponentCreated(scene, entity);
             
@@ -135,6 +134,7 @@ namespace DCL.ECSComponents.Test
 
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId, anchorPoints = anchorPoints });
 
+            handler.OnComponentCreated(scene,entity);
             handler.OnComponentModelUpdated(scene, entity, new PBAvatarAttach() { AvatarId = userId, AnchorPointId = 0 });
             handler.LateUpdate();
 

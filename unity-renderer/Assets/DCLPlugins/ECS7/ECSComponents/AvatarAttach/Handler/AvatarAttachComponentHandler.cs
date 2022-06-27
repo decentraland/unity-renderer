@@ -7,6 +7,7 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.ECSComponents;
 using DCL.Helpers;
+using NSubstitute;
 using UnityEngine;
 
 namespace DCL.ECSComponents
@@ -17,21 +18,21 @@ namespace DCL.ECSComponents
         
         internal PBAvatarAttach prevModel = null;
 
-        private IAvatarAnchorPoints anchorPoints;
-        private AvatarAnchorPointIds anchorPointId;
+        internal IAvatarAnchorPoints anchorPoints;
+        internal AvatarAnchorPointIds anchorPointId;
         private IDCLEntity entity;
         private IParcelScene scene;
 
         private Action componentUpdate = null;
 
-        private readonly GetAnchorPointsHandler getAnchorPointsHandler;
+        internal readonly GetAnchorPointsHandler getAnchorPointsHandler;
         private readonly IUpdateEventHandler updateEventHandler;
         internal ISceneBoundsChecker sceneBoundsChecker;
         
         private Vector2Int? currentCoords = null;
         private bool isInsideScene = true;
         private float lastBoundariesCheckTime = 0;
-        
+
         public AvatarAttachComponentHandler(IUpdateEventHandler updateEventHandler, ISceneBoundsChecker sceneBoundsChecker)
         {
             this.updateEventHandler = updateEventHandler;
@@ -70,9 +71,13 @@ namespace DCL.ECSComponents
             
             prevModel = model;
         }
-        
+
+        private bool disposed = false;
         public void Dispose()
         {
+            if (disposed)
+                return;
+            disposed = true;
             Detach();
             getAnchorPointsHandler.OnAvatarRemoved -= Detach;
             getAnchorPointsHandler.Dispose();
@@ -151,7 +156,7 @@ namespace DCL.ECSComponents
             lastBoundariesCheckTime = Time.unscaledTime;
         }
 
-        protected virtual void StartComponentUpdate()
+        private void StartComponentUpdate()
         {
             if (componentUpdate != null)
                 return;
@@ -161,7 +166,7 @@ namespace DCL.ECSComponents
             updateEventHandler?.AddListener(IUpdateEventHandler.EventType.LateUpdate, componentUpdate);
         }
 
-        protected virtual void StopComponentUpdate()
+        private void StopComponentUpdate()
         {
             if (componentUpdate == null)
                 return;
