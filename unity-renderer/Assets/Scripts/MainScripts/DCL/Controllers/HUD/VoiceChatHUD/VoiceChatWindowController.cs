@@ -9,7 +9,8 @@ using static DCL.SettingsCommon.GeneralSettings;
 
 public class VoiceChatWindowController : IHUD
 {
-    const float MUTE_STATUS_UPDATE_INTERVAL = 0.3f;
+    internal const string VOICE_CHAT_FEATURE_FLAG = "voice_chat";
+    internal const float MUTE_STATUS_UPDATE_INTERVAL = 0.3f;
     internal const string TALKING_MESSAGE_YOU = "You";
     internal const string TALKING_MESSAGE_JUST_YOU_IN_THE_VOICE_CHAT = "Just you in the voice chat";
     internal const string TALKING_MESSAGE_NOBODY_TALKING = "Nobody is talking";
@@ -18,6 +19,7 @@ public class VoiceChatWindowController : IHUD
     public IVoiceChatWindowComponentView VoiceChatWindowView => voiceChatWindowView;
     public IVoiceChatBarComponentView VoiceChatBarView => voiceChatBarView;
 
+    private bool isVoiceChatFFEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(VOICE_CHAT_FEATURE_FLAG);
     private UserProfile ownProfile => userProfileBridge.GetOwn();
 
     private IVoiceChatWindowComponentView voiceChatWindowView;
@@ -60,8 +62,12 @@ public class VoiceChatWindowController : IHUD
         this.dataStore = dataStore;
         this.settings = settings;
 
+        if (!isVoiceChatFFEnabled)
+            return;
+
         voiceChatWindowView = CreateVoiceChatWindowView();
         voiceChatWindowView.Hide(instant: true);
+
         voiceChatWindowView.OnClose += CloseView;
         voiceChatWindowView.OnJoinVoiceChat += JoinVoiceChat;
         voiceChatWindowView.OnGoToCrowd += GoToCrowd;
@@ -87,6 +93,9 @@ public class VoiceChatWindowController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        if (voiceChatWindowView == null)
+            return;
+
         if (visible)
             voiceChatWindowView.Show();
         else
@@ -114,7 +123,13 @@ public class VoiceChatWindowController : IHUD
         SetWhichPlayerIsTalking();
     }
 
-    public void SetVoiceChatEnabledByScene(bool enabled) { voiceChatBarView.SetVoiceChatEnabledByScene(enabled); }
+    public void SetVoiceChatEnabledByScene(bool enabled)
+    {
+        if (voiceChatBarView == null)
+            return;
+
+        voiceChatBarView.SetVoiceChatEnabledByScene(enabled);
+    }
 
     public void Dispose()
     {
@@ -123,13 +138,19 @@ public class VoiceChatWindowController : IHUD
         if (updateMuteStatusRoutine != null)
             CoroutineStarter.Stop(updateMuteStatusRoutine);
 
-        voiceChatWindowView.OnClose -= CloseView;
-        voiceChatWindowView.OnJoinVoiceChat -= JoinVoiceChat;
-        voiceChatWindowView.OnGoToCrowd -= GoToCrowd;
-        voiceChatWindowView.OnMuteAll -= OnMuteAllToggled;
-        voiceChatWindowView.OnMuteUser -= MuteUser;
-        voiceChatWindowView.OnAllowUsersFilterChange -= ChangeAllowUsersFilter;
-        voiceChatBarView.OnLeaveVoiceChat -= LeaveVoiceChat;
+        if (voiceChatWindowView != null)
+        {
+            voiceChatWindowView.OnClose -= CloseView;
+            voiceChatWindowView.OnJoinVoiceChat -= JoinVoiceChat;
+            voiceChatWindowView.OnGoToCrowd -= GoToCrowd;
+            voiceChatWindowView.OnMuteAll -= OnMuteAllToggled;
+            voiceChatWindowView.OnMuteUser -= MuteUser;
+            voiceChatWindowView.OnAllowUsersFilterChange -= ChangeAllowUsersFilter;
+        }
+
+        if (voiceChatBarView != null)
+            voiceChatBarView.OnLeaveVoiceChat -= LeaveVoiceChat;
+
         dataStore.player.otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
         dataStore.player.otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
         ownProfile.OnUpdate -= OnUserProfileUpdated;
