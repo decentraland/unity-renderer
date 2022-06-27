@@ -10,7 +10,7 @@ rm packages-microsoft-prod.deb
 apt-get update; \
 apt-get install -y apt-transport-https && \
 apt-get update && \
-apt-get install -y dotnet-sdk-3.1
+apt-get install -y dotnet-sdk-3.1 unzip
 
 cd ${PROJECT_PATH}/unity-renderer/
 mkdir -p reporter && cd reporter
