@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 PROJECT_PATH="$(pwd)/unity-renderer"
 echo "Uploading Benchmark Report for $PROJECT_PATH"
