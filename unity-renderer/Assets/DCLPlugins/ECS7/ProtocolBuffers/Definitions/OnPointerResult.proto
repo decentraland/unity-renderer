@@ -5,13 +5,12 @@ option (ecs_component_id) = 1065;
 import "common/Vector3.proto";
 
 message PBOnPointerResult {
-  string identifier = 1;
-  int64 entity_id = 2;
-  string button = 3;
-  string meshName = 4;
-  Vector3 origin = 5;
-  Vector3 direction = 6;
-  Vector3 point = 7;
-  Vector3 normal = 8;
-  float distance = 9;
+  int64 identifier = 1;
+  int32 button = 2;
+  string meshName = 3;
+  Vector3 origin = 4;
+  Vector3 direction = 5;
+  Vector3 point = 6;
+  Vector3 normal = 7;
+  float distance = 8;
 }

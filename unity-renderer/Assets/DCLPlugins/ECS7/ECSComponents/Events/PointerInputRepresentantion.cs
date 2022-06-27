@@ -24,10 +24,10 @@ namespace DCLPlugins.ECSComponents
 
         // This represents the model component, since we have several components model, we just use their data
         private bool showFeedback = false;
-        private string button;
+        private int button;
         private string hoverText;
         private float distance;
-        private string identifier;
+        private long identifier;
 
         public PointerInputRepresentantion(IDCLEntity entity,DataStore_ECS7 dataStore,PointerInputEventType type, IECSComponentWriter componentWriter)
         {
@@ -39,7 +39,7 @@ namespace DCLPlugins.ECSComponents
             Initializate(entity);
         }
 
-        public void SetData(IParcelScene scene, IDCLEntity entity, bool showFeedback, string button, float distance, string identifier, string hoverText)
+        public void SetData(IParcelScene scene, IDCLEntity entity, bool showFeedback, int button, float distance, long identifier, string hoverText)
         {
             this.scene = scene;
             eventEntity = entity;
@@ -63,7 +63,7 @@ namespace DCLPlugins.ECSComponents
         
         public void SetHoverState(bool hoverState)
         {
-            pointerEventHandler.SetFeedbackState(showFeedback, hoverState, button, hoverText);
+            pointerEventHandler.SetFeedbackState(showFeedback, hoverState, button.ToString(), hoverText);
         }
         
         public bool IsAtHoverDistance(float distance) => distance <= this.distance;
@@ -95,7 +95,7 @@ namespace DCLPlugins.ECSComponents
                 string meshName = pointerEventHandler.GetMeshName(hit.collider);
                 long entityId = entity.entityId;
 
-                PBOnPointerResult result = CommonUtils.GetPointerResultModel(buttonId.ToString(), identifier, entityId, meshName, ray, hit);
+                PBOnPointerResult result = CommonUtils.GetPointerResultModel((int)buttonId, identifier, meshName, ray, hit);
                 componentWriter.PutComponent(scene.sceneData.id, entityId, ComponentID.ON_POINTER_RESULT,
                     result);
             }
@@ -105,17 +105,7 @@ namespace DCLPlugins.ECSComponents
         
         public WebInterface.ACTION_BUTTON GetActionButton()
         {
-            switch (button)
-            {
-                case "PRIMARY":
-                    return WebInterface.ACTION_BUTTON.PRIMARY;
-                case "SECONDARY":
-                    return WebInterface.ACTION_BUTTON.SECONDARY;
-                case "POINTER":
-                    return WebInterface.ACTION_BUTTON.POINTER;
-                default:
-                    return WebInterface.ACTION_BUTTON.ANY;
-            }
+            return (WebInterface.ACTION_BUTTON) button;
         }
 
         public bool ShouldShowHoverFeedback()  => showFeedback;
@@ -124,7 +114,7 @@ namespace DCLPlugins.ECSComponents
         {
             return IsVisible() &&
                    IsAtHoverDistance(hit.distance) &&
-                   (button == "ANY" || buttonId.ToString() == button);
+                   (button == (int)WebInterface.ACTION_BUTTON.ANY || buttonId == (WebInterface.ACTION_BUTTON)button);
         }
         
         private void ConfigureColliders(long entityId, GameObject shapeGameObject)

@@ -25,9 +25,9 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChNPblBvaW50ZXJEb3duLnByb3RvEhBkZWNlbnRyYWxhbmQuZWNzInIKD1BC",
-            "T25Qb2ludGVyRG93bhISCgppZGVudGlmaWVyGAIgASgJEg4KBmJ1dHRvbhgD",
-            "IAEoCRISCgpob3Zlcl90ZXh0GAQgASgJEhAKCGRpc3RhbmNlGAUgASgCEhUK",
-            "DXNob3dfZmVlZGJhY2sYBiABKAhCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZw",
+            "T25Qb2ludGVyRG93bhISCgppZGVudGlmaWVyGAEgASgDEg4KBmJ1dHRvbhgC",
+            "IAEoBRISCgpob3Zlcl90ZXh0GAMgASgJEhAKCGRpc3RhbmNlGAQgASgCEhUK",
+            "DXNob3dfZmVlZGJhY2sYBSABKAhCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZw",
             "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
@@ -78,29 +78,29 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "identifier" field.</summary>
-    public const int IdentifierFieldNumber = 2;
-    private string identifier_ = "";
+    public const int IdentifierFieldNumber = 1;
+    private long identifier_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Identifier {
+    public long Identifier {
       get { return identifier_; }
       set {
-        identifier_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        identifier_ = value;
       }
     }
 
     /// <summary>Field number for the "button" field.</summary>
-    public const int ButtonFieldNumber = 3;
-    private string button_ = "";
+    public const int ButtonFieldNumber = 2;
+    private int button_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Button {
+    public int Button {
       get { return button_; }
       set {
-        button_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        button_ = value;
       }
     }
 
     /// <summary>Field number for the "hover_text" field.</summary>
-    public const int HoverTextFieldNumber = 4;
+    public const int HoverTextFieldNumber = 3;
     private string hoverText_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string HoverText {
@@ -111,7 +111,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "distance" field.</summary>
-    public const int DistanceFieldNumber = 5;
+    public const int DistanceFieldNumber = 4;
     private float distance_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public float Distance {
@@ -122,7 +122,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "show_feedback" field.</summary>
-    public const int ShowFeedbackFieldNumber = 6;
+    public const int ShowFeedbackFieldNumber = 5;
     private bool showFeedback_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool ShowFeedback {
@@ -156,8 +156,8 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Identifier.Length != 0) hash ^= Identifier.GetHashCode();
-      if (Button.Length != 0) hash ^= Button.GetHashCode();
+      if (Identifier != 0L) hash ^= Identifier.GetHashCode();
+      if (Button != 0) hash ^= Button.GetHashCode();
       if (HoverText.Length != 0) hash ^= HoverText.GetHashCode();
       if (Distance != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Distance);
       if (ShowFeedback != false) hash ^= ShowFeedback.GetHashCode();
@@ -174,24 +174,24 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Identifier.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteString(Identifier);
+      if (Identifier != 0L) {
+        output.WriteRawTag(8);
+        output.WriteInt64(Identifier);
       }
-      if (Button.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(Button);
+      if (Button != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(Button);
       }
       if (HoverText.Length != 0) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(26);
         output.WriteString(HoverText);
       }
       if (Distance != 0F) {
-        output.WriteRawTag(45);
+        output.WriteRawTag(37);
         output.WriteFloat(Distance);
       }
       if (ShowFeedback != false) {
-        output.WriteRawTag(48);
+        output.WriteRawTag(40);
         output.WriteBool(ShowFeedback);
       }
       if (_unknownFields != null) {
@@ -202,11 +202,11 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Identifier.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Identifier);
+      if (Identifier != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Identifier);
       }
-      if (Button.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Button);
+      if (Button != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Button);
       }
       if (HoverText.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(HoverText);
@@ -228,10 +228,10 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.Identifier.Length != 0) {
+      if (other.Identifier != 0L) {
         Identifier = other.Identifier;
       }
-      if (other.Button.Length != 0) {
+      if (other.Button != 0) {
         Button = other.Button;
       }
       if (other.HoverText.Length != 0) {
@@ -254,23 +254,23 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 18: {
-            Identifier = input.ReadString();
+          case 8: {
+            Identifier = input.ReadInt64();
+            break;
+          }
+          case 16: {
+            Button = input.ReadInt32();
             break;
           }
           case 26: {
-            Button = input.ReadString();
-            break;
-          }
-          case 34: {
             HoverText = input.ReadString();
             break;
           }
-          case 45: {
+          case 37: {
             Distance = input.ReadFloat();
             break;
           }
-          case 48: {
+          case 40: {
             ShowFeedback = input.ReadBool();
             break;
           }

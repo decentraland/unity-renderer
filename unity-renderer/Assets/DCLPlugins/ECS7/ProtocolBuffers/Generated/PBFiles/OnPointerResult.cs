@@ -25,16 +25,16 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChVPblBvaW50ZXJSZXN1bHQucHJvdG8SEGRlY2VudHJhbGFuZC5lY3MaFGNv",
-            "bW1vbi9WZWN0b3IzLnByb3RvItgBChFQQk9uUG9pbnRlclJlc3VsdBISCgpp",
-            "ZGVudGlmaWVyGAEgASgJEhEKCWVudGl0eV9pZBgCIAEoAxIOCgZidXR0b24Y",
-            "AyABKAkSEAoIbWVzaE5hbWUYBCABKAkSGAoGb3JpZ2luGAUgASgLMgguVmVj",
-            "dG9yMxIbCglkaXJlY3Rpb24YBiABKAsyCC5WZWN0b3IzEhcKBXBvaW50GAcg",
-            "ASgLMgguVmVjdG9yMxIYCgZub3JtYWwYCCABKAsyCC5WZWN0b3IzEhAKCGRp",
-            "c3RhbmNlGAkgASgCQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "bW1vbi9WZWN0b3IzLnByb3RvIsUBChFQQk9uUG9pbnRlclJlc3VsdBISCgpp",
+            "ZGVudGlmaWVyGAEgASgDEg4KBmJ1dHRvbhgCIAEoBRIQCghtZXNoTmFtZRgD",
+            "IAEoCRIYCgZvcmlnaW4YBCABKAsyCC5WZWN0b3IzEhsKCWRpcmVjdGlvbhgF",
+            "IAEoCzIILlZlY3RvcjMSFwoFcG9pbnQYBiABKAsyCC5WZWN0b3IzEhgKBm5v",
+            "cm1hbBgHIAEoCzIILlZlY3RvcjMSEAoIZGlzdGFuY2UYCCABKAJCFKoCEURD",
+            "TC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Vector3Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerResult), global::DCL.ECSComponents.PBOnPointerResult.Parser, new[]{ "Identifier", "EntityId", "Button", "MeshName", "Origin", "Direction", "Point", "Normal", "Distance" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerResult), global::DCL.ECSComponents.PBOnPointerResult.Parser, new[]{ "Identifier", "Button", "MeshName", "Origin", "Direction", "Point", "Normal", "Distance" }, null, null, null, null)
           }));
     }
     #endregion
@@ -67,7 +67,6 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public PBOnPointerResult(PBOnPointerResult other) : this() {
       identifier_ = other.identifier_;
-      entityId_ = other.entityId_;
       button_ = other.button_;
       meshName_ = other.meshName_;
       origin_ = other.origin_ != null ? other.origin_.Clone() : null;
@@ -85,39 +84,28 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "identifier" field.</summary>
     public const int IdentifierFieldNumber = 1;
-    private string identifier_ = "";
+    private long identifier_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Identifier {
+    public long Identifier {
       get { return identifier_; }
       set {
-        identifier_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "entity_id" field.</summary>
-    public const int EntityIdFieldNumber = 2;
-    private long entityId_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public long EntityId {
-      get { return entityId_; }
-      set {
-        entityId_ = value;
+        identifier_ = value;
       }
     }
 
     /// <summary>Field number for the "button" field.</summary>
-    public const int ButtonFieldNumber = 3;
-    private string button_ = "";
+    public const int ButtonFieldNumber = 2;
+    private int button_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Button {
+    public int Button {
       get { return button_; }
       set {
-        button_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        button_ = value;
       }
     }
 
     /// <summary>Field number for the "meshName" field.</summary>
-    public const int MeshNameFieldNumber = 4;
+    public const int MeshNameFieldNumber = 3;
     private string meshName_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string MeshName {
@@ -128,7 +116,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "origin" field.</summary>
-    public const int OriginFieldNumber = 5;
+    public const int OriginFieldNumber = 4;
     private global::Vector3 origin_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Vector3 Origin {
@@ -139,7 +127,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "direction" field.</summary>
-    public const int DirectionFieldNumber = 6;
+    public const int DirectionFieldNumber = 5;
     private global::Vector3 direction_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Vector3 Direction {
@@ -150,7 +138,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "point" field.</summary>
-    public const int PointFieldNumber = 7;
+    public const int PointFieldNumber = 6;
     private global::Vector3 point_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Vector3 Point {
@@ -161,7 +149,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "normal" field.</summary>
-    public const int NormalFieldNumber = 8;
+    public const int NormalFieldNumber = 7;
     private global::Vector3 normal_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Vector3 Normal {
@@ -172,7 +160,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "distance" field.</summary>
-    public const int DistanceFieldNumber = 9;
+    public const int DistanceFieldNumber = 8;
     private float distance_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public float Distance {
@@ -196,7 +184,6 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (Identifier != other.Identifier) return false;
-      if (EntityId != other.EntityId) return false;
       if (Button != other.Button) return false;
       if (MeshName != other.MeshName) return false;
       if (!object.Equals(Origin, other.Origin)) return false;
@@ -210,9 +197,8 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Identifier.Length != 0) hash ^= Identifier.GetHashCode();
-      if (EntityId != 0L) hash ^= EntityId.GetHashCode();
-      if (Button.Length != 0) hash ^= Button.GetHashCode();
+      if (Identifier != 0L) hash ^= Identifier.GetHashCode();
+      if (Button != 0) hash ^= Button.GetHashCode();
       if (MeshName.Length != 0) hash ^= MeshName.GetHashCode();
       if (origin_ != null) hash ^= Origin.GetHashCode();
       if (direction_ != null) hash ^= Direction.GetHashCode();
@@ -232,40 +218,36 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Identifier.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Identifier);
+      if (Identifier != 0L) {
+        output.WriteRawTag(8);
+        output.WriteInt64(Identifier);
       }
-      if (EntityId != 0L) {
+      if (Button != 0) {
         output.WriteRawTag(16);
-        output.WriteInt64(EntityId);
-      }
-      if (Button.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(Button);
+        output.WriteInt32(Button);
       }
       if (MeshName.Length != 0) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(26);
         output.WriteString(MeshName);
       }
       if (origin_ != null) {
-        output.WriteRawTag(42);
+        output.WriteRawTag(34);
         output.WriteMessage(Origin);
       }
       if (direction_ != null) {
-        output.WriteRawTag(50);
+        output.WriteRawTag(42);
         output.WriteMessage(Direction);
       }
       if (point_ != null) {
-        output.WriteRawTag(58);
+        output.WriteRawTag(50);
         output.WriteMessage(Point);
       }
       if (normal_ != null) {
-        output.WriteRawTag(66);
+        output.WriteRawTag(58);
         output.WriteMessage(Normal);
       }
       if (Distance != 0F) {
-        output.WriteRawTag(77);
+        output.WriteRawTag(69);
         output.WriteFloat(Distance);
       }
       if (_unknownFields != null) {
@@ -276,14 +258,11 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Identifier.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Identifier);
+      if (Identifier != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Identifier);
       }
-      if (EntityId != 0L) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(EntityId);
-      }
-      if (Button.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Button);
+      if (Button != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Button);
       }
       if (MeshName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MeshName);
@@ -314,13 +293,10 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.Identifier.Length != 0) {
+      if (other.Identifier != 0L) {
         Identifier = other.Identifier;
       }
-      if (other.EntityId != 0L) {
-        EntityId = other.EntityId;
-      }
-      if (other.Button.Length != 0) {
+      if (other.Button != 0) {
         Button = other.Button;
       }
       if (other.MeshName.Length != 0) {
@@ -364,51 +340,47 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            Identifier = input.ReadString();
+          case 8: {
+            Identifier = input.ReadInt64();
             break;
           }
           case 16: {
-            EntityId = input.ReadInt64();
+            Button = input.ReadInt32();
             break;
           }
           case 26: {
-            Button = input.ReadString();
-            break;
-          }
-          case 34: {
             MeshName = input.ReadString();
             break;
           }
-          case 42: {
+          case 34: {
             if (origin_ == null) {
               Origin = new global::Vector3();
             }
             input.ReadMessage(Origin);
             break;
           }
-          case 50: {
+          case 42: {
             if (direction_ == null) {
               Direction = new global::Vector3();
             }
             input.ReadMessage(Direction);
             break;
           }
-          case 58: {
+          case 50: {
             if (point_ == null) {
               Point = new global::Vector3();
             }
             input.ReadMessage(Point);
             break;
           }
-          case 66: {
+          case 58: {
             if (normal_ == null) {
               Normal = new global::Vector3();
             }
             input.ReadMessage(Normal);
             break;
           }
-          case 77: {
+          case 69: {
             Distance = input.ReadFloat();
             break;
           }

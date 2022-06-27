@@ -7,7 +7,7 @@ namespace DCL.ECSComponents
 {
     public static class CommonUtils 
     {
-        public static PBOnPointerResult GetPointerResultModel(string buttonId, string identifier, long entityId, string meshName, Ray ray, HitInfo hit)
+        public static PBOnPointerResult GetPointerResultModel(int buttonId, long identifier, string meshName, Ray ray, HitInfo hit)
         {
             PBOnPointerResult result = new PBOnPointerResult();
             result.Button = buttonId;
@@ -17,7 +17,6 @@ namespace DCL.ECSComponents
             result.Normal = UnityVectorToPBVector(hit.normal);
             result.Origin = UnityVectorToPBVector(ray.origin);
             result.Point = UnityVectorToPBVector(hit.point);
-            result.EntityId = entityId;
             result.MeshName = meshName;
             return result;
         }
