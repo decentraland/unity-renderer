@@ -31,6 +31,8 @@ export type RendererOptions = {
   onError?: (error: any) => void
   /** Legacy messaging system */
   onMessageLegacy: (type: string, payload: string) => void
+  /** scene binary messaging system */
+  onBinaryMessage?: (data: Uint8Array) => void
   /** used to append a ?v={} to the URL. Useful to debug cache issues */
   versionQueryParam?: string
   /** baseUrl where all the assets are deployed */
@@ -79,7 +81,7 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
   }
 
   const rendererVersion = options.versionQueryParam
-  const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy } = options
+  const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy, onBinaryMessage } = options
   const resolveWithBaseUrl = (file: string) =>
     new URL(file + (rendererVersion ? "?v=" + rendererVersion : ""), baseUrl).toString()
 
@@ -116,6 +118,8 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
 
     // This function is called from the unity renderer to send messages back to the scenes
     BinaryMessageFromEngine(data: Uint8Array) {
+      if (!!onBinaryMessage)
+        onBinaryMessage(data)
     },
   }
 

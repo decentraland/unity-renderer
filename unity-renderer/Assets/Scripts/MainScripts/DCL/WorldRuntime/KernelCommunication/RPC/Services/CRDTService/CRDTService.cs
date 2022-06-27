@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.CRDT;
@@ -65,74 +63,21 @@ namespace RPC.Services
             return defaultResponse;
         }
 
-        private static IEnumerator<UniTask<CRDTManyMessages>> CRDTNotificationStream(CRDTStreamRequest request, RPCContext context)
+        private static IEnumerator<CRDTManyMessages> CRDTNotificationStream(CRDTStreamRequest request, RPCContext context)
         {
-            return new CRDTStreamEnumerator(context);
-        }
-
-        class CRDTStreamEnumerator : IEnumerator<UniTask<CRDTManyMessages>>
-        {
-            private readonly RPCContext context;
-            private readonly CancellationTokenSource cancellationTokenSource;
-            private UniTaskCompletionSource<CRDTManyMessages> messageFuture;
-            private bool isDisposed = false;
-
-            public CRDTStreamEnumerator(RPCContext context)
+            while (true)
             {
-                this.context = context;
-                cancellationTokenSource = new CancellationTokenSource();
-            }
-
-            public bool MoveNext()
-            {
-                if (isDisposed)
+                if (context.crdtContext.notifications.Count > 0)
                 {
-                    return false;
-                }
-
-                if (messageFuture != null && !messageFuture.Task.GetAwaiter().IsCompleted)
-                {
-                    return true;
-                }
-
-                messageFuture = new UniTaskCompletionSource<CRDTManyMessages>();
-
-                UniTask.Void(async (ct) =>
-                {
-                    while (context.crdtContext.notifications.Count == 0 && !ct.IsCancellationRequested)
-                    {
-                        await UniTask.Yield();
-                    }
-
-                    if (ct.IsCancellationRequested)
-                    {
-                        return;
-                    }
-
                     var (sceneId, payload) = context.crdtContext.notifications.Dequeue();
-                    Resolve(sceneId, payload);
-                }, cancellationTokenSource.Token);
-
-                return true;
-            }
-
-            public void Reset() { }
-
-            public UniTask<CRDTManyMessages> Current => messageFuture.Task;
-
-            object IEnumerator.Current => Current;
-
-            public void Dispose()
-            {
-                cancellationTokenSource.Cancel();
-                isDisposed = true;
-            }
-
-            private void Resolve(string sceneId, byte[] payload)
-            {
-                reusableCrdtMessage.SceneId = sceneId;
-                reusableCrdtMessage.Payload = ByteString.CopyFrom(payload);
-                messageFuture.TrySetResult(reusableCrdtMessage);
+                    reusableCrdtMessage.SceneId = sceneId;
+                    reusableCrdtMessage.Payload = ByteString.CopyFrom(payload);
+                    yield return reusableCrdtMessage;
+                }
+                else
+                {
+                    yield return null;
+                }
             }
         }
     }

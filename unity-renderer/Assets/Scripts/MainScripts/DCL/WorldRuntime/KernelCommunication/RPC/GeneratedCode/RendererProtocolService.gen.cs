@@ -2,11 +2,12 @@
 // Type definitions for server implementations of ports.
 // package: 
 // file: RendererProtocol.proto
+
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Google.Protobuf;
-using rpc_csharp.protocol;
 using rpc_csharp;
+using rpc_csharp.protocol;
 
 public abstract class CRDTService<Context>
 {
@@ -25,7 +26,7 @@ public abstract class CRDTService<Context>
             var res = await sendCRDT(CRDTManyMessages.Parser.ParseFrom(payload), context);
             return res?.ToByteString();
         });
-        result.streamDefinition.Add("CRDTNotificationStream", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator(cRDTNotificationStream(CRDTStreamRequest.Parser.ParseFrom(payload), context)); });
+        result.streamDefinition.Add("CRDTNotificationStream", (payload, context) => { return new ProtocolHelpers.StreamEnumerator<CRDTManyMessages>(cRDTNotificationStream(CRDTStreamRequest.Parser.ParseFrom(payload), context)); });
 
         port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
     }

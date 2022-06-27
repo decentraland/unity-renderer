@@ -19,7 +19,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "7cf554f235e7e868857e73bd3785b0ebeb5935ae"
+      "hash": "f03c7c5a0fd0df1bd990cda0a490ac04d28e1721"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
@@ -183,14 +183,14 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework.performance": {
-        "version": "2.8.1-preview",
-        "depth": 0,
-        "source": "registry",
-        "dependencies": {
-            "com.unity.test-framework": "1.1.0",
-            "com.unity.modules.jsonserialize": "1.0.0"
-        },
-        "url": "https://packages.unity.com"
+      "version": "2.8.1-preview",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.testtools.codecoverage": {
       "version": "1.1.0",

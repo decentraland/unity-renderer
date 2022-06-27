@@ -7,7 +7,6 @@ using DCL.Controllers;
 using DCL.CRDT;
 using KernelCommunication;
 using RPC;
-using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
 public class ComponentCrdtWriteSystem : IDisposable
@@ -61,10 +60,6 @@ public class ComponentCrdtWriteSystem : IDisposable
 
     internal void ProcessMessages()
     {
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            RPCGlobalContext.context.crdtContext.notifications.Enqueue(($"PATO: -scene {DateTime.Now.Millisecond}", new byte[] { 0 }));
-        }
         if (queuedMessages.Count == 0)
         {
             return;
