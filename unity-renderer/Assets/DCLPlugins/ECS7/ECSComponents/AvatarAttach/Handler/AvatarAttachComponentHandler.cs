@@ -51,13 +51,16 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAvatarAttach model)
         {
+            // If is the same avatar, we skip
             if (model == null || (prevModel != null && prevModel.AvatarId != model.AvatarId))
                 return;
             
+            // Detach previous attachments
             Detach();
 
             if (!string.IsNullOrEmpty(model.AvatarId))
             {
+                // Attach the anchor point
                 Attach(model.AvatarId, (AvatarAnchorPointIds)model.AnchorPointId);
             }
 
