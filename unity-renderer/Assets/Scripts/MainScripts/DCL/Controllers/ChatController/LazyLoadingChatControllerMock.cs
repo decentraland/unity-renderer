@@ -30,7 +30,7 @@ public class LazyLoadingChatControllerMock : IChatController
 
     public void MarkMessagesAsSeen(string userId) => controller.MarkMessagesAsSeen(userId);
 
-    public void GetPrivateMessages(string userId, int limit, long fromTimestamp) => SimulateDelayedResponseFor_GetPrivateMessages(userId, limit, fromTimestamp);
+    public void GetPrivateMessages(string userId, int limit, long fromTimestamp) => SimulateDelayedResponseFor_GetPrivateMessages(userId, limit, fromTimestamp).Forget();
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) => controller.GetPrivateAllocatedEntriesByUser(userId);
 
