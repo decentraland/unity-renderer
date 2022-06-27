@@ -58,7 +58,6 @@ public class FriendsHUDController : IHUD
         view.OnRejectConfirmation += HandleRequestRejected;
         view.OnFriendRequestSent += HandleRequestSent;
         view.OnWhisper += HandleOpenWhisperChat;
-        view.OnDeleteConfirmation += HandleUnfriend;
         view.OnClose += HandleViewClosed;
         view.OnRequireMoreFriends += DisplayMoreFriends;
         view.OnRequireMoreFriendRequests += DisplayMoreFriendRequests;
