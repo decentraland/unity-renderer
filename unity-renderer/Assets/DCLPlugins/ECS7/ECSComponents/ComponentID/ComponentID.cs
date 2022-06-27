@@ -8,7 +8,7 @@ namespace DCL.ECS7
         public const int AUDIO_STREAM = 1021;
         public const int BOX_SHAPE = 1013;
         public const int CYLINDER_SHAPE = 1016;
-        public const int G_L_T_F_SHAPE = 1040;
+        public const int G_L_T_F_SHAPE = 1041;
         public const int N_F_T_SHAPE = 1040;
         public const int ON_POINTER_DOWN = 1060;
         public const int ON_POINTER_RESULT = 1065;
