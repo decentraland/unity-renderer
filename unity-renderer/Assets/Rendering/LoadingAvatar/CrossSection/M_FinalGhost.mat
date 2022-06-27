@@ -53,10 +53,10 @@ Material:
     - _RefractionScale: 0
     m_Colors:
     - Vector2_a88edb82dce1499a9920d0c1949e324b: {r: 0.05, g: 0.035, b: 0, a: 0}
-    - _Color: {r: 0, g: 2.71224, b: 3.441591, a: 1}
+    - _Color: {r: 0, g: 2.71224, b: 3.441591, a: 0}
     - _PatternSpeed: {r: 0.01, g: 0.02, b: 0, a: 0}
     - _RefractionSpeed: {r: 0.01, g: 0.02, b: 0, a: 0}
-    - _RevealNormal: {r: 0, g: 1, b: 0, a: 0}
+    - _RevealNormal: {r: 0, g: -1, b: 0, a: 0}
     - _RevealPosition: {r: 0, g: 2, b: 0, a: 0}
     - _SecondColor: {r: 0, g: 3.9999995, b: 3.7699447, a: 0.972549}
   m_BuildTextureStacks: []
