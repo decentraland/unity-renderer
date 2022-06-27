@@ -7,7 +7,6 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
-        internal const string AVATAR_LODS_FLAG_NAME = "avatar_lods";
         internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
         internal const float AVATARS_INVISIBILITY_DISTANCE = 1.75f;
         private const float MIN_DISTANCE_BETWEEN_NAMES_PIXELS = 70f;
@@ -23,35 +22,17 @@ namespace DCL
         private SimpleOverlappingTracker overlappingTracker = new SimpleOverlappingTracker(MIN_DISTANCE_BETWEEN_NAMES_PIXELS);
 
         internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
-        internal bool enabled;
         private UnityEngine.Camera mainCamera;
 
         public AvatarsLODController ()
         {
             gpuSkinningThrottlingCurve = Resources.Load<GPUSkinningThrottlingCurveSO>("GPUSkinningThrottlingCurve");
-            DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagChanged;
         }
 
         public void Initialize()
         {
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
-        }
-
-        private void OnFeatureFlagChanged(FeatureFlag current, FeatureFlag previous)
-        {
-            if (enabled == current.IsFeatureEnabled(AVATAR_LODS_FLAG_NAME))
-                return;
-
-            Initialize(current);
-        }
-
-        internal void Initialize(FeatureFlag current)
-        {
-            enabled = current.IsFeatureEnabled(AVATAR_LODS_FLAG_NAME);
-
-            if (!enabled)
-                return;
-
+            
             foreach (IAvatarLODController lodController in lodControllers.Values)
             {
                 lodController.Dispose();
@@ -70,7 +51,7 @@ namespace DCL
 
         public void RegisterAvatar(string id, Player player)
         {
-            if (!enabled || lodControllers.ContainsKey(id))
+            if (lodControllers.ContainsKey(id))
                 return;
 
             lodControllers.Add(id, CreateLodController(player));
@@ -89,9 +70,6 @@ namespace DCL
 
         public void Update()
         {
-            if (!enabled)
-                return;
-
             cameraPosition = CommonScriptableObjects.cameraPosition.Get();
             cameraForward = CommonScriptableObjects.cameraForward.Get();
 
@@ -184,7 +162,6 @@ namespace DCL
 
         public void Dispose()
         {
-            DataStore.i.featureFlags.flags.OnChange -= OnFeatureFlagChanged;
             foreach (IAvatarLODController lodController in lodControllers.Values)
             {
                 lodController.Dispose();
