@@ -26,7 +26,12 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
     public float fadeInSpeed;
     Material _ghostMaterial;
 
-    float startH, startS, startV, endH, endS, endV;
+    private float startH;
+    private float startS;
+    private float startV;
+    private float endH;
+    private float endS;
+    private float endV;
 
     public List<Renderer> targets = new List<Renderer>();
     List<Material> _materials = new List<Material>();

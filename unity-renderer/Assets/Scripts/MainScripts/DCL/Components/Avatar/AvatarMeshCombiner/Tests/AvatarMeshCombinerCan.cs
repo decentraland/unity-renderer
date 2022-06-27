@@ -76,9 +76,9 @@ public class AvatarMeshCombinerCan
 
         for (int i = 0; i < bonesTransforms.Length; i++)
         {
-            Assert.IsTrue(bonesTransforms[i].pos == firstRenderer.bones[i].transform.position);
-            Assert.IsTrue(bonesTransforms[i].rot == firstRenderer.bones[i].transform.rotation);
-            Assert.IsTrue(bonesTransforms[i].scale == firstRenderer.bones[i].transform.localScale);
+            Assert.AreEqual(bonesTransforms[i].pos, firstRenderer.bones[i].transform.position);
+            Assert.AreEqual(bonesTransforms[i].rot, firstRenderer.bones[i].transform.rotation);
+            Assert.AreEqual(bonesTransforms[i].scale, firstRenderer.bones[i].transform.localScale);
         }
 
         keeper.Forget(promise);
@@ -114,8 +114,8 @@ public class AvatarMeshCombinerCan
 
         for (int i = 0; i < bonesTransforms.Length; i++)
         {
-            Assert.IsTrue(bonesTransforms[i].pos != firstRenderer.bones[i].transform.position);
-            Assert.IsTrue(bonesTransforms[i].rot != firstRenderer.bones[i].transform.rotation);
+            Assert.AreNotEqual(bonesTransforms[i].pos, firstRenderer.bones[i].transform.position);
+            Assert.AreNotEqual(bonesTransforms[i].rot, firstRenderer.bones[i].transform.rotation);
         }
 
         keeper.Forget(promise);
