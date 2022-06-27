@@ -3,6 +3,7 @@ using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.Interface;
+using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using SignupHUD;
 using SocialFeaturesAnalytics;
@@ -111,10 +112,14 @@ public class HUDFactory : IHUDFactory
                 hudElement = new HelpAndSupportHUDController();
                 break;
             case HUDElementID.USERS_AROUND_LIST_HUD:
-                hudElement = new UsersAroundListHUDController(
+                hudElement = new VoiceChatWindowController(
+                    new UserProfileWebInterfaceBridge(),
+                    FriendsController.i,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
+                        new UserProfileWebInterfaceBridge()),
+                    DataStore.i,
+                    Settings.i);
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();

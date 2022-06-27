@@ -263,7 +263,6 @@ public class PrivateChatWindowController : IHUD
 
     private void Unfriend(string friendId)
     {
-        friendsController.RemoveFriend(friendId);
         Hide();
     }
 
