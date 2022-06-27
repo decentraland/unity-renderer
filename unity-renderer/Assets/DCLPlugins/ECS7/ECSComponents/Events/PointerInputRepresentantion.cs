@@ -59,33 +59,33 @@ namespace DCLPlugins.ECSComponents
 
         public Transform GetTransform() { return eventEntity.gameObject.transform; }
         
-        public IDCLEntity entity => eventEntity;
+        IDCLEntity IPointerEvent.entity => eventEntity;
         
-        public void SetHoverState(bool hoverState)
+        void IPointerEvent.SetHoverState(bool hoverState)
         {
             pointerEventHandler.SetFeedbackState(showFeedback, hoverState, button.ToString(), hoverText);
         }
         
-        public bool IsAtHoverDistance(float distance) => distance <= this.distance;
+        public bool /*IPointerEvent*/ IsAtHoverDistance(float distance) => distance <= this.distance;
         
-        public bool IsVisible()
+        public bool /*IPointerEvent*/ IsVisible()
         {
-            if (entity == null)
+            if (eventEntity == null)
                 return false;
 
             bool isVisible = false;
 
-            if (entity.meshesInfo != null &&
-                entity.meshesInfo.renderers != null &&
-                entity.meshesInfo.renderers.Length > 0)
+            if (eventEntity.meshesInfo != null &&
+                eventEntity.meshesInfo.renderers != null &&
+                eventEntity.meshesInfo.renderers.Length > 0)
             {
-                isVisible = entity.meshesInfo.renderers[0].enabled;
+                isVisible = eventEntity.meshesInfo.renderers[0].enabled;
             }
 
             return isVisible;
         }
         
-        public void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
+        void IPointerInputEvent.Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
             if (!IsVisible())
                 return;
@@ -93,22 +93,22 @@ namespace DCLPlugins.ECSComponents
             if (ShouldReportEvent(buttonId, hit))
             {
                 string meshName = pointerEventHandler.GetMeshName(hit.collider);
-                long entityId = entity.entityId;
+                long entityId = eventEntity.entityId;
 
-                PBOnPointerResult result = CommonUtils.GetPointerResultModel((int)buttonId, identifier, meshName, ray, hit);
+                PBOnPointerResult result = ProtoConvertUtils.GetPointerResultModel((int)buttonId, identifier, meshName, ray, hit);
                 componentWriter.PutComponent(scene.sceneData.id, entityId, ComponentID.ON_POINTER_RESULT,
                     result);
             }
         }
         
-        public PointerInputEventType GetEventType() {  return type; }
+        PointerInputEventType IPointerInputEvent.GetEventType() {  return type; }
         
-        public WebInterface.ACTION_BUTTON GetActionButton()
+        WebInterface.ACTION_BUTTON IPointerInputEvent.GetActionButton()
         {
             return (WebInterface.ACTION_BUTTON) button;
         }
 
-        public bool ShouldShowHoverFeedback()  => showFeedback;
+        bool IPointerInputEvent.ShouldShowHoverFeedback()  => showFeedback;
         
         private bool ShouldReportEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
         {
@@ -119,7 +119,7 @@ namespace DCLPlugins.ECSComponents
         
         private void ConfigureColliders(long entityId, GameObject shapeGameObject)
         {
-            pointerEventHandler.SetColliders(entity);
+            pointerEventHandler.SetColliders(eventEntity);
         }
         
         private void Initializate(IDCLEntity entity)

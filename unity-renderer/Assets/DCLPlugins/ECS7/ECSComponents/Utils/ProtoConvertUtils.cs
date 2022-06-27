@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public static class CommonUtils 
+    public static class ProtoConvertUtils 
     {
         public static PBOnPointerResult GetPointerResultModel(int buttonId, long identifier, string meshName, Ray ray, HitInfo hit)
         {

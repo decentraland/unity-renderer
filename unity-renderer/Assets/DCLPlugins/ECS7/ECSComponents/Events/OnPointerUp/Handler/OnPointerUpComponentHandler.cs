@@ -38,8 +38,11 @@ namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown.OnPointerUp.Handler
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBOnPointerUp model)
         {
             representantion.SetData(scene, entity, model.ShowFeedback, model.Button, model.Distance, model.Identifier, model.HoverText);
-            if(!isAdded)
-                dataStore.AddPointerEvent(entity.entityId,representantion);
+            if (!isAdded)
+            {
+                isAdded = true;
+                dataStore.AddPointerEvent(entity.entityId, representantion);
+            }
         }
     }
 }

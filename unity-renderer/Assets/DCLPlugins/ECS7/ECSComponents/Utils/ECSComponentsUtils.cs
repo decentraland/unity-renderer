@@ -24,7 +24,12 @@ public static class ECSComponentsUtils
         {
             renderer.enabled = isVisible;
         }
-          
+
+        UpdateMeshInfoColliders(withCollisions, isPointerBlocker, meshesInfo);
+    }
+
+    public static void UpdateMeshInfoColliders(bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
+    {
         int colliderLayer = isPointerBlocker ? PhysicsLayers.onPointerEventLayer : PhysicsLayers.defaultLayer;
         
         foreach (Collider collider in meshesInfo.colliders)

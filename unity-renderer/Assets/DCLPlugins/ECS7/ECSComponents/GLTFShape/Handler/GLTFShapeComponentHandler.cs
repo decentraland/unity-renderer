@@ -119,13 +119,7 @@ namespace DCL.ECSComponents
             meshesInfo.meshRootGameObject.SetActive(model.Visible);
             
             // Set collisions and pointer blocker
-            int colliderLayer = model.IsPointerBlocker ? PhysicsLayers.onPointerEventLayer : PhysicsLayers.defaultLayer;
-        
-            foreach (Collider collider in meshesInfo.colliders)
-            {
-                collider.enabled = model.WithCollisions;
-                collider.gameObject.layer = colliderLayer;
-            }
+            ECSComponentsUtils.UpdateMeshInfoColliders(model.WithCollisions, model.IsPointerBlocker, meshesInfo);
         }
 
         internal void DisposeMesh(IParcelScene scene)

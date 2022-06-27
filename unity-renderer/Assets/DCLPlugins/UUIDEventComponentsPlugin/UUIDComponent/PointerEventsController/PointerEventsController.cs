@@ -429,15 +429,15 @@ namespace DCL
                 else
                     hitGameObject = collider.gameObject;
 
-                IPointerInputEvent[] events;
+                IList<IPointerInputEvent> events;
                 
                 // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
                 if (DataStore.i.ecs7.entityEvents.TryGetValue(info.entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
-                    events  = pointerInputEvent.ToArray();
+                    events  = pointerInputEvent;
                 else
                     events = hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
 
-                for (var i = 0; i < events.Length; i++)
+                for (var i = 0; i < events.Count; i++)
                 {
                     IPointerInputEvent e = events[i];
                     bool areSameEntity = AreSameEntity(e, info);
