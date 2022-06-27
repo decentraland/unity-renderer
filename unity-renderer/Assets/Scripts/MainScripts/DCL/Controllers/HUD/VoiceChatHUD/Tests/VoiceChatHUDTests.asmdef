@@ -16,7 +16,8 @@
         "DataStore",
         "IntegrationTestSuite",
         "BaseVariable",
-        "PlayerModels"
+        "PlayerModels",
+        "FeatureFlagData"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

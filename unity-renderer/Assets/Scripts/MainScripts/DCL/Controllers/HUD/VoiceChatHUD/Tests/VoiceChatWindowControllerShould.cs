@@ -34,6 +34,10 @@ public class VoiceChatWindowControllerShould
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         dataStore = new DataStore();
 
+        FeatureFlag testFeatureFlag = new FeatureFlag();
+        testFeatureFlag.flags.Add("voice_chat", true);
+        dataStore.featureFlags.flags.Set(testFeatureFlag);
+
         Settings.CreateSharedInstance(new DefaultSettingsFactory());
         voiceChatWindowController.Initialize(userProfileBridge, friendsController, socialAnalytics, dataStore, Settings.i);
     }
