@@ -52,7 +52,7 @@ namespace DCL.ECSComponents
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAvatarAttach model)
         {
             // If is the same avatar, we skip
-            if (model == null || (prevModel != null && prevModel.AvatarId != model.AvatarId))
+            if (model == null || (prevModel != null && prevModel.AvatarId == model.AvatarId))
                 return;
             
             // Detach previous attachments
