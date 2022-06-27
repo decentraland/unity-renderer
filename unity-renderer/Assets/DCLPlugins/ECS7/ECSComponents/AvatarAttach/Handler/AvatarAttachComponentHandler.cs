@@ -51,30 +51,21 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAvatarAttach model)
         {
-            if (model == null)
-            {
+            if (model == null || (prevModel != null && prevModel.AvatarId != model.AvatarId))
                 return;
-            }
-
-            if (prevModel == null || prevModel.AvatarId != model.AvatarId)
-            {
-                Detach();
-
-                if (!string.IsNullOrEmpty(model.AvatarId))
-                {
-                    Attach(model.AvatarId, (AvatarAnchorPointIds)model.AnchorPointId);
-                }
-            }
             
+            Detach();
+
+            if (!string.IsNullOrEmpty(model.AvatarId))
+            {
+                Attach(model.AvatarId, (AvatarAnchorPointIds)model.AnchorPointId);
+            }
+
             prevModel = model;
         }
-
-        private bool disposed = false;
+        
         public void Dispose()
         {
-            if (disposed)
-                return;
-            disposed = true;
             Detach();
             getAnchorPointsHandler.OnAvatarRemoved -= Detach;
             getAnchorPointsHandler.Dispose();
@@ -138,10 +129,10 @@ namespace DCL.ECSComponents
         {
             bool result = isInsideScene;
             Vector2Int coords = Utils.WorldToGridPosition(position);
+            
             if (currentCoords == null || currentCoords != coords)
-            {
                 result = scene.IsInsideSceneBoundaries(coords, position.y);
-            }
+            
             currentCoords = coords;
             isInsideScene = result;
             return result;
