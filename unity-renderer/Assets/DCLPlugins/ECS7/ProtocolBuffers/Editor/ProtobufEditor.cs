@@ -225,6 +225,7 @@ namespace DCL.Protobuf
             try
             {
                 List<ProtoComponent> components = GetComponents();
+                components = components.OrderBy( component => component.componentId).ToList();
 
                 if (Directory.Exists(tempOutputPath))
                 {
@@ -284,6 +285,15 @@ namespace DCL.Protobuf
             foreach (ProtoComponent component in components )
             {
                 string componentUpperCaseName = ProtobufEditorHelper.ToSnakeCase(component.componentName).ToUpper();
+                
+                // Special case where NFT is created from NFTProto, instead of N_F_T_SHAPE we set NFT_SHAPE
+                if (componentUpperCaseName.Contains("N_F_T"))
+                    componentUpperCaseName = "NFT_SHAPE";
+               
+                // Special case where GLTF is created from GLTFProto, instead of G_L_T_F_SHAPE we set GLTF_SHAPE
+                if (componentUpperCaseName.Contains("G_L_T_F"))
+                    componentUpperCaseName = "GLTF_SHAPE";
+                
                 componentCsFileContent += $"        public const int {componentUpperCaseName} = {component.componentId.ToString()};\n";
             }
             componentCsFileContent += "    }\n}\n";
