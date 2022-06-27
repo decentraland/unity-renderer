@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL.Chat.Channels;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -157,6 +158,7 @@ namespace DCL
             gameObject.AddComponent<CatalogController>();
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<ChatController>();
+            gameObject.AddComponent<ChatChannelsController>();
             gameObject.AddComponent<FriendsController>();
             gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();
