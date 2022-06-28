@@ -12,15 +12,50 @@ namespace DCL.Chat.Channels
         private readonly ChatController controller;
         private readonly UserProfileController userProfileController;
 
-        public event Action<ChatMessage> OnAddMessage;
-        public event Action OnInitialized;
-        public event Action<Channel> OnChannelUpdated;
-        public event Action<Channel> OnChannelJoined;
-        public event Action<string, string> OnJoinChannelError;
-        public event Action<string> OnChannelLeft;
-        public event Action<string, string> OnChannelLeaveError;
-        public event Action<string, string> OnMuteChannelError;
+        public event Action<ChatMessage> OnAddMessage
+        {
+            add => controller.OnAddMessage += value;
+            remove => controller.OnAddMessage -= value;
+        }
+        public event Action OnInitialized
+        {
+            add => controller.OnInitialized += value;
+            remove => controller.OnInitialized -= value;
+        }
+        
+        public event Action<Channel> OnChannelUpdated
+        {
+            add => controller.OnChannelUpdated += value;
+            remove => controller.OnChannelUpdated -= value;
+        }
+        public event Action<Channel> OnChannelJoined
+        {
+            add => controller.OnChannelJoined += value;
+            remove => controller.OnChannelJoined -= value;
+        }
+        public event Action<string, string> OnJoinChannelError
+        {
+            add => controller.OnJoinChannelError += value;
+            remove => controller.OnJoinChannelError -= value;
+        }
+        public event Action<string> OnChannelLeft
+        {
+            add => controller.OnChannelLeft += value;
+            remove => controller.OnChannelLeft -= value;
+        }
+        public event Action<string, string> OnChannelLeaveError
+        {
+            add => controller.OnChannelLeaveError += value;
+            remove => controller.OnChannelLeaveError -= value;
+        }
+        public event Action<string, string> OnMuteChannelError
+        {
+            add => controller.OnMuteChannelError += value;
+            remove => controller.OnMuteChannelError -= value;
+        }
 
+        public int TotalJoinedChannelCount => 46;
+        
         public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
 
         public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) =>
@@ -116,8 +151,10 @@ namespace DCL.Chat.Channels
             
             var characters = new[]
                 {'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+            var max = Mathf.Min(TotalJoinedChannelCount, skip + limit);
             
-            for (var i = skip; i < skip + limit; i++)
+            for (var i = skip; i < max; i++)
             {
                 var channelId = "";
                 for (var x = 0; x < 4; x++)

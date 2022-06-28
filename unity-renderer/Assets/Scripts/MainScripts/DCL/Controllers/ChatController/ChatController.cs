@@ -11,6 +11,7 @@ public class ChatController : MonoBehaviour, IChatController
     public static ChatController i { get; private set; }
 
     private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
+    private readonly List<ChatMessage> entries = new List<ChatMessage>();
 
     public event Action OnInitialized;
     public event Action<Channel> OnChannelUpdated;
@@ -20,13 +21,13 @@ public class ChatController : MonoBehaviour, IChatController
     public event Action<string, string> OnChannelLeaveError;
     public event Action<string, string> OnMuteChannelError;
     public event Action<ChatMessage> OnAddMessage;
+    
+    public int TotalJoinedChannelCount => throw new NotImplementedException();
 
     public void Awake()
     {
         i = this;
     }
-
-    [NonSerialized] public List<ChatMessage> entries = new List<ChatMessage>();
 
     // called by kernel
     [UsedImplicitly]
@@ -42,7 +43,7 @@ public class ChatController : MonoBehaviour, IChatController
     {
         var msg = JsonUtility.FromJson<ChannelInfoPayload>(payload);
         var channelId = msg.channelId;
-        var channel = new Channel(channelId, msg.unseenMessages, msg.memberCount, msg.joined, msg.muted);
+        var channel = new Channel(channelId, msg.unseenMessages, msg.memberCount, msg.joined, msg.muted, msg.description);
         var justLeft = false;
 
         if (channels.ContainsKey(channelId))
@@ -64,7 +65,7 @@ public class ChatController : MonoBehaviour, IChatController
     public void JoinChannelConfirmation(string payload)
     {
         var msg = JsonUtility.FromJson<ChannelInfoPayload>(payload);
-        var channel = new Channel(msg.channelId, msg.unseenMessages, msg.memberCount, msg.joined, msg.muted);
+        var channel = new Channel(msg.channelId, msg.unseenMessages, msg.memberCount, msg.joined, msg.muted, msg.description);
         OnChannelJoined?.Invoke(channel);
         OnChannelUpdated?.Invoke(channel);
     }

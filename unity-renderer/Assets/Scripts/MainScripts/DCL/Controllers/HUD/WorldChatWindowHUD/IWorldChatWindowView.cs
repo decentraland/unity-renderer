@@ -14,6 +14,7 @@ public interface IWorldChatWindowView
     RectTransform Transform { get; }
     bool IsActive { get; }
     int PrivateChannelsCount { get; }
+    int PublicChannelsCount { get; }
 
     void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService);
     void Show();
@@ -21,6 +22,7 @@ public interface IWorldChatWindowView
     void SetPrivateChat(PrivateChatModel model);
     void RemovePrivateChat(string userId);
     void SetPublicChannel(PublicChatChannelModel model);
+    void RemovePublicChannel(string channelId);
     void ShowPrivateChatsLoading();
     void HidePrivateChatsLoading();
     void RefreshBlockedDirectMessages(List<string> blockedUsers);

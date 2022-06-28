@@ -19,6 +19,7 @@ public class ChatController_Mock : IChatController
 
     public double initTime => 0;
 
+    public int TotalJoinedChannelCount { get; }
     public List<ChatMessage> GetAllocatedEntries() { return entries; }
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)

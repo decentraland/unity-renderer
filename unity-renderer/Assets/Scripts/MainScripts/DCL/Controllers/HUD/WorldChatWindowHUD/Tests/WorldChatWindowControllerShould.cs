@@ -301,12 +301,12 @@ public class WorldChatWindowControllerShould
         controller.Initialize(view);
         int limit = 30;
         long timestamp = 500;
-        controller.isRequestingFriendsWithDMs = false;
+        controller.isRequestingDMs = false;
         controller.areDMsRequestedByFirstTime = requestedByFirstTime;
 
         controller.RequestFriendsWithDirectMessages(limit, timestamp);
 
-        Assert.IsTrue(controller.isRequestingFriendsWithDMs);
+        Assert.IsTrue(controller.isRequestingDMs);
 
         if (!requestedByFirstTime)
         {

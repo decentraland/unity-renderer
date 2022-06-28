@@ -33,6 +33,8 @@ public class LazyLoadingChatControllerMock : IChatController
     public event Action<string, string> OnChannelLeaveError;
     public event Action<string, string> OnMuteChannelError;
 
+    public int TotalJoinedChannelCount => 0;
+    
     public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
 
     public void Send(ChatMessage message) => controller.Send(message);

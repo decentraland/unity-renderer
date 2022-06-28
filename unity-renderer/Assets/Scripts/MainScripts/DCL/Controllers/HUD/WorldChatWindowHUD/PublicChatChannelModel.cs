@@ -13,4 +13,11 @@ public class PublicChatChannelModel : BaseComponentModel
         this.name = name;
         this.description = description;
     }
+
+    public void CopyFrom(PublicChatChannelModel model)
+    {
+        channelId = model.channelId;
+        name = model.name;
+        description = model.description;
+    }
 }

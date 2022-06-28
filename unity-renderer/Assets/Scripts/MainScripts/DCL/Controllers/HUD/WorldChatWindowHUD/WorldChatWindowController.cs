@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using DCL.Chat.Channels;
 using DCL.Interface;
 
 public class WorldChatWindowController : IHUD
@@ -19,14 +20,13 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, PublicChatChannelModel> publicChannels = new Dictionary<string, PublicChatChannelModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
-    internal bool areDMsRequestedByFirstTime = false;
     private long olderDMTimestampRequested = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     private string currentSearch = "";
-    internal bool isRequestingFriendsWithDMs = false;
-    internal int hiddenDMs;
-
+    private int hiddenDMs;
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
+    internal bool areDMsRequestedByFirstTime;
+    internal bool isRequestingDMs;
 
     public IWorldChatWindowView View => view;
 
@@ -74,6 +74,9 @@ public class WorldChatWindowController : IHUD
                 view.ShowPrivateChatsLoading();
         
         chatController.OnAddMessage += HandleMessageAdded;
+        chatController.OnChannelUpdated += HandleChannelUpdated;
+        chatController.OnChannelJoined += HandleChannelUpdated;
+        chatController.OnChannelLeft += HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages += HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
@@ -89,6 +92,9 @@ public class WorldChatWindowController : IHUD
         view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
         view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
+        chatController.OnChannelUpdated -= HandleChannelUpdated;
+        chatController.OnChannelJoined -= HandleChannelUpdated;
+        chatController.OnChannelLeft -= HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
@@ -109,10 +115,21 @@ public class WorldChatWindowController : IHUD
                 RequestFriendsWithDirectMessages(
                     USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                     DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+
+                DisplayMoreJoinedChannels();
             }
         }
         else
             view.Hide();
+    }
+
+    private void DisplayMoreJoinedChannels()
+    {
+        // -1: skip #nearby channel
+        chatController.GetJoinedChannels(30, view.PublicChannelsCount - 1);
+        
+        if (view.PublicChannelsCount - 1 < chatController.TotalJoinedChannelCount)
+            view.ShowMoreChatsLoading();
     }
 
     private void HandleUnfriend(string friendId)
@@ -127,6 +144,8 @@ public class WorldChatWindowController : IHUD
             RequestFriendsWithDirectMessages(
                 USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+            
+            DisplayMoreJoinedChannels();
         }
         else
             view.HidePrivateChatsLoading();
@@ -232,7 +251,7 @@ public class WorldChatWindowController : IHUD
         if (!string.IsNullOrEmpty(currentSearch))
             SearchChannelsLocally(currentSearch);
 
-        isRequestingFriendsWithDMs = false;
+        isRequestingDMs = false;
     }
 
     private bool ShouldDisplayPrivateChat(string userId)
@@ -308,7 +327,7 @@ public class WorldChatWindowController : IHUD
     
     internal void ShowMorePrivateChats()
     {
-        if (isRequestingFriendsWithDMs || 
+        if (isRequestingDMs || 
             hiddenDMs == 0 || 
             !string.IsNullOrEmpty(currentSearch))
             return;
@@ -330,7 +349,7 @@ public class WorldChatWindowController : IHUD
 
     internal void RequestFriendsWithDirectMessages(int limit, long fromTimestamp)
     {
-        isRequestingFriendsWithDMs = true;
+        isRequestingDMs = true;
 
         if (!areDMsRequestedByFirstTime)
         {
@@ -348,5 +367,24 @@ public class WorldChatWindowController : IHUD
     {
         view.ShowSearchLoading();
         friendsController.GetFriendsWithDirectMessages(userNameOrId, limit);
+    }
+    
+    private void HandleChannelUpdated(Channel channel)
+    {
+        var channelId = channel.ChannelId;
+        var model = new PublicChatChannelModel(channelId, channel.Name, channel.Description);
+        
+        if (publicChannels.ContainsKey(channelId))
+            publicChannels[channelId].CopyFrom(model);
+        else
+            publicChannels[channelId] = model;
+        
+        view.SetPublicChannel(model);
+    }
+    
+    private void HandleChannelLeft(string channelId)
+    {
+        publicChannels.Remove(channelId);
+        view.RemovePublicChannel(channelId);
     }
 }

@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Chat.Channels;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
@@ -63,7 +64,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
                     new WebInterfaceFriendsController(new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i)), // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingChatControllerMock(ChatController.i), // TODO (lazy loading): Pass ChatController.i after kernel integration
+                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i), // TODO (lazy loading): Pass ChatController.i after kernel integration
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>());
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
