@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using UnityEngine;
@@ -6,12 +7,12 @@ using Random = UnityEngine.Random;
 
 namespace DCL.Chat.Channels
 {
-    public class ChatChannelsMock : IChatChannelsController
+    public class ChatChannelsMock : IChatController
     {
-        private readonly ChatChannelsController controller;
-        private readonly ChatController chatController;
+        private readonly ChatController controller;
         private readonly UserProfileController userProfileController;
 
+        public event Action<ChatMessage> OnAddMessage;
         public event Action OnInitialized;
         public event Action<Channel> OnChannelUpdated;
         public event Action<Channel> OnChannelJoined;
@@ -20,12 +21,22 @@ namespace DCL.Chat.Channels
         public event Action<string, string> OnChannelLeaveError;
         public event Action<string, string> OnMuteChannelError;
 
-        public ChatChannelsMock(ChatChannelsController controller,
-            ChatController chatController,
+        public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
+
+        public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) =>
+            controller.GetPrivateAllocatedEntriesByUser(userId);
+
+        public void Send(ChatMessage message) => controller.Send(message);
+
+        public void MarkMessagesAsSeen(string userId) => controller.MarkMessagesAsSeen(userId);
+
+        public void GetPrivateMessages(string userId, int limit, long fromTimestamp) =>
+            controller.GetPrivateMessages(userId, limit, fromTimestamp);
+
+        public ChatChannelsMock(ChatController controller,
             UserProfileController userProfileController)
         {
             this.controller = controller;
-            this.chatController = chatController;
             this.userProfileController = userProfileController;
         }
 
@@ -63,7 +74,7 @@ namespace DCL.Chat.Channels
             controller.JoinChannelConfirmation(JsonUtility.ToJson(msg));
         }
 
-        public void GetMessages(string channelId, int limit, long fromTimestamp) =>
+        public void GetChannelMessages(string channelId, int limit, long fromTimestamp) =>
             GetFakeMessages(channelId, limit, fromTimestamp).Forget();
 
         private async UniTask GetFakeMessages(string channelId, int limit, long fromTimestamp)
@@ -93,7 +104,7 @@ namespace DCL.Chat.Channels
                     timestamp = (ulong) (fromTimestamp + i)
                 };
             
-                chatController.AddMessageToChatWindow(JsonUtility.ToJson(msg));
+                controller.AddMessageToChatWindow(JsonUtility.ToJson(msg));
             }
         }
 

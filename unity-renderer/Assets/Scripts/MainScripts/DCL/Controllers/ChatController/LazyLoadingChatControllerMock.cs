@@ -3,6 +3,7 @@ using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Channel = DCL.Chat.Channels.Channel;
 
 [RequireComponent(typeof(ChatController))]
 public class LazyLoadingChatControllerMock : IChatController
@@ -24,6 +25,14 @@ public class LazyLoadingChatControllerMock : IChatController
         remove => controller.OnAddMessage -= value;
     }
 
+    public event Action OnInitialized;
+    public event Action<Channel> OnChannelUpdated;
+    public event Action<Channel> OnChannelJoined;
+    public event Action<string, string> OnJoinChannelError;
+    public event Action<string> OnChannelLeft;
+    public event Action<string, string> OnChannelLeaveError;
+    public event Action<string, string> OnMuteChannelError;
+
     public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
 
     public void Send(ChatMessage message) => controller.Send(message);
@@ -31,6 +40,21 @@ public class LazyLoadingChatControllerMock : IChatController
     public void MarkMessagesAsSeen(string userId) => controller.MarkMessagesAsSeen(userId);
 
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp) => SimulateDelayedResponseFor_GetPrivateMessages(userId, limit, fromTimestamp).Forget();
+
+    public void JoinOrCreateChannel(string channelId) => controller.JoinOrCreateChannel(channelId);
+
+    public void LeaveChannel(string channelId) => controller.LeaveChannel(channelId);
+
+    public void GetChannelMessages(string channelId, int limit, long fromTimestamp) =>
+        controller.GetChannelMessages(channelId, limit, fromTimestamp);
+
+    public void GetJoinedChannels(int limit, int skip) =>
+        controller.GetJoinedChannels(limit, skip);
+
+    public void GetChannels(int limit, int skip, string name) =>
+        controller.GetChannels(limit, skip, name);
+
+    public void MuteChannel(string channelId) => controller.MuteChannel(channelId);
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) => controller.GetPrivateAllocatedEntriesByUser(userId);
 
