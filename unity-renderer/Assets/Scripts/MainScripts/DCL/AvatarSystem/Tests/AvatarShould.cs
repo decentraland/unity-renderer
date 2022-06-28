@@ -29,6 +29,7 @@ namespace Test.AvatarSystem
         private IGPUSkinning gpuSkinning;
         private IGPUSkinningThrottler gpuSkinningThrottler;
         private IEmoteAnimationEquipper emoteAnimationEquipper;
+        private IBaseAvatar baseAvatar;
 
         [SetUp]
         public void SetUp()
@@ -43,7 +44,9 @@ namespace Test.AvatarSystem
             gpuSkinning = Substitute.For<IGPUSkinning>();
             gpuSkinningThrottler = Substitute.For<IGPUSkinningThrottler>();
             emoteAnimationEquipper = Substitute.For<IEmoteAnimationEquipper>();
+            baseAvatar = Substitute.For<IBaseAvatar>();
             avatar = new Avatar(
+                baseAvatar,
                 curator,
                 loader,
                 animator,
@@ -78,7 +81,7 @@ namespace Test.AvatarSystem
             visibility.DidNotReceive().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             curator.Received().Curate(settings, wearableIds, Arg.Any<CancellationToken>());
             loader.DidNotReceiveWithAnyArgs()
-                  .Load(default, default, default, default, default, default);
+                  .Load(default, default, default, default, default, default, default);
         });
 
         [UnityTest]
@@ -102,13 +105,14 @@ namespace Test.AvatarSystem
                       Arg.Any<WearableItem>(),
                       Arg.Any<List<WearableItem>>(),
                       Arg.Any<AvatarSettings>(),
+                      Arg.Any<SkinnedMeshRenderer>(),
                       Arg.Any<CancellationToken>())
                   .Returns(x => throw new Exception("Loader failed"));
 
             await TestUtils.ThrowsAsync<Exception>(avatar.Load(new List<string>(), settings));
 
             loader.Received()
-                  .Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, Arg.Any<CancellationToken>());
+                  .Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, Arg.Any<SkinnedMeshRenderer>(), Arg.Any<CancellationToken>());
         });
 
         [UnityTest]
@@ -127,7 +131,7 @@ namespace Test.AvatarSystem
             await avatar.Load(new List<string>(), settings);
 
             Assert.AreEqual(extents, avatar.extents);
-            animator.Received().Prepare(settings.bodyshapeId, combinedRenderer.gameObject);
+            animator.Received().Prepare(settings.bodyshapeId, null);
             gpuSkinning.Received().Prepare(combinedRenderer);
             gpuSkinningThrottler.Received().Bind(gpuSkinning);
             visibility.Received().Bind(gpuSkinnedRenderer, facialFeatures);

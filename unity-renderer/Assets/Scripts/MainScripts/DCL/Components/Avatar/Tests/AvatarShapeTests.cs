@@ -56,6 +56,7 @@ namespace Tests
             Assert.AreEqual(avatar.gameObject.layer, LayerMask.NameToLayer("ViewportCullingIgnored"));
             Assert.AreEqual(avatar.avatarCollider.gameObject.layer, LayerMask.NameToLayer("AvatarTriggerDetection"));
             Assert.AreEqual(avatar.onPointerDown.gameObject.layer, LayerMask.NameToLayer("OnPointerEvent"));
+            TestUtils.RemoveSceneEntity(scene, avatar.entity);
         }
 
         [UnityTest]
