@@ -19,6 +19,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - Texture2D_ca38f0c2dd0b47d09c01597020888c39:
+        m_Texture: {fileID: 2800000, guid: 7317924fa5c66324aaf9fd0e6d33c0dd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -55,6 +59,8 @@ Material:
     - _Color04: {r: 0.23921569, g: 0.22745098, b: 0.27450982, a: 0}
     - _Color05: {r: 0.101960786, g: 0.101960786, b: 0.101960786, a: 0}
     - _GridColor: {r: 0, g: 0, b: 0, a: 0}
+    - _HighlightColor: {r: 0, g: 0.5686169, b: 1, a: 1}
+    - _MousePosition: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _Resolution: {r: 512, g: 512, b: 0, a: 0}
     - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}
   m_BuildTextureStacks: []
