@@ -87,7 +87,7 @@ namespace DCL.ECSComponents
         private void Awake()
         {
             // NOTE: we use half scale to keep backward compatibility cause we are using 512px to normalize the scale with a 256px value that comes from the images
-            meshRenderer.transform.localScale = new Vector3(0.5f, 0.5f, 1);
+            meshRenderer.transform.localScale = new UnityEngine.Vector3(0.5f, 0.5f, 1);
             InitializeMaterials();
         }
         
@@ -170,7 +170,7 @@ namespace DCL.ECSComponents
                     h *= texture.height / (float) texture.width;
                 else if (texture.width < texture.height)
                     w *= texture.width / (float) texture.height;
-                Vector3 newScale = new Vector3(w, h, 1f);
+                UnityEngine.Vector3 newScale = new UnityEngine.Vector3(w, h, 1f);
 
                 meshRenderer.transform.localScale = newScale;
             }

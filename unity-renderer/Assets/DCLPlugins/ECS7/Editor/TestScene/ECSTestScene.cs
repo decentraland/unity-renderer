@@ -21,7 +21,7 @@ public class ECSTestScene : MonoBehaviour
     private static void SceneScript(string sceneId, IECSComponentWriter componentWriter)
     {
         componentWriter.PutComponent(sceneId, 1, 1,
-            new ECSTransform() { position = new Vector3(8, 1, 8) });
+            new ECSTransform() { position = new UnityEngine.Vector3(8, 1, 8) });
         AddGLTFShapeComponent(sceneId, componentWriter);
         AddBoxComponent(sceneId, componentWriter);
     }
@@ -55,7 +55,7 @@ public class ECSTestScene : MonoBehaviour
         model.Color.R = 0.5f;
         model.Color.G = 0.5f;
         model.Color.B = 1f;
-        componentWriter.PutComponent(sceneId,0,ComponentID.NFT_SHAPE,
+        componentWriter.PutComponent(sceneId,0,ComponentID.N_F_T_SHAPE,
             model );
     }
 
@@ -114,7 +114,7 @@ public class ECSTestScene : MonoBehaviour
             x = 0,
             y = 0,
             z = 0,
-            cameraTarget = new Vector3(0, 0, 1)
+            cameraTarget = new UnityEngine.Vector3(0, 0, 1)
         };
         CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
         var cameraController = GameObject.Find("CameraController");
