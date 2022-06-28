@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 
 namespace DCL.Chat.Channels
 {
-    public class ChatChannelsMock : IChatController
+    public class ChatChannelsControllerMock : IChatController
     {
         private readonly ChatController controller;
         private readonly UserProfileController userProfileController;
@@ -33,7 +33,7 @@ namespace DCL.Chat.Channels
         public void GetPrivateMessages(string userId, int limit, long fromTimestamp) =>
             controller.GetPrivateMessages(userId, limit, fromTimestamp);
 
-        public ChatChannelsMock(ChatController controller,
+        public ChatChannelsControllerMock(ChatController controller,
             UserProfileController userProfileController)
         {
             this.controller = controller;
