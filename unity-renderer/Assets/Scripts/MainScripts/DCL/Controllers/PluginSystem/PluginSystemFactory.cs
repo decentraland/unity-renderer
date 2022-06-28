@@ -35,6 +35,7 @@ namespace DCL
             pluginSystem.Register<UIComponentsPlugin>(() => new UIComponentsPlugin());
             pluginSystem.Register<CoreComponentsPlugin>(() => new CoreComponentsPlugin());
             pluginSystem.Register<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature());
+            pluginSystem.Register<ChatNotificationsFeature>(() => new ChatNotificationsFeature());
 
             pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
