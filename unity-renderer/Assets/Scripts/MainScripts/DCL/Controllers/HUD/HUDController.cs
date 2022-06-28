@@ -102,8 +102,8 @@ public class HUDController : IHUDController
 
     public MinimapHUDController minimapHUD => GetHUDElement(HUDElementID.MINIMAP) as MinimapHUDController;
 
-    public UsersAroundListHUDController usersAroundListHud =>
-        GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
+    public VoiceChatWindowController voiceChatHud =>
+        GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as VoiceChatWindowController;
 
     public QuestsPanelHUDController questsPanelHUD =>
         GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
@@ -296,15 +296,6 @@ public class HUDController : IHUDController
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
 
-                        if (!string.IsNullOrEmpty(extraPayload))
-                        {
-                            var config = JsonUtility.FromJson<TaskbarHUDController.Configuration>(extraPayload);
-                            if (config.enableVoiceChat)
-                            {
-                                taskbarHud.OnAddVoiceChat();
-                            }
-                        }
-
                         OnTaskbarCreation?.Invoke();
                     }
                 }
@@ -332,10 +323,8 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.USERS_AROUND_LIST_HUD:
                 CreateHudElement(configuration, hudElementId);
-                if (usersAroundListHud != null)
-                {
-                    minimapHud?.AddUsersAroundIndicator(usersAroundListHud);
-                }
+                if (voiceChatHud != null)
+                    taskbarHud?.AddVoiceChatWindow(voiceChatHud);
 
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:

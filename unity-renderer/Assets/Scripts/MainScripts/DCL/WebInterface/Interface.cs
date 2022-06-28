@@ -690,7 +690,6 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
-    [DllImport("__Internal")] public static extern bool CheckURLParam(string targetParam);
     [DllImport("__Internal")] public static extern void BinaryMessageFromEngine(string sceneId, byte[] bytes, int size);
         
     public static System.Action<string, string> OnMessageFromEngine;
@@ -713,6 +712,7 @@ namespace DCL.Interface
         private static List<(string, string)> queuedMessages = new List<(string, string)>();
         public static void StartDecentraland() { }
         public static bool CheckURLParam(string targetParam) { return false; }
+        public static string GetURLParam(string targetParam) { return String.Empty; }
 
         public static void MessageFromEngine(string type, string message)
         {

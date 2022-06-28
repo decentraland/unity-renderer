@@ -1,10 +1,6 @@
 using System;
-using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using DCL;
 using DCL.ECS7;
-using DCL.ECSComponents;
-using DCL.SettingsCommon;
 
 namespace DCL.ECSComponents
 {
@@ -17,8 +13,10 @@ namespace DCL.ECSComponents
         private readonly CylinderShapeRegister cylinderShapeRegister;
         private readonly AudioStreamRegister audioStreamRegister;
         private readonly AudioSourceRegister audioSourceRegister;
-        
-        private readonly ECSTextShapeComponent textShapeComponent;
+        private readonly GLTFShapeRegister gltfRegister;
+        private readonly ECSTextShapeRegister textShapeRegister;
+        private readonly NFTShapeRegister nftRegister;
+        private readonly AnimatorRegister animatorRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
@@ -29,7 +27,10 @@ namespace DCL.ECSComponents
             cylinderShapeRegister = new CylinderShapeRegister(ComponentID.CYLINDER_SHAPE, componentsFactory, componentsWriter);
             audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentsWriter);
             audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter);
-            textShapeComponent = new ECSTextShapeComponent(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
+            nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter);
+            textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
+            gltfRegister = new GLTFShapeRegister(ComponentID.GLTF_SHAPE, componentsFactory, componentsWriter);
+            animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -41,7 +42,10 @@ namespace DCL.ECSComponents
             cylinderShapeRegister.Dispose();
             audioStreamRegister.Dispose();
             audioSourceRegister.Dispose();
-            textShapeComponent.Dispose();
+            textShapeRegister.Dispose();
+            nftRegister.Dispose();
+            gltfRegister.Dispose();
+            animatorRegister.Dispose();
         }
     }
 }
