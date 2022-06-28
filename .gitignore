@@ -20,6 +20,11 @@ Assets/InitTestScene*.unity.meta
 ehthumbs.db
 Thumbs.db
 
+# ===================================== #
+# Proto generation system               #
+# ===================================== #
+#Generated/
+bin/
 
 # ===================================== #
 # Visual Studio / MonoDevelop / Rider   #
