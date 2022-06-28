@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
 namespace DCL.Chat.Channels
 {
-    public class ChatChannelsController : MonoBehaviour, IChatChannelsBridge
+    public class ChatChannelsController : MonoBehaviour, IChatChannelsController
     {
         public event Action OnInitialized;
         public event Action<Channel> OnChannelUpdated;

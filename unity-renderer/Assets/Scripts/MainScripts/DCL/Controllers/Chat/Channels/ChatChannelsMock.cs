@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using UnityEngine;
@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 namespace DCL.Chat.Channels
 {
-    public class ChatChannelsMock : IChatChannelsBridge
+    public class ChatChannelsMock : IChatChannelsController
     {
         private readonly ChatChannelsController controller;
         private readonly ChatController chatController;

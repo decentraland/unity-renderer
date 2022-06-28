@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
 namespace DCL.Chat.Channels
 {
-    public interface IChatChannelsBridge
+    public interface IChatChannelsController
     {
         event Action OnInitialized;
         event Action<Channel> OnChannelUpdated;
