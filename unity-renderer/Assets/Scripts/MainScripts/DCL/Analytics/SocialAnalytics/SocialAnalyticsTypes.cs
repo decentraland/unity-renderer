@@ -18,4 +18,10 @@ namespace SocialFeaturesAnalytics
     {
         None
     }
+
+    public enum VoiceMessageSource
+    {
+        Shortcut,
+        Button
+    }
 }

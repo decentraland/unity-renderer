@@ -1,5 +1,6 @@
 using UnityEngine;
 using SocialFeaturesAnalytics;
+using System.Collections.Generic;
 
 namespace DCL
 {
@@ -15,41 +16,104 @@ namespace DCL
 
         private bool firstTimeVoiceRecorded = true;
         private ISocialAnalytics socialAnalytics;
+        private UserProfileWebInterfaceBridge userProfileWebInterfaceBridge;
+        private double voiceMessageStartTime = 0;
+        private bool isVoiceChatToggledOn = false;
 
         void Awake()
         {
-            voiceChatStartedDelegate = (action) => StartVoiceChatRecording();
-            voiceChatFinishedDelegate = (action) => DCL.Interface.WebInterface.SendSetVoiceChatRecording(false);
-            voiceChatToggleDelegate = (action) => DCL.Interface.WebInterface.ToggleVoiceChatRecording();
+            userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
+
+            voiceChatStartedDelegate = (action) => DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true));
+            voiceChatFinishedDelegate = (action) => DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
+            voiceChatToggleDelegate = (action) => ToggleVoiceChatRecording();
             voiceChatAction.OnStarted += voiceChatStartedDelegate;
             voiceChatAction.OnFinished += voiceChatFinishedDelegate;
             voiceChatToggleAction.OnTriggered += voiceChatToggleDelegate;
 
             KernelConfig.i.EnsureConfigInitialized().Then(config => EnableVoiceChat(config.comms.voiceChatEnabled));
             KernelConfig.i.OnChange += OnKernelConfigChanged;
+            DataStore.i.voiceChat.isRecording.OnChange += IsVoiceChatRecordingChanged;
         }
+
         void OnDestroy()
         {
             voiceChatAction.OnStarted -= voiceChatStartedDelegate;
             voiceChatAction.OnFinished -= voiceChatFinishedDelegate;
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
+            DataStore.i.voiceChat.isRecording.OnChange -= IsVoiceChatRecordingChanged;
         }
 
         void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { EnableVoiceChat(current.comms.voiceChatEnabled); }
 
         void EnableVoiceChat(bool enable) { CommonScriptableObjects.voiceChatDisabled.Set(!enable); }
 
-        private void StartVoiceChatRecording()
+        private void IsVoiceChatRecordingChanged(KeyValuePair<bool, bool> current, KeyValuePair<bool, bool> previous)
         {
-            DCL.Interface.WebInterface.SendSetVoiceChatRecording(true);
+            if (!DataStore.i.voiceChat.isJoinedToVoiceChat.Get())
+                return;
 
+            CreateSocialAnalyticsIfNeeded();
+
+            if (current.Key)
+            {
+                if (!isVoiceChatToggledOn)
+                {
+                    Interface.WebInterface.SendSetVoiceChatRecording(true);
+                    SendFirstTimeMetricIfNeeded();
+                    voiceMessageStartTime = Time.realtimeSinceStartup;
+                }
+            }
+            else
+            {
+                Interface.WebInterface.SendSetVoiceChatRecording(false);
+
+                socialAnalytics.SendVoiceMessage(
+                    Time.realtimeSinceStartup - voiceMessageStartTime, 
+                    (current.Value || isVoiceChatToggledOn) ? VoiceMessageSource.Shortcut : VoiceMessageSource.Button, 
+                    userProfileWebInterfaceBridge.GetOwn().userId);
+
+                isVoiceChatToggledOn = false;
+            }
+        }
+
+        private void ToggleVoiceChatRecording()
+        {
+            if (!DataStore.i.voiceChat.isJoinedToVoiceChat.Get())
+                return;
+
+            Interface.WebInterface.ToggleVoiceChatRecording();
+            isVoiceChatToggledOn = !isVoiceChatToggledOn;
+
+            if (isVoiceChatToggledOn)
+            {
+                SendFirstTimeMetricIfNeeded();
+                voiceMessageStartTime = Time.realtimeSinceStartup;
+            }
+            else
+            {
+                socialAnalytics.SendVoiceMessage(
+                    Time.realtimeSinceStartup - voiceMessageStartTime,
+                    VoiceMessageSource.Shortcut,
+                    userProfileWebInterfaceBridge.GetOwn().userId);
+            }
+        }
+
+        private void CreateSocialAnalyticsIfNeeded()
+        {
+            if (socialAnalytics != null)
+                return;
+
+            socialAnalytics = new SocialAnalytics(
+                Environment.i.platform.serviceProviders.analytics,
+                userProfileWebInterfaceBridge);
+        }
+
+        private void SendFirstTimeMetricIfNeeded()
+        {
             if (firstTimeVoiceRecorded)
             {
-                if (socialAnalytics == null)
-                    socialAnalytics = new SocialAnalytics(
-                        Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge());
-                
+                CreateSocialAnalyticsIfNeeded();
                 socialAnalytics.SendVoiceMessageStartedByFirstTime();
                 firstTimeVoiceRecorded = false;
             }
