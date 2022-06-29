@@ -24,6 +24,7 @@ namespace DCL
         private CancellationTokenSource cancellationSource;
         private readonly string fileName;
         private readonly string assetDirectoryPath;
+        private static IDeferAgent deferAgent;
         public AssetPromise_GLTFast(  string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null) 
             : base(contentUrl, hash)
         {
@@ -31,6 +32,12 @@ namespace DCL
             this.contentProvider = contentProvider;
             fileName = contentUrl.Substring(contentUrl.LastIndexOf('/') + 1);
             assetDirectoryPath = URIHelper.GetDirectoryName(contentUrl);
+
+            if (deferAgent == null)
+            {
+                var agentObject = new GameObject("GLTFastDeferAgent");
+                deferAgent = agentObject.AddComponent<GLTFastDeferAgent>();
+            }
         }
 
         protected override void OnBeforeLoadOrReuse(){}
@@ -71,7 +78,7 @@ namespace DCL
                 await UniTask.SwitchToMainThread();
                 
                 // TODO: wrap our providers here
-                var gltfImport = new GltfImport(new GLTFastDownloadProvider(webRequestController, contentProvider, FileToUrl), null, null, new GLTFImportLogger());
+                var gltfImport = new GltfImport(new GLTFastDownloadProvider(webRequestController, contentProvider, FileToUrl), deferAgent, null, new GLTFImportLogger());
 
                 var gltfastSettings = new ImportSettings
                 {
