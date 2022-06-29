@@ -84,6 +84,8 @@ namespace DCL
 
         public virtual bool HasContentsUrl(string url)
         {
+            url = url.ToLower();
+
             if (string.IsNullOrEmpty(url))
             {
                 return false;
@@ -100,12 +102,13 @@ namespace DCL
                 return false;
             }
 
-            return fileToHash.ContainsKey(url.ToLower());
+            return fileToHash.ContainsKey(url);
         }
 
         public virtual string GetContentsUrl(string url)
         {
             string result = "";
+            url = url.ToLower();
 
             if (TryGetContentsUrl(url, out result))
             {
@@ -179,6 +182,8 @@ namespace DCL
 
         public bool HasTestSchema(string url)
         {
+            url = url.ToLower();
+
 #if UNITY_EDITOR
             if (url.StartsWith("file://"))
             {
@@ -195,6 +200,7 @@ namespace DCL
 
         public bool TryGetContentHash(string file, out string result)
         {
+            file = file.ToLower();
             result = string.Empty;
 
             if (fileToHash == null)
