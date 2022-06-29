@@ -70,9 +70,20 @@ public class PublicChatChannelComponentViewShould
     public void TriggerFocusWhenWindowIsClicked()
     {
         var focused = false;
-        view.OnFocused += f => focused = f;
+        view.OnClick += () => focused = true;
         
         view.OnPointerDown(null);
+        
+        Assert.IsTrue(focused);
+    }
+    
+    [Test]
+    public void TriggerFocusWhenWindowIsHovered()
+    {
+        var focused = false;
+        view.OnFocused += f => focused = f;
+        
+        view.OnPointerEnter(null);
         
         Assert.IsTrue(focused);
     }
