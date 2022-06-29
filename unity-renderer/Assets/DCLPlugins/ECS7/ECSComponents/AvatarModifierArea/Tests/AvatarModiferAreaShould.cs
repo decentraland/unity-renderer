@@ -61,7 +61,7 @@ namespace DCL.ECSComponents.Test
 
             // Assert
             Assert.IsNotNull(componentHandler.excludedColliders);
-            Assert.AreEqual(1,componentHandler.avatarsInArea.Count);
+            Assert.AreEqual(model,componentHandler.model);
         }
 
         [Test]

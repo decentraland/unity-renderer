@@ -16,7 +16,7 @@ namespace DCL.ECSComponents
         internal HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
         internal HashSet<Collider> excludedColliders;
         
-        private PBAvatarModifierArea model;
+        internal PBAvatarModifierArea model;
         private IDCLEntity entity;
         private UnityEngine.Vector3 boxArea;
         
@@ -46,7 +46,8 @@ namespace DCL.ECSComponents
 
             // Remove the modifiers on all avatars
             RemoveAllModifiers(toRemove);
-            avatarsInArea.Clear();
+            if(avatarsInArea != null)
+                avatarsInArea.Clear();
             
             // We unsubscribe from events
             dataStore.ownPlayer.OnChange -= OwnPlayerOnOnChange;
