@@ -12,11 +12,13 @@ namespace DCL.ECSComponents
     {
         private event Action<GameObject> OnAvatarEnter;
         private event Action<GameObject> OnAvatarExit;
-        private HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
-        private HashSet<Collider> excludedColliders;
+        
+        internal HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
+        internal HashSet<Collider> excludedColliders;
         
         private PBAvatarModifierArea model;
         private IDCLEntity entity;
+        private UnityEngine.Vector3 boxArea;
         
         private readonly AvatarModifierFactory factory;
         private readonly IUpdateEventHandler updateEventHandler;
@@ -36,16 +38,17 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            var toRemove = new HashSet<GameObject>();
-            if (avatarsInArea != null)
-                toRemove.UnionWith(avatarsInArea);
-
+            // We detect current affected avatars
+            var toRemove = avatarsInArea;
             var currentInArea = DetectAllAvatarsInArea();
             if (currentInArea != null)
                 toRemove.UnionWith(currentInArea);
 
+            // Remove the modifiers on all avatars
             RemoveAllModifiers(toRemove);
-
+            avatarsInArea.Clear();
+            
+            // We unsubscribe from events
             dataStore.ownPlayer.OnChange -= OwnPlayerOnOnChange;
             dataStore.otherPlayers.OnAdded -= OtherPlayersOnOnAdded;
             dataStore.otherPlayers.OnRemoved -= OnOtherPlayersRemoved;
@@ -66,16 +69,13 @@ namespace DCL.ECSComponents
         
         private void Update()
         {
+            if (model == null)
+                return;
+            
             // Find avatars currently on the area
             HashSet<GameObject> newAvatarsInArea = DetectAllAvatarsInArea();
             if (AreSetEquals(avatarsInArea, newAvatarsInArea))
                 return;
-
-            if (avatarsInArea == null)
-                avatarsInArea = new HashSet<GameObject>();
-
-            if (newAvatarsInArea == null)
-                newAvatarsInArea = new HashSet<GameObject>();
 
             // Call event for avatars that just entered the area
             foreach (GameObject avatarThatEntered in newAvatarsInArea.Except(avatarsInArea))
@@ -110,7 +110,7 @@ namespace DCL.ECSComponents
             
             UnityEngine.Vector3 center = entity.gameObject.transform.position;
             Quaternion rotation = entity.gameObject.transform.rotation;
-            return ECSComponentsUtils.DetectAvatars(model.Area,center, rotation, excludedColliders);
+            return ECSComponentsUtils.DetectAvatars(boxArea, center, rotation, excludedColliders);
         }
 
         private void RemoveAllModifiers()
@@ -121,7 +121,7 @@ namespace DCL.ECSComponents
 
         private void RemoveAllModifiers(HashSet<GameObject> avatars)
         {
-            if (area == null || avatars == null)
+            if (avatars == null)
                 return;
 
             foreach (GameObject avatar in avatars)
@@ -132,12 +132,14 @@ namespace DCL.ECSComponents
 
         private void ApplyCurrentModel(PBAvatarModifierArea model)
         {
-            this.model = model;
             dataStore.ownPlayer.OnChange -= OwnPlayerOnOnChange;
             dataStore.otherPlayers.OnAdded -= OtherPlayersOnOnAdded;
 
             if (model.Modifiers.Count > 0)
             {
+                // We set the unity engine Vector3 here, so we don't allocate a Vector3 each time we use it
+                boxArea = ProtoConvertUtils.PBVectorToUnityVector(model.Area);
+                
                 // Add all listeners
                 foreach (PBAvatarModifierArea.Types.Modifier modifierKey in model.Modifiers)
                 {
@@ -156,12 +158,15 @@ namespace DCL.ECSComponents
                     dataStore.otherPlayers.OnAdded += OtherPlayersOnOnAdded;
                 }
 
+                this.model = model;
+                
                 // Force update due to after model update modifiers are removed and re-added
                 // leaving a frame with the avatar without the proper modifications
                 Update();
             }
         }
-        private HashSet<Collider> GetExcludedColliders(PBAvatarModifierArea model)
+        
+        internal HashSet<Collider> GetExcludedColliders(PBAvatarModifierArea model)
         {
             if (model.ExcludeIds.Count == 0)
                 return null;
@@ -173,13 +178,9 @@ namespace DCL.ECSComponents
             for (int i = 0; i < model.ExcludeIds.Count; i++)
             {
                 if (ownPlayer != null && model.ExcludeIds[i] == ownPlayer.id)
-                {
                     result.Add(ownPlayer.collider);
-                }
                 else if (otherPlayers.TryGetValue(model.ExcludeIds[i], out Player player))
-                {
                     result.Add(player.collider);
-                }
             }
             return result;
         }

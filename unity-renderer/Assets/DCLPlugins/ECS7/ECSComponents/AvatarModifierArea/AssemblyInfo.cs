@@ -1,3 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DCL.Components.AvatarModifierAreaShould")]
+[assembly: InternalsVisibleTo("DCL.ECSComponents.AvatarModifierAreaShould")]

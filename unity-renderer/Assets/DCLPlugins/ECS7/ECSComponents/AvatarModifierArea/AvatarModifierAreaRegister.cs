@@ -8,10 +8,13 @@ namespace DCL.ECSComponents
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
+        private readonly AvatarModifierFactory modifierFactory;
 
         public AvatarModifierAreaRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, AvatarModifierAreaSerializer.Deserialize, () => new AvatarModifierAreaComponentHandler(DataStore.i.ecs7));
+            modifierFactory = new AvatarModifierFactory();
+            
+            factory.AddOrReplaceComponent(componentId, AvatarModifierAreaSerializer.Deserialize, () => new AvatarModifierAreaComponentHandler(Environment.i.platform.updateEventHandler, DataStore.i.player, modifierFactory));
             componentWriter.AddOrReplaceComponentSerializer<PBAvatarModifierArea>(componentId, AvatarModifierAreaSerializer.Serialize);
 
             this.factory = factory;
@@ -23,6 +26,7 @@ namespace DCL.ECSComponents
         {
             factory.RemoveComponent(componentId);
             componentWriter.RemoveComponentSerializer(componentId);
+            modifierFactory.Dispose();
         }
     }
 }
