@@ -24,6 +24,7 @@ public class TaskbarHUDController : IHUD
     private InputAction_Trigger closeWindowTrigger;
     private InputAction_Trigger toggleWorldChatTrigger;
     private Transform experiencesViewerTransform;
+    private Transform notificationViewerTransform;
     private IHUD chatToggleTargetWindow;
     private IHUD chatInputTargetWindow;
     private IHUD chatBackWindow;
@@ -36,6 +37,7 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<bool> isEmotesVisible => DataStore.i.HUDs.emotesVisible;
     internal BaseVariable<bool> emoteJustTriggeredFromShortcut => DataStore.i.HUDs.emoteJustTriggeredFromShortcut;
     internal BaseVariable<Transform> isExperiencesViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
+    internal BaseVariable<Transform> isNotificationPanelInitialized => DataStore.i.HUDs.isNotificationPanelInitialized;
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
 
@@ -87,6 +89,9 @@ public class TaskbarHUDController : IHUD
 
         isExperiencesViewerInitialized.OnChange += InitializeExperiencesViewer;
         InitializeExperiencesViewer(isExperiencesViewerInitialized.Get(), null);
+
+        isNotificationPanelInitialized.OnChange += InitializeNotificationPanel;
+
 
         numOfLoadedExperiences.OnChange += NumOfLoadedExperiencesChanged;
         NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
@@ -491,6 +496,16 @@ public class TaskbarHUDController : IHUD
         experiencesViewerTransform.SetAsLastSibling();
 
         view.ShowExperiencesButton();
+    }
+
+    private void InitializeNotificationPanel(Transform currentPanelTransform, Transform previousPanelTransform)
+    {
+        if (currentPanelTransform == null)
+            return;
+
+        notificationViewerTransform = currentPanelTransform;
+        notificationViewerTransform.SetParent(view.leftWindowContainer, false);
+        notificationViewerTransform.SetAsLastSibling();
     }
 
     private void IsExperiencesViewerOpenChanged(bool current, bool previous)

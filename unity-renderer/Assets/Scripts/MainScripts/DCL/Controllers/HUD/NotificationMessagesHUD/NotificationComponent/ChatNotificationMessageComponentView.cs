@@ -31,8 +31,8 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     public override void Awake()
     {
         base.Awake();
-
         button?.onClick.AddListener(()=>OnClickedNotification.Invoke(notificationTargetId));
+        RefreshControl();
     }
 
     public override void RefreshControl()
