@@ -212,6 +212,11 @@ namespace DCL.Protobuf
         }
 
         [MenuItem("Decentraland/Protobuf/Regenerate models (For debugging)")]
+        public static void GenerateComponentCode()
+        {
+            GenerateComponentCode("LocalMachine");
+        }
+        
         public static void GenerateComponentCode(string versionNameToCompile)
         {
             Debug.Log("Starting regenerate ");
