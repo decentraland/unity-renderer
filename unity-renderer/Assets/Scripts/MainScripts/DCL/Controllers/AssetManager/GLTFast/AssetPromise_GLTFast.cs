@@ -2,8 +2,6 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using GLTFast;
-using GLTFast.Logging;
-using GLTFast.Materials;
 using UnityEngine;
 
 // Disable async call not being awaited warning
@@ -18,17 +16,20 @@ namespace DCL
         public static int concurrentRequests = 0;
         
         bool requestRegistered = false;
-        
-        private readonly IWebRequestController webRequestController;
+
         private readonly ContentProvider contentProvider;
-        private CancellationTokenSource cancellationSource;
         private readonly string fileName;
         private readonly string assetDirectoryPath;
+        private readonly GLTFastDownloadProvider gltFastDownloadProvider;
+        private readonly CancellationTokenSource cancellationSource;
+
+
         private static IDeferAgent deferAgent;
+        private GLTFImportLogger gltfImportLogger;
+
         public AssetPromise_GLTFast(  string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null) 
             : base(contentUrl, hash)
         {
-            this.webRequestController = requestController;
             this.contentProvider = contentProvider;
             fileName = contentUrl.Substring(contentUrl.LastIndexOf('/') + 1);
             assetDirectoryPath = URIHelper.GetDirectoryName(contentUrl);
@@ -38,6 +39,10 @@ namespace DCL
                 var agentObject = new GameObject("GLTFastDeferAgent");
                 deferAgent = agentObject.AddComponent<GLTFastDeferAgent>();
             }
+            
+            gltFastDownloadProvider = new GLTFastDownloadProvider(requestController, FileToUrl);
+            cancellationSource = new CancellationTokenSource();
+            gltfImportLogger = new GLTFImportLogger();
         }
 
         protected override void OnBeforeLoadOrReuse(){}
@@ -66,19 +71,22 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
-            cancellationSource = new CancellationTokenSource();
             ImportGLTF(OnSuccess, OnFail, cancellationSource.Token);
         }
 
-        bool FileToUrl(string fileName, out string hash) { return contentProvider.TryGetContentsUrl(assetDirectoryPath + fileName, out hash); }
+        internal override void Unload()
+        {
+            base.Unload();
+            gltFastDownloadProvider.Dispose();
+        }
+
         private async UniTaskVoid ImportGLTF( Action OnSuccess, Action<Exception> OnFail, CancellationToken cancellationSourceToken)
         {
             try
             {
-                await UniTask.SwitchToMainThread();
-                
-                // TODO: wrap our providers here
-                var gltfImport = new GltfImport(new GLTFastDownloadProvider(webRequestController, contentProvider, FileToUrl), deferAgent, null, new GLTFImportLogger());
+                string url = contentProvider.baseUrl + hash;
+
+                var gltfImport = new GltfImport(gltFastDownloadProvider, deferAgent, null, gltfImportLogger);
 
                 var gltfastSettings = new ImportSettings
                 {
@@ -88,7 +96,7 @@ namespace DCL
                 };
 
                 // TODO: Implement a cancellation token for the GLTFImport when its supported https://github.com/atteneder/glTFast/issues/177
-                var success = await gltfImport.Load(contentProvider.baseUrl + hash, gltfastSettings);
+                var success = await gltfImport.Load(url, gltfastSettings);
 
                 if (cancellationSourceToken.IsCancellationRequested)
                 {
@@ -98,7 +106,7 @@ namespace DCL
                 
                 if (!success)
                 {
-                    OnFail?.Invoke(new Exception("GLTFast promise failure"));
+                    OnFail?.Invoke(new Exception(gltfImportLogger.GetLastError()));
                 }
                 else
                 {
@@ -112,29 +120,7 @@ namespace DCL
             }
         }
         
-    }
-
-    internal class GLTFastMaterialGenerator : IMaterialGenerator
-    {
-        private readonly Shader defaultShader;
-        private Material defaultMaterial;
-        public GLTFastMaterialGenerator()
-        {
-            defaultShader = Shader.Find("DCL/Universal Render Pipeline/Lit");
-            defaultMaterial = new Material(defaultShader);
-        }
-        public Material GetDefaultMaterial()
-        {
-             return defaultMaterial;
-        }
-        public Material GenerateMaterial(GLTFast.Schema.Material gltfMaterial, IGltfReadable gltf)
-        {
-            throw new NotImplementedException();
-        }
-        public void SetLogger(ICodeLogger logger)
-        {
-            
-        }
+        bool FileToUrl(string fileName, out string hash) { return contentProvider.TryGetContentsUrl(assetDirectoryPath + fileName, out hash); }
     }
 
 }

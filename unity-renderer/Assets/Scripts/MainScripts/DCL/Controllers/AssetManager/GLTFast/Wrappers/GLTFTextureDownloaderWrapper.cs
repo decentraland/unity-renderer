@@ -1,10 +1,11 @@
-﻿using GLTFast.Loading;
+﻿using System;
+using GLTFast.Loading;
 using UnityEngine;
 using UnityEngine.Networking;
 
 namespace DCL
 {
-    internal class GLTFTextureDownloaderWrapper : ITextureDownload
+    internal class GLTFTextureDownloaderWrapper : ITextureDownload, IDisposable
     {
         private readonly WebRequestAsyncOperation asyncOp;
         private readonly bool nonReadable;
@@ -21,6 +22,12 @@ namespace DCL
         public bool MoveNext() => asyncOp.MoveNext();
         public void Reset() => asyncOp.Reset();
         public object Current => asyncOp.Current;
+        
+        // TODO: Update this when we receive decoded images from the content server
         public Texture2D texture => (asyncOp.webRequest.downloadHandler as DownloadHandlerTexture)?.texture;
+        public void Dispose()
+        {
+            asyncOp.Dispose();
+        }
     }
 }

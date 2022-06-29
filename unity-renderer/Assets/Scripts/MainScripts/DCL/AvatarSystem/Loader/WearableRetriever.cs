@@ -54,7 +54,7 @@ namespace AvatarSystem
 
                 loaderAssetHelper.OnSuccessEvent += OnSuccessWrapper;
                 loaderAssetHelper.OnFailEvent += OnFailEventWrapper;
-                loaderAssetHelper.Load(mainFile, AvatarSystemUtils.UseAssetBundles() ? RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK : RendereableAssetLoadHelper.LoadingType.OLD_GLTF);
+                loaderAssetHelper.Load(mainFile, AvatarSystemUtils.UseAssetBundles() ? RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK : RendereableAssetLoadHelper.LoadingType.GLTF_ONLY);
 
                 // AttachExternalCancellation is needed because a cancelled WaitUntil UniTask requires a frame
                 await UniTask.WaitUntil(() => done, cancellationToken: ct).AttachExternalCancellation(ct);
