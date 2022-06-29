@@ -24,9 +24,8 @@ public static class ECSComponentsUtils
         foreach (Collider collider in colliders)
         {
             if (hasExcludeList && excludeColliders.Contains(collider))
-            {
                 continue;
-            }
+            
             result.Add(collider.transform.parent.gameObject);
         }
         return result;
