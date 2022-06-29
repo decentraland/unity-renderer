@@ -50,5 +50,6 @@ public class ChatNotificationController : IHUD
 
     public void Dispose()
     {
+        chatController.OnAddMessage -= HandleMessageAdded;
     }
 }
