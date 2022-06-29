@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DCL.Interface;
 using NSubstitute;
@@ -331,6 +331,29 @@ public class WorldChatWindowControllerShould
 
         view.Received(1).ShowSearchLoading();
         friendsController.Received(1).GetFriendsWithDirectMessages(userName, limit);
+    }
+
+    [Test]
+    public void RequestChannelsWhenBecomesVisible()
+    {
+        controller.Initialize(view);
+        controller.SetVisibility(true);
+        
+        chatController.Received(1).GetJoinedChannels(10, 0);
+    }
+
+    [Test]
+    public void RequestChannelsWhenFriendsInitializes()
+    {
+        friendsController.IsInitialized.Returns(false);
+        controller.Initialize(view);
+        controller.SetVisibility(true);
+        view.IsActive.Returns(true);
+        friendsController.IsInitialized.Returns(true);
+        
+        friendsController.OnInitialized += Raise.Event<Action>();
+        
+        chatController.Received(1).GetJoinedChannels(10, 0);
     }
 
     private void GivenFriend(string friendId, PresenceStatus presence)
