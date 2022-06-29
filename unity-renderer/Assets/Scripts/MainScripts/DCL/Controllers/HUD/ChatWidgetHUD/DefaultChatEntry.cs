@@ -98,8 +98,10 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     {
         var userString = GetDefaultSenderString(chatEntryModel.senderName);
         
+        if (chatEntryModel.messageType == ChatMessage.Type.PUBLIC && chatEntryModel.subType == ChatEntryModel.SubType.SENT) return $"<b>YOU:</b>";
+        
         if (chatEntryModel.messageType != ChatMessage.Type.PRIVATE) return userString;
-
+        
         userString = chatEntryModel.subType switch
         {
             ChatEntryModel.SubType.RECEIVED => $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",
