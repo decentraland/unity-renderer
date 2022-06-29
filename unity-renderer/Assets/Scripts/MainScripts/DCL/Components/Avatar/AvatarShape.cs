@@ -29,7 +29,8 @@ namespace DCL
         public GameObject avatarContainer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
-        [SerializeField] private GameObject onloadParticlePrefab;
+        [SerializeField] private Transform avatarRevealContainer;
+        [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
         [SerializeField] internal GameObject playerNameContainer;
@@ -61,7 +62,9 @@ namespace DCL
             Visibility visibility = new Visibility();
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
             avatar = new Avatar(
+                baseAvatar,
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                 animator,
@@ -152,7 +155,8 @@ namespace DCL
                 loadingCts?.Cancel();
                 loadingCts?.Dispose();
                 loadingCts = new CancellationTokenSource();
-
+                playerName.SetName(model.name);
+                playerName.Show(true);
                 avatar.Load(wearableItems, new AvatarSettings
                 {
                     playerName = model.name,
@@ -164,9 +168,6 @@ namespace DCL
 
                 // Yielding a UniTask doesn't do anything, we manually wait until the avatar is ready
                 yield return new WaitUntil(() => avatar.status == IAvatar.Status.Loaded);
-
-                if (avatar.lodLevel <= 1)
-                    AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, onloadParticlePrefab);
             }
 
             avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
