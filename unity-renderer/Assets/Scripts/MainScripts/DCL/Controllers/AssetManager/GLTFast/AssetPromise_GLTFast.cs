@@ -18,14 +18,16 @@ namespace DCL
         public static int concurrentRequests = 0;
         
         bool requestRegistered = false;
+        
+        private readonly IWebRequestController webRequestController;
         private readonly ContentProvider contentProvider;
         private CancellationTokenSource cancellationSource;
         private readonly string fileName;
         private readonly string assetDirectoryPath;
-        private IWebRequestController webRequestController => Environment.i.platform.webRequest;
-        public AssetPromise_GLTFast(string contentUrl, string hash, ContentProvider contentProvider = null) 
+        public AssetPromise_GLTFast(  string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null) 
             : base(contentUrl, hash)
         {
+            this.webRequestController = requestController;
             this.contentProvider = contentProvider;
             fileName = contentUrl.Substring(contentUrl.LastIndexOf('/') + 1);
             assetDirectoryPath = URIHelper.GetDirectoryName(contentUrl);

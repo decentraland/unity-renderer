@@ -56,7 +56,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
     void GenerateGLTFast(string url)
     {
         Debug.Log(url);
-        AssetPromise_GLTFast_GameObject promise2 = new AssetPromise_GLTFast_GameObject(url, url);
+        AssetPromise_GLTFast_GameObject promise2 = new AssetPromise_GLTFast_GameObject(url, url, webRequestController);
         Vector3 pos = Vector3.zero;
         pos.x = Random.Range(-10, 10);
         pos.z = Random.Range(-10, 10);
