@@ -53,7 +53,7 @@ namespace DCL.ECSComponents
             dataStore.ownPlayer.OnChange -= OwnPlayerOnOnChange;
             dataStore.otherPlayers.OnAdded -= OtherPlayersOnOnAdded;
             dataStore.otherPlayers.OnRemoved -= OnOtherPlayersRemoved;
-            
+
             updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, Update);
         }
 

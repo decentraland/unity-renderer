@@ -68,10 +68,9 @@ namespace DCL.ECSComponents.Test
         public void DisposeComponentCorrectly()
         {
             // Arrange
-            componentHandler.avatarsInArea.Add(gameObject);
-            
             var model = CreateModel();
             componentHandler.OnComponentModelUpdated(scene, entity, model);
+            componentHandler.avatarsInArea.Add(gameObject);
 
             // Act
             componentHandler.OnComponentRemoved(scene, entity);
