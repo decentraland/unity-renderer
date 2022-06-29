@@ -5,6 +5,7 @@ using System.Linq;
 using DCL.Chat.Channels;
 using JetBrains.Annotations;
 using UnityEngine;
+using Random = System.Random;
 
 public class ChatController : MonoBehaviour, IChatController
 {
@@ -12,6 +13,7 @@ public class ChatController : MonoBehaviour, IChatController
 
     private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
     private readonly List<ChatMessage> entries = new List<ChatMessage>();
+    private readonly Random randomizer = new Random();
 
     public event Action OnInitialized;
     public event Action<Channel> OnChannelUpdated;
@@ -43,7 +45,8 @@ public class ChatController : MonoBehaviour, IChatController
     {
         var msg = JsonUtility.FromJson<ChannelInfoPayload>(payload);
         var channelId = msg.channelId;
-        var channel = new Channel(channelId, msg.unseenMessages, msg.memberCount, msg.joined, msg.muted, msg.description);
+        var channel = new Channel(channelId, msg.unseenMessages, msg.memberCount, msg.joined, msg.muted, msg.description,
+            (long) (randomizer.NextDouble() * DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()));
         var justLeft = false;
 
         if (channels.ContainsKey(channelId))
@@ -65,7 +68,8 @@ public class ChatController : MonoBehaviour, IChatController
     public void JoinChannelConfirmation(string payload)
     {
         var msg = JsonUtility.FromJson<ChannelInfoPayload>(payload);
-        var channel = new Channel(msg.channelId, msg.unseenMessages, msg.memberCount, msg.joined, msg.muted, msg.description);
+        var channel = new Channel(msg.channelId, msg.unseenMessages, msg.memberCount, msg.joined, msg.muted, msg.description,
+            (long) (randomizer.NextDouble() * DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()));
         OnChannelJoined?.Invoke(channel);
         OnChannelUpdated?.Invoke(channel);
     }

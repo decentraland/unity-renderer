@@ -198,7 +198,7 @@ public class WorldChatWindowComponentViewShould
     {
         const string channelId = "general";
 
-        var model = new PublicChatChannelModel(channelId, "nearby", "any description");
+        var model = new PublicChatChannelModel(channelId, "nearby", "any description", 0);
         view.SetPublicChannel(model);
 
         yield return null;
@@ -338,7 +338,7 @@ public class WorldChatWindowComponentViewShould
         }, new Dictionary<string, PublicChatChannelModel>
         {
             {
-                "general", new PublicChatChannelModel("general", "general", "")
+                "general", new PublicChatChannelModel("general", "general", "", 0)
             }
         });
 
@@ -450,7 +450,7 @@ public class WorldChatWindowComponentViewShould
 
     private void GivenPublicChannel(string channelId, string name)
     {
-        view.SetPublicChannel(new PublicChatChannelModel(channelId, name, "any description"));
+        view.SetPublicChannel(new PublicChatChannelModel(channelId, name, "any description", 0));
     }
 
     private UserProfile GivenProfile(string userId)
