@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_FinalGhost
+  m_Shader: {fileID: 4800000, guid: 48ab4630448d99f40b8df0f1d6076f87, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_485d4399fc3245a886150a7a6aa92057:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_7cfe0fbfe8e84e269806828a0f117264_Texture_1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_0837aa1f22d24a4294ebad9857722909_Out_0:
+        m_Texture: {fileID: 2800000, guid: 48fea5cb8b115de4088a6d237efc7d13, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - EdgeThickness: 2.1
+    - Vector1_61a7a0ad63c841748fe6f6cfb1a67e1f: 0.05
+    - Vector1_7db7aa7f94f5470d935a0ff14989164a: 0.05
+    - _EdgeThickness: 2.2
+    - _PatternSpeed: 0.5
+    - _RefractionIntensity: 0
+    - _RefractionScale: 0
+    m_Colors:
+    - Vector2_a88edb82dce1499a9920d0c1949e324b: {r: 0.05, g: 0.035, b: 0, a: 0}
+    - _Color: {r: 0, g: 2.71224, b: 3.441591, a: 0}
+    - _PatternSpeed: {r: 0.01, g: 0.02, b: 0, a: 0}
+    - _RefractionSpeed: {r: 0.01, g: 0.02, b: 0, a: 0}
+    - _RevealNormal: {r: 0, g: -1, b: 0, a: 0}
+    - _RevealPosition: {r: 0, g: 2, b: 0, a: 0}
+    - _SecondColor: {r: 0, g: 3.9999995, b: 3.7699447, a: 0.972549}
+  m_BuildTextureStacks: []

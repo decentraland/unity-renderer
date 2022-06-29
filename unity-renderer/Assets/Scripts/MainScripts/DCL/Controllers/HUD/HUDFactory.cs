@@ -4,6 +4,7 @@ using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.Interface;
+using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using SignupHUD;
 using SocialFeaturesAnalytics;
@@ -57,21 +58,21 @@ public class HUDFactory : IHUDFactory
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    new LazyLoadingChatControllerMock(ChatController.i), // TODO (lazy loading): Pass ChatController.i after kernel integration
+                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i), // TODO (channels): Pass ChatController.i after kernel integration
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>());
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
                     new WebInterfaceFriendsController(new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i)), // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i), // TODO (lazy loading): Pass ChatController.i after kernel integration
+                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i), // TODO (channels): Pass ChatController.i after kernel integration
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>());
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
-                    new LazyLoadingChatControllerMock(ChatController.i), // TODO (lazy loading): Pass ChatController.i after kernel integration
+                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i), // TODO (channels): Pass ChatController.i after kernel integration
                     new WebInterfaceFriendsController(new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i)), // TODO (lazy loading): Pass FriendsController.i after kernel integration
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
@@ -82,7 +83,7 @@ public class HUDFactory : IHUDFactory
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
-                hudElement = new PublicChatChannelController(new LazyLoadingChatControllerMock(ChatController.i), // TODO (lazy loading): Pass ChatController.i after kernel integration
+                hudElement = new PublicChatChannelController(new ChatChannelsControllerMock(ChatController.i, UserProfileController.i), // TODO (channels): Pass ChatController.i after kernel integration
                     Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
                     new UserProfileWebInterfaceBridge(),
                     DataStore.i,
@@ -112,10 +113,14 @@ public class HUDFactory : IHUDFactory
                 hudElement = new HelpAndSupportHUDController();
                 break;
             case HUDElementID.USERS_AROUND_LIST_HUD:
-                hudElement = new UsersAroundListHUDController(
+                hudElement = new VoiceChatWindowController(
+                    new UserProfileWebInterfaceBridge(),
+                    FriendsController.i,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
+                        new UserProfileWebInterfaceBridge()),
+                    DataStore.i,
+                    Settings.i);
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();

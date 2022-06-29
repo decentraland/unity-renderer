@@ -55,7 +55,6 @@ public class WorldChatWindowController : IHUD
         view.OnClose += HandleViewCloseRequest;
         view.OnOpenPrivateChat += OpenPrivateChat;
         view.OnOpenPublicChannel += OpenPublicChannel;
-        view.OnUnfriend += HandleUnfriend;
         view.OnSearchChannelRequested += SearchChannels;
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
         
@@ -89,7 +88,6 @@ public class WorldChatWindowController : IHUD
         view.OnClose -= HandleViewCloseRequest;
         view.OnOpenPrivateChat -= OpenPrivateChat;
         view.OnOpenPublicChannel -= OpenPublicChannel;
-        view.OnUnfriend -= HandleUnfriend;
         view.OnSearchChannelRequested -= SearchChannels;
         view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
         view.Dispose();
@@ -132,11 +130,6 @@ public class WorldChatWindowController : IHUD
         // skip=0: we do not support pagination for channels, it is supposed that a user can have a limited amount of joined channels
         chatController.GetJoinedChannels(CHANNELS_PAGE_SIZE, 0);
         isRequestingChannels = true;
-    }
-
-    private void HandleUnfriend(string friendId)
-    {
-        friendsController.RemoveFriend(friendId);
     }
 
     private void HandleFriendsControllerInitialization()

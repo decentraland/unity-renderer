@@ -41,6 +41,7 @@ public class CharacterPreviewController : MonoBehaviour
     public Transform bodySnapshotTemplate;
 
     [SerializeField] private GameObject avatarContainer;
+    [SerializeField] private Transform avatarRevealContainer;
     private IAvatar avatar;
     private readonly AvatarModel currentAvatarModel = new AvatarModel { wearables = new List<string>() };
     private CancellationTokenSource loadingCts = new CancellationTokenSource();
@@ -55,7 +56,9 @@ public class CharacterPreviewController : MonoBehaviour
             { CameraFocus.BodySnapshot, bodySnapshotTemplate },
         };
         IAnimator animator = avatarContainer.gameObject.GetComponentInChildren<IAnimator>();
+        BaseAvatarDummy baseAvatar = new BaseAvatarDummy(avatarRevealContainer, avatarContainer);
         avatar = new AvatarSystem.Avatar(
+            baseAvatar,
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
@@ -63,8 +66,8 @@ public class CharacterPreviewController : MonoBehaviour
             new NoLODs(),
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler(),
-            new EmoteAnimationEquipper(animator, DataStore.i.emotes) 
-        );
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes)
+        ) ;
     }
 
     public void UpdateModel(AvatarModel newModel, Action onDone)

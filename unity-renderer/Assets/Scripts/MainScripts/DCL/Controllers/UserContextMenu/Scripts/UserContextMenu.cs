@@ -163,28 +163,34 @@ public class UserContextMenu : MonoBehaviour
     private void OnDeleteUserButtonPressed()
     {
         OnUnfriend?.Invoke(userId);
+
         if (currentConfirmationDialog != null)
         {
             currentConfirmationDialog.SetText(string.Format(DELETE_MSG_PATTERN, UserProfileController.userProfilesCatalog.Get(userId)?.userName));
             currentConfirmationDialog.Show(() =>
             {
-                FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-                {
-                    userId = userId,
-                    action = FriendshipAction.DELETED
-                });
-
-                WebInterface.UpdateFriendshipStatus(
-                    new FriendsController.FriendshipUpdateStatusMessage()
-                    {
-                        action = FriendshipAction.DELETED,
-                        userId = userId
-                    });
+                UnfriendUser();
             });
         }
-        Hide();
+        else
+        {
+            UnfriendUser();
+        }
 
         GetSocialAnalytics().SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
+        Hide();
+    }
+
+    private void UnfriendUser()
+    {
+        FriendsController.FriendshipUpdateStatusMessage newFriendshipStatusMessage = new FriendsController.FriendshipUpdateStatusMessage()
+        {
+            userId = userId,
+            action = FriendshipAction.DELETED
+        };
+
+        FriendsController.i.UpdateFriendshipStatus(newFriendshipStatusMessage);
+        WebInterface.UpdateFriendshipStatus(newFriendshipStatusMessage);
     }
 
     private void OnAddFriendButtonPressed()
