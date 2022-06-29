@@ -300,7 +300,7 @@ public class ChatHUDControllerShould
     [Test]
     public void DeactivatePreview()
     {
-        controller.DeactivatePreview();
+        controller.DeactivatePreview(true);
         
         view.Received(1).DeactivatePreview();
     }

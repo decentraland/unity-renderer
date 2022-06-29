@@ -22,11 +22,13 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     public event Action OnClose;
     public event Action OnBack;
     public event Action<bool> OnFocused;
+    public event Action OnClick;
 
     public bool IsActive => gameObject.activeInHierarchy;
     public IChatHUDComponentView ChatHUD => chatView;
     public RectTransform Transform => (RectTransform) transform;
     public bool IsFocused => isFocused;
+    public bool IsInPreviewMode { get ; private set; }
 
     public static PublicChatChannelComponentView Create()
     {
@@ -74,6 +76,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = previewModeSize;
+        IsInPreviewMode = true;
     }
 
     public void ActivatePreviewInstantly()
@@ -105,11 +108,14 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = originalSize;
+        IsInPreviewMode = false;
     }
 
     public void Configure(BaseComponentModel newModel) => Configure((PublicChatChannelModel) newModel);
     
-    public void OnPointerDown(PointerEventData eventData) => OnFocused?.Invoke(true);
+    public void OnPointerDown(PointerEventData eventData) => OnClick?.Invoke();
+    
+    public override void OnPointerEnter(PointerEventData eventData) => OnFocused?.Invoke(true);
 
     public override void OnPointerExit(PointerEventData eventData)
     {

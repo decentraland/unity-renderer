@@ -42,6 +42,7 @@ public class ChatHUDController : IDisposable
     }
 
     public bool IsInputSelected => view.IsInputFieldSelected;
+    public bool IsInPreviewMode => view.IsInPreviewMode;
 
     public void Initialize(IChatHUDComponentView view)
     {
@@ -124,7 +125,8 @@ public class ChatHUDController : IDisposable
 
     public void ActivatePreview() => view.ActivatePreview();
     
-    public void DeactivatePreview() => view.DeactivatePreview();
+    public void DeactivatePreview(bool fadeOut = false) => view.DeactivatePreview(fadeOut);
+
 
     private ChatEntryModel ChatMessageToChatEntry(ChatMessage message)
     {

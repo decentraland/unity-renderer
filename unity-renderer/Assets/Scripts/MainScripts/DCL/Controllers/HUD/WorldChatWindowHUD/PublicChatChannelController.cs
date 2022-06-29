@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
+using UnityEngine;
 
 public class PublicChatChannelController : IHUD
 {
@@ -24,6 +25,8 @@ public class PublicChatChannelController : IHUD
     private double initTimeInSeconds;
     private string channelId;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
+    private CancellationTokenSource deactivatePreviewHUDControllerCancellationToken = new CancellationTokenSource();
+
     private bool skipChatInputTrigger;
     private string lastPrivateMessageRecipient = string.Empty;
 
@@ -55,6 +58,7 @@ public class PublicChatChannelController : IHUD
         view.OnClose += HandleViewClosed;
         view.OnBack += HandleViewBacked;
         view.OnFocused += HandleViewFocused;
+        View.OnClick += HandleViewClicked; 
 
         chatHudController = new ChatHUDController(dataStore,
             userProfileBridge,
@@ -112,6 +116,7 @@ public class PublicChatChannelController : IHUD
         if (View != null)
         {
             View.OnFocused -= HandleViewFocused;
+            View.OnClick -= HandleViewClicked; 
             View.Dispose();
         }
     }
@@ -221,6 +226,32 @@ public class PublicChatChannelController : IHUD
 
         if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
             lastPrivateMessageRecipient = userProfileBridge.Get(message.sender).userName;
+        
+        deactivatePreviewCancellationToken.Cancel();
+        deactivatePreviewCancellationToken = new CancellationTokenSource();
+        deactivatePreviewHUDControllerCancellationToken.Cancel();
+        deactivatePreviewHUDControllerCancellationToken = new CancellationTokenSource();
+        
+        if (!View.IsInPreviewMode)
+        {
+            //Input window is present. Start counter to deactivate
+            if (chatHudController.IsInputSelected) return;
+            WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
+        }
+        else
+        {
+            //If the chatHudController is visible, just restart the counter
+            if (chatHudController.IsInPreviewMode)
+            {
+                //Start Fade Out Counter
+                WaitThenDeactivatePreviewChatHUDController(deactivatePreviewHUDControllerCancellationToken.Token).Forget();
+            }
+            else
+            {
+                //If the chat hud controller is not visible, we got to activate preview immediately
+                ActivatePreview();
+            }
+        }
     }
 
     private void HandleInputFieldSelected()
@@ -242,13 +273,40 @@ public class PublicChatChannelController : IHUD
         {
             deactivatePreviewCancellationToken.Cancel();
             deactivatePreviewCancellationToken = new CancellationTokenSource();
-            DeactivatePreview();
+            deactivatePreviewHUDControllerCancellationToken.Cancel();
+            deactivatePreviewHUDControllerCancellationToken = new CancellationTokenSource();
+            //Means something is visible. Restarting the counters is enough
+            if (!View.IsInPreviewMode || chatHudController.IsInPreviewMode)
+                return;
+            
+            //ActivatePreviewMode only of ChatHudController
+            chatHudController.ActivatePreview();
+            OnPreviewModeChanged?.Invoke(true);
         }
         else
         {
             if (chatHudController.IsInputSelected) return;
-            WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
+            //Means Input Window is visible
+            if (!View.IsInPreviewMode)
+            {
+                //Input window is present. Start counter to deactivate
+                WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
+                return;
+            }
+            //Means ChatHUDController is visible
+            if (chatHudController.IsInPreviewMode)
+            {
+                //Start Fade Out Counter
+                WaitThenDeactivatePreviewChatHUDController(deactivatePreviewHUDControllerCancellationToken.Token).Forget();
+            }
         }
+    }
+    
+    private void HandleViewClicked()
+    {
+        deactivatePreviewCancellationToken.Cancel();
+        deactivatePreviewCancellationToken = new CancellationTokenSource();
+        DeactivatePreview();
     }
 
     private async UniTaskVoid WaitThenActivatePreview(CancellationToken cancellationToken)
@@ -259,17 +317,32 @@ public class PublicChatChannelController : IHUD
         ActivatePreview();
     }
     
+    private async UniTaskVoid WaitThenDeactivatePreviewChatHUDController(CancellationToken cancellationToken)
+    {
+        //Moved the fadeout counter to this class, since it seemed more appropiate. Left a testing value of 5 secs, this should be changed to 30 when released
+        await UniTask.Delay(5000, cancellationToken: cancellationToken);
+        await UniTask.SwitchToMainThread(cancellationToken);
+        if (cancellationToken.IsCancellationRequested) return;
+        chatHudController.DeactivatePreview(true);
+    }
+    
     public void ActivatePreview()
     {
         View.ActivatePreview();
         chatHudController.ActivatePreview();
+        WaitThenDeactivatePreviewChatHUDController(deactivatePreviewHUDControllerCancellationToken.Token).Forget();
         OnPreviewModeChanged?.Invoke(true);
     }
 
     public void DeactivatePreview()
     {
+        deactivatePreviewCancellationToken.Cancel();
+        deactivatePreviewCancellationToken = new CancellationTokenSource();
+        deactivatePreviewHUDControllerCancellationToken.Cancel();
+        deactivatePreviewHUDControllerCancellationToken = new CancellationTokenSource();
+        
         View.DeactivatePreview();
-        chatHudController.DeactivatePreview();
+        chatHudController.DeactivatePreview(false);
         OnPreviewModeChanged?.Invoke(false);
     }
 

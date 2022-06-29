@@ -32,13 +32,13 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     [SerializeField] internal Color previewFontColor;
 
     private bool fadeEnabled;
-    private double fadeoutStartTime;
     private float hoverPanelTimer;
     private float hoverGotoPanelTimer;
     private bool isOverCoordinates;
     private ParcelCoordinates currentCoordinates;
     private ChatEntryModel model;
     private Coroutine previewInterpolationRoutine;
+    private Coroutine previewInterpolationAlphaRoutine;
     private Color originalBackgroundColor;
     private Color originalFontColor;
     internal CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
@@ -87,9 +87,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         messageLocalDateTime = UnixTimeStampToLocalDateTime(chatEntryModel.timestamp).ToString();
 
         Utils.ForceUpdateLayout(transform as RectTransform);
-        
-        if (fadeEnabled)
-            group.alpha = 0;
 
         PlaySfx(chatEntryModel);
     }
@@ -244,19 +241,14 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (!enabled)
         {
             group.alpha = 1;
-            group.blocksRaycasts = true;
-            group.interactable = true;
             fadeEnabled = false;
             return;
         }
 
-        fadeoutStartTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
         fadeEnabled = true;
-        group.blocksRaycasts = false;
-        group.interactable = false;
     }
 
-    public override void DeactivatePreview()
+    public override void DeactivatePreview(bool fadeOut)
     {
         if (!gameObject.activeInHierarchy)
         {
@@ -267,9 +259,20 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
+        
+        if(previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
 
-        previewInterpolationRoutine =
-            StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+        if (fadeOut)
+        {
+            previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(0, 0.5f));
+        }
+        else
+        {
+            group.alpha = 1;
+            previewInterpolationRoutine =
+                StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+        }
     }
 
     public override void ActivatePreview()
@@ -282,9 +285,18 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
+        
+        if(previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine); 
 
         previewInterpolationRoutine =
             StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
+
+        //We have to evaluate if we were already showing the alpha group.
+        if (group.alpha <= 0.99f)
+        {
+            previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
+        }
     }
 
     public override void ActivatePreviewInstantly()
@@ -294,6 +306,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         previewBackgroundImage.color = previewBackgroundColor;
         body.color = previewFontColor;
+        group.alpha = 1;
+        
+        if(previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine); 
+        
+        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
     }
 
     public override void DeactivatePreviewInstantly()
@@ -319,7 +337,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private void Update()
     {
-        Fade();
         CheckHoverCoordinates();
         ProcessHoverPanelTimer();
         ProcessHoverGotoPanelTimer();
@@ -340,27 +357,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
         hoverGotoPanelTimer = timeToHoverGotoPanel;
         OnCancelHover?.Invoke();
-    }
-
-    private void Fade()
-    {
-        if (!fadeEnabled)
-            return;
-
-        //NOTE(Brian): Small offset using normalized Y so we keep the cascade effect
-        double yOffset = ((RectTransform) transform).anchoredPosition.y / (double) Screen.height * 2.0;
-        double fadeTime = Math.Max(Model.timestamp / 1000.0, fadeoutStartTime) + timeToFade - yOffset;
-        double currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
-
-        if (currentTime > fadeTime)
-        {
-            double timeSinceFadeTime = currentTime - fadeTime;
-            group.alpha = Mathf.Clamp01(1 - (float) (timeSinceFadeTime / fadeDuration));
-        }
-        else
-        {
-            group.alpha += (1 - group.alpha) * 0.05f;
-        }
     }
 
     private void ProcessHoverPanelTimer()
@@ -430,5 +426,26 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         previewBackgroundImage.color = backgroundColor;
         body.color = fontColor;
+    }
+    
+    private IEnumerator InterpolateAlpha(float destinationAlpha, float duration)
+    {
+        if (!fadeEnabled)
+        {
+            group.alpha = destinationAlpha;
+            StopCoroutine(previewInterpolationAlphaRoutine); 
+        }
+        var t = 0f;
+        var startAlpha = group.alpha;
+        //NOTE(Brian): Small offset using normalized Y so we keep the cascade effect
+        double yOffset = ((RectTransform) transform).anchoredPosition.y / (double) Screen.height * 4.0;
+        duration -= (float) yOffset;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            group.alpha = Mathf.Lerp(startAlpha, destinationAlpha, t / duration);
+            yield return null;
+        }
+        group.alpha = destinationAlpha;
     }
 }

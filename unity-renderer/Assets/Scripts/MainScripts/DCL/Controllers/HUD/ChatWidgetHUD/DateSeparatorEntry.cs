@@ -42,7 +42,7 @@ public class DateSeparatorEntry : ChatEntry
         
     }
 
-    public override void DeactivatePreview()
+    public override void DeactivatePreview(bool fadeOut)
     {
         if (!gameObject.activeInHierarchy)
         {
