@@ -4,6 +4,9 @@ using Cysharp.Threading.Tasks;
 using GLTFast;
 using UnityEngine;
 
+// Disable async call not being awaited warning
+#pragma warning disable CS4014
+
 namespace DCL
 {
     public class AssetPromise_GLTFast : AssetPromise_WithUrl<Asset_GLTFast>
@@ -53,7 +56,7 @@ namespace DCL
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
             cancellationSource = new CancellationTokenSource();
-            UniTask.Run(() => ImportGLTF(OnSuccess, OnFail, cancellationSource.Token), true, cancellationSource.Token);
+            ImportGLTF(OnSuccess, OnFail, cancellationSource.Token);
         }
 
         bool FileToUrl(string fileName, out string hash) { return contentProvider.TryGetContentsUrl(assetDirectoryPath + fileName, out hash); }
