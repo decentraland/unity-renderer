@@ -14,7 +14,6 @@ namespace RPC.Services
         private static readonly UniTask<CRDTResponse> defaultResponse = UniTask.FromResult(new CRDTResponse());
         private static readonly CRDTManyMessages reusableCrdtMessage = new CRDTManyMessages();
 
-        // TODO: remove binary reader and use this stream instead
         private static readonly CRDTStream crdtStream = new CRDTStream();
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
@@ -37,9 +36,8 @@ namespace RPC.Services
         {
             messages.Payload.WriteTo(crdtStream);
 
-            var sceneMessagesPool = context.crdtContext.messageQueueHanlder.sceneMessagesPool;
+            var sceneMessagesPool = context.crdtContext.messageQueueHandler.sceneMessagesPool;
 
-            // TODO: delete KernelBinaryMessageDeserializer and move deserialization here
             using (var iterator = KernelBinaryMessageDeserializer.Deserialize(crdtStream))
             {
                 while (iterator.MoveNext())
@@ -56,7 +54,7 @@ namespace RPC.Services
                     queuedMessage.sceneId = messages.SceneId;
                     queuedMessage.payload = crdtMessage;
 
-                    context.crdtContext.messageQueueHanlder.EnqueueSceneMessage(queuedMessage);
+                    context.crdtContext.messageQueueHandler.EnqueueSceneMessage(queuedMessage);
                 }
             }
 

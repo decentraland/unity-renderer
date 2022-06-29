@@ -12,7 +12,7 @@ namespace RPC
     {
         public static void BuildDefaultServer()
         {
-            RPCGlobalContext.context.crdtContext.messageQueueHanlder = Environment.i.world.sceneController;
+            RPCGlobalContext.context.crdtContext.messageQueueHandler = Environment.i.world.sceneController;
             BuildDefaultServer(RPCGlobalContext.context);
         }
 
