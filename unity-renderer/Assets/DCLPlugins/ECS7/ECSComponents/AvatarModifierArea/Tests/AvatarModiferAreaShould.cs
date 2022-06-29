@@ -70,6 +70,7 @@ namespace DCL.ECSComponents.Test
             // Arrange
             var model = CreateModel();
             componentHandler.OnComponentModelUpdated(scene, entity, model);
+            componentHandler.avatarsInArea = new HashSet<GameObject>();
             componentHandler.avatarsInArea.Add(gameObject);
 
             // Act
