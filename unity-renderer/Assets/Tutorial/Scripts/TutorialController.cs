@@ -177,11 +177,8 @@ namespace DCL.Tutorial
             NotificationsController.disableWelcomeNotification = true;
 
             WebInterface.SetDelightedSurveyEnabled(false);
-
-            if (!CommonScriptableObjects.rendererState.Get())
-                CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
-            else
-                OnRenderingStateChanged(true, false);
+            
+            CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
 
             OnTutorialEnabled?.Invoke();
         }
