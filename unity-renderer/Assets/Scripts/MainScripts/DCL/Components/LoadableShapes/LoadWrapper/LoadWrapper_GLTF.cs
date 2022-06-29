@@ -28,11 +28,12 @@ namespace DCL.Components
             alreadyLoaded = false;
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
 
+            Func<bool> checkIfGLTFastIsEnabled = () => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("gltfast");
 
             if (customContentProvider == null)
-                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles);
+                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles, checkIfGLTFastIsEnabled);
             else
-                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles);
+                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles,checkIfGLTFastIsEnabled);
 
             loadHelper.settings.forceGPUOnlyMesh = true;
             loadHelper.settings.parent = entity.meshRootGameObject.transform;

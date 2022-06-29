@@ -22,7 +22,9 @@ namespace AvatarSystem
             {
                 loaderAssetHelper?.Unload();
 
-                loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl);
+                // TODO: use feature flag after the wearable material bug is fixed
+                Func<bool> checkIfGltFastIsEnabled = () => false;
+                loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl, checkIfGltFastIsEnabled);
 
                 loaderAssetHelper.settings.forceNewInstance = false;
                 // TODO Review this hardcoded offset and try to solve it by offseting the Avatar container
