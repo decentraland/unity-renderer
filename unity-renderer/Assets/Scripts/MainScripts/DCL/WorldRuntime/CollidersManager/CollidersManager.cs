@@ -64,13 +64,25 @@ namespace DCL
 
             ColliderInfo info = new ColliderInfo();
             info.entity = entity;
-            info.meshName = collider.transform.parent != null ? collider.transform.parent.name : "";
+            info.meshName = GetMeshName(collider);
             info.scene = entity.scene;
             AddOrUpdateColliderInfo(collider, info);
 
             // Note (Zak): avoid adding the event multiple times
             entity.OnCleanupEvent -= OnEntityCleanUpEvent;
             entity.OnCleanupEvent += OnEntityCleanUpEvent;
+        }
+        private static string GetMeshName(Collider collider)
+        {
+            string originalName = collider.transform.name.ToLower();
+
+            // Old GLTF
+            if (originalName.Contains("primitive"))
+            {
+                return collider.transform.parent != null ? collider.transform.parent.name : ""; 
+            }
+
+            return collider.transform.name;
         }
 
         void RemoveAllEntityColliders(IDCLEntity entity)
