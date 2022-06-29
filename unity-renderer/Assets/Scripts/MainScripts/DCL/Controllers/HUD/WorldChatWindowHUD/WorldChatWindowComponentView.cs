@@ -18,8 +18,10 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] internal Button closeButton;
     [SerializeField] internal GameObject directChatsLoadingContainer;
     [SerializeField] internal GameObject directChatsContainer;
+    [SerializeField] internal GameObject channelsHeader;
     [SerializeField] internal GameObject directChannelHeader;
     [SerializeField] internal GameObject searchResultsHeader;
+    [SerializeField] internal TMP_Text channelsHeaderLabel;
     [SerializeField] internal TMP_Text directChatsHeaderLabel;
     [SerializeField] internal TMP_Text searchResultsHeaderLabel;
     [SerializeField] internal ScrollRect scroll;
@@ -207,6 +209,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         {
             directChatList.Show();
             directChatList.Sort();
+            channelsHeader.SetActive(true);
             directChannelHeader.SetActive(true);
         }
 
@@ -228,6 +231,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         searchResultsList.Sort();
         publicChannelList.Hide();
         directChatList.Hide();
+        channelsHeader.SetActive(false);
         directChannelHeader.SetActive(false);
         searchResultsHeader.SetActive(true);
 
@@ -312,6 +316,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         directChatsHeaderLabel.text = $"Direct Messages ({directChatList.Count()})";
         searchResultsHeaderLabel.text = $"Results ({searchResultsList.Count()})";
+        channelsHeaderLabel.text = $"Channels ({publicChannelList.Count()})";
     }
 
     private void UpdateLayout() => isLayoutDirty = true;

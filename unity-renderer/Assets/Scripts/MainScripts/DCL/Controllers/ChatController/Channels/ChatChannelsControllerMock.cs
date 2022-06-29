@@ -54,7 +54,7 @@ namespace DCL.Chat.Channels
             remove => controller.OnMuteChannelError -= value;
         }
 
-        public int TotalJoinedChannelCount => 46;
+        public int TotalJoinedChannelCount => 5;
         
         public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
 
