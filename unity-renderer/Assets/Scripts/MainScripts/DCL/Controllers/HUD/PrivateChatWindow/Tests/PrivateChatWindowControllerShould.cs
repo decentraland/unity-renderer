@@ -231,7 +231,7 @@ public class PrivateChatWindowControllerShould
         controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        controller.ActivatePreviewMode();
+        controller.ActivatePreview();
         
         view.Received(1).ActivatePreview();
         internalChatView.Received(1).ActivatePreview();
@@ -260,7 +260,7 @@ public class PrivateChatWindowControllerShould
         controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        controller.DeactivatePreviewMode();
+        controller.DeactivatePreview();
         
         view.Received(1).DeactivatePreview();
         internalChatView.Received(1).DeactivatePreview();

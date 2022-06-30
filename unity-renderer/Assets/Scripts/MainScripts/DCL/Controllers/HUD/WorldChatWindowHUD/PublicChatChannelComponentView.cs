@@ -28,7 +28,6 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     public IChatHUDComponentView ChatHUD => chatView;
     public RectTransform Transform => (RectTransform) transform;
     public bool IsFocused => isFocused;
-    public bool IsInPreviewMode { get ; private set; }
 
     public static PublicChatChannelComponentView Create()
     {
@@ -76,7 +75,6 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = previewModeSize;
-        IsInPreviewMode = true;
     }
 
     public void ActivatePreviewInstantly()
@@ -108,7 +106,6 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = originalSize;
-        IsInPreviewMode = false;
     }
 
     public void Configure(BaseComponentModel newModel) => Configure((PublicChatChannelModel) newModel);

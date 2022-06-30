@@ -11,8 +11,6 @@ public interface IChannelChatWindowView
     IChatHUDComponentView ChatHUD { get; }
     RectTransform Transform { get; }
     bool IsFocused { get; }
-    bool IsInPreviewMode { get; }
-
     void Dispose();
     void Hide();
     void Show();

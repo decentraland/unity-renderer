@@ -15,7 +15,6 @@ public interface IChatHUDComponentView
 
     IChatEntryFactory ChatEntryFactory { get; set; }
     bool IsInputFieldSelected { get; }
-    bool IsInPreviewMode { get;  }
 
     void OnMessageCancelHover();
     void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false);

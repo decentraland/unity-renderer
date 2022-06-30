@@ -222,14 +222,14 @@ public class TaskbarHUDController : IHUD
             if (openedWindow == publicChatChannel)
                 publicChatChannel.DeactivatePreview();
             else if (openedWindow == privateChatWindow)
-                privateChatWindow.DeactivatePreviewMode();
+                privateChatWindow.DeactivatePreview();
         }
         else
         {
             if (chatToggleTargetWindow == publicChatChannel)
                 publicChatChannel.ActivatePreview();
             else if (chatToggleTargetWindow == privateChatWindow)
-                privateChatWindow.ActivatePreviewMode();
+                privateChatWindow.ActivatePreview();
             else
             {
                 CloseAnyChatWindow();
