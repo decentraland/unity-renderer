@@ -77,7 +77,8 @@ public class WorldChatWindowController : IHUD
         
         chatController.OnAddMessage += HandleMessageAdded;
         chatController.OnChannelUpdated += HandleChannelUpdated;
-        chatController.OnChannelJoined += HandleChannelUpdated;
+        chatController.OnChannelJoined += HandleChannelJoined;
+        chatController.OnJoinChannelError += HandleJoinChannelError;
         chatController.OnChannelLeft += HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages += HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
@@ -94,7 +95,8 @@ public class WorldChatWindowController : IHUD
         view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
         chatController.OnChannelUpdated -= HandleChannelUpdated;
-        chatController.OnChannelJoined -= HandleChannelUpdated;
+        chatController.OnChannelJoined -= HandleChannelJoined;
+        chatController.OnJoinChannelError -= HandleJoinChannelError;
         chatController.OnChannelLeft -= HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
@@ -364,7 +366,7 @@ public class WorldChatWindowController : IHUD
         view.ShowSearchLoading();
         friendsController.GetFriendsWithDirectMessages(userNameOrId, limit);
     }
-    
+
     private void HandleChannelUpdated(Channel channel)
     {
         var channelId = channel.ChannelId;
@@ -379,7 +381,17 @@ public class WorldChatWindowController : IHUD
         
         isRequestingChannels = false;
     }
-    
+
+    private void HandleChannelJoined(Channel channel)
+    {
+        // TO DO: Open the channel window...
+    }
+
+    private void HandleJoinChannelError(string channelId, string message)
+    {
+        // TO DO: Give error feedback...
+    }
+
     private void HandleChannelLeft(string channelId)
     {
         publicChannels.Remove(channelId);
