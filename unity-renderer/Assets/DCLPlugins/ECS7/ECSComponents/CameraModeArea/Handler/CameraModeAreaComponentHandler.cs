@@ -1,7 +1,8 @@
-﻿using DCL.Controllers;
+﻿using DCL.Configuration;
+using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
-using DCL.ECSComponents;
+using DCL.Components;
 using UnityEngine;
 
 namespace DCL.ECSComponents
@@ -11,16 +12,14 @@ namespace DCL.ECSComponents
         private readonly DataStore_Player dataStore;
         internal readonly IUpdateEventHandler updateEventHandler;
 
+        internal CameraModeRepresentantion cameraModeRepresentantion;
+        private UnityEngine.Vector3 area; 
         private IDCLEntity entity;
         private IParcelScene scene;
-        private PBCameraModeArea lastModel;
+        internal PBCameraModeArea lastModel;
         
-        private static CameraModeAreasController areasController { get; } = new CameraModeAreasController();
-
+        internal ICameraModeAreasController areasController = new CameraModeAreasController();
         private Collider playerCollider;
-
-        internal int validCameraModes = 1 << (int)CameraMode.ModeId.FirstPerson | 1 << (int)CameraMode.ModeId.ThirdPerson;
-
         internal bool isPlayerInside = false;
         
         public CameraModeAreaComponentHandler(IUpdateEventHandler updateEventHandler, DataStore_Player dataStore)
@@ -31,47 +30,57 @@ namespace DCL.ECSComponents
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            Initialize(scene, entity, Environment.i.platform.updateEventHandler, dataStore.ownPlayer.Get()?.collider);
+            Initialize(scene, entity, dataStore.ownPlayer.Get()?.collider);
             dataStore.ownPlayer.OnChange += OnOwnPlayerChange;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             Dispose();
-            DataStore.i.player.ownPlayer.OnChange -= OnOwnPlayerChange;
+            dataStore.ownPlayer.OnChange -= OnOwnPlayerChange;
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBCameraModeArea model)
         {
-            bool cameraModeChanged = model.Mode != lastModel.Mode;
+            // We check if the mode should change, and adjust the area for the new model
+            bool cameraModeChanged = lastModel != null || model.Mode != lastModel?.Mode;
+            area = ProtoConvertUtils.PBVectorToUnityVector(model.Area);
+            
             lastModel = model;
-
+            cameraModeRepresentantion.SetCameraMode(ProtoConvertUtils.PBCameraEnumToUnityEnum(model.Mode));
+            
+            // If the mode must change and the player is inside, we change the mode here
             if (cameraModeChanged && isPlayerInside)
-            {
-                areasController.ChangeAreaMode(this, model.Mode);
-            }
+                areasController.ChangeAreaMode(cameraModeRepresentantion, cameraModeRepresentantion.cameraMode);
         }
         
         internal void Initialize(in IParcelScene scene, in IDCLEntity entity, in Collider playerCollider)
         {
             this.playerCollider = playerCollider;
-
+            this.scene = scene;
+            this.entity = entity;
+            
             updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            cameraModeRepresentantion = new CameraModeRepresentantion();
         }
 
         internal void Update()
         {
+            if (lastModel == null)
+                return;
+            
             bool playerInside = IsPlayerInsideArea();
-
+            
             switch (playerInside)
             {
                 case true when !isPlayerInside:
-                    areasController.AddInsideArea(this);
+                    areasController.AddInsideArea(cameraModeRepresentantion);
                     break;
                 case false when isPlayerInside:
-                    areasController.RemoveInsideArea(this);
+                    areasController.RemoveInsideArea(cameraModeRepresentantion);
                     break;
             }
+            
             isPlayerInside = playerInside;
         }
 
@@ -90,20 +99,16 @@ namespace DCL.ECSComponents
             UnityEngine.Vector3 center = entity.gameObject.transform.position;
             Quaternion rotation = entity.gameObject.transform.rotation;
 
-            Collider[] colliders = Physics.OverlapBox(center, lastModel.Area * 0.5f, rotation,
+            Collider[] colliders = Physics.OverlapBox(center, area * 0.5f, rotation,
                 PhysicsLayers.avatarTriggerMask, QueryTriggerInteraction.Collide);
 
             if (colliders.Length == 0)
-            {
                 return false;
-            }
 
             for (int i = 0; i < colliders.Length; i++)
             {
                 if (colliders[i] == playerCollider)
-                {
                     return true;
-                }
             }
             return false;
         }
@@ -111,10 +116,9 @@ namespace DCL.ECSComponents
         private void OnAreaDisabled()
         {
             if (!isPlayerInside)
-            {
                 return;
-            }
-            areasController.RemoveInsideArea(this);
+            
+            areasController.RemoveInsideArea(cameraModeRepresentantion);
             isPlayerInside = false;
         }
 

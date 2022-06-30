@@ -3,7 +3,19 @@ using DCL.NotificationModel;
 
 namespace DCL.Components
 {
-    internal class CameraModeAreasController
+    public interface ICameraModeAreasController
+    {
+        /// <summary>
+        /// This will change the camera to the passed mode,
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="mode"></param>
+        void ChangeAreaMode(in ICameraModeArea area, in CameraMode.ModeId mode);
+        void AddInsideArea(in ICameraModeArea area);
+        void RemoveInsideArea(in ICameraModeArea area);
+    }
+    
+    public class CameraModeAreasController : ICameraModeAreasController
     {
         private const string NOTIFICATION_GROUP = "CameraModeLockedByScene";
         private const float NOTIFICATION_TIME = 3;

@@ -17,6 +17,7 @@ namespace DCL.ECSComponents
         private readonly ECSTextShapeRegister textShapeRegister;
         private readonly NFTShapeRegister nftRegister;
         private readonly AnimatorRegister animatorRegister;
+        private readonly CameraModeAreaRegister cameraModeAreaRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
@@ -31,6 +32,7 @@ namespace DCL.ECSComponents
             textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
             gltfRegister = new GLTFShapeRegister(ComponentID.G_L_T_F_SHAPE, componentsFactory, componentsWriter);
             animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
+            cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -46,6 +48,7 @@ namespace DCL.ECSComponents
             nftRegister.Dispose();
             gltfRegister.Dispose();
             animatorRegister.Dispose();
+            cameraModeAreaRegister.Dispose();
         }
     }
 }

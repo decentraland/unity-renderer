@@ -1,5 +1,5 @@
 {
-    "name": "DCL.Components.ECSBoxShapeShould",
+    "name": "DCL.Components.CameraModeArea.Tests",
     "rootNamespace": "",
     "references": [
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
@@ -23,7 +23,14 @@
         "GUID:c9fbb75c15a4cd042b731877ede4a5c1",
         "GUID:28f74c468a54948bfa9f625c5d428f56",
         "GUID:4bd423f6dceb67540b5c246ca8cf789b",
-        "GUID:46951180f4d84b25a1619640aa317e5b"
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:c34e38f41494f834abff029ddf82af43",
+        "GUID:9857fe4bae4e30441bc3a577c5de790a",
+        "GUID:78f68309b49af42f9a72c4441bd3b77c",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:46951180f4d84b25a1619640aa317e5b",
+        "GUID:fa68a19c663b84d429f4d05606cc8327"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
