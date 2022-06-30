@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    public class AvatarAttachHandler : IDisposable
+    internal class AvatarAttachHandler : IDisposable
     {
         private const float BOUNDARIES_CHECK_INTERVAL = 5;
 
@@ -53,7 +53,7 @@ namespace DCL.Components
                 return;
             }
 
-            if (prevModel.avatarId != model.avatarId)
+            if (prevModel.avatarId != model.avatarId || prevModel.anchorPointId != model.anchorPointId)
             {
                 Detach();
 
