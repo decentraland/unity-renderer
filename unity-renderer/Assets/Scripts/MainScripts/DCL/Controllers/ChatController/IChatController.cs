@@ -26,4 +26,6 @@ public interface IChatController
     void GetJoinedChannels(int limit, int skip);
     void GetChannels(int limit, int skip, string name);
     void MuteChannel(string channelId);
+    Channel GetAllocatedChannel(string channelId);
+    List<ChatMessage> GetAllocatedEntriesByChannel(string channelId);
 }

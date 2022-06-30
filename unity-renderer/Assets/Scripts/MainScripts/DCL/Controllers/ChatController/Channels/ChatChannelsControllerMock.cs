@@ -194,6 +194,11 @@ namespace DCL.Chat.Channels
 
         public void MuteChannel(string channelId) => MuteFakeChannel(channelId).Forget();
 
+        public Channel GetAllocatedChannel(string channelId) => controller.GetAllocatedChannel(channelId);
+
+        public List<ChatMessage> GetAllocatedEntriesByChannel(string channelId) =>
+            controller.GetAllocatedEntriesByChannel(channelId);
+
         private async UniTask MuteFakeChannel(string channelId)
         {
             await UniTask.Delay(Random.Range(40, 1000));

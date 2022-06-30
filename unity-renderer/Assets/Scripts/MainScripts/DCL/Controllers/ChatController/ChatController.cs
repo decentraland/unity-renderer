@@ -12,7 +12,7 @@ public class ChatController : MonoBehaviour, IChatController
     public static ChatController i { get; private set; }
 
     private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
-    private readonly List<ChatMessage> entries = new List<ChatMessage>();
+    private readonly List<ChatMessage> messages = new List<ChatMessage>();
     private readonly Random randomizer = new Random();
 
     public event Action OnInitialized;
@@ -128,6 +128,14 @@ public class ChatController : MonoBehaviour, IChatController
         throw new NotImplementedException();
     }
 
+    public Channel GetAllocatedChannel(string channelId) =>
+        channels.ContainsKey(channelId) ? channels[channelId] : null;
+
+    public List<ChatMessage> GetAllocatedEntriesByChannel(string channelId)
+    {
+        return messages.Where(message => message.recipient == channelId).ToList();
+    }
+
     public void AddMessageToChatWindow(string jsonMessage)
     {
         ChatMessage message = JsonUtility.FromJson<ChatMessage>(jsonMessage);
@@ -135,7 +143,7 @@ public class ChatController : MonoBehaviour, IChatController
         if (message == null)
             return;
 
-        entries.Add(message);
+        messages.Add(message);
         OnAddMessage?.Invoke(message);
     }
 
@@ -153,12 +161,12 @@ public class ChatController : MonoBehaviour, IChatController
 
     public List<ChatMessage> GetAllocatedEntries()
     {
-        return new List<ChatMessage>(entries);
+        return new List<ChatMessage>(messages);
     }
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
     {
-        return entries
+        return messages
             .Where(x => (x.sender == userId || x.recipient == userId) && x.messageType == ChatMessage.Type.PRIVATE)
             .ToList();
     }
