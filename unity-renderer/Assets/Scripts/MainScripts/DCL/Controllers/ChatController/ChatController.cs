@@ -70,6 +70,13 @@ public class ChatController : MonoBehaviour, IChatController
         var msg = JsonUtility.FromJson<ChannelInfoPayload>(payload);
         var channel = new Channel(msg.channelId, msg.unseenMessages, msg.memberCount, msg.joined, msg.muted, msg.description,
             (long) (randomizer.NextDouble() * DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()));
+        var channelId = channel.ChannelId;
+        
+        if (channels.ContainsKey(channelId))
+            channels[channelId].CopyFrom(channel);
+        else
+            channels[channelId] = channel;
+        
         OnChannelJoined?.Invoke(channel);
         OnChannelUpdated?.Invoke(channel);
     }
