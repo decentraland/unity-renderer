@@ -6,7 +6,7 @@ using DCL.Models;
 using DCLPlugins.ECSComponents;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 
-namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown.OnPointerUp.Handler
+namespace DCL.ECSComponents.OnPointerUp
 {
     public class OnPointerUpComponentHandler : IECSComponentHandler<PBOnPointerUp>
     {
@@ -24,6 +24,9 @@ namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown.OnPointerUp.Handler
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
+            if(representantion != null)
+                representantion.Dispose();
+            
             representantion = new PointerInputRepresentantion(entity, dataStore, PointerInputEventType.UP, componentWriter);
             isAdded = false;
         }

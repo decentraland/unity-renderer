@@ -23,6 +23,9 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
         
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
+            if(representantion != null)
+                representantion.Dispose();
+            
             representantion = new PointerInputRepresentantion(entity, dataStore, PointerInputEventType.DOWN, componentWriter);
             isAdded = false;
         }

@@ -1,7 +1,7 @@
 ﻿using DCL;
 using DCL.ECSComponents;
+using DCL.ECSComponents.OnPointerUp;
 using DCL.ECSRuntime;
-using DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown.OnPointerUp.Handler;
 using DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown.OnPointerUp.Serializer;
 
 namespace DCLPlugins.ECSComponents
