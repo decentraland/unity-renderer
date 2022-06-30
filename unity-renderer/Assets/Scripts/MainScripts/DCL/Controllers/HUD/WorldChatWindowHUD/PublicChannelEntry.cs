@@ -52,11 +52,13 @@ public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
     {
         public string channelId;
         public string name;
+        public long lastMessageTimestamp;
 
-        public PublicChannelEntryModel(string channelId, string name)
+        public PublicChannelEntryModel(string channelId, string name, long lastMessageTimestamp)
         {
             this.channelId = channelId;
             this.name = name;
+            this.lastMessageTimestamp = lastMessageTimestamp;
         }
     }
 }

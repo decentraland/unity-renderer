@@ -67,6 +67,8 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     }
 
     public void Set(PrivateChatEntry.PrivateChatEntryModel model) => directChatList.Set(model.userId, model);
+    
+    public void Set(PublicChannelEntry.PublicChannelEntryModel model) => publicChannelList.Set(model.channelId, model);
 
     public void Export(CollapsablePublicChannelListComponentView publicChannelList,
         CollapsableDirectChatListComponentView privateChatList)

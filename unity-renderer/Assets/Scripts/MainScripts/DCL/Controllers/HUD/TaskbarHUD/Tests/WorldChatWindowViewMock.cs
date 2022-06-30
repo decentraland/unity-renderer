@@ -14,6 +14,7 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeSelf;
     public int PrivateChannelsCount { get; }
+    public int PublicChannelsCount { get; }
 
     private bool isDestroyed;
 
@@ -44,6 +45,10 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     }
 
     public void SetPublicChannel(PublicChatChannelModel model)
+    {
+    }
+
+    public void RemovePublicChannel(string channelId)
     {
     }
 

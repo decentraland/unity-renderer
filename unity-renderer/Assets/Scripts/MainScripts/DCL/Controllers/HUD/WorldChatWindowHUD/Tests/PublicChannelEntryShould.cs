@@ -21,7 +21,7 @@ public class PublicChannelEntryShould
     [Test]
     public void Configure()
     {
-        view.Configure(new PublicChannelEntry.PublicChannelEntryModel("nearby", "nearby"));
+        view.Configure(new PublicChannelEntry.PublicChannelEntryModel("nearby", "nearby", 0));
         view.nameLabel.text = "#nearby";
     }
 

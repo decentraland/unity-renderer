@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using DCL.Chat.Channels;
 using DCL.Interface;
 
 public class WorldChatWindowController : IHUD
@@ -11,6 +12,7 @@ public class WorldChatWindowController : IHUD
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD = 50;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SHOW_MORE = 20;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH = 20;
+    private const int CHANNELS_PAGE_SIZE = 10;
 
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
@@ -19,14 +21,14 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, PublicChatChannelModel> publicChannels = new Dictionary<string, PublicChatChannelModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
-    internal bool areDMsRequestedByFirstTime = false;
     private long olderDMTimestampRequested = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     private string currentSearch = "";
-    internal bool isRequestingFriendsWithDMs = false;
-    internal int hiddenDMs;
-
+    private int hiddenDMs;
+    private bool isRequestingChannels;
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
+    internal bool areDMsRequestedByFirstTime;
+    internal bool isRequestingDMs;
 
     public IWorldChatWindowView View => view;
 
@@ -62,7 +64,8 @@ public class WorldChatWindowController : IHUD
         
         // TODO: this data should come from the chat service when channels are implemented
         publicChannels[GENERAL_CHANNEL_ID] = new PublicChatChannelModel(GENERAL_CHANNEL_ID, "nearby",
-            "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.");
+            "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.",
+            0);
         view.SetPublicChannel(publicChannels[GENERAL_CHANNEL_ID]);
         
         foreach (var value in chatController.GetAllocatedEntries())
@@ -73,6 +76,9 @@ public class WorldChatWindowController : IHUD
                 view.ShowPrivateChatsLoading();
         
         chatController.OnAddMessage += HandleMessageAdded;
+        chatController.OnChannelUpdated += HandleChannelUpdated;
+        chatController.OnChannelJoined += HandleChannelUpdated;
+        chatController.OnChannelLeft += HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages += HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
@@ -87,6 +93,9 @@ public class WorldChatWindowController : IHUD
         view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
         view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
+        chatController.OnChannelUpdated -= HandleChannelUpdated;
+        chatController.OnChannelJoined -= HandleChannelUpdated;
+        chatController.OnChannelLeft -= HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
@@ -107,10 +116,21 @@ public class WorldChatWindowController : IHUD
                 RequestFriendsWithDirectMessages(
                     USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                     DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+
+                DisplayMoreJoinedChannels();
             }
         }
         else
             view.Hide();
+    }
+
+    private void DisplayMoreJoinedChannels()
+    {
+        if (isRequestingChannels) return;
+        
+        // skip=0: we do not support pagination for channels, it is supposed that a user can have a limited amount of joined channels
+        chatController.GetJoinedChannels(CHANNELS_PAGE_SIZE, 0);
+        isRequestingChannels = true;
     }
 
     private void HandleFriendsControllerInitialization()
@@ -120,6 +140,8 @@ public class WorldChatWindowController : IHUD
             RequestFriendsWithDirectMessages(
                 USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+            
+            DisplayMoreJoinedChannels();
         }
         else
             view.HidePrivateChatsLoading();
@@ -225,7 +247,7 @@ public class WorldChatWindowController : IHUD
         if (!string.IsNullOrEmpty(currentSearch))
             SearchChannelsLocally(currentSearch);
 
-        isRequestingFriendsWithDMs = false;
+        isRequestingDMs = false;
     }
 
     private bool ShouldDisplayPrivateChat(string userId)
@@ -301,7 +323,7 @@ public class WorldChatWindowController : IHUD
     
     internal void ShowMorePrivateChats()
     {
-        if (isRequestingFriendsWithDMs || 
+        if (isRequestingDMs || 
             hiddenDMs == 0 || 
             !string.IsNullOrEmpty(currentSearch))
             return;
@@ -323,7 +345,7 @@ public class WorldChatWindowController : IHUD
 
     internal void RequestFriendsWithDirectMessages(int limit, long fromTimestamp)
     {
-        isRequestingFriendsWithDMs = true;
+        isRequestingDMs = true;
 
         if (!areDMsRequestedByFirstTime)
         {
@@ -341,5 +363,26 @@ public class WorldChatWindowController : IHUD
     {
         view.ShowSearchLoading();
         friendsController.GetFriendsWithDirectMessages(userNameOrId, limit);
+    }
+    
+    private void HandleChannelUpdated(Channel channel)
+    {
+        var channelId = channel.ChannelId;
+        var model = new PublicChatChannelModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp);
+        
+        if (publicChannels.ContainsKey(channelId))
+            publicChannels[channelId].CopyFrom(model);
+        else
+            publicChannels[channelId] = model;
+        
+        view.SetPublicChannel(model);
+        
+        isRequestingChannels = false;
+    }
+    
+    private void HandleChannelLeft(string channelId)
+    {
+        publicChannels.Remove(channelId);
+        view.RemovePublicChannel(channelId);
     }
 }

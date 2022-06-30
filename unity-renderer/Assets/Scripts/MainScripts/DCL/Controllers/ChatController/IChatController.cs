@@ -12,7 +12,8 @@ public interface IChatController
     event Action<string, string> OnJoinChannelError;
     event Action<string> OnChannelLeft;
     event Action<string, string> OnChannelLeaveError;
-    event Action<string, string> OnMuteChannelError; 
+    event Action<string, string> OnMuteChannelError;
+    int TotalJoinedChannelCount { get; }
 
     List<ChatMessage> GetAllocatedEntries();
     List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId);
