@@ -17,7 +17,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     [SerializeField] internal float timeToFade = 10f;
     [SerializeField] internal float fadeDuration = 5f;
     [SerializeField] internal TextMeshProUGUI body;
-    [SerializeField] internal CanvasGroup group;
     [SerializeField] internal float timeToHoverPanel = 1f;
     [SerializeField] internal float timeToHoverGotoPanel = 1f;
     [SerializeField] internal bool showUserName = true;
@@ -31,14 +30,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     [SerializeField] internal Color previewBackgroundColor;
     [SerializeField] internal Color previewFontColor;
 
-    private bool fadeEnabled;
     private float hoverPanelTimer;
     private float hoverGotoPanelTimer;
     private bool isOverCoordinates;
     private ParcelCoordinates currentCoordinates;
     private ChatEntryModel model;
-    private Coroutine previewInterpolationRoutine;
-    private Coroutine previewInterpolationAlphaRoutine;
+
     private Color originalBackgroundColor;
     private Color originalFontColor;
     internal CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
@@ -428,24 +425,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         body.color = fontColor;
     }
     
-    private IEnumerator InterpolateAlpha(float destinationAlpha, float duration)
-    {
-        if (!fadeEnabled)
-        {
-            group.alpha = destinationAlpha;
-            StopCoroutine(previewInterpolationAlphaRoutine); 
-        }
-        var t = 0f;
-        var startAlpha = group.alpha;
-        //NOTE(Brian): Small offset using normalized Y so we keep the cascade effect
-        double yOffset = ((RectTransform) transform).anchoredPosition.y / (double) Screen.height * 4.0;
-        duration -= (float) yOffset;
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            group.alpha = Mathf.Lerp(startAlpha, destinationAlpha, t / duration);
-            yield return null;
-        }
-        group.alpha = destinationAlpha;
-    }
+    
+    
 }
