@@ -107,6 +107,7 @@ namespace DCL.Tutorial_Tests
 
             // Act
             yield return tutorialController.StartTutorialFromStep(0);
+            yield return  null;
 
             // Assert
             Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
@@ -115,12 +116,13 @@ namespace DCL.Tutorial_Tests
             Assert.AreEqual(TutorialPath.FromGenesisPlaza, tutorialController.currentPath);
         }
 
-        [Test]
-        public void SkipTutorialStepsFromGenesisPlazaCorrectly()
+        [UnityTest]
+        public IEnumerator SkipTutorialStepsFromGenesisPlazaCorrectly()
         {
             ConfigureTutorialForGenesisPlaza();
 
             tutorialController.SkipTutorial();
+            yield return null;
 
             Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
@@ -140,12 +142,13 @@ namespace DCL.Tutorial_Tests
             Assert.AreEqual(TutorialPath.FromDeepLink, tutorialController.currentPath);
         }
 
-        [Test]
-        public void SkipTutorialStepsFromDeepLinkCorrectly()
+        [UnityTest]
+        public IEnumerator SkipTutorialStepsFromDeepLinkCorrectly()
         {
             ConfigureTutorialForDeepLink();
 
             tutorialController.SkipTutorial();
+            yield return  null;
 
             Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
@@ -166,12 +169,13 @@ namespace DCL.Tutorial_Tests
             Assert.AreEqual(TutorialPath.FromResetTutorial, tutorialController.currentPath);
         }
 
-        [Test]
-        public void SkipTutorialStepsForResetTutorialCorrectly()
+        [UnityTest]
+        public IEnumerator SkipTutorialStepsForResetTutorialCorrectly()
         {
             ConfigureTutorialForResetTutorial();
 
             tutorialController.SkipTutorial();
+            yield return null;
 
             Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
@@ -185,6 +189,7 @@ namespace DCL.Tutorial_Tests
             ConfigureTutorialForUserThatAlreadyDidTheTutorial();
 
             yield return tutorialController.StartTutorialFromStep(0);
+            yield return null;
 
             Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
@@ -192,12 +197,13 @@ namespace DCL.Tutorial_Tests
             Assert.AreEqual(TutorialPath.FromUserThatAlreadyDidTheTutorial, tutorialController.currentPath);
         }
 
-        [Test]
-        public void SkipTutorialStepsFromUserThatAlreadyDidTheTutorialCorrectly()
+        [UnityTest]
+        public IEnumerator SkipTutorialStepsFromUserThatAlreadyDidTheTutorialCorrectly()
         {
             ConfigureTutorialForUserThatAlreadyDidTheTutorial();
 
             tutorialController.SkipTutorial();
+            yield return null;
 
             Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
@@ -220,12 +226,13 @@ namespace DCL.Tutorial_Tests
             Assert.AreEqual(TutorialPath.FromBuilderInWorld, tutorialController.currentPath);
         }
 
-        [Test]
-        public void SkipTutorialStepsFromBuilderInWorldCorrectly()
+        [UnityTest]
+        public IEnumerator SkipTutorialStepsFromBuilderInWorldCorrectly()
         {
             ConfigureTutorialForBuilderInWorld();
 
             tutorialController.SkipTutorial();
+            yield return null;
 
             Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);

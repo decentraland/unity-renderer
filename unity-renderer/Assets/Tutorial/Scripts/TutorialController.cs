@@ -177,10 +177,8 @@ namespace DCL.Tutorial
             NotificationsController.disableWelcomeNotification = true;
 
             WebInterface.SetDelightedSurveyEnabled(false);
-            
-            IWorldState worldState = Environment.i.world.state;
-            
-            if ((!CommonScriptableObjects.rendererState.Get()) || worldState?.currentSceneId == null)
+
+            if (!CommonScriptableObjects.rendererState.Get())
                 CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
             else
                 OnRenderingStateChanged(true, false);
@@ -244,6 +242,10 @@ namespace DCL.Tutorial
                 GameObject.Destroy(runningStep.gameObject);
                 runningStep = null;
             }
+
+            yield return new WaitUntil(IsPlayerInScene);
+
+            playerIsInGenesisPlaza = playerIsInGenesisPlaza || IsPlayerInsideGenesisPlaza();
 
             switch (tutorialType)
             {
@@ -438,8 +440,6 @@ namespace DCL.Tutorial
 
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
 
-            playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
-
             if (configuration.debugRunTutorial)
                 currentStepIndex = configuration.debugStartingStepIndex >= 0 ? configuration.debugStartingStepIndex : 0;
             else
@@ -592,6 +592,16 @@ namespace DCL.Tutorial
                 fromDeepLink = false.ToString(),
                 enableNewTutorialCamera = false.ToString()
             }));
+        }
+
+        internal bool IsPlayerInScene()
+        {
+            IWorldState worldState = Environment.i.world.state;
+
+            if (worldState == null || worldState.currentSceneId == null)
+                return false;
+
+            return true;
         }
 
         internal static bool IsPlayerInsideGenesisPlaza()
