@@ -178,7 +178,12 @@ namespace DCL.Tutorial
 
             WebInterface.SetDelightedSurveyEnabled(false);
             
-            CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
+            IWorldState worldState = Environment.i.world.state;
+            
+            if ((!CommonScriptableObjects.rendererState.Get()) || worldState?.currentSceneId == null)
+                CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
+            else
+                OnRenderingStateChanged(true, false);
 
             OnTutorialEnabled?.Invoke();
         }
