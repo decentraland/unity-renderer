@@ -79,7 +79,7 @@ public class DefaultChatEntryShould
         
         await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
 
-        Assert.AreEqual("test message", entry.body.text);
+        Assert.AreEqual("<b>YOU:</b> test message", entry.body.text);
     });
 
     [UnityTest]
