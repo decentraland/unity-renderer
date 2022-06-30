@@ -1,4 +1,4 @@
-using DCL.Interface;
+using static DCL.SettingsCommon.GeneralSettings;
 
 namespace SocialFeaturesAnalytics
 {
@@ -7,6 +7,10 @@ namespace SocialFeaturesAnalytics
         void SendPlayerMuted(string toUserId);
         void SendPlayerUnmuted(string toUserId);
         void SendVoiceMessageStartedByFirstTime();
+        void SendVoiceMessage(double messageLength, VoiceMessageSource source, string fromUserId);
+        void SendVoiceChannelConnection(int numberOfPeers);
+        void SendVoiceChannelDisconnection();
+        void SendVoiceChatPreferencesChanged(VoiceChatAllow preference);
         void SendChannelMessageSent(string fromUserId, double messageLength, string channel);
         void SendDirectMessageSent(string fromUserId, string toUserId, double messageLength, bool areFriends, ChatContentType contentType);
         void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source);
