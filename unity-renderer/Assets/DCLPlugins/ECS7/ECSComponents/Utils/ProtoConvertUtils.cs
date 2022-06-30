@@ -1,4 +1,4 @@
-namespace DCL.ECSComponents
+namespace DCL.ECSComponents.Utils
 {
     public static class ProtoConvertUtils 
     {      

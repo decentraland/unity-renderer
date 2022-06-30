@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Controllers;
+using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
 using UnityEngine;
@@ -111,7 +112,7 @@ namespace DCL.ECSComponents
             
             UnityEngine.Vector3 center = entity.gameObject.transform.position;
             Quaternion rotation = entity.gameObject.transform.rotation;
-            return ECSComponentsUtils.DetectAvatars(boxArea, center, rotation, excludedColliders);
+            return ECSAvatarUtils.DetectAvatars(boxArea, center, rotation, excludedColliders);
         }
 
         private void RemoveAllModifiers()
