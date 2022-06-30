@@ -4,16 +4,18 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
 
 public class ChatNotificationMessageComponentView : BaseComponentView, IChatNotificationMessageComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal Button button;
-    [SerializeField] internal TMP_Text notificationMessage;
+    [SerializeField] public TMP_Text notificationMessage;
     [SerializeField] internal TMP_Text notificationHeader;
     [SerializeField] internal TMP_Text notificationTimestamp;
     [SerializeField] internal ImageComponentView image;
     [SerializeField] internal bool isPrivate;
+    [SerializeField] internal RectTransform backgroundTransform;
 
     [Header("Configuration")]
     [SerializeField] internal ChatNotificationMessageComponentModel model;
@@ -56,12 +58,16 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
             notificationMessage.text = message;
         else
             notificationMessage.text = $"{message.Substring(0, maxContentCharacters)}...";
+
+        ForceUIRefresh();
     }
 
     public void SetTimestamp(string timestamp)
     {
         model.time = timestamp;
         notificationTimestamp.text = timestamp;
+
+        ForceUIRefresh();
     }
 
     public void SetNotificationHeader(string header)
@@ -71,6 +77,8 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
             notificationHeader.text = header;
         else
             notificationHeader.text = $"{header.Substring(0, maxHeaderCharacters)}...";
+
+        ForceUIRefresh();
     }
 
     public void SetIsPrivate(bool isPrivate)
@@ -78,6 +86,8 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         model.isPrivate = isPrivate;
         this.isPrivate = isPrivate;
         image.gameObject.SetActive(isPrivate);
+
+        ForceUIRefresh();
     }
 
     public void SetImage(string uri)
@@ -107,4 +117,8 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         this.notificationTargetId = notificationTargetId;
     }
 
+    private void ForceUIRefresh()
+    {
+        Utils.ForceRebuildLayoutImmediate(backgroundTransform);
+    }
 }

@@ -13,13 +13,9 @@ public class ChatNotificationController : IHUD
 
     private UserProfile ownUserProfile;
 
-    public ChatNotificationController(IChatController chatController)
+    public ChatNotificationController(IChatController chatController, IUserProfileBridge userProfileBridge, MainChatNotificationsComponentView view)
     {
         this.chatController = chatController;
-    }
-
-    public void Initialize(IUserProfileBridge userProfileBridge, MainChatNotificationsComponentView view)
-    {
         this.userProfileBridge = userProfileBridge;
         this.view = view;
         ownUserProfile = userProfileBridge.GetOwn();
@@ -36,8 +32,12 @@ public class ChatNotificationController : IHUD
             var profile = ExtractRecipient(message);
             if (profile == null) return;
             message.sender = profile.userName;
+            view.AddNewChatNotification(message, profile.face256SnapshotURL);
         }
-        view.AddNewChatNotification(message);
+        else
+        {
+            view.AddNewChatNotification(message, null);
+        }
         isInitialized.Set(view.gameObject.transform);
     }
 

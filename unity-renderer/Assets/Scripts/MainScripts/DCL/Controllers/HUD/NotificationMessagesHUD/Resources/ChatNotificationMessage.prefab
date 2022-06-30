@@ -458,6 +458,7 @@ MonoBehaviour:
   notificationTimestamp: {fileID: 9112808225028901382}
   image: {fileID: 179125349042078575}
   isPrivate: 0
+  backgroundTransform: {fileID: 4826730172210535619}
   model:
     maxHeaderCharacters: 30
     maxContentCharacters: 50

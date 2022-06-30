@@ -3,18 +3,17 @@
 /// </summary>
 public class ChatNotificationsFeature : IPlugin
 {
-    public ChatNotificationController chatController;
+    public ChatNotificationController chatNotificationController;
 
     public ChatNotificationsFeature()
     {
-        chatController = CreateController();
-        chatController.Initialize(new UserProfileWebInterfaceBridge(), MainChatNotificationsComponentView.Create());
+        chatNotificationController = CreateController();
     }
 
-    internal virtual ChatNotificationController CreateController() => new ChatNotificationController(ChatController.i);
+    internal virtual ChatNotificationController CreateController() => new ChatNotificationController(ChatController.i, new UserProfileWebInterfaceBridge(), MainChatNotificationsComponentView.Create());
 
     public void Dispose()
     {
-        chatController.Dispose();
+        chatNotificationController.Dispose();
     }
 }
