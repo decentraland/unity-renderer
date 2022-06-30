@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Chat.Channels;
+using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
@@ -88,6 +89,18 @@ public class HUDFactory : IHUDFactory
                     new UserProfileWebInterfaceBridge(),
                     DataStore.i,
                     ProfanityFilterSharedInstances.regexFilter,
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
+                    SceneReferences.i.mouseCatcher,
+                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
+                break;
+            case HUDElementID.CHANNELS_CHAT:
+                hudElement = new ChatChannelHUDController(
+                    DataStore.i,
+                    new UserProfileWebInterfaceBridge(),
+                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i), // TODO (channels): Pass ChatController.i after kernel integration
+                    Resources.Load<InputAction_Trigger>("CloseWindow"),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),

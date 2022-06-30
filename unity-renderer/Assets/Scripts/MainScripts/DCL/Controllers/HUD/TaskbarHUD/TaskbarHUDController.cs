@@ -1,5 +1,6 @@
 using System;
 using DCL;
+using DCL.Chat.HUD;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,6 +18,7 @@ public class TaskbarHUDController : IHUD
     public WorldChatWindowController worldChatWindowHud;
     public PrivateChatWindowController privateChatWindow;
     public PublicChatChannelController publicChatChannel;
+    public ChatChannelHUDController chatChannel;
     public FriendsHUDController friendsHud;
     public VoiceChatWindowController voiceChatHud;
 
@@ -380,14 +382,24 @@ public class TaskbarHUDController : IHUD
 
     public void OpenPublicChatChannel(string channelId, bool focusInputField)
     {
-        publicChatChannel?.Setup(channelId);
+        if (channelId == "general")
+        {
+            publicChatChannel?.Setup(channelId);
+            publicChatChannel?.SetVisibility(true, focusInputField);
+        }
+        else
+        {
+            chatChannel?.Setup(channelId);
+            chatChannel?.SetVisibility(true);
+        }
+        
         worldChatWindowHud?.SetVisibility(false);
         privateChatWindow?.SetVisibility(false);
         friendsHud?.SetVisibility(false);
         isExperiencesViewerOpen?.Set(false);
         isEmotesVisible?.Set(false);
         voiceChatHud?.SetVisibility(false);
-        publicChatChannel?.SetVisibility(true, focusInputField);
+        
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         chatToggleTargetWindow = publicChatChannel;
         chatInputTargetWindow = publicChatChannel;
@@ -473,6 +485,15 @@ public class TaskbarHUDController : IHUD
     private void HandlePublicChannelPreviewModeChanged(bool isPreviewMode)
     {
         if (!publicChatChannel.View.IsActive) return;
+        if (isPreviewMode)
+            view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
+        else
+            view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
+    }
+    
+    private void HandleChannelPreviewModeChanged(bool isPreviewMode)
+    {
+        if (!chatChannel.View.IsActive) return;
         if (isPreviewMode)
             view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
         else
@@ -623,5 +644,24 @@ public class TaskbarHUDController : IHUD
             OpenFriendsWindow();
         else
             OpenChatList();
+    }
+
+    public void AddChatChannel(ChatChannelHUDController controller)
+    {
+        if (controller?.View == null)
+        {
+            Debug.LogWarning("AddChatChannel >>> Chat Window doesn't exist yet!");
+            return;
+        }
+
+        if (controller.View.Transform.parent == view.leftWindowContainer) return;
+
+        controller.View.Transform.SetParent(view.leftWindowContainer, false);
+        experiencesViewerTransform?.SetAsLastSibling();
+        
+        chatChannel = controller;
+
+        controller.OnClosed += OpenPublicChannelOnPreviewMode;
+        controller.OnPreviewModeChanged += HandleChannelPreviewModeChanged;
     }
 }
