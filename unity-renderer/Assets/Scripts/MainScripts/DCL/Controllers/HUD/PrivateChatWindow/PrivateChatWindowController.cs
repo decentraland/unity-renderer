@@ -203,8 +203,6 @@ public class PrivateChatWindowController : IHUD
         message.body = $"/w {message.recipient} {message.body}";
 
         chatController.Send(message);
-        socialAnalytics.SendDirectMessageSent(message.sender, ConversationUserId, message.body.Length,
-            friendsController.IsFriend(ConversationUserId), ChatContentType.Text);
     }
 
     private void HandleCloseInputTriggered(DCLAction_Trigger action) => Hide();
@@ -234,7 +232,6 @@ public class PrivateChatWindowController : IHUD
 
     private void Unfriend(string friendId)
     {
-        friendsController.RemoveFriend(friendId);
         Hide();
     }
 

@@ -65,16 +65,17 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     internal async UniTask PopulateTask(ChatEntryModel chatEntryModel, CancellationToken cancellationToken)
     {
-        // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
-        // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
-        await UniTask.NextFrame();
-        await UniTask.NextFrame();
-        await UniTask.NextFrame();
-        
         model = chatEntryModel;
 
         chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
         var userString = GetUserString(chatEntryModel);
+        
+        // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
+        // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
+        // TODO: Remove hack in a newer Unity/TMPro version 
+        await UniTask.NextFrame();
+        await UniTask.NextFrame();
+        await UniTask.NextFrame();
         
         if (!string.IsNullOrEmpty(userString) && showUserName)
             body.text = $"{userString} {chatEntryModel.bodyText}";
