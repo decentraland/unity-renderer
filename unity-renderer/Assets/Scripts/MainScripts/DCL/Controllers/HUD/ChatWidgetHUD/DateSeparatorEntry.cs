@@ -11,6 +11,7 @@ using UnityEngine.UI;
 public class DateSeparatorEntry : ChatEntry
 {
     [SerializeField] internal TextMeshProUGUI title;
+    [SerializeField] internal CanvasGroup group;
     
     [Header("Preview Mode")]
     [SerializeField] private Image previewBackgroundImage;
@@ -20,8 +21,10 @@ public class DateSeparatorEntry : ChatEntry
     private DateTime timestamp;
     private ChatEntryModel chatEntryModel;
     private Coroutine previewInterpolationRoutine;
+    private Coroutine previewInterpolationAlphaRoutine;
     private Color originalBackgroundColor;
     private Color originalFontColor;
+    private bool fadeEnabled;
 
     public override ChatEntryModel Model => chatEntryModel;
     
@@ -39,7 +42,14 @@ public class DateSeparatorEntry : ChatEntry
 
     public override void SetFadeout(bool enabled)
     {
-        
+        if (!enabled)
+        {
+            group.alpha = 1;
+            fadeEnabled = false;
+            return;
+        }
+
+        fadeEnabled = true;
     }
 
     public override void DeactivatePreview(bool fadeOut)
@@ -54,7 +64,16 @@ public class DateSeparatorEntry : ChatEntry
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
         
-        previewInterpolationRoutine = StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+        if (fadeOut)
+        {
+            previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(0, 0.5f));
+        }
+        else
+        {
+            group.alpha = 1;
+            previewInterpolationRoutine =
+                StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+        }
     }
 
     public override void ActivatePreview()
@@ -69,6 +88,12 @@ public class DateSeparatorEntry : ChatEntry
             StopCoroutine(previewInterpolationRoutine);
         
         previewInterpolationRoutine = StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
+        
+        //We have to evaluate if we were already showing the alpha group.
+        if (group.alpha <= 0.99f)
+        {
+            previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
+        }
     }
     
     public override void ActivatePreviewInstantly()
@@ -130,4 +155,26 @@ public class DateSeparatorEntry : ChatEntry
         previewBackgroundImage.color = backgroundColor;
         title.color = fontColor;
     }
+    
+    private IEnumerator InterpolateAlpha(float destinationAlpha, float duration)
+    {
+        if (!fadeEnabled)
+        {
+            group.alpha = destinationAlpha;
+            StopCoroutine(previewInterpolationAlphaRoutine); 
+        }
+        var t = 0f;
+        var startAlpha = group.alpha;
+        //NOTE(Brian): Small offset using normalized Y so we keep the cascade effect
+        double yOffset = ((RectTransform) transform).anchoredPosition.y / (double) Screen.height * 4.0;
+        duration -= (float) yOffset;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            group.alpha = Mathf.Lerp(startAlpha, destinationAlpha, t / duration);
+            yield return null;
+        }
+        group.alpha = destinationAlpha;
+    }
+    
 }

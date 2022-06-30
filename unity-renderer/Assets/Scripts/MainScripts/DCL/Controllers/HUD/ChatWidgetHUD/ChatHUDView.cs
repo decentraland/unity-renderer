@@ -25,7 +25,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public UserContextMenu contextMenu;
     public UserContextConfirmationDialog confirmationDialog;
     [SerializeField] private DefaultChatEntryFactory defaultChatEntryFactory;
-    [SerializeField] private Model model;
+    [SerializeField] protected Model model;
     [SerializeField] private InputAction_Trigger nextChatInHistoryInput;
     [SerializeField] private InputAction_Trigger previousChatInHistoryInput;
     
@@ -96,8 +96,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public int EntryCount => entries.Count;
     public IChatEntryFactory ChatEntryFactory { get; set; }
     public bool IsInputFieldSelected => inputField.isFocused;
-    public bool IsInPreviewMode => model.isPreviewMode;
-
 
     public static ChatHUDView Create()
     {
@@ -378,7 +376,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private void UpdateLayout() => isLayoutDirty = true;
 
     [Serializable]
-    private struct Model
+    protected struct Model
     {
         public bool isPreviewMode;
         public bool isInputFieldFocused;
