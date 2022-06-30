@@ -44,13 +44,19 @@ namespace DCL.ECSComponents
         {
             // We check if the mode should change, and adjust the area for the new model
             bool cameraModeChanged = lastModel != null || model.Mode != lastModel?.Mode;
-            area = ProtoConvertUtils.PBVectorToUnityVector(model.Area);
             
+            area = ProtoConvertUtils.PBVectorToUnityVector(model.Area);
             lastModel = model;
+            
+            // If the camera mode hasn't changed we skip the model 
+            if (!cameraModeChanged)
+                return;
+            
+            // We set the new mode
             cameraModeRepresentantion.SetCameraMode(ProtoConvertUtils.PBCameraEnumToUnityEnum(model.Mode));
             
             // If the mode must change and the player is inside, we change the mode here
-            if (cameraModeChanged && isPlayerInside)
+            if (isPlayerInside)
                 areasController.ChangeAreaMode(cameraModeRepresentantion, cameraModeRepresentantion.cameraMode);
         }
         

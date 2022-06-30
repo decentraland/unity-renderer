@@ -11,7 +11,17 @@ namespace DCL.Components
         /// <param name="area"></param>
         /// <param name="mode"></param>
         void ChangeAreaMode(in ICameraModeArea area, in CameraMode.ModeId mode);
+        
+        /// <summary>
+        /// Adds an area
+        /// </summary>
+        /// <param name="area"></param>
         void AddInsideArea(in ICameraModeArea area);
+        
+        /// <summary>
+        /// Remove an area
+        /// </summary>
+        /// <param name="area"></param>
         void RemoveInsideArea(in ICameraModeArea area);
     }
     
