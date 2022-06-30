@@ -17,8 +17,8 @@ namespace DCL
         public GameObject container { get; }
         public SkinnedMeshRenderer renderer { get; }
 
-        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine);
-        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset);
+        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, bool keepPose = true);
+        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset, bool keepPose = true);
     }
     
     /// <summary>
@@ -43,7 +43,10 @@ namespace DCL
 
         private AvatarMeshCombiner.Output? lastOutput;
 
-        public AvatarMeshCombinerHelper (GameObject container = null) { this.container = container; }
+        public AvatarMeshCombinerHelper (GameObject container = null) 
+        { 
+            this.container = container;
+        }
 
         /// <summary>
         /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
@@ -56,7 +59,7 @@ namespace DCL
         /// </summary>
         /// <param name="bonesContainer">A SkinnedMeshRenderer that must contain the bones and bindposes that will be used by the combined avatar.</param>
         /// <param name="renderersToCombine">A list of avatar parts to be combined</param>
-        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine) { return Combine(bonesContainer, renderersToCombine, Resources.Load<Material>("Avatar Material")); }
+        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, bool keepPose = true) { return Combine(bonesContainer, renderersToCombine, Resources.Load<Material>("Avatar Material"), keepPose); }
 
         /// <summary>
         /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
@@ -69,7 +72,7 @@ namespace DCL
         /// <param name="renderersToCombine">A list of avatar parts to be combined</param>
         /// <param name="materialAsset">A material asset that will serve as the base of the combine result. A new materialAsset will be created for each combined sub-mesh.</param>
         /// <returns>true if succeeded, false if not</returns>
-        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset)
+        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset, bool keepPose)
         {
             Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
             Assert.IsTrue(renderersToCombine != null, "renderersToCombine should never be null!");
@@ -86,7 +89,8 @@ namespace DCL
             bool success = CombineInternal(
                 bonesContainer,
                 renderers,
-                materialAsset);
+                materialAsset,
+                keepPose);
 
             // Disable original renderers
             for ( int i = 0; i < renderers.Length; i++ )
@@ -97,7 +101,7 @@ namespace DCL
             return success;
         }
 
-        private bool CombineInternal(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset)
+        private bool CombineInternal(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset, bool keepPose)
         {
             Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
             Assert.IsTrue(bonesContainer.sharedMesh != null, "bonesContainer should never be null!");
@@ -105,14 +109,14 @@ namespace DCL
             Assert.IsTrue(bonesContainer.bones != null, "bonesContainer bones should never be null!");
             Assert.IsTrue(renderers != null, "renderers should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
-
+            
             CombineLayerUtils.ENABLE_CULL_OPAQUE_HEURISTIC = useCullOpaqueHeuristic;
-
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
                 bonesContainer.sharedMesh.bindposes,
                 bonesContainer.bones,
                 renderers,
-                materialAsset);
+                materialAsset,
+                keepPose);
 
             if ( !output.isValid )
             {
