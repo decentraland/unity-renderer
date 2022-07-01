@@ -18,13 +18,14 @@ public class MainChatNotificationsComponentView : BaseComponentView
     Queue<PoolableObject> poolableQueue = new Queue<PoolableObject>();
     Queue<ChatNotificationMessageComponentView> creationQueue2 = new Queue<ChatNotificationMessageComponentView>();
     private Pool entryPool;
+    public event Action<string> OnClickedNotification;
 
     public static MainChatNotificationsComponentView Create()
     {
         return Instantiate(Resources.Load<MainChatNotificationsComponentView>("SocialBarV1/ChatNotificationHUD"));
     }
 
-    public void AddNewChatNotification(ChatMessage message, string profilePicture)
+    public ChatNotificationMessageComponentView AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null)
     {
         CheckNotificationCountAndRelease();
         entryPool = GetNotificationEntryPool();
@@ -34,25 +35,35 @@ public class MainChatNotificationsComponentView : BaseComponentView
         poolableQueue.Enqueue(newNotification);
         creationQueue2.Enqueue(chatNotificationComponentView);
 
+        chatNotificationComponentView.OnClickedNotification -= ClickedOnNotification;
 
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
             chatNotificationComponentView.SetIsPrivate(true);
             chatNotificationComponentView.SetMessage(message.body);
-            chatNotificationComponentView.SetNotificationHeader(message.sender);
+            chatNotificationComponentView.SetNotificationHeader(username);
+            chatNotificationComponentView.SetNotificationTargetId(message.sender);
             if (profilePicture != null)
                 chatNotificationComponentView.SetImage(profilePicture);
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {
             chatNotificationComponentView.SetIsPrivate(false);
-            chatNotificationComponentView.SetMessage($"{message.sender}: {message.body}");
+            chatNotificationComponentView.SetMessage($"{username}: {message.body}");
+            chatNotificationComponentView.SetNotificationTargetId("#nearby");
             chatNotificationComponentView.SetNotificationHeader("#nearby");
         }
 
         chatNotificationComponentView.transform.SetParent(chatEntriesContainer, false);
         chatNotificationComponentView.RefreshControl();
-        //chatNotificationComponentView.SetTimestamp(message.timestamp);
+        chatNotificationComponentView.SetTimestamp(UnixTimeStampToLocalTime(message.timestamp));
+        chatNotificationComponentView.OnClickedNotification += ClickedOnNotification;
+        return chatNotificationComponentView;
+    }
+
+    private void ClickedOnNotification(string targetId)
+    {
+        OnClickedNotification?.Invoke(targetId);
     }
 
     private void CheckNotificationCountAndRelease()
@@ -77,6 +88,13 @@ public class MainChatNotificationsComponentView : BaseComponentView
         entryPool.ForcePrewarm();
 
         return entryPool;
+    }
+
+    private static string UnixTimeStampToLocalTime(ulong unixTimeStampMilliseconds)
+    {
+        DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
+        return $"{dtDateTime.Hour}:{dtDateTime.Minute.ToString("D2")}";
     }
 
     public override void RefreshControl()

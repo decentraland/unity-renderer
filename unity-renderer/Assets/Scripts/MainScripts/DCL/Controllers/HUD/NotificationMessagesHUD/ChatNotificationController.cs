@@ -8,6 +8,7 @@ public class ChatNotificationController : IHUD
 {
     IChatController chatController;
     MainChatNotificationsComponentView view;
+    TaskbarHUDController taskbarHUDController;
     private IUserProfileBridge userProfileBridge;
     internal BaseVariable<Transform> isInitialized => DataStore.i.HUDs.isNotificationPanelInitialized;
 
@@ -18,8 +19,10 @@ public class ChatNotificationController : IHUD
         this.chatController = chatController;
         this.userProfileBridge = userProfileBridge;
         this.view = view;
+        taskbarHUDController = HUDController.i.taskbarHud;
         ownUserProfile = userProfileBridge.GetOwn();
         chatController.OnAddMessage += HandleMessageAdded;
+        view.OnClickedNotification += OpenNotificationChat;
     }
 
     private void HandleMessageAdded(ChatMessage message)
@@ -31,14 +34,23 @@ public class ChatNotificationController : IHUD
         {
             var profile = ExtractRecipient(message);
             if (profile == null) return;
-            message.sender = profile.userName;
-            view.AddNewChatNotification(message, profile.face256SnapshotURL);
+            view.AddNewChatNotification(message, profile.userName, profile.face256SnapshotURL);
         }
         else
         {
-            view.AddNewChatNotification(message, null);
+            view.AddNewChatNotification(message);
         }
         isInitialized.Set(view.gameObject.transform);
+    }
+
+    private void OpenNotificationChat(string targetId)
+    {
+        if (targetId == null) return;
+
+        if (targetId == "#nearby")
+            HUDController.i.taskbarHud.OpenPublicChatChannel("#nearby", false);
+        else
+            HUDController.i.taskbarHud.OpenPrivateChat(targetId);
     }
 
     private UserProfile ExtractRecipient(ChatMessage message) =>
@@ -51,5 +63,6 @@ public class ChatNotificationController : IHUD
     public void Dispose()
     {
         chatController.OnAddMessage -= HandleMessageAdded;
+        view.OnClickedNotification -= OpenNotificationChat;
     }
 }
