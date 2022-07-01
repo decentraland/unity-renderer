@@ -144,9 +144,8 @@ public class PublicChatChannelController : IHUD
             message.body = $"/w {message.recipient} {message.body}";
 
         chatController.Send(message);
-        socialAnalytics.SendChannelMessageSent(message.sender, message.body.Length, channelId);
     }
-    
+
     public void SetVisibility(bool visible, bool focusInputField)
     {
         if (visible)

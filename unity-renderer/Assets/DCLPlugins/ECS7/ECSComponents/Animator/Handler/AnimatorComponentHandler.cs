@@ -25,7 +25,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            dataStore.animatorShapesReady.OnAdded -= AnimatorShapeReadyAdded;
+            dataStore.shapesReady.OnAdded -= ShapeReadyAdded;
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAnimator model)
@@ -41,19 +41,19 @@ namespace DCL.ECSComponents
             else
             {
                 // If shape is not loaded, we check if it is already loaded, if not we subscribe to when it is ready
-                if (dataStore.animatorShapesReady.TryGetValue(entity.entityId, out GameObject gameObject))
+                if (dataStore.shapesReady.TryGetValue(entity.entityId, out GameObject gameObject))
                 {
-                    AnimatorShapeReadyAdded(entity.entityId, gameObject);
+                    ShapeReadyAdded(entity.entityId, gameObject);
                 }
                 else
                 {
-                    dataStore.animatorShapesReady.OnAdded -= AnimatorShapeReadyAdded;
-                    dataStore.animatorShapesReady.OnAdded += AnimatorShapeReadyAdded;
+                    dataStore.shapesReady.OnAdded -= ShapeReadyAdded;
+                    dataStore.shapesReady.OnAdded += ShapeReadyAdded;
                 }
             }
         }
 
-        private void AnimatorShapeReadyAdded(long entityId, GameObject gameObject)
+        private void ShapeReadyAdded(long entityId, GameObject gameObject)
         {
             if (entityId != entity.entityId)
                 return;
