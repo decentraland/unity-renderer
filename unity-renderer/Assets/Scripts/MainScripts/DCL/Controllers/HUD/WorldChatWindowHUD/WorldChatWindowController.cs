@@ -36,6 +36,7 @@ public class WorldChatWindowController : IHUD
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChannel;
     public event Action OnOpen;
+    public event Action<string, string> OnJoinChannelError;
 
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -390,7 +391,7 @@ public class WorldChatWindowController : IHUD
 
     private void HandleJoinChannelError(string channelId, string message)
     {
-        // TO DO: Give error feedback...
+        OnJoinChannelError?.Invoke(channelId, message);
     }
 
     private void HandleChannelLeft(string channelId)
