@@ -101,9 +101,6 @@ public class HUDFactory : IHUDFactory
                     new UserProfileWebInterfaceBridge(),
                     new ChatChannelsControllerMock(ChatController.i, UserProfileController.i), // TODO (channels): Pass ChatController.i after kernel integration
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
-                    new SocialAnalytics(
-                        Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
