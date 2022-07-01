@@ -40,7 +40,7 @@ namespace DCL.ECSComponents.OnPointerUp
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBOnPointerUp model)
         {
-            representantion.SetData(scene, entity, model.ShowFeedback, model.Button, model.Distance, model.Identifier, model.HoverText);
+            representantion.SetData(scene, entity, model.ShowFeedback, model.Button, model.Distance, model.HoverText);
             if (!isAdded)
             {
                 isAdded = true;
