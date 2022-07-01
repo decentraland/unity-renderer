@@ -29,5 +29,10 @@ namespace DCL.ECSComponents
             vector.Z = original.z;
             return vector;
         }
+        
+        public static Color UnityVectorToPBVector(Color3 original)
+        {
+            return new UnityEngine.Color(original.R, original.G, original.B, 1);
+        }
     }
 }
