@@ -1,4 +1,5 @@
-﻿using DCL;
+﻿using System;
+using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.ECS7;
@@ -27,7 +28,6 @@ namespace DCLPlugins.ECSComponents
         private int button;
         private string hoverText;
         private float distance;
-        private long identifier;
 
         public PointerInputRepresentantion(IDCLEntity entity,DataStore_ECS7 dataStore,PointerInputEventType type, IECSComponentWriter componentWriter)
         {
@@ -39,7 +39,7 @@ namespace DCLPlugins.ECSComponents
             Initializate(entity);
         }
 
-        public void SetData(IParcelScene scene, IDCLEntity entity, bool showFeedback, int button, float distance, long identifier, string hoverText)
+        public void SetData(IParcelScene scene, IDCLEntity entity, bool showFeedback, int button, float distance, string hoverText)
         {
             this.scene = scene;
             eventEntity = entity;
@@ -47,7 +47,6 @@ namespace DCLPlugins.ECSComponents
             this.showFeedback = showFeedback;
             this.button = button;
             this.distance = distance;
-            this.identifier = identifier;
             this.hoverText = hoverText;
         }
 
@@ -95,9 +94,25 @@ namespace DCLPlugins.ECSComponents
                 string meshName = pointerEventHandler.GetMeshName(hit.collider);
                 long entityId = eventEntity.entityId;
 
-                PBOnPointerResult result = ProtoConvertUtils.GetPointerResultModel((int)buttonId, identifier, meshName, ray, hit);
-                componentWriter.PutComponent(scene.sceneData.id, entityId, ComponentID.ON_POINTER_RESULT,
-                    result);
+                object payload = null;
+                int componentId = ComponentID.ON_POINTER_UP_RESULT;
+                
+                // We have to differentiate between OnPointerDown and OnPointerUp
+                switch (type)
+                {
+                    case PointerInputEventType.DOWN:
+                        componentId = ComponentID.ON_POINTER_DOWN_RESULT;
+                        payload = ProtoConvertUtils.GetPointerDownResultModel((int)buttonId, meshName, ray, hit);
+                        break;
+                    case PointerInputEventType.UP:
+                        componentId = ComponentID.ON_POINTER_UP_RESULT;
+                        payload = ProtoConvertUtils.GetPointerUpResultModel((int)buttonId, meshName, ray, hit);
+                        break;
+                }
+                
+                // We set the result
+                componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
+                    payload);
             }
         }
         
