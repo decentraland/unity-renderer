@@ -1,8 +1,12 @@
 using DCL.Tutorial;
+using DCL;
 using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Controllers;
+using DCL.Helpers;
+using DCL.Models;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -11,17 +15,25 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Tutorial_Tests
 {
-    public class TutorialControllerShould : IntegrationTestSuite
+    public class TutorialControllerShould : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
         private TutorialView tutorialView;
         private TutorialController tutorialController;
         private int currentStepIndex = 0;
         private List<TutorialStep> currentSteps = new List<TutorialStep>();
         private Coroutine stepCoroutine;
+        
+        private ISceneController sceneController => DCL.Environment.i.world.sceneController;
+
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+            sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
+            yield return new WaitForAllMessagesProcessed();
             CreateAndConfigureTutorial();
         }
 
@@ -586,10 +598,11 @@ namespace DCL.Tutorial_Tests
 
             currentStepIndex = 0;
             currentSteps = tutorialController.configuration.stepsOnGenesisPlaza;
-
+            
             tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = true;
+            if(!scene.parcels.Contains(new Vector2Int(-9, -9)))scene.parcels.Add(new Vector2Int(-9, -9));
             tutorialController.tutorialReset = false;
             DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
@@ -611,6 +624,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = false;
+            if(scene.parcels.Contains(new Vector2Int(-9, -9)))scene.parcels.Remove(new Vector2Int(-9, -9));
             tutorialController.tutorialReset = false;
             tutorialController.openedFromDeepLink = true;
             DataStore.i.common.isTutorialRunning.Set(true);
@@ -634,6 +648,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.tutorialReset = true;
             tutorialController.playerIsInGenesisPlaza = false;
+            if(scene.parcels.Contains(new Vector2Int(-9, -9)))scene.parcels.Remove(new Vector2Int(-9, -9));
             DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
@@ -729,6 +744,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = true;
+            if(!scene.parcels.Contains(new Vector2Int(-9, -9)))scene.parcels.Add(new Vector2Int(-9, -9));
             tutorialController.tutorialReset = false;
             DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = null;

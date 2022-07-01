@@ -245,7 +245,7 @@ namespace DCL.Tutorial
 
             yield return new WaitUntil(IsPlayerInScene);
 
-            playerIsInGenesisPlaza = playerIsInGenesisPlaza || IsPlayerInsideGenesisPlaza();
+            playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
 
             switch (tutorialType)
             {
