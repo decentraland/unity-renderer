@@ -46,7 +46,7 @@ namespace DCL.Protobuf
         private const string COMPILED_VERSION_FILENAME = "compiledVersion.gen.txt";
         private const string EXECUTABLE_VERSION_FILENAME = "executableVersion.gen.txt";
 
-        private const string PROTO_VERSION = "3.12.3";
+        private const string PROTO_VERSION = "3.20.1";
 
         private const string NPM_PACKAGE = "decentraland-ecs";
         private const string NPM_PACKAGE_PROTO_DEF = "/package/dist/ecs7/proto-definitions";
@@ -551,7 +551,7 @@ namespace DCL.Protobuf
         private static bool AddExecutablePermisson(string path)
         {
             // This is the console to convert the proto
-            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "chmod", Arguments = $"+x \"${path}\"" };
+            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "chmod", Arguments = $"+x \"{path}\"" };
             
             Process proc = new Process() { StartInfo = startInfo };
             proc.StartInfo.UseShellExecute = false;
