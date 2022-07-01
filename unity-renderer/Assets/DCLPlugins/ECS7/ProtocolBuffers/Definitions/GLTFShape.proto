@@ -1,0 +1,11 @@
+﻿syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1041;
+
+message PBGLTFShape {
+  bool with_collisions = 1;
+  bool is_pointer_blocker = 2;
+  bool visible = 3;
+  string src = 4;
+}

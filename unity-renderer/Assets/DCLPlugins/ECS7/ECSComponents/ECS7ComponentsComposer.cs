@@ -1,6 +1,7 @@
 using System;
 using DCL.ECSRuntime;
 using DCL.ECS7;
+using DCLPlugins.ECSComponents;
 
 namespace DCL.ECSComponents
 {
@@ -16,6 +17,8 @@ namespace DCL.ECSComponents
         private readonly GLTFShapeRegister gltfRegister;
         private readonly ECSTextShapeRegister textShapeRegister;
         private readonly NFTShapeRegister nftRegister;
+        private readonly OnPointerDownRegister pointerDownRegister;
+        private readonly OnPointerUpRegister pointerUpRegister;
         private readonly AnimatorRegister animatorRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
@@ -30,6 +33,8 @@ namespace DCL.ECSComponents
             nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter);
             textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
             gltfRegister = new GLTFShapeRegister(ComponentID.GLTF_SHAPE, componentsFactory, componentsWriter);
+            pointerDownRegister = new OnPointerDownRegister(ComponentID.ON_POINTER_DOWN, componentsFactory, componentsWriter);
+            pointerUpRegister = new OnPointerUpRegister(ComponentID.ON_POINTER_UP, componentsFactory, componentsWriter);
             animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
         }
 
@@ -46,6 +51,8 @@ namespace DCL.ECSComponents
             nftRegister.Dispose();
             gltfRegister.Dispose();
             animatorRegister.Dispose();
+            pointerDownRegister.Dispose();
+            pointerUpRegister.Dispose();
         }
     }
 }
