@@ -41,5 +41,14 @@ namespace DCL.ECSComponents
             vector.Z = original.z;
             return vector;
         }
+        
+        public static UnityEngine.Vector3 PBVectorToUnityVector(Vector3 original)
+        {
+            UnityEngine.Vector3 vector = new UnityEngine.Vector3();
+            vector.x = original.X;
+            vector.y = original.Y;
+            vector.z = original.Z;
+            return vector;
+        }
     }
 }
