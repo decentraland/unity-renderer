@@ -41,6 +41,7 @@ namespace AssetPromiseKeeper_DCLTexture_Tests
         protected override IEnumerator TearDown()
         {
             AssetPromiseKeeper_Texture.i.library.Cleanup();
+            DataStore.Clear();
             return base.TearDown();
         }
 
@@ -132,6 +133,32 @@ namespace AssetPromiseKeeper_DCLTexture_Tests
             Assert.IsNotNull(loadedAsset4.texture2D);
 
             Assert.IsTrue(loadedAsset3.texture2D == loadedAsset4.texture2D);
+        }
+
+        [UnityTest]
+        public IEnumerator CompressWhenCompressionEnabled()
+        {
+            DataStore.i.textureConfig.runCompression.Set(true);
+            Asset_TextureResource loadedAsset = null;
+            var prom = CreatePromise();
+            prom.OnSuccessEvent += (x) => loadedAsset = x;
+            keeper.Keep(prom);
+            yield return prom;
+
+            Assert.IsTrue(loadedAsset.texture2D.format.ToString().Contains("DXT"));
+        }
+
+        [UnityTest]
+        public IEnumerator NotCompressWhenCompressionDisabled()
+        {
+            DataStore.i.textureConfig.runCompression.Set(false);
+            Asset_TextureResource loadedAsset = null;
+            var prom = CreatePromise();
+            prom.OnSuccessEvent += (x) => loadedAsset = x;
+            keeper.Keep(prom);
+            yield return prom;
+
+            Assert.IsFalse(loadedAsset.texture2D.format.ToString().Contains("DXT"));
         }
 
         [UnityTest]

@@ -33,7 +33,7 @@ namespace DCL.ECSComponents.Test
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
             var shapeFrameFactory = Resources.Load<NFTShapeFrameFactory>("NFTShapeFrameFactory");
-            componentHandler = new ECSNFTShapeComponentHandler(shapeFrameFactory, new NFTInfoRetriever(), new NFTAssetRetriever());
+            componentHandler = new ECSNFTShapeComponentHandler(new DataStore_ECS7(),shapeFrameFactory, new NFTInfoRetriever(), new NFTAssetRetriever());
 
             var meshInfo = new MeshesInfo();
             meshInfo.meshRootGameObject = gameObject;
@@ -127,7 +127,7 @@ namespace DCL.ECSComponents.Test
             var model = CreateModel();
             
             // Act
-            componentHandler.LoadNFT(scene, model);
+            componentHandler.LoadNFT(model);
 
             // Assert
             componentHandler.shapeFrame.Received().FailLoading();
@@ -150,7 +150,7 @@ namespace DCL.ECSComponents.Test
             var model = CreateModel();
             
             // Act
-            componentHandler.LoadNFT(scene, model);
+            componentHandler.LoadNFT(model);
 
             // Assert
             componentHandler.shapeFrame.Received().FailLoading();
@@ -172,7 +172,7 @@ namespace DCL.ECSComponents.Test
             var model = CreateModel();
             
             // Act
-            componentHandler.LoadNFT(scene, model);
+            componentHandler.LoadNFT(model);
 
             // Assert
             componentHandler.shapeFrame.Received().SetImage(Arg.Any<string>(),Arg.Any<string>(),Arg.Any<INFTAsset>());
@@ -194,7 +194,7 @@ namespace DCL.ECSComponents.Test
             var model = CreateModel();
             
             // Act
-            componentHandler.LoadNFT(scene, model);
+            componentHandler.LoadNFT(model);
 
             // Assert
             componentHandler.shapeFrame.Received().SetImage(Arg.Any<string>(),Arg.Any<string>(), Arg.Any<INFTAsset>());

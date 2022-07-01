@@ -23,6 +23,8 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
     private AvatarSystem.Avatar avatar;
     private CancellationTokenSource avatarLoadingCts = null;
     public GameObject avatarContainer;
+    public GameObject armatureContainer;
+    public Transform loadingAvatarContainer;
     private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
 
     public Collider avatarCollider;
@@ -47,12 +49,15 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
             new UserProfileWebInterfaceBridge());
 
         AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+        AvatarSystem.NoLODs noLod = new NoLODs();
+        BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer, noLod);
         avatar = new AvatarSystem.Avatar(
+            baseAvatar,
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
             new Visibility(),
-            new NoLODs(),
+            noLod,
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler(),
             new EmoteAnimationEquipper(animator, DataStore.i.emotes));

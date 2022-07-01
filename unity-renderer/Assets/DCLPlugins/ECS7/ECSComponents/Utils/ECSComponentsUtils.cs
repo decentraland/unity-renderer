@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
+using DCL.ECSComponents;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
@@ -24,13 +25,19 @@ public static class ECSComponentsUtils
         {
             renderer.enabled = isVisible;
         }
-            
+
+        UpdateMeshInfoColliders(withCollisions, isPointerBlocker, meshesInfo);
+    }
+
+    public static void UpdateMeshInfoColliders(bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
+    {
+        int colliderLayer = isPointerBlocker ? PhysicsLayers.onPointerEventLayer : PhysicsLayers.defaultLayer;
+        
         foreach (Collider collider in meshesInfo.colliders)
         {
             collider.enabled = withCollisions;
+            collider.gameObject.layer = colliderLayer;
         }
-            
-        //TODO: Implement isPointerBlocker when it is defined
     }
 
     public static MeshesInfo GenerateMeshInfo(IDCLEntity entity, Mesh mesh, GameObject gameObject,bool visible, bool withCollisions, bool isPointerBlocker)

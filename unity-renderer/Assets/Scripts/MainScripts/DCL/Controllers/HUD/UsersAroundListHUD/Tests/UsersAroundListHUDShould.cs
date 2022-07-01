@@ -70,12 +70,11 @@ public class UsersAroundListHUDShould : IntegrationTestSuite_Legacy
             userId = users[2]
         });
 
-        otherPlayers.Add(users[0], new Player { id = users[0], name = users[0], worldPosition = Vector3.zero });
-        otherPlayers.Add(users[1], new Player { id = users[1], name = users[1], worldPosition = Vector3.zero });
+        otherPlayers.Add(users[0], new Player { id = users[0], name = users[0], worldPosition = Vector3.zero,  playerName = GameObject.Instantiate(Resources.Load<GameObject>("PlayerName")).GetComponent<PlayerName>() });
+        otherPlayers.Add(users[1], new Player { id = users[1], name = users[1], worldPosition = Vector3.zero,  playerName = GameObject.Instantiate(Resources.Load<GameObject>("PlayerName")).GetComponent<PlayerName>() });
 
         Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 2, "listView.content.childCount != 2");
         Assert.IsTrue(listView.availableElements.Count == 0, "listView.availableElements.Count != 0");
-
 
         otherPlayers.Remove(users[1]);
         Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 1, "listView.content.childCount != 1");
@@ -85,8 +84,7 @@ public class UsersAroundListHUDShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 0, "listView.content.childCount != 0");
         Assert.IsTrue(listView.availableElements.Count == 2, "listView.availableElements.Count != 2");
 
-
-        otherPlayers.Add(users[2], new Player { id = users[2], name = users[2], worldPosition = Vector3.zero });
+        otherPlayers.Add(users[2], new Player { id = users[2], name = users[2], worldPosition = Vector3.zero,  playerName = GameObject.Instantiate(Resources.Load<GameObject>("PlayerName")).GetComponent<PlayerName>() });
         Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 1, "listView.content.childCount != 1");
         Assert.IsTrue(listView.availableElements.Count == 1, "listView.availableElements.Count != 1");
 
