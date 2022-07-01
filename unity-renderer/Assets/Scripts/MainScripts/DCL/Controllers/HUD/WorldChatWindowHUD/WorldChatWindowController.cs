@@ -384,7 +384,7 @@ public class WorldChatWindowController : IHUD
 
     private void HandleChannelJoined(Channel channel)
     {
-        // TO DO: Open the channel window...
+        OpenPublicChannel(channel.ChannelId);
     }
 
     private void HandleJoinChannelError(string channelId, string message)
