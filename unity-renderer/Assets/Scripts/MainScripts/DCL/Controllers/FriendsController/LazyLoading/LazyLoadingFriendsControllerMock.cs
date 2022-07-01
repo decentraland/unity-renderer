@@ -1,7 +1,8 @@
-using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using DCL.Friends.WebApi;
 using UnityEngine;
 using static FriendsController;
 using Random = UnityEngine.Random;
@@ -9,10 +10,13 @@ using Random = UnityEngine.Random;
 public class LazyLoadingFriendsControllerMock : IFriendsController
 {
     private const int MAX_AMOUNT_OF_FAKE_FRIENDS = 130;
-    
+    private const int TOTAL_RECEIVED_REQUESTS = 14;
+    private const int TOTAL_SENT_REQUESTS = 18;
+    private const int TOTAL_FRIENDS = 46;
+
     private readonly FriendsController controller;
     private readonly UserProfileController userProfileController;
-    
+
     private int amountOfFriendsWithDirectMessagesRequested;
     private int lastFriendWithDirectMessageIndex = -1;
 
@@ -28,7 +32,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         remove => controller.OnUpdateFriendship -= value;
     }
 
-    public event Action<string, FriendsController.UserStatus> OnUpdateUserStatus
+    public event Action<string, UserStatus> OnUpdateUserStatus
     {
         add => controller.OnUpdateUserStatus += value;
         remove => controller.OnUpdateUserStatus -= value;
@@ -46,11 +50,25 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         remove => controller.OnAddFriendsWithDirectMessages -= value;
     }
 
+    public event Action<int, int> OnTotalFriendRequestUpdated
+    {
+        add => controller.OnTotalFriendRequestUpdated += value;
+        remove => controller.OnTotalFriendRequestUpdated -= value;
+    }
+
+    public event Action<int> OnTotalFriendsUpdated
+    {
+        add => controller.OnTotalFriendsUpdated += value;
+        remove => controller.OnTotalFriendsUpdated -= value;
+    }
+
     public int AllocatedFriendCount => controller.AllocatedFriendCount;
     public bool IsInitialized => controller.IsInitialized;
     public int ReceivedRequestCount => controller.ReceivedRequestCount;
-    public int TotalFriendCount => 45;
-    public int TotalFriendRequestCount => 38;
+    public int TotalFriendCount => controller.TotalFriendCount;
+    public int TotalFriendRequestCount => controller.TotalFriendRequestCount;
+    public int TotalReceivedFriendRequestCount => controller.TotalReceivedFriendRequestCount;
+    public int TotalSentFriendRequestCount => controller.TotalSentFriendRequestCount;
     public int TotalFriendsWithDirectMessagesCount => controller.TotalFriendsWithDirectMessagesCount;
 
     public LazyLoadingFriendsControllerMock(
@@ -59,28 +77,48 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
     {
         this.controller = controller;
         this.userProfileController = userProfileController;
-        
+
         // TODO: Use it when the friends service is down
-        //SimulateDelayedResponseFor_InitializeFriends().Forget();
+        SimulateDelayedResponseFor_InitializeFriends().Forget();
     }
 
-    public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() => controller.GetAllocatedFriends();
+    public Dictionary<string, UserStatus> GetAllocatedFriends() => controller.GetAllocatedFriends();
 
-    public FriendsController.UserStatus GetUserStatus(string userId) => controller.GetUserStatus(userId);
+    public UserStatus GetUserStatus(string userId) => controller.GetUserStatus(userId);
 
     public bool ContainsStatus(string friendId, FriendshipStatus status) => controller.ContainsStatus(friendId, status);
 
-    public void RequestFriendship(string friendUserId) => controller.RequestFriendship(friendUserId);
+    public void RequestFriendship(string friendUserId)
+    {
+        controller.RequestFriendship(friendUserId);
+        UpdateFriendshipCount(Random.Range(0, 100), Random.Range(0, 100), Random.Range(0, 100)).Forget();
+    }
 
-    public void CancelRequest(string friendUserId) => controller.CancelRequest(friendUserId);
+    public void CancelRequest(string friendUserId)
+    {
+        controller.CancelRequest(friendUserId);
+        UpdateFriendshipCount(Random.Range(0, 100), Random.Range(0, 100), Random.Range(0, 100)).Forget();
+    }
 
-    public void AcceptFriendship(string friendUserId) => controller.AcceptFriendship(friendUserId);
-
-    public void RejectFriendship(string friendUserId) => controller.RejectFriendship(friendUserId);
+    public void AcceptFriendship(string friendUserId)
+    {
+        controller.AcceptFriendship(friendUserId);
+        UpdateFriendshipCount(Random.Range(0, 100), Random.Range(0, 100), Random.Range(0, 100)).Forget();
+    }
+    
+    public void RejectFriendship(string friendUserId)
+    {
+        controller.RejectFriendship(friendUserId);
+        UpdateFriendshipCount(Random.Range(0, 100), Random.Range(0, 100), Random.Range(0, 100)).Forget();
+    }
 
     public bool IsFriend(string userId) => controller.IsFriend(userId);
 
-    public void RemoveFriend(string friendId) => controller.RemoveFriend(friendId);
+    public void RemoveFriend(string friendId)
+    {
+        controller.RemoveFriend(friendId);
+        UpdateFriendshipCount(Random.Range(0, 100), Random.Range(0, 100), Random.Range(0, 100)).Forget();
+    }
 
     public void GetFriendsAsync(int limit, int skip)
     {
@@ -149,8 +187,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
         mockedPayload.currentFriendsWithDirectMessages = mockedFriendWithDirectMessages.ToArray();
         mockedPayload.totalFriendsWithDirectMessages = MAX_AMOUNT_OF_FAKE_FRIENDS;
-
-
+        
         return JsonUtility.ToJson(mockedPayload);
     }
 
@@ -170,12 +207,13 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
             allFriendsWithDMsInServer.Add($"fakeuser{i + 1}");
         }
 
-        List<string> resultsFound = allFriendsWithDMsInServer.Where(x => x.ToLower().Contains(userNameOrId.ToLower())).ToList();
+        List<string> resultsFound =
+            allFriendsWithDMsInServer.Where(x => x.ToLower().Contains(userNameOrId.ToLower())).ToList();
 
         AddFriendsWithDirectMessagesPayload mockedPayload = new AddFriendsWithDirectMessagesPayload();
         List<FriendWithDirectMessages> mockedFriendWithDirectMessages = new List<FriendWithDirectMessages>();
 
-        for (int i = 0; i < resultsFound.Count(); i++)
+        for (int i = 0; i < resultsFound.Count; i++)
         {
             if (i >= numberOfUsers)
                 break;
@@ -200,22 +238,24 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
     private async UniTask GetFakeFriendsAsync(int limit, int skip, string name)
     {
         var friendIds = new List<string>();
-        
-        await UniTask.Delay(Random.Range(20, 500));
-        
-        var characters = new[]
-            {'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-        var max = Mathf.Min(skip + Random.Range(1, limit), TotalFriendCount);
-        
+        await UniTask.Delay(Random.Range(20, 500));
+
+        var characters = new[]
+        {
+            'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+        };
+
+        var max = Mathf.Min(skip + Random.Range(1, limit), TOTAL_FRIENDS);
+
         for (var i = skip; i < max; i++)
         {
             var userId = "";
             for (var x = 0; x < 8; x++)
                 userId += characters[Random.Range(0, characters.Length)];
-            
+
             friendIds.Add(userId);
-            
+
             userProfileController.AddUserProfileToCatalog(JsonUtility.ToJson(new UserProfileModel
             {
                 userId = userId,
@@ -224,34 +264,38 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
                 snapshots = new UserProfileModel.Snapshots {face256 = $"https://picsum.photos/seed/{i + 1}/256"}
             }));
         }
-        
+
         await UniTask.Delay(Random.Range(20, 500));
 
         var payload = new AddFriendsPayload
         {
-            currentFriends = friendIds.ToArray()
+            currentFriends = friendIds.ToArray(),
+            totalFriends = TOTAL_FRIENDS
         };
-        
+
         controller.AddFriends(JsonUtility.ToJson(payload));
     }
-    
+
     private async UniTask GetFakeRequestsAsync(int limit)
     {
         var characters = new[]
-            {'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-        
+        {
+            'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+        };
+
         await UniTask.Delay(Random.Range(20, 500));
-        
+
         var fromUserIds = new List<string>();
-        
-        for (var i = 0; i < Random.Range(1, limit); i++)
+        var maxReceivedRequests = Mathf.Min(TOTAL_RECEIVED_REQUESTS, Random.Range(1, limit));
+
+        for (var i = 0; i < maxReceivedRequests; i++)
         {
             var userId = "";
             for (var x = 0; x < 8; x++)
                 userId += characters[Random.Range(0, characters.Length)];
-            
+
             fromUserIds.Add(userId);
-            
+
             userProfileController.AddUserProfileToCatalog(JsonUtility.ToJson(new UserProfileModel
             {
                 userId = userId,
@@ -260,17 +304,18 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
                 snapshots = new UserProfileModel.Snapshots {face256 = $"https://picsum.photos/seed/{i + 1}/256"}
             }));
         }
-        
+
         var toUserIds = new List<string>();
-        
-        for (var i = 0; i < Random.Range(1, limit); i++)
+        var maxSentRequests = Mathf.Min(TOTAL_SENT_REQUESTS, Random.Range(1, limit));
+
+        for (var i = 0; i < maxSentRequests; i++)
         {
             var userId = "";
             for (var x = 0; x < 8; x++)
                 userId += characters[Random.Range(0, characters.Length)];
-            
+
             toUserIds.Add(userId);
-            
+
             userProfileController.AddUserProfileToCatalog(JsonUtility.ToJson(new UserProfileModel
             {
                 userId = userId,
@@ -279,15 +324,17 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
                 snapshots = new UserProfileModel.Snapshots {face256 = $"https://picsum.photos/seed/{i + 1}/256"}
             }));
         }
-        
+
         await UniTask.Delay(Random.Range(20, 500));
 
         var payload = new AddFriendRequestsPayload
         {
             requestedFrom = fromUserIds.ToArray(),
-            requestedTo = toUserIds.ToArray()
+            requestedTo = toUserIds.ToArray(),
+            totalReceivedFriendRequests = TOTAL_RECEIVED_REQUESTS,
+            totalSentFriendRequests = TOTAL_SENT_REQUESTS
         };
-        
+
         controller.AddFriendRequests(JsonUtility.ToJson(payload));
     }
 
@@ -296,11 +343,11 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         if (controller.friends.ContainsKey(userId))
             return;
 
-        controller.friends.Add(userId, new FriendsController.UserStatus
+        controller.friends.Add(userId, new UserStatus
         {
             userId = userId,
             position = new Vector2(Random.Range(-100, 101), Random.Range(-100, 101)),
-            realm = new FriendsController.UserStatus.Realm
+            realm = new UserStatus.Realm
             {
                 serverName = "dg",
                 layer = ""
@@ -321,7 +368,29 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
     private string CreateFakeFriendsInitialization()
     {
-        FriendshipInitializationMessage mockedPayload = new FriendshipInitializationMessage();
+        var mockedPayload = new FriendshipInitializationMessage
+        {
+            totalReceivedRequests = TOTAL_RECEIVED_REQUESTS 
+        };
+        
         return JsonUtility.ToJson(mockedPayload);
+    }
+    
+    private async UniTask UpdateFriendshipCount(int totalReceivedRequests, int totalSentRequests, int totalFriends)
+    {
+        await UniTask.Delay(Random.Range(100, 2000));
+
+        var requestsPayload = new UpdateTotalFriendRequestsPayload
+        {
+            totalReceivedRequests = totalReceivedRequests,
+            totalSentRequests = totalSentRequests
+        };
+        controller.UpdateTotalFriendRequests(JsonUtility.ToJson(requestsPayload));
+
+        var friendsPayload = new UpdateTotalFriendsPayload
+        {
+            totalFriends = totalFriends
+        };
+        controller.UpdateTotalFriends(JsonUtility.ToJson(friendsPayload));
     }
 }

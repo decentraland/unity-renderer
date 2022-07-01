@@ -1606,5 +1606,10 @@ namespace DCL.Interface
             getPrivateMessagesPayload.from = from;
             SendMessage("GetPrivateMessages", getPrivateMessagesPayload);
         }
+
+        public static void GetUnseenMessagesByUser()
+        {
+            SendMessage("GetUnseenMessagesByUser");
+        }
     }
 }

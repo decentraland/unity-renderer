@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Friends.WebApi;
 
 public class FriendsController_Mock : IFriendsController
 {
@@ -9,6 +10,8 @@ public class FriendsController_Mock : IFriendsController
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
     public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
+    public event Action<int, int> OnTotalFriendRequestUpdated;
+    public event Action<int> OnTotalFriendsUpdated;
 
     private readonly Dictionary<string, FriendsController.UserStatus> friends = new Dictionary<string, FriendsController.UserStatus>();
 
@@ -21,6 +24,8 @@ public class FriendsController_Mock : IFriendsController
 
     public int TotalFriendCount { get; }
     public int TotalFriendRequestCount { get; }
+    public int TotalReceivedFriendRequestCount { get; }
+    public int TotalSentFriendRequestCount { get; }
     public int TotalFriendsWithDirectMessagesCount => friends.Count;
 
     public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() { return friends; }
@@ -45,10 +50,6 @@ public class FriendsController_Mock : IFriendsController
     }
 
     public void GetFriendsAsync(string usernameOrId, int limit)
-    {
-    }
-
-    public void GetFriendsAsync(string usernameOrId)
     {
     }
 

@@ -1,8 +1,8 @@
-using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using DCL.Chat.Channels;
 using UnityEngine;
+using DCL.Interface;
 
 public class ChatController_Mock : IChatController
 {
@@ -16,10 +16,12 @@ public class ChatController_Mock : IChatController
     public event Action<string> OnChannelLeft;
     public event Action<string, string> OnChannelLeaveError;
     public event Action<string, string> OnMuteChannelError;
-
-    public double initTime => 0;
+    public event Action<int> OnTotalUnseenMessagesUpdated;
+    public event Action<string, int> OnUserUnseenMessagesUpdated;
 
     public int TotalJoinedChannelCount { get; }
+    public int TotalUnseenMessages { get; }
+    
     public List<ChatMessage> GetAllocatedEntries() { return entries; }
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
@@ -31,17 +33,6 @@ public class ChatController_Mock : IChatController
     {
         entries.Add(chatMessage);
         OnAddMessage?.Invoke(chatMessage);
-    }
-
-    public void AddMessageToChatWindow(string jsonMessage)
-    {
-        ChatMessage message = JsonUtility.FromJson<ChatMessage>(jsonMessage);
-
-        if (message == null)
-            return;
-
-        entries.Add(message);
-        OnAddMessage?.Invoke(message);
     }
 
     public void Send(ChatMessage message)
@@ -86,4 +77,8 @@ public class ChatController_Mock : IChatController
     public Channel GetAllocatedChannel(string channelId) => null;
 
     public List<ChatMessage> GetAllocatedEntriesByChannel(string channelId) => new List<ChatMessage>();
+    
+    public void GetUnseenMessagesByUser()
+    {
+    }
 }

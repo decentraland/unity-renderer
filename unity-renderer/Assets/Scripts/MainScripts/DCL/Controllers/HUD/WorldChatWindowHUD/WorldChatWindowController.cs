@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DCL.Chat.Channels;
 using DCL.Interface;
+using DCL.Friends.WebApi;
 
 public class WorldChatWindowController : IHUD
 {
