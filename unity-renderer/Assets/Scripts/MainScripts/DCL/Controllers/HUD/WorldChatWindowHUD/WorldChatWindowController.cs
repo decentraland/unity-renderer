@@ -36,6 +36,7 @@ public class WorldChatWindowController : IHUD
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChannel;
     public event Action OnOpen;
+    public event Action<string, string> OnJoinChannelError;
 
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -78,7 +79,8 @@ public class WorldChatWindowController : IHUD
         
         chatController.OnAddMessage += HandleMessageAdded;
         chatController.OnChannelUpdated += HandleChannelUpdated;
-        chatController.OnChannelJoined += HandleChannelUpdated;
+        chatController.OnChannelJoined += HandleChannelJoined;
+        chatController.OnJoinChannelError += HandleJoinChannelError;
         chatController.OnChannelLeft += HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages += HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
@@ -95,7 +97,8 @@ public class WorldChatWindowController : IHUD
         view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
         chatController.OnChannelUpdated -= HandleChannelUpdated;
-        chatController.OnChannelJoined -= HandleChannelUpdated;
+        chatController.OnChannelJoined -= HandleChannelJoined;
+        chatController.OnJoinChannelError -= HandleJoinChannelError;
         chatController.OnChannelLeft -= HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
@@ -365,7 +368,7 @@ public class WorldChatWindowController : IHUD
         view.ShowSearchLoading();
         friendsController.GetFriendsWithDirectMessages(userNameOrId, limit);
     }
-    
+
     private void HandleChannelUpdated(Channel channel)
     {
         var channelId = channel.ChannelId;
@@ -380,7 +383,17 @@ public class WorldChatWindowController : IHUD
         
         isRequestingChannels = false;
     }
-    
+
+    private void HandleChannelJoined(Channel channel)
+    {
+        OpenPublicChannel(channel.ChannelId);
+    }
+
+    private void HandleJoinChannelError(string channelId, string message)
+    {
+        OnJoinChannelError?.Invoke(channelId, message);
+    }
+
     private void HandleChannelLeft(string channelId)
     {
         publicChannels.Remove(channelId);

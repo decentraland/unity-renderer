@@ -61,32 +61,46 @@ namespace DCL.Chat.Channels
 
         public int TotalUnseenMessages => controller.TotalUnseenMessages;
 
-        public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
-
-        public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) =>
-            controller.GetPrivateAllocatedEntriesByUser(userId);
-
-        public void Send(ChatMessage message) => controller.Send(message);
-
-        public void MarkMessagesAsSeen(string userId) => controller.MarkMessagesAsSeen(userId);
-
-        public void GetPrivateMessages(string userId, int limit, long fromTimestamp) =>
-            controller.GetPrivateMessages(userId, limit, fromTimestamp);
-
-        public ChatChannelsControllerMock(ChatController controller,
+        public ChatChannelsControllerMock(
+            ChatController controller,
             UserProfileController userProfileController)
         {
             this.controller = controller;
             this.userProfileController = userProfileController;
         }
 
-        public void JoinOrCreateChannel(string channelId) => JoinOrCreateFakeChannel(channelId).Forget();
+        public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
 
-        private async UniTask JoinOrCreateFakeChannel(string channelId)
+        public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) =>
+            controller.GetPrivateAllocatedEntriesByUser(userId);
+
+        public void Send(ChatMessage message)
         {
-            await UniTask.Delay(Random.Range(40, 1000));
-            
-            var msg = new ChannelInfoPayload
+            controller.Send(message);
+
+            SimulateDelayedResponseFor_JoinChatMessage(message.body).Forget();
+        }
+
+        private async UniTask SimulateDelayedResponseFor_JoinChatMessage(string chatMessage)
+        {
+            await UniTask.Delay(Random.Range(500, 1000));
+
+            string chatMessagerToLower = chatMessage.ToLower();
+
+            if (chatMessagerToLower.StartsWith("/join "))
+            {
+                string channelId = chatMessagerToLower.Split(' ')[1].Replace("#", "");
+
+                if (!chatMessagerToLower.Contains("error"))
+                    controller.JoinChannelConfirmation(CreateMockedDataFor_ChannelInfoPayload(channelId));
+                else
+                    controller.JoinChannelError(CreateMockedDataFor_JoinChannelErrorPayload(channelId));
+            }
+        }
+
+        private string CreateMockedDataFor_ChannelInfoPayload(string channelId)
+        {
+            ChannelInfoPayload mockedPayload = new ChannelInfoPayload
             {
                 joined = true,
                 channelId = channelId,
@@ -94,7 +108,33 @@ namespace DCL.Chat.Channels
                 memberCount = Random.Range(0, 16),
                 unseenMessages = Random.Range(0, 16)
             };
-            controller.JoinChannelConfirmation(JsonUtility.ToJson(msg));
+
+            return JsonUtility.ToJson(mockedPayload);
+        }
+
+        private string CreateMockedDataFor_JoinChannelErrorPayload(string joinMessage)
+        {
+            JoinChannelErrorPayload mockedPayload = new JoinChannelErrorPayload
+            {
+                channelId = joinMessage.Split(' ')[1].Replace("#", ""),
+                message = "There was an error creating the channel."
+            };
+
+            return JsonUtility.ToJson(mockedPayload);
+        }
+
+        public void MarkMessagesAsSeen(string userId) => controller.MarkMessagesAsSeen(userId);
+
+        public void GetPrivateMessages(string userId, int limit, long fromTimestamp) =>
+            controller.GetPrivateMessages(userId, limit, fromTimestamp);
+
+        public void JoinOrCreateChannel(string channelId) => SimulateDelayedResponseFor_JoinOrCreateChannel(channelId).Forget();
+
+        private async UniTask SimulateDelayedResponseFor_JoinOrCreateChannel(string channelId)
+        {
+            await UniTask.Delay(Random.Range(40, 1000));
+
+            controller.JoinChannelConfirmation(CreateMockedDataFor_ChannelInfoPayload(channelId));
         }
 
         public void LeaveChannel(string channelId) => LeaveFakeChannel(channelId).Forget();
@@ -165,7 +205,7 @@ namespace DCL.Chat.Channels
                 for (var x = 0; x < 4; x++)
                     channelId += characters[Random.Range(0, characters.Length)];
 
-                JoinOrCreateChannel(channelId);
+                controller.UpdateChannelInfo(CreateMockedDataFor_ChannelInfoPayload(channelId));
             }
         }
 
