@@ -9,7 +9,7 @@ public class LazyLoadingChatControllerMock : IChatController
 {
     private const int MAX_AMOUNT_OF_FAKE_USERS_IN_CATALOG = 130;
 
-    private ChatController controller;
+    private readonly ChatController controller;
 
     public LazyLoadingChatControllerMock(ChatController controller)
     {
@@ -18,11 +18,16 @@ public class LazyLoadingChatControllerMock : IChatController
         CreateFakeUsersInCatalog();
     }
 
+    public int TotalUnseenMessages => controller.TotalUnseenMessages;
+
     public event Action<ChatMessage> OnAddMessage
     {
         add => controller.OnAddMessage += value;
         remove => controller.OnAddMessage -= value;
     }
+
+    public event Action<int> OnTotalUnseenMessagesUpdated;
+    public event Action<string, int> OnUserUnseenMessagesUpdated;
 
     public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
 
@@ -31,6 +36,8 @@ public class LazyLoadingChatControllerMock : IChatController
     public void MarkMessagesAsSeen(string userId) => controller.MarkMessagesAsSeen(userId);
 
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp) => SimulateDelayedResponseFor_GetPrivateMessages(userId, limit, fromTimestamp).Forget();
+
+    public int GetUnseenMessagesCount(string userId) => controller.GetUnseenMessagesCount(userId);
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) => controller.GetPrivateAllocatedEntriesByUser(userId);
 

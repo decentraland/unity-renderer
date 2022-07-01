@@ -1,15 +1,15 @@
-using DCL.Interface;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using DCL.Interface;
 
 public class ChatController_Mock : IChatController
 {
     private readonly List<ChatMessage> entries = new List<ChatMessage>();
-    
-    public event Action<ChatMessage> OnAddMessage;
 
-    public double initTime => 0;
+    public int TotalUnseenMessages { get; }
+    public event Action<ChatMessage> OnAddMessage;
+    public event Action<int> OnTotalUnseenMessagesUpdated;
+    public event Action<string, int> OnUserUnseenMessagesUpdated;
 
     public List<ChatMessage> GetAllocatedEntries() { return entries; }
 
@@ -22,17 +22,6 @@ public class ChatController_Mock : IChatController
     {
         entries.Add(chatMessage);
         OnAddMessage?.Invoke(chatMessage);
-    }
-
-    public void AddMessageToChatWindow(string jsonMessage)
-    {
-        ChatMessage message = JsonUtility.FromJson<ChatMessage>(jsonMessage);
-
-        if (message == null)
-            return;
-
-        entries.Add(message);
-        OnAddMessage?.Invoke(message);
     }
 
     public void Send(ChatMessage message)
@@ -49,4 +38,6 @@ public class ChatController_Mock : IChatController
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp)
     {
     }
+
+    public int GetUnseenMessagesCount(string userId) => 0;
 }

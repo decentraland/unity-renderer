@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DCL.Interface;
+using DCL.Friends.WebApi;
 
 public class WorldChatWindowController : IHUD
 {

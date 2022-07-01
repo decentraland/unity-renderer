@@ -1,7 +1,8 @@
-using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using DCL.Friends.WebApi;
 using UnityEngine;
 using static FriendsController;
 using Random = UnityEngine.Random;
@@ -28,7 +29,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         remove => controller.OnUpdateFriendship -= value;
     }
 
-    public event Action<string, FriendsController.UserStatus> OnUpdateUserStatus
+    public event Action<string, UserStatus> OnUpdateUserStatus
     {
         add => controller.OnUpdateUserStatus += value;
         remove => controller.OnUpdateUserStatus -= value;
@@ -46,11 +47,25 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         remove => controller.OnAddFriendsWithDirectMessages -= value;
     }
 
+    public event Action<int, int> OnTotalFriendRequestUpdated
+    {
+        add => controller.OnTotalFriendRequestUpdated += value;
+        remove => controller.OnTotalFriendRequestUpdated -= value;
+    }
+    
+    public event Action<int> OnTotalFriendsUpdated
+    {
+        add => controller.OnTotalFriendsUpdated += value;
+        remove => controller.OnTotalFriendsUpdated -= value;
+    }
+
     public int AllocatedFriendCount => controller.AllocatedFriendCount;
     public bool IsInitialized => controller.IsInitialized;
     public int ReceivedRequestCount => controller.ReceivedRequestCount;
-    public int TotalFriendCount => 45;
-    public int TotalFriendRequestCount => 38;
+    public int TotalFriendCount => controller.TotalFriendCount;
+    public int TotalFriendRequestCount => controller.TotalFriendRequestCount;
+    public int TotalReceivedFriendRequestCount => controller.TotalReceivedFriendRequestCount;
+    public int TotalSentFriendRequestCount => controller.TotalSentFriendRequestCount;
     public int TotalFriendsWithDirectMessagesCount => controller.TotalFriendsWithDirectMessagesCount;
 
     public LazyLoadingFriendsControllerMock(
@@ -64,9 +79,9 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         //SimulateDelayedResponseFor_InitializeFriends().Forget();
     }
 
-    public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() => controller.GetAllocatedFriends();
+    public Dictionary<string, UserStatus> GetAllocatedFriends() => controller.GetAllocatedFriends();
 
-    public FriendsController.UserStatus GetUserStatus(string userId) => controller.GetUserStatus(userId);
+    public UserStatus GetUserStatus(string userId) => controller.GetUserStatus(userId);
 
     public bool ContainsStatus(string friendId, FriendshipStatus status) => controller.ContainsStatus(friendId, status);
 
@@ -199,6 +214,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
     private async UniTask GetFakeFriendsAsync(int limit, int skip, string name)
     {
+        const int totalFriends = 46;
         var friendIds = new List<string>();
         
         await UniTask.Delay(Random.Range(20, 500));
@@ -206,7 +222,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         var characters = new[]
             {'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-        var max = Mathf.Min(skip + Random.Range(1, limit), TotalFriendCount);
+        var max = Mathf.Min(skip + Random.Range(1, limit), totalFriends);
         
         for (var i = skip; i < max; i++)
         {
@@ -229,7 +245,8 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
         var payload = new AddFriendsPayload
         {
-            currentFriends = friendIds.ToArray()
+            currentFriends = friendIds.ToArray(),
+            totalFriends = totalFriends
         };
         
         controller.AddFriends(JsonUtility.ToJson(payload));
@@ -237,14 +254,18 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
     
     private async UniTask GetFakeRequestsAsync(int limit)
     {
+        const int totalReceivedRequests = 14;
+        const int totalSentRequests = 9;
+        
         var characters = new[]
             {'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
         
         await UniTask.Delay(Random.Range(20, 500));
         
         var fromUserIds = new List<string>();
+        var maxReceivedRequests = Mathf.Min(totalReceivedRequests, Random.Range(1, limit));
         
-        for (var i = 0; i < Random.Range(1, limit); i++)
+        for (var i = 0; i < maxReceivedRequests; i++)
         {
             var userId = "";
             for (var x = 0; x < 8; x++)
@@ -262,8 +283,9 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         }
         
         var toUserIds = new List<string>();
+        var maxSentRequests = Mathf.Min(totalSentRequests, Random.Range(1, limit));
         
-        for (var i = 0; i < Random.Range(1, limit); i++)
+        for (var i = 0; i < maxSentRequests; i++)
         {
             var userId = "";
             for (var x = 0; x < 8; x++)
@@ -285,7 +307,9 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         var payload = new AddFriendRequestsPayload
         {
             requestedFrom = fromUserIds.ToArray(),
-            requestedTo = toUserIds.ToArray()
+            requestedTo = toUserIds.ToArray(),
+            totalReceivedFriendRequests = totalReceivedRequests,
+            totalSentFriendRequests = totalSentRequests
         };
         
         controller.AddFriendRequests(JsonUtility.ToJson(payload));
@@ -296,11 +320,11 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         if (controller.friends.ContainsKey(userId))
             return;
 
-        controller.friends.Add(userId, new FriendsController.UserStatus
+        controller.friends.Add(userId, new UserStatus
         {
             userId = userId,
             position = new Vector2(Random.Range(-100, 101), Random.Range(-100, 101)),
-            realm = new FriendsController.UserStatus.Realm
+            realm = new UserStatus.Realm
             {
                 serverName = "dg",
                 layer = ""

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL.Friends.WebApi;
 
 public interface IFriendsController
 {
@@ -8,12 +9,16 @@ public interface IFriendsController
     event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
     event Action<string> OnFriendNotFound;
     event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
+    event Action<int, int> OnTotalFriendRequestUpdated;
+    event Action<int> OnTotalFriendsUpdated;
 
     int AllocatedFriendCount { get; }
     bool IsInitialized { get; }
     int ReceivedRequestCount { get; }
     int TotalFriendCount { get; }
     int TotalFriendRequestCount { get; }
+    int TotalReceivedFriendRequestCount { get; }
+    int TotalSentFriendRequestCount { get; }
     int TotalFriendsWithDirectMessagesCount { get; }
     Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends();
     FriendsController.UserStatus GetUserStatus(string userId);

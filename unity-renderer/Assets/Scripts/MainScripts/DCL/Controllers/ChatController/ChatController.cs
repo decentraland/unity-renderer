@@ -2,21 +2,30 @@ using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Chat.WebApi;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class ChatController : MonoBehaviour, IChatController
 {
     public static ChatController i { get; private set; }
+    
+    [NonSerialized] public List<ChatMessage> entries = new List<ChatMessage>();
+
+    private readonly Dictionary<string, int> unseenMessagesByUser = new Dictionary<string, int>();
 
     public void Awake()
     {
         i = this;
     }
 
-    [NonSerialized] public List<ChatMessage> entries = new List<ChatMessage>();
-
+    public int TotalUnseenMessages { get; private set; }
     public event Action<ChatMessage> OnAddMessage;
+    public event Action<int> OnTotalUnseenMessagesUpdated;
+    public event Action<string, int> OnUserUnseenMessagesUpdated;
 
+    // called by kernel
+    [UsedImplicitly]
     public void AddMessageToChatWindow(string jsonMessage)
     {
         ChatMessage message = JsonUtility.FromJson<ChatMessage>(jsonMessage);
@@ -27,12 +36,34 @@ public class ChatController : MonoBehaviour, IChatController
         entries.Add(message);
         OnAddMessage?.Invoke(message);
     }
+    
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateTotalUnseenMessages(string json)
+    {
+        var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesPayload>(json);
+        // TODO: add #nearby unseen messages
+        TotalUnseenMessages = msg.total;
+        OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
+    }
+    
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateUserUnseenMessages(string json)
+    {
+        var msg = JsonUtility.FromJson<UpdateUserUnseenMessagesPayload>(json);
+        unseenMessagesByUser[msg.userId] = msg.total;
+        OnUserUnseenMessagesUpdated?.Invoke(msg.userId, msg.total);
+    }
 
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
-    
-    public void MarkMessagesAsSeen(string userId) { WebInterface.MarkMessagesAsSeen(userId); }
+
+    public void MarkMessagesAsSeen(string userId) => WebInterface.MarkMessagesAsSeen(userId);
 
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp) { WebInterface.GetPrivateMessages(userId, limit, fromTimestamp); }
+
+    public int GetUnseenMessagesCount(string userId) =>
+        unseenMessagesByUser.ContainsKey(userId) ? unseenMessagesByUser[userId] : 0;
 
     public List<ChatMessage> GetAllocatedEntries() { return new List<ChatMessage>(entries); }
 
