@@ -12,6 +12,9 @@ namespace DCL.Chat.Channels
         private readonly ChatController controller;
         private readonly UserProfileController userProfileController;
 
+        public event Action<int> OnTotalUnseenMessagesUpdated;
+        public event Action<string, int> OnUserUnseenMessagesUpdated;
+
         public event Action<ChatMessage> OnAddMessage
         {
             add => controller.OnAddMessage += value;
@@ -55,7 +58,9 @@ namespace DCL.Chat.Channels
         }
 
         public int TotalJoinedChannelCount => 5;
-        
+
+        public int TotalUnseenMessages => controller.TotalUnseenMessages;
+
         public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
 
         public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) =>
@@ -198,6 +203,8 @@ namespace DCL.Chat.Channels
 
         public List<ChatMessage> GetAllocatedEntriesByChannel(string channelId) =>
             controller.GetAllocatedEntriesByChannel(channelId);
+
+        public void GetUnseenMessagesByUser() => controller.GetUnseenMessagesByUser();
 
         private async UniTask MuteFakeChannel(string channelId)
         {

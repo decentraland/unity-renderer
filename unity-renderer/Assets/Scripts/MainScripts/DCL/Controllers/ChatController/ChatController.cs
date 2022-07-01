@@ -212,11 +212,9 @@ public class ChatController : MonoBehaviour, IChatController
 
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp) => WebInterface.GetPrivateMessages(userId, limit, fromTimestamp);
 
-    public List<ChatMessage> GetAllocatedEntries() => return new List<ChatMessage>(messages);
+    public List<ChatMessage> GetAllocatedEntries() => new List<ChatMessage>(messages);
     
     public void GetUnseenMessagesByUser() => WebInterface.GetUnseenMessagesByUser();
-
-    public List<ChatMessage> GetAllocatedEntries() { return new List<ChatMessage>(entries); }
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
     {
