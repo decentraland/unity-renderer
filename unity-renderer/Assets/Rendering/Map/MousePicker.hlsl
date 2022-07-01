@@ -10,8 +10,8 @@ SAMPLER(custom_point_clamp_sampler);
 void MousePicker_float(UnityTexture2D Input, float2 TextureSize, float2 Resolution, float Zoom, float2 UV, float2 MousePos, out float Out)
 {
     SamplerState ss = custom_point_clamp_sampler;
-
     float2 zoom;
+    float2 offset = float2(0.5, 0.5);
 
     if (Resolution.x > Resolution.y)
     {
@@ -24,10 +24,11 @@ void MousePicker_float(UnityTexture2D Input, float2 TextureSize, float2 Resoluti
         zoom = TextureSize.y / Resolution.x * Zoom;
     }
 
-    float2 mouseUV = OverlayClampToTexture(MousePos/zoom, TextureSize);
+    float2 mouseTile = ((MousePos / zoom + offset) + TextureSize/2)/TextureSize;
+    float2 mouseUV = OverlayClampToTexture(mouseTile, TextureSize);
 
 
-    float2 tileOfInterest = UV / zoom + float2(0.5, 0.5);
+    float2 tileOfInterest = UV / zoom + offset;
     float2 uv = OverlayClampToTexture(tileOfInterest, TextureSize);
 
     float4 mouseData = SAMPLE_TEXTURE2D(Input, ss, mouseUV);
@@ -44,4 +45,9 @@ void MousePicker_float(UnityTexture2D Input, float2 TextureSize, float2 Resoluti
             Out = 0;
         }
     }
+    else
+    {
+        Out = 0;
+    }
+
 }

@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_MapV4
-  m_Shader: {fileID: -6465566751694194690, guid: feecc4cb4e0cdec4c8cdc103e4fc9d47,
-    type: 3}
+  m_Shader: {fileID: 4800000, guid: 09d9c9ff79059c34aa937a62e707cd03, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -25,7 +24,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EstateIDMap:
-        m_Texture: {fileID: 2800000, guid: 3ad7373032aa69c4b9494945da28d5c2, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9fd4d3757b5f1c148ac6903817ed6c8a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -56,7 +55,7 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _Zoom: 3.75
+    - _Zoom: 5.66
     m_Colors:
     - Color_f7a1901521834de5bb5b8d9d8a6c19e8: {r: 0, g: 0.12941177, b: 0.8705883,
         a: 1}
@@ -67,8 +66,8 @@ Material:
     - _Color05: {r: 0.101960786, g: 0.101960786, b: 0.101960786, a: 0}
     - _GridColor: {r: 0, g: 0, b: 0, a: 0}
     - _HighlightColor: {r: 0, g: 0.5686169, b: 1, a: 1}
-    - _MousePosition: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _OverlayColor: {r: 0, g: 0.69411767, b: 1, a: 0.48235294}
+    - _MousePosition: {r: 0, g: 0, b: 0, a: 0}
+    - _OverlayColor: {r: 0, g: 0.71557903, b: 1, a: 0.48235294}
     - _Resolution: {r: 1920, g: 1920, b: 0, a: 0}
     - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}
   m_BuildTextureStacks: []

@@ -653,7 +653,7 @@
     ],
     "m_VertexContext": {
         "m_Position": {
-            "x": 2197.0,
+            "x": 2232.0,
             "y": 2752.0
         },
         "m_Blocks": [
@@ -670,7 +670,7 @@
     },
     "m_FragmentContext": {
         "m_Position": {
-            "x": 2197.0,
+            "x": 2232.0,
             "y": 2942.0
         },
         "m_Blocks": [
@@ -952,7 +952,7 @@
     ],
     "synonyms": [],
     "m_Precision": 0,
-    "m_PreviewExpanded": false,
+    "m_PreviewExpanded": true,
     "m_PreviewMode": 0,
     "m_CustomColors": {
         "m_SerializableColors": []
@@ -3525,8 +3525,8 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "x": 0.5,
-        "y": 0.5,
+        "x": 0.0,
+        "y": 0.0,
         "z": 0.0,
         "w": 0.0
     }

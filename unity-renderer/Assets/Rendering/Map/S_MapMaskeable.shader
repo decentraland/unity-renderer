@@ -4,9 +4,10 @@ Shader "Unlit/S_MapMaskeable"
     {
         [NoScaleOffset] _MainTex("MainTex", 2D) = "white" {}
         [NoScaleOffset]_Map("Map", 2D) = "white" {}
+        [NoScaleOffset]_EstateIDMap("EstateIDMap", 2D) = "white" {}
         _SizeOfTexture("SizeOfTexture", Vector) = (512, 512, 0, 0)
-        _Resolution("Resolution", Vector) = (512, 512, 0, 0)
-        _Zoom("Zoom", Float) = 10
+        _Resolution("Resolution", Vector) = (1920, 1920, 0, 0)
+        _Zoom("Zoom", Float) = 3.75
         _GridThickness("GridThickness", Range(0, 10)) = 1
         _GridColor("GridColor", Color) = (0, 0, 0, 0)
         _Color01("Color01", Color) = (1, 0, 0, 0)
@@ -14,6 +15,8 @@ Shader "Unlit/S_MapMaskeable"
         _Color03("Color03", Color) = (0, 0.2896385, 1, 0)
         _Color04("Color04", Color) = (0.2189539, 0.1096921, 0.2735849, 0)
         _Color05("Color05", Color) = (0.2189539, 0.1096921, 0.2735849, 0)
+        [HDR]_OverlayColor("OverlayColor", Color) = (0, 0.6943347, 1, 1)
+        _MousePosition("MousePosition", Vector) = (0, 0, 0, 0)
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
@@ -42,21 +45,21 @@ Shader "Unlit/S_MapMaskeable"
                 "LightMode" = "Universal2D"
             }
 
-            // Render State
-            Cull Off
-            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-            ZTest[unity_GUIZTestMode]
-            ZWrite Off
+        // Render State
+        Cull Off
+        Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+        ZTest[unity_GUIZTestMode]
+        ZWrite Off
 
-            Stencil
-            {
-              Ref[_Stencil]
-              Comp[_StencilComp]
-              Pass[_StencilOp]
-              ReadMask[_StencilReadMask]
-              WriteMask[_StencilWriteMask]
-            }
-            ColorMask[_ColorMask]
+        Stencil
+        {
+          Ref[_Stencil]
+          Comp[_StencilComp]
+          Pass[_StencilOp]
+          ReadMask[_StencilReadMask]
+          WriteMask[_StencilWriteMask]
+        }
+        ColorMask[_ColorMask]
 
         // Debug
         // <None>
@@ -210,6 +213,7 @@ Shader "Unlit/S_MapMaskeable"
     CBUFFER_START(UnityPerMaterial)
 float4 _MainTex_TexelSize;
 float4 _Map_TexelSize;
+float4 _EstateIDMap_TexelSize;
 float2 _SizeOfTexture;
 float2 _Resolution;
 float _Zoom;
@@ -220,6 +224,8 @@ float4 _Color02;
 float4 _Color03;
 float4 _Color04;
 float4 _Color05;
+float4 _OverlayColor;
+float2 _MousePosition;
 CBUFFER_END
 
 // Object and Global properties
@@ -227,6 +233,8 @@ TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex);
 TEXTURE2D(_Map);
 SAMPLER(sampler_Map);
+TEXTURE2D(_EstateIDMap);
+SAMPLER(sampler_EstateIDMap);
 
 // Graph Functions
 
@@ -236,6 +244,14 @@ SAMPLER(sampler_Map);
 void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
 {
     Out = lerp(A, B, T);
+}
+
+// a459a31843d579b255fe4f185352bf29
+#include "Assets/Rendering/Map/MousePicker.hlsl"
+
+void Unity_Multiply_float(float A, float B, out float Out)
+{
+    Out = A * B;
 }
 
 // Graph Vertex
@@ -294,7 +310,24 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Property_afe137a643bd4ee797e36d52b401ff1f_Out_0 = _GridColor;
     float4 _Lerp_9ba2170387c141e28ff9cb1a7263d01a_Out_3;
     Unity_Lerp_float4(_Lerp_8f6d30cfd54f4903a5949b9b51e20250_Out_3, _Property_afe137a643bd4ee797e36d52b401ff1f_Out_0, (_MainCustomFunction_fc80707c41a14d5e95900dad01640841_Grid_3.xxxx), _Lerp_9ba2170387c141e28ff9cb1a7263d01a_Out_3);
-    surface.BaseColor = (_Lerp_9ba2170387c141e28ff9cb1a7263d01a_Out_3.xyz);
+    float4 _Property_f652c59ef3b44017916bb0f0279111e1_Out_0 = IsGammaSpace() ? LinearToSRGB(_OverlayColor) : _OverlayColor;
+    float _Split_bdfe6245792145ca8af4f1fcfde9056f_R_1 = _Property_f652c59ef3b44017916bb0f0279111e1_Out_0[0];
+    float _Split_bdfe6245792145ca8af4f1fcfde9056f_G_2 = _Property_f652c59ef3b44017916bb0f0279111e1_Out_0[1];
+    float _Split_bdfe6245792145ca8af4f1fcfde9056f_B_3 = _Property_f652c59ef3b44017916bb0f0279111e1_Out_0[2];
+    float _Split_bdfe6245792145ca8af4f1fcfde9056f_A_4 = _Property_f652c59ef3b44017916bb0f0279111e1_Out_0[3];
+    UnityTexture2D _Property_263cce4ee0c2486fa3db723c52d16398_Out_0 = UnityBuildTexture2DStructNoScale(_EstateIDMap);
+    float2 _Property_8ccf0d217b194f5e8d275c2907a9594e_Out_0 = _SizeOfTexture;
+    float2 _Property_f68ebde3dc3447c7af9894ca329f44bb_Out_0 = _Resolution;
+    float _Property_616480ebd4b14f7081a95d004f84561f_Out_0 = _Zoom;
+    float4 _UV_6192100f628341f990973d08e3852a42_Out_0 = IN.uv0;
+    float2 _Property_000123902d434aa4a19e0404cf6799a7_Out_0 = _MousePosition;
+    float _MousePickerCustomFunction_1bba44b17a3a461f947159001f46e1d2_Out_4;
+    MousePicker_float(_Property_263cce4ee0c2486fa3db723c52d16398_Out_0, _Property_8ccf0d217b194f5e8d275c2907a9594e_Out_0, _Property_f68ebde3dc3447c7af9894ca329f44bb_Out_0, _Property_616480ebd4b14f7081a95d004f84561f_Out_0, (_UV_6192100f628341f990973d08e3852a42_Out_0.xy), _Property_000123902d434aa4a19e0404cf6799a7_Out_0, _MousePickerCustomFunction_1bba44b17a3a461f947159001f46e1d2_Out_4);
+    float _Multiply_c7ffa99a71ce416481cd9ef6023cb14f_Out_2;
+    Unity_Multiply_float(_Split_bdfe6245792145ca8af4f1fcfde9056f_A_4, _MousePickerCustomFunction_1bba44b17a3a461f947159001f46e1d2_Out_4, _Multiply_c7ffa99a71ce416481cd9ef6023cb14f_Out_2);
+    float4 _Lerp_34a3d0bbb09048e0ab33526147848616_Out_3;
+    Unity_Lerp_float4(_Lerp_9ba2170387c141e28ff9cb1a7263d01a_Out_3, _Property_f652c59ef3b44017916bb0f0279111e1_Out_0, (_Multiply_c7ffa99a71ce416481cd9ef6023cb14f_Out_2.xxxx), _Lerp_34a3d0bbb09048e0ab33526147848616_Out_3);
+    surface.BaseColor = (_Lerp_34a3d0bbb09048e0ab33526147848616_Out_3.xyz);
     surface.Alpha = 1;
     return surface;
 }
@@ -518,6 +551,7 @@ Pass
     CBUFFER_START(UnityPerMaterial)
 float4 _MainTex_TexelSize;
 float4 _Map_TexelSize;
+float4 _EstateIDMap_TexelSize;
 float2 _SizeOfTexture;
 float2 _Resolution;
 float _Zoom;
@@ -528,6 +562,8 @@ float4 _Color02;
 float4 _Color03;
 float4 _Color04;
 float4 _Color05;
+float4 _OverlayColor;
+float2 _MousePosition;
 CBUFFER_END
 
 // Object and Global properties
@@ -535,6 +571,8 @@ TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex);
 TEXTURE2D(_Map);
 SAMPLER(sampler_Map);
+TEXTURE2D(_EstateIDMap);
+SAMPLER(sampler_EstateIDMap);
 
 // Graph Functions
 
@@ -544,6 +582,14 @@ SAMPLER(sampler_Map);
 void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
 {
     Out = lerp(A, B, T);
+}
+
+// a459a31843d579b255fe4f185352bf29
+#include "Assets/Rendering/Map/MousePicker.hlsl"
+
+void Unity_Multiply_float(float A, float B, out float Out)
+{
+    Out = A * B;
 }
 
 // Graph Vertex
@@ -602,7 +648,24 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Property_afe137a643bd4ee797e36d52b401ff1f_Out_0 = _GridColor;
     float4 _Lerp_9ba2170387c141e28ff9cb1a7263d01a_Out_3;
     Unity_Lerp_float4(_Lerp_8f6d30cfd54f4903a5949b9b51e20250_Out_3, _Property_afe137a643bd4ee797e36d52b401ff1f_Out_0, (_MainCustomFunction_fc80707c41a14d5e95900dad01640841_Grid_3.xxxx), _Lerp_9ba2170387c141e28ff9cb1a7263d01a_Out_3);
-    surface.BaseColor = (_Lerp_9ba2170387c141e28ff9cb1a7263d01a_Out_3.xyz);
+    float4 _Property_f652c59ef3b44017916bb0f0279111e1_Out_0 = IsGammaSpace() ? LinearToSRGB(_OverlayColor) : _OverlayColor;
+    float _Split_bdfe6245792145ca8af4f1fcfde9056f_R_1 = _Property_f652c59ef3b44017916bb0f0279111e1_Out_0[0];
+    float _Split_bdfe6245792145ca8af4f1fcfde9056f_G_2 = _Property_f652c59ef3b44017916bb0f0279111e1_Out_0[1];
+    float _Split_bdfe6245792145ca8af4f1fcfde9056f_B_3 = _Property_f652c59ef3b44017916bb0f0279111e1_Out_0[2];
+    float _Split_bdfe6245792145ca8af4f1fcfde9056f_A_4 = _Property_f652c59ef3b44017916bb0f0279111e1_Out_0[3];
+    UnityTexture2D _Property_263cce4ee0c2486fa3db723c52d16398_Out_0 = UnityBuildTexture2DStructNoScale(_EstateIDMap);
+    float2 _Property_8ccf0d217b194f5e8d275c2907a9594e_Out_0 = _SizeOfTexture;
+    float2 _Property_f68ebde3dc3447c7af9894ca329f44bb_Out_0 = _Resolution;
+    float _Property_616480ebd4b14f7081a95d004f84561f_Out_0 = _Zoom;
+    float4 _UV_6192100f628341f990973d08e3852a42_Out_0 = IN.uv0;
+    float2 _Property_000123902d434aa4a19e0404cf6799a7_Out_0 = _MousePosition;
+    float _MousePickerCustomFunction_1bba44b17a3a461f947159001f46e1d2_Out_4;
+    MousePicker_float(_Property_263cce4ee0c2486fa3db723c52d16398_Out_0, _Property_8ccf0d217b194f5e8d275c2907a9594e_Out_0, _Property_f68ebde3dc3447c7af9894ca329f44bb_Out_0, _Property_616480ebd4b14f7081a95d004f84561f_Out_0, (_UV_6192100f628341f990973d08e3852a42_Out_0.xy), _Property_000123902d434aa4a19e0404cf6799a7_Out_0, _MousePickerCustomFunction_1bba44b17a3a461f947159001f46e1d2_Out_4);
+    float _Multiply_c7ffa99a71ce416481cd9ef6023cb14f_Out_2;
+    Unity_Multiply_float(_Split_bdfe6245792145ca8af4f1fcfde9056f_A_4, _MousePickerCustomFunction_1bba44b17a3a461f947159001f46e1d2_Out_4, _Multiply_c7ffa99a71ce416481cd9ef6023cb14f_Out_2);
+    float4 _Lerp_34a3d0bbb09048e0ab33526147848616_Out_3;
+    Unity_Lerp_float4(_Lerp_9ba2170387c141e28ff9cb1a7263d01a_Out_3, _Property_f652c59ef3b44017916bb0f0279111e1_Out_0, (_Multiply_c7ffa99a71ce416481cd9ef6023cb14f_Out_2.xxxx), _Lerp_34a3d0bbb09048e0ab33526147848616_Out_3);
+    surface.BaseColor = (_Lerp_34a3d0bbb09048e0ab33526147848616_Out_3.xyz);
     surface.Alpha = 1;
     return surface;
 }
