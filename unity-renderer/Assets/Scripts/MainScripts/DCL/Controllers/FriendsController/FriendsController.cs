@@ -13,7 +13,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public event Action<int> OnTotalFriendsUpdated;
     public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
 
-    void Awake()
+    private void Awake()
     {
         i = this;
     }
@@ -52,16 +52,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     [Serializable]
     public class FriendshipInitializationMessage
     {
-        [Serializable]
-        public class UnseenPrivateMessage
-        {
-            public string userId;
-            public int count;
-            public long lastMessageTimestamp;
-        }
-
         public int totalReceivedRequests;
-        public UnseenPrivateMessage[] unseenPrivateMessages;
     }
 
     [Serializable]
@@ -182,56 +173,6 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
         TotalReceivedFriendRequestCount = msg.totalReceivedRequests;
         
-        // HashSet<string> processedIds = new HashSet<string>();
-        //
-        // foreach (var userId in msg.currentFriends)
-        // {
-        //     UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-        //         {action = FriendshipAction.APPROVED, userId = userId});
-        //     if (!processedIds.Contains(userId))
-        //         processedIds.Add(userId);
-        // }
-        //
-        // foreach (var userId in msg.requestedFrom)
-        // {
-        //     UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-        //         {action = FriendshipAction.REQUESTED_FROM, userId = userId});
-        //     if (!processedIds.Contains(userId))
-        //         processedIds.Add(userId);
-        // }
-        //
-        // foreach (var userId in msg.requestedTo)
-        // {
-        //     UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-        //         {action = FriendshipAction.REQUESTED_TO, userId = userId});
-        //     if (!processedIds.Contains(userId))
-        //         processedIds.Add(userId);
-        // }
-        //
-        // Queue<string> newFriends = new Queue<string>();
-        //
-        // foreach (var kvp in friends)
-        // {
-        //     if (!processedIds.Contains(kvp.Key))
-        //     {
-        //         newFriends.Enqueue(kvp.Key);
-        //     }
-        // }
-        //
-        // while (newFriends.Count > 0)
-        // {
-        //     var userId = newFriends.Dequeue();
-        //
-        //     if (KERNEL_CAN_REMOVE_ENTRIES)
-        //     {
-        //         UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-        //             {action = FriendshipAction.NONE, userId = userId});
-        //     }
-        //
-        //     if (friends.ContainsKey(userId))
-        //         friends.Remove(userId);
-        // }
-
         OnInitialized?.Invoke();
     }
 

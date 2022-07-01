@@ -26,6 +26,16 @@ public class ChatController : MonoBehaviour, IChatController
 
     // called by kernel
     [UsedImplicitly]
+    public void InitializeChat(string json)
+    {
+        var msg = JsonUtility.FromJson<InitializeChatPayload>(json);
+
+        // TODO: add #nearby unseen messages
+        TotalUnseenMessages = msg.totalUnseenPrivateMessages;
+    }
+
+    // called by kernel
+    [UsedImplicitly]
     public void AddMessageToChatWindow(string jsonMessage)
     {
         ChatMessage message = JsonUtility.FromJson<ChatMessage>(jsonMessage);
@@ -55,6 +65,19 @@ public class ChatController : MonoBehaviour, IChatController
         unseenMessagesByUser[msg.userId] = msg.total;
         OnUserUnseenMessagesUpdated?.Invoke(msg.userId, msg.total);
     }
+    
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateTotalUnseenMessagesByUser(string json)
+    {
+        var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesByUserPayload>(json);
+
+        foreach (var unseenMessages in msg.unseenPrivateMessages)
+        {
+            unseenMessagesByUser[unseenMessages.userId] = unseenMessages.count;
+            OnUserUnseenMessagesUpdated?.Invoke(unseenMessages.userId, unseenMessages.count);
+        }
+    }
 
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
 
@@ -62,8 +85,7 @@ public class ChatController : MonoBehaviour, IChatController
 
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp) { WebInterface.GetPrivateMessages(userId, limit, fromTimestamp); }
 
-    public int GetUnseenMessagesCount(string userId) =>
-        unseenMessagesByUser.ContainsKey(userId) ? unseenMessagesByUser[userId] : 0;
+    public void GetUnseenMessagesByUser() => WebInterface.GetUnseenMessagesByUser();
 
     public List<ChatMessage> GetAllocatedEntries() { return new List<ChatMessage>(entries); }
 
