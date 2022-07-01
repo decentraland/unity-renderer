@@ -30,7 +30,7 @@ namespace DCL
             filterMode = textureFilterMode;
             this.storeDefaultTextureInAdvance = storeDefaultTextureInAdvance;
             this.storeTexAsNonReadable = storeTexAsNonReadable;
-            maxTextureSize = overrideMaxTextureSize ?? DataStore.i.textureSize.generalMaxSize.Get();
+            maxTextureSize = overrideMaxTextureSize ?? DataStore.i.textureConfig.generalMaxSize.Get();
             idWithDefaultTexSettings = ConstructId(url, DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, maxTextureSize);
             idWithTexSettings = UsesDefaultWrapAndFilterMode() ? idWithDefaultTexSettings : ConstructId(url, wrapMode, filterMode, maxTextureSize);
         }
