@@ -82,4 +82,8 @@ public class ChatController_Mock : IChatController
     public void MuteChannel(string channelId)
     {
     }
+
+    public Channel GetAllocatedChannel(string channelId) => null;
+
+    public List<ChatMessage> GetAllocatedEntriesByChannel(string channelId) => new List<ChatMessage>();
 }

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 
-[RequireComponent(typeof(ChatController))]
 public class LazyLoadingChatControllerMock : IChatController
 {
     private const int MAX_AMOUNT_OF_FAKE_USERS_IN_CATALOG = 130;
@@ -57,6 +56,11 @@ public class LazyLoadingChatControllerMock : IChatController
         controller.GetChannels(limit, skip, name);
 
     public void MuteChannel(string channelId) => controller.MuteChannel(channelId);
+
+    public Channel GetAllocatedChannel(string channelId) => controller.GetAllocatedChannel(channelId);
+
+    public List<ChatMessage> GetAllocatedEntriesByChannel(string channelId) =>
+        controller.GetAllocatedEntriesByChannel(channelId);
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) => controller.GetPrivateAllocatedEntriesByUser(userId);
 
