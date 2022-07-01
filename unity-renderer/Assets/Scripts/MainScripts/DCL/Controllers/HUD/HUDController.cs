@@ -8,6 +8,7 @@ using SignupHUD;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
+using DCL.Chat.HUD;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -89,6 +90,9 @@ public class HUDController : IHUDController
 
     public PublicChatChannelController PublicChatChannelHud =>
         GetHUDElement(HUDElementID.PUBLIC_CHAT_CHANNEL) as PublicChatChannelController;
+
+    private ChatChannelHUDController chatChannelHud =>
+        GetHUDElement(HUDElementID.CHANNELS_CHAT) as ChatChannelHUDController;
 
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
 
@@ -261,6 +265,18 @@ public class HUDController : IHUDController
                 else
                     UpdateHudElement(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
 
+                if (chatChannelHud == null)
+                {
+                    CreateHudElement(configuration, HUDElementID.CHANNELS_CHAT);
+                    
+                    chatChannelHud.Initialize();
+                    chatChannelHud.SetVisibility(false);
+                    chatChannelHud.OnPressBack -= HandleChannelBacked;
+                    chatChannelHud.OnPressBack += HandleChannelBacked;
+
+                    taskbarHud?.AddChatChannel(chatChannelHud);
+                }
+
                 break;
             case HUDElementID.FRIENDS:
                 if (friendsHud == null)
@@ -370,6 +386,12 @@ public class HUDController : IHUDController
 
         if (hudElement != null)
             hudElement.SetVisibility(configuration.active && configuration.visible);
+    }
+
+    private void HandleChannelBacked()
+    {
+        chatChannelHud.SetVisibility(false);
+        taskbarHud?.GoBackFromChat();
     }
 
     private void HandlePublicChatChannelBacked()
