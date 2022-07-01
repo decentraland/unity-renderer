@@ -159,7 +159,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         if (model.isPreviewMode)
             ActivatePreview();
         else
-            DeactivatePreview(true);
+            DeactivatePreview();
         ClearAllEntries();
         foreach (var entry in model.entries)
             AddEntry(entry);
@@ -190,15 +190,24 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             entry.ActivatePreview();
         }
     }
-    public void DeactivatePreview(bool fadeOut)
+    public void DeactivatePreview()
     {
         model.isPreviewMode = false;
-        model.isFadedOut = fadeOut;
         
         for (var i = 0; i < entries.Count; i++)
         {
             var entry = entries[i];
-            entry.DeactivatePreview(fadeOut);
+            entry.DeactivatePreview();
+        }
+    }
+    public void FadeOutPreview()
+    {
+        model.isFadedOut = true;
+        
+        for (var i = 0; i < entries.Count; i++)
+        {
+            var entry = entries[i];
+            entry.FadeOutPreview();
         }
     }
 

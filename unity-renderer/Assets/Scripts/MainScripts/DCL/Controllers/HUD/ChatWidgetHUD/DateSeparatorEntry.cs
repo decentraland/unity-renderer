@@ -48,7 +48,7 @@ public class DateSeparatorEntry : ChatEntry
         fadeEnabled = true;
     }
 
-    public override void DeactivatePreview(bool fadeOut)
+    public override void DeactivatePreview()
     {
         if (!gameObject.activeInHierarchy)
         {
@@ -59,17 +59,24 @@ public class DateSeparatorEntry : ChatEntry
         
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
-        
-        if (fadeOut)
-        {
-            previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(0, 0.5f));
-        }
-        else
-        {
-            group.alpha = 1;
-            previewInterpolationRoutine =
-                StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
-        }
+
+        if (previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
+
+        group.alpha = 1;
+        previewInterpolationRoutine =
+            StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+    }
+    
+    public override void FadeOutPreview()
+    {
+        if (previewInterpolationRoutine != null)
+            StopCoroutine(previewInterpolationRoutine);
+
+        if (previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
+
+        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(0, 0.5f));
     }
 
     public override void ActivatePreview()

@@ -55,10 +55,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         originalFontColor = body.color;
     }
 
-    public override void Populate(ChatEntryModel chatEntryModel)
-    {
-        PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget();
-    }
+    public override void Populate(ChatEntryModel chatEntryModel) { PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget(); }
 
     internal async UniTask PopulateTask(ChatEntryModel chatEntryModel, CancellationToken cancellationToken)
     {
@@ -66,14 +63,14 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
         var userString = GetUserString(chatEntryModel);
-        
+
         // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
         // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
         // TODO: Remove hack in a newer Unity/TMPro version 
         await UniTask.NextFrame();
         await UniTask.NextFrame();
         await UniTask.NextFrame();
-        
+
         if (!string.IsNullOrEmpty(userString) && showUserName)
             body.text = $"{userString} {chatEntryModel.bodyText}";
         else
@@ -91,8 +88,9 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     private string GetUserString(ChatEntryModel chatEntryModel)
     {
         var userString = GetDefaultSenderString(chatEntryModel.senderName);
-        
-        if (chatEntryModel.messageType != ChatMessage.Type.PRIVATE) return userString;
+
+        if (chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
+            return userString;
 
         userString = chatEntryModel.subType switch
         {
@@ -106,7 +104,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private string GetCoordinatesLink(string body)
     {
-        if (!CoordinateUtils.HasValidTextCoordinates(body)) return body;
+        if (!CoordinateUtils.HasValidTextCoordinates(body))
+            return body;
         var textCoordinates = CoordinateUtils.GetTextCoordinates(body);
 
         for (var i = 0; i < textCoordinates.Count; i++)
@@ -123,7 +122,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private void PlaySfx(ChatEntryModel chatEntryModel)
     {
-        if (HUDAudioHandler.i == null) return;
+        if (HUDAudioHandler.i == null)
+            return;
 
         // Check whether or not this message is new, and chat sounds are enabled in settings
         if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp &&
@@ -223,15 +223,9 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         OnCancelHover?.Invoke();
     }
 
-    private void OnDisable()
-    {
-        OnPointerExit(null);
-    }
+    private void OnDisable() { OnPointerExit(null); }
 
-    private void OnDestroy()
-    {
-        populationTaskCancellationTokenSource.Cancel();
-    }
+    private void OnDestroy() { populationTaskCancellationTokenSource.Cancel(); }
 
     public override void SetFadeout(bool enabled)
     {
@@ -245,7 +239,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         fadeEnabled = true;
     }
 
-    public override void DeactivatePreview(bool fadeOut)
+    public override void DeactivatePreview()
     {
         if (!gameObject.activeInHierarchy)
         {
@@ -256,20 +250,24 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
-        
-        if(previewInterpolationAlphaRoutine != null)
+
+        if (previewInterpolationAlphaRoutine != null)
             StopCoroutine(previewInterpolationAlphaRoutine);
 
-        if (fadeOut)
-        {
-            previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(0, 0.5f));
-        }
-        else
-        {
-            group.alpha = 1;
-            previewInterpolationRoutine =
-                StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
-        }
+        group.alpha = 1;
+        previewInterpolationRoutine =
+            StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+    }
+    
+    public override void FadeOutPreview()
+    {
+        if (previewInterpolationRoutine != null)
+            StopCoroutine(previewInterpolationRoutine);
+
+        if (previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
+
+        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(0, 0.5f));
     }
 
     public override void ActivatePreview()
@@ -282,9 +280,9 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
-        
-        if(previewInterpolationAlphaRoutine != null)
-            StopCoroutine(previewInterpolationAlphaRoutine); 
+
+        if (previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
 
         previewInterpolationRoutine =
             StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
@@ -298,16 +296,19 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override void ActivatePreviewInstantly()
     {
+        if (!gameObject.activeInHierarchy)
+            return;
+        
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
 
         previewBackgroundImage.color = previewBackgroundColor;
         body.color = previewFontColor;
         group.alpha = 1;
-        
-        if(previewInterpolationAlphaRoutine != null)
-            StopCoroutine(previewInterpolationAlphaRoutine); 
-        
+
+        if (previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
+
         previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
     }
 
@@ -383,7 +384,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     }
 
     private string RemoveTabs(string text)
-    {   
+    {
         if (string.IsNullOrEmpty(text))
             return "";
 
@@ -424,7 +425,5 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         previewBackgroundImage.color = backgroundColor;
         body.color = fontColor;
     }
-    
-    
-    
+
 }

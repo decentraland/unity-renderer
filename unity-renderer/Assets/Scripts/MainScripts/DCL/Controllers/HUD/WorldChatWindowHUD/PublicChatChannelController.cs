@@ -329,7 +329,7 @@ public class PublicChatChannelController : IHUD
         await UniTask.Delay(5000, cancellationToken: cancellationToken);
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;
-        chatHudController.DeactivatePreview(true);
+        chatHudController.FadeOutPreview();
         _currentState = ChatWindowVisualState.NONE_VISIBLE;
     }
     
@@ -357,7 +357,7 @@ public class PublicChatChannelController : IHUD
         deactivatePreviewHUDControllerCancellationToken = new CancellationTokenSource();
         
         View.DeactivatePreview();
-        chatHudController.DeactivatePreview(false);
+        chatHudController.DeactivatePreview();
         OnPreviewModeChanged?.Invoke(false);
         _currentState = ChatWindowVisualState.INPUT_MODE;
     }

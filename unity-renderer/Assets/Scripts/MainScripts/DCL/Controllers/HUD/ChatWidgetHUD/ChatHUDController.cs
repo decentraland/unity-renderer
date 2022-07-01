@@ -124,7 +124,9 @@ public class ChatHUDController : IDisposable
 
     public void ActivatePreview() => view.ActivatePreview();
     
-    public void DeactivatePreview(bool fadeOut = false) => view.DeactivatePreview(fadeOut);
+    public void DeactivatePreview() => view.DeactivatePreview();
+
+    public void FadeOutPreview() => view.FadeOutPreview();
 
 
     private ChatEntryModel ChatMessageToChatEntry(ChatMessage message)
