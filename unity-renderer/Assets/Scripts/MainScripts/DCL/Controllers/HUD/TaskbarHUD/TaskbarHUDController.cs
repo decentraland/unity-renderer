@@ -312,7 +312,7 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.SetVisibility(false);
         privateChatWindow.SetVisibility(false);
         publicChatChannel.SetVisibility(false);
-        chatChannel.SetVisibility(false);
+        chatChannel?.SetVisibility(false);
         isExperiencesViewerOpen.Set(false);
         isEmotesVisible.Set(false);
         voiceChatHud?.SetVisibility(false);
@@ -348,7 +348,7 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.SetVisibility(false);
         privateChatWindow.SetVisibility(false);
         publicChatChannel.SetVisibility(false);
-        chatChannel.SetVisibility(false);
+        chatChannel?.SetVisibility(false);
         friendsHud?.SetVisibility(false);
         isEmotesVisible.Set(false);
         isExperiencesViewerOpen.Set(false);
