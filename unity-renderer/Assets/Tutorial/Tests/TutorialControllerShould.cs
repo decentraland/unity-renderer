@@ -1,5 +1,4 @@
 using DCL.Tutorial;
-using DCL;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -15,25 +14,23 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Tutorial_Tests
 {
-    public class TutorialControllerShould : IntegrationTestSuite_Legacy
+    public class TutorialControllerShould : IntegrationTestSuite
     {
-        private ParcelScene scene;
-
         private TutorialView tutorialView;
         private TutorialController tutorialController;
         private int currentStepIndex = 0;
         private List<TutorialStep> currentSteps = new List<TutorialStep>();
         private Coroutine stepCoroutine;
-        
-        private ISceneController sceneController => DCL.Environment.i.world.sceneController;
-
+        private ParcelScene genesisPlazaSimulator;
+        private readonly Vector2Int genesisPlazaLocation = new Vector2Int(-9, -9);
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene();
-            sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
-            yield return new WaitForAllMessagesProcessed();
+            Environment.i.world.state.loadedScenes = new Dictionary<string, IParcelScene>();
+            genesisPlazaSimulator = TestUtils.CreateTestScene();
+            Environment.i.world.state.currentSceneId = genesisPlazaSimulator.sceneData.id;
+            genesisPlazaSimulator.parcels.Add(genesisPlazaLocation);
             CreateAndConfigureTutorial();
         }
 
@@ -598,11 +595,11 @@ namespace DCL.Tutorial_Tests
 
             currentStepIndex = 0;
             currentSteps = tutorialController.configuration.stepsOnGenesisPlaza;
-            
+
             tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = true;
-            if(!scene.parcels.Contains(new Vector2Int(-9, -9)))scene.parcels.Add(new Vector2Int(-9, -9));
+            if(!genesisPlazaSimulator.parcels.Contains(genesisPlazaLocation)) genesisPlazaSimulator.parcels.Add(genesisPlazaLocation);
             tutorialController.tutorialReset = false;
             DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
@@ -624,7 +621,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = false;
-            if(scene.parcels.Contains(new Vector2Int(-9, -9)))scene.parcels.Remove(new Vector2Int(-9, -9));
+            if(genesisPlazaSimulator.parcels.Contains(genesisPlazaLocation)) genesisPlazaSimulator.parcels.Remove(genesisPlazaLocation);
             tutorialController.tutorialReset = false;
             tutorialController.openedFromDeepLink = true;
             DataStore.i.common.isTutorialRunning.Set(true);
@@ -648,7 +645,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.tutorialReset = true;
             tutorialController.playerIsInGenesisPlaza = false;
-            if(scene.parcels.Contains(new Vector2Int(-9, -9)))scene.parcels.Remove(new Vector2Int(-9, -9));
+            if(genesisPlazaSimulator.parcels.Contains(genesisPlazaLocation)) genesisPlazaSimulator.parcels.Remove(genesisPlazaLocation);
             DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
@@ -744,7 +741,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = true;
-            if(!scene.parcels.Contains(new Vector2Int(-9, -9)))scene.parcels.Add(new Vector2Int(-9, -9));
+            if(!genesisPlazaSimulator.parcels.Contains(genesisPlazaLocation)) genesisPlazaSimulator.parcels.Add(genesisPlazaLocation);
             tutorialController.tutorialReset = false;
             DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = null;
