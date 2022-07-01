@@ -7,23 +7,11 @@ namespace DCL.ECSComponents
 {
     public static class ProtoConvertUtils 
     {
-        public static PBOnPointerUpResult GetPointerUpResultModel(int buttonId, string meshName, Ray ray, HitInfo hit)
+        public static PBOnPointerResult GetPointerResultModel(int buttonId, long identifier, string meshName, Ray ray, HitInfo hit)
         {
-            PBOnPointerUpResult result = new PBOnPointerUpResult();
+            PBOnPointerResult result = new PBOnPointerResult();
             result.Button = buttonId;
-            result.Direction = UnityVectorToPBVector(ray.direction);
-            result.Distance = hit.distance;
-            result.Normal = UnityVectorToPBVector(hit.normal);
-            result.Origin = UnityVectorToPBVector(ray.origin);
-            result.Point = UnityVectorToPBVector(hit.point);
-            result.MeshName = meshName;
-            return result;
-        }
-        
-        public static PBOnPointerDownResult GetPointerDownResultModel(int buttonId, string meshName, Ray ray, HitInfo hit)
-        {
-            PBOnPointerDownResult result = new PBOnPointerDownResult();
-            result.Button = buttonId;
+            result.Identifier = identifier;
             result.Direction = UnityVectorToPBVector(ray.direction);
             result.Distance = hit.distance;
             result.Normal = UnityVectorToPBVector(hit.normal);
