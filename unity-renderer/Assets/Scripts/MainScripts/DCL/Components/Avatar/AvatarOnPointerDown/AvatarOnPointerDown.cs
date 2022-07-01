@@ -4,6 +4,7 @@ using DCL.Interface;
 using UnityEngine;
 using DCL.Helpers;
 using DCL.Models;
+using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using Ray = UnityEngine.Ray;
 
 namespace DCL.Components
