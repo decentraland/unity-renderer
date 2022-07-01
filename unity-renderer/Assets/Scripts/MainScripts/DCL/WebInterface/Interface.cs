@@ -109,20 +109,20 @@ namespace DCL.Interface
 
         public enum ACTION_BUTTON
         {
-            POINTER,
-            PRIMARY,
-            SECONDARY,
-            ANY,
-            FORWARD,
-            BACKWARD,
-            RIGHT,
-            LEFT,
-            JUMP,
-            WALK,
-            ACTION_3,
-            ACTION_4,
-            ACTION_5,
-            ACTION_6
+            POINTER = 0,
+            PRIMARY = 1,
+            SECONDARY = 2,
+            ANY = 3,
+            FORWARD = 4,
+            BACKWARD = 5,
+            RIGHT = 6,
+            LEFT = 7,
+            JUMP = 8,
+            WALK = 9, 
+            ACTION_3 = 10,
+            ACTION_4 = 11,
+            ACTION_5 = 12,
+            ACTION_6 = 13
         }
 
         [System.Serializable]

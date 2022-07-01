@@ -26,7 +26,7 @@ namespace DCL.ECSComponents
         {
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
-            DisposeMesh(scene);
+            DisposeMesh(entity, scene);
             
             lastModel = null;
         }
@@ -49,9 +49,10 @@ namespace DCL.ECSComponents
                 primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
                 primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>
                 {
-                    DisposeMesh(scene);
+                    DisposeMesh(entity,scene);
                     generatedMesh = shape.mesh;
                     GenerateRenderer(generatedMesh, scene, entity, model);
+                    dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
                 };
                 primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
@@ -74,10 +75,13 @@ namespace DCL.ECSComponents
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
         }
 
-        internal void DisposeMesh(IParcelScene scene)
+        internal void DisposeMesh(IDCLEntity entity,IParcelScene scene)
         {
-            if(meshesInfo != null)
+            if (meshesInfo != null)
+            {
+                dataStore.RemoveShapeReady(entity.entityId);
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
+            }
             if(rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id,rendereable);
             if(lastModel != null)

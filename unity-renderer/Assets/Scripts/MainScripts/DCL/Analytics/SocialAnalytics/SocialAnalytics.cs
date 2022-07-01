@@ -97,39 +97,6 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(VOICE_CHAT_PREFERENCES_CHANGED, data);
         }
 
-        public void SendChannelMessageSent(string fromUserId, double messageLength, string channel)
-        {
-            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
-
-            if (fromPlayerType == null)
-                return;
-
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("length", messageLength.ToString());
-            data.Add("channel", channel);
-
-            analytics.SendAnalytic(CHANNEL_MESSAGE_SENT, data);
-        }
-
-        public void SendDirectMessageSent(string fromUserId, string toUserId, double messageLength, bool areFriends, ChatContentType contentType)
-        {
-            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
-            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
-
-            if (fromPlayerType == null || toPlayerType == null)
-                return;
-
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("to", toPlayerType.ToString());
-            data.Add("length", messageLength.ToString());
-            data.Add("friends", areFriends.ToString());
-            data.Add("content_type", contentType.ToString());
-
-            analytics.SendAnalytic(DIRECT_MESSAGE_SENT, data);
-        }
-
         public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
