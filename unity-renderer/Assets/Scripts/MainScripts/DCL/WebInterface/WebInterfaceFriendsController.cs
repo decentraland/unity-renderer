@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL.Friends.WebApi;
 
 namespace DCL.Interface
 {
@@ -38,11 +39,25 @@ namespace DCL.Interface
             remove => friendsController.OnAddFriendsWithDirectMessages -= value;
         }
 
+        public event Action<int, int> OnTotalFriendRequestUpdated
+        {
+            add => friendsController.OnTotalFriendRequestUpdated += value;
+            remove => friendsController.OnTotalFriendRequestUpdated -= value;
+        }
+        
+        public event Action<int> OnTotalFriendsUpdated
+        {
+            add => friendsController.OnTotalFriendsUpdated += value;
+            remove => friendsController.OnTotalFriendsUpdated -= value;
+        }
+
         public int AllocatedFriendCount => friendsController.AllocatedFriendCount;
         public bool IsInitialized => friendsController.IsInitialized;
         public int ReceivedRequestCount => friendsController.ReceivedRequestCount;
         public int TotalFriendCount => friendsController.TotalFriendCount;
         public int TotalFriendRequestCount => friendsController.TotalFriendRequestCount;
+        public int TotalReceivedFriendRequestCount => friendsController.TotalReceivedFriendRequestCount;
+        public int TotalSentFriendRequestCount => friendsController.TotalSentFriendRequestCount;
         public int TotalFriendsWithDirectMessagesCount => friendsController.TotalFriendsWithDirectMessagesCount;
 
         public WebInterfaceFriendsController(IFriendsController friendsController)

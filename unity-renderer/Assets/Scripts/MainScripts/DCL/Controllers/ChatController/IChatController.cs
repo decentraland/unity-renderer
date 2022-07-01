@@ -13,7 +13,11 @@ public interface IChatController
     event Action<string> OnChannelLeft;
     event Action<string, string> OnChannelLeaveError;
     event Action<string, string> OnMuteChannelError;
+    event Action<int> OnTotalUnseenMessagesUpdated;
+    event Action<string, int> OnUserUnseenMessagesUpdated;
+
     int TotalJoinedChannelCount { get; }
+    int TotalUnseenMessages { get; }
 
     List<ChatMessage> GetAllocatedEntries();
     List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId);
@@ -28,4 +32,5 @@ public interface IChatController
     void MuteChannel(string channelId);
     Channel GetAllocatedChannel(string channelId);
     List<ChatMessage> GetAllocatedEntriesByChannel(string channelId);
+    void GetUnseenMessagesByUser();
 }
