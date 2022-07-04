@@ -27,11 +27,13 @@ namespace Tests
             CRDTSerializer.Serialize(binaryWriter, message);
             var bytes = memoryStream.ToArray();
 
-            CRDTMessage result = CRDTDeserializer.Deserialize(new ByteArrayReader(bytes), CrdtMessageType.PUT_COMPONENT);
+            CrdtMessageType crdtMessageType = CrdtMessageType.PUT_COMPONENT;
+            CRDTMessage result = CRDTDeserializer.Deserialize(new ByteArrayReader(bytes), crdtMessageType);
+            object expextedData = message.data ?? new byte[0]; // NULL data for a PUT operation will be converted to byte[0]
 
             Assert.AreEqual(message.key, result.key);
             Assert.AreEqual(message.timestamp, result.timestamp);
-            Assert.IsTrue(AreEqual((byte[])message.data, (byte[])result.data));
+            Assert.IsTrue(AreEqual((byte[])expextedData, (byte[])result.data));
 
             return bytes;
         }
