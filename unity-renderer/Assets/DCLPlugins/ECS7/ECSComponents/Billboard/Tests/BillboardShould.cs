@@ -52,7 +52,8 @@ namespace DCL.ECSComponents.Test
             var model = CreateModel();
             componentHandler.OnComponentCreated(scene,entity);
             var currentRotation = gameObject.transform.rotation;
-
+            CommonScriptableObjects.cameraPosition.Set(new UnityEngine.Vector3(10, 10, 10));
+                
             // Act
             componentHandler.OnComponentModelUpdated(scene, entity, model);
 
@@ -84,7 +85,9 @@ namespace DCL.ECSComponents.Test
         private PBBillboard CreateModel()
         {
             PBBillboard model = new PBBillboard();
-
+            model.X = true;
+            model.Y = false;
+            model.Z = false;
             return model;
         }
     }

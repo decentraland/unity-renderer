@@ -91,7 +91,7 @@ namespace DCL.ECSComponents
 
         private void ChangeOrientation()
         {
-            if (entityTransform == null)
+            if (entityTransform == null || model == null)
                 return;
             UnityEngine.Vector3 lookAtVector = GetLookAtVector();
             if (lookAtVector != UnityEngine.Vector3.zero)

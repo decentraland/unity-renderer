@@ -1,3 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DCL.Components.Billboard.Tests")]
+[assembly: InternalsVisibleTo("DCL.ECSComponents.Billboard.Tests")]
