@@ -19,8 +19,8 @@ namespace KernelCommunication
         private static int GetCRDTMessageType(CRDTMessage message)
         {
             if (message.data == null)
-                return (int)KernelBinaryMessageType.DELETE_COMPONENT;
-            return (int)KernelBinaryMessageType.PUT_COMPONENT;
+                return (int)CrdtMessageType.DELETE_COMPONENT;
+            return (int)CrdtMessageType.PUT_COMPONENT;
         }
     }
 }

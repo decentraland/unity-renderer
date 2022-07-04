@@ -27,7 +27,7 @@ namespace Tests
             CRDTSerializer.Serialize(binaryWriter, message);
             var bytes = memoryStream.ToArray();
 
-            CRDTMessage result = CRDTDeserializer.Deserialize(new ByteArrayReader(bytes));
+            CRDTMessage result = CRDTDeserializer.Deserialize(new ByteArrayReader(bytes), CrdtMessageType.PUT_COMPONENT);
 
             Assert.AreEqual(message.key, result.key);
             Assert.AreEqual(message.timestamp, result.timestamp);

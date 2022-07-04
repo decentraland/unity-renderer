@@ -7,7 +7,7 @@ namespace DCL.CRDT
     {
         internal static readonly CRDTComponentMessageHeader componentHeader = new CRDTComponentMessageHeader();
 
-        public static CRDTMessage Deserialize(IBinaryReader dataReader)
+        public static CRDTMessage Deserialize(IBinaryReader dataReader, CrdtMessageType messageType)
         {
             componentHeader.entityId = dataReader.ReadInt32();
             componentHeader.componentClassId = dataReader.ReadInt32();
@@ -15,9 +15,13 @@ namespace DCL.CRDT
             componentHeader.dataLength = dataReader.ReadInt32();
 
             byte[] data = null;
-            if (componentHeader.dataLength > 0)
+            if (componentHeader.dataLength > 0 && messageType != CrdtMessageType.DELETE_COMPONENT)
             {
                 data = dataReader.ReadBytes(componentHeader.dataLength);
+            }
+            else if (messageType == CrdtMessageType.PUT_COMPONENT)
+            {
+                data = new byte[0];
             }
 
             return new CRDTMessage()
