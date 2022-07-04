@@ -105,7 +105,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
                 {
             
                     ChatEntryModel.SubType.RECEIVED => userString,
-                    ChatEntryModel.SubType.SENT => $"<b>YOU:</b>",
+                    ChatEntryModel.SubType.SENT => $"<b>You:</b>",
                     _ => userString
                 };
                 break;
