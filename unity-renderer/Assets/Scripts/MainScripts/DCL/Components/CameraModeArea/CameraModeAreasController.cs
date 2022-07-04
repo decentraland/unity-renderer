@@ -3,7 +3,29 @@ using DCL.NotificationModel;
 
 namespace DCL.Components
 {
-    internal class CameraModeAreasController
+    public interface ICameraModeAreasController
+    {
+        /// <summary>
+        /// This will change the camera to the passed mode,
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="mode"></param>
+        void ChangeAreaMode(in ICameraModeArea area);
+        
+        /// <summary>
+        /// Adds an area
+        /// </summary>
+        /// <param name="area"></param>
+        void AddInsideArea(in ICameraModeArea area);
+        
+        /// <summary>
+        /// Remove an area
+        /// </summary>
+        /// <param name="area"></param>
+        void RemoveInsideArea(in ICameraModeArea area);
+    }
+    
+    public class CameraModeAreasController : ICameraModeAreasController
     {
         private const string NOTIFICATION_GROUP = "CameraModeLockedByScene";
         private const float NOTIFICATION_TIME = 3;
@@ -57,11 +79,11 @@ namespace DCL.Components
             insideAreasList.Remove(area);
         }
 
-        public void ChangeAreaMode(in ICameraModeArea area, in CameraMode.ModeId mode)
+        public void ChangeAreaMode(in ICameraModeArea area)
         {
             if (IsTheActivelyAffectingArea(area))
             {
-                CommonScriptableObjects.cameraMode.Set(mode);
+                CommonScriptableObjects.cameraMode.Set(area.cameraMode);
             }
         }
 

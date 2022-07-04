@@ -1,33 +1,40 @@
 {
-  "name": "TutorialControllerTests",
-  "rootNamespace": "",
-  "references": [
-    "GUID:27619889b8ba8c24980f49ee34dbb44a",
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:8e14059e964ca49aeb55d0e7b2b14c3c",
-    "GUID:3bdb7fe910cce8d4888137cded3ba4a2",
-    "GUID:760a1d365aad58044916992b072cf2a6",
-    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-    "GUID:4307f53044263cf4b835bd812fc161a4",
-    "GUID:28f74c468a54948bfa9f625c5d428f56",
-    "GUID:70aa308435753374584c7061e4b89ef2",
-    "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
-    "GUID:858f845923fcab3448cf8b66614b41a1",
-    "GUID:c9fbb75c15a4cd042b731877ede4a5c1",
-    "GUID:7fe146b43e76fe745aeaf2020feb54b7",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "nunit.framework.dll"
-  ],
-  "autoReferenced": false,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "TutorialControllerTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:8e14059e964ca49aeb55d0e7b2b14c3c",
+        "GUID:3bdb7fe910cce8d4888137cded3ba4a2",
+        "GUID:760a1d365aad58044916992b072cf2a6",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:70aa308435753374584c7061e4b89ef2",
+        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
+        "GUID:858f845923fcab3448cf8b66614b41a1",
+        "GUID:c9fbb75c15a4cd042b731877ede4a5c1",
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:3047fd2f05bcaae498a99a3f9321f9a8",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:44a9db8f655ab05409802e5476cf9dd3",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
