@@ -46,7 +46,6 @@ namespace Test.AvatarSystem
             emoteAnimationEquipper = Substitute.For<IEmoteAnimationEquipper>();
             baseAvatar = Substitute.For<IBaseAvatar>();
             avatar = new Avatar(
-                baseAvatar,
                 curator,
                 loader,
                 animator,
