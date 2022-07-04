@@ -55,14 +55,14 @@ namespace DCL.ECSComponents.Test
             componentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Assert
-            areasController.Received(1).ChangeAreaMode(componentHandler.cameraModeRepresentantion, ProtoConvertUtils.PBCameraEnumToUnityEnum(model.Mode));
+            areasController.Received(1).ChangeAreaMode(componentHandler.cameraModeRepresentantion);
         }
         
         [Test]
         public void NotUpdateComponentIfSameMode()
         {
             // Arrange
-            var model = CreateModel();
+            var model = CreateModel();  
             componentHandler.lastModel = CreateModel();
             componentHandler.lastModel.Mode = model.Mode;
 
@@ -70,7 +70,7 @@ namespace DCL.ECSComponents.Test
             componentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Assert
-            areasController.DidNotReceive().ChangeAreaMode(componentHandler.cameraModeRepresentantion, ProtoConvertUtils.PBCameraEnumToUnityEnum(model.Mode));
+            areasController.DidNotReceive().ChangeAreaMode(componentHandler.cameraModeRepresentantion);
         }
 
         [Test]
