@@ -31,7 +31,7 @@ public class ECSTestScene : MonoBehaviour
         Environment.i.world.state.scenesSortedByDistance[0].contentProvider.baseUrl = "https://peer-lb.decentraland.org/content/contents/";
         Environment.i.world.state.scenesSortedByDistance[0].contentProvider.fileToHash.Add("models/SCENE.glb".ToLower(), "QmQgQtuAg9qsdrmLwnFiLRAYZ6Du4Dp7Yh7bw7ELn7AqkD");
             
-        componentWriter.PutComponent(sceneId, 2, 1050,
+        componentWriter.PutComponent(sceneId, 2, ComponentID.GLTF_SHAPE,
             new PBGLTFShape() { Src = "models/SCENE.glb", Visible = true});
     }
 

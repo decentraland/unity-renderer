@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL.Components;
+using DCL.Configuration;
 using NFTShape_Internal;
 using UnityEngine;
 
@@ -28,6 +29,12 @@ namespace DCL.ECSComponents
         /// </summary>
         /// <param name="withCollision"></param>
         void SetHasCollisions(bool withCollision);
+
+        /// <summary>
+        /// Enable or disable the pointer events on the frame
+        /// </summary>
+        /// <param name="isPointerBlocker"></param>
+        void SetPointerBlocker(bool isPointerBlocker);
         
         /// <summary>
         /// This set the image and creates the HQ Texture handler
@@ -112,6 +119,13 @@ namespace DCL.ECSComponents
         public void SetHasCollisions(bool withCollision)
         {
             boxCollider.enabled = withCollision;
+        }
+
+        public void SetPointerBlocker(bool isPointerBlocker)
+        {
+            int colliderLayer = isPointerBlocker ? PhysicsLayers.onPointerEventLayer : DCL.Configuration.PhysicsLayers.defaultLayer;
+
+            boxCollider.gameObject.layer = colliderLayer;
         }
 
         public void SetImage(string name, string url, INFTAsset nftAsset)
