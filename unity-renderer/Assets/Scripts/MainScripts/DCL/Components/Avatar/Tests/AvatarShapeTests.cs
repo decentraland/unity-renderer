@@ -8,6 +8,7 @@ using DCL.Controllers;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.TestTools;
+using AvatarSystem;
 
 namespace Tests
 {
@@ -27,6 +28,7 @@ namespace Tests
 
         protected override IEnumerator TearDown()
         {
+            DataStore.Clear();
             coreComponentsPlugin.Dispose();
             Object.Destroy(catalogController.gameObject);
             yield return base.TearDown();
@@ -46,6 +48,24 @@ namespace Tests
                     Assert.IsTrue(!material.shader.name.Contains("Lit"), $"Material must not be LWRP Lit. found {material.shader.name} instead!");
                 }
             }
+        }
+
+        [Test]
+        public void CreateStandardAvatar()
+        {
+            DataStore.i.avatarConfig.useHologramAvatar.Set(false);
+            AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
+            Assert.IsTrue(avatar.avatar is AvatarSystem.Avatar);
+            TestUtils.RemoveSceneEntity(scene, avatar.entity);
+        }
+
+        [Test]
+        public void CreateAvatarWithHologram()
+        {
+            DataStore.i.avatarConfig.useHologramAvatar.Set(true);
+            AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
+            Assert.IsTrue(avatar.avatar is AvatarSystem.AvatarWithHologram);
+            TestUtils.RemoveSceneEntity(scene, avatar.entity);
         }
 
         [Test]

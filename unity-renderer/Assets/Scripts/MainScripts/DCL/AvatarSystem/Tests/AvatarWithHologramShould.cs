@@ -16,11 +16,11 @@ using Object = UnityEngine.Object;
 
 namespace Test.AvatarSystem
 {
-    public class AvatarShould
+    public class AvatarWithHologramShould
     {
         private GameObject container;
 
-        private Avatar avatar;
+        private AvatarWithHologram avatar;
         private IAvatarCurator curator;
         private ILoader loader;
         private IAnimator animator;
@@ -29,6 +29,7 @@ namespace Test.AvatarSystem
         private IGPUSkinning gpuSkinning;
         private IGPUSkinningThrottler gpuSkinningThrottler;
         private IEmoteAnimationEquipper emoteAnimationEquipper;
+        private IBaseAvatar baseAvatar;
 
         [SetUp]
         public void SetUp()
@@ -43,7 +44,9 @@ namespace Test.AvatarSystem
             gpuSkinning = Substitute.For<IGPUSkinning>();
             gpuSkinningThrottler = Substitute.For<IGPUSkinningThrottler>();
             emoteAnimationEquipper = Substitute.For<IEmoteAnimationEquipper>();
-            avatar = new Avatar(
+            baseAvatar = Substitute.For<IBaseAvatar>();
+            avatar = new AvatarWithHologram(
+                baseAvatar,
                 curator,
                 loader,
                 animator,
@@ -109,7 +112,7 @@ namespace Test.AvatarSystem
             await TestUtils.ThrowsAsync<Exception>(avatar.Load(new List<string>(), settings));
 
             loader.Received()
-                .Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, Arg.Any<CancellationToken>());
+                .Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, Arg.Any<SkinnedMeshRenderer>(), Arg.Any<CancellationToken>());
         });
 
         [UnityTest]
@@ -128,7 +131,7 @@ namespace Test.AvatarSystem
             await avatar.Load(new List<string>(), settings);
 
             Assert.AreEqual(extents, avatar.extents);
-            animator.Received().Prepare(settings.bodyshapeId, combinedRenderer.gameObject);
+            animator.Received().Prepare(settings.bodyshapeId, null);
             gpuSkinning.Received().Prepare(combinedRenderer);
             gpuSkinningThrottler.Received().Bind(gpuSkinning);
             visibility.Received().Bind(gpuSkinnedRenderer, facialFeatures);

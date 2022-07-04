@@ -96,7 +96,7 @@ namespace DCL.Components
 
             if (cameraModeChanged && isPlayerInside)
             {
-                areasController.ChangeAreaMode(this, areaModel.cameraMode);
+                areasController.ChangeAreaMode(this);
             }
         }
 

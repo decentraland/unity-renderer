@@ -33,6 +33,11 @@ namespace AvatarSystem
             avatarMeshCombiner.uploadMeshToGpu = true;
         }
 
+        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default)
+        {
+            await Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, null, ct);
+        }
+
         public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesContainer = null, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
@@ -56,7 +61,7 @@ namespace AvatarSystem
 
                 (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(settings.bodyshapeId, wearables);
 
-                combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, bonesContainer, ct);
+                combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, skinnedContainer, ct);
                 facialFeaturesRenderers = new List<Renderer>();
                 if (headVisible)
                 {
