@@ -48,7 +48,7 @@ namespace DCL.Protobuf
 
         private const string PROTO_VERSION = "3.20.1";
 
-        private const string NPM_PACKAGE = "decentraland-ecs";
+        private const string NPM_PACKAGE = "@dcl/sdk";
         private const string NPM_PACKAGE_PROTO_DEF = "/package/dist/ecs7/proto-definitions";
 
         private struct ProtoComponent
