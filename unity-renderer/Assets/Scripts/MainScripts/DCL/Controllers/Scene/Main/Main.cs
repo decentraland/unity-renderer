@@ -66,7 +66,7 @@ namespace DCL
         {
             DataStore.i.textureConfig.gltfMaxSize.Set(512);
             DataStore.i.textureConfig.generalMaxSize.Set(2048);
-            DataStore.i.avatarConfig.useHologramAvatar.Set(true);
+            DataStore.i.avatarConfig.useHologramAvatar.Set(false);
         }
 
         protected virtual void InitializeCommunication()
