@@ -62,7 +62,7 @@ namespace DCL
             Visibility visibility = new Visibility();
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
+            BaseAvatarDummy baseAvatar = new BaseAvatarDummy(avatarRevealContainer, armatureContainer);
             avatar = new Avatar(
                 baseAvatar,
                 new AvatarCurator(new WearableItemResolver()),

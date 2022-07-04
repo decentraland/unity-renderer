@@ -19,18 +19,18 @@ namespace AvatarSystem
 
         public GameObject GetArmatureContainer()
         {
-            return armatureContainer;
+            return null;
         }
 
         public SkinnedMeshRenderer GetMainRenderer()
         {
-            return meshRenderer;
+            return null;
         }
 
         public void Initialize()
         {
-            if (meshRenderer == null)
-                meshRenderer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatarDummy"), avatarRevealerContainer).GetComponentInChildren<SkinnedMeshRenderer>();
+            //if (meshRenderer == null)
+            //    meshRenderer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatarDummy"), avatarRevealerContainer).GetComponentInChildren<SkinnedMeshRenderer>();
         }
 
         public void FadeOut(MeshRenderer targetRenderer, bool playParticles) { }

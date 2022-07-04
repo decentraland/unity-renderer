@@ -56,7 +56,7 @@ namespace AvatarSystem
 
                 (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(settings.bodyshapeId, wearables);
 
-                combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, bonesContainer, ct);
+                combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, skinnedContainer, ct);
                 facialFeaturesRenderers = new List<Renderer>();
                 if (headVisible)
                 {

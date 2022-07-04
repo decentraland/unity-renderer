@@ -50,7 +50,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
 
         AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
         AvatarSystem.NoLODs noLod = new NoLODs();
-        BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer, noLod);
+        BaseAvatarDummy baseAvatar = new BaseAvatarDummy(loadingAvatarContainer, armatureContainer);
         avatar = new AvatarSystem.Avatar(
             baseAvatar,
             new AvatarCurator(new WearableItemResolver()),
