@@ -115,12 +115,13 @@ namespace DCL.Protobuf
             VerboseLog(NPM_PACKAGE + "@" + version + "url: " + tgzUrl);
 
             // Download package
-            string packageName = NPM_PACKAGE + "-" + version + ".tgz";
+            string packageWithoutSlash = NPM_PACKAGE.Replace("/", "-"); // Replace / because in the file system is interpreted as a folder
+            string packageName = packageWithoutSlash + "-" + version + ".tgz";
             client = new WebClient();
             client.DownloadFile(tgzUrl, packageName);
             VerboseLog("File downloaded " + packageName);
 
-            string destPackage = NPM_PACKAGE + "-" + version;
+            string destPackage = packageWithoutSlash + "-" + version;
             if (Directory.Exists(destPackage))
                 Directory.Delete(destPackage, true);
 
