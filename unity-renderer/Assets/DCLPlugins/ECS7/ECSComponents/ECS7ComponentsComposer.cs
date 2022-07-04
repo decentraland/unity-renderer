@@ -20,6 +20,7 @@ namespace DCL.ECSComponents
         private readonly OnPointerDownRegister pointerDownRegister;
         private readonly OnPointerUpRegister pointerUpRegister;
         private readonly AnimatorRegister animatorRegister;
+        private readonly BillboardRegister billboardRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
@@ -36,6 +37,7 @@ namespace DCL.ECSComponents
             pointerDownRegister = new OnPointerDownRegister(ComponentID.ON_POINTER_DOWN, componentsFactory, componentsWriter);
             pointerUpRegister = new OnPointerUpRegister(ComponentID.ON_POINTER_UP, componentsFactory, componentsWriter);
             animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
+            billboardRegister = new BillboardRegister(ComponentID.BILLBOARD, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -43,6 +45,7 @@ namespace DCL.ECSComponents
             transformRegister.Dispose();
             sphereShapeRegister.Dispose();
             boxShapeRegister.Dispose();
+            billboardRegister.Dispose();
             planeShapeRegister.Dispose();
             cylinderShapeRegister.Dispose();
             audioStreamRegister.Dispose();

@@ -1,0 +1,10 @@
+﻿syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1080;
+
+message PBBillboard {
+  bool x = 1;
+  bool y = 2;
+  bool z = 3;
+}
