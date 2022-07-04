@@ -57,7 +57,7 @@ namespace DCL.ECSComponents
             
             // If the mode must change and the player is inside, we change the mode here
             if (isPlayerInside)
-                areasController.ChangeAreaMode(cameraModeRepresentantion, cameraModeRepresentantion.cameraMode);
+                areasController.ChangeAreaMode(cameraModeRepresentantion);
         }
         
         internal void Initialize(in IParcelScene scene, in IDCLEntity entity, in Collider playerCollider)

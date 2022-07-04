@@ -10,7 +10,7 @@ namespace DCL.Components
         /// </summary>
         /// <param name="area"></param>
         /// <param name="mode"></param>
-        void ChangeAreaMode(in ICameraModeArea area, in CameraMode.ModeId mode);
+        void ChangeAreaMode(in ICameraModeArea area);
         
         /// <summary>
         /// Adds an area
@@ -79,11 +79,11 @@ namespace DCL.Components
             insideAreasList.Remove(area);
         }
 
-        public void ChangeAreaMode(in ICameraModeArea area, in CameraMode.ModeId mode)
+        public void ChangeAreaMode(in ICameraModeArea area)
         {
             if (IsTheActivelyAffectingArea(area))
             {
-                CommonScriptableObjects.cameraMode.Set(mode);
+                CommonScriptableObjects.cameraMode.Set(area.cameraMode);
             }
         }
 
