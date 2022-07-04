@@ -67,7 +67,7 @@ namespace Tests
                                });
 
             // Simulate client sending `crdtMessage` CRDT
-            await testClient.CallProcedure<CRDTResponse>("SendCRDT", new CRDTManyMessages()
+            await testClient.CallProcedure<CRDTResponse>("SendCrdt", new CRDTManyMessages()
             {
                 SceneId = sceneId,
                 Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
@@ -127,7 +127,7 @@ namespace Tests
             bool testDone = false;
 
             // client receives CRDT notifications
-            await foreach (var element in testClient.CallStream<CRDTManyMessages>("CRDTNotificationStream", new CRDTStreamRequest()))
+            await foreach (var element in testClient.CallStream<CRDTManyMessages>("CrdtNotificationStream", new CRDTStreamRequest()))
             {
                 var receivedCrdt = await element;
                 clientReceiveCRDT.TrySetResult(receivedCrdt);

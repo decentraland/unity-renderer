@@ -20,8 +20,8 @@ namespace RPC.Services
         {
             CRDTService<RPCContext>.RegisterService(
                 port,
-                sendCRDT: OnCRDTReceived,
-                cRDTNotificationStream: CRDTNotificationStream
+                sendCrdt: OnCRDTReceived,
+                crdtNotificationStream: CRDTNotificationStream
             );
 
             PingPongService<RPCContext>.RegisterService(port,

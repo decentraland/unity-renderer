@@ -10,8 +10,8 @@ message CRDTResponse {}
 message CRDTStreamRequest {}
 
 service CRDTService {
-  rpc SendCRDT(CRDTManyMessages) returns (CRDTResponse){}
-  rpc CRDTNotificationStream(CRDTStreamRequest) returns (stream CRDTManyMessages) {}
+  rpc SendCrdt(CRDTManyMessages) returns (CRDTResponse){}
+  rpc CrdtNotificationStream(CRDTStreamRequest) returns (stream CRDTManyMessages) {}
 }
 
 message PingRequest {}
