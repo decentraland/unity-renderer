@@ -7,7 +7,7 @@ public class PublicChatChannelWindowMock : MonoBehaviour, IChannelChatWindowView
     public event Action OnClose;
     public event Action OnBack;
     public event Action<bool> OnFocused;
-    public event Action OnClick;
+    public event Action OnClickOverWindow;
 
     public bool IsActive => gameObject.activeSelf;
     public IChatHUDComponentView ChatHUD => Substitute.For<IChatHUDComponentView>();

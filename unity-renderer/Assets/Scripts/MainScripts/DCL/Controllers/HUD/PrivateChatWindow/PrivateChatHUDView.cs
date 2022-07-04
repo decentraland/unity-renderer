@@ -31,7 +31,7 @@ public class PrivateChatHUDView : ChatHUDView
         if (dateSeparators.ContainsKey(entryDateTime)) return;
         var dateSeparatorEntry = Instantiate(separatorEntryPrefab, chatEntriesContainer);
         dateSeparatorEntry.Populate(chatEntryModel);
-        dateSeparatorEntry.SetFadeout( this.model.enableFadeoutMode);
+        dateSeparatorEntry.SetFadeout(IsFadeoutModeEnabled);
         dateSeparators.Add(entryDateTime, dateSeparatorEntry);
         entries.Add(dateSeparatorEntry);
     }

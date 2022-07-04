@@ -12,10 +12,11 @@ public abstract class ChatEntry : MonoBehaviour
     public abstract void Populate(ChatEntryModel model);
     public abstract void SetFadeout(bool enabled);
     public abstract void DeactivatePreview();
-    public abstract void FadeOutPreview();
+    public abstract void FadeOut();
     public abstract void ActivatePreview();
     public abstract void ActivatePreviewInstantly();
     public abstract void DeactivatePreviewInstantly();
+    
     protected IEnumerator InterpolateAlpha(float destinationAlpha, float duration)
     {
         if (!fadeEnabled)
@@ -23,10 +24,11 @@ public abstract class ChatEntry : MonoBehaviour
             group.alpha = destinationAlpha;
             StopCoroutine(previewInterpolationAlphaRoutine); 
         }
+        if(destinationAlpha.Equals(group.alpha)) yield break;
         var t = 0f;
         var startAlpha = group.alpha;
         //NOTE(Brian): Small offset using normalized Y so we keep the cascade effect
-        double yOffset = ((RectTransform) transform).anchoredPosition.y / (double) Screen.height * 4.0;
+        double yOffset = ((RectTransform) transform).localPosition.y / (double) Screen.height * 2.5f;
         duration -= (float) yOffset;
         while (t < duration)
         {

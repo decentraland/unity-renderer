@@ -259,11 +259,13 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
     }
     
-    public override void FadeOutPreview()
+    public override void FadeOut()
     {
-        if (previewInterpolationRoutine != null)
-            StopCoroutine(previewInterpolationRoutine);
-
+        if (!gameObject.activeInHierarchy)
+        {
+            return;
+        }
+        
         if (previewInterpolationAlphaRoutine != null)
             StopCoroutine(previewInterpolationAlphaRoutine);
 
@@ -287,11 +289,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         previewInterpolationRoutine =
             StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
 
-        //We have to evaluate if we were already showing the alpha group.
-        if (group.alpha <= 0.99f)
-        {
-            previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
-        }
+        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
     }
 
     public override void ActivatePreviewInstantly()

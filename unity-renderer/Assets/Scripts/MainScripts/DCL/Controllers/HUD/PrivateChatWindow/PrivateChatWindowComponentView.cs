@@ -32,17 +32,17 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         add => userContextMenu.OnUnfriend += value;
         remove => userContextMenu.OnUnfriend -= value;
     }
-
-    public event Action<bool> OnFocused;
-    public event Action OnClick;
-
-
+    public event Action<bool> OnFocused
+    {
+        add => onFocused += value;
+        remove => onFocused -= value;
+    }
+    public event Action OnClickOverWindow;
 
     public IChatHUDComponentView ChatHUD => chatView;
     public bool IsActive => gameObject.activeInHierarchy;
     public RectTransform Transform => (RectTransform) transform;
     public bool IsFocused => isFocused;
-    public bool IsInPreviewMode { get; private set; }
 
     public static PrivateChatWindowComponentView Create()
     {
@@ -92,7 +92,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = previewModeSize;
-        IsInPreviewMode = true;
     }
 
     public void DeactivatePreview()
@@ -112,7 +111,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = originalSize;
-        IsInPreviewMode = false;
     }
 
     public override void RefreshControl()
@@ -144,18 +142,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
 
     public void Hide() => gameObject.SetActive(false);
 
-    public override void OnPointerEnter(PointerEventData eventData)
-    {
-        base.OnPointerEnter(eventData);
-        OnFocused?.Invoke(true);
-    }
-    public override void OnPointerExit(PointerEventData eventData)
-    {
-        base.OnPointerExit(eventData);
-        OnFocused?.Invoke(false);
-    }
-
-    public void OnPointerDown(PointerEventData eventData) => OnClick?.Invoke();
+    public void OnPointerDown(PointerEventData eventData) => OnClickOverWindow?.Invoke();
 
     private void ShowOptions()
     {

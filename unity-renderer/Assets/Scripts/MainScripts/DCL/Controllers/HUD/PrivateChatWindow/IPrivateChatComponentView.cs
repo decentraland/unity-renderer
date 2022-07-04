@@ -8,7 +8,7 @@ public interface IPrivateChatComponentView
     event Action OnClose;
     event Action<string> OnUnfriend;
     event Action<bool> OnFocused;
-    event Action OnClick;
+    event Action OnClickOverWindow;
 
     
     IChatHUDComponentView ChatHUD { get; }
