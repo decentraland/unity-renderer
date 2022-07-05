@@ -9,7 +9,7 @@ using UnityEngine;
 namespace AvatarSystem
 {
     // [ADR 65 - https://github.com/decentraland/adr]
-    public class Avatar : IAvatar
+    public class AvatarWithHologram : IAvatar
     {
         private const float RESCALING_BOUNDS_FACTOR = 100f;
         internal const string LOADING_VISIBILITY_CONSTRAIN = "Loading";
@@ -22,13 +22,15 @@ namespace AvatarSystem
         private readonly IGPUSkinningThrottler gpuSkinningThrottler;
         private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
+        private readonly IBaseAvatar baseAvatar;
 
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
 
-        public Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
+        public AvatarWithHologram(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
         {
+            this.baseAvatar = baseAvatar;
             this.avatarCurator = avatarCurator;
             this.loader = loader;
             this.animator = animator;
@@ -63,16 +65,18 @@ namespace AvatarSystem
                 List<WearableItem> wearables = null;
                 List<WearableItem> emotes = null;
 
+                baseAvatar.Initialize();
+                animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
                 }
-                await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
+                await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, baseAvatar.GetMainRenderer(), linkedCt);
 
                 //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
-                animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
+                
                 emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
                 gpuSkinning.Prepare(loader.combinedRenderer);
                 gpuSkinningThrottler.Bind(gpuSkinning);
@@ -83,7 +87,8 @@ namespace AvatarSystem
                 lod.Bind(gpuSkinning.renderer);
                 gpuSkinningThrottler.Start();
 
-                status = IAvatar.Status.Loaded;
+                status = IAvatar.Status.Loaded; 
+                await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), lodLevel <= 1, linkedCt);
             }
             catch (OperationCanceledException)
             {
