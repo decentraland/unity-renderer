@@ -64,5 +64,6 @@ namespace DCL
         public DataStore_VoiceChat voiceChat => i.Get<DataStore_VoiceChat>();
         public DataStore_TextureConfig textureConfig => i.Get<DataStore_TextureConfig>();
         public DataStore_FriendNotifications friendNotifications => i.Get<DataStore_FriendNotifications>();
+        public DataStore_AvatarConfig avatarConfig => i.Get<DataStore_AvatarConfig>();
     }
 }

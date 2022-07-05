@@ -10,7 +10,9 @@ public interface IPrivateChatComponentView
     event Action<string> OnUnfriend;
     event Action<bool> OnFocused;
     event Action OnRequireMoreMessages;
+    event Action OnClickOverWindow;
 
+    
     IChatHUDComponentView ChatHUD { get; }
     bool IsActive { get; }
     RectTransform Transform { get; }

@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using DCL.Helpers;
 using DCL;
 using AvatarSystem;
+using Cysharp.Threading.Tasks;
 
 public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
 {
@@ -32,6 +34,7 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
     private float endH;
     private float endS;
     private float endV;
+    private bool isRevealing;
 
     public List<Renderer> targets = new List<Renderer>();
     List<Material> _materials = new List<Material>();
@@ -103,16 +106,28 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         }
     }
 
-    public void StartAvatarRevealAnimation(bool closeby)
+    public async UniTask StartAvatarRevealAnimation(bool instant, CancellationToken cancellationToken)
     {
-        if (closeby)
-            animation.Play();
-        else
+        if (!instant)
+        {
             SetFullRendered();
+            return;
+        }
+
+        isRevealing = true;
+        animation.Play();
+        await UniTask.WaitUntil(() => !isRevealing, cancellationToken: cancellationToken);
+    }
+
+    public void OnRevealAnimationEnd()
+    {
+        isRevealing = false;
+        meshRenderer.enabled = false;
     }
 
     private void SetFullRendered()
     {
+        meshRenderer.enabled = false;
         animation.Stop();
         foreach (Material m in _materials)
         {
