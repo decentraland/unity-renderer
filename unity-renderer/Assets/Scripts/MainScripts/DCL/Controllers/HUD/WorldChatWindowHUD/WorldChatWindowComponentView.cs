@@ -76,10 +76,16 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public override void Awake()
     {
         base.Awake();
+        
+        int SortByAlphabeticalOrder(PublicChannelEntry u1, PublicChannelEntry u2)
+        {
+            return string.Compare(u1.Model.name, u2.Model.name, StringComparison.InvariantCultureIgnoreCase);
+        }
+        
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         directChatList.SortingMethod = (a, b) => b.Model.lastMessageTimestamp.CompareTo(a.Model.lastMessageTimestamp);
         directChatList.OnOpenChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
-        publicChannelList.SortingMethod = (a, b) => b.Model.lastMessageTimestamp.CompareTo(a.Model.lastMessageTimestamp);
+        publicChannelList.SortingMethod = SortByAlphabeticalOrder;
         publicChannelList.OnOpenChat += entry => OnOpenPublicChannel?.Invoke(entry.Model.channelId);
         searchBar.OnSearchText += text => OnSearchChannelRequested?.Invoke(text);
         scroll.onValueChanged.AddListener((scrollPos) =>
