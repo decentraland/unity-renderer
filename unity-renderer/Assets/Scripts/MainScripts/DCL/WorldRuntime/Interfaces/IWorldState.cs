@@ -9,6 +9,7 @@ namespace DCL
     {
         HashSet<string> readyScenes { get; set; }
         Dictionary<string, IParcelScene> loadedScenes { get; set; }
+        List<IParcelScene> loadedScenesList { get; }
         List<IParcelScene> scenesSortedByDistance { get; set; }
         List<string> globalSceneIds { get; set; }
         string currentSceneId { get; set; }
