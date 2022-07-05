@@ -105,6 +105,7 @@ public class WorldChatWindowController : IHUD
                 RequestFriendsWithDirectMessages(
                     USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                     DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                RequestUnreadMessages();
             }
         }
         else
@@ -118,6 +119,7 @@ public class WorldChatWindowController : IHUD
             RequestFriendsWithDirectMessages(
                 USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+            RequestUnreadMessages();
         }
         else
             view.HidePrivateChatsLoading();
@@ -340,4 +342,6 @@ public class WorldChatWindowController : IHUD
         view.ShowSearchLoading();
         friendsController.GetFriendsWithDirectMessages(userNameOrId, limit);
     }
+    
+    private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();
 }

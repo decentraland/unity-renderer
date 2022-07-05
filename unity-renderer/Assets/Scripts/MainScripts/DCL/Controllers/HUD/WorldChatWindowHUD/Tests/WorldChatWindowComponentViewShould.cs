@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using DCL.Interface;
 using NSubstitute;
@@ -14,7 +14,7 @@ public class WorldChatWindowComponentViewShould
     public void SetUp()
     {
         view = WorldChatWindowComponentView.Create();
-        view.Initialize(Substitute.For<IChatController>(), Substitute.For<ILastReadMessagesService>());
+        view.Initialize(Substitute.For<IChatController>());
     }
 
     [TearDown]

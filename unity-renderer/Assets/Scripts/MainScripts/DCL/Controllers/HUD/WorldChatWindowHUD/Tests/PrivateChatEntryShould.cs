@@ -11,7 +11,7 @@ public class PrivateChatEntryShould
     {
         view = PrivateChatEntry.Create();
         userContextMenu = Substitute.ForPartsOf<UserContextMenu>();
-        view.Initialize(Substitute.For<IChatController>(), userContextMenu, Substitute.For<ILastReadMessagesService>());
+        view.Initialize(Substitute.For<IChatController>(), userContextMenu);
     }
 
     [TearDown]

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DCL.Interface;
 using NSubstitute;
@@ -30,8 +30,7 @@ public class WorldChatWindowControllerShould
         friendsController.IsInitialized.Returns(true);
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,
-            chatController,
-            Substitute.For<ILastReadMessagesService>());
+            chatController);
         view = Substitute.For<IWorldChatWindowView>();
     }
 
@@ -331,6 +330,28 @@ public class WorldChatWindowControllerShould
 
         view.Received(1).ShowSearchLoading();
         friendsController.Received(1).GetFriendsWithDirectMessages(userName, limit);
+    }
+
+    [Test]
+    public void RequestUnreadMessagesWhenIsVisible()
+    {
+        controller.Initialize(view);
+        controller.SetVisibility(true);
+        
+        chatController.Received(1).GetUnseenMessagesByUser();
+    }
+
+    [Test]
+    public void RequestUnreadMessagesWhenFriendsInitializes()
+    {
+        controller.Initialize(view);
+        friendsController.IsInitialized.Returns(false);
+        controller.SetVisibility(true);
+        friendsController.IsInitialized.Returns(true);
+        view.IsActive.Returns(true);
+        friendsController.OnInitialized += Raise.Event<Action>();
+        
+        chatController.Received(1).GetUnseenMessagesByUser();
     }
 
     private void GivenFriend(string friendId, PresenceStatus presence)
