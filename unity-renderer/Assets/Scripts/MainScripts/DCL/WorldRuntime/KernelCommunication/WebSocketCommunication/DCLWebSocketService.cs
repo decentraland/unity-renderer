@@ -61,10 +61,10 @@ public class DCLWebSocketService : WebSocketBehavior
     {
         base.OnMessage(e);
         
-        if (e.IsBinary)
-        {
-            return;
-        }        
+        // if (e.IsBinary)
+        // {
+        //     return;
+        // }        
 
         if (e.IsBinary)
         {
