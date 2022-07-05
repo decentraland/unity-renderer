@@ -317,8 +317,7 @@ public class PublicChatChannelController : IHUD
     
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
     {
-        //Moved the fadeout counter to this class, since it seemed more appropiate. Left a testing value of 5 secs, this should be changed to 30 when released
-        await UniTask.Delay(5000, cancellationToken: cancellationToken);
+        await UniTask.Delay(30000, cancellationToken: cancellationToken);
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;
         chatHudController.FadeOutMessages();

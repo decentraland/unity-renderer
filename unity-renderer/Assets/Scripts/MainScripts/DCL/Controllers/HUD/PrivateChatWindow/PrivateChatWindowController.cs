@@ -341,7 +341,7 @@ public class PrivateChatWindowController : IHUD
 
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
     {
-        await UniTask.Delay(5000, cancellationToken: cancellationToken);
+        await UniTask.Delay(30000, cancellationToken: cancellationToken);
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested)
             return;

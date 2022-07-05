@@ -14,8 +14,6 @@ using UnityEngine.UI;
 
 public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] internal float timeToFade = 10f;
-    [SerializeField] internal float fadeDuration = 5f;
     [SerializeField] internal TextMeshProUGUI body;
     [SerializeField] internal float timeToHoverPanel = 1f;
     [SerializeField] internal float timeToHoverGotoPanel = 1f;
