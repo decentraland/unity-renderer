@@ -80,7 +80,7 @@ namespace DCL.ECSComponents.Test
             componentHandler.OnComponentModelUpdated(scene,entity,model);
             
             // Act
-            dataStoreEcs7.AddReadyAnimatorShape(entity.entityId,entity.gameObject);
+            dataStoreEcs7.AddShapeReady(entity.entityId,entity.gameObject);
 
             // Assert
             Assert.IsNotNull(componentHandler.animComponent);

@@ -21,17 +21,17 @@ public class ECSTestScene : MonoBehaviour
     private static void SceneScript(string sceneId, IECSComponentWriter componentWriter)
     {
         componentWriter.PutComponent(sceneId, 1, 1,
-            new ECSTransform() { position = new Vector3(8, 1, 8) });
+            new ECSTransform() { position = new UnityEngine.Vector3(8, 1, 8) });
         AddGLTFShapeComponent(sceneId, componentWriter);
         AddBoxComponent(sceneId, componentWriter);
     }
 
     private static void AddGLTFShapeComponent(string sceneId, IECSComponentWriter componentWriter)
     {
-        Environment.i.world.state.scenesSortedByDistance[0].contentProvider.baseUrl = "https://peer-lb.decentraland.org/content/contents/";
+        Environment.i.world.state.scenesSortedByDistance[0].contentProvider.baseUrl = "https://peer.decentraland.org/content/contents/";
         Environment.i.world.state.scenesSortedByDistance[0].contentProvider.fileToHash.Add("models/SCENE.glb".ToLower(), "QmQgQtuAg9qsdrmLwnFiLRAYZ6Du4Dp7Yh7bw7ELn7AqkD");
             
-        componentWriter.PutComponent(sceneId, 2, 1050,
+        componentWriter.PutComponent(sceneId, 2, ComponentID.GLTF_SHAPE,
             new PBGLTFShape() { Src = "models/SCENE.glb", Visible = true});
     }
 
@@ -114,7 +114,7 @@ public class ECSTestScene : MonoBehaviour
             x = 0,
             y = 0,
             z = 0,
-            cameraTarget = new Vector3(0, 0, 1)
+            cameraTarget = new UnityEngine.Vector3(0, 0, 1)
         };
         CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
         var cameraController = GameObject.Find("CameraController");

@@ -20,9 +20,11 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
     private const string IN_HIDE_AREA = "IN_HIDE_AREA";
     private const string INSIDE_CAMERA = "INSIDE_CAMERA";
 
-    private AvatarSystem.Avatar avatar;
+    private IAvatar avatar;
     private CancellationTokenSource avatarLoadingCts = null;
     public GameObject avatarContainer;
+    public GameObject armatureContainer;
+    public Transform loadingAvatarContainer;
     private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
 
     public Collider avatarCollider;
@@ -46,16 +48,10 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
             DCL.Environment.i.platform.serviceProviders.analytics,
             new UserProfileWebInterfaceBridge());
 
-        AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-        avatar = new AvatarSystem.Avatar(
-            new AvatarCurator(new WearableItemResolver()),
-            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-            animator,
-            new Visibility(),
-            new NoLODs(),
-            new SimpleGPUSkinning(),
-            new GPUSkinningThrottler(),
-            new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+        if (DataStore.i.avatarConfig.useHologramAvatar.Get())
+            avatar = GetAvatarWithHologram();
+        else
+            avatar = GetStandardAvatar();
 
         if ( UserProfileController.i != null )
         {
@@ -72,6 +68,38 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
 #endif
 
         mainCamera = Camera.main;
+    }
+
+    private AvatarSystem.Avatar GetStandardAvatar()
+    {
+        AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+        AvatarSystem.NoLODs noLod = new NoLODs();
+        return new AvatarSystem.Avatar(
+            new AvatarCurator(new WearableItemResolver()),
+            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
+            animator,
+            new Visibility(),
+            noLod,
+            new SimpleGPUSkinning(),
+            new GPUSkinningThrottler(),
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+    }
+
+    private AvatarWithHologram GetAvatarWithHologram()
+    {
+        AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+        AvatarSystem.NoLODs noLod = new NoLODs();
+        BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer, noLod);
+        return new AvatarSystem.AvatarWithHologram(
+            baseAvatar,
+            new AvatarCurator(new WearableItemResolver()),
+            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
+            animator,
+            new Visibility(),
+            noLod,
+            new SimpleGPUSkinning(),
+            new GPUSkinningThrottler(),
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes));
     }
 
     private void OnBaseWereablesFail()

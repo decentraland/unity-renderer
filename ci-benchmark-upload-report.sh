@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 PROJECT_PATH="$(pwd)/unity-renderer"
 echo "Uploading Benchmark Report for $PROJECT_PATH"
@@ -10,9 +11,9 @@ rm packages-microsoft-prod.deb
 apt-get update; \
 apt-get install -y apt-transport-https && \
 apt-get update && \
-apt-get install -y dotnet-sdk-3.1
+apt-get install -y dotnet-sdk-3.1 unzip
 
-cd ${PROJECT_PATH}/unity-renderer/
+cd ${PROJECT_PATH}
 mkdir -p reporter && cd reporter
 wget https://github.com/Unity-Technologies/PerformanceBenchmarkReporter/releases/download/1.2.0/UnityPerformanceBenchmarkReporter_1_2_0.zip -O UnityPerformanceBenchmarkReporter.zip
 unzip UnityPerformanceBenchmarkReporter.zip
