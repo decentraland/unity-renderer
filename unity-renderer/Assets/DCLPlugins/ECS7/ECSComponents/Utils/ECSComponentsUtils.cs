@@ -48,9 +48,7 @@ public static class ECSComponentsUtils
         meshRenderer.sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
         Renderer[] renderers = new Renderer[] { meshRenderer };
         meshFilter.sharedMesh = mesh;
-        
-        UpdateRenderer(entity, gameObject, renderers, visible, withCollisions, isPointerBlocker);
-        
+
         // We generate the mesh info on the entity, so we can use on other systems 
         MeshesInfo meshesInfo = new MeshesInfo();
         meshesInfo.innerGameObject = gameObject;
@@ -64,6 +62,9 @@ public static class ECSComponentsUtils
         
         // We should remove this relation in the future, the entity shouldn't know about the mesh
         entity.meshesInfo = meshesInfo;
+        
+        // We update the rendering
+        UpdateRenderer(entity, gameObject, renderers, visible, withCollisions, isPointerBlocker);
         
         return meshesInfo;
     }
