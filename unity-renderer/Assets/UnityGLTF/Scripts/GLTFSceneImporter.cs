@@ -124,6 +124,8 @@ namespace UnityGLTF
         private bool useMaterialTransitionValue = true;
 
         public bool importSkeleton = true;
+        
+        public bool ignoreMaterials = false;
 
         public bool useMaterialTransition { get => useMaterialTransitionValue && !renderingIsDisabled; set => useMaterialTransitionValue = value; }
 
@@ -1639,6 +1641,14 @@ namespace UnityGLTF
             Renderer renderer = primitiveObj.GetComponent<Renderer>();
 
             cancellationToken.ThrowIfCancellationRequested();
+            
+            if (ignoreMaterials)
+            {
+                if (!(useMaterialTransition && initialVisibility) && LoadingTextureMaterial == null)
+                    primitiveObj.SetActive(true);
+                
+                return;
+            }
 
             //// NOTE(Brian): Texture loading
             if (useMaterialTransition && initialVisibility)
