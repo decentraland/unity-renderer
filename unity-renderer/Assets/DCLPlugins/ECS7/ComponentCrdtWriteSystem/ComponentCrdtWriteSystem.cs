@@ -5,8 +5,8 @@ using System.Linq;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
-using DCL.Interface;
 using KernelCommunication;
+using RPC;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
 public class ComponentCrdtWriteSystem : IDisposable
@@ -127,7 +127,7 @@ public class ComponentCrdtWriteSystem : IDisposable
 
     private void DispatchBinaryMessage(string sceneId, MemoryStream stream)
     {
-        WebInterface.SendBinaryMessage(sceneId, stream.ToArray());
+        RPCGlobalContext.context.crdtContext.notifications.Enqueue((sceneId, stream.ToArray()));
         stream.SetLength(0);
     }
 
