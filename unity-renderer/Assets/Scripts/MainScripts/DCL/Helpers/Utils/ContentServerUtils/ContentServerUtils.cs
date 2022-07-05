@@ -73,7 +73,7 @@ namespace DCL
         public static string GetBaseUrl(ApiTLD tld)
         {
             if (tld != ApiTLD.NONE)
-                return $"https://peer-lb.decentraland.{GetTldString(tld)}/lambdas/contentv2";
+                return $"https://peer.decentraland.{GetTldString(tld)}/lambdas/contentv2";
 
             return customBaseUrl;
         }

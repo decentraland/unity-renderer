@@ -7,11 +7,23 @@ namespace DCL.ECSComponents
 {
     public static class ProtoConvertUtils 
     {
-        public static PBOnPointerResult GetPointerResultModel(int buttonId, long identifier, string meshName, Ray ray, HitInfo hit)
+        public static PBOnPointerUpResult GetPointerUpResultModel(int buttonId, string meshName, Ray ray, HitInfo hit)
         {
-            PBOnPointerResult result = new PBOnPointerResult();
+            PBOnPointerUpResult result = new PBOnPointerUpResult();
             result.Button = buttonId;
-            result.Identifier = identifier;
+            result.Direction = UnityVectorToPBVector(ray.direction);
+            result.Distance = hit.distance;
+            result.Normal = UnityVectorToPBVector(hit.normal);
+            result.Origin = UnityVectorToPBVector(ray.origin);
+            result.Point = UnityVectorToPBVector(hit.point);
+            result.MeshName = meshName;
+            return result;
+        }
+        
+        public static PBOnPointerDownResult GetPointerDownResultModel(int buttonId, string meshName, Ray ray, HitInfo hit)
+        {
+            PBOnPointerDownResult result = new PBOnPointerDownResult();
+            result.Button = buttonId;
             result.Direction = UnityVectorToPBVector(ray.direction);
             result.Distance = hit.distance;
             result.Normal = UnityVectorToPBVector(hit.normal);
@@ -28,6 +40,28 @@ namespace DCL.ECSComponents
             vector.Y = original.y;
             vector.Z = original.z;
             return vector;
+        }
+        
+        public static UnityEngine.Vector3 PBVectorToUnityVector(Vector3 original)
+        {
+            UnityEngine.Vector3 vector = new UnityEngine.Vector3();
+            vector.x = original.X;
+            vector.y = original.Y;
+            vector.z = original.Z;
+            return vector;
+        }
+        
+        public static CameraMode.ModeId PBCameraEnumToUnityEnum(PBCameraModeArea.Types.CameraMode mode)
+        {
+            switch (mode)
+            {
+                case PBCameraModeArea.Types.CameraMode.FirstPerson:
+                    return CameraMode.ModeId.FirstPerson;
+                case PBCameraModeArea.Types.CameraMode.ThirdPerson:
+                    return CameraMode.ModeId.ThirdPerson;
+                default:
+                    return CommonScriptableObjects.cameraMode.Get();
+            }
         }
     }
 }
