@@ -13,7 +13,7 @@ public class MainChatNotificationsComponentView : BaseComponentView
     [SerializeField] GameObject chatNotification;
 
     private const string NOTIFICATION_POOL_NAME_PREFIX = "NotificationEntriesPool_";
-    private const int MAX_NOTIFICATION_ENTRIES = 5;
+    private const int MAX_NOTIFICATION_ENTRIES = 30;
 
     internal Queue<PoolableObject> poolableQueue = new Queue<PoolableObject>();
     internal Queue<ChatNotificationMessageComponentView> creationQueue2 = new Queue<ChatNotificationMessageComponentView>();
