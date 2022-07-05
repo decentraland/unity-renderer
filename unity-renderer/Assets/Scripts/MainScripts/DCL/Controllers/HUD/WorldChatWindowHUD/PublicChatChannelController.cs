@@ -321,7 +321,7 @@ public class PublicChatChannelController : IHUD
         await UniTask.Delay(5000, cancellationToken: cancellationToken);
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;
-        chatHudController.FadeOutPreview();
+        chatHudController.FadeOutMessages();
         currentState = ChatWindowVisualState.NONE_VISIBLE;
     }
     

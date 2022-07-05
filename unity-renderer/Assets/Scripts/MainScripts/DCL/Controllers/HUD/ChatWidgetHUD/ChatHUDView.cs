@@ -202,7 +202,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             entry.DeactivatePreview();
         }
     }
-    public void FadeOut()
+    public void FadeOutMessages()
     {
         for (var i = 0; i < entries.Count; i++)
         {

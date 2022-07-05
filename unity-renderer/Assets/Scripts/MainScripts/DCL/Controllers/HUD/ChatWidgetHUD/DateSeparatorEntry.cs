@@ -70,9 +70,11 @@ public class DateSeparatorEntry : ChatEntry
     
     public override void FadeOut()
     {
-        
         if (!gameObject.activeInHierarchy)
+        {
+            group.alpha = 0;
             return;
+        }
         
         if (previewInterpolationAlphaRoutine != null)
             StopCoroutine(previewInterpolationAlphaRoutine);

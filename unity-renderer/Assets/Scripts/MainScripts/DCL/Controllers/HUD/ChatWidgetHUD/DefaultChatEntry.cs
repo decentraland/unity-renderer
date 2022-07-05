@@ -263,6 +263,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     {
         if (!gameObject.activeInHierarchy)
         {
+            group.alpha = 0;
             return;
         }
         

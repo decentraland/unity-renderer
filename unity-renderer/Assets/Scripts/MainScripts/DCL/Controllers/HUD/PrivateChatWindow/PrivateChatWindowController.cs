@@ -345,7 +345,7 @@ public class PrivateChatWindowController : IHUD
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested)
             return;
-        chatHudController.FadeOutPreview();
+        chatHudController.FadeOutMessages();
         currentState = ChatWindowVisualState.NONE_VISIBLE;
     }
 
