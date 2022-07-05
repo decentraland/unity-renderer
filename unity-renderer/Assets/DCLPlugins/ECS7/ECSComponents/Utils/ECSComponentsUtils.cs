@@ -44,16 +44,17 @@ public static class ECSComponentsUtils
     {
         // We create the unity components needed to generate the primitive
         MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
+        meshFilter.sharedMesh = mesh;
         MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
         meshRenderer.sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
         Renderer[] renderers = new Renderer[] { meshRenderer };
-        meshFilter.sharedMesh = mesh;
+        MeshFilter[] meshFilters = new MeshFilter[] { meshFilter };
 
         // We generate the mesh info on the entity, so we can use on other systems 
         MeshesInfo meshesInfo = new MeshesInfo();
         meshesInfo.innerGameObject = gameObject;
         meshesInfo.meshRootGameObject = gameObject;
-        meshesInfo.UpdateRenderersCollection(renderers,entity.meshesInfo.meshFilters);
+        meshesInfo.UpdateRenderersCollection(renderers,meshFilters);
         
         // We generate the representation of the primitive and assign it to the meshInfo
         ShapeRepresentation shape = new ShapeRepresentation();
