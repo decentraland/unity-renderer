@@ -27,7 +27,7 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
         isDestroyed = true;
     }
 
-    public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService)
+    public void Initialize(IChatController chatController)
     {
     }
 

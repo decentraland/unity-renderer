@@ -19,7 +19,6 @@ public interface IFriendsHUDComponentView
     event Action OnRequestListDisplayed;
 
     void Initialize(IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics);
     RectTransform Transform { get; }

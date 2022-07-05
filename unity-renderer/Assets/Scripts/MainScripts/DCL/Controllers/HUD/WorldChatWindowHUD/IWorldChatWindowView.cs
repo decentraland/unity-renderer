@@ -7,7 +7,6 @@ public interface IWorldChatWindowView
     event Action OnClose;
     event Action<string> OnOpenPrivateChat;
     event Action<string> OnOpenPublicChannel;
-    event Action<string> OnUnfriend;
     event Action<string> OnSearchChannelRequested;
     event Action OnRequireMorePrivateChats;
 
@@ -15,7 +14,7 @@ public interface IWorldChatWindowView
     bool IsActive { get; }
     int PrivateChannelsCount { get; }
 
-    void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService);
+    void Initialize(IChatController chatController);
     void Show();
     void Hide();
     void SetPrivateChat(PrivateChatModel model);

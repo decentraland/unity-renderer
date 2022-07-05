@@ -16,4 +16,5 @@ public interface IChatController
     void MarkMessagesAsSeen(string userId);
     void GetPrivateMessages(string userId, int limit, long fromTimestamp);
     void GetUnseenMessagesByUser();
+    int GetAllocatedUnseenMessages(string userId);
 }

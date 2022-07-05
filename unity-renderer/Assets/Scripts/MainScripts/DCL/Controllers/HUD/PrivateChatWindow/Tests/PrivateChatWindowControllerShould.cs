@@ -24,7 +24,6 @@ public class PrivateChatWindowControllerShould
     private ISocialAnalytics socialAnalytics;
     private IChatController chatController;
     private IFriendsController friendsController;
-    private ILastReadMessagesService lastReadMessagesService;
     private IMouseCatcher mouseCatcher;
 
     [SetUp]
@@ -46,8 +45,6 @@ public class PrivateChatWindowControllerShould
         chatController.GetAllocatedEntries().ReturnsForAnyArgs(new List<ChatMessage>());
         chatController.GetPrivateAllocatedEntriesByUser(Arg.Any<string>()).ReturnsForAnyArgs(new List<ChatMessage>());
 
-        lastReadMessagesService = Substitute.For<ILastReadMessagesService>();
-
         mouseCatcher = Substitute.For<IMouseCatcher>();
         controller = new PrivateChatWindowController(
             new DataStore(),
@@ -55,7 +52,6 @@ public class PrivateChatWindowControllerShould
             chatController,
             friendsController,
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
-            lastReadMessagesService,
             socialAnalytics,
             mouseCatcher,
             ScriptableObject.CreateInstance<InputAction_Trigger>());
@@ -206,7 +202,7 @@ public class PrivateChatWindowControllerShould
         view.Received().Setup(Arg.Is<UserProfile>(u => u.userId == FRIEND_ID), true, false);
         view.Received(1).Show();
         Assert.IsTrue(isViewActive);
-        lastReadMessagesService.Received(1).MarkAllRead(FRIEND_ID);
+        chatController.Received(1).MarkMessagesAsSeen(FRIEND_ID);
     }
     
     [Test]

@@ -16,15 +16,14 @@ public class WorldChatWindowController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
     private readonly IChatController chatController;
-    private readonly ILastReadMessagesService lastReadMessagesService;
     private readonly Dictionary<string, PublicChatChannelModel> publicChannels = new Dictionary<string, PublicChatChannelModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
-    internal bool areDMsRequestedByFirstTime = false;
+    private int hiddenDMs;
     private long olderDMTimestampRequested = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     private string currentSearch = "";
-    internal bool isRequestingFriendsWithDMs = false;
-    internal int hiddenDMs;
+    internal bool areDMsRequestedByFirstTime;
+    internal bool isRequestingFriendsWithDMs;
 
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
@@ -38,19 +37,17 @@ public class WorldChatWindowController : IHUD
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
-        IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService)
+        IChatController chatController)
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Initialize(IWorldChatWindowView view)
     {
         this.view = view;
-        view.Initialize(chatController, lastReadMessagesService);
+        view.Initialize(chatController);
         view.OnClose += HandleViewCloseRequest;
         view.OnOpenPrivateChat += OpenPrivateChat;
         view.OnOpenPublicChannel += OpenPublicChannel;

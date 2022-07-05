@@ -9,7 +9,7 @@ using UnityEngine;
 public class ChatController : MonoBehaviour, IChatController
 {
     public static ChatController i { get; private set; }
-    
+
     [NonSerialized] public List<ChatMessage> entries = new List<ChatMessage>();
 
     private readonly Dictionary<string, int> unseenMessagesByUser = new Dictionary<string, int>();
@@ -46,7 +46,7 @@ public class ChatController : MonoBehaviour, IChatController
         entries.Add(message);
         OnAddMessage?.Invoke(message);
     }
-    
+
     // called by kernel
     [UsedImplicitly]
     public void UpdateTotalUnseenMessages(string json)
@@ -56,7 +56,7 @@ public class ChatController : MonoBehaviour, IChatController
         TotalUnseenMessages = msg.total;
         OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
     }
-    
+
     // called by kernel
     [UsedImplicitly]
     public void UpdateUserUnseenMessages(string json)
@@ -65,7 +65,7 @@ public class ChatController : MonoBehaviour, IChatController
         unseenMessagesByUser[msg.userId] = msg.total;
         OnUserUnseenMessagesUpdated?.Invoke(msg.userId, msg.total);
     }
-    
+
     // called by kernel
     [UsedImplicitly]
     public void UpdateTotalUnseenMessagesByUser(string json)
@@ -83,11 +83,17 @@ public class ChatController : MonoBehaviour, IChatController
 
     public void MarkMessagesAsSeen(string userId) => WebInterface.MarkMessagesAsSeen(userId);
 
-    public void GetPrivateMessages(string userId, int limit, long fromTimestamp) { WebInterface.GetPrivateMessages(userId, limit, fromTimestamp); }
+    public void GetPrivateMessages(string userId, int limit, long fromTimestamp)
+    {
+        WebInterface.GetPrivateMessages(userId, limit, fromTimestamp);
+    }
 
     public void GetUnseenMessagesByUser() => WebInterface.GetUnseenMessagesByUser();
 
-    public List<ChatMessage> GetAllocatedEntries() { return new List<ChatMessage>(entries); }
+    public int GetAllocatedUnseenMessages(string userId) =>
+        unseenMessagesByUser.ContainsKey(userId) ? unseenMessagesByUser[userId] : 0;
+
+    public List<ChatMessage> GetAllocatedEntries() => new List<ChatMessage>(entries);
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
     {

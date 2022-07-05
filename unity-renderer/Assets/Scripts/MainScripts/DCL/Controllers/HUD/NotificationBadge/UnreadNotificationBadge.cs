@@ -1,4 +1,3 @@
-using DCL.Interface;
 using TMPro;
 using UnityEngine;
 
@@ -11,10 +10,9 @@ public class UnreadNotificationBadge : MonoBehaviour
     public GameObject notificationContainer;
     public int maxNumberToShow = 9;
 
-    private IChatController currentChatController;
+    private IChatController chatController;
     private string currentUserId;
     private int currentUnreadMessagesValue;
-    private ILastReadMessagesService lastReadMessagesService;
     private bool isInitialized;
 
     public int CurrentUnreadMessages
@@ -41,23 +39,25 @@ public class UnreadNotificationBadge : MonoBehaviour
     /// </summary>
     /// <param name="chatController">Chat Controlled to be listened</param>
     /// <param name="userId">User ID to listen to</param>
-    /// <param name="lastReadMessagesService">Service that handles unread messages</param>
-    public void Initialize(IChatController chatController, string userId, ILastReadMessagesService lastReadMessagesService)
+    public void Initialize(IChatController chatController, string userId)
     {
         if (chatController == null)
             return;
 
-        this.lastReadMessagesService = lastReadMessagesService;
-        currentChatController = chatController;
+        this.chatController = chatController;
         currentUserId = userId;
 
         UpdateUnreadMessages();
 
-        currentChatController.OnAddMessage -= HandleMessageAdded;
-        currentChatController.OnAddMessage += HandleMessageAdded;
-        lastReadMessagesService.OnUpdated += HandleUnreadMessagesUpdated;
+        chatController.OnUserUnseenMessagesUpdated += HandleUnseenMessagesUpdated;
 
         isInitialized = true;
+    }
+
+    private void HandleUnseenMessagesUpdated(string userId, int unseenMessages)
+    {
+        if (userId != currentUserId) return;
+        CurrentUnreadMessages = unseenMessages;
     }
 
     private void OnEnable()
@@ -68,19 +68,9 @@ public class UnreadNotificationBadge : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (currentChatController != null)
-            currentChatController.OnAddMessage -= HandleMessageAdded;
-        if (lastReadMessagesService != null)
-            lastReadMessagesService.OnUpdated -= HandleUnreadMessagesUpdated;
+        if (chatController != null)
+            chatController.OnUserUnseenMessagesUpdated -= HandleUnseenMessagesUpdated;
     }
 
-    private void HandleMessageAdded(ChatMessage newMessage) => UpdateUnreadMessages();
-
-    private void HandleUnreadMessagesUpdated(string userId)
-    {
-        if (userId != currentUserId) return;
-        UpdateUnreadMessages();
-    }
-
-    private void UpdateUnreadMessages() => CurrentUnreadMessages = lastReadMessagesService.GetUnreadCount(currentUserId);
+    private void UpdateUnreadMessages() => CurrentUnreadMessages = chatController.GetAllocatedUnseenMessages(currentUserId);
 }

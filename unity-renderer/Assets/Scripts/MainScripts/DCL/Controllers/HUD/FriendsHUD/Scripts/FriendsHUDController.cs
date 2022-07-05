@@ -18,7 +18,6 @@ public class FriendsHUDController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IChatController chatController;
-    private readonly ILastReadMessagesService lastReadMessagesService;
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
@@ -35,15 +34,13 @@ public class FriendsHUDController : IHUD
         IFriendsController friendsController,
         IUserProfileBridge userProfileBridge,
         ISocialAnalytics socialAnalytics,
-        IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService)
+        IChatController chatController)
     {
         this.dataStore = dataStore;
         this.friendsController = friendsController;
         this.userProfileBridge = userProfileBridge;
         this.socialAnalytics = socialAnalytics;
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Initialize(IFriendsHUDComponentView view = null)
@@ -51,7 +48,7 @@ public class FriendsHUDController : IHUD
         view ??= FriendsHUDComponentView.Create();
         View = view;
 
-        view.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
+        view.Initialize(chatController, friendsController, socialAnalytics);
         view.ListByOnlineStatus = dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_by_online_status");
         view.OnFriendRequestApproved += HandleRequestAccepted;
         view.OnCancelConfirmation += HandleRequestCancelled;

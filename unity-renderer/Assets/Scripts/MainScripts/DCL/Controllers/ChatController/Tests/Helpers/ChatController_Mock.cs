@@ -42,4 +42,6 @@ public class ChatController_Mock : IChatController
     public void GetUnseenMessagesByUser()
     {
     }
+
+    public int GetAllocatedUnseenMessages(string userId) => 0;
 }

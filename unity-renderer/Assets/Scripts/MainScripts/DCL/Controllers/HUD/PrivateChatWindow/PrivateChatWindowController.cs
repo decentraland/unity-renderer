@@ -23,7 +23,6 @@ public class PrivateChatWindowController : IHUD
     private readonly IChatController chatController;
     private readonly IFriendsController friendsController;
     private readonly InputAction_Trigger closeWindowTrigger;
-    private readonly ILastReadMessagesService lastReadMessagesService;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IMouseCatcher mouseCatcher;
     private readonly InputAction_Trigger toggleChatTrigger;
@@ -32,8 +31,8 @@ public class PrivateChatWindowController : IHUD
     private UserProfile conversationProfile;
     private bool skipChatInputTrigger;
     internal Dictionary<string, long> lastTimestampRequestedByUser = new Dictionary<string, long>();
-    internal bool isRequestingOldMessages = false;
-    internal float lastRequestTime = 0;
+    internal bool isRequestingOldMessages;
+    internal float lastRequestTime;
     private ChatWindowVisualState currentState;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
@@ -49,7 +48,6 @@ public class PrivateChatWindowController : IHUD
         IChatController chatController,
         IFriendsController friendsController,
         InputAction_Trigger closeWindowTrigger,
-        ILastReadMessagesService lastReadMessagesService,
         ISocialAnalytics socialAnalytics,
         IMouseCatcher mouseCatcher,
         InputAction_Trigger toggleChatTrigger)
@@ -59,7 +57,6 @@ public class PrivateChatWindowController : IHUD
         this.chatController = chatController;
         this.friendsController = friendsController;
         this.closeWindowTrigger = closeWindowTrigger;
-        this.lastReadMessagesService = lastReadMessagesService;
         this.socialAnalytics = socialAnalytics;
         this.mouseCatcher = mouseCatcher;
         this.toggleChatTrigger = toggleChatTrigger;
@@ -298,7 +295,7 @@ public class PrivateChatWindowController : IHUD
     }
 
     private void MarkUserChatMessagesAsRead() =>
-        lastReadMessagesService.MarkAllRead(ConversationUserId);
+        chatController.MarkMessagesAsSeen(ConversationUserId);
 
     private void HandleInputFieldSelected()
     {

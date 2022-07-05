@@ -64,8 +64,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController = new WorldChatWindowController(
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
-            chatController,
-            Substitute.For<ILastReadMessagesService>());
+            chatController);
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -78,7 +77,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddFriendWindowProperly()
     {
         friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
-            socialAnalytics, chatController, Substitute.For<ILastReadMessagesService>());
+            socialAnalytics, chatController);
         friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 
@@ -90,14 +89,12 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void ToggleWindowsProperly()
     {
-        var lastReadMessagesService = Substitute.For<ILastReadMessagesService>();
         privateChatController = new PrivateChatWindowController(
             new DataStore(),
             userProfileBridge,
             chatController,
             Substitute.For<IFriendsController>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
-            lastReadMessagesService,
             socialAnalytics,
             Substitute.For<IMouseCatcher>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>());
@@ -107,25 +104,22 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController = new WorldChatWindowController(
             userProfileBridge,
             Substitute.For<IFriendsController>(),
-            chatController,
-            lastReadMessagesService);
+            chatController);
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
         var publicChatChannelController = new PublicChatChannelController(
-            chatController, 
-            lastReadMessagesService, 
+            chatController,  
             userProfileBridge,
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
-            socialAnalytics,
             Substitute.For<IMouseCatcher>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>());
         publicChatChannelController.Initialize(new GameObject("PublicChatChannelWindowMock").AddComponent<PublicChatChannelWindowMock>());
         controller.AddPublicChatChannel(publicChatChannelController);
 
         friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
-            socialAnalytics, chatController, Substitute.For<ILastReadMessagesService>());
+            socialAnalytics, chatController);
         friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 

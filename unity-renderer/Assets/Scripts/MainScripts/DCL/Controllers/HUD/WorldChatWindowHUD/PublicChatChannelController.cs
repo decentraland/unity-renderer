@@ -17,11 +17,9 @@ public class PublicChatChannelController : IHUD
     public event Action<bool> OnPreviewModeChanged;
 
     private readonly IChatController chatController;
-    private readonly ILastReadMessagesService lastReadMessagesService;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly DataStore dataStore;
     private readonly IProfanityFilter profanityFilter;
-    private readonly ISocialAnalytics socialAnalytics;
     private readonly IMouseCatcher mouseCatcher;
     private readonly InputAction_Trigger toggleChatTrigger;
     private ChatHUDController chatHudController;
@@ -37,20 +35,16 @@ public class PublicChatChannelController : IHUD
     private UserProfile ownProfile => userProfileBridge.GetOwn();
     
     public PublicChatChannelController(IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService,
         IUserProfileBridge userProfileBridge,
         DataStore dataStore,
         IProfanityFilter profanityFilter,
-        ISocialAnalytics socialAnalytics,
         IMouseCatcher mouseCatcher,
         InputAction_Trigger toggleChatTrigger)
     {
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
         this.userProfileBridge = userProfileBridge;
         this.dataStore = dataStore;
         this.profanityFilter = profanityFilter;
-        this.socialAnalytics = socialAnalytics;
         this.mouseCatcher = mouseCatcher;
         this.toggleChatTrigger = toggleChatTrigger;
     }
@@ -208,7 +202,7 @@ public class PublicChatChannelController : IHUD
         OnPreviewModeChanged?.Invoke(true);
     }
 
-    private void MarkChatMessagesAsRead() => lastReadMessagesService.MarkAllRead(channelId);
+    private void MarkChatMessagesAsRead() => chatController.MarkMessagesAsSeen(channelId);
 
     private void HandleViewClosed() => OnClosed?.Invoke();
 

@@ -52,20 +52,23 @@ public class HUDFactory : IHUDFactory
                 hudElement = new TermsOfServiceHUDController();
                 break;
             case HUDElementID.FRIENDS:
-                hudElement = new FriendsHUDController(DataStore.i, new WebInterfaceFriendsController(new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i)), // TODO (lazy loading): Pass FriendsController.i after kernel integration
+                hudElement = new FriendsHUDController(DataStore.i,
+                    new WebInterfaceFriendsController(
+                        new LazyLoadingFriendsControllerMock(FriendsController.i,
+                            UserProfileController.i)), // TODO (lazy loading): Pass FriendsController.i after kernel integration
                     new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    new LazyLoadingChatControllerMock(ChatController.i), // TODO (lazy loading): Pass ChatController.i after kernel integration
-                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
+                    new LazyLoadingChatControllerMock(ChatController.i)); // TODO (lazy loading): Pass ChatController.i after kernel integration
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
-                    new WebInterfaceFriendsController(new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i)), // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingChatControllerMock(ChatController.i), // TODO (lazy loading): Pass ChatController.i after kernel integration
-                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
+                    new WebInterfaceFriendsController(
+                        new LazyLoadingFriendsControllerMock(FriendsController.i,
+                            UserProfileController.i)), // TODO (lazy loading): Pass FriendsController.i after kernel integration
+                    new LazyLoadingChatControllerMock(ChatController.i)); // TODO (lazy loading): Pass ChatController.i after kernel integration
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
@@ -74,7 +77,6 @@ public class HUDFactory : IHUDFactory
                     new LazyLoadingChatControllerMock(ChatController.i), // TODO (lazy loading): Pass ChatController.i after kernel integration
                     new WebInterfaceFriendsController(new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i)), // TODO (lazy loading): Pass FriendsController.i after kernel integration
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
-                    Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
@@ -83,13 +85,9 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
                 hudElement = new PublicChatChannelController(new LazyLoadingChatControllerMock(ChatController.i), // TODO (lazy loading): Pass ChatController.i after kernel integration
-                    Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
                     new UserProfileWebInterfaceBridge(),
                     DataStore.i,
                     ProfanityFilterSharedInstances.regexFilter,
-                    new SocialAnalytics(
-                        Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
