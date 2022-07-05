@@ -113,7 +113,7 @@ namespace DCL.ECSComponents
         
         internal void ApplyModel(PBGLTFShape model)
         {
-            shapeRepresentation.UpdateModel(model);
+            shapeRepresentation.UpdateModel(model.Visible, model.WithCollisions);
             
             // Set visibility
             meshesInfo.meshRootGameObject.SetActive(model.Visible);
