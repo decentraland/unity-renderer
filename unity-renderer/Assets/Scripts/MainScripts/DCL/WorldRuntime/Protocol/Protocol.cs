@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System;
 using DCL.Interface;
 using UnityEngine;
 
@@ -13,13 +13,14 @@ namespace DCL.Models
         public const string THIRD_PERSON_CAMERA_ENTITY_REFERENCE = "PlayerEntityReference";
     }
 
-    public enum SpecialEntityId
+    public static class SpecialEntityId
     {
-        SCENE_ROOT_ENTITY = 0,
-        AVATAR_ENTITY_REFERENCE = 1,
-        AVATAR_POSITION_REFERENCE = 2,
-        FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 3,
-        THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 4
+        public const long SCENE_ROOT_ENTITY = 0;
+        public const long CAMERA_ENTITY = 2;
+        public const long AVATAR_ENTITY_REFERENCE = 50;
+        public const long AVATAR_POSITION_REFERENCE = 51;
+        public const long FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 52;
+        public const long THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 53;
     }
 
     public static class ComponentNameLiterals
@@ -103,12 +104,12 @@ namespace DCL.Models
 
     public static class Protocol
     {
-        [System.Serializable]
+        [Serializable]
         public struct SceneReady
         {
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct CreateEntity
         {
             public string entityId;
@@ -119,7 +120,7 @@ namespace DCL.Models
             }
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct RemoveEntity
         {
             public string entityId;
@@ -130,7 +131,7 @@ namespace DCL.Models
             }
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct SetEntityParent
         {
             public string entityId;
@@ -142,7 +143,7 @@ namespace DCL.Models
             }
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct EntityComponentCreateOrUpdate
         {
             public string entityId;
@@ -156,7 +157,7 @@ namespace DCL.Models
             }
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct EntityComponentDestroy
         {
             public string entityId;
@@ -168,7 +169,7 @@ namespace DCL.Models
             }
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct SharedComponentAttach
         {
             public string entityId;
@@ -182,7 +183,7 @@ namespace DCL.Models
             }
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct SharedComponentCreate
         {
             public string id;
@@ -196,7 +197,7 @@ namespace DCL.Models
             }
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct SharedComponentDispose
         {
             public string id;
@@ -207,7 +208,7 @@ namespace DCL.Models
             }
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct SharedComponentUpdate
         {
             public string componentId;
@@ -219,22 +220,22 @@ namespace DCL.Models
             }
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct ParcelSceneLoad
         {
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct ParcelSceneUpdate
         {
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct ParcelSceneUnload
         {
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct OpenExternalUrl
         {
             public string url;
@@ -245,7 +246,7 @@ namespace DCL.Models
             }
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct OpenNftDialog
         {
             public string contactAddress;
@@ -262,14 +263,14 @@ namespace DCL.Models
             }
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct QueryPayload
         {
             public int queryType;
             public RaycastQueryPayload raycastPayload;
         }
 
-        [System.Serializable]
+        [Serializable]
         public struct RaycastQueryPayload
         {
             public int id;
@@ -279,7 +280,7 @@ namespace DCL.Models
             public float distance;
         }
 
-        public static string RaycastTypeToLiteral(Models.RaycastType raycastType)
+        public static string RaycastTypeToLiteral(RaycastType raycastType)
         {
             switch (raycastType)
             {
@@ -314,7 +315,7 @@ namespace DCL.Models
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class UUIDCallbackMessage
     {
         /// ID of the event to trigger
@@ -334,14 +335,14 @@ namespace DCL.Models
 
     //-----------------------------------------------------
     // Raycast
-    [System.Serializable]
+    [Serializable]
     public class Ray
     {
         public Vector3 origin;
         public Vector3 direction;
         public float distance;
 
-        [System.NonSerialized] public Vector3 unityOrigin;
+        [NonSerialized] public Vector3 unityOrigin;
     }
 
     public enum RaycastType
@@ -353,7 +354,7 @@ namespace DCL.Models
         HIT_ALL_AVATARS = 4
     }
 
-    [System.Serializable]
+    [Serializable]
     public class RaycastQuery
     {
         public string sceneId;
@@ -362,7 +363,7 @@ namespace DCL.Models
         public Ray ray;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class QueryMessage
     {
         public string queryType;
