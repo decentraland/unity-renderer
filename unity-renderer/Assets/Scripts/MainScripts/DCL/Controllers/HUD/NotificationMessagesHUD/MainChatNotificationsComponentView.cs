@@ -15,14 +15,24 @@ public class MainChatNotificationsComponentView : BaseComponentView
     private const string NOTIFICATION_POOL_NAME_PREFIX = "NotificationEntriesPool_";
     private const int MAX_NOTIFICATION_ENTRIES = 5;
 
-    Queue<PoolableObject> poolableQueue = new Queue<PoolableObject>();
-    Queue<ChatNotificationMessageComponentView> creationQueue2 = new Queue<ChatNotificationMessageComponentView>();
+    internal Queue<PoolableObject> poolableQueue = new Queue<PoolableObject>();
+    internal Queue<ChatNotificationMessageComponentView> creationQueue2 = new Queue<ChatNotificationMessageComponentView>();
     private Pool entryPool;
     public event Action<string> OnClickedNotification;
 
     public static MainChatNotificationsComponentView Create()
     {
         return Instantiate(Resources.Load<MainChatNotificationsComponentView>("SocialBarV1/ChatNotificationHUD"));
+    }
+
+    public void Show()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
     }
 
     public ChatNotificationMessageComponentView AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null)
