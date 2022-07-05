@@ -27,4 +27,5 @@ public interface IChatHUDComponentView
     void SetInputFieldText(string text);
     void ActivatePreview();
     void DeactivatePreview();
+    void FadeOutMessages();
 }

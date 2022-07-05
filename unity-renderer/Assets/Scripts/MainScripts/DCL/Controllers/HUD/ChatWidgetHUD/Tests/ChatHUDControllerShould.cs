@@ -298,6 +298,14 @@ public class ChatHUDControllerShould
     }
 
     [Test]
+    public void DeactivatePreviewFadeOut()
+    {
+        controller.DeactivatePreview();
+        
+        view.Received(1).DeactivatePreview();
+    }
+    
+    [Test]
     public void DeactivatePreview()
     {
         controller.DeactivatePreview();

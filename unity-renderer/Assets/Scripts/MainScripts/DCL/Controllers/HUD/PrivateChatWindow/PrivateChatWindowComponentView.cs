@@ -32,8 +32,12 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         add => userContextMenu.OnUnfriend += value;
         remove => userContextMenu.OnUnfriend -= value;
     }
-
-    public event Action<bool> OnFocused;
+    public event Action<bool> OnFocused
+    {
+        add => onFocused += value;
+        remove => onFocused -= value;
+    }
+    public event Action OnClickOverWindow;
 
     public IChatHUDComponentView ChatHUD => chatView;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -138,13 +142,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
 
     public void Hide() => gameObject.SetActive(false);
 
-    public override void OnPointerExit(PointerEventData eventData)
-    {
-        base.OnPointerExit(eventData);
-        OnFocused?.Invoke(false);
-    }
-
-    public void OnPointerDown(PointerEventData eventData) => OnFocused?.Invoke(true);
+    public void OnPointerDown(PointerEventData eventData) => OnClickOverWindow?.Invoke();
 
     private void ShowOptions()
     {
