@@ -1,0 +1,51 @@
+{
+    "name": "DCL.Components.CameraModeArea.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:b24824f3bc2a60641a01e2083614f802",
+        "GUID:a92fa8e55a4197b4d815691f30474181",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:b308ae946900fa04080222d7daf47d9a",
+        "GUID:bf449696eeb8a48adb5d063bf6fb0d91",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:3c42479e53c24ab098ea7aa54c818b2e",
+        "GUID:3f9bd7dfada994a3ca114055e53e2c1f",
+        "GUID:f8a3a0af3ed28474c885e04c605a7962",
+        "GUID:37d2c04574c1d480d8c817e2a7c578e7",
+        "GUID:8af21c3a612af2645a9953d4b9b3f6d5",
+        "GUID:c9fbb75c15a4cd042b731877ede4a5c1",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:4bd423f6dceb67540b5c246ca8cf789b",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:c34e38f41494f834abff029ddf82af43",
+        "GUID:9857fe4bae4e30441bc3a577c5de790a",
+        "GUID:78f68309b49af42f9a72c4441bd3b77c",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:46951180f4d84b25a1619640aa317e5b",
+        "GUID:fa68a19c663b84d429f4d05606cc8327"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll",
+        "Google.Protobuf.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
