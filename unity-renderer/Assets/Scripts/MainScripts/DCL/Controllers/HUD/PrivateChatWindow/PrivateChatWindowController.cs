@@ -64,9 +64,14 @@ public class PrivateChatWindowController : IHUD
         view.OnClose += Hide;
         view.OnMinimize += MinimizeView;
         view.OnUnfriend += Unfriend;
-        view.OnFocused += HandleViewFocused;
-        view.OnClickOverWindow += HandleViewClicked;
-
+        
+        if (DataStore.i.HUDs.isNotificationPanelInitialized == null)
+        {
+            view.OnFocused += HandleViewFocused;
+            view.OnClickOverWindow += HandleViewClicked;
+            if (mouseCatcher != null)
+                mouseCatcher.OnMouseLock += ActivatePreview;
+        }
         closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
         closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
 
@@ -80,9 +85,6 @@ public class PrivateChatWindowController : IHUD
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
-
-        if (mouseCatcher != null)
-            mouseCatcher.OnMouseLock += ActivatePreview;
 
         toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
@@ -110,7 +112,7 @@ public class PrivateChatWindowController : IHUD
 
     public void SetVisibility(bool visible)
     {
-        if (View.IsActive == visible)
+        if (View.IsActive == visible && DataStore.i.HUDs.isNotificationPanelInitialized == null)
             return;
 
         if (visible)
@@ -341,7 +343,9 @@ public class PrivateChatWindowController : IHUD
 
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
     {
-        await UniTask.Delay(30000, cancellationToken: cancellationToken);
+        if (DataStore.i.HUDs.isNotificationPanelInitialized == null)
+            await UniTask.Delay(30000, cancellationToken: cancellationToken);
+
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested)
             return;

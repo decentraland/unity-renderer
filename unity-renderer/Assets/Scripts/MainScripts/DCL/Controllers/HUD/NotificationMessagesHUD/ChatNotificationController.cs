@@ -47,6 +47,7 @@ public class ChatNotificationController : IHUD
     {
         if (targetId == null) return;
 
+        SetVisibility(false);
         if (targetId == "#nearby")
             HUDController.i.taskbarHud.OpenPublicChatChannel("#nearby", true);
         else
@@ -58,6 +59,10 @@ public class ChatNotificationController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        if (visible)
+            view.Show();
+        else
+            view.Hide();
     }
 
     public void Dispose()

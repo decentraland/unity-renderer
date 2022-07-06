@@ -61,9 +61,14 @@ public class PublicChatChannelController : IHUD
         View = view;
         view.OnClose += HandleViewClosed;
         view.OnBack += HandleViewBacked;
-        view.OnFocused += HandleViewFocused;
-        View.OnClickOverWindow += HandleViewClicked;
 
+        if (DataStore.i.HUDs.isNotificationPanelInitialized == null)
+        {
+            view.OnFocused += HandleViewFocused;
+            View.OnClickOverWindow += HandleViewClicked;
+            if (mouseCatcher != null)
+                mouseCatcher.OnMouseLock += ActivatePreview;
+        }
 
         chatHudController = new ChatHUDController(dataStore,
             userProfileBridge,
@@ -79,9 +84,6 @@ public class PublicChatChannelController : IHUD
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
-
-        if (mouseCatcher != null)
-            mouseCatcher.OnMouseLock += ActivatePreview;
 
         toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
@@ -317,7 +319,9 @@ public class PublicChatChannelController : IHUD
     
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
     {
-        await UniTask.Delay(30000, cancellationToken: cancellationToken);
+        if (DataStore.i.HUDs.isNotificationPanelInitialized == null)
+            await UniTask.Delay(30000, cancellationToken: cancellationToken);
+
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;
         chatHudController.FadeOutMessages();
