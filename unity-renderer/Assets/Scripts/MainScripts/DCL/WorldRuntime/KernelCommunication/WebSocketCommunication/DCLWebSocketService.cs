@@ -63,11 +63,6 @@ public class DCLWebSocketService : WebSocketBehavior
         
         if (e.IsBinary)
         {
-            return;
-        }        
-
-        if (e.IsBinary)
-        {
             OnMessageEvent?.Invoke(e.RawData);
             return;
         }
