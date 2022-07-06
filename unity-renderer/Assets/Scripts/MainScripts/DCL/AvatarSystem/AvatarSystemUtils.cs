@@ -164,7 +164,7 @@ namespace AvatarSystem
                 else if (name.Contains("mouth"))
                     mouth = renderer;
                 else 
-                    Debug.LogWarning($"{r.name} is not a body part?", r);
+                    Debug.LogWarning($"{name} is not a body part?", r);
             }
 
             return (head, upperBody, lowerBody, feet, eyes, eyebrows, mouth);

@@ -10,9 +10,12 @@ namespace AvatarSystem
 {
     public class WearableRetriever : IWearableRetriever
     {
+        private const string FEATURE_GLTFAST = "gltfast";
         public Rendereable rendereable { get; private set; }
 
         private RendereableAssetLoadHelper loaderAssetHelper;
+
+
 
         public async UniTask<Rendereable> Retrieve(GameObject container, ContentProvider contentProvider, string baseUrl, string mainFile, CancellationToken ct = default)
         {
@@ -22,9 +25,7 @@ namespace AvatarSystem
             {
                 loaderAssetHelper?.Unload();
 
-                // TODO: use feature flag after the wearable material bug is fixed
-                Func<bool> checkIfGltFastIsEnabled = () => false;
-                loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl, checkIfGltFastIsEnabled);
+                loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl, CheckGLTFastFeature);
 
                 loaderAssetHelper.settings.forceNewInstance = false;
                 // TODO Review this hardcoded offset and try to solve it by offseting the Avatar container
@@ -72,6 +73,12 @@ namespace AvatarSystem
                 Dispose();
                 throw;
             }
+        }
+        private bool CheckGLTFastFeature()
+        {
+            // TODO: use feature flag after the wearable material bug is fixed
+            return false;
+            return DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
         }
 
         public void Dispose() { loaderAssetHelper?.Unload(); }

@@ -100,7 +100,8 @@ namespace DCL
                 // TODO: Fill me!
                 totalTriangleCount = 0,
                 animationClipSize = 0,
-                meshDataSize = 0
+                meshDataSize = 0,
+                isGLTFast = true
             };
         }
     }
