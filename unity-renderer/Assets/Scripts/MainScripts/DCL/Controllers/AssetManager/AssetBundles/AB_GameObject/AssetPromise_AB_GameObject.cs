@@ -50,7 +50,15 @@ namespace DCL
         protected override void OnAfterLoadOrReuse()
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
-            settings.ApplyAfterLoad(asset.container.transform);
+            foreach (Renderer r in asset.renderers)
+            {
+                if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE)
+                {
+                    MaterialTransitionController matTransition = r.gameObject.AddComponent<MaterialTransitionController>();
+                    matTransition.OnDidFinishLoading(r.sharedMaterial);
+                }
+            }
+            //settings.ApplyAfterLoad(asset.container.transform);
         }
 
         protected override void OnBeforeLoadOrReuse()
