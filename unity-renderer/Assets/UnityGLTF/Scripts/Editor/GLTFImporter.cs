@@ -130,7 +130,7 @@ namespace UnityGLTF
             loader.forceGPUOnlyMesh = false;
             loader.forceGPUOnlyTex = false;
             loader.forceSyncCoroutines = true;
-
+            loader.ignoreMaterials = !_importMaterials;
 
             Task task = loader.LoadScene(CancellationToken.None);
             bool result = task.Wait(TimeSpan.FromSeconds(30));
@@ -561,11 +561,13 @@ namespace UnityGLTF
                         }
                     }
 
-                    var rootObject = gltfScene.GetComponentInChildren<InstantiatedGLTFObject>();
 
-                    if (rootObject != null)
-                        DestroyImmediate(rootObject);
                 }
+                
+                var rootObject = gltfScene.GetComponentInChildren<InstantiatedGLTFObject>();
+
+                if (rootObject != null)
+                    DestroyImmediate(rootObject);
             }
             catch (Exception e)
             {
