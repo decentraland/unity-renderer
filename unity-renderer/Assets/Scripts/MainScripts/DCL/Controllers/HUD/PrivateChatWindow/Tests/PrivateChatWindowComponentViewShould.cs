@@ -88,10 +88,21 @@ public class PrivateChatWindowComponentViewShould
     [Test]
     public void TriggerFocusWhenWindowIsClicked()
     {
+        var clicked = false;
+        view.OnClickOverWindow += () => clicked = true;
+        
+        view.OnPointerDown(null);
+        
+        Assert.IsTrue(clicked);
+    }
+    
+    [Test]
+    public void TriggerFocusWhenWindowIsHovered()
+    {
         var focused = false;
         view.OnFocused += f => focused = f;
         
-        view.OnPointerDown(null);
+        view.OnPointerEnter(null);
         
         Assert.IsTrue(focused);
     }
