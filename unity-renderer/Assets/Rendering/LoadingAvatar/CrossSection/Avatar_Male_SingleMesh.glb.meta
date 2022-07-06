@@ -15,6 +15,6 @@ ScriptedImporter:
   _generateColliders: 0
   _swapUvs: 0
   _importNormals: 0
-  _importMaterials: 1
+  _importMaterials: 0
   _useJpgTextures: 0
   _importTextures: 1

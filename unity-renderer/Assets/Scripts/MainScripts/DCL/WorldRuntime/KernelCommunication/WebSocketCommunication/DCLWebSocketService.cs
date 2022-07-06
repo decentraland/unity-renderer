@@ -64,6 +64,11 @@ public class DCLWebSocketService : WebSocketBehavior
     protected override void OnMessage(MessageEventArgs e)
     {
         base.OnMessage(e);
+        
+        if (e.IsBinary)
+        {
+            return;
+        }        
 
         lock (WebSocketCommunication.queuedMessages)
         {

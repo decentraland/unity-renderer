@@ -126,8 +126,6 @@ namespace DCL.ECSComponents
         {
             if (entity != null)
                 dataStore.RemoveShapeReady(entity.entityId);
-            if (meshesInfo != null)
-                ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if (rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id, rendereable);
             if (model != null)
