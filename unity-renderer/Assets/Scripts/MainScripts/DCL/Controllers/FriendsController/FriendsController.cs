@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using DCL.Friends.WebApi;
+using DCL.Interface;
 using UnityEngine;
 
 public class FriendsController : MonoBehaviour, IFriendsController
 {
-    public static bool VERBOSE = false;
+    private const bool VERBOSE = false;
     public static FriendsController i { get; private set; }
 
     public event Action<int> OnTotalFriendsUpdated;
@@ -18,7 +19,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         i = this;
     }
 
-    public bool IsInitialized { get; private set; } = false;
+    public bool IsInitialized { get; private set; }
 
     public int ReceivedRequestCount =>
         friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
@@ -34,7 +35,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public UserStatus GetUserStatus(string userId)
     {
         if (!friends.ContainsKey(userId))
-            return new UserStatus() {userId = userId, friendshipStatus = FriendshipStatus.NOT_FRIEND};
+            return new UserStatus {userId = userId, friendshipStatus = FriendshipStatus.NOT_FRIEND};
 
         return friends[userId];
     }
@@ -59,10 +60,10 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public void RejectFriendship(string friendUserId)
     {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
         {
-            userId = friendUserId,
-            action = FriendshipAction.REJECTED
+            action = WebInterface.FriendshipAction.CANCELLED,
+            userId = friendUserId
         });
     }
 
@@ -70,57 +71,62 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public void RemoveFriend(string friendId)
     {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
         {
-            action = FriendshipAction.DELETED,
+            action = WebInterface.FriendshipAction.DELETED,
             userId = friendId
         });
     }
 
-    public void GetFriendsAsync(int limit, int skip)
-    {
-        throw new NotImplementedException();
-    }
+    public void GetFriendsAsync(int limit, int skip) =>
+        WebInterface.GetFriends(limit, skip);
 
     public void GetFriendsAsync(string usernameOrId, int limit)
     {
-        // we cant have WebInterface dependency here.. 
-        throw new NotSupportedException();
+        WebInterface.GetFriends(usernameOrId, limit);
     }
 
     public void GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit,
         long receivedFromTimestamp)
     {
+        WebInterface.GetFriendRequests(sentLimit, sentFromTimestamp, receivedLimit,
+            receivedFromTimestamp);
     }
 
-    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp) { }
+    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
+    {
+        WebInterface.GetFriendsWithDirectMessages("", limit, fromTimestamp);
+    }
 
-    public void GetFriendsWithDirectMessages(string userNameOrId, int limit) { }
+    public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
+    {
+        WebInterface.GetFriendsWithDirectMessages(userNameOrId, limit, 0);
+    }
 
     public void RequestFriendship(string friendUserId)
     {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
         {
             userId = friendUserId,
-            action = FriendshipAction.REQUESTED_TO
+            action = WebInterface.FriendshipAction.REQUESTED_TO
         });
     }
 
     public void CancelRequest(string friendUserId)
     {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
         {
             userId = friendUserId,
-            action = FriendshipAction.CANCELLED
+            action = WebInterface.FriendshipAction.CANCELLED
         });
     }
 
     public void AcceptFriendship(string friendUserId)
     {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
         {
             userId = friendUserId,
-            action = FriendshipAction.APPROVED
+            action = WebInterface.FriendshipAction.APPROVED
         });
     }
 
@@ -131,6 +137,8 @@ public class FriendsController : MonoBehaviour, IFriendsController
         OnFriendNotFound?.Invoke(name);
     }
 
+    // called by kernel
+    [UsedImplicitly]
     public void InitializeFriends(string json)
     {
         if (IsInitialized)
@@ -222,7 +230,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         UpdateUserStatus(newUserStatus);
     }
 
-    public void UpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
+    private void UpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
     {
         var friendshipStatus = ToFriendshipStatus(msg.action);
         var userId = msg.userId;
