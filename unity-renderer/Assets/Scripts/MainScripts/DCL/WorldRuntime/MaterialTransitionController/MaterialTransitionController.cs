@@ -291,9 +291,6 @@ public class MaterialTransitionController : MonoBehaviour
             if (r.gameObject.GetComponent<MaterialTransitionController>() != null)
                 continue;
             
-            if (r.transform.parent.parent.name.Equals("Armature"))
-                continue;
-
             MaterialTransitionController transition = r.gameObject.AddComponent<MaterialTransitionController>();
             Material finalMaterial = r.sharedMaterial;
             transition.delay = delay;

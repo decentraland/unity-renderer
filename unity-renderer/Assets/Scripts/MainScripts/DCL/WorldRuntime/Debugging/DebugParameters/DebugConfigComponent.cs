@@ -76,6 +76,7 @@ namespace DCL
         public bool builderInWorld = false;
         public bool soloScene = true;
         public bool multithreaded = false;
+        public bool disableAssetBundles = false;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
         private void Awake()
@@ -188,6 +189,11 @@ namespace DCL
             if (builderInWorld)
             {
                 debugString += "ENABLE_BUILDER_IN_WORLD&";
+            }
+            
+            if(disableAssetBundles)
+            {
+                debugString += "DISABLE_ASSET_BUNDLES&";
             }
 
             if (!string.IsNullOrEmpty(realm))

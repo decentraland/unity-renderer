@@ -51,11 +51,6 @@ namespace DCL
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
             settings.ApplyAfterLoad(asset.container.transform);
-            if (asset.container.transform.root.name.Equals("CharacterController"))
-            {
-                return;
-            }
-            MaterialTransitionController.ApplyToLoadedObject(asset.container);
         }
 
         protected override void OnBeforeLoadOrReuse()

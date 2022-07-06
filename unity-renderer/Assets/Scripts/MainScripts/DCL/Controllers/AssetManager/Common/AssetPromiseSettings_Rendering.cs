@@ -62,7 +62,11 @@ namespace DCL
             for (int i = 0; i < renderersCount; i++)
             {
                 Renderer renderer = renderers[i];
-                renderer.enabled = visibleFlags != VisibleFlags.INVISIBLE;
+                if (visibleFlags != VisibleFlags.INVISIBLE)
+                {
+                    MaterialTransitionController matTransition = renderer.gameObject.AddComponent<MaterialTransitionController>();
+                    matTransition.OnDidFinishLoading(renderer.sharedMaterial);
+                }
             }
         }
     }
