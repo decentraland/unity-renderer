@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -5,6 +6,7 @@ using DCL.CRDT;
 using Google.Protobuf;
 using KernelCommunication;
 using rpc_csharp;
+using UnityEngine;
 
 namespace RPC.Services
 {
@@ -30,24 +32,31 @@ namespace RPC.Services
 
             var sceneMessagesPool = context.crdtContext.messageQueueHandler.sceneMessagesPool;
 
-            using (var iterator = KernelBinaryMessageDeserializer.Deserialize(crdtStream))
+            try
             {
-                while (iterator.MoveNext())
+                using (var iterator = KernelBinaryMessageDeserializer.Deserialize(crdtStream))
                 {
-                    if (!(iterator.Current is CRDTMessage crdtMessage))
-                        continue;
-
-                    if (!sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene queuedMessage))
+                    while (iterator.MoveNext())
                     {
-                        queuedMessage = new QueuedSceneMessage_Scene();
-                    }
-                    queuedMessage.method = MessagingTypes.CRDT_MESSAGE;
-                    queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
-                    queuedMessage.sceneId = messages.SceneId;
-                    queuedMessage.payload = crdtMessage;
+                        if (!(iterator.Current is CRDTMessage crdtMessage))
+                            continue;
 
-                    context.crdtContext.messageQueueHandler.EnqueueSceneMessage(queuedMessage);
+                        if (!sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene queuedMessage))
+                        {
+                            queuedMessage = new QueuedSceneMessage_Scene();
+                        }
+                        queuedMessage.method = MessagingTypes.CRDT_MESSAGE;
+                        queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
+                        queuedMessage.sceneId = messages.SceneId;
+                        queuedMessage.payload = crdtMessage;
+
+                        context.crdtContext.messageQueueHandler.EnqueueSceneMessage(queuedMessage);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
             }
 
             return defaultResponse;
