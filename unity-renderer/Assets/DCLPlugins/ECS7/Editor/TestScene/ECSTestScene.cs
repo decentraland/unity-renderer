@@ -28,7 +28,7 @@ public class ECSTestScene : MonoBehaviour
 
     private static void AddGLTFShapeComponent(string sceneId, IECSComponentWriter componentWriter)
     {
-        Environment.i.world.state.scenesSortedByDistance[0].contentProvider.baseUrl = "https://peer-lb.decentraland.org/content/contents/";
+        Environment.i.world.state.scenesSortedByDistance[0].contentProvider.baseUrl = "https://peer.decentraland.org/content/contents/";
         Environment.i.world.state.scenesSortedByDistance[0].contentProvider.fileToHash.Add("models/SCENE.glb".ToLower(), "QmQgQtuAg9qsdrmLwnFiLRAYZ6Du4Dp7Yh7bw7ELn7AqkD");
             
         componentWriter.PutComponent(sceneId, 2, ComponentID.GLTF_SHAPE,

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -44,13 +46,13 @@ namespace AvatarSystem
             meshRenderer = avatarRevealer.GetMainRenderer();
         }
 
-        public void FadeOut(MeshRenderer targetRenderer, bool playParticles) 
+        public async UniTask FadeOut(MeshRenderer targetRenderer, bool playParticles, CancellationToken cancellationToken) 
         {
             if (avatarRevealerContainer == null) 
                 return;
 
             avatarRevealer.AddTarget(targetRenderer);
-            avatarRevealer.StartAvatarRevealAnimation(playParticles);
+            await avatarRevealer.StartAvatarRevealAnimation(playParticles, cancellationToken);
         }
 
     }
