@@ -5,7 +5,6 @@ using DCL.CRDT;
 using Google.Protobuf;
 using KernelCommunication;
 using rpc_csharp;
-using UnityEngine;
 
 namespace RPC.Services
 {
@@ -23,13 +22,6 @@ namespace RPC.Services
                 sendCrdt: OnCRDTReceived,
                 crdtNotificationStream: CRDTNotificationStream
             );
-
-            PingPongService<RPCContext>.RegisterService(port,
-                ping: async (request, context) =>
-                {
-                    Debug.Log("Ping received!");
-                    return new PongResponse();
-                });
         }
 
         private static UniTask<CRDTResponse> OnCRDTReceived(CRDTManyMessages messages, RPCContext context)

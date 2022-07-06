@@ -3,7 +3,6 @@ using rpc_csharp.transport;
 
 namespace RPC.Transports
 {
-    // TODO: fix issues when websocket reconnect!
     public class WebSocketTransport : ITransport
     {
         public event Action OnCloseEvent;
@@ -18,6 +17,7 @@ namespace RPC.Transports
 
         public WebSocketTransport()
         {
+            // TODO: refactor websocket service to avoid the need of this reference
             if (WebSocketCommunication.service != null)
             {
                 OnWebSocketServiceAdded(WebSocketCommunication.service);
