@@ -90,9 +90,9 @@ public class WorldChatWindowControllerShould
         });
         
         controller.Initialize(view);
-        friendsController.OnUpdateUserStatus += Raise.Event<Action<string, FriendsController.UserStatus>>(
+        friendsController.OnUpdateUserStatus += Raise.Event<Action<string, UserStatus>>(
             FRIEND_ID,
-            new FriendsController.UserStatus
+            new UserStatus
             {
                 userId = FRIEND_ID,
                 presence = PresenceStatus.ONLINE,
@@ -116,9 +116,9 @@ public class WorldChatWindowControllerShould
         });
         
         controller.Initialize(view);
-        friendsController.OnUpdateUserStatus += Raise.Event<Action<string, FriendsController.UserStatus>>(
+        friendsController.OnUpdateUserStatus += Raise.Event<Action<string, UserStatus>>(
             FRIEND_ID,
-            new FriendsController.UserStatus
+            new UserStatus
             {
                 userId = FRIEND_ID,
                 presence = PresenceStatus.ONLINE,
@@ -360,7 +360,7 @@ public class WorldChatWindowControllerShould
         friendProfile.UpdateData(new UserProfileModel {userId = friendId, name = friendId});
         userProfileBridge.Get(friendId).Returns(friendProfile);
         friendsController.IsFriend(friendId).Returns(true);
-        friendsController.GetUserStatus(friendId).Returns(new FriendsController.UserStatus
+        friendsController.GetUserStatus(friendId).Returns(new UserStatus
             {userId = friendId, presence = presence, friendshipStatus = FriendshipStatus.FRIEND});
     }
 }

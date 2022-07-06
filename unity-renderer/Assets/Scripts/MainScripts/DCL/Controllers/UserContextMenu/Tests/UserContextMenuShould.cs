@@ -121,7 +121,7 @@ public class UserContextMenuShould
         Assert.IsFalse(contextMenu.friendRequestedContainer.activeSelf, "friendRequestedContainer should not be active");
         Assert.IsFalse(contextMenu.deleteFriendButton.gameObject.activeSelf, "deleteFriendButton should not be active");
 
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        FriendsController.i.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
         {
             userId = TEST_USER_ID,
             action = FriendshipAction.REQUESTED_TO
@@ -132,7 +132,7 @@ public class UserContextMenuShould
         Assert.IsTrue(contextMenu.friendRequestedContainer.activeSelf, "friendRequestedContainer should be active");
         Assert.IsFalse(contextMenu.deleteFriendButton.gameObject.activeSelf, "deleteFriendButton should not be active");
 
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        FriendsController.i.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
         {
             userId = TEST_USER_ID,
             action = FriendshipAction.APPROVED
@@ -143,7 +143,7 @@ public class UserContextMenuShould
         Assert.IsFalse(contextMenu.friendRequestedContainer.activeSelf, "friendRequestedContainer should not be active");
         Assert.IsTrue(contextMenu.deleteFriendButton.gameObject.activeSelf, "deleteFriendButton should be active");
 
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        FriendsController.i.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
         {
             userId = TEST_USER_ID,
             action = FriendshipAction.DELETED
@@ -162,7 +162,7 @@ public class UserContextMenuShould
 
         Assert.IsFalse(contextMenu.messageButton.gameObject.activeSelf, "messageButton should not be active");
 
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        FriendsController.i.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
         {
             userId = TEST_USER_ID,
             action = FriendshipAction.REQUESTED_TO
@@ -170,7 +170,7 @@ public class UserContextMenuShould
 
         Assert.IsFalse(contextMenu.messageButton.gameObject.activeSelf, "messageButton should not be active");
 
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        FriendsController.i.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
         {
             userId = TEST_USER_ID,
             action = FriendshipAction.APPROVED
@@ -178,7 +178,7 @@ public class UserContextMenuShould
 
         Assert.IsTrue(contextMenu.messageButton.gameObject.activeSelf, "messageButton should be active");
 
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        FriendsController.i.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
         {
             userId = TEST_USER_ID,
             action = FriendshipAction.DELETED

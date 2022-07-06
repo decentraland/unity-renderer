@@ -93,7 +93,7 @@ public class PlayerInfoCardHUDController : IHUD
 
         friendsController.RequestFriendship(currentPlayerId);
 
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+        WebInterface.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
         {
             userId = currentPlayerId, action = FriendshipAction.REQUESTED_TO
         });
@@ -106,7 +106,7 @@ public class PlayerInfoCardHUDController : IHUD
         // Add fake action to avoid waiting for kernel
         friendsController.CancelRequest(currentPlayerId);
 
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        WebInterface.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
         {
             userId = currentPlayerId, action = FriendshipAction.CANCELLED
         });
@@ -119,7 +119,7 @@ public class PlayerInfoCardHUDController : IHUD
         // Add fake action to avoid waiting for kernel
         friendsController.AcceptFriendship(currentPlayerId);
 
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        WebInterface.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
         {
             userId = currentPlayerId, action = FriendshipAction.APPROVED
         });
@@ -132,7 +132,7 @@ public class PlayerInfoCardHUDController : IHUD
         // Add fake action to avoid waiting for kernel
         friendsController.RejectFriendship(currentPlayerId);
 
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        WebInterface.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
         {
             userId = currentPlayerId, action = FriendshipAction.REJECTED
         });

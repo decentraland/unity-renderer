@@ -16,7 +16,7 @@ public class FriendsHUDComponentViewShould
     {
         view = FriendsHUDComponentView.Create();
         var friendsController = Substitute.For<IFriendsController>();
-        friendsController.GetAllocatedFriends().Returns(new Dictionary<string, FriendsController.UserStatus>());
+        friendsController.GetAllocatedFriends().Returns(new Dictionary<string, UserStatus>());
         view.Initialize(Substitute.For<IChatController>(),
             friendsController, Substitute.For<ISocialAnalytics>());
     }

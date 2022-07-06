@@ -362,7 +362,7 @@ public class PrivateChatWindowControllerShould
             name = name
         });
         userProfileBridge.Get(friendId).Returns(testUserProfile);
-        friendsController.GetUserStatus(testUserProfile.userId).Returns(new FriendsController.UserStatus
+        friendsController.GetUserStatus(testUserProfile.userId).Returns(new UserStatus
         {
             presence = presence,
             friendshipStatus = FriendshipStatus.FRIEND,

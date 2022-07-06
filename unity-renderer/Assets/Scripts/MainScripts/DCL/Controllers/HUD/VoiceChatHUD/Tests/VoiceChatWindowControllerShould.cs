@@ -30,7 +30,7 @@ public class VoiceChatWindowControllerShould
         userProfileBridge.Configure().GetOwn().Returns(info => ScriptableObject.CreateInstance<UserProfile>());
         userProfileBridge.Configure().Get(Arg.Any<string>()).Returns(info => ScriptableObject.CreateInstance<UserProfile>());
         friendsController = Substitute.For<IFriendsController>();
-        friendsController.Configure().GetAllocatedFriends().Returns(info => new Dictionary<string, FriendsController.UserStatus>());
+        friendsController.Configure().GetAllocatedFriends().Returns(info => new Dictionary<string, UserStatus>());
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         dataStore = new DataStore();
 

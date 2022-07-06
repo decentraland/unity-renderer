@@ -31,37 +31,6 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
-    [Serializable]
-    public class UserStatus
-    {
-        [Serializable]
-        public class Realm
-        {
-            public string serverName;
-            public string layer;
-        }
-
-        public Realm realm;
-        public Vector2 position;
-        public string userId;
-        public FriendshipStatus friendshipStatus;
-        public PresenceStatus presence;
-        [NonSerialized] public DateTime friendshipStartedTime;
-    }
-
-    [Serializable]
-    public class FriendshipInitializationMessage
-    {
-        public int totalReceivedRequests;
-    }
-
-    [Serializable]
-    public class FriendshipUpdateStatusMessage
-    {
-        public string userId;
-        public FriendshipAction action;
-    }
-
     public UserStatus GetUserStatus(string userId)
     {
         if (!friends.ContainsKey(userId))
@@ -115,13 +84,13 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public void GetFriendsAsync(string usernameOrId, int limit)
     {
-        throw new NotImplementedException();
+        // we cant have WebInterface dependency here.. 
+        throw new NotSupportedException();
     }
 
     public void GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit,
         long receivedFromTimestamp)
     {
-        throw new NotImplementedException();
     }
 
     public void GetFriendsWithDirectMessages(int limit, long fromTimestamp) { }
@@ -185,7 +154,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         TotalFriendCount = msg.totalFriends;
         OnTotalFriendsUpdated?.Invoke(TotalFriendCount);
 
-        foreach (var friendId in msg.currentFriends)
+        foreach (var friendId in msg.friendsToAdd)
         {
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 {action = FriendshipAction.APPROVED, userId = friendId});

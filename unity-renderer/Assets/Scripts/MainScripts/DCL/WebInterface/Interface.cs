@@ -539,7 +539,7 @@ namespace DCL.Interface
         [System.Serializable]
         public class JumpInPayload
         {
-            public FriendsController.UserStatus.Realm realm = new FriendsController.UserStatus.Realm();
+            public UserStatus.Realm realm = new UserStatus.Realm();
             public Vector2 gridPosition;
         }
 
@@ -1396,7 +1396,7 @@ namespace DCL.Interface
             SendMessage("SendChatMessage", sendChatMessageEvent);
         }
 
-        public static void UpdateFriendshipStatus(FriendsController.FriendshipUpdateStatusMessage message) { SendMessage("UpdateFriendshipStatus", message); }
+        public static void UpdateFriendshipStatus(FriendshipUpdateStatusMessage message) { SendMessage("UpdateFriendshipStatus", message); }
 
         public static void ScenesLoadingFeedback(LoadingFeedbackMessage message) { SendMessage("ScenesLoadingFeedback", message); }
 

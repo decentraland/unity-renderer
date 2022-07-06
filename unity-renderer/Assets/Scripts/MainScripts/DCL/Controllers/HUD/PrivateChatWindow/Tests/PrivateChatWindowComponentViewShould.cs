@@ -29,7 +29,7 @@ public class PrivateChatWindowComponentViewShould
         view.userThumbnail = userThumbnail;
 
         friendsController = Substitute.For<IFriendsController>();
-        friendsController.GetAllocatedFriends().Returns(x => new Dictionary<string, FriendsController.UserStatus>());
+        friendsController.GetAllocatedFriends().Returns(x => new Dictionary<string, UserStatus>());
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         view.Initialize(friendsController, socialAnalytics);
     }

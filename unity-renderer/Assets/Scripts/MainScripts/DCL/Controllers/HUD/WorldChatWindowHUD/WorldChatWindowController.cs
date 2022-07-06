@@ -136,7 +136,7 @@ public class WorldChatWindowController : IHUD
 
     private void HandleViewCloseRequest() => SetVisibility(false);
     
-    private void HandleUserStatusChanged(string userId, FriendsController.UserStatus status)
+    private void HandleUserStatusChanged(string userId, UserStatus status)
     {
         if (!recipientsFromPrivateChats.ContainsKey(userId)) return;
         if (!lastPrivateMessages.ContainsKey(userId)) return;

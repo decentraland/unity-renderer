@@ -6,7 +6,7 @@ public interface IFriendsController
 {
     event Action OnInitialized;
     event Action<string, FriendshipAction> OnUpdateFriendship;
-    event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
+    event Action<string, UserStatus> OnUpdateUserStatus;
     event Action<string> OnFriendNotFound;
     event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
     event Action<int, int> OnTotalFriendRequestUpdated;
@@ -20,8 +20,8 @@ public interface IFriendsController
     int TotalReceivedFriendRequestCount { get; }
     int TotalSentFriendRequestCount { get; }
     int TotalFriendsWithDirectMessagesCount { get; }
-    Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends();
-    FriendsController.UserStatus GetUserStatus(string userId);
+    Dictionary<string, UserStatus> GetAllocatedFriends();
+    UserStatus GetUserStatus(string userId);
 
     bool ContainsStatus(string friendId, FriendshipStatus status);
     void RequestFriendship(string friendUserId);

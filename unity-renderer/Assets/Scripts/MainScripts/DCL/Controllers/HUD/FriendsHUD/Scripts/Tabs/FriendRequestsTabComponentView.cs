@@ -304,7 +304,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private void OnFriendRequestReceivedAccepted(FriendRequestEntry requestEntry)
     {
         // Add placeholder friend to avoid affecting UX by roundtrip with kernel
-        FriendsController.i?.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+        FriendsController.i?.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
         {
             userId = requestEntry.Model.userId,
             action = FriendshipAction.APPROVED

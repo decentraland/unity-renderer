@@ -21,7 +21,7 @@ namespace DCL.Interface
             remove => friendsController.OnUpdateFriendship -= value;
         }
         
-        public event Action<string, FriendsController.UserStatus> OnUpdateUserStatus
+        public event Action<string, UserStatus> OnUpdateUserStatus
         {
             add => friendsController.OnUpdateUserStatus += value;
             remove => friendsController.OnUpdateUserStatus -= value;
@@ -65,9 +65,9 @@ namespace DCL.Interface
             this.friendsController = friendsController;
         }
 
-        public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() => friendsController.GetAllocatedFriends();
+        public Dictionary<string, UserStatus> GetAllocatedFriends() => friendsController.GetAllocatedFriends();
 
-        public FriendsController.UserStatus GetUserStatus(string userId) => friendsController.GetUserStatus(userId);
+        public UserStatus GetUserStatus(string userId) => friendsController.GetUserStatus(userId);
 
         public bool ContainsStatus(string friendId, FriendshipStatus status) =>
             friendsController.ContainsStatus(friendId, status);
@@ -75,7 +75,7 @@ namespace DCL.Interface
         public void RequestFriendship(string friendUserId)
         {
             friendsController.RequestFriendship(friendUserId);
-            WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+            WebInterface.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
             {
                 userId = friendUserId,
                 action = FriendshipAction.REQUESTED_TO
@@ -85,7 +85,7 @@ namespace DCL.Interface
         public void CancelRequest(string friendUserId)
         {
             friendsController.CancelRequest(friendUserId);
-            WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+            WebInterface.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
             {
                 userId = friendUserId,
                 action = FriendshipAction.CANCELLED
@@ -95,7 +95,7 @@ namespace DCL.Interface
         public void AcceptFriendship(string friendUserId)
         {
             friendsController.AcceptFriendship(friendUserId);
-            WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+            WebInterface.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
             {
                 userId = friendUserId,
                 action = FriendshipAction.APPROVED
@@ -105,7 +105,7 @@ namespace DCL.Interface
         public void RejectFriendship(string friendUserId)
         {
             friendsController.RejectFriendship(friendUserId);
-            WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+            WebInterface.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
             {
                 userId = friendUserId,
                 action = FriendshipAction.REJECTED
@@ -117,7 +117,7 @@ namespace DCL.Interface
         public void RemoveFriend(string friendId)
         {
             friendsController.RemoveFriend(friendId);
-            WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+            WebInterface.UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
             {
                 userId = friendId,
                 action = FriendshipAction.DELETED

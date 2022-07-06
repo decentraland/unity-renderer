@@ -16,7 +16,7 @@ public class JumpInButton : MonoBehaviour
 
     private IFriendsController currentFriendsController;
     private string currentUserId;
-    private FriendsController.UserStatus currentUserStatus;
+    private UserStatus currentUserStatus;
 
     internal Vector2 currentCoords;
     internal string currentRealmServerName;
@@ -58,7 +58,7 @@ public class JumpInButton : MonoBehaviour
         currentFriendsController.OnUpdateUserStatus -= FriendsController_OnUpdateUserStatus;
     }
 
-    private void FriendsController_OnUpdateUserStatus(string userId, FriendsController.UserStatus userStatus)
+    private void FriendsController_OnUpdateUserStatus(string userId, UserStatus userStatus)
     {
         if (userId != currentUserId)
             return;

@@ -225,7 +225,7 @@ public class FriendsHUDController : IHUD
                && friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND);
     }
 
-    private void OnUpdateUserStatus(string userId, FriendsController.UserStatus newStatus)
+    private void OnUpdateUserStatus(string userId, UserStatus newStatus)
     {
         var model = GetOrCreateModel(userId, newStatus);
         model.CopyFrom(newStatus);
@@ -263,7 +263,7 @@ public class FriendsHUDController : IHUD
         ShowOrHideMoreFriendRequestsToLoadHint();
     }
 
-    private void UpdatePaginationState(string userId, FriendsController.UserStatus status)
+    private void UpdatePaginationState(string userId, UserStatus status)
     {
         switch (status.friendshipStatus)
         {
@@ -358,7 +358,7 @@ public class FriendsHUDController : IHUD
         return friends[userId];
     }
 
-    private FriendEntryModel GetOrCreateModel(string userId, FriendsController.UserStatus newStatus)
+    private FriendEntryModel GetOrCreateModel(string userId, UserStatus newStatus)
     {
         if (!friends.ContainsKey(userId))
         {
