@@ -30,7 +30,7 @@ namespace DCL.ECSComponents
             return vector;
         }
         
-        public static Color UnityVectorToPBVector(Color3 original)
+        public static Color PBColorToUnityColor(Color3 original)
         {
             return new UnityEngine.Color(original.R, original.G, original.B, 1);
         }

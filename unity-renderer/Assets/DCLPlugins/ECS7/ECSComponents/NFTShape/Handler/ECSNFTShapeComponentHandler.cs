@@ -120,7 +120,7 @@ namespace DCL.ECSComponents
             if (this.model != null && model.Color.Equals(this.model.Color))
                 return;
 
-            shapeFrame.UpdateBackgroundColor(ProtoConvertUtils.UnityVectorToPBVector(model.Color));
+            shapeFrame.UpdateBackgroundColor(ProtoConvertUtils.PBColorToUnityColor(model.Color));
         }
     }
 }

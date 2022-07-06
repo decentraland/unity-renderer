@@ -11,7 +11,7 @@ namespace DCL.ECSComponents
 
         public AvatarShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, AvatarShapeSerializer.Deserialize, () => new AvatarShapeComponentHandler(DataStore.i.ecs7));
+            factory.AddOrReplaceComponent(componentId, AvatarShapeSerializer.Deserialize, () => new AvatarShapeComponentHandler());
             componentWriter.AddOrReplaceComponentSerializer<PBAvatarShape>(componentId, AvatarShapeSerializer.Serialize);
 
             this.factory = factory;
