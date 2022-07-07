@@ -10,7 +10,7 @@ public class ChatNotificationsFeature : IPlugin
         chatNotificationController = CreateController();
     }
 
-    internal virtual ChatNotificationController CreateController() => new ChatNotificationController(ChatController.i, new UserProfileWebInterfaceBridge(), MainChatNotificationsComponentView.Create());
+    internal virtual ChatNotificationController CreateController() => new ChatNotificationController(ChatController.i, new UserProfileWebInterfaceBridge());
 
     public void Dispose()
     {

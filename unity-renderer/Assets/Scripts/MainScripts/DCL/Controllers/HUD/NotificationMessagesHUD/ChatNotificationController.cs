@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,22 +8,24 @@ using DCL;
 public class ChatNotificationController : IHUD
 {
     IChatController chatController;
-    MainChatNotificationsComponentView view;
-    TaskbarHUDController taskbarHUDController;
+    MainChatNotificationsComponentView mainChatNotificationView;
     private IUserProfileBridge userProfileBridge;
     internal BaseVariable<Transform> isInitialized => DataStore.i.HUDs.isNotificationPanelInitialized;
 
+    public event Action<string> OnOpenNotificationChat;
+
     private UserProfile ownUserProfile;
 
-    public ChatNotificationController(IChatController chatController, IUserProfileBridge userProfileBridge, MainChatNotificationsComponentView view)
+    public ChatNotificationController(IChatController chatController, IUserProfileBridge userProfileBridge)
     {
         this.chatController = chatController;
         this.userProfileBridge = userProfileBridge;
-        this.view = view;
-        taskbarHUDController = HUDController.i.taskbarHud;
+        mainChatNotificationView = MainChatNotificationsComponentView.Create();
+        mainChatNotificationView.Initialize(this);
         ownUserProfile = userProfileBridge.GetOwn();
         chatController.OnAddMessage += HandleMessageAdded;
-        view.OnClickedNotification += OpenNotificationChat;
+        mainChatNotificationView.OnClickedNotification += OpenNotificationChat;
+        isInitialized.Set(mainChatNotificationView.gameObject.transform);
     }
 
     private void HandleMessageAdded(ChatMessage message)
@@ -34,24 +37,23 @@ public class ChatNotificationController : IHUD
         {
             var profile = ExtractRecipient(message);
             if (profile == null) return;
-            view.AddNewChatNotification(message, profile.userName, profile.face256SnapshotURL);
+            mainChatNotificationView.AddNewChatNotification(message, profile.userName, profile.face256SnapshotURL);
         }
         else
         {
-            view.AddNewChatNotification(message);
+            mainChatNotificationView.AddNewChatNotification(message);
         }
-        isInitialized.Set(view.gameObject.transform);
     }
 
     private void OpenNotificationChat(string targetId)
     {
         if (targetId == null) return;
 
-        SetVisibility(false);
-        if (targetId == "#nearby")
-            HUDController.i.taskbarHud.OpenPublicChatChannel("#nearby", true);
-        else
-            HUDController.i.taskbarHud.OpenPrivateChat(targetId);
+        OnOpenNotificationChat?.Invoke(targetId);
+        //if (targetId == "#nearby")
+        //HUDController.i.taskbarHud.OpenPublicChatChannel("#nearby", true);
+        //else
+        //HUDController.i.taskbarHud.OpenPrivateChat(targetId);
     }
 
     private UserProfile ExtractRecipient(ChatMessage message) =>
@@ -60,14 +62,14 @@ public class ChatNotificationController : IHUD
     public void SetVisibility(bool visible)
     {
         if (visible)
-            view.Show();
+            mainChatNotificationView.Show();
         else
-            view.Hide();
+            mainChatNotificationView.Hide();
     }
 
     public void Dispose()
     {
         chatController.OnAddMessage -= HandleMessageAdded;
-        view.OnClickedNotification -= OpenNotificationChat;
+        mainChatNotificationView.OnClickedNotification -= OpenNotificationChat;
     }
 }

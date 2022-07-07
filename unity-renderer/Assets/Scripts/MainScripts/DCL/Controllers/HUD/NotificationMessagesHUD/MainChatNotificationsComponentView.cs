@@ -12,6 +12,8 @@ public class MainChatNotificationsComponentView : BaseComponentView
     [SerializeField] RectTransform chatEntriesContainer;
     [SerializeField] GameObject chatNotification;
 
+    public ChatNotificationController controller;
+
     private const string NOTIFICATION_POOL_NAME_PREFIX = "NotificationEntriesPool_";
     private const int MAX_NOTIFICATION_ENTRIES = 30;
 
@@ -23,6 +25,11 @@ public class MainChatNotificationsComponentView : BaseComponentView
     public static MainChatNotificationsComponentView Create()
     {
         return Instantiate(Resources.Load<MainChatNotificationsComponentView>("SocialBarV1/ChatNotificationHUD"));
+    }
+
+    public void Initialize(ChatNotificationController chatController)
+    {
+        controller = chatController;
     }
 
     public void Show()
