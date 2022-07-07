@@ -50,11 +50,9 @@ namespace DCL
         protected override void OnAfterLoadOrReuse()
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
-            
             foreach (Renderer r in asset.renderers)
             {
-                if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && 
-                    r.transform.GetComponentInParent<CharacterController>() == null)
+                if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE)
                 {
                     MaterialTransitionController matTransition = r.gameObject.AddComponent<MaterialTransitionController>();
                     matTransition.OnDidFinishLoading(r.sharedMaterial);

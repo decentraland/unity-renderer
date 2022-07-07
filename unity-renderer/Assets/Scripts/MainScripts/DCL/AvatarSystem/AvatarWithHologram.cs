@@ -58,36 +58,46 @@ namespace AvatarSystem
 
             try
             {
+                Debug.Log("A");
                 WearableItem bodyshape = null;
                 WearableItem eyes = null;
                 WearableItem eyebrows = null;
                 WearableItem mouth = null;
                 List<WearableItem> wearables = null;
                 List<WearableItem> emotes = null;
-
+                Debug.Log("B");
                 baseAvatar.Initialize();
+                Debug.Log("C");
                 animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
+                Debug.Log("D");
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
+                Debug.Log("E");
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
                 }
+                Debug.Log("F");
                 await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, baseAvatar.GetMainRenderer(), linkedCt);
-
+                Debug.Log("G");
                 //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
-                
+                Debug.Log("H");
                 emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
+                Debug.Log("I");
                 gpuSkinning.Prepare(loader.combinedRenderer);
+                Debug.Log("J");
                 gpuSkinningThrottler.Bind(gpuSkinning);
-
+                Debug.Log("K");
                 visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers);
+                Debug.Log("L");
                 visibility.RemoveGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
-
+                Debug.Log("M");
                 lod.Bind(gpuSkinning.renderer);
+                Debug.Log("N");
                 gpuSkinningThrottler.Start();
-
+                Debug.Log("O");
                 status = IAvatar.Status.Loaded; 
+                Debug.Log("P");
                 await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), lodLevel <= 1, linkedCt);
             }
             catch (OperationCanceledException)
