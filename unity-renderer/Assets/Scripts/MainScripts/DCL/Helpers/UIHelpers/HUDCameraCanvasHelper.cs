@@ -24,8 +24,7 @@ public class HUDCameraCanvasHelper : IDisposable
     internal void UpdateCanvas(Camera newCamera, Camera oldCamera)
     {
         canvas.renderMode = newCamera == null ? RenderMode.ScreenSpaceOverlay : RenderMode.ScreenSpaceCamera;
-        if (newCamera != null)
-            canvas.worldCamera = newCamera;
+        canvas.worldCamera = newCamera;
     }
 
     public void Dispose() { hudCameraVariable.OnChange -= UpdateCanvas; }

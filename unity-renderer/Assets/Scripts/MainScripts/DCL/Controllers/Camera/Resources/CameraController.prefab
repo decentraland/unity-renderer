@@ -1840,6 +1840,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 3202392186591585866}
+  hudsCamera: {fileID: 6936408694004738075}
   thirdPersonCamera: {fileID: 1128386904}
   cameraBrain: {fileID: 682333195972692980}
   cameraModes:
