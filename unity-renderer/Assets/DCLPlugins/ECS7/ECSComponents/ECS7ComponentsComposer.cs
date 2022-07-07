@@ -20,6 +20,11 @@ namespace DCL.ECSComponents
         private readonly OnPointerDownRegister pointerDownRegister;
         private readonly OnPointerUpRegister pointerUpRegister;
         private readonly AnimatorRegister animatorRegister;
+        private readonly CameraModeAreaRegister cameraModeAreaRegister;
+        
+        // Those components are only here to serialize over the wire, we don't need a handler for these
+        private readonly OnPointerDownResultRegister pointerDownResultRegister;
+        private readonly OnPointerUpResultRegister pointerUpResultRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
@@ -36,6 +41,11 @@ namespace DCL.ECSComponents
             pointerDownRegister = new OnPointerDownRegister(ComponentID.ON_POINTER_DOWN, componentsFactory, componentsWriter);
             pointerUpRegister = new OnPointerUpRegister(ComponentID.ON_POINTER_UP, componentsFactory, componentsWriter);
             animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
+            cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
+            
+            // Components without a handler
+            pointerDownResultRegister = new OnPointerDownResultRegister(ComponentID.ON_POINTER_DOWN_RESULT, componentsFactory, componentsWriter);
+            pointerUpResultRegister = new OnPointerUpResultRegister(ComponentID.ON_POINTER_UP_RESULT, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -53,6 +63,11 @@ namespace DCL.ECSComponents
             animatorRegister.Dispose();
             pointerDownRegister.Dispose();
             pointerUpRegister.Dispose();
+            cameraModeAreaRegister.Dispose();
+            
+            // Components without a handler
+            pointerDownResultRegister.Dispose();
+            pointerUpResultRegister.Dispose();
         }
     }
 }

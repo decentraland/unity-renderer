@@ -40,6 +40,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private bool isLayoutDirty;
     private bool isSortingDirty;
 
+    protected bool IsFadeoutModeEnabled => this.model.enableFadeoutMode;
+
     public event Action<string> OnMessageUpdated;
 
     public event Action OnShowMenu
@@ -111,6 +113,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
         inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str));
         ChatEntryFactory ??= defaultChatEntryFactory;
+        this.model.enableFadeoutMode = true;
     }
     
     public override void OnEnable()
@@ -155,7 +158,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             FocusInputField();
         SetInputFieldText(model.inputFieldText);
         SetFadeoutMode(model.enableFadeoutMode);
-        if (model.isPreviewMode)
+        if (model.isInPreviewMode)
             ActivatePreview();
         else
             DeactivatePreview();
@@ -181,7 +184,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public void ActivatePreview()
     {
-        model.isPreviewMode = true;
+        model.isInPreviewMode = true;
         
         for (var i = 0; i < entries.Count; i++)
         {
@@ -189,15 +192,22 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             entry.ActivatePreview();
         }
     }
-
     public void DeactivatePreview()
     {
-        model.isPreviewMode = false;
+        model.isInPreviewMode = false;
         
         for (var i = 0; i < entries.Count; i++)
         {
             var entry = entries[i];
             entry.DeactivatePreview();
+        }
+    }
+    public void FadeOutMessages()
+    {
+        for (var i = 0; i < entries.Count; i++)
+        {
+            var entry = entries[i];
+            entry.FadeOut();
         }
     }
 
@@ -230,18 +240,13 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         var chatEntry = ChatEntryFactory.Create(model);
         chatEntry.transform.SetParent(chatEntriesContainer, false);
 
-        if (this.model.enableFadeoutMode && IsEntryVisible(chatEntry))
+        if(this.model.enableFadeoutMode)
             chatEntry.SetFadeout(true);
         else
             chatEntry.SetFadeout(false);
 
         chatEntry.Populate(model);
         
-        if (this.model.isPreviewMode)
-            chatEntry.ActivatePreviewInstantly();
-        else
-            chatEntry.DeactivatePreviewInstantly();
-
         if (model.messageType == ChatMessage.Type.PUBLIC
             || model.messageType == ChatMessage.Type.PRIVATE)
             chatEntry.OnPressRightButton += OnOpenContextMenu;
@@ -252,6 +257,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
 
         entries.Add(chatEntry);
+        
+        if (this.model.isInPreviewMode)
+            chatEntry.ActivatePreviewInstantly();
 
         SortEntries();
         UpdateLayout();
@@ -372,7 +380,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [Serializable]
     private struct Model
     {
-        public bool isPreviewMode;
+        public bool isInPreviewMode;
         public bool isInputFieldFocused;
         public string inputFieldText;
         public bool enableFadeoutMode;

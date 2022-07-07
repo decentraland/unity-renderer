@@ -42,14 +42,17 @@ namespace Test.AvatarSystem
             Assert.AreEqual(baseAvatar.GetArmatureContainer(), armatureContainer);
         }
 
-        [Test]
-        public void StartRevealerFadeout()
+        [UnityTest]
+        public IEnumerator StartRevealerFadeout() => UniTask.ToCoroutine(async () =>
         {
             MeshRenderer testMesh = new MeshRenderer();
-            baseAvatar.FadeOut(testMesh, false);
+            CancellationToken cancellationToken = CancellationToken.None;
+            
+            await baseAvatar.FadeOut(testMesh, false, cancellationToken);
+            
             baseAvatarRevealer.Received().AddTarget(testMesh);
-            baseAvatarRevealer.Received().StartAvatarRevealAnimation(false);
-        }
+            baseAvatarRevealer.Received().StartAvatarRevealAnimation(false, cancellationToken);
+        });
 
     }
 }
