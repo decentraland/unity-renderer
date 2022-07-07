@@ -4,7 +4,6 @@ using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSRuntime;
-using DCL.Interface;
 using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
@@ -100,7 +99,7 @@ namespace Tests
             CRDTMessage message0 = new CRDTMessage()
             {
                 key = CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID_0),
-                timestamp =0,
+                timestamp = 0,
                 data = componentData0
             };
             CRDTMessage message1 = new CRDTMessage()

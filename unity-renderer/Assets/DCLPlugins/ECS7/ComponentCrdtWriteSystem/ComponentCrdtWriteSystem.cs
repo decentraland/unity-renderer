@@ -6,8 +6,8 @@ using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSRuntime;
-using DCL.Interface;
 using KernelCommunication;
+using RPC;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
