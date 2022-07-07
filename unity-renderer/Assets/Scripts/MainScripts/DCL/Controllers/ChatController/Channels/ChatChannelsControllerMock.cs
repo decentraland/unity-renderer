@@ -246,6 +246,8 @@ namespace DCL.Chat.Channels
 
         public void GetUnseenMessagesByUser() => controller.GetUnseenMessagesByUser();
 
+        public int GetAllocatedUnseenMessages(string userId) => controller.GetAllocatedUnseenMessages(userId);
+
         private async UniTask MuteFakeChannel(string channelId)
         {
             await UniTask.Delay(Random.Range(40, 1000));
