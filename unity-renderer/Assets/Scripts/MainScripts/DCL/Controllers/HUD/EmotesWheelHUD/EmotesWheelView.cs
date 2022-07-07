@@ -28,6 +28,7 @@ namespace DCL.EmotesWheel
         public event Action OnClose;
         public event Action OnCustomizeClicked;
 
+        [SerializeField] internal Canvas canvas;
         [SerializeField] internal Sprite nonAssignedEmoteSprite;
         [SerializeField] internal EmoteWheelSlot[] emoteButtons;
         [SerializeField] internal Button_OnPointerDown[] closeButtons;
@@ -36,6 +37,8 @@ namespace DCL.EmotesWheel
         [SerializeField] internal List<RarityColor> rarityColors;
         [SerializeField] internal GameObject customizeTitle;
 
+        private HUDCameraCanvasHelper hudCameraCanvasHelper;
+        
         public static EmotesWheelView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesWheelView>(); }
 
         private void Awake()
@@ -51,6 +54,7 @@ namespace DCL.EmotesWheel
             });
 
             selectedEmoteName.text = string.Empty;
+            hudCameraCanvasHelper = new HUDCameraCanvasHelper(canvas, DataStore.i.camera.hudsCamera);
         }
 
         public void SetVisiblity(bool visible)
@@ -115,7 +119,11 @@ namespace DCL.EmotesWheel
 
         private void Close() { OnClose?.Invoke(); }
 
-        public void OnDestroy() { CleanUp(); }
+        public void OnDestroy()
+        {
+            CleanUp();
+            hudCameraCanvasHelper?.Dispose();
+        }
 
         public void CleanUp()
         {

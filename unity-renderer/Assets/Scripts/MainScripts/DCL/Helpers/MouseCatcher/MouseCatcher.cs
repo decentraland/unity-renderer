@@ -21,6 +21,7 @@ namespace DCL
     public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler, IPointerUpHandler
     {
         [SerializeField] private InputAction_Trigger unlockInputAction;
+        [SerializeField] private Canvas canvas;
 
         public bool isLocked => Utils.IsCursorLocked;
         bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
@@ -32,13 +33,17 @@ namespace DCL
         //Default OnPointerEvent
         public LayerMask OnPointerDownTarget = 1 << 9;
 
+        private HUDCameraCanvasHelper hudCameraCanvasHelper;
+        
         private void Start()
         {
+            hudCameraCanvasHelper = new HUDCameraCanvasHelper(canvas, DataStore.i.camera.hudsCamera);
             unlockInputAction.OnTriggered += HandleUnlockInput;
         }
 
         private void OnDestroy()
         {
+            hudCameraCanvasHelper?.Dispose();
             unlockInputAction.OnTriggered -= HandleUnlockInput;
         }
 
