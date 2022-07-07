@@ -1,9 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
+using DCL.ECSRuntime;
+using DCL.Interface;
 using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
@@ -27,6 +28,7 @@ namespace Tests
             IUpdateEventHandler updateHandler = Substitute.For<IUpdateEventHandler>();
 
             crdtExecutor = Substitute.For<ICRDTExecutor>();
+            crdtExecutor.crdtProtocol.Returns(new CRDTProtocol());
 
             scene.crdtExecutor.Returns(crdtExecutor);
             worldState.loadedScenes.Returns(new Dictionary<string, IParcelScene>() { { SCENE_ID, scene } });
@@ -41,7 +43,7 @@ namespace Tests
             const int COMPONENT_ID = 2134;
 
             byte[] componentData = new byte[] { 1, 0, 0, 1 };
-            long timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            long timeStamp = 0;
 
             crdtExecutor.WhenForAnyArgs(x => x.Execute(Arg.Any<CRDTMessage>()))
                         .Do(info =>
@@ -52,7 +54,7 @@ namespace Tests
                             Assert.IsTrue(AreEqual(componentData, (byte[])crdtMessage.data));
                         });
 
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, ECSComponentWriteType.SEND_TO_LOCAL);
             crdtExecutor.Received(1).Execute(Arg.Any<CRDTMessage>());
         }
 
@@ -67,12 +69,12 @@ namespace Tests
             CRDTMessage message = new CRDTMessage()
             {
                 key = CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID),
-                timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                timestamp = 0,
                 data = componentData
             };
 
             // write component
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, ECSComponentWriteType.SEND_TO_SCENE);
 
             // process message so it is serialized and sent to WebInterface
             crdtWriteSystem.ProcessMessages();
@@ -98,19 +100,19 @@ namespace Tests
             CRDTMessage message0 = new CRDTMessage()
             {
                 key = CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID_0),
-                timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                timestamp =0,
                 data = componentData0
             };
             CRDTMessage message1 = new CRDTMessage()
             {
                 key = CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID_1),
-                timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                timestamp = 0,
                 data = componentData1
             };
 
             // write components
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID_0, componentData0);
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID_1, componentData1);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID_0, componentData0, ECSComponentWriteType.SEND_TO_SCENE);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID_1, componentData1, ECSComponentWriteType.SEND_TO_SCENE);
             Assert.AreEqual(2, crdtWriteSystem.queuedMessages[SCENE_ID].Count);
 
             // get expected messages
@@ -144,19 +146,19 @@ namespace Tests
             CRDTMessage message0 = new CRDTMessage()
             {
                 key = CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID_0),
-                timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                timestamp = 0,
                 data = componentData0
             };
             CRDTMessage message1 = new CRDTMessage()
             {
                 key = CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID_1),
-                timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                timestamp = 0,
                 data = componentData1
             };
 
             // write components
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID_0, componentData0);
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID_1, componentData1);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID_0, componentData0, ECSComponentWriteType.SEND_TO_SCENE);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID_1, componentData1, ECSComponentWriteType.SEND_TO_SCENE);
             Assert.AreEqual(2, crdtWriteSystem.queuedMessages[SCENE_ID].Count);
 
             // get expected messages
@@ -196,12 +198,12 @@ namespace Tests
             CRDTMessage message = new CRDTMessage()
             {
                 key = CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID),
-                timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                timestamp = 0,
                 data = componentData
             };
 
             // write component
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, ECSComponentWriteType.SEND_TO_SCENE);
             Assert.AreEqual(1, crdtWriteSystem.queuedMessages.Count);
 
             byte[] expectedBinaryMessage = SerializeCRDTMessage(message);
