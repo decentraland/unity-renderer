@@ -45,24 +45,35 @@ namespace AvatarSystem
             List<IWearableLoader> toCleanUp = new List<IWearableLoader>();
             try
             {
+                Debug.Log("AA");
                 status = ILoader.Status.Loading;
+                Debug.Log("AB");
                 await LoadBodyshape(settings, bodyshape, eyes, eyebrows, mouth, toCleanUp, ct);
+                Debug.Log("AC");
                 await LoadWearables(wearables, settings, toCleanUp, ct);
+                Debug.Log("AD");
                 SkinnedMeshRenderer skinnedContainer = bonesContainer == null ? bodyshapeLoader.upperBodyRenderer : bonesContainer;
+                Debug.Log("AF");
                 // Update Status accordingly
                 status = ComposeStatus(loaders);
+                Debug.Log("AG");
+
                 if (status == ILoader.Status.Failed_Major)
                     throw new Exception($"Couldnt load (nor fallback) wearables with required category: {string.Join(", ", ConstructRequiredFailedWearablesList(loaders.Values))}");
+                Debug.Log("AH");
 
                 AvatarSystemUtils.CopyBones(skinnedContainer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
+                Debug.Log("AI");
 
                 if (bodyshapeLoader.rendereable != null)
                     AvatarSystemUtils.CopyBones(skinnedContainer, bodyshapeLoader.rendereable.renderers.OfType<SkinnedMeshRenderer>());
-
+                Debug.Log("AJ");
                 (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(settings.bodyshapeId, wearables);
-
+                Debug.Log("AK");
                 combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, skinnedContainer, ct);
+                Debug.Log("AL");
                 facialFeaturesRenderers = new List<Renderer>();
+                Debug.Log("AM");
                 if (headVisible)
                 {
                     if (eyes != null)
@@ -77,6 +88,7 @@ namespace AvatarSystem
                     if(bodyshapeLoader != null)
                         bodyshapeLoader.DisableFacialRenderers();
                 }
+                Debug.Log("AN");
             }
             catch (OperationCanceledException)
             {
@@ -109,32 +121,56 @@ namespace AvatarSystem
 
         private async UniTask LoadBodyshape(AvatarSettings settings, WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<IWearableLoader> loadersToCleanUp, CancellationToken ct)
         {
+            Debug.Log("BA");
             //We get a new loader if any of the subparts of the bodyshape changes
             if (!IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
             {
                 loadersToCleanUp.Add(bodyshapeLoader);
+                Debug.Log("BC");
+
                 bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
+                Debug.Log("BD");
+
             }
+            Debug.Log("BE");
 
             await bodyshapeLoader.Load(container, settings, ct);
+            Debug.Log("BF");
 
             if (bodyshapeLoader.status == IWearableLoader.Status.Failed)
             {
                 status = ILoader.Status.Failed_Major;
                 throw new Exception($"Couldnt load bodyshape");
             }
+            Debug.Log("BG");
+
         }
 
         private async UniTask LoadWearables(List<WearableItem> wearables, AvatarSettings settings, List<IWearableLoader> loadersToCleanUp, CancellationToken ct)
         {
+            Debug.Log("CC");
+
             (List<IWearableLoader> notReusableLoaders, List<IWearableLoader> newLoaders) = GetNewLoaders(wearables, loaders, wearableLoaderFactory);
+            Debug.Log("CD");
+
             loadersToCleanUp.AddRange(notReusableLoaders);
+            Debug.Log("CE");
+
             loaders.Clear();
+            Debug.Log("CF");
+
             for (int i = 0; i < newLoaders.Count; i++)
             {
+                Debug.Log("CG");
+
                 IWearableLoader loader = newLoaders[i];
+                Debug.Log("CH");
+
                 loaders.Add(loader.wearable.data.category, loader);
+                Debug.Log("CI");
+
             }
+            Debug.Log("CJ");
 
             await UniTask.WhenAll(loaders.Values.Select(x => x.Load(container, settings, ct)));
         }
