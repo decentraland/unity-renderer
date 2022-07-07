@@ -50,10 +50,6 @@ public class ChatNotificationController : IHUD
         if (targetId == null) return;
 
         OnOpenNotificationChat?.Invoke(targetId);
-        //if (targetId == "#nearby")
-        //HUDController.i.taskbarHud.OpenPublicChatChannel("#nearby", true);
-        //else
-        //HUDController.i.taskbarHud.OpenPrivateChat(targetId);
     }
 
     private UserProfile ExtractRecipient(ChatMessage message) =>
