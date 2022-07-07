@@ -223,10 +223,10 @@ public class WorldChatWindowComponentViewShould
     [UnityTest]
     public IEnumerator TriggerOpenPublicChannel()
     {
-        const string expectedChannelId = "general";
+        const string expectedChannelId = "nearby";
         var channelId = "";
         view.OnOpenPublicChat += s => channelId = s;
-        GivenPublicChannel(expectedChannelId, "nearby");
+        GivenPublicChannel(expectedChannelId, expectedChannelId);
 
         yield return null;
 

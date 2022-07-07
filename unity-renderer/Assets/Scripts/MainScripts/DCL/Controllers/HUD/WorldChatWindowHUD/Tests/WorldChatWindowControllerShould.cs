@@ -40,7 +40,7 @@ public class WorldChatWindowControllerShould
         controller.Initialize(view);
 
         view.Received(1).SetPublicChat(Arg.Is<PublicChatModel>(p => p.name == "nearby"
-                                                                              && p.channelId == "general"));
+                                                                              && p.channelId == "nearby"));
     }
 
     [Test]
@@ -271,7 +271,7 @@ public class WorldChatWindowControllerShould
         view.OnSearchChannelRequested += Raise.Event<Action<string>>("near");
         
         view.Received(1).Filter(Arg.Is<Dictionary<string, PrivateChatModel>>(d => d.ContainsKey("nearfr") && d.Count == 1),
-            Arg.Is<Dictionary<string, PublicChatModel>>(d => d.ContainsKey("general") && d.Count == 1));
+            Arg.Is<Dictionary<string, PublicChatModel>>(d => d.ContainsKey("nearby") && d.Count == 1));
     }
 
     [Test]
