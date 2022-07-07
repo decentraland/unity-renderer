@@ -99,6 +99,7 @@ namespace AvatarSystem
                 status = IAvatar.Status.Loaded; 
                 Debug.Log("P");
                 await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), lodLevel <= 1, linkedCt);
+                
             }
             catch (OperationCanceledException)
             {
