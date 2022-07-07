@@ -18,7 +18,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public event Action OnFriendListDisplayed;
     public event Action OnRequestListDisplayed;
 
-    public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService,
+    public void Initialize(IChatController chatController,
         IFriendsController friendsController, ISocialAnalytics socialAnalytics)
     {
     }

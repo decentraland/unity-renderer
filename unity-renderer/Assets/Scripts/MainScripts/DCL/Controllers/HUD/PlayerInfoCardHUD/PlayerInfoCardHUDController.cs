@@ -92,51 +92,24 @@ public class PlayerInfoCardHUDController : IHUD
         });
 
         friendsController.RequestFriendship(currentPlayerId);
-
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
-        {
-            userId = currentPlayerId, action = FriendshipAction.REQUESTED_TO
-        });
-
         socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
     }
 
     private void CancelInvitation()
     {
-        // Add fake action to avoid waiting for kernel
         friendsController.CancelRequest(currentPlayerId);
-
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = currentPlayerId, action = FriendshipAction.CANCELLED
-        });
-
         socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
     private void AcceptFriendRequest()
     {
-        // Add fake action to avoid waiting for kernel
         friendsController.AcceptFriendship(currentPlayerId);
-
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = currentPlayerId, action = FriendshipAction.APPROVED
-        });
-
         socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
     private void RejectFriendRequest()
     {
-        // Add fake action to avoid waiting for kernel
         friendsController.RejectFriendship(currentPlayerId);
-
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = currentPlayerId, action = FriendshipAction.REJECTED
-        });
-
         socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 

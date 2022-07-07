@@ -95,11 +95,11 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         UpdateLayout();
     }
 
-    public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService)
+    public void Initialize(IChatController chatController)
     {
-        directChatList.Initialize(chatController, lastReadMessagesService);
-        publicChannelList.Initialize(chatController, lastReadMessagesService);
-        searchResultsList.Initialize(chatController, lastReadMessagesService);
+        directChatList.Initialize(chatController);
+        publicChannelList.Initialize(chatController);
+        searchResultsList.Initialize(chatController);
     }
 
     public override void Update()

@@ -535,11 +535,18 @@ namespace DCL.Interface
             public float voiceChatVolume;
             public int voiceChatAllowCategory;
         }
+        
+        [Serializable]
+        public class UserRealmPayload
+        {
+            public string serverName;
+            public string layer;
+        }
 
         [System.Serializable]
         public class JumpInPayload
         {
-            public FriendsController.UserStatus.Realm realm = new FriendsController.UserStatus.Realm();
+            public UserRealmPayload realm = new UserRealmPayload();
             public Vector2 gridPosition;
         }
 
@@ -700,6 +707,41 @@ namespace DCL.Interface
             public string userId;
             public int limit;
             public long from;
+        }
+        
+        [Serializable]
+        public class FriendshipUpdateStatusMessage
+        {
+            public string userId;
+            public FriendshipAction action;
+        }
+        
+        public enum FriendshipAction
+        {
+            NONE,
+            APPROVED,
+            REJECTED,
+            CANCELLED,
+            REQUESTED_FROM,
+            REQUESTED_TO,
+            DELETED
+        }
+
+        [Serializable]
+        private class GetFriendsPayload
+        {
+            public string userNameOrId;
+            public int limit;
+            public int skip;
+        }
+        
+        [Serializable]
+        private class GetFriendRequestsPayload
+        {
+            public int sentLimit;
+            public long sentFrom;
+            public int receivedLimit;
+            public long receivedFrom;
         }
 
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
@@ -1396,7 +1438,7 @@ namespace DCL.Interface
             SendMessage("SendChatMessage", sendChatMessageEvent);
         }
 
-        public static void UpdateFriendshipStatus(FriendsController.FriendshipUpdateStatusMessage message) { SendMessage("UpdateFriendshipStatus", message); }
+        public static void UpdateFriendshipStatus(FriendshipUpdateStatusMessage message) { SendMessage("UpdateFriendshipStatus", message); }
 
         public static void ScenesLoadingFeedback(LoadingFeedbackMessage message) { SendMessage("ScenesLoadingFeedback", message); }
 
@@ -1610,6 +1652,35 @@ namespace DCL.Interface
         public static void GetUnseenMessagesByUser()
         {
             SendMessage("GetUnseenMessagesByUser");
+        }
+
+        public static void GetFriends(int limit, int skip)
+        {
+            SendMessage("GetFriends", new GetFriendsPayload
+            {
+                limit = limit,
+                skip = skip
+            });
+        }
+
+        public static void GetFriends(string usernameOrId, int limit)
+        {
+            SendMessage("GetFriends", new GetFriendsPayload
+            {
+                userNameOrId = usernameOrId,
+                limit = limit
+            });
+        }
+
+        public static void GetFriendRequests(int sentLimit, long sentFromTimestamp, int receivedLimit, long receivedFromTimestamp)
+        {
+            SendMessage("GetFriendRequests", new GetFriendRequestsPayload
+            {
+                receivedFrom = receivedFromTimestamp,
+                receivedLimit = receivedLimit,
+                sentFrom = sentFromTimestamp,
+                sentLimit = sentLimit
+            });
         }
     }
 }

@@ -22,13 +22,13 @@ public class JumpInButtonShould : IntegrationTestSuite_Legacy
         Vector2 testCoords = new Vector2(5, 20);
 
         friendsController = new FriendsController_Mock();
-        friendsController.AddFriend(new FriendsController.UserStatus
+        friendsController.AddFriend(new UserStatus
         {
             userId = TEST_USER_ID,
             friendshipStatus = FriendshipStatus.FRIEND,
             position = testCoords,
             presence = PresenceStatus.ONLINE,
-            realm = new FriendsController.UserStatus.Realm
+            realm = new UserStatus.Realm
             {
                 serverName = TEST_SERVER_NAME,
                 layer = TEST_LAYER_NAME
@@ -59,13 +59,13 @@ public class JumpInButtonShould : IntegrationTestSuite_Legacy
     {
         Vector2 newTestCoords = new Vector2(10, 20);
 
-        friendsController.RaiseUpdateUserStatus(TEST_USER_ID, new FriendsController.UserStatus
+        friendsController.RaiseUpdateUserStatus(TEST_USER_ID, new UserStatus
         {
             userId = TEST_USER_ID,
             friendshipStatus = FriendshipStatus.FRIEND,
             position = newTestCoords,
             presence = PresenceStatus.ONLINE,
-            realm = new FriendsController.UserStatus.Realm
+            realm = new UserStatus.Realm
             {
                 serverName = TEST_SERVER_NAME,
                 layer = TEST_LAYER_NAME
@@ -86,13 +86,13 @@ public class JumpInButtonShould : IntegrationTestSuite_Legacy
         string newRealmServerName = "test server name 2";
         string newRealmLayerName = "test layer name 2";
 
-        friendsController.RaiseUpdateUserStatus(TEST_USER_ID, new FriendsController.UserStatus
+        friendsController.RaiseUpdateUserStatus(TEST_USER_ID, new UserStatus
         {
             userId = TEST_USER_ID,
             friendshipStatus = FriendshipStatus.FRIEND,
             position = newTestCoords,
             presence = PresenceStatus.ONLINE,
-            realm = new FriendsController.UserStatus.Realm
+            realm = new UserStatus.Realm
             {
                 serverName = newRealmServerName,
                 layer = newRealmLayerName
@@ -111,13 +111,13 @@ public class JumpInButtonShould : IntegrationTestSuite_Legacy
     {
         Vector2 newTestCoords = new Vector2(10, 20);
 
-        friendsController.RaiseUpdateUserStatus(TEST_USER_ID, new FriendsController.UserStatus
+        friendsController.RaiseUpdateUserStatus(TEST_USER_ID, new UserStatus
         {
             userId = TEST_USER_ID,
             friendshipStatus = FriendshipStatus.FRIEND,
             position = newTestCoords,
             presence = PresenceStatus.OFFLINE,
-            realm = new FriendsController.UserStatus.Realm
+            realm = new UserStatus.Realm
             {
                 serverName = TEST_SERVER_NAME,
                 layer = TEST_LAYER_NAME

@@ -68,6 +68,8 @@ public class LazyLoadingChatControllerMock : IChatController
     
     public void GetUnseenMessagesByUser() => SimulateDelayedResponseFor_TotalUnseenMessagesByUser().Forget();
 
+    public int GetAllocatedUnseenMessages(string userId) => Random.Range(0, 10);
+
     public void JoinOrCreateChannel(string channelId) => controller.JoinOrCreateChannel(channelId);
 
     public void LeaveChannel(string channelId) => controller.LeaveChannel(channelId);
@@ -101,13 +103,13 @@ public class LazyLoadingChatControllerMock : IChatController
                     userId,
                     $"fake message {i + 1} from user {userId}",
                     DateTimeOffset.FromUnixTimeMilliseconds(fromTimestamp).AddMinutes(-10 * (i + 1)).ToUnixTimeMilliseconds(),
-                    UnityEngine.Random.Range(0, 2) != 0));
+                    Random.Range(0, 2) != 0));
         }
     }
 
     private string CreateMockedDataFor_AddMessageToChatWindowPayload(string userId, string messageBody, long fromTimestamp, bool isOwnMessage)
     {
-        var fakeMessage = new ChatMessage()
+        var fakeMessage = new ChatMessage
         {
             body = messageBody,
             sender = isOwnMessage ? UserProfile.GetOwnUserProfile().userId : userId,
@@ -126,7 +128,7 @@ public class LazyLoadingChatControllerMock : IChatController
 
         for (int i = 0; i < MAX_AMOUNT_OF_FAKE_USERS_IN_CATALOG; i++)
         {
-            var model = new UserProfileModel()
+            var model = new UserProfileModel
             {
                 userId = $"fakeuser{i + 1}",
                 name = $"Fake User {i + 1}",

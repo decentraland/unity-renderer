@@ -18,17 +18,17 @@ public class WorldChatWindowController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
     private readonly IChatController chatController;
-    private readonly ILastReadMessagesService lastReadMessagesService;
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
+    private int hiddenDMs;
     private long olderDMTimestampRequested = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     private string currentSearch = "";
-    private int hiddenDMs;
     private bool isRequestingChannels;
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
     internal bool areDMsRequestedByFirstTime;
+    internal bool isRequestingFriendsWithDMs;
     internal bool isRequestingDMs;
 
     public IWorldChatWindowView View => view;
@@ -41,19 +41,17 @@ public class WorldChatWindowController : IHUD
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
-        IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService)
+        IChatController chatController)
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Initialize(IWorldChatWindowView view)
     {
         this.view = view;
-        view.Initialize(chatController, lastReadMessagesService);
+        view.Initialize(chatController);
         view.OnClose += HandleViewCloseRequest;
         view.OnOpenPrivateChat += OpenPrivateChat;
         view.OnOpenPublicChat += OpenPublicChat;
@@ -120,7 +118,7 @@ public class WorldChatWindowController : IHUD
                 RequestFriendsWithDirectMessages(
                     USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                     DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-
+                RequestUnreadMessages();
                 DisplayMoreJoinedChannels();
             }
         }
@@ -144,7 +142,7 @@ public class WorldChatWindowController : IHUD
             RequestFriendsWithDirectMessages(
                 USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-            
+            RequestUnreadMessages();
             DisplayMoreJoinedChannels();
         }
         else
@@ -163,7 +161,7 @@ public class WorldChatWindowController : IHUD
 
     private void HandleViewCloseRequest() => SetVisibility(false);
     
-    private void HandleUserStatusChanged(string userId, FriendsController.UserStatus status)
+    private void HandleUserStatusChanged(string userId, UserStatus status)
     {
         if (!recipientsFromPrivateChats.ContainsKey(userId)) return;
         if (!lastPrivateMessages.ContainsKey(userId)) return;
@@ -396,4 +394,6 @@ public class WorldChatWindowController : IHUD
         publicChannels.Remove(channelId);
         view.RemovePublicChannel(channelId);
     }
+    
+    private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();
 }

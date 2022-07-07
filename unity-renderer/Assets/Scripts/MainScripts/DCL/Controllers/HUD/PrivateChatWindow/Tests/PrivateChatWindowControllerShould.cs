@@ -1,4 +1,5 @@
 using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
@@ -23,7 +24,6 @@ public class PrivateChatWindowControllerShould
     private ISocialAnalytics socialAnalytics;
     private IChatController chatController;
     private IFriendsController friendsController;
-    private ILastReadMessagesService lastReadMessagesService;
     private IMouseCatcher mouseCatcher;
 
     [SetUp]
@@ -45,8 +45,6 @@ public class PrivateChatWindowControllerShould
         chatController.GetAllocatedEntries().ReturnsForAnyArgs(new List<ChatMessage>());
         chatController.GetPrivateAllocatedEntriesByUser(Arg.Any<string>()).ReturnsForAnyArgs(new List<ChatMessage>());
 
-        lastReadMessagesService = Substitute.For<ILastReadMessagesService>();
-
         mouseCatcher = Substitute.For<IMouseCatcher>();
         controller = new PrivateChatWindowController(
             new DataStore(),
@@ -54,7 +52,6 @@ public class PrivateChatWindowControllerShould
             chatController,
             friendsController,
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
-            lastReadMessagesService,
             socialAnalytics,
             mouseCatcher,
             ScriptableObject.CreateInstance<InputAction_Trigger>());
@@ -205,7 +202,7 @@ public class PrivateChatWindowControllerShould
         view.Received().Setup(Arg.Is<UserProfile>(u => u.userId == FRIEND_ID), true, false);
         view.Received(1).Show();
         Assert.IsTrue(isViewActive);
-        lastReadMessagesService.Received(1).MarkAllRead(FRIEND_ID);
+        chatController.Received(1).MarkMessagesAsSeen(FRIEND_ID);
     }
     
     [Test]
@@ -232,7 +229,7 @@ public class PrivateChatWindowControllerShould
         controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        controller.ActivatePreviewMode();
+        controller.ActivatePreview();
         
         view.Received(1).ActivatePreview();
         internalChatView.Received(1).ActivatePreview();
@@ -261,7 +258,7 @@ public class PrivateChatWindowControllerShould
         controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        controller.DeactivatePreviewMode();
+        controller.DeactivatePreview();
         
         view.Received(1).DeactivatePreview();
         internalChatView.Received(1).DeactivatePreview();
@@ -365,7 +362,7 @@ public class PrivateChatWindowControllerShould
             name = name
         });
         userProfileBridge.Get(friendId).Returns(testUserProfile);
-        friendsController.GetUserStatus(testUserProfile.userId).Returns(new FriendsController.UserStatus
+        friendsController.GetUserStatus(testUserProfile.userId).Returns(new UserStatus
         {
             presence = presence,
             friendshipStatus = FriendshipStatus.FRIEND,

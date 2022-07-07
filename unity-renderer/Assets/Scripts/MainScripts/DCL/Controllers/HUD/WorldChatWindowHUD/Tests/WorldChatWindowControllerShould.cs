@@ -30,8 +30,7 @@ public class WorldChatWindowControllerShould
         friendsController.IsInitialized.Returns(true);
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,
-            chatController,
-            Substitute.For<ILastReadMessagesService>());
+            chatController);
         view = Substitute.For<IWorldChatWindowView>();
     }
 
@@ -91,9 +90,9 @@ public class WorldChatWindowControllerShould
         });
         
         controller.Initialize(view);
-        friendsController.OnUpdateUserStatus += Raise.Event<Action<string, FriendsController.UserStatus>>(
+        friendsController.OnUpdateUserStatus += Raise.Event<Action<string, UserStatus>>(
             FRIEND_ID,
-            new FriendsController.UserStatus
+            new UserStatus
             {
                 userId = FRIEND_ID,
                 presence = PresenceStatus.ONLINE,
@@ -117,9 +116,9 @@ public class WorldChatWindowControllerShould
         });
         
         controller.Initialize(view);
-        friendsController.OnUpdateUserStatus += Raise.Event<Action<string, FriendsController.UserStatus>>(
+        friendsController.OnUpdateUserStatus += Raise.Event<Action<string, UserStatus>>(
             FRIEND_ID,
-            new FriendsController.UserStatus
+            new UserStatus
             {
                 userId = FRIEND_ID,
                 presence = PresenceStatus.ONLINE,
@@ -356,13 +355,35 @@ public class WorldChatWindowControllerShould
         chatController.Received(1).GetJoinedChannels(10, 0);
     }
 
+    [Test]
+    public void RequestUnreadMessagesWhenIsVisible()
+    {
+        controller.Initialize(view);
+        controller.SetVisibility(true);
+        
+        chatController.Received(1).GetUnseenMessagesByUser();
+    }
+
+    [Test]
+    public void RequestUnreadMessagesWhenFriendsInitializes()
+    {
+        controller.Initialize(view);
+        friendsController.IsInitialized.Returns(false);
+        controller.SetVisibility(true);
+        friendsController.IsInitialized.Returns(true);
+        view.IsActive.Returns(true);
+        friendsController.OnInitialized += Raise.Event<Action>();
+        
+        chatController.Received(1).GetUnseenMessagesByUser();
+    }
+
     private void GivenFriend(string friendId, PresenceStatus presence)
     {
         var friendProfile = ScriptableObject.CreateInstance<UserProfile>();
         friendProfile.UpdateData(new UserProfileModel {userId = friendId, name = friendId});
         userProfileBridge.Get(friendId).Returns(friendProfile);
         friendsController.IsFriend(friendId).Returns(true);
-        friendsController.GetUserStatus(friendId).Returns(new FriendsController.UserStatus
+        friendsController.GetUserStatus(friendId).Returns(new UserStatus
             {userId = friendId, presence = presence, friendshipStatus = FriendshipStatus.FRIEND});
     }
 }

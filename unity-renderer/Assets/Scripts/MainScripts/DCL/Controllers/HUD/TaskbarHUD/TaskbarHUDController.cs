@@ -192,7 +192,6 @@ public class TaskbarHUDController : IHUD
 
         if (anyInputFieldIsSelected) return;
 
-
         mouseCatcher.UnlockCursor();
 
         if (!friendsHud.View.IsActive())
@@ -246,7 +245,7 @@ public class TaskbarHUDController : IHUD
             if (openedWindow == publicChatWindow)
                 publicChatWindow.DeactivatePreview();
             else if (openedWindow == privateChatWindow)
-                privateChatWindow.DeactivatePreviewMode();
+                privateChatWindow.DeactivatePreview();
             else if (openedWindow == channelChatWindow)
                 channelChatWindow.DeactivatePreviewMode();
         }
@@ -255,7 +254,7 @@ public class TaskbarHUDController : IHUD
             if (chatToggleTargetWindow == publicChatWindow)
                 publicChatWindow.ActivatePreview();
             else if (chatToggleTargetWindow == privateChatWindow)
-                privateChatWindow.ActivatePreviewMode();
+                privateChatWindow.ActivatePreview();
             else if (chatToggleTargetWindow == channelChatWindow)
                 channelChatWindow.ActivatePreviewMode();
             else

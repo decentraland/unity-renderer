@@ -15,7 +15,7 @@ public interface IWorldChatWindowView
     int PrivateChannelsCount { get; }
     int PublicChannelsCount { get; }
 
-    void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService);
+    void Initialize(IChatController chatController);
     void Show();
     void Hide();
     void SetPrivateChat(PrivateChatModel model);

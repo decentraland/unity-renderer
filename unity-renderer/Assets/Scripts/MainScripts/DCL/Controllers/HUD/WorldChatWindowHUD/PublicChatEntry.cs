@@ -12,7 +12,6 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
     [SerializeField] internal string namePrefix = "#";
     
     private IChatController chatController;
-    private ILastReadMessagesService lastReadMessagesService;
 
     public PublicChatEntryModel Model => model;
 
@@ -29,11 +28,9 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
         openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
     }
 
-    public void Initialize(IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService)
+    public void Initialize(IChatController chatController)
     {
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Configure(BaseComponentModel newModel)
@@ -45,7 +42,7 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
     public override void RefreshControl()
     {
         nameLabel.text = $"{namePrefix}{model.name}";
-        unreadNotifications.Initialize(chatController, model.channelId, lastReadMessagesService);
+        unreadNotifications.Initialize(chatController, model.channelId);
     }
 
     [Serializable]

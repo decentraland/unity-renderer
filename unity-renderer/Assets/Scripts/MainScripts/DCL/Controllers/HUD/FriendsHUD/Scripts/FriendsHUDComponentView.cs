@@ -96,11 +96,10 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     }
     
     public void Initialize(IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics)
     {
-        friendsTab.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
+        friendsTab.Initialize(chatController, friendsController, socialAnalytics);
     }
 
     public override void Awake()

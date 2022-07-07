@@ -11,7 +11,7 @@ using Random = System.Random;
 public class ChatController : MonoBehaviour, IChatController
 {
     public static ChatController i { get; private set; }
-    
+
     [NonSerialized] public List<ChatMessage> entries = new List<ChatMessage>();
 
     private readonly Dictionary<string, int> unseenMessagesByUser = new Dictionary<string, int>();
@@ -173,7 +173,7 @@ public class ChatController : MonoBehaviour, IChatController
         messages.Add(message);
         OnAddMessage?.Invoke(message);
     }
-    
+
     // called by kernel
     [UsedImplicitly]
     public void UpdateTotalUnseenMessages(string json)
@@ -183,7 +183,7 @@ public class ChatController : MonoBehaviour, IChatController
         TotalUnseenMessages = msg.total;
         OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
     }
-    
+
     // called by kernel
     [UsedImplicitly]
     public void UpdateUserUnseenMessages(string json)
@@ -192,7 +192,7 @@ public class ChatController : MonoBehaviour, IChatController
         unseenMessagesByUser[msg.userId] = msg.total;
         OnUserUnseenMessagesUpdated?.Invoke(msg.userId, msg.total);
     }
-    
+
     // called by kernel
     [UsedImplicitly]
     public void UpdateTotalUnseenMessagesByUser(string json)
@@ -215,6 +215,9 @@ public class ChatController : MonoBehaviour, IChatController
     public List<ChatMessage> GetAllocatedEntries() => new List<ChatMessage>(messages);
     
     public void GetUnseenMessagesByUser() => WebInterface.GetUnseenMessagesByUser();
+
+    public int GetAllocatedUnseenMessages(string userId) =>
+        unseenMessagesByUser.ContainsKey(userId) ? unseenMessagesByUser[userId] : 0;
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
     {

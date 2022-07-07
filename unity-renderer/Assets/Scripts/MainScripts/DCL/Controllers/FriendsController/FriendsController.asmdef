@@ -2,7 +2,8 @@
     "name": "FriendsController",
     "rootNamespace": "",
     "references": [
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:4973650d2444c4561a15d50f24d91cd9"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

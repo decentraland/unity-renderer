@@ -18,7 +18,6 @@ public class FriendsHUDController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IChatController chatController;
-    private readonly ILastReadMessagesService lastReadMessagesService;
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
@@ -35,15 +34,13 @@ public class FriendsHUDController : IHUD
         IFriendsController friendsController,
         IUserProfileBridge userProfileBridge,
         ISocialAnalytics socialAnalytics,
-        IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService)
+        IChatController chatController)
     {
         this.dataStore = dataStore;
         this.friendsController = friendsController;
         this.userProfileBridge = userProfileBridge;
         this.socialAnalytics = socialAnalytics;
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Initialize(IFriendsHUDComponentView view = null)
@@ -51,7 +48,7 @@ public class FriendsHUDController : IHUD
         view ??= FriendsHUDComponentView.Create();
         View = view;
 
-        view.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
+        view.Initialize(chatController, friendsController, socialAnalytics);
         view.ListByOnlineStatus = dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_by_online_status");
         view.OnFriendRequestApproved += HandleRequestAccepted;
         view.OnCancelConfirmation += HandleRequestCancelled;
@@ -228,7 +225,7 @@ public class FriendsHUDController : IHUD
                && friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND);
     }
 
-    private void OnUpdateUserStatus(string userId, FriendsController.UserStatus newStatus)
+    private void OnUpdateUserStatus(string userId, UserStatus newStatus)
     {
         var model = GetOrCreateModel(userId, newStatus);
         model.CopyFrom(newStatus);
@@ -266,7 +263,7 @@ public class FriendsHUDController : IHUD
         ShowOrHideMoreFriendRequestsToLoadHint();
     }
 
-    private void UpdatePaginationState(string userId, FriendsController.UserStatus status)
+    private void UpdatePaginationState(string userId, UserStatus status)
     {
         switch (status.friendshipStatus)
         {
@@ -361,7 +358,7 @@ public class FriendsHUDController : IHUD
         return friends[userId];
     }
 
-    private FriendEntryModel GetOrCreateModel(string userId, FriendsController.UserStatus newStatus)
+    private FriendEntryModel GetOrCreateModel(string userId, UserStatus newStatus)
     {
         if (!friends.ContainsKey(userId))
         {

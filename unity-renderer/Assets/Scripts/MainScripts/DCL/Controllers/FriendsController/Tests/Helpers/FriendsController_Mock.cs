@@ -6,14 +6,14 @@ using DCL.Friends.WebApi;
 public class FriendsController_Mock : IFriendsController
 {
     public event Action<string, FriendshipAction> OnUpdateFriendship;
-    public event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
+    public event Action<string, UserStatus> OnUpdateUserStatus;
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
     public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
     public event Action<int, int> OnTotalFriendRequestUpdated;
     public event Action<int> OnTotalFriendsUpdated;
 
-    private readonly Dictionary<string, FriendsController.UserStatus> friends = new Dictionary<string, FriendsController.UserStatus>();
+    private readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
     public int AllocatedFriendCount => friends.Count;
 
@@ -28,7 +28,7 @@ public class FriendsController_Mock : IFriendsController
     public int TotalSentFriendRequestCount { get; }
     public int TotalFriendsWithDirectMessagesCount => friends.Count;
 
-    public Dictionary<string, FriendsController.UserStatus> GetAllocatedFriends() { return friends; }
+    public Dictionary<string, UserStatus> GetAllocatedFriends() { return friends; }
     
     public void RejectFriendship(string friendUserId)
     {
@@ -68,7 +68,7 @@ public class FriendsController_Mock : IFriendsController
         throw new NotImplementedException();
     }
 
-    public FriendsController.UserStatus GetUserStatus(string userId)
+    public UserStatus GetUserStatus(string userId)
     {
         return friends.ContainsKey(userId) ? friends[userId] : default;
     }
@@ -81,7 +81,7 @@ public class FriendsController_Mock : IFriendsController
     public void RequestFriendship(string friendUserId)
     {
         if (!friends.ContainsKey(friendUserId))
-            friends.Add(friendUserId, new FriendsController.UserStatus{friendshipStatus = FriendshipStatus.REQUESTED_TO});
+            friends.Add(friendUserId, new UserStatus{friendshipStatus = FriendshipStatus.REQUESTED_TO});
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.REQUESTED_TO);
     }
 
@@ -110,15 +110,15 @@ public class FriendsController_Mock : IFriendsController
         if (action == FriendshipAction.APPROVED)
         {
             if (!friends.ContainsKey(id))
-                friends.Add(id, new FriendsController.UserStatus());
+                friends.Add(id, new UserStatus());
         }
 
         OnUpdateFriendship?.Invoke(id, action);
     }
 
-    public void RaiseUpdateUserStatus(string id, FriendsController.UserStatus userStatus) { OnUpdateUserStatus?.Invoke(id, userStatus); }
+    public void RaiseUpdateUserStatus(string id, UserStatus userStatus) { OnUpdateUserStatus?.Invoke(id, userStatus); }
 
     public void RaiseOnFriendNotFound(string id) { OnFriendNotFound?.Invoke(id); }
 
-    public void AddFriend(FriendsController.UserStatus newFriend) { friends.Add(newFriend.userId, newFriend); }
+    public void AddFriend(UserStatus newFriend) { friends.Add(newFriend.userId, newFriend); }
 }

@@ -43,8 +43,7 @@ public class FriendsHUDControllerShould
             friendsController,
             userProfileBridge,
             socialAnalytics,
-            Substitute.For<IChatController>(),
-            Substitute.For<ILastReadMessagesService>());
+            Substitute.For<IChatController>());
         view = Substitute.For<IFriendsHUDComponentView>();
         view.FriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         controller.Initialize(view);
@@ -160,18 +159,18 @@ public class FriendsHUDControllerShould
         string realmLayer, string serverName)
     {
         var position = new Vector2(positionX, positionY);
-        var status = new FriendsController.UserStatus
+        var status = new UserStatus
         {
             position = position,
             presence = presence,
             friendshipStatus = friendshipStatus,
-            realm = new FriendsController.UserStatus.Realm {layer = realmLayer, serverName = serverName},
+            realm = new UserStatus.Realm {layer = realmLayer, serverName = serverName},
             userId = userId,
             friendshipStartedTime = DateTime.UtcNow
         };
 
         friendsController.OnUpdateUserStatus +=
-            Raise.Event<Action<string, FriendsController.UserStatus>>(userId, status);
+            Raise.Event<Action<string, UserStatus>>(userId, status);
 
         view.Received(1).Set(userId, friendshipStatus, Arg.Is<FriendEntryModel>(f => f.blocked == false
             && f.coords.Equals(position)
@@ -183,7 +182,7 @@ public class FriendsHUDControllerShould
     [Test]
     public void UpdateUserStatusWhenRequestSent()
     {
-        var status = new FriendsController.UserStatus
+        var status = new UserStatus
         {
             position = Vector2.zero,
             presence = PresenceStatus.ONLINE,
@@ -194,7 +193,7 @@ public class FriendsHUDControllerShould
         };
 
         friendsController.OnUpdateUserStatus +=
-            Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
+            Raise.Event<Action<string, UserStatus>>(OTHER_USER_ID, status);
 
         view.Received(1).Set(OTHER_USER_ID, FriendshipStatus.REQUESTED_TO,
             Arg.Is<FriendRequestEntryModel>(f => f.isReceived == false));
@@ -203,7 +202,7 @@ public class FriendsHUDControllerShould
     [Test]
     public void UpdateUserStatusWhenRequestReceived()
     {
-        var status = new FriendsController.UserStatus
+        var status = new UserStatus
         {
             position = Vector2.zero,
             presence = PresenceStatus.ONLINE,
@@ -214,7 +213,7 @@ public class FriendsHUDControllerShould
         };
 
         friendsController.OnUpdateUserStatus +=
-            Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
+            Raise.Event<Action<string, UserStatus>>(OTHER_USER_ID, status);
 
         view.Received(1).Set(OTHER_USER_ID, FriendshipStatus.REQUESTED_FROM,
             Arg.Is<FriendRequestEntryModel>(f => f.isReceived == true));
@@ -278,7 +277,7 @@ public class FriendsHUDControllerShould
     {
         view.FriendCount.Returns(10000);
 
-        var status = new FriendsController.UserStatus
+        var status = new UserStatus
         {
             position = Vector2.zero,
             presence = PresenceStatus.ONLINE,
@@ -289,7 +288,7 @@ public class FriendsHUDControllerShould
         };
 
         friendsController.OnUpdateUserStatus +=
-            Raise.Event<Action<string, FriendsController.UserStatus>>(OTHER_USER_ID, status);
+            Raise.Event<Action<string, UserStatus>>(OTHER_USER_ID, status);
 
         view.Received(1).Set(OTHER_USER_ID, FriendshipStatus.FRIEND,
             Arg.Is<FriendEntryModel>(f => f.userId == OTHER_USER_ID));
@@ -477,7 +476,7 @@ public class FriendsHUDControllerShould
     [TestCase(OTHER_USER_NAME, 1)]
     public void SearchFriends(string searchText, int expectedCount)
     {
-        friendsController.GetUserStatus(OTHER_USER_ID).Returns(new FriendsController.UserStatus
+        friendsController.GetUserStatus(OTHER_USER_ID).Returns(new UserStatus
         {
             friendshipStatus = FriendshipStatus.FRIEND,
             userId = OTHER_USER_ID

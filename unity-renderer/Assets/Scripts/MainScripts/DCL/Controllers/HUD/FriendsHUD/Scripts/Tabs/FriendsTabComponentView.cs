@@ -44,7 +44,6 @@ public class FriendsTabComponentView : BaseComponentView
     private int currentAvatarSnapshotIndex;
     private bool isLayoutDirty;
     private IChatController chatController;
-    private ILastReadMessagesService lastReadMessagesService;
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
     private bool isSearchMode;
@@ -73,12 +72,10 @@ public class FriendsTabComponentView : BaseComponentView
     public event Action OnRequireMoreEntries;
     
     public void Initialize(IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics)
     {
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
         this.friendsController = friendsController;
         this.socialAnalytics = socialAnalytics;
     }
@@ -425,7 +422,7 @@ public class FriendsTabComponentView : BaseComponentView
         var newFriendEntry = entryPool.Get();
         pooleableEntries.Add(userId, newFriendEntry);
         var entry = newFriendEntry.gameObject.GetComponent<FriendEntry>();
-        entry.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
+        entry.Initialize(chatController, friendsController, socialAnalytics);
         entries.Add(userId, entry);
 
         entry.OnMenuToggle -= OnEntryMenuToggle;

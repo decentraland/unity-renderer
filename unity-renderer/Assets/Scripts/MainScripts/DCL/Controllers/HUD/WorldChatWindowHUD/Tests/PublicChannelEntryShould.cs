@@ -9,7 +9,7 @@ public class PublicChannelEntryShould
     public void SetUp()
     {
         view = PublicChatEntry.Create();
-        view.Initialize(Substitute.For<IChatController>(), Substitute.For<ILastReadMessagesService>());
+        view.Initialize(Substitute.For<IChatController>());
     }
 
     [TearDown]

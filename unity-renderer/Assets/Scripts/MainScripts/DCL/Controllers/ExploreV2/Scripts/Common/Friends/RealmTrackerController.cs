@@ -87,7 +87,7 @@ public class RealmTrackerController : IDisposable
         listeners.Clear();
     }
 
-    void OnUpdateUserStatus(string userId, FriendsController.UserStatus status)
+    void OnUpdateUserStatus(string userId, UserStatus status)
     {
         if (!friendsController.IsInitialized)
             return;
