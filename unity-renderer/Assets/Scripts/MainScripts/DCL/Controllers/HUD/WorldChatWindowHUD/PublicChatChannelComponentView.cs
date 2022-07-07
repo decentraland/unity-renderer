@@ -12,7 +12,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     [SerializeField] internal TMP_Text nameLabel;
     [SerializeField] internal TMP_Text descriptionLabel;
     [SerializeField] internal ChatHUDView chatView;
-    [SerializeField] internal PublicChatChannelModel model;
+    [SerializeField] internal PublicChatModel model;
     [SerializeField] internal CanvasGroup[] previewCanvasGroup;
     [SerializeField] internal Vector2 previewModeSize;
     
@@ -51,7 +51,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
 
     public void Show() => gameObject.SetActive(true);
     
-    public void Configure(PublicChatChannelModel model)
+    public void Configure(PublicChatModel model)
     {
         this.model = model;
         RefreshControl();
@@ -107,7 +107,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         ((RectTransform) transform).sizeDelta = originalSize;
     }
 
-    public void Configure(BaseComponentModel newModel) => Configure((PublicChatChannelModel) newModel);
+    public void Configure(BaseComponentModel newModel) => Configure((PublicChatModel) newModel);
     
     public void OnPointerDown(PointerEventData eventData) => OnFocused?.Invoke(true);
 

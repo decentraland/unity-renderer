@@ -3,23 +3,24 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
+public class PublicChatEntry : BaseComponentView, IComponentModelConfig
 {
     [SerializeField] internal Button openChatButton;
     [SerializeField] internal TMP_Text nameLabel;
-    [SerializeField] internal PublicChannelEntryModel model;
+    [SerializeField] internal PublicChatEntryModel model;
     [SerializeField] internal UnreadNotificationBadge unreadNotifications;
+    [SerializeField] internal string namePrefix = "#";
     
     private IChatController chatController;
     private ILastReadMessagesService lastReadMessagesService;
 
-    public PublicChannelEntryModel Model => model;
+    public PublicChatEntryModel Model => model;
 
-    public event Action<PublicChannelEntry> OnOpenChat;
+    public event Action<PublicChatEntry> OnOpenChat;
 
-    public static PublicChannelEntry Create()
+    public static PublicChatEntry Create()
     {
-        return Instantiate(Resources.Load<PublicChannelEntry>("SocialBarV1/PublicChannelElement"));
+        return Instantiate(Resources.Load<PublicChatEntry>("SocialBarV1/PublicChannelElement"));
     }
 
     public override void Awake()
@@ -37,24 +38,24 @@ public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
 
     public void Configure(BaseComponentModel newModel)
     {
-        model = (PublicChannelEntryModel) newModel;
+        model = (PublicChatEntryModel) newModel;
         RefreshControl();
     }
 
     public override void RefreshControl()
     {
-        nameLabel.text = $"#{model.name}";
+        nameLabel.text = $"{namePrefix}{model.name}";
         unreadNotifications.Initialize(chatController, model.channelId, lastReadMessagesService);
     }
 
     [Serializable]
-    public class PublicChannelEntryModel : BaseComponentModel
+    public class PublicChatEntryModel : BaseComponentModel
     {
         public string channelId;
         public string name;
         public long lastMessageTimestamp;
 
-        public PublicChannelEntryModel(string channelId, string name, long lastMessageTimestamp)
+        public PublicChatEntryModel(string channelId, string name, long lastMessageTimestamp)
         {
             this.channelId = channelId;
             this.name = name;

@@ -3,12 +3,12 @@ using NUnit.Framework;
 
 public class PublicChannelEntryShould
 {
-    private PublicChannelEntry view;
+    private PublicChatEntry view;
 
     [SetUp]
     public void SetUp()
     {
-        view = PublicChannelEntry.Create();
+        view = PublicChatEntry.Create();
         view.Initialize(Substitute.For<IChatController>(), Substitute.For<ILastReadMessagesService>());
     }
 
@@ -21,7 +21,7 @@ public class PublicChannelEntryShould
     [Test]
     public void Configure()
     {
-        view.Configure(new PublicChannelEntry.PublicChannelEntryModel("nearby", "nearby", 0));
+        view.Configure(new PublicChatEntry.PublicChatEntryModel("nearby", "nearby", 0));
         view.nameLabel.text = "#nearby";
     }
 

@@ -37,8 +37,8 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     private readonly Dictionary<string, PrivateChatModel> privateChatsCreationQueue =
         new Dictionary<string, PrivateChatModel>();
 
-    private readonly Dictionary<string, PublicChatChannelModel> publicChatsCreationQueue =
-        new Dictionary<string, PublicChatChannelModel>();
+    private readonly Dictionary<string, PublicChatModel> publicChatsCreationQueue =
+        new Dictionary<string, PublicChatModel>();
 
     private bool isSortingDirty;
     private bool isLayoutDirty;
@@ -48,14 +48,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
-    public event Action<string> OnOpenPublicChannel;
-
-    public event Action<string> OnUnfriend
-    {
-        add => directChatList.OnUnfriend += value;
-        remove => directChatList.OnUnfriend -= value;
-    }
-
+    public event Action<string> OnOpenPublicChat;
     public event Action<string> OnSearchChannelRequested;
     public event Action OnRequireMorePrivateChats;
 
@@ -77,7 +70,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         base.Awake();
         
-        int SortByAlphabeticalOrder(PublicChannelEntry u1, PublicChannelEntry u2)
+        int SortByAlphabeticalOrder(PublicChatEntry u1, PublicChatEntry u2)
         {
             return string.Compare(u1.Model.name, u2.Model.name, StringComparison.InvariantCultureIgnoreCase);
         }
@@ -86,7 +79,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         directChatList.SortingMethod = (a, b) => b.Model.lastMessageTimestamp.CompareTo(a.Model.lastMessageTimestamp);
         directChatList.OnOpenChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
         publicChannelList.SortingMethod = SortByAlphabeticalOrder;
-        publicChannelList.OnOpenChat += entry => OnOpenPublicChannel?.Invoke(entry.Model.channelId);
+        publicChannelList.OnOpenChat += entry => OnOpenPublicChat?.Invoke(entry.Model.channelId);
         searchBar.OnSearchText += text => OnSearchChannelRequested?.Invoke(text);
         scroll.onValueChanged.AddListener((scrollPos) =>
         {
@@ -144,7 +137,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         UpdateLayout();
     }
 
-    public void SetPublicChannel(PublicChatChannelModel model) => publicChatsCreationQueue[model.channelId] = model;
+    public void SetPublicChat(PublicChatModel model) => publicChatsCreationQueue[model.channelId] = model;
 
     public void RemovePublicChannel(string channelId)
     {
@@ -229,7 +222,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     }
 
     public void Filter(Dictionary<string, PrivateChatModel> privateChats,
-        Dictionary<string, PublicChatChannelModel> publicChannels)
+        Dictionary<string, PublicChatModel> publicChannels)
     {
         isSearchMode = true;
 
@@ -290,10 +283,10 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         SortLists();
     }
     
-    private void Set(PublicChatChannelModel model)
+    private void Set(PublicChatModel model)
     {
         var channelId = model.channelId;
-        var entry = new PublicChannelEntry.PublicChannelEntryModel(channelId, model.name, model.lastMessageTimestamp);
+        var entry = new PublicChatEntry.PublicChatEntryModel(channelId, model.name, model.lastMessageTimestamp);
 
         if (isSearchMode)
         {

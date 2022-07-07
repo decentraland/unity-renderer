@@ -5,11 +5,11 @@ using DCL;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
 
-public class CollapsablePublicChannelListComponentView : CollapsableSortedListComponentView<string, PublicChannelEntry>
+public class CollapsablePublicChannelListComponentView : CollapsableSortedListComponentView<string, PublicChatEntry>
 {
     private const string POOL_NAME_PREFIX = "PublicChannelEntriesPool_";
     
-    [SerializeField] private PublicChannelEntry entryPrefab;
+    [SerializeField] private PublicChatEntry entryPrefab;
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private Pool entryPool;
@@ -17,7 +17,7 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
     private IChatController chatController;
     private ILastReadMessagesService lastReadMessagesService;
 
-    public event Action<PublicChannelEntry> OnOpenChat;
+    public event Action<PublicChatEntry> OnOpenChat;
     
     public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService)
     {
@@ -40,7 +40,7 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         pooleableEntries.Clear();
     }
 
-    public override PublicChannelEntry Remove(string key)
+    public override PublicChatEntry Remove(string key)
     {
         if (releaseEntriesFromPool)
         {
@@ -52,7 +52,7 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         return base.Remove(key);
     }
 
-    public void Set(string channelId, PublicChannelEntry.PublicChannelEntryModel entryModel)
+    public void Set(string channelId, PublicChatEntry.PublicChatEntryModel entryModel)
     {
         if (!Contains(entryModel.channelId))
             CreateEntry(channelId);
@@ -66,14 +66,14 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         entryPool = GetEntryPool();
         var newFriendEntry = entryPool.Get();
         pooleableEntries.Add(channelId, newFriendEntry);
-        var entry = newFriendEntry.gameObject.GetComponent<PublicChannelEntry>();
+        var entry = newFriendEntry.gameObject.GetComponent<PublicChatEntry>();
         Add(channelId, entry);
         entry.Initialize(chatController, lastReadMessagesService);
         entry.OnOpenChat -= OnEntryOpenChat;
         entry.OnOpenChat += OnEntryOpenChat;
     }
 
-    private void OnEntryOpenChat(PublicChannelEntry entry) { OnOpenChat?.Invoke(entry); }
+    private void OnEntryOpenChat(PublicChatEntry entry) { OnOpenChat?.Invoke(entry); }
 
     private Pool GetEntryPool()
     {

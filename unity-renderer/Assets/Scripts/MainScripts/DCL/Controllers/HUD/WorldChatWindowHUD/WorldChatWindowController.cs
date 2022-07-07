@@ -8,7 +8,7 @@ using DCL.Friends.WebApi;
 
 public class WorldChatWindowController : IHUD
 {
-    private const string GENERAL_CHANNEL_ID = "general";
+    private const string NEARBY_CHANNEL_ID = "nearby";
     private const int MAX_SEARCHED_CHANNELS = 100;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD = 50;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SHOW_MORE = 20;
@@ -19,7 +19,7 @@ public class WorldChatWindowController : IHUD
     private readonly IFriendsController friendsController;
     private readonly IChatController chatController;
     private readonly ILastReadMessagesService lastReadMessagesService;
-    private readonly Dictionary<string, PublicChatChannelModel> publicChannels = new Dictionary<string, PublicChatChannelModel>();
+    private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private long olderDMTimestampRequested = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -34,9 +34,9 @@ public class WorldChatWindowController : IHUD
     public IWorldChatWindowView View => view;
 
     public event Action<string> OnOpenPrivateChat;
-    public event Action<string> OnOpenPublicChannel;
+    public event Action<string> OnOpenPublicChat;
+    public event Action<string> OnOpenChannel;
     public event Action OnOpen;
-    public event Action<string, string> OnJoinChannelError;
 
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -56,7 +56,7 @@ public class WorldChatWindowController : IHUD
         view.Initialize(chatController, lastReadMessagesService);
         view.OnClose += HandleViewCloseRequest;
         view.OnOpenPrivateChat += OpenPrivateChat;
-        view.OnOpenPublicChannel += OpenPublicChannel;
+        view.OnOpenPublicChat += OpenPublicChat;
         view.OnSearchChannelRequested += SearchChannels;
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
         
@@ -65,10 +65,10 @@ public class WorldChatWindowController : IHUD
             ownUserProfile.OnUpdate += OnUserProfileUpdate;
         
         // TODO: this data should come from the chat service when channels are implemented
-        publicChannels[GENERAL_CHANNEL_ID] = new PublicChatChannelModel(GENERAL_CHANNEL_ID, "nearby",
+        publicChannels[NEARBY_CHANNEL_ID] = new PublicChatModel(NEARBY_CHANNEL_ID, "nearby",
             "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.",
             0);
-        view.SetPublicChannel(publicChannels[GENERAL_CHANNEL_ID]);
+        view.SetPublicChat(publicChannels[NEARBY_CHANNEL_ID]);
         
         foreach (var value in chatController.GetAllocatedEntries())
             HandleMessageAdded(value);
@@ -91,7 +91,7 @@ public class WorldChatWindowController : IHUD
     {
         view.OnClose -= HandleViewCloseRequest;
         view.OnOpenPrivateChat -= OpenPrivateChat;
-        view.OnOpenPublicChannel -= OpenPublicChannel;
+        view.OnOpenPublicChat -= OpenPublicChat;
         view.OnSearchChannelRequested -= SearchChannels;
         view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
         view.Dispose();
@@ -149,16 +149,17 @@ public class WorldChatWindowController : IHUD
         }
         else
             view.HidePrivateChatsLoading();
-
-        // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
-        foreach (var userId in recipientsFromPrivateChats.Keys)
-            if (!friendsController.IsFriend(userId))
-                view.RemovePrivateChat(userId);
     }
 
     private void OpenPrivateChat(string userId) { OnOpenPrivateChat?.Invoke(userId); }
 
-    private void OpenPublicChannel(string channelId) => OnOpenPublicChannel?.Invoke(channelId);
+    private void OpenPublicChat(string channelId)
+    {
+        if (channelId == NEARBY_CHANNEL_ID)
+            OnOpenPublicChat?.Invoke(channelId);
+        else
+            OnOpenChannel?.Invoke(channelId);
+    }
 
     private void HandleViewCloseRequest() => SetVisibility(false);
     
@@ -312,7 +313,7 @@ public class WorldChatWindowController : IHUD
                 .ToDictionary(model => model.userId, profile => CreatePrivateChatModel(lastPrivateMessages[profile.userId], profile));
         }
 
-        Dictionary<string, PublicChatChannelModel> FilterPublicChannelsByName(string search)
+        Dictionary<string, PublicChatModel> FilterPublicChannelsByName(string search)
         {
             var regex = new Regex(search, RegexOptions.IgnoreCase);
 
@@ -324,8 +325,8 @@ public class WorldChatWindowController : IHUD
 
         View.Filter(FilterPrivateChannelsByUserName(search), FilterPublicChannelsByName(search));
     }
-    
-    internal void ShowMorePrivateChats()
+
+    private void ShowMorePrivateChats()
     {
         if (isRequestingDMs || 
             hiddenDMs == 0 || 
@@ -372,26 +373,22 @@ public class WorldChatWindowController : IHUD
     private void HandleChannelUpdated(Channel channel)
     {
         var channelId = channel.ChannelId;
-        var model = new PublicChatChannelModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp);
+        var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp);
         
         if (publicChannels.ContainsKey(channelId))
             publicChannels[channelId].CopyFrom(model);
         else
             publicChannels[channelId] = model;
         
-        view.SetPublicChannel(model);
+        view.SetPublicChat(model);
         
         isRequestingChannels = false;
     }
 
-    private void HandleChannelJoined(Channel channel)
-    {
-        OpenPublicChannel(channel.ChannelId);
-    }
+    private void HandleChannelJoined(Channel channel) => OpenPublicChat(channel.ChannelId);
 
     private void HandleJoinChannelError(string channelId, string message)
     {
-        OnJoinChannelError?.Invoke(channelId, message);
     }
 
     private void HandleChannelLeft(string channelId)

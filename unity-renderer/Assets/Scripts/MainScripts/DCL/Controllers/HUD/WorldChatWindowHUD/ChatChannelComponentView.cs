@@ -15,7 +15,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal TMP_Text descriptionLabel;
         [SerializeField] internal ChatHUDView chatView;
-        [SerializeField] internal PublicChatChannelModel model;
+        [SerializeField] internal PublicChatModel model;
         [SerializeField] internal CanvasGroup[] previewCanvasGroup;
         [SerializeField] internal Vector2 previewModeSize;
         [SerializeField] internal GameObject messagesLoading;
@@ -66,7 +66,7 @@ namespace DCL.Chat.HUD
 
         public void Show() => gameObject.SetActive(true);
         
-        public void Setup(PublicChatChannelModel model)
+        public void Setup(PublicChatModel model)
         {
             this.model = model;
             RefreshControl();
@@ -125,7 +125,7 @@ namespace DCL.Chat.HUD
             oldMessagesLoadingContainer.transform.SetAsFirstSibling();
         }
 
-        public void Configure(BaseComponentModel newModel) => Setup((PublicChatChannelModel) newModel);
+        public void Configure(BaseComponentModel newModel) => Setup((PublicChatModel) newModel);
 
         public void OnPointerDown(PointerEventData eventData) => OnFocused?.Invoke(true);
 

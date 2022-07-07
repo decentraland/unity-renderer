@@ -4,6 +4,6 @@
 public class WorldChatWindowModel : BaseComponentModel
 {
     public PrivateChatEntry.PrivateChatEntryModel[] privateChats;
-    public PublicChannelEntry.PublicChannelEntryModel[] publicChannels;
+    public PublicChatEntry.PublicChatEntryModel[] publicChannels;
     public bool isLoadingDirectChats;
 }

@@ -29,7 +29,7 @@ public class PublicChatChannelWindowMock : MonoBehaviour, IChannelChatWindowView
 
     public void Show() => gameObject.SetActive(true);
     
-    public void Configure(PublicChatChannelModel model)
+    public void Configure(PublicChatModel model)
     {
     }
 

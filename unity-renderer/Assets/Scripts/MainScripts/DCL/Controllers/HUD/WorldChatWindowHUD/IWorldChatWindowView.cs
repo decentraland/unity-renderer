@@ -6,8 +6,7 @@ public interface IWorldChatWindowView
 {
     event Action OnClose;
     event Action<string> OnOpenPrivateChat;
-    event Action<string> OnOpenPublicChannel;
-    event Action<string> OnUnfriend;
+    event Action<string> OnOpenPublicChat;
     event Action<string> OnSearchChannelRequested;
     event Action OnRequireMorePrivateChats;
 
@@ -21,7 +20,7 @@ public interface IWorldChatWindowView
     void Hide();
     void SetPrivateChat(PrivateChatModel model);
     void RemovePrivateChat(string userId);
-    void SetPublicChannel(PublicChatChannelModel model);
+    void SetPublicChat(PublicChatModel model);
     void RemovePublicChannel(string channelId);
     void ShowPrivateChatsLoading();
     void HidePrivateChatsLoading();
@@ -34,6 +33,6 @@ public interface IWorldChatWindowView
     void HideMoreChatsLoading();
     void ShowSearchLoading();
     void HideSearchLoading();
-    void Filter(Dictionary<string,PrivateChatModel> privateChats, Dictionary<string,PublicChatChannelModel> publicChannels);
+    void Filter(Dictionary<string,PrivateChatModel> privateChats, Dictionary<string,PublicChatModel> publicChannels);
     bool ContainsPrivateChannel(string userId);
 }

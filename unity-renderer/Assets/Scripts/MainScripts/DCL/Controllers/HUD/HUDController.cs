@@ -223,8 +223,10 @@ public class HUDController : IHUDController
                         worldChatWindowHud.SetVisibility(false);
                         worldChatWindowHud.OnOpenPrivateChat -= OpenPrivateChatWindow;
                         worldChatWindowHud.OnOpenPrivateChat += OpenPrivateChatWindow;
-                        worldChatWindowHud.OnOpenPublicChannel -= OpenPublicChannelWindow;
-                        worldChatWindowHud.OnOpenPublicChannel += OpenPublicChannelWindow;
+                        worldChatWindowHud.OnOpenPublicChat -= OpenPublicChatWindow;
+                        worldChatWindowHud.OnOpenPublicChat += OpenPublicChatWindow;
+                        worldChatWindowHud.OnOpenChannel -= OpenChannelChatWindow;
+                        worldChatWindowHud.OnOpenChannel += OpenChannelChatWindow;
 
                         taskbarHud?.AddWorldChatWindow(worldChatWindowHud);
                     }
@@ -242,7 +244,7 @@ public class HUDController : IHUDController
                     PublicChatChannelHud.OnClosed += HandlePublicChatChannelClosed;
                     taskbarHud?.AddPublicChatChannel(PublicChatChannelHud);
                     // TODO: this call should be removed when chat notifications are implemented
-                    taskbarHud?.OpenPublicChatChannel("general", false);
+                    taskbarHud?.OpenPublicChat("nearby", false);
                     PublicChatChannelHud.ActivatePreviewModeInstantly();
                 }
                 else
@@ -400,9 +402,14 @@ public class HUDController : IHUDController
         taskbarHud?.GoBackFromChat();
     }
 
-    private void OpenPublicChannelWindow(string channelId)
+    private void OpenPublicChatWindow(string channelId)
     {
-        taskbarHud?.OpenPublicChatChannel(channelId, true);
+        taskbarHud?.OpenPublicChat(channelId, true);
+    }
+    
+    private void OpenChannelChatWindow(string channelId)
+    {
+        taskbarHud?.OpenChannelChat(channelId);
     }
 
     private void OpenPrivateChatWindow(string targetUserId)
@@ -454,7 +461,8 @@ public class HUDController : IHUDController
         if (worldChatWindowHud != null)
         {
             worldChatWindowHud.OnOpenPrivateChat -= OpenPrivateChatWindow;
-            worldChatWindowHud.OnOpenPublicChannel -= OpenPublicChannelWindow;
+            worldChatWindowHud.OnOpenPublicChat -= OpenPublicChatWindow;
+            worldChatWindowHud.OnOpenChannel -= OpenChannelChatWindow;
         }
 
         if (PrivateChatWindow != null)

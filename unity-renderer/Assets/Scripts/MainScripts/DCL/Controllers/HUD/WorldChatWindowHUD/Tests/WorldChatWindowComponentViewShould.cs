@@ -198,18 +198,18 @@ public class WorldChatWindowComponentViewShould
     {
         const string channelId = "general";
 
-        var model = new PublicChatChannelModel(channelId, "nearby", "any description", 0);
-        view.SetPublicChannel(model);
+        var model = new PublicChatModel(channelId, "nearby", "any description", 0);
+        view.SetPublicChat(model);
 
         yield return null;
 
         model.name = "hoho";
-        view.SetPublicChannel(model);
+        view.SetPublicChat(model);
 
         yield return null;
 
         model.description = "another description";
-        view.SetPublicChannel(model);
+        view.SetPublicChat(model);
 
         yield return null;
 
@@ -225,7 +225,7 @@ public class WorldChatWindowComponentViewShould
     {
         const string expectedChannelId = "general";
         var channelId = "";
-        view.OnOpenPublicChannel += s => channelId = s;
+        view.OnOpenPublicChat += s => channelId = s;
         GivenPublicChannel(expectedChannelId, "nearby");
 
         yield return null;
@@ -335,10 +335,10 @@ public class WorldChatWindowComponentViewShould
                     recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "buy my nft")
                 }
             }
-        }, new Dictionary<string, PublicChatChannelModel>
+        }, new Dictionary<string, PublicChatModel>
         {
             {
-                "general", new PublicChatChannelModel("general", "general", "", 0)
+                "general", new PublicChatModel("general", "general", "", 0)
             }
         });
 
@@ -450,7 +450,7 @@ public class WorldChatWindowComponentViewShould
 
     private void GivenPublicChannel(string channelId, string name)
     {
-        view.SetPublicChannel(new PublicChatChannelModel(channelId, name, "any description", 0));
+        view.SetPublicChat(new PublicChatModel(channelId, name, "any description", 0));
     }
 
     private UserProfile GivenProfile(string userId)

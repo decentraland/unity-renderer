@@ -6,7 +6,7 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
 {
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
-    public event Action<string> OnOpenPublicChannel;
+    public event Action<string> OnOpenPublicChat;
     public event Action<string> OnUnfriend;
     public event Action<string> OnSearchChannelRequested;
     public event Action OnRequireMorePrivateChats;
@@ -44,7 +44,7 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
-    public void SetPublicChannel(PublicChatChannelModel model)
+    public void SetPublicChat(PublicChatModel model)
     {
     }
 
@@ -98,7 +98,7 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
-    public void Filter(Dictionary<string, PrivateChatModel> privateChats, Dictionary<string, PublicChatChannelModel> publicChannels)
+    public void Filter(Dictionary<string, PrivateChatModel> privateChats, Dictionary<string, PublicChatModel> publicChannels)
     {
     }
 

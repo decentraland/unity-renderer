@@ -19,7 +19,7 @@ namespace DCL.Chat.HUD
         void Dispose();
         void Hide();
         void Show();
-        void Setup(PublicChatChannelModel model);
+        void Setup(PublicChatModel model);
         void ActivatePreview();
         void DeactivatePreview();
         void SetLoadingMessagesActive(bool isActive);
