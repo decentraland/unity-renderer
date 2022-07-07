@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWindowView, IComponentModelConfig, IPointerDownHandler
+public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindowView, IComponentModelConfig, IPointerDownHandler
 {
     [SerializeField] internal Button closeButton;
     [SerializeField] internal Button backButton;
@@ -33,9 +33,9 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     public RectTransform Transform => (RectTransform) transform;
     public bool IsFocused => isFocused;
 
-    public static PublicChatChannelComponentView Create()
+    public static PublicChatWindowComponentView Create()
     {
-        return Instantiate(Resources.Load<PublicChatChannelComponentView>("SocialBarV1/GeneralChatChannelHUD"));
+        return Instantiate(Resources.Load<PublicChatWindowComponentView>("SocialBarV1/GeneralChatChannelHUD"));
     }
 
     public override void Awake()

@@ -13,8 +13,8 @@ public class PublicChatChannelControllerShould
     private const string TEST_USER_ID = "otherUserId";
     private const string TEST_USER_NAME = "otherUserName";
 
-    private PublicChatChannelController controller;
-    private IChannelChatWindowView view;
+    private PublicChatWindowController controller;
+    private IPublicChatWindowView view;
     private IChatHUDComponentView internalChatView;
     private IChatController chatController;
     private IUserProfileBridge userProfileBridge;
@@ -28,7 +28,7 @@ public class PublicChatChannelControllerShould
 
         chatController = Substitute.For<IChatController>();
         mouseCatcher = Substitute.For<IMouseCatcher>();
-        controller = new PublicChatChannelController(
+        controller = new PublicChatWindowController(
             chatController,
             userProfileBridge,
             new DataStore(),
@@ -36,7 +36,7 @@ public class PublicChatChannelControllerShould
             mouseCatcher,
             ScriptableObject.CreateInstance<InputAction_Trigger>());
 
-        view = Substitute.For<IChannelChatWindowView>();
+        view = Substitute.For<IPublicChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();
         view.ChatHUD.Returns(internalChatView);
         controller.Initialize(view);

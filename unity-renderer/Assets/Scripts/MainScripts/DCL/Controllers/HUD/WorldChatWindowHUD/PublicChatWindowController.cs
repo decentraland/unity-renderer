@@ -3,12 +3,10 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
-using SocialFeaturesAnalytics;
-using UnityEngine;
 
-public class PublicChatChannelController : IHUD
+public class PublicChatWindowController : IHUD
 {
-    public IChannelChatWindowView View { get; private set; }
+    public IPublicChatWindowView View { get; private set; }
     
     private enum ChatWindowVisualState { NONE_VISIBLE, INPUT_MODE, PREVIEW_MODE }
 
@@ -34,7 +32,7 @@ public class PublicChatChannelController : IHUD
 
     private UserProfile ownProfile => userProfileBridge.GetOwn();
     
-    public PublicChatChannelController(IChatController chatController,
+    public PublicChatWindowController(IChatController chatController,
         IUserProfileBridge userProfileBridge,
         DataStore dataStore,
         IProfanityFilter profanityFilter,
@@ -49,15 +47,14 @@ public class PublicChatChannelController : IHUD
         this.toggleChatTrigger = toggleChatTrigger;
     }
 
-    public void Initialize(IChannelChatWindowView view = null)
+    public void Initialize(IPublicChatWindowView view = null)
     {
-        view ??= PublicChatChannelComponentView.Create();
+        view ??= PublicChatWindowComponentView.Create();
         View = view;
         view.OnClose += HandleViewClosed;
         view.OnBack += HandleViewBacked;
         view.OnFocused += HandleViewFocused;
-        View.OnClickOverWindow += HandleViewClicked;
-
+        view.OnClickOverWindow += HandleViewClicked;
 
         chatHudController = new ChatHUDController(dataStore,
             userProfileBridge,
@@ -327,13 +324,6 @@ public class PublicChatChannelController : IHUD
         WaitThenFadeOutMessages(deactivateFadeOutCancellationToken.Token).Forget();
         OnPreviewModeChanged?.Invoke(true);
     }
-    
-    public void ActivatePreviewOnMessages()
-    {
-        chatHudController.ActivatePreview();
-        OnPreviewModeChanged?.Invoke(true);
-        currentState = ChatWindowVisualState.PREVIEW_MODE;
-    }
 
     public void DeactivatePreview()
     {
@@ -346,6 +336,13 @@ public class PublicChatChannelController : IHUD
         chatHudController.DeactivatePreview();
         OnPreviewModeChanged?.Invoke(false);
         currentState = ChatWindowVisualState.INPUT_MODE;
+    }
+
+    private void ActivatePreviewOnMessages()
+    {
+        chatHudController.ActivatePreview();
+        OnPreviewModeChanged?.Invoke(true);
+        currentState = ChatWindowVisualState.PREVIEW_MODE;
     }
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)

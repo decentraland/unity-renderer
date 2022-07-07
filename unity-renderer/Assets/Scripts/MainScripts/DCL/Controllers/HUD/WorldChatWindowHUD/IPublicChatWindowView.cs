@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public interface IChannelChatWindowView
+public interface IPublicChatWindowView
 {
     event Action OnClose;
     event Action OnBack;

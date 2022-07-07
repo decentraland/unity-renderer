@@ -17,7 +17,7 @@ public class TaskbarHUDController : IHUD
     public TaskbarHUDView view;
     public WorldChatWindowController worldChatWindowHud;
     public PrivateChatWindowController privateChatWindow;
-    public PublicChatChannelController publicChatWindow;
+    public PublicChatWindowController publicChatWindow;
     public ChatChannelHUDController channelChatWindow;
     public FriendsHUDController friendsHud;
     public VoiceChatWindowController voiceChatHud;
@@ -491,7 +491,7 @@ public class TaskbarHUDController : IHUD
         controller.OnPreviewModeChanged += HandlePrivateChannelPreviewMode;
     }
 
-    public void AddPublicChatChannel(PublicChatChannelController controller)
+    public void AddPublicChatChannel(PublicChatWindowController controller)
     {
         if (controller?.View == null)
         {

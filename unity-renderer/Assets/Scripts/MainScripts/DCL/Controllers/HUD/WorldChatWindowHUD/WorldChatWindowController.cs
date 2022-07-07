@@ -392,7 +392,7 @@ public class WorldChatWindowController : IHUD
     private void HandleChannelLeft(string channelId)
     {
         publicChannels.Remove(channelId);
-        view.RemovePublicChannel(channelId);
+        view.RemovePublicChat(channelId);
     }
     
     private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();

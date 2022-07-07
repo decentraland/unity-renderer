@@ -2,7 +2,7 @@ using System;
 using NSubstitute;
 using UnityEngine;
 
-public class PublicChatChannelWindowMock : MonoBehaviour, IChannelChatWindowView
+public class PublicChatPublicWindowMock : MonoBehaviour, IPublicChatWindowView
 {
     public event Action OnClose;
     public event Action OnBack;

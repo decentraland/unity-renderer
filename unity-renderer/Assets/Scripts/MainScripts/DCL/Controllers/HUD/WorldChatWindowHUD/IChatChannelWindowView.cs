@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace DCL.Chat.HUD
 {
-    // TODO: rename this class since it conflicts with IChannelChatWindowView which should also be renamed
-    public interface IChatChannelWindowViewRenamePlz
+    public interface IChatChannelWindowView
     {
         event Action OnClose;
         event Action<bool> OnFocused;

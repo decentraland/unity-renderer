@@ -5,12 +5,12 @@ using UnityEngine.TestTools;
 
 public class PublicChatChannelComponentViewShould
 {
-    private PublicChatChannelComponentView view;
+    private PublicChatWindowComponentView view;
     
     [SetUp]
     public void SetUp()
     {
-        view = PublicChatChannelComponentView.Create();
+        view = PublicChatWindowComponentView.Create();
     }
 
     [TearDown]

@@ -92,7 +92,7 @@ public class HUDFactory : IHUDFactory
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
-                hudElement = new PublicChatChannelController(
+                hudElement = new PublicChatWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
                     new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
                     new UserProfileWebInterfaceBridge(),

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
 {
-    public class ChatChannelComponentView : BaseComponentView, IChatChannelWindowViewRenamePlz, IComponentModelConfig,
+    public class ChatChannelComponentView : BaseComponentView, IChatChannelWindowView, IComponentModelConfig,
         IPointerDownHandler
     {
         [SerializeField] internal Button closeButton;

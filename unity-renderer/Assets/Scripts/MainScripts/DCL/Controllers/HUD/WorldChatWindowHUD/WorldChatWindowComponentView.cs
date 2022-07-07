@@ -139,7 +139,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public void SetPublicChat(PublicChatModel model) => publicChatsCreationQueue[model.channelId] = model;
 
-    public void RemovePublicChannel(string channelId)
+    public void RemovePublicChat(string channelId)
     {
         publicChannelList.Remove(channelId);
         UpdateHeaders();

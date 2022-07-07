@@ -49,6 +49,7 @@ public class UnreadNotificationBadge : MonoBehaviour
 
         UpdateUnreadMessages();
 
+        chatController.OnUserUnseenMessagesUpdated -= HandleUnseenMessagesUpdated;
         chatController.OnUserUnseenMessagesUpdated += HandleUnseenMessagesUpdated;
 
         isInitialized = true;

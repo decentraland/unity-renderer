@@ -15,7 +15,7 @@ namespace DCL.Chat.HUD
         private const int SHOW_MORE_PAGE_SIZE = 10;
         private const float REQUEST_PRIVATE_MESSAGES_TIME_OUT = 5;
 
-        public IChatChannelWindowViewRenamePlz View { get; private set; }
+        public IChatChannelWindowView View { get; private set; }
 
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
@@ -52,7 +52,7 @@ namespace DCL.Chat.HUD
             this.toggleChatTrigger = toggleChatTrigger;
         }
 
-        public void Initialize(IChatChannelWindowViewRenamePlz view = null)
+        public void Initialize(IChatChannelWindowView view = null)
         {
             view ??= ChatChannelComponentView.Create();
             View = view;

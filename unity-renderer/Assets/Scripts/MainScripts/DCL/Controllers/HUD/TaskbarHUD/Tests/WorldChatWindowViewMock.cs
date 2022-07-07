@@ -48,7 +48,7 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
-    public void RemovePublicChannel(string channelId)
+    public void RemovePublicChat(string channelId)
     {
     }
 
