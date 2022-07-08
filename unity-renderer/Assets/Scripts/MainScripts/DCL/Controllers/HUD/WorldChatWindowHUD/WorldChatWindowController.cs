@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DCL.Chat.Channels;
-using DCL.Interface;
 using DCL.Friends.WebApi;
+using DCL.Interface;
 
 public class WorldChatWindowController : IHUD
 {
@@ -37,6 +37,7 @@ public class WorldChatWindowController : IHUD
     public event Action<string> OnOpenPublicChat;
     public event Action<string> OnOpenChannel;
     public event Action OnOpen;
+    public event Action OnOpenChannelSearch;
 
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -55,8 +56,9 @@ public class WorldChatWindowController : IHUD
         view.OnClose += HandleViewCloseRequest;
         view.OnOpenPrivateChat += OpenPrivateChat;
         view.OnOpenPublicChat += OpenPublicChat;
-        view.OnSearchChannelRequested += SearchChannels;
+        view.OnSearchChatRequested += SearchChats;
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
+        view.OnOpenChannelSearch += OpenChannelSearch;
         
         ownUserProfile = userProfileBridge.GetOwn();
         if (ownUserProfile != null)
@@ -90,8 +92,9 @@ public class WorldChatWindowController : IHUD
         view.OnClose -= HandleViewCloseRequest;
         view.OnOpenPrivateChat -= OpenPrivateChat;
         view.OnOpenPublicChat -= OpenPublicChat;
-        view.OnSearchChannelRequested -= SearchChannels;
+        view.OnSearchChatRequested -= SearchChats;
         view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
+        view.OnOpenChannelSearch -= OpenChannelSearch;
         view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
         chatController.OnChannelUpdated -= HandleChannelUpdated;
@@ -283,7 +286,7 @@ public class WorldChatWindowController : IHUD
             view.HidePrivateChatsLoading();
     }
     
-    private void SearchChannels(string search)
+    private void SearchChats(string search)
     {
         currentSearch = search;
 
@@ -396,4 +399,6 @@ public class WorldChatWindowController : IHUD
     }
     
     private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();
+
+    private void OpenChannelSearch() => OnOpenChannelSearch?.Invoke();
 }

@@ -12,8 +12,6 @@ public class ChatController : MonoBehaviour, IChatController
 {
     public static ChatController i { get; private set; }
 
-    [NonSerialized] public List<ChatMessage> entries = new List<ChatMessage>();
-
     private readonly Dictionary<string, int> unseenMessagesByUser = new Dictionary<string, int>();
 
     private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
@@ -134,6 +132,11 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     public void GetChannels(int limit, int skip, string name)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void GetChannels(int limit, int skip)
     {
         throw new NotImplementedException();
     }

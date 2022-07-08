@@ -212,6 +212,9 @@ namespace DCL.Chat.Channels
         public void GetChannels(int limit, int skip, string name) =>
             GetFakeChannels(limit, skip, name).Forget();
 
+        public void GetChannels(int limit, int skip) =>
+            GetFakeChannels(limit, skip, "").Forget();
+
         private async UniTask GetFakeChannels(int limit, int skip, string name)
         {
             await UniTask.Delay(Random.Range(40, 1000));

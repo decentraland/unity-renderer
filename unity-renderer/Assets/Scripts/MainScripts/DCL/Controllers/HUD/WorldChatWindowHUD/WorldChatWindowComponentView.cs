@@ -26,6 +26,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] internal TMP_Text searchResultsHeaderLabel;
     [SerializeField] internal ScrollRect scroll;
     [SerializeField] internal SearchBarComponentView searchBar;
+    [SerializeField] internal Button openChannelSearchButton;
     [SerializeField] private WorldChatWindowModel model;
 
     [Header("Load More Entries")] [SerializeField]
@@ -49,8 +50,9 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChat;
-    public event Action<string> OnSearchChannelRequested;
+    public event Action<string> OnSearchChatRequested;
     public event Action OnRequireMorePrivateChats;
+    public event Action OnOpenChannelSearch;
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -75,12 +77,13 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             return string.Compare(u1.Model.name, u2.Model.name, StringComparison.InvariantCultureIgnoreCase);
         }
         
+        openChannelSearchButton.onClick.AddListener(() => OnOpenChannelSearch?.Invoke());
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         directChatList.SortingMethod = (a, b) => b.Model.lastMessageTimestamp.CompareTo(a.Model.lastMessageTimestamp);
         directChatList.OnOpenChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
         publicChannelList.SortingMethod = SortByAlphabeticalOrder;
         publicChannelList.OnOpenChat += entry => OnOpenPublicChat?.Invoke(entry.Model.channelId);
-        searchBar.OnSearchText += text => OnSearchChannelRequested?.Invoke(text);
+        searchBar.OnSearchText += text => OnSearchChatRequested?.Invoke(text);
         scroll.onValueChanged.AddListener((scrollPos) =>
         {
             if (scrollPos.y < 0.005f)

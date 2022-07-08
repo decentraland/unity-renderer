@@ -7,8 +7,9 @@ public interface IWorldChatWindowView
     event Action OnClose;
     event Action<string> OnOpenPrivateChat;
     event Action<string> OnOpenPublicChat;
-    event Action<string> OnSearchChannelRequested;
+    event Action<string> OnSearchChatRequested;
     event Action OnRequireMorePrivateChats;
+    event Action OnOpenChannelSearch;
 
     RectTransform Transform { get; }
     bool IsActive { get; }

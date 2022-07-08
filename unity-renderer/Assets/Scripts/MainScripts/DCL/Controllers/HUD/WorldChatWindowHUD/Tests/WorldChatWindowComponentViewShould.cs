@@ -265,7 +265,7 @@ public class WorldChatWindowComponentViewShould
     public void TriggerSearchChannel()
     {
         var search = "";
-        view.OnSearchChannelRequested += s => search = s;
+        view.OnSearchChatRequested += s => search = s;
 
         view.searchBar.SubmitSearch("hello");
 
