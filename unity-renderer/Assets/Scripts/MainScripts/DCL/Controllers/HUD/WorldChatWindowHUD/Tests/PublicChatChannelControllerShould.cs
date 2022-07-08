@@ -49,27 +49,6 @@ public class PublicChatChannelControllerShould
     }
 
     [Test]
-    public void AddEntryWhenPrivateMessage()
-    {
-        var msg = new ChatMessage
-        {
-            messageType = ChatMessage.Type.PRIVATE,
-            body = "test message",
-            sender = OWN_USER_ID,
-            recipient = TEST_USER_ID,
-            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        };
-
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg);
-
-        internalChatView.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model =>
-            model.messageType == msg.messageType
-            && model.bodyText == $"<noparse>{msg.body}</noparse>"
-            && model.senderId == msg.sender
-            && model.otherUserId == msg.recipient));
-    }
-
-    [Test]
     public void AddEntryWhenMessageReceived()
     {
         var msg = new ChatMessage
@@ -157,29 +136,6 @@ public class PublicChatChannelControllerShould
 
         controller.View.OnClose += Raise.Event<Action>();
         Assert.IsFalse(view.IsActive);
-    }
-
-    [UnityTest]
-    public IEnumerator ReplyToWhisperingSender()
-    {
-        var msg = new ChatMessage
-        {
-            body = "test message",
-            sender = TEST_USER_ID,
-            recipient = OWN_USER_ID,
-            messageType = ChatMessage.Type.PRIVATE,
-            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        };
-
-        yield return null;
-
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg);
-
-        yield return null;
-
-        internalChatView.OnMessageUpdated += Raise.Event<Action<string>>("/r ");
-
-        internalChatView.Received(1).SetInputFieldText($"/w {TEST_USER_NAME} ");
     }
 
     [Test]

@@ -21,16 +21,12 @@ public class PublicChatWindowController : IHUD
     private readonly IMouseCatcher mouseCatcher;
     private readonly InputAction_Trigger toggleChatTrigger;
     private ChatHUDController chatHudController;
-    private double initTimeInSeconds;
     private string channelId;
     private ChatWindowVisualState currentState;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
 
     private bool skipChatInputTrigger;
-    private string lastPrivateMessageRecipient = string.Empty;
-
-    private UserProfile ownProfile => userProfileBridge.GetOwn();
     
     public PublicChatWindowController(IChatController chatController,
         IUserProfileBridge userProfileBridge,
@@ -62,7 +58,6 @@ public class PublicChatWindowController : IHUD
             profanityFilter);
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnSendMessage += SendChatMessage;
-        chatHudController.OnMessageUpdated += HandleMessageInputUpdated;
         chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
         chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
         chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
@@ -75,8 +70,6 @@ public class PublicChatWindowController : IHUD
             mouseCatcher.OnMouseLock += ActivatePreview;
 
         toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
-
-        initTimeInSeconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
         
         currentState = ChatWindowVisualState.PREVIEW_MODE;
         WaitThenFadeOutMessages(deactivateFadeOutCancellationToken.Token).Forget();
@@ -104,7 +97,6 @@ public class PublicChatWindowController : IHUD
             chatController.OnAddMessage -= HandleMessageReceived;
 
         chatHudController.OnSendMessage -= SendChatMessage;
-        chatHudController.OnMessageUpdated -= HandleMessageInputUpdated;
         chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
         chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
 
@@ -125,11 +117,6 @@ public class PublicChatWindowController : IHUD
     {
         var isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
         var isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
-
-        if (isPrivateMessage && isValidMessage)
-            lastPrivateMessageRecipient = message.recipient;
-        else
-            lastPrivateMessageRecipient = null;
 
         if (isValidMessage)
         {
@@ -206,30 +193,16 @@ public class PublicChatWindowController : IHUD
 
     private void HandleViewBacked() => OnBack?.Invoke();
 
-    private void HandleMessageInputUpdated(string message)
-    {
-        if (!string.IsNullOrEmpty(lastPrivateMessageRecipient) && message == "/r ")
-            chatHudController.SetInputFieldText($"/w {lastPrivateMessageRecipient} ");
-    }
-
-    private bool IsOldPrivateMessage(ChatMessage message)
-    {
-        if (message.messageType != ChatMessage.Type.PRIVATE) return false;
-        var timestampInSeconds = message.timestamp / 1000.0;
-        return timestampInSeconds < initTimeInSeconds;
-    }
-
     private void HandleMessageReceived(ChatMessage message)
     {
-        if (IsOldPrivateMessage(message)) return;
+        if (message.messageType != ChatMessage.Type.PUBLIC
+            && message.messageType != ChatMessage.Type.SYSTEM) return;
+        if (!string.IsNullOrEmpty(message.recipient)) return;
 
         chatHudController.AddChatMessage(message, View.IsActive);
 
         if (View.IsActive)
             MarkChatMessagesAsRead();
-
-        if (message.messageType == ChatMessage.Type.PRIVATE && message.recipient == ownProfile.userId)
-            lastPrivateMessageRecipient = userProfileBridge.Get(message.sender).userName;
         
         deactivatePreviewCancellationToken.Cancel();
         deactivatePreviewCancellationToken = new CancellationTokenSource();
