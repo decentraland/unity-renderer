@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using Cysharp.Threading.Tasks;
@@ -12,6 +13,7 @@ using rpc_csharp;
 using rpc_csharp_test;
 using rpc_csharp.transport;
 using RPC.Services;
+using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace Tests
@@ -67,11 +69,18 @@ namespace Tests
                                });
 
             // Simulate client sending `crdtMessage` CRDT
-            await testClient.CallProcedure<CRDTResponse>("SendCrdt", new CRDTManyMessages()
+            try
             {
-                SceneId = sceneId,
-                Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
-            });
+                await testClient.CallProcedure<CRDTResponse>("SendCrdt", new CRDTManyMessages()
+                {
+                    SceneId = sceneId,
+                    Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
+                });
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
 
             messageQueueHandler.Received(1).EnqueueSceneMessage(Arg.Any<QueuedSceneMessage_Scene>());
         }
@@ -126,16 +135,23 @@ namespace Tests
 
             bool testDone = false;
 
-            // client receives CRDT notifications
-            await foreach (var element in testClient.CallStream<CRDTManyMessages>("CrdtNotificationStream", new CRDTStreamRequest()))
+            try
             {
-                var receivedCrdt = await element;
-                clientReceiveCRDT.TrySetResult(receivedCrdt);
-                if (isLastElementOfStream)
+                // client receives CRDT notifications
+                await foreach (var element in testClient.CallStream<CRDTManyMessages>("CrdtNotificationStream", new CRDTStreamRequest()))
                 {
-                    testDone = true;
-                    break;
+                    var receivedCrdt = await element;
+                    clientReceiveCRDT.TrySetResult(receivedCrdt);
+                    if (isLastElementOfStream)
+                    {
+                        testDone = true;
+                        break;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
             }
             Assert.IsTrue(testDone);
         }
