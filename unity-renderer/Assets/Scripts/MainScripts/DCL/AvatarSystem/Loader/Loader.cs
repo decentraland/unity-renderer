@@ -212,24 +212,35 @@ namespace AvatarSystem
             bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible, SkinnedMeshRenderer bonesContainer,
             CancellationToken ct)
         {
+            Debug.Log("DA");
             var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible);
+            Debug.Log("DB");
             IEnumerable<SkinnedMeshRenderer> allRenderers = activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
-
+            Debug.Log("DC");
             // AvatarMeshCombiner is a bit buggy when performing the combine of the same meshes on the same frame,
             // once that's fixed we can remove this wait
             // AttachExternalCancellation is needed because cancellation will take a wait to trigger
+            Debug.Log("DE");
             await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
+            Debug.Log("DF");
             var featureFlags = DataStore.i.featureFlags.flags.Get();
+            Debug.Log("DG");
             avatarMeshCombiner.useCullOpaqueHeuristic = true;
+            Debug.Log("DH");
             avatarMeshCombiner.enableCombinedMesh = false;
+            Debug.Log("DI");
             bool success = avatarMeshCombiner.Combine(bonesContainer, allRenderers.ToArray());
+            Debug.Log("DJ");
             if (!success)
             {
                 status = ILoader.Status.Failed_Major;
                 throw new Exception("Couldnt merge avatar");
             }
+            Debug.Log("DK");
             avatarMeshCombiner.container.transform.SetParent(container.transform, true);
+            Debug.Log("DL");
             avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
+            Debug.Log("DM");
             return avatarMeshCombiner.renderer;
         }
 
