@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "e1ba2e767d09400ab55b2adf70387a68",
     "m_Properties": [
@@ -14,6 +14,12 @@
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "5e68da879f634fd49ac4d59cd3b1ac95"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "04452707cf0e46b7bf8d825d27ba6087"
@@ -113,10 +119,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Sub Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": "04452707cf0e46b7bf8d825d27ba6087"
@@ -226,9 +233,13 @@
         "m_GuidSerialized": "09cd6aca-c70e-4641-8c71-9dd0255408c9"
     },
     "m_Name": "BaseColor",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector4_24bfc4fe6d814a87afb553851c8d94be",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -249,9 +260,13 @@
         "m_GuidSerialized": "18ac4d55-c7c0-4dc4-9631-d4f5b9941739"
     },
     "m_Name": "LightTint",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector4_303038c18fb5462fb8badf7f4494edea",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -277,6 +292,24 @@
     "m_Value": 1.0,
     "m_DefaultValue": 1.0,
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "5e68da879f634fd49ac4d59cd3b1ac95",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "24bfc4fe6d814a87afb553851c8d94be"
+        },
+        {
+            "m_Id": "303038c18fb5462fb8badf7f4494edea"
+        },
+        {
+            "m_Id": "e5a8ddeb84e142ddb01fb36b28018509"
+        }
+    ]
 }
 
 {
@@ -472,9 +505,13 @@
         "m_GuidSerialized": "f7a8969c-da4f-47fc-9a66-04c018625273"
     },
     "m_Name": "LightIntensity",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_e5a8ddeb84e142ddb01fb36b28018509",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,

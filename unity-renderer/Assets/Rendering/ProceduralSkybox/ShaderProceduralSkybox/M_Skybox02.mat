@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -10,7 +10,8 @@ Material:
   m_Name: M_Skybox02
   m_Shader: {fileID: -6465566751694194690, guid: bf4000fbd9b31784cab1d27368431336,
     type: 3}
-  m_ShaderKeywords: 
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -120,6 +121,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _horizonPlane:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _normals:
         m_Texture: {fileID: 2800000, guid: f956ca744d72ca149b1f004946413eea, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -169,11 +174,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_0:
-        m_Texture: {fileID: 2800000, guid: 1f19dbb2b85e7a94987d2b6cb4687dde, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_1:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: e115b258140375c48b22b4bdf6b4ae5b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_2:
@@ -200,6 +205,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - Vector1_1: 1
     - Vector1_124badfe62ea4e3f84853a36f1755f70: 0
@@ -221,6 +227,8 @@ Material:
     - Vector1_ee4830b881524b7d911e938223ed7a1f: 0
     - Vector1_ee4830b881524b7d911e938223ed7a1f_1: 0
     - Vector1_ee4830b881524b7d911e938223ed7a1f_2: 0
+    - _QueueControl: 1
+    - _QueueOffset: 0
     - _RenderDistance_0: 3.4
     - _RenderDistance_1: 3.4
     - _RenderDistance_2: 0
@@ -228,11 +236,12 @@ Material:
     - _RenderDistance_4: 0
     - _dayTime: 0
     - _distance_0: 20
-    - _fadeTime_0: 0.14126281
+    - _fadeTime_0: 1
     - _fadeTime_1: 1
     - _fadeTime_2: 1
     - _fadeTime_3: 1
     - _fadeTime_4: 1
+    - _fogIntesity: 0
     - _hasFade00: 0
     - _hasFade01: 1
     - _hasFade02: 0
@@ -240,7 +249,8 @@ Material:
     - _hasFade_1: 0
     - _hasFade_2: 0
     - _horizonHeight: 0
-    - _horizonPlaneHeight: -1
+    - _horizonLigthIntesity: 0
+    - _horizonPlaneHeight: 0
     - _horizonWidth: 0
     - _isRadial00: 0
     - _isRadial01: 1
@@ -251,8 +261,8 @@ Material:
     - _isRadial_0: 0
     - _isRadial_1: 0
     - _isRadial_2: 0
-    - _layerType_0: 1
-    - _layerType_1: 0
+    - _layerType_0: 0
+    - _layerType_1: 2
     - _layerType_2: 4
     - _layerType_3: 4
     - _layerType_4: 4
@@ -311,11 +321,11 @@ Material:
     - _color00: {r: 1, g: 1, b: 1, a: 1}
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
-    - _color_0: {r: 383.49805, g: 383.49805, b: 383.49805, a: 0.34868333}
-    - _color_1: {r: 1, g: 1, b: 1, a: 0}
-    - _color_2: {r: 0.78088814, g: 0.64944816, b: 0.6804646, a: 0.96496075}
-    - _color_3: {r: 0.83226484, g: 0.5985333, b: 0.61655295, a: 0.6808644}
-    - _color_4: {r: 0.36907035, g: 0.35220236, b: 0.36722818, a: 1}
+    - _color_0: {r: 1, g: 1, b: 1, a: 0}
+    - _color_1: {r: 12.1921835, g: 9.602472, b: 7.559802, a: 1}
+    - _color_2: {r: 0.98498535, g: 0.98498535, b: 0.98498535, a: 1}
+    - _color_3: {r: 0.996176, g: 0.9289012, b: 0.9032171, a: 0.8062119}
+    - _color_4: {r: 0.52501404, g: 0.45566308, b: 0.44271928, a: 1}
     - _distortIntAndSize_0: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_1: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_2: {r: 0, g: 0, b: 0, a: 0}
@@ -326,11 +336,13 @@ Material:
     - _distortSpeedAndSharp_2: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_3: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_4: {r: 0, g: 0, b: 0, a: 0}
-    - _groundColor: {r: 0.12716153, g: 0.15448119, b: 0.26293996, a: 1}
-    - _horizonColor: {r: 0.8505523, g: 0.41144514, b: 0.16617683, a: 1}
-    - _horizonMaskValues: {r: -0.98, g: 0, b: -1.77, a: 0}
-    - _lightDirection: {r: 356.18976, g: 134.99998, b: 90, a: 0}
-    - _lightTint: {r: 0.9709974, g: 0.7793894, b: 0.6353253, a: 1}
+    - _groundColor: {r: 0.14499974, g: 0.21562186, b: 0.293466, a: 1}
+    - _horizonColor: {r: 0.9995487, g: 0.99664056, b: 0.9957249, a: 1}
+    - _horizonMaskValues: {r: 0, g: 0, b: 0, a: 0}
+    - _horizonPlaneColor: {r: 0, g: 0, b: 0, a: 1}
+    - _horizonPlaneValues: {r: 0, g: 0, b: 0, a: 0}
+    - _lightDirection: {r: 75.633865, g: 314.99997, b: 270.00006, a: 0}
+    - _lightTint: {r: 0.85725796, g: 0.8707784, b: 0.7760787, a: 1}
     - _particlesMainParameters_0: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_1: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_2: {r: 0, g: 0, b: 0, a: 0}
@@ -341,13 +353,14 @@ Material:
     - _particlesSecondaryParameters_2: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_3: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_4: {r: 0, g: 0, b: 0, a: 0}
-    - _rowAndCollumns_0: {r: 2.43, g: -9.78, b: 0, a: 0}
+    - _rowAndCollumns_0: {r: 1, g: 1, b: 0, a: 0}
     - _rowAndCollumns_1: {r: 1, g: 1, b: 0, a: 0}
     - _rowAndCollumns_2: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_3: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_4: {r: 0, g: 0, b: 0, a: 0}
-    - _skyColor: {r: 0.2925811, g: 0.27818993, b: 0.4517373, a: 1}
-    - _speedAndRotation_0: {r: 0.01, g: 0, b: 0, a: 0}
+    - _skyColor: {r: 0.3827855, g: 0.7028034, b: 0.9905131, a: 1}
+    - _smoothRange: {r: 0, g: 0.021739125, b: 0, a: 0}
+    - _speedAndRotation_0: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_1: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_2: {r: 0, g: 0.4, b: 0, a: 0}
     - _speedAndRotation_3: {r: 0, g: 1, b: 0, a: 0}
@@ -358,17 +371,30 @@ Material:
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_0: {r: 27.3, g: 4, b: 0, a: 0}
-    - _tilingAndOffset_1: {r: 1, g: 1, b: 0, a: 0}
+    - _tilingAndOffset_0: {r: 1, g: 1, b: 0, a: 0}
+    - _tilingAndOffset_1: {r: 4.1070547, g: 4.1070547, b: 45, a: 93.02299}
     - _tilingAndOffset_2: {r: 0, g: 0, b: 0, a: 0}
     - _tilingAndOffset_3: {r: 0, g: 0, b: 0, a: 0}
     - _tilingAndOffset_4: {r: 0, g: 0, b: 0, a: 0}
     - _timeFrame00: {r: 0, g: 10, b: 0, a: 0}
     - _timeFrame01: {r: 9, g: 16, b: 0, a: 0}
     - _timeFrame02: {r: 16, g: 24, b: 0, a: 0}
-    - _timeFrame_0: {r: 18, g: 5, b: 0, a: 0}
-    - _timeFrame_1: {r: 0, g: 0, b: 0, a: 0}
+    - _timeFrame_0: {r: 0, g: 0, b: 0, a: 0}
+    - _timeFrame_1: {r: 5, g: 20, b: 0, a: 0}
     - _timeFrame_2: {r: 0, g: 24, b: 0, a: 0}
     - _timeFrame_3: {r: 0, g: 24, b: 0, a: 0}
     - _timeFrame_4: {r: 0, g: 24, b: 0, a: 0}
   m_BuildTextureStacks: []
+--- !u!114 &4023029828089676068
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 5

@@ -11,6 +11,7 @@ TestResults/
 Assets/InitTestScene*.unity
 Assets/InitTestScene*.unity.meta
 **/CurrentTestImages/
+UserSettings/
 
 .DS_Store
 .DS_Store?

@@ -1,7 +1,6 @@
 using DCL.Helpers;
 using System.Collections;
 using System.IO;
-using UnityEditor.Experimental.TerrainAPI;
 using UnityEngine.Networking;
 using MappingPair = DCL.ContentServerUtils.MappingPair;
 
