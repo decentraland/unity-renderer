@@ -232,10 +232,21 @@ public class WorldChatWindowControllerShould
     }
     
     [Test]
-    public void TriggerOpenPublicChannel()
+    public void TriggerOpenPublicChat()
     {
         var opened = false;
-        controller.OnOpenPublicChat += s => opened = s == FRIEND_ID;
+        controller.OnOpenPublicChat += s => opened = s == "nearby";
+        controller.Initialize(view);
+        view.OnOpenPublicChat += Raise.Event<Action<string>>("nearby");
+        
+        Assert.IsTrue(opened);
+    }
+    
+    [Test]
+    public void TriggerOpenChannel()
+    {
+        var opened = false;
+        controller.OnOpenChannel += s => opened = s == FRIEND_ID;
         controller.Initialize(view);
         view.OnOpenPublicChat += Raise.Event<Action<string>>(FRIEND_ID);
         
