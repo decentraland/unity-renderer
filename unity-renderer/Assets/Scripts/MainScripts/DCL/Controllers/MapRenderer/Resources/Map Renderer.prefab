@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 785378317}
   - component: {fileID: 829943578414287809}
   - component: {fileID: 7929854281947399184}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Map Renderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,7 +267,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 90597117798403300}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Overlay Layer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,7 +307,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3332934504654532118}
   - component: {fileID: 7444257446788367200}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GlobalUsersMakerOverlay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -462,7 +462,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -471,6 +471,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -499,7 +500,7 @@ GameObject:
   - component: {fileID: 1025416073224921776}
   - component: {fileID: 5701652931424918980}
   - component: {fileID: 4349151360197092999}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: CenteredReferenceParcel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -569,7 +570,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6100807533600505858}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: OverlayContainerPlayers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -718,7 +719,7 @@ GameObject:
   - component: {fileID: 1340394175305253205}
   - component: {fileID: 1744163396224065109}
   - component: {fileID: 7800080416519839540}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -883,6 +884,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MapRendererAudioHandler
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005274151773561966, guid: c9d078f34ad7cc146861524afff2f443,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3343481069366915239, guid: c9d078f34ad7cc146861524afff2f443,
         type: 3}

@@ -170,6 +170,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     internal RectTransform profileCardRectTranform;
     internal RealmSelectorComponentView realmSelectorModal;
+    internal HUDCameraCanvasHelper hudCameraCanvasHelper;
 
     public override void Awake()
     {
@@ -177,6 +178,12 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         profileCardRectTranform = profileCard.GetComponent<RectTransform>();
         realmSelectorModal = ConfigureRealmSelectorModal();
+        hudCameraCanvasHelper = new HUDCameraCanvasHelper(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
+    }
+
+    public void OnDestroy()
+    {
+        hudCameraCanvasHelper?.Dispose();
     }
 
     public override void Start()

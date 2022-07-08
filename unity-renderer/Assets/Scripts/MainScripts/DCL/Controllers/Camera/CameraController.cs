@@ -6,6 +6,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using DCL;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 namespace DCL.Camera
 {
@@ -230,6 +231,10 @@ namespace DCL.Camera
         private void SetCameraEnabledState(bool enabled)
         {
             camera.enabled = enabled;
+
+            var hudsCameraData = hudsCamera.GetUniversalAdditionalCameraData();
+            hudsCameraData.renderType = enabled ?  CameraRenderType.Overlay : CameraRenderType.Base;
+
             DataStore.i.camera.mainCamEnabled.Set(enabled);
         }
 

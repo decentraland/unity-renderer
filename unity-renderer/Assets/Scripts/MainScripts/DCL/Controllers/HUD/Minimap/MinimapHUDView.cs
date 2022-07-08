@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using TMPro;
 using UnityEngine;
@@ -32,6 +33,9 @@ public class MinimapHUDView : MonoBehaviour
     public static System.Action OnOpenNavmapClicked;
     public InputAction_Trigger toggleNavMapAction;
     private IMouseCatcher mouseCatcher;
+    private HUDCameraCanvasHelper hudCameraCanvasHelper;
+
+    private void Awake() { hudCameraCanvasHelper = new HUDCameraCanvasHelper(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera); }
 
     public void Initialize(MinimapHUDController controller)
     {
@@ -91,5 +95,6 @@ public class MinimapHUDView : MonoBehaviour
     {
         if(mouseCatcher != null)
             mouseCatcher.OnMouseLock -= OnMouseLocked;
+        hudCameraCanvasHelper?.Dispose();
     }
 }

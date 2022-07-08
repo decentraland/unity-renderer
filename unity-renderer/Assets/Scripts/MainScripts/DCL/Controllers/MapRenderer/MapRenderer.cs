@@ -431,6 +431,7 @@ namespace DCL
             marker.gameObject.transform.SetParent(overlayContainerPlayers.transform, true);
             marker.Populate(player);
             marker.gameObject.SetActive(otherPlayersIconsEnabled);
+            marker.transform.localScale = Vector3.one;
             usersInfoMarkers.Add(userId, poolable);
         }
 

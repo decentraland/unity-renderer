@@ -28,7 +28,6 @@ namespace DCL.EmotesWheel
         public event Action OnClose;
         public event Action OnCustomizeClicked;
 
-        [SerializeField] internal Canvas canvas;
         [SerializeField] internal Sprite nonAssignedEmoteSprite;
         [SerializeField] internal EmoteWheelSlot[] emoteButtons;
         [SerializeField] internal Button_OnPointerDown[] closeButtons;
@@ -54,7 +53,7 @@ namespace DCL.EmotesWheel
             });
 
             selectedEmoteName.text = string.Empty;
-            hudCameraCanvasHelper = new HUDCameraCanvasHelper(canvas, DataStore.i.camera.hudsCamera);
+            hudCameraCanvasHelper = new HUDCameraCanvasHelper(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
         }
 
         public void SetVisiblity(bool visible)
