@@ -21,7 +21,7 @@ namespace DCL.ECSComponents.Test
         [SetUp]
         public void Setup()
         {
-            handler = Substitute.ForPartsOf<AvatarAttachComponentHandler>(Substitute.For<IUpdateEventHandler>(), Substitute.For<ISceneBoundsChecker>());
+            handler = Substitute.ForPartsOf<AvatarAttachComponentHandler>(Substitute.For<IUpdateEventHandler>());
 
             scene = Substitute.For<IParcelScene>();
 
