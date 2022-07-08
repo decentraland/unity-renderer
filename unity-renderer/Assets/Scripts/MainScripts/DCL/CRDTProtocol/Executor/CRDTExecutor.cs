@@ -7,10 +7,11 @@ namespace DCL.CRDT
     public class CRDTExecutor : ICRDTExecutor
     {
         private readonly IParcelScene ownerScene;
-        private readonly CRDTProtocol crdtProtocol;
         private readonly ECSComponentsFactory ecsComponentsFactory;
 
         private ECSComponentsManager ecsManager;
+
+        public CRDTProtocol crdtProtocol { get; }
 
         public CRDTExecutor(IParcelScene scene)
         {

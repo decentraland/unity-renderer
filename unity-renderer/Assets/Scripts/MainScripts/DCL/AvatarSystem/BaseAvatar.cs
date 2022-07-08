@@ -50,6 +50,8 @@ namespace AvatarSystem
         {
             if (avatarRevealerContainer == null) 
                 return;
+            
+            cancellationToken.ThrowIfCancellationRequested();
 
             avatarRevealer.AddTarget(targetRenderer);
             await avatarRevealer.StartAvatarRevealAnimation(playParticles, cancellationToken);
