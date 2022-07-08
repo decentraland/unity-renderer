@@ -21,11 +21,13 @@ public class ComponentCrdtWriteSystem : IDisposable
     private readonly MemoryStream memoryStream;
     private readonly BinaryWriter binaryWriter;
     private readonly IWorldState worldState;
+    private readonly RPCContext rpcContext;
 
-    public ComponentCrdtWriteSystem(IUpdateEventHandler updateEventHandler, IWorldState worldState)
+    public ComponentCrdtWriteSystem(IUpdateEventHandler updateEventHandler, IWorldState worldState, RPCContext rpcContext)
     {
         this.updateEventHandler = updateEventHandler;
         this.worldState = worldState;
+        this.rpcContext = rpcContext;
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, ProcessMessages);
         memoryStream = new MemoryStream();
         binaryWriter = new BinaryWriter(memoryStream);
@@ -147,7 +149,7 @@ public class ComponentCrdtWriteSystem : IDisposable
 
     private void DispatchBinaryMessage(string sceneId, MemoryStream stream)
     {
-        RPCGlobalContext.context.crdtContext.notifications.Enqueue((sceneId, stream.ToArray()));
+        rpcContext.crdtContext.notifications.Enqueue((sceneId, stream.ToArray()));
         stream.SetLength(0);
     }
 }

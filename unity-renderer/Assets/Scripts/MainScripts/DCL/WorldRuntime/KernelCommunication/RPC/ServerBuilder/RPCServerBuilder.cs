@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL;
 using rpc_csharp;
 using rpc_csharp.transport;
 using RPC.Services;
@@ -12,8 +13,9 @@ namespace RPC
     {
         public static void BuildDefaultServer()
         {
-            RPCGlobalContext.context.crdtContext.messageQueueHandler = Environment.i.world.sceneController;
-            BuildDefaultServer(RPCGlobalContext.context);
+            RPCContext context = DataStore.i.rpcContext.context;
+            context.crdtContext.messageQueueHandler = Environment.i.world.sceneController;
+            BuildDefaultServer(context);
         }
 
         public static RpcServer<RPCContext> BuildDefaultServer(RPCContext context)

@@ -7,7 +7,6 @@ using DCL.ECSRuntime;
 using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
-using RPC;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace Tests
@@ -32,7 +31,13 @@ namespace Tests
             scene.crdtExecutor.Returns(crdtExecutor);
             worldState.loadedScenes.Returns(new Dictionary<string, IParcelScene>() { { SCENE_ID, scene } });
 
-            crdtWriteSystem = new ComponentCrdtWriteSystem(updateHandler, worldState);
+            crdtWriteSystem = new ComponentCrdtWriteSystem(updateHandler, worldState, DataStore.i.rpcContext.context);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            DataStore.Clear();
         }
 
         [Test]
@@ -80,7 +85,7 @@ namespace Tests
 
             // get the expected binary message and compare with the one that is being sent to WebInterface
             byte[] expectedBinaryMessage = SerializeCRDTMessage(message);
-            var (sceneId, bytes) = RPCGlobalContext.context.crdtContext.notifications.Dequeue();
+            var (sceneId, bytes) = DataStore.i.rpcContext.context.crdtContext.notifications.Dequeue();
             Assert.AreEqual(SCENE_ID, sceneId);
             Assert.IsTrue(AreEqual(expectedBinaryMessage, bytes));
         }
@@ -120,7 +125,7 @@ namespace Tests
             // process messages
             crdtWriteSystem.ProcessMessages();
 
-            var (sceneId, bytes) = RPCGlobalContext.context.crdtContext.notifications.Dequeue();
+            var (sceneId, bytes) = DataStore.i.rpcContext.context.crdtContext.notifications.Dequeue();
             Assert.AreEqual(SCENE_ID, sceneId);
             Assert.IsTrue(AreEqual(expectedSerialized, bytes));
 
@@ -168,7 +173,7 @@ namespace Tests
             crdtWriteSystem.ProcessMessages();
             Assert.AreEqual(1, crdtWriteSystem.queuedMessages[SCENE_ID].Count);
 
-            var (sceneId0, bytes0) = RPCGlobalContext.context.crdtContext.notifications.Dequeue();
+            var (sceneId0, bytes0) = DataStore.i.rpcContext.context.crdtContext.notifications.Dequeue();
             Assert.AreEqual(SCENE_ID, sceneId0);
             Assert.IsTrue(AreEqual(expectedSerialized0, bytes0));
 
@@ -176,7 +181,7 @@ namespace Tests
             crdtWriteSystem.ProcessMessages();
             Assert.AreEqual(0, crdtWriteSystem.queuedMessages.Count);
 
-            var (sceneId1, bytes1) = RPCGlobalContext.context.crdtContext.notifications.Dequeue();
+            var (sceneId1, bytes1) = DataStore.i.rpcContext.context.crdtContext.notifications.Dequeue();
             Assert.AreEqual(SCENE_ID, sceneId1);
             Assert.IsTrue(AreEqual(expectedSerialized1, bytes1));
         }
@@ -211,7 +216,7 @@ namespace Tests
             crdtWriteSystem.ProcessMessages();
             Assert.AreEqual(0, crdtWriteSystem.queuedMessages.Count);
 
-            var (sceneId, bytes) = RPCGlobalContext.context.crdtContext.notifications.Dequeue();
+            var (sceneId, bytes) = DataStore.i.rpcContext.context.crdtContext.notifications.Dequeue();
             Assert.AreEqual(SCENE_ID, sceneId);
             Assert.IsTrue(AreEqual(expectedBinaryMessage, bytes));
         }
