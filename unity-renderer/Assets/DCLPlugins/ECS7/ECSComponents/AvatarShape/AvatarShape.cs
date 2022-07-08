@@ -177,7 +177,7 @@ namespace DCL.ECSComponents
                 loadingCts?.Dispose();
                 loadingCts = new CancellationTokenSource();
                 
-                await LoadAvatar(wearableItems,loadingCts);
+                await LoadAvatar(wearableItems);
             }
             
             avatar.PlayEmote(model.ExpressionTriggerId, model.ExpressionTriggerTimestamp);
@@ -202,17 +202,16 @@ namespace DCL.ECSComponents
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
         }
 
-        private async UniTask LoadAvatar(List<string> wearableItems, CancellationTokenSource ct)
+        private async UniTask LoadAvatar(List<string> wearableItems)
         {
-            //TODO Add Collider to the AvatarSystem
-            //TODO Without this the collider could get triggered disabling the avatar container,
-            // this would stop the loading process due to the underlying coroutines of the AssetLoader not starting
-            avatarCollider.gameObject.SetActive(false);
-
-            SetImpostor(model.Id);
-            
             try
             {
+                //TODO Add Collider to the AvatarSystem
+                //TODO Without this the collider could get triggered disabling the avatar container,
+                // this would stop the loading process due to the underlying coroutines of the AssetLoader not starting
+                avatarCollider.gameObject.SetActive(false);
+
+                SetImpostor(model.Id);
                 playerName.SetName(model.Name);
                 playerName.Show(true);
                 await avatar.Load(wearableItems, new AvatarSettings
@@ -222,7 +221,7 @@ namespace DCL.ECSComponents
                     eyesColor = ProtoConvertUtils.PBColorToUnityColor(model.EyeColor),
                     skinColor = ProtoConvertUtils.PBColorToUnityColor(model.SkinColor),
                     hairColor = ProtoConvertUtils.PBColorToUnityColor(model.HairColor),
-                }, ct.Token);
+                }, loadingCts.Token);
             }
             catch (OperationCanceledException)
             {
@@ -236,8 +235,8 @@ namespace DCL.ECSComponents
             }
             finally
             {
-                ct?.Dispose();
-                ct = null;
+                loadingCts?.Dispose();
+                loadingCts = null;
             }
         }
 
@@ -394,10 +393,11 @@ namespace DCL.ECSComponents
                 otherPlayers.Remove(player.id);
                 player = null;
             }
-
+            
             loadingCts?.Cancel();
             loadingCts?.Dispose();
             loadingCts = null;
+            
             currentLazyObserver?.RemoveListener(avatar.SetImpostorTexture);
             avatar.Dispose();
 
