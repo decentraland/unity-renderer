@@ -326,7 +326,7 @@ Shader "DCL/Universal Render Pipeline/LitNoFog"
 
             #define _EMISSION
             #pragma vertex UniversalVertexMeta
-            #pragma fragment UniversalFragmentMeta
+            #pragma fragment UniversalFragmentMetaLit
 
             #pragma shader_feature_local_fragment _SPECULAR_SETUP
             #pragma shader_feature_local_fragment _METALLICSPECGLOSSMAP
@@ -541,7 +541,7 @@ Shader "DCL/Universal Render Pipeline/LitNoFog"
             #pragma target 2.0
 
             #pragma vertex UniversalVertexMeta
-            #pragma fragment UniversalFragmentMeta
+            #pragma fragment UniversalFragmentMetaLit
 
             #pragma shader_feature_local_fragment _SPECULAR_SETUP
             #define _EMISSION

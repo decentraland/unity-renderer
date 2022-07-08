@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "a16fa58c0ca545b88aa9b34ca03ed698",
     "m_Properties": [
@@ -14,6 +14,12 @@
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "a4f75dd4de6042f5a07fd3e2281dee46"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "3e015b35bff76284853220d6ed019e2e"
@@ -143,10 +149,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Sub Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": "2a813d1a51f2928cafdc2328d8325f6a"
@@ -244,7 +251,9 @@
     "m_PropertyIds": [
         -1783097993,
         -250712641
-    ]
+    ],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 
 {
@@ -466,9 +475,13 @@
         "m_GuidSerialized": "f3bdd092-0092-4c30-8375-79e76af0f59c"
     },
     "m_Name": "Blend Color",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_D7818A04",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -479,6 +492,7 @@
         "b": 1.0,
         "a": 1.0
     },
+    "isMainColor": false,
     "m_ColorMode": 0
 }
 
@@ -490,9 +504,13 @@
         "m_GuidSerialized": "d51a511e-cec3-49c7-a670-024a843669ae"
     },
     "m_Name": "TintColor",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_546468F9",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -503,6 +521,7 @@
         "b": 0.5416518449783325,
         "a": 1.0
     },
+    "isMainColor": false,
     "m_ColorMode": 0
 }
 
@@ -588,9 +607,13 @@
         "m_GuidSerialized": "a5eed4b7-915f-44e4-9cea-b18d4a23aa52"
     },
     "m_Name": "Texture Color",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_D4F585C6",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -601,6 +624,7 @@
         "b": 1.0,
         "a": 1.0
     },
+    "isMainColor": false,
     "m_ColorMode": 0
 }
 
@@ -640,6 +664,24 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "a4f75dd4de6042f5a07fd3e2281dee46",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "9a83afec825641888a9ef9ee903c7579"
+        },
+        {
+            "m_Id": "6e9547cfd2d68f87a68a7c0579c5d4a7"
+        },
+        {
+            "m_Id": "5bbe166f6231498b9430d5561c5114db"
+        }
+    ]
 }
 
 {
