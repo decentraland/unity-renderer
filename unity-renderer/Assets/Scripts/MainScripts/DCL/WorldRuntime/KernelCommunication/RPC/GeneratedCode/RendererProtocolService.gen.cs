@@ -3,6 +3,7 @@
 // package: 
 // file: RendererProtocol.proto
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Google.Protobuf;
 using rpc_csharp.protocol;
@@ -12,7 +13,7 @@ public abstract class CRDTService<Context>
 {
     public const string ServiceName = "CRDTService";
 
-    public delegate UniTask<CRDTResponse> SendCrdt(CRDTManyMessages request, Context context);
+    public delegate UniTask<CRDTResponse> SendCrdt(CRDTManyMessages request, Context context, CancellationToken ct);
 
     public delegate IEnumerator<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, Context context);
 
@@ -20,7 +21,7 @@ public abstract class CRDTService<Context>
     {
         var result = new ServerModuleDefinition<Context>();
       
-        result.definition.Add("SendCrdt", async (payload, context) => { var res = await sendCrdt(CRDTManyMessages.Parser.ParseFrom(payload), context); return res?.ToByteString(); });
+        result.definition.Add("SendCrdt", async (payload, context, ct) => { var res = await sendCrdt(CRDTManyMessages.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
         result.streamDefinition.Add("CrdtNotificationStream", (payload, context) => { return new ProtocolHelpers.StreamEnumerator<CRDTManyMessages>(crdtNotificationStream(CRDTStreamRequest.Parser.ParseFrom(payload), context)); });
 
         port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
@@ -31,13 +32,13 @@ public abstract class PingPongService<Context>
 {
     public const string ServiceName = "PingPongService";
 
-    public delegate UniTask<PongResponse> Ping(PingRequest request, Context context);
+    public delegate UniTask<PongResponse> Ping(PingRequest request, Context context, CancellationToken ct);
 
     public static void RegisterService(RpcServerPort<Context> port, Ping ping)
     {
         var result = new ServerModuleDefinition<Context>();
       
-        result.definition.Add("Ping", async (payload, context) => { var res = await ping(PingRequest.Parser.ParseFrom(payload), context); return res?.ToByteString(); });
+        result.definition.Add("Ping", async (payload, context, ct) => { var res = await ping(PingRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
 
         port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
     }

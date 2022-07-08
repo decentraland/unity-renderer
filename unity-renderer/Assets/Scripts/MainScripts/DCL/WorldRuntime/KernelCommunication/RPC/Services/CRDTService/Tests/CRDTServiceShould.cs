@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.CRDT;
@@ -22,6 +23,8 @@ namespace Tests
     {
         private RPCContext context;
         private ITransport testClientTransport;
+        private RpcServer<RPCContext> rpcServer;
+        private CancellationTokenSource testCancellationSource;
 
         [SetUp]
         public void SetUp()
@@ -29,7 +32,7 @@ namespace Tests
             context = new RPCContext();
 
             var (clientTransport, serverTransport) = MemoryTransport.Create();
-            var rpcServer = new RpcServer<RPCContext>();
+            rpcServer = new RpcServer<RPCContext>();
             rpcServer.AttachTransport(serverTransport, context);
 
             rpcServer.SetHandler((port, t, c) =>
@@ -37,6 +40,15 @@ namespace Tests
                 CRDTServiceImpl.RegisterService(port);
             });
             testClientTransport = clientTransport;
+            testCancellationSource = new CancellationTokenSource();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            rpcServer.Dispose();
+            testCancellationSource.Cancel();
+            testCancellationSource.Dispose();
         }
 
         [Test]
@@ -131,7 +143,7 @@ namespace Tests
 
                 Assert.AreEqual(clientReceive.SceneId, sceneId);
                 Assert.IsTrue(AreEqual(crdtBytes, clientReceive.Payload.ToByteArray()));
-            });
+            }, true, testCancellationSource.Token);
 
             bool testDone = false;
 

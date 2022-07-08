@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.CRDT;
@@ -26,7 +27,7 @@ namespace RPC.Services
             );
         }
 
-        private static UniTask<CRDTResponse> OnCRDTReceived(CRDTManyMessages messages, RPCContext context)
+        private static UniTask<CRDTResponse> OnCRDTReceived(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
         {
             messages.Payload.WriteTo(crdtStream);
 
