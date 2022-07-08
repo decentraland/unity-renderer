@@ -172,8 +172,14 @@ namespace DCL.ECSComponents
             wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
 
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
-                await LoadAvatar(wearableItems);
-
+            {
+                loadingCts?.Cancel();
+                loadingCts?.Dispose();
+                loadingCts = new CancellationTokenSource();
+                
+                await LoadAvatar(wearableItems,loadingCts);
+            }
+            
             avatar.PlayEmote(model.ExpressionTriggerId, model.ExpressionTriggerTimestamp);
 
             UpdatePlayerStatus(entity,model);
@@ -196,7 +202,7 @@ namespace DCL.ECSComponents
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
         }
 
-        private async UniTask LoadAvatar(List<string> wearableItems, CancellationToken ct = default)
+        private async UniTask LoadAvatar(List<string> wearableItems, CancellationTokenSource ct)
         {
             //TODO Add Collider to the AvatarSystem
             //TODO Without this the collider could get triggered disabling the avatar container,
@@ -204,12 +210,7 @@ namespace DCL.ECSComponents
             avatarCollider.gameObject.SetActive(false);
 
             SetImpostor(model.Id);
-            loadingCts?.Cancel();
-            loadingCts?.Dispose();
-            loadingCts = new CancellationTokenSource();
-            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, loadingCts.Token).Token;
-            linkedCt.ThrowIfCancellationRequested();
-
+            
             try
             {
                 playerName.SetName(model.Name);
@@ -221,7 +222,7 @@ namespace DCL.ECSComponents
                     eyesColor = ProtoConvertUtils.PBColorToUnityColor(model.EyeColor),
                     skinColor = ProtoConvertUtils.PBColorToUnityColor(model.SkinColor),
                     hairColor = ProtoConvertUtils.PBColorToUnityColor(model.HairColor),
-                }, loadingCts.Token);
+                }, ct.Token);
             }
             catch (OperationCanceledException)
             {
@@ -235,8 +236,8 @@ namespace DCL.ECSComponents
             }
             finally
             {
-                loadingCts?.Dispose();
-                loadingCts = null;
+                ct?.Dispose();
+                ct = null;
             }
         }
 

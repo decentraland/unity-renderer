@@ -7,6 +7,8 @@ namespace DCL.ECSComponents
     public class AvatarShapeRegister : IDisposable
     {
         private const string AVATAR_POOL_NAME = "AvatarShapeECS";
+        private const string AVATAR_PREFAB_PATH = "NewAvatarShape";
+        
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
@@ -15,7 +17,7 @@ namespace DCL.ECSComponents
         
         public AvatarShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            AvatarShape avatarShapePrefab = Resources.Load<AvatarShape>("NewAvatarShape");
+            AvatarShape avatarShapePrefab = Resources.Load<AvatarShape>(AVATAR_PREFAB_PATH);
             ConfigurePool(avatarShapePrefab.gameObject);
             factory.AddOrReplaceComponent(componentId, AvatarShapeSerializer.Deserialize, () => new AvatarShapeComponentHandler(pool));
             componentWriter.AddOrReplaceComponentSerializer<PBAvatarShape>(componentId, AvatarShapeSerializer.Serialize);
