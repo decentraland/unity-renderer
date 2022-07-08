@@ -99,7 +99,7 @@ namespace DCL.ECSComponents.Tests
             Assert.IsNull(avatarShape.loadingCts);
             Assert.IsNull(avatarShape.entity);
             avatar.Received(1).Dispose();
-            avatarReporterController.Received(1).ReportAvatarRemoved();
+            avatarReporterController.Received().ReportAvatarRemoved();
         }
 
         [Test]
