@@ -28,10 +28,7 @@ namespace DCL.ECSComponents
         {
             this.entity = entity;
             this.scene = scene;
-            
-            // Each time the camera position changes, we update the rotation of the entity
-            cameraPosition.OnChange += CameraPositionChanged;
-            
+
             // The billboard will rotate the entity transform toward the camera
             entityTransform = entity.gameObject.transform;
         }
@@ -39,7 +36,6 @@ namespace DCL.ECSComponents
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
-            cameraPosition.OnChange -= CameraPositionChanged;
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBBillboard model)
@@ -97,7 +93,5 @@ namespace DCL.ECSComponents
             if (lookAtVector != UnityEngine.Vector3.zero)
                 entityTransform.forward = lookAtVector;
         }
-
-        private void CameraPositionChanged(UnityEngine.Vector3 current, UnityEngine.Vector3 previous) { ChangeOrientation(); }
     }
 }
