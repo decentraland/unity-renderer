@@ -27,8 +27,8 @@ public class AvatarModifierArea : BaseComponent
     private Model cachedModel = new Model();
 
     private HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
-    private event Action<GameObject> OnAvatarEnter;
-    private event Action<GameObject> OnAvatarExit;
+    public event Action<GameObject> OnAvatarEnter;
+    public event Action<GameObject> OnAvatarExit;
     internal readonly Dictionary<string, IAvatarModifier> modifiers;
 
     private HashSet<Collider> excludedColliders;

@@ -1,0 +1,17 @@
+{
+    "name": "AvatarModifieraAreaHUD",
+    "rootNamespace": "",
+    "references": [
+        "GUID:81f3218b29e049144b175dad2ebbac1b",
+        "GUID:9fad297e585ef204c9c2c497d77099f0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

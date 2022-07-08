@@ -129,13 +129,14 @@ GameObject:
   m_Component:
   - component: {fileID: 5706079331077895866}
   - component: {fileID: 5046029925391882108}
+  - component: {fileID: 8451609052780906319}
   m_Layer: 21
   m_Name: MessageContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5706079331077895866
 RectTransform:
   m_ObjectHideFlags: 0
@@ -145,18 +146,18 @@ RectTransform:
   m_GameObject: {fileID: 2019855077279410885}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 1}
   m_Children:
   - {fileID: 8862887848395349482}
   - {fileID: 4950252797861146950}
   m_Father: {fileID: 6718158588054529058}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -594, y: 243.8}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 241.9, y: -230.20001}
   m_SizeDelta: {x: 267, y: 132}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &5046029925391882108
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -165,6 +166,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2019855077279410885}
   m_CullTransparentMesh: 1
+--- !u!225 &8451609052780906319
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2019855077279410885}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &2727756216058377485
 GameObject:
   m_ObjectHideFlags: 0
@@ -678,6 +691,7 @@ GameObject:
   - component: {fileID: 7047919777422189407}
   - component: {fileID: 3640318332079471546}
   - component: {fileID: 4957054972765701414}
+  - component: {fileID: 3419905511971970310}
   m_Layer: 21
   m_Name: Canvas
   m_TagString: Untagged
@@ -767,6 +781,20 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &3419905511971970310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7113245758047942121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82db8a090961f104f8b5341d76ff54a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  warningMessageRectTransform: {fileID: 5706079331077895866}
+  avatarModifierArea: {fileID: 4524852361449031375}
 --- !u!1 &7233948961862474708
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,6 +806,8 @@ GameObject:
   - component: {fileID: 5821921827926009812}
   - component: {fileID: 4218773619386164287}
   - component: {fileID: 3995536983884013386}
+  - component: {fileID: 8571919132785791832}
+  - component: {fileID: 810744230112575181}
   m_Layer: 21
   m_Name: WarningContainer
   m_TagString: Untagged
@@ -802,7 +832,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 232.4, y: -268}
+  m_AnchoredPosition: {x: 234.1, y: -268}
   m_SizeDelta: {x: 37.29, y: 46.12}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &4218773619386164287
@@ -843,3 +873,29 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2
+--- !u!114 &8571919132785791832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7233948961862474708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82db8a090961f104f8b5341d76ff54a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  warningMessageRectTransform: {fileID: 5706079331077895866}
+  avatarModifierArea: {fileID: 4524852361449031375}
+--- !u!225 &810744230112575181
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7233948961862474708}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
