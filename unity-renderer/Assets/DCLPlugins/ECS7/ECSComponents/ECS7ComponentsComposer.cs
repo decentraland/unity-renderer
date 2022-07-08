@@ -20,6 +20,7 @@ namespace DCL.ECSComponents
         private readonly OnPointerDownRegister pointerDownRegister;
         private readonly OnPointerUpRegister pointerUpRegister;
         private readonly AnimatorRegister animatorRegister;
+        private readonly AvatarShapeRegister avatarShapeRegister;
         private readonly CameraModeAreaRegister cameraModeAreaRegister;
         
         // Those components are only here to serialize over the wire, we don't need a handler for these
@@ -41,6 +42,7 @@ namespace DCL.ECSComponents
             pointerDownRegister = new OnPointerDownRegister(ComponentID.ON_POINTER_DOWN, componentsFactory, componentsWriter);
             pointerUpRegister = new OnPointerUpRegister(ComponentID.ON_POINTER_UP, componentsFactory, componentsWriter);
             animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
+            avatarShapeRegister = new AvatarShapeRegister(ComponentID.AVATAR_SHAPE, componentsFactory, componentsWriter);
             cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
             
             // Components without a handler
@@ -63,6 +65,7 @@ namespace DCL.ECSComponents
             animatorRegister.Dispose();
             pointerDownRegister.Dispose();
             pointerUpRegister.Dispose();
+            avatarShapeRegister.Dispose();
             cameraModeAreaRegister.Dispose();
             
             // Components without a handler

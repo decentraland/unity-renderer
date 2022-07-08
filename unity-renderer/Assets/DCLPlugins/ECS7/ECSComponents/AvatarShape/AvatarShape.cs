@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
@@ -11,23 +13,44 @@ using DCL.Interface;
 using DCL.Models;
 using GPUSkinning;
 using UnityEngine;
-using Avatar = AvatarSystem.Avatar;
 using LOD = AvatarSystem.LOD;
 
 namespace DCL.ECSComponents
 {
-    public class AvatarShape : MonoBehaviour, IHideAvatarAreaHandler, IPoolableObjectContainer
+    public interface IAvatarShape
     {
-         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
+        /// <summary>
+        /// Clean up the avatar shape so we can reutilizate it using the pool
+        /// </summary>
+        void Cleanup();
+        
+        /// <summary>
+        /// Apply the model of the avatar, it will reload if necessary
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <param name="entity"></param>
+        /// <param name="newModel"></param>
+        void ApplyModel(IParcelScene scene, IDCLEntity entity, PBAvatarShape newModel);
+
+        /// <summary>
+        /// Get the transform of the avatar shape
+        /// </summary>
+        Transform transform { get; }
+    }
+    
+    public class AvatarShape : MonoBehaviour, IHideAvatarAreaHandler, IPoolableObjectContainer, IAvatarShape, IPoolLifecycleHandler
+    {
+        private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
-        private const float AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD = 0.9f;
-        private const string IN_HIDE_AREA = "IN_HIDE_AREA";
+        internal const string IN_HIDE_AREA = "IN_HIDE_AREA";
 
-        public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
-
-        [SerializeField] private  GameObject avatarContainer;
-        [SerializeField] private  Collider avatarCollider;
-        [SerializeField] private  AvatarMovementController avatarMovementController;
+        // NOTE: Don't use the reference, use the avatarMovementController
+        // Unity can't serialize interfaces, so we assign the reference on the prefab and assign it in the Awake method so we can avoid 1 GetComponent call
+        [SerializeField] private AvatarMovementController avatarMovementControllerReference;
+        internal IAvatarMovementController avatarMovementController;
+        
+        [SerializeField] private GameObject avatarContainer;
+        [SerializeField] internal Collider avatarCollider;
         [SerializeField] private Transform avatarRevealContainer;
         [SerializeField] private GameObject armatureContainer;
 
@@ -38,31 +61,34 @@ namespace DCL.ECSComponents
 
         private StringVariable currentPlayerInfoCardId;
 
-        public bool everythingIsLoaded;
+        internal bool initializedPosition = false;
 
-        bool initializedPosition = false;
-
-        private Player player = null;
-        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-
+        internal Player player = null;
+        internal BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+        
         private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-        private IAvatar avatar;
-        private CancellationTokenSource loadingCts;
+        internal IAvatar avatar;
+        internal CancellationTokenSource loadingCts;
         private ILazyTextureObserver currentLazyObserver;
         private bool isGlobalSceneAvatar = true;
 
         public IPoolableObject poolableObject { get; set; }
-        private PBAvatarShape model;
-        private IDCLEntity entity;
+        internal PBAvatarShape model;
+        internal IDCLEntity entity;
         
         private void Awake()
         {
+            // NOTE: Unity can't serialize interfaces, so we assign the reference and assign it there so we can avoid 1 GetComponent call
+            avatarMovementController = avatarMovementControllerReference;
+            
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             Visibility visibility = new Visibility();
+            avatarMovementController.SetAvatarTransform(transform);
+            
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
             BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
-            avatar = new Avatar(
+            avatar = new AvatarWithHologram(
                 baseAvatar,
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
@@ -74,17 +100,26 @@ namespace DCL.ECSComponents
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes));
 
             if (avatarReporterController == null)
-            {
                 avatarReporterController = new AvatarReporterController(Environment.i.world.state);
-            }
+            
+            onPointerDown.OnPointerDownReport += PlayerClicked;
+            onPointerDown.OnPointerEnterReport += PlayerPointerEnter;
+            onPointerDown.OnPointerExitReport += PlayerPointerExit;
         }
 
         private void Start()
         {
+            SetPlayerNameReference();
+        }
+
+        private void SetPlayerNameReference()
+        {
+            if (playerName != null)
+                return;
             playerName = GetComponentInChildren<IPlayerName>();
             playerName?.Hide(true);
         }
-
+        
         private void PlayerClicked()
         {
             if (model == null)
@@ -102,6 +137,8 @@ namespace DCL.ECSComponents
 
         public async void ApplyModel(IParcelScene scene, IDCLEntity entity, PBAvatarShape newModel)
         {
+            this.entity = entity;
+            
             isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
 
             DisablePassport();
@@ -114,12 +151,10 @@ namespace DCL.ECSComponents
 #if UNITY_EDITOR
             gameObject.name = $"Avatar Shape {model.Name}";
 #endif
-            everythingIsLoaded = false;
-            
+
             // To deal with the cases in which the entity transform was configured before the AvatarShape
-            if (!initializedPosition && scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TRANSFORM))
+            if (!initializedPosition)
             {
-                initializedPosition = true;
                 OnEntityTransformChanged(entity.gameObject.transform.localPosition,
                     entity.gameObject.transform.localRotation, true);
             }
@@ -137,36 +172,9 @@ namespace DCL.ECSComponents
             wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
 
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
-            {
-                //TODO Add Collider to the AvatarSystem
-                //TODO Without this the collider could get triggered disabling the avatar container,
-                // this would stop the loading process due to the underlying coroutines of the AssetLoader not starting
-                avatarCollider.gameObject.SetActive(false);
-
-                SetImpostor(model.Id);
-                loadingCts?.Cancel();
-                loadingCts?.Dispose();
-                loadingCts = new CancellationTokenSource();
-                playerName.SetName(model.Name);
-                playerName.Show(true);
-                await avatar.Load(wearableItems, new AvatarSettings
-                {
-                    playerName = model.Name,
-                    bodyshapeId = model.BodyShape,
-                    eyesColor = ProtoConvertUtils.PBColorToUnityColor(model.EyeColor),
-                    skinColor = ProtoConvertUtils.PBColorToUnityColor(model.SkinColor),
-                    hairColor = ProtoConvertUtils.PBColorToUnityColor(model.HairColor),
-                }, loadingCts.Token);
-            }
+                await LoadAvatar(wearableItems);
 
             avatar.PlayEmote(model.ExpressionTriggerId, model.ExpressionTriggerTimestamp);
-
-            onPointerDown.OnPointerDownReport -= PlayerClicked;
-            onPointerDown.OnPointerDownReport += PlayerClicked;
-            onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;
-            onPointerDown.OnPointerEnterReport += PlayerPointerEnter;
-            onPointerDown.OnPointerExitReport -= PlayerPointerExit;
-            onPointerDown.OnPointerExitReport += PlayerPointerExit;
 
             UpdatePlayerStatus(entity,model);
 
@@ -182,13 +190,54 @@ namespace DCL.ECSComponents
 
             avatarCollider.gameObject.SetActive(true);
 
-            everythingIsLoaded = true;
-            OnAvatarShapeUpdated?.Invoke(entity, this);
-
             EnablePassport();
 
             onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
+        }
+
+        private async UniTask LoadAvatar(List<string> wearableItems, CancellationToken ct = default)
+        {
+            //TODO Add Collider to the AvatarSystem
+            //TODO Without this the collider could get triggered disabling the avatar container,
+            // this would stop the loading process due to the underlying coroutines of the AssetLoader not starting
+            avatarCollider.gameObject.SetActive(false);
+
+            SetImpostor(model.Id);
+            loadingCts?.Cancel();
+            loadingCts?.Dispose();
+            loadingCts = new CancellationTokenSource();
+            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, loadingCts.Token).Token;
+            linkedCt.ThrowIfCancellationRequested();
+
+            try
+            {
+                playerName.SetName(model.Name);
+                playerName.Show(true);
+                await avatar.Load(wearableItems, new AvatarSettings
+                {
+                    playerName = model.Name,
+                    bodyshapeId = model.BodyShape,
+                    eyesColor = ProtoConvertUtils.PBColorToUnityColor(model.EyeColor),
+                    skinColor = ProtoConvertUtils.PBColorToUnityColor(model.SkinColor),
+                    hairColor = ProtoConvertUtils.PBColorToUnityColor(model.HairColor),
+                }, loadingCts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                Cleanup();
+                throw;
+            }
+            catch (Exception e)
+            {
+                Cleanup();
+                Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearableItems)}] for bodyshape:{model.BodyShape} and player {model.Name}");
+            }
+            finally
+            {
+                loadingCts?.Dispose();
+                loadingCts = null;
+            }
         }
 
         public void SetImpostor(string userId)
@@ -206,9 +255,10 @@ namespace DCL.ECSComponents
         }
 
         private void PlayerPointerExit() { playerName?.SetForceShow(false); }
+        
         private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
 
-        private void UpdatePlayerStatus(IDCLEntity entity,PBAvatarShape model)
+        internal void UpdatePlayerStatus(IDCLEntity entity,PBAvatarShape model)
         {
             // Remove the player status if the userId changes
             if (player != null && (player.id != model.Id || player.name != model.Name))
@@ -219,10 +269,8 @@ namespace DCL.ECSComponents
 
             bool isNew = player == null;
             if (isNew)
-            {
                 player = new Player();
-            }
-
+            
             bool isNameDirty = player.name != model.Name;
 
             player.id = model.Id;
@@ -295,24 +343,32 @@ namespace DCL.ECSComponents
 
         private void OnEntityTransformChanged(in UnityEngine.Vector3 position, in Quaternion rotation, bool inmediate)
         {
+            if (entity == null)
+                return;
+            
             if (isGlobalSceneAvatar)
             {
                 avatarMovementController.OnTransformChanged(position, rotation, inmediate);
             }
             else
             {
-                var scenePosition = Utils.GridToWorldPosition(entity.scene.sceneData.basePosition.x, entity.scene.sceneData.basePosition.y);
+                var scenePosition = DCL.Helpers.Utils.GridToWorldPosition(entity.scene.sceneData.basePosition.x, entity.scene.sceneData.basePosition.y);
                 avatarMovementController.OnTransformChanged(scenePosition + position, rotation, inmediate);
             }
             initializedPosition = true;
         }
 
+        public void OnPoolRelease()
+        {
+            Cleanup();
+        }
+        
         public void OnPoolGet()
         {
-            everythingIsLoaded = false;
             initializedPosition = false;
             model = new PBAvatarShape();
             player = null;
+            SetPlayerNameReference();
         }
 
         public void ApplyHideModifier()

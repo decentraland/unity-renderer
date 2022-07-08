@@ -22,8 +22,47 @@ public class ECSTestScene : MonoBehaviour
     {
         componentWriter.PutComponent(sceneId, 1, 1,
             new ECSTransform() { position = new UnityEngine.Vector3(8, 1, 8) });
-        AddGLTFShapeComponent(sceneId, componentWriter);
+        AddAvatarShapeComponent(sceneId, componentWriter);
         AddBoxComponent(sceneId, componentWriter);
+    }
+
+    private static void AddAvatarShapeComponent(string sceneId, IECSComponentWriter componentWriter)
+    {
+        PBAvatarShape avatarShape = new PBAvatarShape();
+        avatarShape.Id = "0xe7dd153081b0526e0a8c582497cbcee7cd44e464";
+        avatarShape.Name = "TestName#2354";
+        avatarShape.BodyShape = "urn:decentraland:off-chain:base-avatars:BaseFemale";
+        avatarShape.ExpressionTriggerId = "Idle";
+        
+        avatarShape.EyeColor = new Color3();
+        avatarShape.EyeColor.R = 0.223f;
+        avatarShape.EyeColor.G = 0.484f;
+        avatarShape.EyeColor.B = 0.691f;   
+        
+        avatarShape.HairColor = new Color3();
+        avatarShape.HairColor.R = 0.223f;
+        avatarShape.HairColor.G = 0.484f;
+        avatarShape.HairColor.B = 0.691f;
+        
+        avatarShape.SkinColor = new Color3();
+        avatarShape.SkinColor.R = 0.223f;
+        avatarShape.SkinColor.G = 0.484f;
+        avatarShape.SkinColor.B = 0.691f;
+        
+        avatarShape.Wearables.Add("urn:decentraland:off-chain:base-avatars:f_eyebrows_07");
+        avatarShape.Wearables.Add("urn:decentraland:off-chain:base-avatars:eyes_02");
+        avatarShape.Wearables.Add("urn:decentraland:off-chain:base-avatars:f_mouth_03");
+        avatarShape.Wearables.Add("urn:decentraland:off-chain:base-avatars:f_school_skirt");
+        avatarShape.Wearables.Add("urn:decentraland:off-chain:base-avatars:SchoolShoes");
+        avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0x177535a421e7867ec52f2cc19b7dfed4f289a2bb:0");
+        avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0xd89efd0be036410d4ff194cd6ecece4ef8851d86:1");
+        avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0x1df3011a14ea736314df6cdab4fff824c5d46ec1:0");
+        avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0xbada8a315e84e4d78e3b6914003647226d9b4001:1");
+        avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0x1df3011a14ea736314df6cdab4fff824c5d46ec1:5");
+        avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0xd89efd0be036410d4ff194cd6ecece4ef8851d86:0");
+        
+        componentWriter.PutComponent(sceneId, 4, ComponentID.AVATAR_SHAPE,
+            avatarShape);
     }
 
     private static void AddGLTFShapeComponent(string sceneId, IECSComponentWriter componentWriter)
