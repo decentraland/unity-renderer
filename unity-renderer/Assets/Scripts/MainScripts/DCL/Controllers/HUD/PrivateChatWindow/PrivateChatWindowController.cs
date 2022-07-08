@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
+using System.Collections.Generic;
 
 public class PrivateChatWindowController : IHUD
 {
@@ -28,6 +29,7 @@ public class PrivateChatWindowController : IHUD
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
 
     private string ConversationUserId { get; set; } = string.Empty;
+    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => DataStore.i.HUDs.visibleTaskbarPanels;
 
     public event Action OnPressBack;
     public event Action OnClosed;
@@ -115,6 +117,7 @@ public class PrivateChatWindowController : IHUD
         if (View.IsActive == visible && DataStore.i.HUDs.isNotificationPanelInitialized == null)
             return;
 
+        SetVisiblePanelList(visible);
         if (visible)
         {
             if (conversationProfile != null)
@@ -355,6 +358,7 @@ public class PrivateChatWindowController : IHUD
 
     public void ActivatePreview()
     {
+        SetVisiblePanelList(false);
         View.ActivatePreview();
         chatHudController.ActivatePreview();
         currentState = ChatWindowVisualState.PREVIEW_MODE;
@@ -364,6 +368,7 @@ public class PrivateChatWindowController : IHUD
 
     public void ActivatePreviewOnMessages()
     {
+        SetVisiblePanelList(false);
         chatHudController.ActivatePreview();
         currentState = ChatWindowVisualState.PREVIEW_MODE;
         OnPreviewModeChanged?.Invoke(true);
@@ -371,6 +376,7 @@ public class PrivateChatWindowController : IHUD
 
     public void DeactivatePreview()
     {
+        SetVisiblePanelList(true);
         deactivatePreviewCancellationToken.Cancel();
         deactivatePreviewCancellationToken = new CancellationTokenSource();
         deactivateFadeOutCancellationToken.Cancel();
@@ -380,6 +386,17 @@ public class PrivateChatWindowController : IHUD
         chatHudController.DeactivatePreview();
         OnPreviewModeChanged?.Invoke(false);
         currentState = ChatWindowVisualState.INPUT_MODE;
+    }
+
+    private void SetVisiblePanelList(bool visible)
+    {
+        HashSet<string> newSet = visibleTaskbarPanels.Get();
+        if (visible)
+            newSet.Add("PrivateChatChannel");
+        else
+            newSet.Remove("PrivateChatChannel");
+
+        visibleTaskbarPanels.Set(newSet, true);
     }
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)

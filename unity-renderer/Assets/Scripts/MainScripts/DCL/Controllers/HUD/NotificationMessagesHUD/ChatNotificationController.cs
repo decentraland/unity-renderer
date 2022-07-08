@@ -11,6 +11,7 @@ public class ChatNotificationController : IHUD
     MainChatNotificationsComponentView mainChatNotificationView;
     private IUserProfileBridge userProfileBridge;
     internal BaseVariable<Transform> isInitialized => DataStore.i.HUDs.isNotificationPanelInitialized;
+    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => DataStore.i.HUDs.visibleTaskbarPanels;
 
     public event Action<string> OnOpenNotificationChat;
 
@@ -26,6 +27,12 @@ public class ChatNotificationController : IHUD
         chatController.OnAddMessage += HandleMessageAdded;
         mainChatNotificationView.OnClickedNotification += OpenNotificationChat;
         isInitialized.Set(mainChatNotificationView.gameObject.transform);
+        visibleTaskbarPanels.OnChange += VisiblePanelsChanged;
+    }
+
+    private void VisiblePanelsChanged(HashSet<string> newList, HashSet<string> oldList)
+    {
+        SetVisibility(newList.Count == 0);
     }
 
     private void HandleMessageAdded(ChatMessage message)

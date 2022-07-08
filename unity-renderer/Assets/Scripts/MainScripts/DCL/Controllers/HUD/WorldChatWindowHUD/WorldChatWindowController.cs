@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DCL.Interface;
+using DCL;
 
 public class WorldChatWindowController : IHUD
 {
@@ -19,7 +20,8 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, PublicChatChannelModel> publicChannels = new Dictionary<string, PublicChatChannelModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
-    
+    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => DataStore.i.HUDs.visibleTaskbarPanels;
+
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
 
@@ -92,6 +94,7 @@ public class WorldChatWindowController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        SetVisiblePanelList(visible);
         if (visible)
         {
             view.Show();
@@ -99,6 +102,17 @@ public class WorldChatWindowController : IHUD
         }
         else
             view.Hide();
+    }
+
+    private void SetVisiblePanelList(bool visible)
+    {
+        HashSet<string> newSet = visibleTaskbarPanels.Get();
+        if (visible)
+            newSet.Add("WorldChatPanel");
+        else
+            newSet.Remove("WorldChatPanel");
+
+        visibleTaskbarPanels.Set(newSet, true);
     }
 
     private void HandleFriendsControllerInitialization()

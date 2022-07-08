@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
@@ -22,6 +23,7 @@ namespace DCL
         public readonly BaseVariable<ParcelCoordinates> gotoPanelCoordinates = new BaseVariable<ParcelCoordinates>(new ParcelCoordinates(0,0));
         public readonly BaseVariable<Transform> isNotificationPanelInitialized = new BaseVariable<Transform>(null);
         public readonly BaseVariable<bool> isSceneUIEnabled = new BaseVariable<bool>(true);
+        public readonly BaseVariable<HashSet<string>> visibleTaskbarPanels = new BaseVariable<HashSet<string>>(new HashSet<string>());
         public readonly LoadingHUD loadingHUD = new LoadingHUD();
 
         public class LoadingHUD

@@ -5,6 +5,7 @@ using DCL;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PublicChatChannelController : IHUD
 {
@@ -35,7 +36,8 @@ public class PublicChatChannelController : IHUD
     private string lastPrivateMessageRecipient = string.Empty;
 
     private UserProfile ownProfile => userProfileBridge.GetOwn();
-    
+    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => DataStore.i.HUDs.visibleTaskbarPanels;
+
     public PublicChatChannelController(IChatController chatController,
         ILastReadMessagesService lastReadMessagesService,
         IUserProfileBridge userProfileBridge,
@@ -162,6 +164,7 @@ public class PublicChatChannelController : IHUD
     
     public void SetVisibility(bool visible, bool focusInputField)
     {
+        SetVisiblePanelList(visible);
         if (visible)
         {
             View.Show();
@@ -171,10 +174,21 @@ public class PublicChatChannelController : IHUD
                 chatHudController.FocusInputField();
         }
         else
-        {
+        {   
             chatHudController.UnfocusInputField();
             View.Hide();
         }
+    }
+
+    private void SetVisiblePanelList(bool visible)
+    {
+        HashSet<string> newSet = visibleTaskbarPanels.Get();
+        if (visible)
+            newSet.Add("PublicChatChannel");
+        else 
+            newSet.Remove("PublicChatChannel");
+
+        visibleTaskbarPanels.Set(newSet, true);
     }
 
     public void SetVisibility(bool visible) => SetVisibility(visible, false);
@@ -198,6 +212,7 @@ public class PublicChatChannelController : IHUD
 
     public void ActivatePreviewModeInstantly()
     {
+        SetVisiblePanelList(false);
         deactivatePreviewCancellationToken.Cancel();
         deactivatePreviewCancellationToken = new CancellationTokenSource();
         deactivateFadeOutCancellationToken.Cancel();
@@ -212,9 +227,15 @@ public class PublicChatChannelController : IHUD
 
     private void MarkChatMessagesAsRead() => lastReadMessagesService.MarkAllRead(channelId);
 
-    private void HandleViewClosed() => OnClosed?.Invoke();
+    private void HandleViewClosed()
+    {
+        OnClosed?.Invoke();
+    }
 
-    private void HandleViewBacked() => OnBack?.Invoke();
+    private void HandleViewBacked() 
+    {
+        OnBack?.Invoke(); 
+    }
 
     private void HandleMessageInputUpdated(string message)
     {
@@ -330,6 +351,7 @@ public class PublicChatChannelController : IHUD
     
     public void ActivatePreview()
     {
+        SetVisiblePanelList(false);
         View.ActivatePreview();
         chatHudController.ActivatePreview();
         currentState = ChatWindowVisualState.PREVIEW_MODE;
@@ -339,6 +361,7 @@ public class PublicChatChannelController : IHUD
     
     public void ActivatePreviewOnMessages()
     {
+        SetVisiblePanelList(false);
         chatHudController.ActivatePreview();
         OnPreviewModeChanged?.Invoke(true);
         currentState = ChatWindowVisualState.PREVIEW_MODE;
@@ -346,6 +369,7 @@ public class PublicChatChannelController : IHUD
 
     public void DeactivatePreview()
     {
+        SetVisiblePanelList(true);
         deactivatePreviewCancellationToken.Cancel();
         deactivatePreviewCancellationToken = new CancellationTokenSource();
         deactivateFadeOutCancellationToken.Cancel();
