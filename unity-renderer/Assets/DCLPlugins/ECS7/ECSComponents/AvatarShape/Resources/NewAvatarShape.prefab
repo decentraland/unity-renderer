@@ -79,14 +79,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 528eb0c5369dcaa41bb5b814c2e9ca74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  avatarMovementControllerReference: {fileID: 3504616517296556492}
   avatarContainer: {fileID: 8963989720318013202}
   avatarCollider: {fileID: 6534765647599015563}
-  avatarMovementController: {fileID: 3504616517296556492}
   avatarRevealContainer: {fileID: 762005512886389656}
   armatureContainer: {fileID: 8963989720318013202}
   onPointerDown: {fileID: 338606394308916673}
   playerNameContainer: {fileID: 6128202859544868951}
-  everythingIsLoaded: 0
 --- !u!114 &3504616517296556492
 MonoBehaviour:
   m_ObjectHideFlags: 0
