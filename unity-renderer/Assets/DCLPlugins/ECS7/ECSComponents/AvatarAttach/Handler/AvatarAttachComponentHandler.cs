@@ -24,16 +24,13 @@ namespace DCL.ECSComponents
 
         internal readonly GetAnchorPointsHandler getAnchorPointsHandler;
         private readonly IUpdateEventHandler updateEventHandler;
-        internal ISceneBoundsChecker sceneBoundsChecker;
         
         private Vector2Int? currentCoords = null;
         private bool isInsideScene = true;
-        private float lastBoundariesCheckTime = 0;
 
-        public AvatarAttachComponentHandler(IUpdateEventHandler updateEventHandler, ISceneBoundsChecker sceneBoundsChecker)
+        public AvatarAttachComponentHandler(IUpdateEventHandler updateEventHandler)
         {
             this.updateEventHandler = updateEventHandler;
-            this.sceneBoundsChecker = sceneBoundsChecker;
             getAnchorPointsHandler = new GetAnchorPointsHandler();
             getAnchorPointsHandler.OnAvatarRemoved += Detach;
         }
@@ -79,9 +76,7 @@ namespace DCL.ECSComponents
             StopComponentUpdate();
 
             if (entity != null)
-            {
                 entity.gameObject.transform.localPosition = EnvironmentSettings.MORDOR;
-            }
 
             getAnchorPointsHandler.CancelCurrentSearch();
         }
@@ -116,11 +111,6 @@ namespace DCL.ECSComponents
             {
                 entity.gameObject.transform.position = anchorPoint.position;
                 entity.gameObject.transform.rotation = anchorPoint.rotation;
-
-                if (Time.unscaledTime - lastBoundariesCheckTime > BOUNDARIES_CHECK_INTERVAL)
-                {
-                    CheckSceneBoundaries(entity);
-                }
             }
             else
             {
@@ -139,12 +129,6 @@ namespace DCL.ECSComponents
             currentCoords = coords;
             isInsideScene = result;
             return result;
-        }
-
-        private void CheckSceneBoundaries(IDCLEntity entity)
-        {
-            sceneBoundsChecker?.AddEntityToBeChecked(entity);
-            lastBoundariesCheckTime = Time.unscaledTime;
         }
 
         private void StartComponentUpdate()
