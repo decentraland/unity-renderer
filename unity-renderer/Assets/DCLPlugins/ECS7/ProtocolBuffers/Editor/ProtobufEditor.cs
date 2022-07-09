@@ -48,8 +48,11 @@ namespace DCL.Protobuf
 
         private const string PROTO_VERSION = "3.20.1";
 
-        private const string NPM_PACKAGE = "@dcl/sdk";
-        private const string NPM_PACKAGE_PROTO_DEF = "/package/dist/ecs7/proto-definitions";
+        // Use this parameter when you want a fixed version of the @dcl/protocol, otherwise leave it empty
+        private const string FIXED_NPM_PACKAGE_LINK = "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-2611997102.commit-8e362ff.tgz";
+
+        private const string NPM_PACKAGE = "@dcl/protocol";
+        private const string NPM_PACKAGE_PROTO_DEF = "/package/ecs/components/";
 
         private struct ProtoComponent
         {
@@ -112,6 +115,12 @@ namespace DCL.Protobuf
             libraryInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryContent["dist"].ToString());
 
             string tgzUrl = libraryInfo["tarball"].ToString();
+
+            // If we have a fixed version, use it
+            if (FIXED_NPM_PACKAGE_LINK.Length > 0) {
+                tgzUrl = FIXED_NPM_PACKAGE_LINK;
+            }
+
             VerboseLog(NPM_PACKAGE + "@" + version + "url: " + tgzUrl);
 
             // Download package
