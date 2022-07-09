@@ -1,0 +1,188 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using TMPro;
+using UnityEngine;
+
+namespace DCL.AvatarModifierAreaFeedback
+{
+    public class AvatarModifierAreaFeedbackView : BaseComponentView
+    {
+
+        private const string PATH = "_AvatarModifierAreaFeedbackHUD";
+
+        [SerializeField] private RectTransform warningMessageRectTransform;
+        [SerializeField] private CanvasGroup warningIconCanvasGroup;
+        [SerializeField] internal TMP_Text descriptionText;
+        private CanvasGroup warningMessageGroup;
+        private float animationDuration;
+        private bool requiresFirstTimeActivation;
+        private bool isShowingWarningMessage;
+        private Coroutine warningMessageAnimationCoroutine;
+        private Coroutine iconAnimationCoroutine;
+        private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
+
+        public static AvatarModifierAreaFeedbackView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<AvatarModifierAreaFeedbackView>(); }
+
+        public override void Awake()
+        {
+            base.Awake();
+            warningMessageGroup = warningMessageRectTransform.GetComponent<CanvasGroup>();
+            animationDuration = 0.5f;
+            requiresFirstTimeActivation = true;
+        }
+        
+        public override void Show(bool instant = false)
+        {
+            base.Show(instant);
+            if (requiresFirstTimeActivation)
+            {
+                requiresFirstTimeActivation = false;
+                ShowWarningMessage();
+                HideFirstTimeWarningMessage(deactivatePreviewCancellationToken.Token).Forget();
+            }
+            else
+            {
+                ShowIcon();
+            }
+        }
+        
+        public override void Hide(bool instant = false)
+        {
+            base.Hide(instant);
+            deactivatePreviewCancellationToken.Cancel();
+            deactivatePreviewCancellationToken = new CancellationTokenSource();
+            
+            warningIconCanvasGroup.blocksRaycasts = false;
+            
+            if (isShowingWarningMessage)
+            {
+                HideWarningMessage();
+            }
+            else
+            {
+                HideIcon();
+            }
+        }
+        
+        public override void OnFocus()
+        {
+            base.OnFocus();
+
+            if (!isVisible) return;
+
+            ShowWarningMessage();
+            HideIcon();
+        }
+
+        public override void OnLoseFocus()
+        {
+            base.OnLoseFocus();
+            
+            if (!isVisible) return;
+
+            HideWarningMessage();
+            ShowIcon();
+        }
+        
+        private async UniTaskVoid HideFirstTimeWarningMessage(CancellationToken cancellationToken)
+        {
+            await UniTask.Delay(5000, cancellationToken: cancellationToken);
+            await UniTask.SwitchToMainThread(cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return;
+            HideWarningMessage();
+            ShowIcon();
+        }
+
+        private void HideWarningMessage()
+        {
+            if (warningMessageAnimationCoroutine != null)
+            {
+                StopCoroutine(warningMessageAnimationCoroutine);
+            }
+            warningMessageAnimationCoroutine = StartCoroutine(WarningMessageAnimationCoroutine(Vector3.zero, 0));
+            isShowingWarningMessage = false;
+        }
+        
+        private void ShowWarningMessage()
+        {
+            if (warningMessageAnimationCoroutine != null)
+            {
+                StopCoroutine(warningMessageAnimationCoroutine);
+            }
+            warningMessageAnimationCoroutine = StartCoroutine(WarningMessageAnimationCoroutine(Vector3.one, 1));
+            isShowingWarningMessage = true;
+        }
+        
+        private void HideIcon()
+        {
+            if (iconAnimationCoroutine != null)
+            {
+                StopCoroutine(iconAnimationCoroutine);
+            }
+            iconAnimationCoroutine = StartCoroutine(IconAnimationCoroutine(0));
+        }
+        
+        private void ShowIcon()
+        {
+            if (iconAnimationCoroutine != null)
+            {
+                StopCoroutine(iconAnimationCoroutine);
+            }
+            warningIconCanvasGroup.blocksRaycasts = true;
+            iconAnimationCoroutine = StartCoroutine(IconAnimationCoroutine(1));
+        }
+
+        public void AddNewWarningMessage(string newWarning)
+        {
+            if (!string.IsNullOrEmpty(descriptionText.text)) descriptionText.text += "\n";
+                
+            descriptionText.text += newWarning;
+        }
+
+        public void ResetWarningMessage()
+        {
+            descriptionText.text = "";
+        }
+
+        public override void RefreshControl() { }
+
+        IEnumerator WarningMessageAnimationCoroutine(Vector3 destinationScale, float destinationAlpha)
+        {
+            var t = 0f;
+            Vector3 startScale = warningMessageRectTransform.localScale;
+            float startAlphaMessage = warningMessageGroup.alpha;
+
+            while (t < animationDuration)
+            {
+                t += Time.deltaTime;
+
+                warningMessageRectTransform.localScale = Vector3.Lerp(startScale, destinationScale, t / animationDuration);
+                warningMessageGroup.alpha = Mathf.Lerp(startAlphaMessage, destinationAlpha,  t / animationDuration);
+                yield return null;
+            }
+
+            warningMessageRectTransform.localScale = destinationScale;
+            warningMessageGroup.alpha = destinationAlpha;
+        }
+
+        IEnumerator IconAnimationCoroutine(float destinationAlpha)
+        {
+            var t = 0f;
+            float startAlphaMessage = warningIconCanvasGroup.alpha;
+
+            while (t < animationDuration)
+            {
+                t += Time.deltaTime;
+
+                warningIconCanvasGroup.alpha = Mathf.Lerp(startAlphaMessage, destinationAlpha,  t / animationDuration);
+                yield return null;
+            }
+
+            warningIconCanvasGroup.alpha = destinationAlpha;
+        }
+
+    }
+}

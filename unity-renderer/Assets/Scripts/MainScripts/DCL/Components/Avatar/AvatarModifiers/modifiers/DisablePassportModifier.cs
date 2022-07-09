@@ -21,4 +21,9 @@ public class DisablePassportModifier : IAvatarModifier
             avatarShape.EnablePassport();
         }
     }
+    
+    public string GetWarningDescription()
+    {
+        return "\u2022  Passports can not be opened";
+    }
 }

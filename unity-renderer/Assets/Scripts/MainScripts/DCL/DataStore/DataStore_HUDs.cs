@@ -20,6 +20,8 @@ namespace DCL
         public readonly BaseVariable<bool> gotoPanelVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<ParcelCoordinates> gotoPanelCoordinates = new BaseVariable<ParcelCoordinates>(new ParcelCoordinates(0,0));
         public readonly BaseVariable<bool> isSceneUIEnabled = new BaseVariable<bool>(true);
+        public readonly BaseVariable<int> inAvatarModifierAreaForSelfCounter = new BaseVariable<int>(0);
+        public readonly BaseCollection<string> inAvatarModifierAreaWarningDescription = new BaseCollection<string>();
         public readonly LoadingHUD loadingHUD = new LoadingHUD();
 
         public class LoadingHUD

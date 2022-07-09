@@ -16,4 +16,9 @@ public class HideAvatarsModifier : IAvatarModifier
             return;
         handler.RemoveHideModifier();
     }
+    
+    public string GetWarningDescription()
+    {
+        return "\u2022  The avatars are hidden";
+    }
 }

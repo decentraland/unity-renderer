@@ -27,8 +27,9 @@ public class AvatarModifierArea : BaseComponent
     private Model cachedModel = new Model();
 
     private HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
-    public event Action<GameObject> OnAvatarEnter;
-    public event Action<GameObject> OnAvatarExit;
+    private event Action<GameObject> OnAvatarEnter;
+    private event Action<GameObject> OnAvatarExit;
+    
     internal readonly Dictionary<string, IAvatarModifier> modifiers;
 
     private HashSet<Collider> excludedColliders;
@@ -103,12 +104,20 @@ public class AvatarModifierArea : BaseComponent
         foreach (GameObject avatarThatEntered in newAvatarsInArea.Except(avatarsInArea))
         {
             OnAvatarEnter?.Invoke(avatarThatEntered);
+            if (avatarThatEntered.tag.Equals("Player"))
+            {
+                DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Set(DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Get() + 1);
+            }
         }
 
         // Call events for avatars that just exited the area
         foreach (GameObject avatarThatExited in avatarsInArea.Except(newAvatarsInArea))
         {
             OnAvatarExit?.Invoke(avatarThatExited);
+            if (avatarThatExited.tag.Equals("Player"))
+            {
+                DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Set(DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Get() - 1);
+            }
         }
 
         avatarsInArea = newAvatarsInArea;
@@ -157,6 +166,9 @@ public class AvatarModifierArea : BaseComponent
                 OnAvatarExit?.Invoke(avatar);
             }
         }
+        
+        DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Set(0);
+        DataStore.i.HUDs.inAvatarModifierAreaWarningDescription.Set(new List<string>());
     }
 
     private void ApplyCurrentModel()
@@ -175,6 +187,12 @@ public class AvatarModifierArea : BaseComponent
 
                 OnAvatarEnter += modifier.ApplyModifier;
                 OnAvatarExit += modifier.RemoveModifier;
+
+                string messageToAdd = modifier.GetWarningDescription();
+                if (!DataStore.i.HUDs.inAvatarModifierAreaWarningDescription.Contains(messageToAdd))
+                {
+                    DataStore.i.HUDs.inAvatarModifierAreaWarningDescription.Add(messageToAdd);
+                }
             }
 
             // Set excluded colliders
