@@ -12,7 +12,7 @@ references:
       at: *working_directory
 
   .image_kernel: &image_kernel
-    - image: circleci/node:14-browsers
+    - image: cimg/node:14.19.3-browsers
       environment:
         BUILD_PATH: /tmp/workspace/unity-renderer/unity-renderer/Builds/unity
         #                          ~~~~~~~~~~~~~~ <- repo name
@@ -52,7 +52,7 @@ jobs:
   checkout:
     <<: *working_directory_root
     docker:
-      - image: circleci/node:14-browsers
+      - image: cimg/node:14.19.3-browsers
         environment:
           # avoid automatic download of LFS files
           GIT_LFS_SKIP_SMUDGE: 1
