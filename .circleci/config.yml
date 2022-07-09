@@ -64,8 +64,9 @@ jobs:
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
+            sudo apt-get update && sudo apt-get install -y git-lfs
             ssh git@github.com git-lfs-authenticate decentraland/unity-renderer.git download
+            git lfs --version
             git lfs install
       # checkout the actual code
       - checkout
