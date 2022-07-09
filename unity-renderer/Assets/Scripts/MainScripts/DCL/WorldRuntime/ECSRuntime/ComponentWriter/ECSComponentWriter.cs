@@ -8,7 +8,7 @@ namespace DCL.ECSRuntime
 {
     public class ECSComponentWriter : IECSComponentWriter
     {
-        public delegate void WriteComponent(string sceneId, long entityId, int componentId, byte[] data);
+        public delegate void WriteComponent(string sceneId, long entityId, int componentId, byte[] data, ECSComponentWriteType writeType);
 
         private readonly Dictionary<int, object> serializers = new Dictionary<int, object>();
         private WriteComponent writeComponent;
@@ -28,12 +28,12 @@ namespace DCL.ECSRuntime
             serializers.Remove(componentId);
         }
 
-        public void PutComponent<T>(IParcelScene scene, IDCLEntity entity, int componentId, T model)
+        public void PutComponent<T>(IParcelScene scene, IDCLEntity entity, int componentId, T model, ECSComponentWriteType writeType)
         {
-            PutComponent(scene.sceneData.id, entity.entityId, componentId, model);
+            PutComponent(scene.sceneData.id, entity.entityId, componentId, model, writeType);
         }
 
-        public void PutComponent<T>(string sceneId, long entityId, int componentId, T model)
+        public void PutComponent<T>(string sceneId, long entityId, int componentId, T model, ECSComponentWriteType writeType)
         {
             if (!serializers.TryGetValue(componentId, out object serializer))
             {
@@ -43,7 +43,7 @@ namespace DCL.ECSRuntime
 
             if (serializer is Func<T, byte[]> typedSerializer)
             {
-                writeComponent(sceneId, entityId, componentId, typedSerializer(model));
+                writeComponent(sceneId, entityId, componentId, typedSerializer(model), writeType);
             }
             else
             {
@@ -51,14 +51,14 @@ namespace DCL.ECSRuntime
             }
         }
 
-        public void RemoveComponent(IParcelScene scene, IDCLEntity entity, int componentId)
+        public void RemoveComponent(IParcelScene scene, IDCLEntity entity, int componentId, ECSComponentWriteType writeType)
         {
-            RemoveComponent(scene.sceneData.id, entity.entityId, componentId);
+            RemoveComponent(scene.sceneData.id, entity.entityId, componentId, writeType);
         }
 
-        public void RemoveComponent(string sceneId, long entityId, int componentId)
+        public void RemoveComponent(string sceneId, long entityId, int componentId, ECSComponentWriteType writeType)
         {
-            writeComponent(sceneId, entityId, componentId, null);
+            writeComponent(sceneId, entityId, componentId, null, writeType);
         }
 
         public void Dispose()

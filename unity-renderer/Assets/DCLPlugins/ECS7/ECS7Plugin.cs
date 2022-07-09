@@ -1,4 +1,3 @@
-using DCL;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 

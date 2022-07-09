@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -6,6 +7,7 @@ using DCL.Helpers;
 using DCL;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
+using Random = UnityEngine.Random;
 
 public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
 {
@@ -108,15 +110,22 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
 
     public async UniTask StartAvatarRevealAnimation(bool instant, CancellationToken cancellationToken)
     {
-        if (!instant)
+        try
+        {
+            if (!instant)
+            {
+                SetFullRendered();
+                return;
+            }
+
+            isRevealing = true;
+            animation.Play();
+            await UniTask.WaitUntil(() => !isRevealing, cancellationToken: cancellationToken);
+        }
+        catch(OperationCanceledException)
         {
             SetFullRendered();
-            return;
         }
-
-        isRevealing = true;
-        animation.Play();
-        await UniTask.WaitUntil(() => !isRevealing, cancellationToken: cancellationToken);
     }
 
     public void OnRevealAnimationEnd()
