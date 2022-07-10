@@ -13,15 +13,16 @@ namespace DCL.AvatarModifierAreaFeedback
 
         private const string PATH = "_AvatarModifierAreaFeedbackHUD";
 
+        private enum AvatarModifierAreaFeedbackState { NEVER_SHOWN, ICON_VISIBLE, WARNING_MESSAGE_VISIBLE }
+
         [SerializeField] private RectTransform warningMessageRectTransform;
         [SerializeField] private CanvasGroup warningIconCanvasGroup;
         [SerializeField] internal TMP_Text descriptionText;
         private CanvasGroup warningMessageGroup;
         private float animationDuration;
-        private bool requiresFirstTimeActivation;
-        private bool isShowingWarningMessage;
         private Coroutine warningMessageAnimationCoroutine;
         private Coroutine iconAnimationCoroutine;
+        private AvatarModifierAreaFeedbackState currentState;
         private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
 
         public static AvatarModifierAreaFeedbackView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<AvatarModifierAreaFeedbackView>(); }
@@ -31,15 +32,14 @@ namespace DCL.AvatarModifierAreaFeedback
             base.Awake();
             warningMessageGroup = warningMessageRectTransform.GetComponent<CanvasGroup>();
             animationDuration = 0.5f;
-            requiresFirstTimeActivation = true;
+            currentState = AvatarModifierAreaFeedbackState.NEVER_SHOWN;
         }
         
         public override void Show(bool instant = false)
         {
             base.Show(instant);
-            if (requiresFirstTimeActivation)
+            if (currentState.Equals(AvatarModifierAreaFeedbackState.NEVER_SHOWN))
             {
-                requiresFirstTimeActivation = false;
                 ShowWarningMessage();
                 HideFirstTimeWarningMessage(deactivatePreviewCancellationToken.Token).Forget();
             }
@@ -52,12 +52,13 @@ namespace DCL.AvatarModifierAreaFeedback
         public override void Hide(bool instant = false)
         {
             base.Hide(instant);
+            
             deactivatePreviewCancellationToken.Cancel();
             deactivatePreviewCancellationToken = new CancellationTokenSource();
             
             warningIconCanvasGroup.blocksRaycasts = false;
             
-            if (isShowingWarningMessage)
+            if (currentState.Equals(AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE))
             {
                 HideWarningMessage();
             }
@@ -70,7 +71,7 @@ namespace DCL.AvatarModifierAreaFeedback
         public override void OnFocus()
         {
             base.OnFocus();
-
+            
             if (!isVisible) return;
 
             ShowWarningMessage();
@@ -80,9 +81,9 @@ namespace DCL.AvatarModifierAreaFeedback
         public override void OnLoseFocus()
         {
             base.OnLoseFocus();
-            
-            if (!isVisible) return;
 
+            if (!isVisible) return;
+            
             HideWarningMessage();
             ShowIcon();
         }
@@ -103,7 +104,6 @@ namespace DCL.AvatarModifierAreaFeedback
                 StopCoroutine(warningMessageAnimationCoroutine);
             }
             warningMessageAnimationCoroutine = StartCoroutine(WarningMessageAnimationCoroutine(Vector3.zero, 0));
-            isShowingWarningMessage = false;
         }
         
         private void ShowWarningMessage()
@@ -113,7 +113,7 @@ namespace DCL.AvatarModifierAreaFeedback
                 StopCoroutine(warningMessageAnimationCoroutine);
             }
             warningMessageAnimationCoroutine = StartCoroutine(WarningMessageAnimationCoroutine(Vector3.one, 1));
-            isShowingWarningMessage = true;
+            currentState = AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE;
         }
         
         private void HideIcon()
@@ -131,8 +131,11 @@ namespace DCL.AvatarModifierAreaFeedback
             {
                 StopCoroutine(iconAnimationCoroutine);
             }
+            
             warningIconCanvasGroup.blocksRaycasts = true;
+            
             iconAnimationCoroutine = StartCoroutine(IconAnimationCoroutine(1));
+            currentState = AvatarModifierAreaFeedbackState.ICON_VISIBLE;
         }
 
         public void AddNewWarningMessage(string newWarning)

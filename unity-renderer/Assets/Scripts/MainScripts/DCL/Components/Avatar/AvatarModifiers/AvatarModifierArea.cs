@@ -114,7 +114,7 @@ public class AvatarModifierArea : BaseComponent
         foreach (GameObject avatarThatExited in avatarsInArea.Except(newAvatarsInArea))
         {
             OnAvatarExit?.Invoke(avatarThatExited);
-            if (avatarThatExited.tag.Equals("Player"))
+            if (avatarThatExited && avatarThatExited.tag.Equals("Player"))
             {
                 DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Set(DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Get() - 1);
             }
