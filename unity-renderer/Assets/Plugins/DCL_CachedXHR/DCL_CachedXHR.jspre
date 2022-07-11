@@ -131,7 +131,7 @@ function DCL_CachedXHR() {
     });
 
     ["dispatchEvent", "readyState", "response", "responseText", "responseType", "responseURL", "responseXML", "status", "statusText", "timeout", "upload", "withCredentials",
-        "onloadstart", "onprogress", "onabort", "onerror", "onload", "ontimeout", "onloadend", "onreadystatechange"].forEach(function (property) {
+        "onloadstart", "onprogress", "onabort", "onerror", "onload", "ontimeout", "onloadend", "onreadystatechange", "redirect"].forEach(function (property) {
         Object.defineProperty(self, property, {
             get: function () {
                 return (cache.override && cache[property]) ? cache[property] : xhr[property];
