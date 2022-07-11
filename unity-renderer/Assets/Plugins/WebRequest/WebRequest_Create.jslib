@@ -1,6 +1,6 @@
 var LibraryWebRequestWebGL = {
     $wr: {
-        requestInstances: {},
+        requests: {},
         nextRequestId: 1
     },
 
@@ -12,7 +12,7 @@ var LibraryWebRequestWebGL = {
         var _method = UTF8ToString(method);
         http.open(_method, _url, true);
         http.responseType = 'arraybuffer';
-        wr.requestInstances[wr.nextRequestId] = http;
+        wr.requests[wr.nextRequestId] = http;
         return wr.nextRequestId++;
     },
 };
