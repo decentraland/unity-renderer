@@ -22,14 +22,7 @@ namespace DCL.AvatarModifierAreaFeedback
     
         private void OnAvatarModifierValueChanged(int current, int previous)
         {
-            if (current == 0)
-            {
-                view.Hide();
-            }
-            if (current >= 1 && !view.isVisible)
-            {
-                view.Show();
-            }
+            view.SetVisibility(current >= 1);
         }
     
         private void OnAvatarModifierWarningAdded(string newWarning)

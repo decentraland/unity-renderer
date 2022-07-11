@@ -37,6 +37,8 @@ namespace DCL.AvatarModifierAreaFeedback
         
         public override void Show(bool instant = false)
         {
+            if (isVisible) return;
+            
             base.Show(instant);
             if (currentState.Equals(AvatarModifierAreaFeedbackState.NEVER_SHOWN))
             {
@@ -65,6 +67,18 @@ namespace DCL.AvatarModifierAreaFeedback
             else
             {
                 HideIcon();
+            }
+        }
+        
+        public void SetVisibility(bool setVisible)
+        {
+            if (setVisible)
+            {
+                Show();
+            }
+            else
+            {
+                Hide();
             }
         }
         
@@ -186,6 +200,7 @@ namespace DCL.AvatarModifierAreaFeedback
 
             warningIconCanvasGroup.alpha = destinationAlpha;
         }
+
 
     }
 }
