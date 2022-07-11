@@ -1,17 +1,26 @@
-﻿using UnityEngine;
+﻿using System;
 
 namespace DCL.Components
 {
     public static class DCLTransformUtils
     {
-        public static void DecodeTransform(string payload, ref DCLTransform.Model model)
+        public static unsafe void DecodeTransform(string payload, ref DCLTransform.Model model)
         {
-            byte[] bytes = System.Convert.FromBase64String(payload);
-            DCL.Interface.PB_Transform pbTransform = DCL.Interface.PB_Transform.Parser.ParseFrom(bytes);
-            model.position = new Vector3(pbTransform.Position.X, pbTransform.Position.Y, pbTransform.Position.Z);
-            model.scale = new Vector3(pbTransform.Scale.X, pbTransform.Scale.Y, pbTransform.Scale.Z);
-            model.rotation = new Quaternion((float) pbTransform.Rotation.X, (float) pbTransform.Rotation.Y,
-                (float) pbTransform.Rotation.Z, (float) pbTransform.Rotation.W);
+            byte[] bytes = Convert.FromBase64String(payload);
+            fixed (byte* numPtr = &bytes[0])
+            {
+                float* arr = (float*)numPtr;
+                model.position.x = arr[0];
+                model.position.y = arr[1];
+                model.position.z = arr[2];
+                model.rotation.x = arr[3];
+                model.rotation.y = arr[4];
+                model.rotation.z = arr[5];
+                model.rotation.w = arr[6];
+                model.scale.x = arr[7];
+                model.scale.y = arr[8];
+                model.scale.z = arr[9];
+            }
         }
     }
 }
