@@ -230,7 +230,7 @@ namespace DCL.Chat.Channels
 
                 var msg = new ChannelInfoPayload
                 {
-                    joined = true,
+                    joined = false,
                     channelId = channelId,
                     muted = false,
                     memberCount = Random.Range(0, 16),

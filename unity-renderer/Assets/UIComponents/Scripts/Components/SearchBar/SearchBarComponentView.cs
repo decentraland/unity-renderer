@@ -52,6 +52,8 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
     internal Coroutine searchWhileTypingRoutine;
     internal float lastValueChangeTime = 0;
 
+    public string Text => inputField.text;
+
     public override void Awake()
     {
         base.Awake();

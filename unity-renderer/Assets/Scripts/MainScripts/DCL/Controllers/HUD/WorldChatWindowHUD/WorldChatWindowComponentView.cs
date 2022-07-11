@@ -289,7 +289,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     private void Set(PublicChatModel model)
     {
         var channelId = model.channelId;
-        var entry = new PublicChatEntry.PublicChatEntryModel(channelId, model.name, model.lastMessageTimestamp);
+        var entry = new PublicChatEntry.PublicChatEntryModel(channelId, model.name, model.lastMessageTimestamp, model.joined, model.memberCount);
 
         if (isSearchMode)
         {

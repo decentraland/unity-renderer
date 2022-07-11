@@ -1,5 +1,7 @@
 using System;
-using DCL.Chat.Channels;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Chat.HUD
 {
@@ -11,6 +13,7 @@ namespace DCL.Chat.HUD
         private readonly IChatController chatController;
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
+        private CancellationTokenSource getChannelTimeoutCancellationToken = new CancellationTokenSource();
 
         public ISearchChannelsWindowView View => view;
 
@@ -44,7 +47,7 @@ namespace DCL.Chat.HUD
                 view.ClearSearchInput();
                 view.ClearAllEntries();
                 view.ShowLoading();
-                
+
                 ClearListeners();
                 view.OnSearchUpdated += SearchChannels;
                 view.OnRequestMoreChannels += LoadMoreChannels;
@@ -53,6 +56,10 @@ namespace DCL.Chat.HUD
                 chatController.OnChannelUpdated += ShowChannel;
                 
                 chatController.GetChannels(LOAD_PAGE_SIZE, 0);
+                
+                getChannelTimeoutCancellationToken.Cancel();
+                getChannelTimeoutCancellationToken = new CancellationTokenSource();
+                WaitTimeoutThenHideLoading(getChannelTimeoutCancellationToken.Token).Forget();
             }
             else
             {
@@ -71,6 +78,10 @@ namespace DCL.Chat.HUD
                 chatController.GetChannels(LOAD_PAGE_SIZE, 0);
             else
                 chatController.GetChannels(LOAD_PAGE_SIZE, 0, searchText);
+            
+            getChannelTimeoutCancellationToken.Cancel();
+            getChannelTimeoutCancellationToken = new CancellationTokenSource();
+            WaitTimeoutThenHideLoading(getChannelTimeoutCancellationToken.Token).Forget();
         }
 
         private void ShowChannel(Channel channel)
@@ -100,6 +111,12 @@ namespace DCL.Chat.HUD
             view.OnSearchUpdated -= SearchChannels;
             view.OnRequestMoreChannels -= LoadMoreChannels;
             chatController.OnChannelUpdated -= ShowChannel;
+        }
+
+        private async UniTask WaitTimeoutThenHideLoading(CancellationToken cancellationToken)
+        {
+            await UniTask.Delay(LOAD_TIMEOUT * 1000, cancellationToken: cancellationToken);
+            view.HideLoading();
         }
     }
 }

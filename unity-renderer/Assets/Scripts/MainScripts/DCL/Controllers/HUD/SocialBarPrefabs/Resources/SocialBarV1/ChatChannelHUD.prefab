@@ -76,6 +76,8 @@ MonoBehaviour:
     name: 
     description: 
     lastMessageTimestamp: 0
+    joined: 0
+    memberCount: 0
   previewCanvasGroup:
   - {fileID: 7418644472536715832}
   - {fileID: 626069884981650284}

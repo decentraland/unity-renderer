@@ -18,6 +18,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal Button closeButton;
 
         private bool isLayoutDirty;
+        private bool isSortDirty;
 
         public event Action OnBack;
         public event Action OnClose;
@@ -34,6 +35,7 @@ namespace DCL.Chat.HUD
             backButton.onClick.AddListener(() => OnBack?.Invoke());
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
             searchBar.OnSearchText += s => OnSearchUpdated?.Invoke(s);
+            channelList.SortingMethod = (a, b) => b.model.memberCount.CompareTo(a.model.memberCount);
         }
 
         public override void Update()
@@ -43,6 +45,10 @@ namespace DCL.Chat.HUD
             if (isLayoutDirty)
                 ((RectTransform) scroll.transform).ForceUpdateLayout();
             isLayoutDirty = false;
+            
+            if (isSortDirty)
+                channelList.Sort();
+            isSortDirty = false;
         }
 
         public static SearchChannelsWindowComponentView Create()
@@ -57,14 +63,19 @@ namespace DCL.Chat.HUD
             UpdateHeaders();
         }
 
-        public void ShowLoading() => loadingContainer.SetActive(true);
+        public void ShowLoading()
+        {
+            loadingContainer.SetActive(true);
+            channelList.gameObject.SetActive(false);
+        }
 
         public void Set(Channel channel)
         {
             channelList.Set(channel.ChannelId,
-                new PublicChatEntry.PublicChatEntryModel(channel.ChannelId, channel.Name, channel.LastMessageTimestamp));
+                new PublicChatEntry.PublicChatEntryModel(channel.ChannelId, channel.Name, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
             
             UpdateLayout();
+            Sort();
             UpdateHeaders();
         }
 
@@ -74,18 +85,29 @@ namespace DCL.Chat.HUD
 
         public void ClearSearchInput() => searchBar.ClearSearch();
 
-        public void HideLoading() => loadingContainer.SetActive(false);
-        
+        public void HideLoading()
+        {
+            loadingContainer.SetActive(false);
+            channelList.gameObject.SetActive(true);
+        }
+
         public override void RefreshControl()
         {
             throw new NotImplementedException();
         }
 
         private void UpdateLayout() => isLayoutDirty = true;
+
+        private void Sort() => isSortDirty = true;
         
         private void UpdateHeaders()
         {
-            resultsHeaderLabel.text = $"Results ({channelList.Count()})";
+            var text = $"Results ({channelList.Count()})";
+            
+            if (!string.IsNullOrEmpty(searchBar.Text))
+                text = "Did you mean?";
+            
+            resultsHeaderLabel.text = text;
         }
     }
 }
