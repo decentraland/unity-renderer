@@ -13,7 +13,7 @@ var WebVideoPlayer = {
             PAUSED: 7,
         };
 
-        const videoUrl = Pointer_stringify(url);
+        const videoUrl = UTF8ToString(url);
         const vid = document.createElement("video");
         vid.autoplay = false;
 
@@ -29,7 +29,7 @@ var WebVideoPlayer = {
             textureId: texId
         };
 
-        videos[Pointer_stringify(videoId)] = videoData;
+        videos[UTF8ToString(videoId)] = videoData;
 
         if (useHls) {
             var hlsConfig = {
@@ -103,7 +103,7 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerRemove: function (videoId) {
-        const id = Pointer_stringify(videoId);
+        const id = UTF8ToString(videoId);
         if (!videos.hasOwnProperty(id)) {
             console.warn("video: trying to remove undefined video of id " + id);
             return;
@@ -126,12 +126,12 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerTextureGet: function (videoId) {
-        const id = Pointer_stringify(videoId);
+        const id = UTF8ToString(videoId);
         return videos[id].textureId;
     },
 
     WebVideoPlayerTextureUpdate: function (videoId) {
-        const id = Pointer_stringify(videoId);
+        const id = UTF8ToString(videoId);
 
         if (videos[id].state !== 4) return; //PLAYING
 
@@ -154,7 +154,7 @@ var WebVideoPlayer = {
 
     WebVideoPlayerPlay: function (videoId, startTime) {
         try {
-            const videoData = videos[Pointer_stringify(videoId)];
+            const videoData = videos[UTF8ToString(videoId)];
             if (videoData.hlsInstance !== undefined) {
                 videoData.hlsInstance.attachMedia(videoData.video);
             }
@@ -178,7 +178,7 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerPause: function (videoId) {
-        const videoData = videos[Pointer_stringify(videoId)];
+        const videoData = videos[UTF8ToString(videoId)];
         if (videoData.hlsInstance !== undefined) {
             videoData.hlsInstance.detachMedia(videoData.video);
         }
@@ -187,27 +187,27 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerVolume: function (videoId, volume) {
-        videos[Pointer_stringify(videoId)].video.volume = volume;
+        videos[UTF8ToString(videoId)].video.volume = volume;
     },
 
     WebVideoPlayerGetHeight: function (videoId) {
-        return videos[Pointer_stringify(videoId)].video.videoHeight;
+        return videos[UTF8ToString(videoId)].video.videoHeight;
     },
 
     WebVideoPlayerGetWidth: function (videoId) {
-        return videos[Pointer_stringify(videoId)].video.videoWidth;
+        return videos[UTF8ToString(videoId)].video.videoWidth;
     },
 
     WebVideoPlayerGetTime: function (videoId) {
-        return videos[Pointer_stringify(videoId)].video.currentTime;
+        return videos[UTF8ToString(videoId)].video.currentTime;
     },
 
     WebVideoPlayerGetDuration: function (videoId) {
-        return videos[Pointer_stringify(videoId)].video.duration;
+        return videos[UTF8ToString(videoId)].video.duration;
     },
 
     WebVideoPlayerGetState: function (videoId) {
-        const id = Pointer_stringify(videoId);
+        const id = UTF8ToString(videoId);
         if (!videos.hasOwnProperty(id)) {
             return 1; //videoState.ERROR;
         }
@@ -215,7 +215,7 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerGetError: function (videoId) {
-        const id = Pointer_stringify(videoId);
+        const id = UTF8ToString(videoId);
         var errorStr = "";
         if (!videos.hasOwnProperty(id)) {
             errorStr = "Video id " + id + " does not exist";
@@ -230,7 +230,7 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerSetTime: function (videoId, second) {
-        const videoData = videos[Pointer_stringify(videoId)];
+        const videoData = videos[UTF8ToString(videoId)];
         const vid = videoData.video;
 
         if (second === 0) {
@@ -241,11 +241,11 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerSetLoop: function (videoId, value) {
-        videos[Pointer_stringify(videoId)].video.loop = value;
+        videos[UTF8ToString(videoId)].video.loop = value;
     },
 
     WebVideoPlayerSetPlaybackRate: function (videoId, value) {
-        videos[Pointer_stringify(videoId)].video.playbackRate = value;
+        videos[UTF8ToString(videoId)].video.playbackRate = value;
     },
 };
 autoAddDeps(WebVideoPlayer, "$videos");
