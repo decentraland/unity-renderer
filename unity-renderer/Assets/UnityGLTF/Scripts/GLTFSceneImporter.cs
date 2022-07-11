@@ -124,6 +124,8 @@ namespace UnityGLTF
         private bool useMaterialTransitionValue = true;
 
         public bool importSkeleton = true;
+        
+        public bool ignoreMaterials = false;
 
         public bool useMaterialTransition { get => useMaterialTransitionValue && !renderingIsDisabled; set => useMaterialTransitionValue = value; }
 
@@ -717,15 +719,10 @@ namespace UnityGLTF
 
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
-
-            // We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
-#if !UNITY_STANDALONE || UNITY_EDITOR
-            if ( Application.isPlaying )
-            {
-                //NOTE(Brian): This breaks importing in editor mode
+            
+            //NOTE(Brian): This tex compression breaks importing in editor mode
+            if (Application.isPlaying && DataStore.i.textureConfig.runCompression.Get())
                 texture.Compress(false);
-            }
-#endif
 
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
@@ -1644,6 +1641,14 @@ namespace UnityGLTF
             Renderer renderer = primitiveObj.GetComponent<Renderer>();
 
             cancellationToken.ThrowIfCancellationRequested();
+            
+            if (ignoreMaterials)
+            {
+                if (!(useMaterialTransition && initialVisibility) && LoadingTextureMaterial == null)
+                    primitiveObj.SetActive(true);
+                
+                return;
+            }
 
             //// NOTE(Brian): Texture loading
             if (useMaterialTransition && initialVisibility)

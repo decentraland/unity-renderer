@@ -61,7 +61,9 @@ namespace DCL
         public DataStore_EmotesCustomization emotesCustomization => i.Get<DataStore_EmotesCustomization>();
         public DataStore_SceneBoundariesChecker sceneBoundariesChecker => i.Get<DataStore_SceneBoundariesChecker>();
         public DataStore_ECS7 ecs7 => i.Get<DataStore_ECS7>();
-        public DataStore_TextureSize textureSize => i.Get<DataStore_TextureSize>();
+        public DataStore_VoiceChat voiceChat => i.Get<DataStore_VoiceChat>();
+        public DataStore_TextureConfig textureConfig => i.Get<DataStore_TextureConfig>();
         public DataStore_FriendNotifications friendNotifications => i.Get<DataStore_FriendNotifications>();
+        public DataStore_AvatarConfig avatarConfig => i.Get<DataStore_AvatarConfig>();
     }
 }

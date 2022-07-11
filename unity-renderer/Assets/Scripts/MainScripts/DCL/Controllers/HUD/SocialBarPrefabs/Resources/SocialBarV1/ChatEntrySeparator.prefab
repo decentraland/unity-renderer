@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 354067052109101211}
   - component: {fileID: 717124712886577979}
   - component: {fileID: 7718504158943562904}
+  - component: {fileID: 8029899084763596690}
   m_Layer: 5
   m_Name: ChatEntrySeparator
   m_TagString: Untagged
@@ -238,6 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: {fileID: 354067051564857684}
+  group: {fileID: 8029899084763596690}
   previewBackgroundImage: {fileID: 354067052128924988}
   previewBackgroundColor: {r: 0, g: 0, b: 0, a: 0.7058824}
   previewFontColor: {r: 1, g: 1, b: 1, a: 1}
@@ -261,6 +263,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!225 &8029899084763596690
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 354067052109101188}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &354067052128924987
 GameObject:
   m_ObjectHideFlags: 0

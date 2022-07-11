@@ -29,7 +29,8 @@ namespace DCL
         public GameObject avatarContainer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
-        [SerializeField] private GameObject onloadParticlePrefab;
+        [SerializeField] private Transform avatarRevealContainer;
+        [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
         [SerializeField] internal GameObject playerNameContainer;
@@ -46,7 +47,7 @@ namespace DCL
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
         private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-        private IAvatar avatar;
+        internal IAvatar avatar;
         private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
         private CancellationTokenSource loadingCts;
         private ILazyTextureObserver currentLazyObserver;
@@ -58,10 +59,24 @@ namespace DCL
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+
+            if (DataStore.i.avatarConfig.useHologramAvatar.Get())
+                avatar = GetAvatarWithHologram();
+            else
+                avatar = GetStandardAvatar();
+
+            if (avatarReporterController == null)
+            {
+                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
+            }
+        }
+
+        private Avatar GetStandardAvatar()
+        {
             Visibility visibility = new Visibility();
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            avatar = new Avatar(
+            return new Avatar(
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                 animator,
@@ -70,11 +85,24 @@ namespace DCL
                 new SimpleGPUSkinning(),
                 new GPUSkinningThrottler(),
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+        }
 
-            if (avatarReporterController == null)
-            {
-                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
-            }
+        private AvatarWithHologram GetAvatarWithHologram()
+        {
+            Visibility visibility = new Visibility();
+            LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
+            AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
+            return new AvatarWithHologram(
+                    baseAvatar,
+                    new AvatarCurator(new WearableItemResolver()),
+                    new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
+                    animator,
+                    visibility,
+                    avatarLOD,
+                    new SimpleGPUSkinning(),
+                    new GPUSkinningThrottler(),
+                    new EmoteAnimationEquipper(animator, DataStore.i.emotes));
         }
 
         private void Start()
@@ -152,7 +180,11 @@ namespace DCL
                 loadingCts?.Cancel();
                 loadingCts?.Dispose();
                 loadingCts = new CancellationTokenSource();
-
+                if (DataStore.i.avatarConfig.useHologramAvatar.Get())
+                {
+                    playerName.SetName(model.name);
+                    playerName.Show(true);
+                }
                 avatar.Load(wearableItems, new AvatarSettings
                 {
                     playerName = model.name,
@@ -164,9 +196,6 @@ namespace DCL
 
                 // Yielding a UniTask doesn't do anything, we manually wait until the avatar is ready
                 yield return new WaitUntil(() => avatar.status == IAvatar.Status.Loaded);
-
-                if (avatar.lodLevel <= 1)
-                    AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, onloadParticlePrefab);
             }
 
             avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);

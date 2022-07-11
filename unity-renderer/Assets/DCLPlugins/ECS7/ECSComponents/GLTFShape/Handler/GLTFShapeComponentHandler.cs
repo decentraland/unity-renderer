@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL.Components;
+using DCL.Configuration;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -94,7 +95,7 @@ namespace DCL.ECSComponents
                     // Apply the model for visibility, collision and event pointer
                     ApplyModel(model);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
-                    dataStore.AddReadyAnimatorShape(entity.entityId,meshesInfo.meshRootGameObject);
+                    dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
                     
                 }, (wrapper, exception) =>
                 {
@@ -112,26 +113,19 @@ namespace DCL.ECSComponents
         
         internal void ApplyModel(PBGLTFShape model)
         {
-            shapeRepresentation.UpdateModel(model);
+            shapeRepresentation.UpdateModel(model.Visible, model.WithCollisions);
             
             // Set visibility
             meshesInfo.meshRootGameObject.SetActive(model.Visible);
             
-            // Set collisions
-            foreach (var collider in meshesInfo.colliders)
-            {
-                collider.enabled = model.WithCollisions;
-            }
-            
-            //TODO: Implement events here
+            // Set collisions and pointer blocker
+            ECSComponentsUtils.UpdateMeshInfoColliders(model.WithCollisions, model.IsPointerBlocker, meshesInfo);
         }
 
         internal void DisposeMesh(IParcelScene scene)
         {
             if (entity != null)
-                dataStore.RemoveReadyAnimatorShape(entity.entityId);
-            if (meshesInfo != null)
-                ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
+                dataStore.RemoveShapeReady(entity.entityId);
             if (rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id, rendereable);
             if (model != null)

@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Models;
+using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using Ray = UnityEngine.Ray;
 
 namespace DCL
@@ -29,7 +30,7 @@ namespace DCL
         GameObject newHoveredGO = null;
 
         IPointerEvent newHoveredInputEvent = null;
-        IPointerEvent[] lastHoveredEventList = null;
+        IList<IPointerEvent> lastHoveredEventList = null;
 
         RaycastHit hitInfo;
         PointerEventData uiGraphicRaycastPointerEventData = new PointerEventData(null);
@@ -121,7 +122,7 @@ namespace DCL
             }
 
             if (CollidersManager.i.GetColliderInfo(hitInfo.collider, out ColliderInfo info))
-                newHoveredInputEvent = info.entity.gameObject.GetComponentInChildren<IPointerEvent>();
+                newHoveredInputEvent = GetPointerEvent(info.entity);
             else
                 newHoveredInputEvent = hitInfo.collider.GetComponentInChildren<IPointerEvent>();
 
@@ -141,13 +142,10 @@ namespace DCL
 
                 lastHoveredObject = newHoveredGO;
 
-                lastHoveredEventList = newHoveredInputEvent.entity.gameObject.transform.Cast<Transform>()
-                    .Select(child => child.GetComponent<IPointerEvent>())
-                    .Where(pointerComponent => pointerComponent != null)
-                    .ToArray();
+                lastHoveredEventList = GetPointerEventList(newHoveredInputEvent.entity);
 
                 // NOTE: this case is for the Avatar, since it hierarchy differs from other ECS components
-                if (lastHoveredEventList?.Length == 0)
+                if (lastHoveredEventList?.Count == 0)
                 {
                     lastHoveredEventList = newHoveredGO.GetComponents<IPointerEvent>();
                 }
@@ -156,11 +154,11 @@ namespace DCL
             }
 
             // OnPointerDown/OnClick and OnPointerUp should display their hover feedback at different moments
-            if (lastHoveredEventList != null && lastHoveredEventList.Length > 0)
+            if (lastHoveredEventList != null && lastHoveredEventList.Count > 0)
             {
                 bool isEntityShowingHoverFeedback = false;
 
-                for (int i = 0; i < lastHoveredEventList.Length; i++)
+                for (int i = 0; i < lastHoveredEventList.Count; i++)
                 {
                     if (lastHoveredEventList[i] is IPointerInputEvent e)
                     {
@@ -194,6 +192,42 @@ namespace DCL
 
             newHoveredGO = null;
             newHoveredInputEvent = null;
+        }
+        
+        private IList<IPointerEvent> GetPointerEventList(IDCLEntity entity)
+        {
+            // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
+            if (DataStore.i.ecs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+            {
+                return pointerInputEvent.Cast<IPointerEvent>().ToList();
+            }
+            else
+            {
+                var lastHoveredEventList = newHoveredInputEvent.entity.gameObject.transform.Cast<Transform>()
+                                                               .Select(child => child.GetComponent<IPointerEvent>())
+                                                               .Where(pointerComponent => pointerComponent != null)
+                                                               .ToArray();
+
+                return lastHoveredEventList;
+            }
+        }
+
+        private IPointerEvent GetPointerEvent(IDCLEntity entity)
+        {
+            // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
+            if (DataStore.i.ecs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+                return pointerInputEvent.First();
+            else
+                return entity.gameObject.GetComponentInChildren<IPointerEvent>();
+        }
+
+        private IList<IPointerInputEvent> GetPointerInputEvents(IDCLEntity entity, GameObject hitGameObject)
+        {
+            // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
+            if (DataStore.i.ecs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+                return pointerInputEvent;
+            else
+                return hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
         }
 
         private bool EventObjectCanBeHovered(ColliderInfo colliderInfo, float distance)
@@ -250,7 +284,7 @@ namespace DCL
 
             OnPointerHoverEnds?.Invoke();
 
-            for (int i = 0; i < lastHoveredEventList.Length; i++)
+            for (int i = 0; i < lastHoveredEventList.Count; i++)
             {
                 if (lastHoveredEventList[i] == null)
                     continue;
@@ -420,9 +454,9 @@ namespace DCL
                 else
                     hitGameObject = collider.gameObject;
 
-                var events = hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
+                IList<IPointerInputEvent> events = GetPointerInputEvents(info.entity, hitGameObject);
 
-                for (var i = 0; i < events.Length; i++)
+                for (var i = 0; i < events.Count; i++)
                 {
                     IPointerInputEvent e = events[i];
                     bool areSameEntity = AreSameEntity(e, info);

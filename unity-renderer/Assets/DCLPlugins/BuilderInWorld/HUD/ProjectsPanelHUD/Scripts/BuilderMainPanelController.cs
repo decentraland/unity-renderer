@@ -467,8 +467,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             network = TESTING_TLD;
             DataStore.i.realm.playerRealm.Set(new CurrentRealmModel()
             {
-                domain = $"https://peer-lb.decentraland.{TESTING_TLD}",
-                contentServerUrl = $"https://peer-lb.decentraland.{TESTING_TLD}/content",
+                domain = $"https://peer.decentraland.{TESTING_TLD}",
+                contentServerUrl = $"https://peer.decentraland.{TESTING_TLD}/content",
             });
         }
 #endif

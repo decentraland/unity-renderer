@@ -25,7 +25,7 @@ namespace DCL.ECSComponents
         {
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
-            DisposeMesh(scene);
+            DisposeMesh(entity, scene);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBCylinderShape model)
@@ -47,9 +47,10 @@ namespace DCL.ECSComponents
                 primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
                 primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>
                 {
-                    DisposeMesh(scene);
+                    DisposeMesh(entity, scene);
                     generatedMesh = shape.mesh;
                     GenerateRenderer(generatedMesh, scene, entity, model);
+                    dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
                 };
                 primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
@@ -66,16 +67,19 @@ namespace DCL.ECSComponents
 
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBCylinderShape model)
         {
-            meshesInfo = ECSComponentsUtils.GenerateMeshInfo(entity, mesh, entity.gameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
+            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
         }
 
-        internal void DisposeMesh(IParcelScene scene)
+        internal void DisposeMesh(IDCLEntity entity,IParcelScene scene)
         {
             if (meshesInfo != null)
+            {
+                dataStore.RemoveShapeReady(entity.entityId);
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
+            }
             if (rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id, rendereable);
             if (lastModel != null)

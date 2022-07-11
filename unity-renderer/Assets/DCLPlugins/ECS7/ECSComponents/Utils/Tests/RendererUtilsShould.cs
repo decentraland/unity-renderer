@@ -40,7 +40,7 @@ public class RendererUtilsShould
         Renderer[] renderers = new Renderer[] { meshRenderer };
         
         // Act
-        ECSComponentsUtils.UpdateRenderer(entity, meshFilter,gameObject, renderers, false, false, false);
+        ECSComponentsUtils.UpdateRenderer(entity, gameObject, renderers, false, false, false);
 
         // Assert
         Assert.IsFalse(meshRenderer.enabled);
