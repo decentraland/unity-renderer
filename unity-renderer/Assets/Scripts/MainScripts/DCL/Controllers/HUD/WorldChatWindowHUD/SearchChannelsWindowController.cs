@@ -53,6 +53,7 @@ namespace DCL.Chat.HUD
                 view.OnRequestMoreChannels += LoadMoreChannels;
                 view.OnBack += HandleViewBacked;
                 view.OnClose += HandleViewClosed;
+                view.OnJoinChannel += HandleJoinChannel;
                 chatController.OnChannelUpdated += ShowChannel;
                 
                 chatController.GetChannels(LOAD_PAGE_SIZE, 0);
@@ -111,12 +112,18 @@ namespace DCL.Chat.HUD
             view.OnSearchUpdated -= SearchChannels;
             view.OnRequestMoreChannels -= LoadMoreChannels;
             chatController.OnChannelUpdated -= ShowChannel;
+            view.OnJoinChannel -= HandleJoinChannel;
         }
 
         private async UniTask WaitTimeoutThenHideLoading(CancellationToken cancellationToken)
         {
             await UniTask.Delay(LOAD_TIMEOUT * 1000, cancellationToken: cancellationToken);
             view.HideLoading();
+        }
+        
+        private void HandleJoinChannel(string channelId)
+        {
+            chatController.JoinOrCreateChannel(channelId);
         }
     }
 }

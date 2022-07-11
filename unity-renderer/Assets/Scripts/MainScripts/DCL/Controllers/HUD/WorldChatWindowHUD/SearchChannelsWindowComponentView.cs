@@ -24,6 +24,7 @@ namespace DCL.Chat.HUD
         public event Action OnClose;
         public event Action<string> OnSearchUpdated;
         public event Action OnRequestMoreChannels;
+        public event Action<string> OnJoinChannel;
 
         public RectTransform Transform => (RectTransform) transform;
         public int EntryCount => channelList.Count();
@@ -35,7 +36,7 @@ namespace DCL.Chat.HUD
             backButton.onClick.AddListener(() => OnBack?.Invoke());
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
             searchBar.OnSearchText += s => OnSearchUpdated?.Invoke(s);
-            channelList.SortingMethod = (a, b) => b.model.memberCount.CompareTo(a.model.memberCount);
+            channelList.SortingMethod = (a, b) => b.Model.memberCount.CompareTo(a.Model.memberCount);
         }
 
         public override void Update()
@@ -73,7 +74,11 @@ namespace DCL.Chat.HUD
         {
             channelList.Set(channel.ChannelId,
                 new PublicChatEntry.PublicChatEntryModel(channel.ChannelId, channel.Name, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
-            
+
+            var entry = channelList.Get(channel.ChannelId);
+            entry.OnOpenChat -= HandleJoinRequest;
+            entry.OnOpenChat += HandleJoinRequest;
+
             UpdateLayout();
             Sort();
             UpdateHeaders();
@@ -109,5 +114,7 @@ namespace DCL.Chat.HUD
             
             resultsHeaderLabel.text = text;
         }
+        
+        private void HandleJoinRequest(PublicChatEntry entry) => OnJoinChannel?.Invoke(entry.Model.channelId);
     }
 }
