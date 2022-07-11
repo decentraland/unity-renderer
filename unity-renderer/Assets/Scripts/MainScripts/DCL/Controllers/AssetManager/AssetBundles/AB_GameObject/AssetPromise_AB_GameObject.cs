@@ -52,7 +52,8 @@ namespace DCL
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
             foreach (Renderer r in asset.renderers)
             {
-                if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE)
+                if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE 
+                    && r is MeshRenderer)
                 {
                     MaterialTransitionController matTransition = r.gameObject.AddComponent<MaterialTransitionController>();
                     matTransition.OnDidFinishLoading(r.sharedMaterial);
