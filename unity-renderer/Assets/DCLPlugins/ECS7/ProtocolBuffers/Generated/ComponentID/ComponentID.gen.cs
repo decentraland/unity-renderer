@@ -22,5 +22,7 @@ namespace DCL.ECS7
         public const int ON_POINTER_DOWN_RESULT = 1066;
         public const int AVATAR_MODIFIER_AREA = 1070;
         public const int CAMERA_MODE_AREA = 1071;
+        public const int AVATAR_SHAPE = 1080;
+        public const int BILLBOARD = 1090;
     }
 }
