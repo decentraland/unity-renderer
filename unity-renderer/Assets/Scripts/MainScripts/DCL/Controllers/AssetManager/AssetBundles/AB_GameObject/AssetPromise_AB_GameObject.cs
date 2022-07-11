@@ -50,6 +50,13 @@ namespace DCL
         protected override void OnAfterLoadOrReuse()
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
+            foreach (Renderer r in asset.renderers)
+            {
+                if (r.GetComponent<MaterialTransitionController>())
+                {
+                    r.GetComponent<MaterialTransitionController>().OnDidFinishLoading(r.sharedMaterial);
+                }
+            }
             settings.ApplyAfterLoad(asset.container.transform);
         }
 
@@ -173,6 +180,16 @@ namespace DCL
                 assetBundleModelGO.name = subPromise.asset.GetName();
 #endif
                 assetBundleModelGO.transform.ResetLocalTRS();
+                
+                foreach (Renderer r in asset.renderers)
+                {
+                    if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE) 
+                    {
+                        
+                        MaterialTransitionController matTransition = r.gameObject.AddComponent<MaterialTransitionController>();
+                        matTransition.OnDidFinishLoading(r.sharedMaterial);
+                    }
+                }
 
                 yield return null;
             }
