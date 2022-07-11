@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using UnityEngine;
 
 namespace DCL.Components
 {
@@ -22,5 +24,33 @@ namespace DCL.Components
                 model.scale.z = arr[9];
             }
         }
+        
+        public static unsafe string EncodeTransform(Vector3 position, Quaternion rotation, Vector3 scale)
+        {
+            unsafe void WriteSingleToStream(float value, Stream stream)
+            {
+                byte* ptr = (byte*)&value;
+                stream.WriteByte(ptr[0]);
+                stream.WriteByte(ptr[1]);
+                stream.WriteByte(ptr[2]);
+                stream.WriteByte(ptr[3]);
+            }
+
+            using (var memoryStream = new MemoryStream(40))
+            {
+                WriteSingleToStream(position.x, memoryStream);
+                WriteSingleToStream(position.y, memoryStream);
+                WriteSingleToStream(position.z, memoryStream);
+                WriteSingleToStream(rotation.x, memoryStream);
+                WriteSingleToStream(rotation.y, memoryStream);
+                WriteSingleToStream(rotation.z, memoryStream);
+                WriteSingleToStream(rotation.w, memoryStream);
+                WriteSingleToStream(scale.x, memoryStream);
+                WriteSingleToStream(scale.y, memoryStream);
+                WriteSingleToStream(scale.z, memoryStream);
+                
+                return Convert.ToBase64String(memoryStream.GetBuffer());
+            }
+        }        
     }
 }
