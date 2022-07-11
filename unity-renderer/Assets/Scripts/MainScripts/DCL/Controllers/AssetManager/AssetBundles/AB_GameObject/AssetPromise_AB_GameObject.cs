@@ -52,11 +52,9 @@ namespace DCL
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
             foreach (Renderer r in asset.renderers)
             {
-                if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE 
-                    && r is MeshRenderer)
+                if (r.GetComponent<MaterialTransitionController>()) 
                 {
-                    MaterialTransitionController matTransition = r.gameObject.AddComponent<MaterialTransitionController>();
-                    matTransition.OnDidFinishLoading(r.sharedMaterial);
+                    r.GetComponent<MaterialTransitionController>().OnDidFinishLoading(r.sharedMaterial);
                 }
             }
             settings.ApplyAfterLoad(asset.container.transform);
@@ -148,7 +146,7 @@ namespace DCL
 
                 yield break;
             }
-
+            
             for (int i = 0; i < goList.Count; i++)
             {
                 if (loadingCoroutine == null)
@@ -172,7 +170,7 @@ namespace DCL
                 var animators = MeshesInfoUtils.ExtractUniqueAnimations(assetBundleModelGO);
                 asset.animationClipSize = 0; // TODO(Brian): Extract animation clip size from metadata
                 asset.meshDataSize = 0; // TODO(Brian): Extract mesh clip size from metadata
-
+                
                 foreach (var animator in animators)
                 {
                     animator.cullingType = AnimationCullingType.AlwaysAnimate;
@@ -182,6 +180,16 @@ namespace DCL
                 assetBundleModelGO.name = subPromise.asset.GetName();
 #endif
                 assetBundleModelGO.transform.ResetLocalTRS();
+                
+                foreach (Renderer r in asset.renderers)
+                {
+                    if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE) 
+                    {
+                        
+                        MaterialTransitionController matTransition = r.gameObject.AddComponent<MaterialTransitionController>();
+                        matTransition.OnDidFinishLoading(r.sharedMaterial);
+                    }
+                }
 
                 yield return null;
             }
