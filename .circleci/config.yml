@@ -33,7 +33,7 @@ references:
     - ./unity-renderer/Builds/
 
   .unity_image: &unity_image
-    - image: unityci/editor:2021.3.4f1-webgl-1
+    - image: unityci/editor:2021.3.6f1-webgl-1
       environment:
         BUILD_TARGET: WebGL
         BUILD_NAME: unity
