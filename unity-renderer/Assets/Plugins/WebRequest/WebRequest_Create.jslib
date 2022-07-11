@@ -8,8 +8,8 @@ var LibraryWebRequestWebGL = {
     JS_WebRequest_Create__sig: 'iii',
     JS_WebRequest_Create: function (url, method) {
         var http = new XMLHttpRequest();
-        var _url = Pointer_stringify(url);
-        var _method = Pointer_stringify(method);
+        var _url = UTF8ToString(url);
+        var _method = UTF8ToString(method);
         http.open(_method, _url, true);
         http.responseType = 'arraybuffer';
         wr.requestInstances[wr.nextRequestId] = http;
